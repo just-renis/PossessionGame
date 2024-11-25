@@ -1,0 +1,35 @@
+﻿#pragma once
+
+#include "CoreMinimal.h"
+#include "PossessionGame/AI/Enemies/Categories/SpecialEnemy.h"
+#include "Samurai.generated.h"
+
+class ADestructible;
+enum class EPlayerInputState : uint8;
+
+UCLASS()
+class POSSESSIONGAME_API ASamurai : public ASpecialEnemy
+{
+	GENERATED_BODY()
+
+	TObjectPtr<ADestructible> SamuraiHat;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TSubclassOf<ADestructible> SamuraiHatClass;
+
+	virtual void AI_Shoot() override;
+	virtual void AI_SetupWeapon() override;
+
+	virtual void P_Setup() override;
+	virtual void P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
+	virtual void P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override {}
+	virtual void P_SetupLeftClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
+	virtual void P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) override;
+	void P_SetBowStretchingState(EPlayerInputState bState);
+	virtual void P_SetupColorsForUI() override;
+
+	virtual void BeginPlay() override;
+	void SetupSamuraiHat();
+	virtual void HandleDeactivation() override;
+	virtual void SetAnimInstance() override;
+	virtual void AI_PlayShootMontage() override;
+};

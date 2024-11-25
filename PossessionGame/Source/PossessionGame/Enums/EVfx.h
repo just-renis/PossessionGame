@@ -1,0 +1,15 @@
+#pragma once
+
+UENUM()
+enum class EVfx : uint8
+{
+	None,
+	RangerMuzzle,
+	RangerBulletTrail,
+	RangerBulletImpact,
+	RangerFpsBulletTrail,
+	StopTimeAbility,
+	StopTimeAbilityReverse,
+	RangerGrenadeExplosion,
+	RangerGrenadeLauncherMuzzle
+};

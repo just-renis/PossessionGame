@@ -1,0 +1,24 @@
+﻿#pragma once
+
+#include "CoreMinimal.h"
+#include "PossessionGame/Abilities/Management/Ability.h"
+#include "RangerAbility1.generated.h"
+
+class ARanger;
+
+UCLASS()
+class POSSESSIONGAME_API URangerAbility1 : public UAbility
+{
+	GENERATED_BODY()
+public:
+	virtual void AI_Execute() override;
+	
+	virtual void P_Execute() override;
+private:
+	UPROPERTY()
+	TObjectPtr<ARanger> Proprietor;
+
+	virtual bool IsProprietorPossessed() override;
+	
+	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) override;
+};

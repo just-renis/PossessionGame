@@ -1,0 +1,82 @@
+﻿#pragma once
+
+#include "CoreMinimal.h"
+#include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/EVfx.h"
+#include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Data Utilities/FAsyncHandle.h"
+#include "PrimaryDataAssetsManager.generated.h"
+
+enum class EVfxType : uint8;
+enum class EPoolObject : uint8;
+class UPA_VfxContainer;
+class UPA_CharacterContainer;
+class UPA_WeaponContainer;
+class UPA_SoundContainer;
+
+USTRUCT()
+struct FPairWrapper
+{
+	GENERATED_BODY()
+	
+	TPair<EPoolObject, EVfxType> Pair;
+
+	bool operator==(const FPairWrapper& Other) const
+	{
+		return Pair.Key == Other.Pair.Key && Pair.Value == Other.Pair.Value;
+	}
+};
+
+FORCEINLINE uint32 GetTypeHash(const FPairWrapper& PairWrapper)
+{
+	uint32 Hash1 = GetTypeHash(PairWrapper.Pair.Key);
+	uint32 Hash2 = GetTypeHash(PairWrapper.Pair.Value);
+	return HashCombine(Hash1, Hash2);
+}
+
+UCLASS()
+class POSSESSIONGAME_API UPrimaryDataAssetsManager : public UWorldSubsystem
+{
+	GENERATED_BODY()
+public:
+	bool IsAsyncLoadingFinished();
+	bool GetCanAsyncLoadHappen() { return bCanAsyncLoadHappen; }
+	EVfx GetVfxName(EPoolObject ProjectileName, EVfxType VfxType);
+	EVfx GetVfxName(ECharacterType CharacterType, EVfxType VfxType);
+	TObjectPtr<UPA_WeaponContainer>& GetWeaponData(EWeapon WeaponName);
+	TObjectPtr<UPA_SoundContainer>& GetSoundData(ESound SoundName);
+	TObjectPtr<UPA_CharacterContainer>& GetCharacterData(ECharacterType CharacterName);
+	TObjectPtr<UPA_VfxContainer>& GetVfxData(EVfx VfxName);
+
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	void Init();
+	void AddAsyncHandle(TSharedPtr<FStreamableHandle>& Handle) { AsyncHandles.Add(FAsyncHandle(Handle)); }
+	void DeleteLoadedHandles();
+	void LoadAndSetSound(TObjectPtr<UAudioComponent> AudioComp, ESound SoundName, bool bPlay2DSound = false);
+private:
+	bool bCanAsyncLoadHappen = true;
+	UPROPERTY()
+	TMap<EWeapon, TObjectPtr<UPA_WeaponContainer>> WeaponContainers;
+	UPROPERTY()
+	TMap<ESound, TObjectPtr<UPA_SoundContainer>> SoundContainers;
+	UPROPERTY()
+	TMap<ECharacterType, TObjectPtr<UPA_CharacterContainer>> CharacterContainers;
+	UPROPERTY()
+	TMap<EVfx, TObjectPtr<UPA_VfxContainer>> VfxContainers;
+	UPROPERTY()
+	TArray<FAsyncHandle> AsyncHandles;
+	UPROPERTY()
+	TMap<FPairWrapper, EVfx> VfxCombinationsMap;
+
+	bool IsGameRunning();
+	EPoolObject GetProjectileNameByCharacterName(ECharacterType CharacterType);
+
+	void SetupWeaponsPrimaryAssets();
+	void SetupSoundsPrimaryAssets();
+	void SetupCharactersPrimaryAssets();
+	void SetupVfxsPrimaryAssets();
+	void SetSoundCallback(TObjectPtr<UAudioComponent> AudioComp, ESound SoundName, bool bPlay2DSound);
+	template<typename T, typename U>
+	void FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type);
+};

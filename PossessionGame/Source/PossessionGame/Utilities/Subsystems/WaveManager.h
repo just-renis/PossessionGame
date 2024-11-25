@@ -1,0 +1,75 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "PossessionGame/Enums/ECharacterType.h"
+#include "WaveManager.generated.h"
+
+class UDelegateManager;
+class UPrimaryDataAssetsManager;
+class ASpawnLocation;
+class AEnemy;
+class UWaveManagerHUD;
+enum class ESound : uint8;
+enum class EWeapon : uint8;
+
+UCLASS()
+class POSSESSIONGAME_API UWaveManager : public UWorldSubsystem
+{
+	GENERATED_BODY()
+public:
+	UWaveManager();
+	
+	void Init(TObjectPtr<UDelegateManager> InDelegateManager);
+	void InitDelegates();
+	void SetupWaveManagerSettings(TArray<ECharacterType>& EnemiesThatAreSpawnable, ECharacterType FirstEnemy, int32 EnemiesAmountOnFirstWave);
+private:
+	bool FIRSTPOSSESSABLE = true;
+	bool bIsSpawnInProcess = false;
+	int32 CurrentWave = 1;
+	int32 EnemiesPerWave = 2;
+	int32 EnemiesLeftToKill = 2;
+	int32 EnemiesOnSceneLimit = 7;
+	int32 AliveEnemiesAmount = 0;
+	int32 CountdownSeconds = 3;
+	float SpawnRate = 0.2f;
+	ECharacterType FirstEnemyToSpawn = ECharacterType::Spy;
+	UPROPERTY()
+	TObjectPtr<UWaveManagerHUD> WaveManagerHUD;
+	UPROPERTY()
+	TArray<TObjectPtr<ASpawnLocation>> SpawnLocations;
+	UPROPERTY()
+	TArray<ECharacterType> EnemyTypes;
+	UPROPERTY()
+	TMap<ECharacterType, TSubclassOf<AEnemy>> Enemies;
+	UPROPERTY()
+	TObjectPtr<UDelegateManager> DelegateManager;
+	UPROPERTY()
+	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
+
+	bool IsGameRunning();
+	EWeapon GetWeaponCode(ECharacterType EnemyType);
+	EWeapon GetSingularWeapon(EWeapon Weapon);
+
+	void SetupTimers();
+	void StartWave();
+	void InitiateNextWave();
+	void SetupNextWave();
+	void SetupNextWaveUI();
+	void SetupWaveManagerUI();
+	void SetupSpawnLocations();
+	void SpawnEnemy(ECharacterType EnemyType);
+	void SpawnLogic();
+	void AsyncLoadAndSpawnEnemy(ECharacterType EnemyType);
+	void PlaySound(ESound SoundName);
+	void SetupSounds();
+	void AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECharacterType EnemyType, TObjectPtr<UPrimaryDataAssetsManager> AssetsManage);
+
+	UFUNCTION()
+	void UpdateCountdown();
+	UFUNCTION()
+	void HandleSpawning();
+	UFUNCTION()
+	void InitiateWave();
+	UFUNCTION()
+	void UpdateEnemiesAmount();
+};
