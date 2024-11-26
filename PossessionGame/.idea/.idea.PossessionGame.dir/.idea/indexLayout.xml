@@ -2,8 +2,9 @@
 <project version="4">
   <component name="UserContentModel">
     <attachedFolders>
-      <Path>../../../Possession repository UE 5.4</Path>
+      <Path>../../PossessionGame</Path>
       <Path>../../PossessionRepository</Path>
+      <Path>../../../Possession repository UE 5.4</Path>
     </attachedFolders>
     <explicitIncludes />
     <explicitExcludes />

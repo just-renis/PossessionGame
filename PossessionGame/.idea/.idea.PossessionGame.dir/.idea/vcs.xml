@@ -2,5 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/PossessionRepository" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../Possession repository UE 5.4/PossessionRepository" vcs="Git" />
   </component>
 </project>
