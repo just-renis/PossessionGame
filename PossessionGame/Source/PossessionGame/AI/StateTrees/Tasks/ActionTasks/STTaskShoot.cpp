@@ -19,7 +19,4 @@ void USTTaskShoot::ExitState(FStateTreeExecutionContext& Context, const FStateTr
 	Super::ExitState(Context, Transition);
 }
 
-void USTTaskShoot::ShootLogic()
-{
-	CachedController->GetProprietor()->AI_ShootLogic();
-}
+void USTTaskShoot::ShootLogic() { CachedController->GetProprietor()->AI_ShootLogic(); }

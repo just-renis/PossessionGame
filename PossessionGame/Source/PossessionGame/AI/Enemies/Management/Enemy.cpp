@@ -10,6 +10,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "InputMappingContext.h"
+#include "Components/WidgetComponent.h"
 #include "Engine/DamageEvents.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
@@ -20,6 +21,7 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EWidget.h"
+#include "PossessionGame/UI/AIHpBarUI.h"
 #include "PossessionGame/UI/PauseMenuUI.h"
 #include "PossessionGame/UI/PlayerHUD.h"
 #include "PossessionGame/UI/SettingsUI.h"
@@ -39,6 +41,8 @@ AEnemy::AEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("camera"));
 	Camera->SetupAttachment(RootComponent);
+	AI_HpBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("AI_HpBar"));
+	AI_HpBarComponent->SetupAttachment(RootComponent);
 }
 
 bool AEnemy::GetIsPossessable() { return AI_Data->GetIsPossessable(); }
@@ -164,6 +168,7 @@ void AEnemy::ReceiveDamage(float Damage)
 {
 	CurrentHp -= Damage;
 	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
+	else AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
 	if (bIsAlive && CurrentHp <= 0)
 	{
 		if (bIsPossessed) P_Death();
@@ -299,6 +304,7 @@ void AEnemy::P_TemporallyToggleRunning(bool bState) { if (bIsRunning) SetMaxWalk
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	AI_HpBar = Cast<UAIHpBarUI>(AI_HpBarComponent->GetWidget());
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
 	SetMesh(CharacterName);

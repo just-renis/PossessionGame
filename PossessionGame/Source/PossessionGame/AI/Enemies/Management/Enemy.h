@@ -10,6 +10,8 @@
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "Enemy.generated.h"
 
+class UAIHpBarUI;
+class UWidgetComponent;
 class UPrimaryDataAssetsManager;
 enum class EVfx : uint8;
 class ADestructible;
@@ -152,11 +154,14 @@ private:
 	EMoveMode CurrentMoveMode = EMoveMode::Walk;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
+	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UWidgetComponent> AI_HpBarComponent;
+	UPROPERTY()
+	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
 	TObjectPtr<UAIPerceptionStimuliSourceComponent> StimuliSource;
 	UPROPERTY()
 	TObjectPtr<ANavAreaModifier> NavAreaModifier;
-
 	EAbility GetAbilityFromCharacterName(int32 AbilityIndex);
 
 	void AI_SetupData();
