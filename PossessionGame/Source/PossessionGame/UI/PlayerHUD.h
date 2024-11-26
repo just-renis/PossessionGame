@@ -23,7 +23,6 @@ public:
 	void UpdateAmmoText(int32 WeaponAmmo, int32 MaxAmmo);
 	void UpdateAmmoText(int32 FirstWeaponAmmo, int32 SecondWeaponAmmo, int32 MaxAmmo);
 	void ToggleAbilitiesUI();
-	void ToggleStats();
 	void UpdateAbilityCooldown(int32 WhichAbility, float Secs);
 	void UpdateAbilityCooldown(int32 WhichAbility, int32 Kills);
 	void ChangeColorOfText(int32 WhichAbility, FLinearColor Color);
@@ -54,10 +53,6 @@ private:
 	TObjectPtr<UBorder> ThirdAbilityIcon;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UImage> ScreenGlow;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UTextBlock> LeftSideDecoration;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UTextBlock> RightSideDecoration;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UTextBlock> FpsText;
 

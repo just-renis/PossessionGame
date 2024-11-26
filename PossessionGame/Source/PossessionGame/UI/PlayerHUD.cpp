@@ -92,12 +92,7 @@ void UPlayerHUD::Reset()
 	ThirdAbilityIcon->SetVisibility(ESlateVisibility::Visible);
 }
 
-void UPlayerHUD::SetColors(FLinearColor Color)
-{
-	ScreenGlow->SetColorAndOpacity(Color);
-	LeftSideDecoration->SetColorAndOpacity(Color);
-	RightSideDecoration->SetColorAndOpacity(Color);
-}
+void UPlayerHUD::SetColors(FLinearColor Color) { ScreenGlow->SetColorAndOpacity(Color); }
 
 void UPlayerHUD::NativeConstruct()
 {
