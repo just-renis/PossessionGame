@@ -2,8 +2,8 @@
 
 #include "FStateTreeData.generated.h"
 
+class UStateTreeComponent;
 class AWeapon;
-class UCustomStateTreeComponent;
 
 USTRUCT(BlueprintType)
 struct POSSESSIONGAME_API FStateTreeData
@@ -14,13 +14,13 @@ struct POSSESSIONGAME_API FStateTreeData
 	bool GetIsEQSPointAvailable() { return bIsEQSPointAvailable; }
 	FVector GetTargetLocation() { return Target->GetActorLocation(); }
 	TObjectPtr<AActor> GetTarget() { return Target; }
-	TObjectPtr<UCustomStateTreeComponent>& GetStateTreeRef() { return StateTree; }
+	TObjectPtr<UStateTreeComponent>& GetStateTreeRef() { return StateTree; }
 
 	void SetIsTargetInMySight(bool bState) { bIsTargetInMySight = bState; }
 	void SetReloadDelay(float Value) { ReloadDelay = Value; }
 	void SetShootCooldown(float Value) { ShootCooldown = Value; }
 	void SetSearchLocation(FVector Value) { SearchLocation = Value;}
-	void SetStateTreeRef(TObjectPtr<UCustomStateTreeComponent>& InStateTreeRef) { StateTree = InStateTreeRef; }
+	void SetStateTreeRef(TObjectPtr<UStateTreeComponent>& InStateTreeRef) { StateTree = InStateTreeRef; }
     void SetWeaponRef(TObjectPtr<AWeapon>& InWeaponRef) { Weapon = InWeaponRef; }
     void SetTargetRef(TObjectPtr<AActor>& InTargetRef) { Target = InTargetRef; }
     void SetEQSTargetRef(TObjectPtr<AActor>& InEQSTargetRef) { EQSTarget = InEQSTargetRef; }
@@ -46,5 +46,5 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<AWeapon> Weapon;
 	UPROPERTY()
-	TObjectPtr<UCustomStateTreeComponent> StateTree;
+	TObjectPtr<UStateTreeComponent> StateTree;
 };

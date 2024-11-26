@@ -6,9 +6,9 @@
 #include "PossessionGame/Utilities/Data Utilities/FStateTreeData.h"
 #include "EnemyAIController.generated.h"
 
+class UStateTreeComponent;
 enum class EMoveMode : uint8;
 struct FAIStimulus;
-class UCustomStateTreeComponent;
 class UAISenseConfig_Sight;
 class AAIPath;
 class UEnemyCommunicator;
@@ -31,17 +31,17 @@ public:
 	void SetProprietor(TObjectPtr<AEnemy> Enemy);
 	void SetupStateTree();
 	void SetMoveMode(EMoveMode MoveMode);
+	virtual void SetupAI();
 	void SetEQSTargetLocation(FVector InLocation) { EQSTarget->SetActorLocation(InLocation); }
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UCustomStateTreeComponent> StateTree;
+	TObjectPtr<UStateTreeComponent> StateTree;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
 	TObjectPtr<UEnemyCommunicator> EnemyCommunicator;
 	
 	virtual void BeginPlay() override;
-	virtual void SetupAI();
 	UFUNCTION()
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 private:

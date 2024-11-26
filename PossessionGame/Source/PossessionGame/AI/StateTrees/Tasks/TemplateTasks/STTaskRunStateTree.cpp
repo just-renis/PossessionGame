@@ -5,7 +5,7 @@
 
 EStateTreeRunStatus USTTaskRunStateTree::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
 {
-	StateTree = StateTreeData.GetStateTreeRef()->GetTaskStateTree(Id);
+	//StateTree = StateTreeData.GetStateTreeRef()->GetTaskStateTree(Id);
 	if (StateTree == nullptr) InitializeStateTree(Context);
 	else StateTree->ResumeLogic(TEXT("Resuming state"));
 	UE_LOG(LogTemp, Warning, TEXT("ENTER"));
@@ -24,6 +24,6 @@ void USTTaskRunStateTree::InitializeStateTree(FStateTreeExecutionContext& Contex
 	StateTree = NewObject<UCustomStateTreeComponent>(Context.GetOwner());
 	StateTree->SetStateTree(StateTreeAsset);
 	StateTree->RegisterComponent();
-	StateTreeData.GetStateTreeRef()->RegisterTaskStateTree(Id, StateTree);
+//	StateTreeData.GetStateTreeRef()->RegisterTaskStateTree(Id, StateTree);
 	StateTree->StartLogic();
 }

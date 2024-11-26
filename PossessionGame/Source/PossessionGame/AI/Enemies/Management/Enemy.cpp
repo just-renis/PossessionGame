@@ -179,6 +179,7 @@ void AEnemy::AI_Setup()
 	AI_SetController();
 	AI->SetProprietor(this);
 	AI_SetupWeapon();
+	AI->SetupAI();
 	AI_SetupData();
 	if (Weapon->GetIsReloadEnabled()) AI->SetReloadDelay(AnimInstance->GetMontageLength(EEnemyAnimState::Reload));
 	AI_SetupAbilities();

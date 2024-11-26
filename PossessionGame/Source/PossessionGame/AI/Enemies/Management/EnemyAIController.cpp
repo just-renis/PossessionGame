@@ -3,9 +3,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "EnemyAnimationInstance.h"
+#include "Components/StateTreeComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
-#include "PossessionGame/AI/StateTrees/CustomStateTreeComponent.h"
 #include "PossessionGame/Utilities/Global Utilities/EmptyActor.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
@@ -21,7 +21,7 @@ AEnemyAIController::AEnemyAIController()
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 	Perception->ConfigureSense(*SightConfig);
 	Perception->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::OnTargetPerceptionUpdated);
-	StateTree = CreateDefaultSubobject<UCustomStateTreeComponent>(TEXT("stateTree"));
+	StateTree = CreateDefaultSubobject<UStateTreeComponent>(TEXT("StateTreeComponent"));
 	StateTree->SetStartLogicAutomatically(false);
 }
 
@@ -57,13 +57,19 @@ void AEnemyAIController::SetupStateTree()
 
 void AEnemyAIController::SetMoveMode(EMoveMode MoveMode) { Proprietor->AI_SetMoveMode(MoveMode); }
 
+void AEnemyAIController::SetupAI()
+{
+	UKismetSystemLibrary::K2_SetTimer(this, "AdjustCustomFocus", 0.02f, true);
+	EnemyCommunicator->GetEQSDelegate().AddUObject(this, &AEnemyAIController::SetEQSTargetLocation);
+	if (EnemyCommunicator->GetTarget()) SetTarget(EnemyCommunicator->GetTarget(), false);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTargetChange.AddUObject(this, &AEnemyAIController::SetTarget);
+}
+
 void AEnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
+	EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
 	SetupEQSTarget();
-	SetupAI();
-	if (EnemyCommunicator->GetTarget()) SetTarget(EnemyCommunicator->GetTarget(), false);
-	EnemyCommunicator->GetEQSDelegate().AddUObject(this, &AEnemyAIController::SetEQSTargetLocation);
 }
 
 void AEnemyAIController::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
@@ -72,13 +78,6 @@ void AEnemyAIController::GetActorEyesViewPoint(FVector& OutLocation, FRotator& O
 	FTransform Transform = Proprietor->GetMesh()->GetSocketTransform("SensorSocket", RTS_World);
 	OutLocation = Transform.GetLocation();
 	OutRotation = Transform.GetRotation().Rotator();
-}
-
-void AEnemyAIController::SetupAI()
-{
-	UKismetSystemLibrary::K2_SetTimer(this, "AdjustCustomFocus", 0.02f, true);
-	EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTargetChange.AddUObject(this, &AEnemyAIController::SetTarget);
 }
 
 void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
