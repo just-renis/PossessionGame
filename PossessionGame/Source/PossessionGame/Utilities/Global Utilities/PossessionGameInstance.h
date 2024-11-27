@@ -11,7 +11,7 @@ class POSSESSIONGAME_API UPossessionGameInstance : public UGameInstance
 public:
 	float GetTimeDilation() { return GlobalTimeDilation; }
 private:
-	UPROPERTY(EditAnywhere, Category = "Global Variables", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Global Variables", meta = (AllowPrivateAccess = true))
 	float GlobalTimeDilation = 1.f;
 
 	virtual void Init() override;

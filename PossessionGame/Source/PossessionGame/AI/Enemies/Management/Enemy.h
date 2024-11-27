@@ -188,6 +188,9 @@ private:
 	void P_UpdateAbilityCooldownUITextColor(int32 Index);
 	void P_StopAllAbilities();
 	void P_HandleEscapeClick();
+	void P_TriggerGlitchingEffect();
+	UFUNCTION()
+	void P_TurnOffGlitchingEffect() const;
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()

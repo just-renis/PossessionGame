@@ -27,13 +27,13 @@ private:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void Move(const FInputActionValue& Value);
-	void Rotate(const FInputActionValue& Value);
+	void Move(const FInputActionValue& InValue);
+	void Rotate(const FInputActionValue& InValue);
 	void StartRunning();
 	void StopRunning();
 	void PossessEnemy();
-	void RestartLevel();
+	void RestartLevel() const;
 	void HandleEscapeClick();
 	UFUNCTION()
-	void CheckIfPlayerFallOutOfWorld();
+	void CheckIfPlayerFallOutOfWorld() const;
 };

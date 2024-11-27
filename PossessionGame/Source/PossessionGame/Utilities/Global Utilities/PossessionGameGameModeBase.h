@@ -5,6 +5,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FPrefabCategoryData.h"
 #include "PossessionGameGameModeBase.generated.h"
 
+enum class EPostProcessMaterial : uint8;
 class UEnvQuery;
 enum class EPrefabCategory : uint8;
 class USettingsSave;
@@ -32,6 +33,8 @@ private:
 	TArray<ECharacterType> EnemiesThatAreSpawnable;
 	UPROPERTY(EditAnywhere, Category = "Level Prefabs", meta = (AllowPrivateAccess = true))
 	TMap<EPrefabCategory, FPrefabCategoryData> Prefabs;
+	UPROPERTY(EditAnywhere, Category = "Widget Manager", meta = (AllowPrivateAccess = true))
+	TMap<EPostProcessMaterial, TObjectPtr<UMaterialInterface>> PostProcessMaterials;
 	UPROPERTY(EditAnywhere, Category = "Pooling Manager", meta = (AllowPrivateAccess = true))
 	TMap<EPoolObject, TSubclassOf<APoolObject>> PoolObjects;
 	UPROPERTY(EditAnywhere, Category = "Widget Manager", meta = (AllowPrivateAccess = true))

@@ -25,9 +25,9 @@ void APlayerGhost::BeginPlay()
 	Tags.Add("PlayerGhost");
 	UKismetSystemLibrary::K2_SetTimer(this, "CheckIfPlayerFallOutOfWorld", 2.f, true);
 	CharacterMovementComponent = GetCharacterMovement();
-	if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
+	if (const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
 	{
-		if (TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		if (const TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(PlayerMappingContext, 0);
 		}
@@ -55,9 +55,9 @@ void APlayerGhost::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	UKismetSystemLibrary::K2_ClearTimer(this, "CheckIfPlayerFallOutOfWorld");
 }
 
-void APlayerGhost::Move(const FInputActionValue& Value)
+void APlayerGhost::Move(const FInputActionValue& InValue)
 {
-	const FVector2D MovementVector = Value.Get<FVector2D>();
+	const FVector2D MovementVector = InValue.Get<FVector2D>();
 	if (Controller)
 	{
 		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
@@ -65,9 +65,9 @@ void APlayerGhost::Move(const FInputActionValue& Value)
 	}
 }
 
-void APlayerGhost::Rotate(const FInputActionValue& Value)
+void APlayerGhost::Rotate(const FInputActionValue& InValue)
 {
-	const FVector2D RotationVector = Value.Get<FVector2D>();
+	const FVector2D RotationVector = InValue.Get<FVector2D>();
 	if (Controller)
 	{
 		AddControllerYawInput(RotationVector.X);
@@ -85,12 +85,11 @@ void APlayerGhost::PossessEnemy()
 {
 	FHitResult HitResult;
 	FCollisionQueryParams QueryParams;
-	FVector StartLocation = Camera->GetComponentLocation();
-	FVector EndLocation = StartLocation + Camera->GetForwardVector() * 15000.f;
+	const FVector StartLocation = Camera->GetComponentLocation();
 	QueryParams.AddIgnoredActor(this);
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, QueryParams))
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_Visibility, QueryParams))
 	{
-		TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
+		const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
 		if (Enemy && Enemy->GetIsPossessable())
 		{
 			Controller->Possess(Enemy);
@@ -99,10 +98,7 @@ void APlayerGhost::PossessEnemy()
 	}
 }
 
-void APlayerGhost::RestartLevel()
-{
-	UGameplayStatics::OpenLevel(GetWorld(), "Level1");
-}
+void APlayerGhost::RestartLevel() const { UGameplayStatics::OpenLevel(GetWorld(), "Level_1"); }
 
 void APlayerGhost::HandleEscapeClick()
 {
@@ -114,7 +110,7 @@ void APlayerGhost::HandleEscapeClick()
 	}
 }
 
-void APlayerGhost::CheckIfPlayerFallOutOfWorld()
+void APlayerGhost::CheckIfPlayerFallOutOfWorld() const
 {
 	if (GetActorLocation().Z <= -1000.f)
 	{

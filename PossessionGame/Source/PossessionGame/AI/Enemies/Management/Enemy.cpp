@@ -31,6 +31,7 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
+#include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -126,7 +127,11 @@ void AEnemy::PossessedBy(AController* NewController)
 	if (!bIsPossessed)
 	{
 		Super::PossessedBy(NewController);
-		if (Cast<APlayerController>(NewController)) P_Setup();
+		if (Cast<APlayerController>(NewController))
+		{
+			P_TriggerGlitchingEffect();
+			P_Setup();
+		}
 	}
 }
 
@@ -591,6 +596,14 @@ void AEnemy::P_HandleEscapeClick()
 		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 	}
 }
+
+void AEnemy::P_TriggerGlitchingEffect()
+{
+	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::Glitching, 1.f);
+	UKismetSystemLibrary::K2_SetTimer(this, "P_TurnOffGlitchingEffect", 0.5f, false);
+}
+
+void AEnemy::P_TurnOffGlitchingEffect() const { GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::Glitching, 0.f); }
 
 void AEnemy::P_Death()
 {
