@@ -62,7 +62,7 @@ void UMainMenuUI::TriggerQuitFadeInAnim()
 	QuitFadeInState = !QuitFadeInState;
 }
 
-void UMainMenuUI::Play() { UGameplayStatics::OpenLevel(GetWorld(), TEXT("Level_1")); }
+void UMainMenuUI::Play() { UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Levels/Chapter1/Levels/Level_1")); }
 
 void UMainMenuUI::QuitGame() { UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false); }
 

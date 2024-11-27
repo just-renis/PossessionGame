@@ -151,6 +151,7 @@ private:
 	bool bIsUnloadLevel = false;
 	bool bIsRunning = false;
 	bool bIsCriticallyDamaged = false;
+	bool bIsAIBarCreated = false;
 	float PossessionBarTimer = 0.f;
 	EMoveMode CurrentMoveMode = EMoveMode::Walk;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
@@ -173,7 +174,7 @@ private:
 	void AI_ReceivedDamage();
 	void AI_DestroyHpBar();
 	UFUNCTION()
-	void AI_HideHpBar() const;
+	void AI_HideHpBar();
 	UFUNCTION()
 	void AI_ClearShootPause();
 	UFUNCTION()

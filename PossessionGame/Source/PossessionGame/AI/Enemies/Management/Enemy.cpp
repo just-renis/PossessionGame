@@ -453,21 +453,23 @@ void AEnemy::AI_SetupHpBar()
 
 void AEnemy::AI_ReceivedDamage()
 {
-	if (AI_HpBar)
-	{
-		AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
-		AI_HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		UKismetSystemLibrary::K2_SetTimer(this, "AI_HideHpBar", 2.f, false);
-	}
+	if (!AI_HpBar) return;
+	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
+	AI_HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	UKismetSystemLibrary::K2_SetTimer(this, "AI_HideHpBar", 2.f, false);
 }
 
 void AEnemy::AI_DestroyHpBar()
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "AI_HideHpBar");
 	AI_HpBar = nullptr;
+	AI_HpBarComponent = nullptr;
 }
 
-void AEnemy::AI_HideHpBar() const { AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
+void AEnemy::AI_HideHpBar()
+{
+	if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed);
+}
 
 void AEnemy::AI_ClearShootPause()
 {

@@ -98,7 +98,7 @@ void APlayerGhost::PossessEnemy()
 	}
 }
 
-void APlayerGhost::RestartLevel() const { UGameplayStatics::OpenLevel(GetWorld(), "Level_1"); }
+void APlayerGhost::RestartLevel() const { UGameplayStatics::OpenLevel(GetWorld(), "/Game/Levels/Chapter1/Levels/Level_1"); }
 
 void APlayerGhost::HandleEscapeClick()
 {
