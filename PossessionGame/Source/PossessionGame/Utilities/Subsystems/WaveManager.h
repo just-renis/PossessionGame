@@ -17,9 +17,7 @@ class POSSESSIONGAME_API UWaveManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-	UWaveManager();
-	
-	void Init(TObjectPtr<UDelegateManager> InDelegateManager);
+	void Init(const TObjectPtr<UDelegateManager>& InDelegateManager);
 	void InitDelegates();
 	void SetupWaveManagerSettings(TArray<ECharacterType>& EnemiesThatAreSpawnable, ECharacterType FirstEnemy, int32 EnemiesAmountOnFirstWave);
 private:
@@ -43,8 +41,6 @@ private:
 	TMap<ECharacterType, TSubclassOf<AEnemy>> Enemies;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
-	UPROPERTY()
-	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	bool IsGameRunning();
 	EWeapon GetWeaponCode(ECharacterType EnemyType);
@@ -60,8 +56,7 @@ private:
 	void SpawnEnemy(ECharacterType EnemyType);
 	void SpawnLogic();
 	void AsyncLoadAndSpawnEnemy(ECharacterType EnemyType);
-	void PlaySound(ESound SoundName);
-	void SetupSounds();
+	void PlaySound(const ESound InSoundName) const;
 	void AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECharacterType EnemyType, TObjectPtr<UPrimaryDataAssetsManager> AssetsManage);
 
 	UFUNCTION()

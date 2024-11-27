@@ -53,7 +53,8 @@ public:
 	void Init();
 	void AddAsyncHandle(TSharedPtr<FStreamableHandle>& Handle) { AsyncHandles.Add(FAsyncHandle(Handle)); }
 	void DeleteLoadedHandles();
-	void LoadAndSetSound(TObjectPtr<UAudioComponent> AudioComp, ESound SoundName, bool bPlay2DSound = false);
+	void ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, ESound InSoundName);
+	void PlaySound2D(ESound SoundName);
 private:
 	bool bCanAsyncLoadHappen = true;
 	UPROPERTY()
@@ -70,13 +71,13 @@ private:
 	TMap<FPairWrapper, EVfx> VfxCombinationsMap;
 
 	bool IsGameRunning();
-	EPoolObject GetProjectileNameByCharacterName(ECharacterType CharacterType);
+	EPoolObject GetProjectileNameByCharacterName(ECharacterType InCharacterType);
 
 	void SetupWeaponsPrimaryAssets();
 	void SetupSoundsPrimaryAssets();
 	void SetupCharactersPrimaryAssets();
 	void SetupVfxsPrimaryAssets();
-	void SetSoundCallback(TObjectPtr<UAudioComponent> AudioComp, ESound SoundName, bool bPlay2DSound);
+	void SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, ESound InSoundName);
 	template<typename T, typename U>
 	void FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type);
 };

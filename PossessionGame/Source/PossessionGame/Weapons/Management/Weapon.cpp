@@ -230,7 +230,7 @@ void AWeapon::DetachWeapon()
 	Mesh->SetSimulatePhysics(true);
 }
 
-void AWeapon::PlaySound(ESound SoundName) { Sounds[SoundName]->Sound ? Sounds[SoundName]->Play() : AssetsManager->LoadAndSetSound(Sounds[SoundName], SoundName); }
+void AWeapon::PlaySound(ESound SoundName) { Sounds[SoundName]->Sound ? Sounds[SoundName]->Play() : AssetsManager->ConfigureSound(Sounds[SoundName], SoundName); }
 
 void AWeapon::MuzzleFlashLogic()
 {

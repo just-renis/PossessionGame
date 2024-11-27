@@ -3,7 +3,6 @@
 #include "PrimaryDataAssetsManager.h"
 #include "WeaponManager.h"
 #include "WidgetManager.h"
-#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/AssetManager.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
@@ -12,9 +11,7 @@
 #include "PossessionGame/UI/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Global Utilities/SpawnLocation.h"
 
-UWaveManager::UWaveManager() { SetupSounds(); }
-
-void UWaveManager::Init(TObjectPtr<UDelegateManager> InDelegateManager)
+void UWaveManager::Init(const TObjectPtr<UDelegateManager>& InDelegateManager)
 {
 	DelegateManager = InDelegateManager;
 	InitDelegates();
@@ -174,18 +171,7 @@ void UWaveManager::AsyncLoadAndSpawnEnemy(ECharacterType EnemyType)
 	}
 }
 
-void UWaveManager::PlaySound(ESound SoundName)
-{
-	Sounds[SoundName]->Sound ? UGameplayStatics::PlaySound2D(GetWorld(), Sounds[SoundName]->Sound) : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->LoadAndSetSound(Sounds[SoundName], SoundName, true);
-}
-
-void UWaveManager::SetupSounds()
-{
-	Sounds.Add(ESound::WaveStart, CreateDefaultSubobject<UAudioComponent>(TEXT("waveStartSound")));
-	Sounds[ESound::WaveStart]->SetAutoActivate(false);
-	Sounds.Add(ESound::WaveCountdown, CreateDefaultSubobject<UAudioComponent>(TEXT("waveCountdownSound")));
-	Sounds[ESound::WaveCountdown]->SetAutoActivate(false);
-}
+void UWaveManager::PlaySound(const ESound InSoundName) const { GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(InSoundName); }
 
 void UWaveManager::AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECharacterType EnemyType, TObjectPtr<UPrimaryDataAssetsManager> AssetsManager)
 {

@@ -82,14 +82,27 @@ void UPrimaryDataAssetsManager::DeleteLoadedHandles()
 	if (AsyncHandles.IsEmpty()) bCanAsyncLoadHappen = false;
 }
 
-void UPrimaryDataAssetsManager::LoadAndSetSound(TObjectPtr<UAudioComponent> AudioComp, ESound SoundName, bool bPlay2DSound)
+void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, ESound InSoundName)
 {
 	if (GetCanAsyncLoadHappen())
 	{
-		FSoftObjectPath PathToLoad = GetSoundData(SoundName)->Sound.ToSoftObjectPath();
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, AudioComp, SoundName, bPlay2DSound]
+		const FSoftObjectPath PathToLoad = GetSoundData(InSoundName)->Sound.ToSoftObjectPath();
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, InAudioComp, InSoundName]
 		{
-			if (IsGameRunning()) SetSoundCallback(AudioComp, SoundName, bPlay2DSound);
+			if (IsGameRunning()) SetAndPlaySoundCallback(InAudioComp, InSoundName);
+		});
+		AddAsyncHandle(Handle);
+	}
+}
+
+void UPrimaryDataAssetsManager::PlaySound2D(ESound SoundName)
+{
+	if (GetCanAsyncLoadHappen())
+	{
+		const FSoftObjectPath PathToLoad = GetSoundData(SoundName)->Sound.ToSoftObjectPath();
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, SoundName]
+		{
+			if (IsGameRunning()) UGameplayStatics::PlaySound2D(GetWorld(), GetSoundData(SoundName)->Sound.Get());
 		});
 		AddAsyncHandle(Handle);
 	}
@@ -97,9 +110,9 @@ void UPrimaryDataAssetsManager::LoadAndSetSound(TObjectPtr<UAudioComponent> Audi
 
 bool UPrimaryDataAssetsManager::IsGameRunning() { return IsValid(this) && GetWorld() && !GetWorld()->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }
 
-EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharacterType CharacterType)
+EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharacterType InCharacterType)
 {
-	switch (CharacterType)
+	switch (InCharacterType)
 	{
 		case ECharacterType::Ranger: return EPoolObject::RangerProjectile;
 		default: return EPoolObject::RangerProjectile;
@@ -128,6 +141,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_WaveCountdown", ESound::WaveCountdown);
 	SoundMap.Add("PA_RangerShoot", ESound::RangerShoot);
 	SoundMap.Add("PA_RangerReload", ESound::RangerReload);
+	SoundMap.Add("PA_OnPossession", ESound::OnPossession);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -160,10 +174,10 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Empty();
 }
 
-void UPrimaryDataAssetsManager::SetSoundCallback(TObjectPtr<UAudioComponent> AudioComp, ESound SoundName, bool bPlay2DSound)
+void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, const ESound InSoundName)
 {
-	AudioComp->SetSound(GetSoundData(SoundName)->Sound.Get());
-	!bPlay2DSound ? AudioComp->Play() : UGameplayStatics::PlaySound2D(GetWorld(), AudioComp->Sound);
+	InAudioComp->SetSound(GetSoundData(InSoundName)->Sound.Get());
+	InAudioComp->Play();
 }
 
 template<typename T, typename U>

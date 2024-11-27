@@ -599,6 +599,7 @@ void AEnemy::P_HandleEscapeClick()
 
 void AEnemy::P_TriggerGlitchingEffect()
 {
+	AssetsManager->PlaySound2D(ESound::OnPossession);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::Glitching, 1.f);
 	UKismetSystemLibrary::K2_SetTimer(this, "P_TurnOffGlitchingEffect", 0.5f, false);
 }

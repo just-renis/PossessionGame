@@ -7,5 +7,6 @@ enum class ESound : uint8
 	WaveStart,
 	WaveCountdown,
 	RangerShoot,
-	RangerReload
+	RangerReload,
+	OnPossession
 };
