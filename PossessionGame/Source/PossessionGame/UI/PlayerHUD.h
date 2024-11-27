@@ -16,8 +16,6 @@ class POSSESSIONGAME_API UPlayerHUD : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	bool IsPossessionIndicatorVisible() const { return PossessionIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible; }
-	
 	void TogglePossessionBar() { ToggleUI(PossessionBar); }
 	void ToggleAmmoText() { ToggleUI(AmmoText); }
 	void ToggleHpBar() { ToggleUI(HPBar); }
@@ -33,7 +31,7 @@ public:
 	void BindCrosshairToggleDelegate();
 	void Reset();
 	void SetColors(FLinearColor Color);
-	void UpdatePossessionIndicator(const bool bState);
+	void UpdatePossessionIndicator(const bool bState) const;
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> PossessionBar;

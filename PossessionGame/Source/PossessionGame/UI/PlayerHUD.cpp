@@ -94,10 +94,7 @@ void UPlayerHUD::Reset()
 
 void UPlayerHUD::SetColors(FLinearColor Color) { ScreenGlow->SetColorAndOpacity(Color); }
 
-void UPlayerHUD::UpdatePossessionIndicator(const bool bState)
-{
-	PossessionIndicator->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-}
+void UPlayerHUD::UpdatePossessionIndicator(const bool bState) const { PossessionIndicator->SetOpacity(bState ? 1.f : 0.3f); }
 
 void UPlayerHUD::NativeConstruct()
 {
