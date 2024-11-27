@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Image.h"
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PlayerHUD.generated.h"
 
@@ -15,6 +16,8 @@ class POSSESSIONGAME_API UPlayerHUD : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	bool IsPossessionIndicatorVisible() const { return PossessionIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible; }
+	
 	void TogglePossessionBar() { ToggleUI(PossessionBar); }
 	void ToggleAmmoText() { ToggleUI(AmmoText); }
 	void ToggleHpBar() { ToggleUI(HPBar); }
@@ -30,31 +33,34 @@ public:
 	void BindCrosshairToggleDelegate();
 	void Reset();
 	void SetColors(FLinearColor Color);
+	void UpdatePossessionIndicator(const bool bState);
 private:
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> PossessionBar;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Crosshair;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> AmmoText;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HPBar;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FirstAbilityText;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SecondAbilityText;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ThirdAbilityText;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UBorder> FirstAbilityIcon;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UBorder> SecondAbilityIcon;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UBorder> ThirdAbilityIcon;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ScreenGlow;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FpsText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> PossessionIndicator;
 
 	virtual void NativeConstruct() override;
 	void ToggleCrosshair();

@@ -80,19 +80,24 @@ void UPlayerHUD::BindCrosshairToggleDelegate()
 
 void UPlayerHUD::Reset()
 {
-	PossessionBar->SetVisibility(ESlateVisibility::Visible);
-	Crosshair->SetVisibility(ESlateVisibility::Visible);
-	AmmoText->SetVisibility(ESlateVisibility::Visible);
-	HPBar->SetVisibility(ESlateVisibility::Visible);
+	PossessionBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	Crosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	AmmoText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	HPBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	FirstAbilityText->SetText(FText());
 	SecondAbilityText->SetText(FText());
 	ThirdAbilityText->SetText(FText());
-	FirstAbilityIcon->SetVisibility(ESlateVisibility::Visible);
-	SecondAbilityIcon->SetVisibility(ESlateVisibility::Visible);
-	ThirdAbilityIcon->SetVisibility(ESlateVisibility::Visible);
+	FirstAbilityIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	SecondAbilityIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	ThirdAbilityIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UPlayerHUD::SetColors(FLinearColor Color) { ScreenGlow->SetColorAndOpacity(Color); }
+
+void UPlayerHUD::UpdatePossessionIndicator(const bool bState)
+{
+	PossessionIndicator->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+}
 
 void UPlayerHUD::NativeConstruct()
 {
@@ -105,5 +110,5 @@ void UPlayerHUD::ToggleCrosshair() { ToggleUI(Crosshair); }
 template<typename T>
 void UPlayerHUD::ToggleUI(TObjectPtr<T> UI)
 {
-	if (UI) UI->GetVisibility() == ESlateVisibility::Visible ? UI->SetVisibility(ESlateVisibility::Hidden) : UI->SetVisibility(ESlateVisibility::Visible);
+	if (UI) UI->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? UI->SetVisibility(ESlateVisibility::Collapsed) : UI->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }

@@ -191,7 +191,7 @@ void AWeapon::Tick(float DeltaTime)
 void AWeapon::HitScanLogic()
 {
 	FHitResult HitResult;
-	FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
+	const FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
 	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail))->GetVfxEffect().Get(), StartLocation, HitResult.ImpactNormal.Rotation());

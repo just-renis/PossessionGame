@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/Interfaces/Concealable.h"
-#include "PossessionGame/Interfaces/Concealable.h"
 #include "PossessionGame/Weapons/Categories/OneHandedWeapon.h"
 #include "SpyWeapon.generated.h"
 

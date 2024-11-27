@@ -195,6 +195,8 @@ private:
 	void P_Death();
 	UFUNCTION()
 	void P_ControlLogic();
+	UFUNCTION()
+	void P_DetectIfPlayerPointingAtEnemy();
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyAI();

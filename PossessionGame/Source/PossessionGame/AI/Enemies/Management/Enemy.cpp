@@ -461,7 +461,7 @@ void AEnemy::P_SetupUI()
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
 	P_SetupColorsForUI();
-//	P_HUD->PlayOnPossessionAnimation();
+	UKismetSystemLibrary::K2_SetTimer(this, "P_DetectIfPlayerPointingAtEnemy", 0.25f, true);
 }
 
 void AEnemy::P_PossessEnemy()
@@ -623,6 +623,16 @@ void AEnemy::P_ControlLogic()
 	P_PossessionBarLogic();
 }
 
+void AEnemy::P_DetectIfPlayerPointingAtEnemy()
+{
+	FHitResult HitResult;
+	const FVector StartLocation = GetCamera()->GetComponentLocation();
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + GetCamera()->GetForwardVector() * 15000.f, ECC_Visibility))
+	{
+		P_HUD->UpdatePossessionIndicator(HitResult.GetActor()->ActorHasTag("Enemy"));
+	}
+}
+
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "AI_SetCharacterMovementSpeed");
@@ -661,7 +671,11 @@ void AEnemy::RestartLevelAfterDelay()
 	UGameplayStatics::OpenLevel(this, *UGameplayStatics::GetCurrentLevelName(GetWorld(), true));
 }
 
-void AEnemy::ClearTimers() { UKismetSystemLibrary::K2_ClearTimer(this, "P_ControlLogic"); }
+void AEnemy::ClearTimers()
+{
+	UKismetSystemLibrary::K2_ClearTimer(this, "P_ControlLogic");
+	UKismetSystemLibrary::K2_ClearTimer(this, "P_DetectIfPlayerPointingAtEnemy");
+}
 
 void AEnemy::SetupStimuliSource()
 {
