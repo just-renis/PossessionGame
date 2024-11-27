@@ -33,19 +33,19 @@ void AWeapon::AI_Shoot()
 
 void AWeapon::AI_ResetShootCycles() { ShootCyclesUntilReload = AI_Data->GetShootCyclesUntilReload(); }
 
-bool AWeapon::P_CanReload(int32 OtherAmmoSource)
+bool AWeapon::P_CanReload(const int32 InOtherAmmoSource)
 {
-	return !HandsAnimInstance->GetIsReloading() && (OtherAmmoSource != -1 ? OtherAmmoSource > 0 : TotalAmmo > 0 && CurrentAmmo != MagazineCap);
+	return !HandsAnimInstance->GetIsReloading() && (InOtherAmmoSource != -1 ? InOtherAmmoSource > 0 : TotalAmmo > 0 && CurrentAmmo != MagazineCap);
 }
 
-bool AWeapon::P_CanShoot(bool bIsFirstWeapon) { return ShootTimer >= ShootCooldown && CurrentAmmo > 0 && !HandsAnimInstance->GetIsReloading(); }
+bool AWeapon::P_CanShoot(const bool bIsFirstWeapon) { return ShootTimer >= ShootCooldown && CurrentAmmo > 0 && !HandsAnimInstance->GetIsReloading(); }
 
-void AWeapon::P_SetWalkingSpeed(float Speed) { if (HandsAnimInstance) HandsAnimInstance->SetSpeed(Speed); }
+void AWeapon::P_SetWalkingSpeed(const float InSpeed) { if (HandsAnimInstance) HandsAnimInstance->SetSpeed(InSpeed); }
 
-void AWeapon::P_Reload(int32 OtherAmmoSource)
+void AWeapon::P_Reload(const int32 InOtherAmmoSource)
 {
-	if (OtherAmmoSource != -1) TotalAmmo = OtherAmmoSource;
-	int32 AmmoNeeded = MagazineCap - CurrentAmmo;
+	if (InOtherAmmoSource != -1) TotalAmmo = InOtherAmmoSource;
+	const int32 AmmoNeeded = MagazineCap - CurrentAmmo;
 	if (TotalAmmo >= AmmoNeeded)
 	{
 		CurrentAmmo += AmmoNeeded;
@@ -58,7 +58,7 @@ void AWeapon::P_Reload(int32 OtherAmmoSource)
 	}
 }
 
-void AWeapon::P_Shoot(bool bIsFirstWeapon)
+void AWeapon::P_Shoot(const bool bIsFirstWeapon)
 {
 	MuzzleFlashLogic();
 	MakeCameraShake();
@@ -75,7 +75,7 @@ void AWeapon::P_InitialSetupTransfer()
 	SetCastShadow(false);
 }
 
-void AWeapon::P_SetupTransfer(bool bSetToFirstHand)
+void AWeapon::P_SetupTransfer(const bool bSetToFirstHand)
 {
 	DelegateManager->OnHandsReloadMontageEnd.BindUObject(this, &AWeapon::P_UpdateAmmoTextHUD);
 	P_InitialSetupTransfer();
@@ -85,21 +85,21 @@ void AWeapon::P_SetupTransfer(bool bSetToFirstHand)
 
 void AWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeTwoParams.Broadcast(CurrentAmmo, TotalAmmo); }
 
-void AWeapon::P_AttachHandsToCamera(FVector Location, FRotator Rotation, FVector Scale)
+void AWeapon::P_AttachHandsToCamera(const FVector InLocation, const FRotator InRotation, const FVector InScale)
 {
 	HandsMesh->SetHiddenInGame(false);
 	HandsMesh->AttachToComponent(GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetTransformComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	HandsMesh->SetRelativeLocationAndRotation(Location, Rotation);
-	if (Scale != FVector::Zero()) HandsMesh->SetRelativeScale3D(Scale);
+	HandsMesh->SetRelativeLocationAndRotation(InLocation, InRotation);
+	if (InScale != FVector::Zero()) HandsMesh->SetRelativeScale3D(InScale);
 	if (Mesh) P_AttachWeaponToHands(HandsMesh);
 }
 
-void AWeapon::P_AttachWeaponToHands(TObjectPtr<USkeletalMeshComponent> InHandsMesh, FName SocketName)
+void AWeapon::P_AttachWeaponToHands(const TObjectPtr<USkeletalMeshComponent>& InHandsMesh, FName InSocketName)
 {
-	Mesh->AttachToComponent(InHandsMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+	Mesh->AttachToComponent(InHandsMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, InSocketName);
 }
 
-void AWeapon::P_SetWalkSpread(bool bState)
+void AWeapon::P_SetWalkSpread(const bool bState)
 {
 	bWalkSpreadEnabled = bState;
 	P_Data->SetAllProjectilesWalkSpread(bState);
@@ -126,15 +126,15 @@ void AWeapon::DeactivateWeapon()
 	DetachWeapon();
 }
 
-void AWeapon::AttachToSocket(TObjectPtr<USkeletalMeshComponent> OwnerMesh)
+void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh) const
 {
 	Mesh->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket1"));
 }
 
-void AWeapon::ShootProjectile(EPoolObject ProjectileName)
+void AWeapon::ShootProjectile(const EPoolObject InProjectileName)
 {
-	GetProjectileData(ProjectileName).SetProprietor(Proprietor);
-	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(GetProjectileData(ProjectileName), GetSocketLocation(GetProjectileData(ProjectileName).ProjectileSocketName), GetSocketRotation(GetProjectileData(ProjectileName).ProjectileSocketName), GetSocketScale(GetProjectileData(ProjectileName).ProjectileSocketName));
+	GetProjectileData(InProjectileName).SetProprietor(Proprietor);
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(GetProjectileData(InProjectileName), GetSocketLocation(GetProjectileData(InProjectileName).ProjectileSocketName), GetSocketRotation(GetProjectileData(InProjectileName).ProjectileSocketName), GetSocketScale(GetProjectileData(InProjectileName).ProjectileSocketName));
 }
 
 void AWeapon::PostProprietorSetup() { AttachAndLoadVfxs(); }
@@ -149,9 +149,9 @@ void AWeapon::AI_Setup()
 	ShootCyclesUntilReload = AI_Data->GetShootCyclesUntilReload();
 }
 
-void AWeapon::AI_LoadDataIfNotLoaded(EWeapon PrimaryDataAssetName)
+void AWeapon::AI_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName)
 {
-	if (!AI_Data) AI_Data = AssetsManager->GetWeaponData(PrimaryDataAssetName)->AI_Data.LoadSynchronous();
+	if (!AI_Data) AI_Data = AssetsManager->GetWeaponData(InPrimaryDataAssetName)->AI_Data.LoadSynchronous();
 }
 
 void AWeapon::P_Setup()
@@ -167,9 +167,9 @@ void AWeapon::P_Setup()
 	if (P_Data->GetLaserSightEnabled()) UKismetSystemLibrary::K2_SetTimer(this, "LaserSightLogic", 0.01f, true);
 }
 
-void AWeapon::P_LoadDataIfNotLoaded(EWeapon PrimaryDataAssetName)
+void AWeapon::P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName)
 {
-	if (!P_Data) P_Data = AssetsManager->GetWeaponData(PrimaryDataAssetName)->P_Data.LoadSynchronous();
+	if (!P_Data) P_Data = AssetsManager->GetWeaponData(InPrimaryDataAssetName)->P_Data.LoadSynchronous();
 }
 
 void AWeapon::BeginPlay()
@@ -182,7 +182,7 @@ void AWeapon::BeginPlay()
 	AI_Setup();
 }
 
-void AWeapon::Tick(float DeltaTime)
+void AWeapon::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	ShootTimer += DeltaTime;
@@ -206,15 +206,15 @@ void AWeapon::HitScanLogic()
 	}
 }
 
-void AWeapon::MakeCameraShake()
+void AWeapon::MakeCameraShake() const
 {
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(ShootingCameraShake);
 }
 
-void AWeapon::SetMeshes(EWeapon PrimaryDataAssetName)
+void AWeapon::SetMeshes(const EWeapon InPrimaryDataAssetName)
 {
-	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(AssetsManager->GetWeaponData(PrimaryDataAssetName)->WeaponMesh.Get());
-	if (!HandsMesh->GetSkeletalMeshAsset()) HandsMesh->SetSkeletalMesh(AssetsManager->GetWeaponData(PrimaryDataAssetName)->HandsMesh.Get());
+	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(AssetsManager->GetWeaponData(InPrimaryDataAssetName)->WeaponMesh.Get());
+	if (!HandsMesh->GetSkeletalMeshAsset()) HandsMesh->SetSkeletalMesh(AssetsManager->GetWeaponData(InPrimaryDataAssetName)->HandsMesh.Get());
 	OriginalScale = Mesh->GetRelativeScale3D();
 }
 
@@ -230,9 +230,9 @@ void AWeapon::DetachWeapon()
 	Mesh->SetSimulatePhysics(true);
 }
 
-void AWeapon::PlaySound(ESound SoundName) { Sounds[SoundName]->Sound ? Sounds[SoundName]->Play() : AssetsManager->ConfigureSound(Sounds[SoundName], SoundName); }
+void AWeapon::PlaySound(const ESound InSoundName) { Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName); }
 
-void AWeapon::MuzzleFlashLogic()
+void AWeapon::MuzzleFlashLogic() const
 {
 	if (MuzzleFlashComponent)
 	{
@@ -241,22 +241,22 @@ void AWeapon::MuzzleFlashLogic()
 	}
 }
 
-void AWeapon::DisableHandsMesh()
+void AWeapon::DisableHandsMesh() const
 {
 	HandsMesh->SetHiddenInGame(true);
 	HandsMesh->SetAnimInstanceClass(nullptr);
 }
 
-void AWeapon::AttachMuzzleFlash(EVfx VfxName)
+void AWeapon::AttachMuzzleFlash(const EVfx InVfxName)
 {
-	MuzzleFlashComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(AssetsManager->GetVfxData(VfxName)->GetVfxEffect().Get(), Mesh, FName("MuzzleSocket"),
+	MuzzleFlashComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().Get(), Mesh, FName("MuzzleSocket"),
 	FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false);
 	MuzzleFlashComponent->Deactivate();
 }
 
 void AWeapon::AttachAndLoadVfxs()
 {
-	EVfx VfxName = AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle);
+	const EVfx VfxName = AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle);
 	if (AssetsManager->GetVfxData(VfxName)->GetVfxEffect().IsValid()) AttachMuzzleFlash(VfxName);
 	else AssetsManager->GetVfxData(VfxName)->LoadVfx(GetWorld(), [this, VfxName] { AttachMuzzleFlash(VfxName); });
 }
@@ -270,15 +270,15 @@ void AWeapon::DeactivateLaserSight()
 	}
 }
 
-void AWeapon::SpawnOrLoadHitScanImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation)
+void AWeapon::SpawnOrLoadHitScanImpactVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
 {
-	if (AssetsManager->GetVfxData(VfxName)->GetVfxEffect().IsValid()) SpawnHitScanImpactVfx(VfxName, InLocation, InRotation);
-	else AssetsManager->GetVfxData(VfxName)->LoadVfx(GetWorld(), [this, VfxName, InLocation, InRotation] { SpawnHitScanImpactVfx(VfxName, InLocation, InRotation); });
+	if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) SpawnHitScanImpactVfx(InVfxName, InLocation, InRotation);
+	else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLocation, InRotation] { SpawnHitScanImpactVfx(InVfxName, InLocation, InRotation); });
 }
 
-void AWeapon::SpawnHitScanImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation)
+void AWeapon::SpawnHitScanImpactVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const
 {
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(VfxName)->GetVfxEffect().Get(), InLocation, InRotation);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().Get(), InLocation, InRotation);
 }
 
 void AWeapon::LaserSightLogic()
@@ -286,8 +286,8 @@ void AWeapon::LaserSightLogic()
 	if (!LaserSight) LaserSight = UNiagaraFunctionLibrary::SpawnSystemAttached(LaserSightSystem.LoadSynchronous(), Mesh, FName("LaserSightSocket"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	else
 	{
-		FVector StartLocation = GetSocketLocation(FName("LaserSightSocket"));
-		FVector TraceEnd = StartLocation + GetSocketRotation(FName("LaserSightSocket")).Vector() * 500;
+		const FVector StartLocation = GetSocketLocation(FName("LaserSightSocket"));
+		const FVector TraceEnd = StartLocation + GetSocketRotation(FName("LaserSightSocket")).Vector() * 500;
 		FHitResult HitResult;
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(this);

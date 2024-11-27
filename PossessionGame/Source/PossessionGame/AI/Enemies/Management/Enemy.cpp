@@ -172,7 +172,16 @@ void AEnemy::InitiateDeath()
 void AEnemy::ReceiveDamage(float Damage)
 {
 	CurrentHp -= Damage;
-	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
+	if (P_HUD)
+	{
+		P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
+		if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f)
+		{
+			UKismetSystemLibrary::K2_SetTimer(this, "P_TriggerCriticalDamageIndicator", 0.5f, true);
+			bIsCriticallyDamaged = true;
+			P_HUD->ToggleCriticalDamageIndicator();
+		}
+	}
 	else AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
 	if (bIsAlive && CurrentHp <= 0)
 	{
@@ -458,6 +467,7 @@ void AEnemy::P_SetupUI()
 	P_HUD = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD);
 	P_HUD->UpdateProgressBar(EUIBar::Possession, 0.f, P_Data->GetPossessionBarCooldown());
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
+	P_HUD->ConfigureUIs();
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
 	P_SetupColorsForUI();
@@ -530,6 +540,7 @@ void AEnemy::P_ToggleRunning(bool bState)
 	if (bCanRun)
 	{
 		bIsRunning = bState;
+		P_HUD->UpdateRunningIndicator(bState);
 		SetMaxWalkSpeed(bState ? P_Data->GetMaxRunSpeed() : P_Data->GetMaxWalkSpeed());
 	}
 }
@@ -549,7 +560,7 @@ void AEnemy::P_OnEnemyDeathEvents()
 
 void AEnemy::P_ToggleGodMode()
 {
-	TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager = GetWorld()->GetGameInstance()->GetSubsystem<UGlobalSettingsManager>();
+	const TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager = GetWorld()->GetGameInstance()->GetSubsystem<UGlobalSettingsManager>();
 	GlobalSettingsManager->ToggleGodModeEnabled();
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
 	MaxHp = P_Data->GetMaxHp();
@@ -633,6 +644,11 @@ void AEnemy::P_DetectIfPlayerPointingAtEnemy()
 	}
 }
 
+void AEnemy::P_TriggerCriticalDamageIndicator() const
+{
+	if (P_HUD) P_HUD->ToggleCriticalDamageIndicator();
+}
+
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "AI_SetCharacterMovementSpeed");
@@ -675,6 +691,7 @@ void AEnemy::ClearTimers()
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "P_ControlLogic");
 	UKismetSystemLibrary::K2_ClearTimer(this, "P_DetectIfPlayerPointingAtEnemy");
+	UKismetSystemLibrary::K2_ClearTimer(this, "P_TriggerCriticalDamageIndicator");
 }
 
 void AEnemy::SetupStimuliSource()

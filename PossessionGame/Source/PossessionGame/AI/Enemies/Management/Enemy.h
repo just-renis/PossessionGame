@@ -150,6 +150,7 @@ private:
 	bool bIsAlive = true;
 	bool bIsUnloadLevel = false;
 	bool bIsRunning = false;
+	bool bIsCriticallyDamaged = false;
 	float PossessionBarTimer = 0.f;
 	EMoveMode CurrentMoveMode = EMoveMode::Walk;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
@@ -197,6 +198,8 @@ private:
 	void P_ControlLogic();
 	UFUNCTION()
 	void P_DetectIfPlayerPointingAtEnemy();
+	UFUNCTION()
+	void P_TriggerCriticalDamageIndicator() const;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyAI();
