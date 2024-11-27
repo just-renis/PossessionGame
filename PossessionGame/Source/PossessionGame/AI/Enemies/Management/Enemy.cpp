@@ -46,9 +46,9 @@ AEnemy::AEnemy()
 	AI_HpBarComponent->SetupAttachment(RootComponent);
 }
 
-bool AEnemy::GetIsPossessable() { return AI_Data->GetIsPossessable(); }
+bool AEnemy::GetIsPossessable() const { return AI_Data->GetIsPossessable(); }
 
-float AEnemy::GetSkeletalMeshHeight() { return GetMesh()->GetSocketLocation(TEXT("Head")).Z - GetMesh()->GetComponentLocation().Z; }
+float AEnemy::GetSkeletalMeshHeight() const { return GetMesh()->GetSocketLocation(TEXT("Head")).Z - GetMesh()->GetComponentLocation().Z; }
 
 void AEnemy::AI_InitiateShooting() { if (CurrentMoveMode != EMoveMode::Run && !AnimInstance->IsPlaying(EEnemyAnimState::Reload)) AI_PlayShootMontage(); }
 
@@ -56,15 +56,15 @@ void AEnemy::AI_ShootLogic() { if (bCanShoot && !AnimInstance->IsPlaying(EEnemyA
 
 void AEnemy::AI_ReloadLogic() { if (Weapon->GetIsReloadEnabled() && bCanReload) AI_Reload(); }
 
-void AEnemy::AI_UseAbility(int32 AbilityIndex) { if (AbilityIndex < Abilities.Num()) Abilities[AbilityIndex]->AI_Execute(); }
+void AEnemy::AI_UseAbility(const int32 AbilityIndex) { if (AbilityIndex < Abilities.Num()) Abilities[AbilityIndex]->AI_Execute(); }
 
-void AEnemy::AI_SetMoveMode(EMoveMode InMoveMode)
+void AEnemy::AI_SetMoveMode(const EMoveMode InMoveMode)
 {
 	CurrentMoveMode = InMoveMode;
 	SetMaxWalkSpeed(InMoveMode == EMoveMode::Walk ? AI_Data->GetMaxWalkSpeed() : AI_Data->GetMaxRunSpeed());
 }
 
-void AEnemy::P_UseAbility(int32 AbilityIndex)
+void AEnemy::P_UseAbility(const int32 AbilityIndex)
 {
 	if (AbilityIndex < Abilities.Num() && Abilities[AbilityIndex]->CanExecute())
 	{
@@ -73,11 +73,11 @@ void AEnemy::P_UseAbility(int32 AbilityIndex)
 	}
 }
 
-void AEnemy::P_UpdateAmmoHUD(int32 WeaponAmmo) { if (P_HUD) P_HUD->UpdateAmmoText(WeaponAmmo); }
+void AEnemy::P_UpdateAmmoHUD(const int32 WeaponAmmo) const { if (P_HUD) P_HUD->UpdateAmmoText(WeaponAmmo); }
 
-void AEnemy::P_UpdateAmmoHUD(int32 WeaponAmmo, int32 MaxAmmo) { if (P_HUD) P_HUD->UpdateAmmoText(WeaponAmmo, MaxAmmo); }
+void AEnemy::P_UpdateAmmoHUD(const int32 WeaponAmmo, const int32 MaxAmmo) const { if (P_HUD) P_HUD->UpdateAmmoText(WeaponAmmo, MaxAmmo); }
 
-void AEnemy::P_UpdateAmmoHUD(int32 FirstWeaponAmmo, int32 SecondWeaponAmmo, int32 MaxAmmo) { if (P_HUD) P_HUD->UpdateAmmoText(FirstWeaponAmmo, SecondWeaponAmmo, MaxAmmo); }
+void AEnemy::P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeaponAmmo, const int32 MaxAmmo) const { if (P_HUD) P_HUD->UpdateAmmoText(FirstWeaponAmmo, SecondWeaponAmmo, MaxAmmo); }
 
 void AEnemy::P_StopTime()
 {
@@ -85,7 +85,7 @@ void AEnemy::P_StopTime()
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
-void AEnemy::Tick(float DeltaTime)
+void AEnemy::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (bIsAlive)
@@ -98,7 +98,7 @@ void AEnemy::Tick(float DeltaTime)
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	if (TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Move);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Triggered, this, &AEnemy::Jump);
@@ -145,7 +145,7 @@ void AEnemy::ToggleCrouch()
 	}
 }
 
-void AEnemy::AI_SetCanShoot(bool bState)
+void AEnemy::AI_SetCanShoot(const bool bState)
 {
 	bCanShoot = bState;
 	if (!bCanShoot)
@@ -158,6 +158,7 @@ void AEnemy::AI_SetCanShoot(bool bState)
 void AEnemy::InitiateDeath()
 {
 	ClearTimers();
+	AI_DestroyHpBar();
 	bIsAlive = false;
 	if (!bIsPossessed)
 	{
@@ -169,7 +170,7 @@ void AEnemy::InitiateDeath()
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", 5.f, false);
 }
 
-void AEnemy::ReceiveDamage(float Damage)
+void AEnemy::ReceiveDamage(const float Damage)
 {
 	CurrentHp -= Damage;
 	if (P_HUD)
@@ -182,7 +183,7 @@ void AEnemy::ReceiveDamage(float Damage)
 			P_HUD->ToggleCriticalDamageIndicator();
 		}
 	}
-	else AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
+	else AI_ReceivedDamage();
 	if (bIsAlive && CurrentHp <= 0)
 	{
 		if (bIsPossessed) P_Death();
@@ -213,7 +214,7 @@ void AEnemy::AI_SetupWeapon()
 
 void AEnemy::AI_Shoot() { Weapon->AI_Shoot(); }
 
-void AEnemy::AI_LoadDataIfNotLoaded(ECharacterType PrimaryDataAssetName)
+void AEnemy::AI_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 {
 	if (!AI_Data) AI_Data = AssetsManager->GetCharacterData(PrimaryDataAssetName)->AI_Data.LoadSynchronous();
 }
@@ -259,7 +260,7 @@ void AEnemy::P_Setup()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeath.AddUObject(this, &AEnemy::P_OnEnemyDeathEvents);
 }
 
-void AEnemy::P_Shoot(bool bFirstWeapon)
+void AEnemy::P_Shoot(const bool bFirstWeapon)
 {
 	if (bCanShoot)
 	{
@@ -268,7 +269,7 @@ void AEnemy::P_Shoot(bool bFirstWeapon)
 	}
 }
 
-void AEnemy::P_SetupLeftClickInput(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
+void AEnemy::P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
 {
 	P_SetupLeftClickInputStartedState(LeftClickInputComponent);
 	P_SetupLeftClickInputTriggeredState(LeftClickInputComponent);
@@ -308,17 +309,17 @@ void AEnemy::P_DisableEnemy()
 	P_HUD = nullptr;
 }
 
-void AEnemy::P_LoadDataIfNotLoaded(ECharacterType PrimaryDataAssetName)
+void AEnemy::P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 {
 	if (!P_Data) P_Data = AssetsManager->GetCharacterData(PrimaryDataAssetName)->P_Data.LoadSynchronous();
 }
 
-void AEnemy::P_TemporallyToggleRunning(bool bState) { if (bIsRunning) SetMaxWalkSpeed(bState ? P_Data->GetMaxWalkSpeed() : P_Data->GetMaxRunSpeed()); }
+void AEnemy::P_TemporallyToggleRunning(const bool bState) { if (bIsRunning) SetMaxWalkSpeed(bState ? P_Data->GetMaxWalkSpeed() : P_Data->GetMaxRunSpeed()); }
 
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	AI_HpBar = Cast<UAIHpBarUI>(AI_HpBarComponent->GetWidget());
+	AI_SetupHpBar();
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
 	SetMesh(CharacterName);
@@ -334,24 +335,23 @@ void AEnemy::BeginPlay()
 
 void AEnemy::SetAnimInstance() { AnimInstance = Cast<UEnemyAnimationInstance>(GetMesh()->GetAnimInstance()); }
 
-void AEnemy::SetMaxWalkSpeed(float Speed)
+void AEnemy::SetMaxWalkSpeed(const float Speed) const
 {
 	GetCharacterMovement()->MaxWalkSpeed = Speed;
 	GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetSafeNormal() * Speed;
 }
 
-void AEnemy::SetInitialWalkSpeed(bool bState) { SetMaxWalkSpeed(bState ? P_Data->GetMaxWalkSpeed() : P_Data->GetMaxSlowedSpeed()); }
+void AEnemy::SetInitialWalkSpeed(const bool bState) const { SetMaxWalkSpeed(bState ? P_Data->GetMaxWalkSpeed() : P_Data->GetMaxSlowedSpeed()); }
 
-void AEnemy::SetupAbilities(TMap<EAbility, TSoftObjectPtr<UAbilityData>>& AbilityData)
+void AEnemy::SetupAbilities(const TMap<EAbility, TSoftObjectPtr<UAbilityData>>& AbilityData)
 {
 	if (AbilityData.Num() > 0)
 	{
-		TObjectPtr<UAbilityManager> AbilityManager = GetWorld()->GetGameInstance()->GetSubsystem<UAbilityManager>();
-		TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+		const TObjectPtr<UAbilityManager> AbilityManager = GetWorld()->GetGameInstance()->GetSubsystem<UAbilityManager>();
+		const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 		for (int32 i = 1; i <= AbilityData.Num(); i++)
 		{
-			TObjectPtr<UAbility> Ability = AbilityManager->GetAbility(GetAbilityFromCharacterName(i), this);
-			if (Ability)
+			if (TObjectPtr<UAbility> Ability = AbilityManager->GetAbility(GetAbilityFromCharacterName(i), this))
 			{
 				Ability->Setup(this, AbilityData[GetAbilityFromCharacterName(i)].LoadSynchronous(), DelegateManager);
 				Abilities.Add(Ability);
@@ -359,13 +359,13 @@ void AEnemy::SetupAbilities(TMap<EAbility, TSoftObjectPtr<UAbilityData>>& Abilit
 		}
 		for (int32 i = 1; i <= Abilities.Num(); i++)
 		{
-			int32 RefreshableAbilityIndex = AbilityData[GetAbilityFromCharacterName(i)]->GetRefreshableAbilityIndex();
+			const int32 RefreshableAbilityIndex = AbilityData[GetAbilityFromCharacterName(i)]->GetRefreshableAbilityIndex();
 			Abilities[i - 1]->SetupAdditionalProperties(AbilityData[GetAbilityFromCharacterName(i)].LoadSynchronous(), RefreshableAbilityIndex != -1 ? Abilities[RefreshableAbilityIndex] : nullptr);
 		}
 	}
 }
 
-void AEnemy::AttachDestructible(TObjectPtr<ADestructible> Destructible, FName SocketName)
+void AEnemy::AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const
 {
 	Destructible->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 }
@@ -380,7 +380,7 @@ void AEnemy::HandleDeactivation()
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	ReceiveDamage(Damage);
 	if (GetMesh()->IsSimulatingPhysics())
 	{
@@ -398,7 +398,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	return Damage;
 }
 
-EAbility AEnemy::GetAbilityFromCharacterName(int32 AbilityIndex)
+EAbility AEnemy::GetAbilityFromCharacterName(const int32 AbilityIndex) const
 {
 	switch (CharacterName)
 	{
@@ -427,7 +427,7 @@ void AEnemy::AI_SetupData()
 	SetMaxWalkSpeed(AI_Data->GetMaxWalkSpeed());
 }
 
-void AEnemy::AI_Reload()
+void AEnemy::AI_Reload() const
 {
 	AnimInstance->PlayMontage(EEnemyAnimState::Reload);
 	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::AIReload);
@@ -444,6 +444,30 @@ void AEnemy::AI_SetShootPause()
 	bShootPauseActive = true;
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_ClearShootPause", AI_Data->GetShootPause(), false);
 }
+
+void AEnemy::AI_SetupHpBar()
+{
+	AI_HpBar = Cast<UAIHpBarUI>(AI_HpBarComponent->GetWidget());
+	AI_HideHpBar();
+}
+
+void AEnemy::AI_ReceivedDamage()
+{
+	if (AI_HpBar)
+	{
+		AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
+		AI_HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		UKismetSystemLibrary::K2_SetTimer(this, "AI_HideHpBar", 2.f, false);
+	}
+}
+
+void AEnemy::AI_DestroyHpBar()
+{
+	UKismetSystemLibrary::K2_ClearTimer(this, "AI_HideHpBar");
+	AI_HpBar = nullptr;
+}
+
+void AEnemy::AI_HideHpBar() const { AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
 
 void AEnemy::AI_ClearShootPause()
 {
@@ -480,16 +504,15 @@ void AEnemy::P_PossessEnemy()
 	{
 		FHitResult HitResult;
 		FCollisionQueryParams QueryParams;
-		FVector StartLocation = Camera->GetComponentLocation();
-		FVector EndLocation = StartLocation + Camera->GetForwardVector() * 15000.f;
+		const FVector StartLocation = Camera->GetComponentLocation();
 		QueryParams.AddIgnoredActor(this);
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_GameTraceChannel5, QueryParams)) P_PossessionLogic(Cast<AEnemy>(HitResult.GetActor()));
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_GameTraceChannel5, QueryParams)) P_PossessionLogic(Cast<AEnemy>(HitResult.GetActor()));
 	}
 }
 
-void AEnemy::P_PossessionLogic(TObjectPtr<AActor> Actor)
+void AEnemy::P_PossessionLogic(const TObjectPtr<AActor>& InActor)
 {
-	if (TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(Actor))
+	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(InActor))
 	{
 		if (Enemy->AI_Data->GetIsPossessable() && !Enemy->bIsPossessed && Enemy->bIsAlive)
 		{
@@ -701,7 +724,7 @@ void AEnemy::SetupStimuliSource()
 	StimuliSource->RegisterWithPerceptionSystem();
 }
 
-void AEnemy::SetMesh(ECharacterType PrimaryDataAssetName)
+void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) const
 {
 	GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get());
 }
@@ -712,7 +735,7 @@ void AEnemy::P_SetupNavArea()
 	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
-void AEnemy::ChangeXRayState(bool bState)
+void AEnemy::ChangeXRayState(const bool bState) const
 {
 	GetMesh()->SetRenderCustomDepth(bState);
 	GetMesh()->SetCustomDepthStencilValue(bState);
