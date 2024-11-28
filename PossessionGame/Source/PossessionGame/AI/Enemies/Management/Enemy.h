@@ -199,10 +199,10 @@ private:
 	void P_UpdateAbilityCooldownUITextColor(const int32 Index);
 	void P_StopAllAbilities();
 	void P_HandleEscapeClick();
-	void P_TriggerGlitchingEffect();
+	void P_TriggerGlitchingEffect() const;
 	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
-	UFUNCTION()
-	void P_TurnOffGlitchingEffect() const;
+	void P_HandlingDamageTaken();
+	void P_TriggerTakeDamageEffects() const;
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()

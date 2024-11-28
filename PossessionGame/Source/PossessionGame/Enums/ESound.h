@@ -8,5 +8,7 @@ enum class ESound : uint8
 	WaveCountdown,
 	RangerShoot,
 	RangerReload,
-	OnPossession
+	OnPossession,
+	TakeDamageLayer1,
+	TakeDamageLayer2
 };

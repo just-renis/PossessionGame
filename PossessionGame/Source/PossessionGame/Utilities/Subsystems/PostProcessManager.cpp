@@ -10,7 +10,16 @@ void UPostProcessManager::Init(const TMap<EPostProcessMaterial, TObjectPtr<UMate
 	}
 }
 
-void UPostProcessManager::ToggleMaterial(const EPostProcessMaterial InMaterialName, const float InValue)
+void UPostProcessManager::TriggerGlitchingMaterial(const float InDuration)
 {
-	if (Materials.Contains(InMaterialName)) PostProcessVolume->AddOrUpdateBlendable(Materials[InMaterialName], InValue);
+	if (Materials.Contains(EPostProcessMaterial::Glitching))
+	{
+		PostProcessVolume->AddOrUpdateBlendable(Materials[EPostProcessMaterial::Glitching], 1.f);
+		UKismetSystemLibrary::K2_SetTimer(this, "DisableGlitchingEffect", InDuration, false);
+	}
+}
+
+void UPostProcessManager::DisableGlitchingEffect()
+{
+	if (Materials.Contains(EPostProcessMaterial::Glitching)) PostProcessVolume->AddOrUpdateBlendable(Materials[EPostProcessMaterial::Glitching], 0.f);
 }

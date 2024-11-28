@@ -12,6 +12,7 @@
 #include "InputMappingContext.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/DamageEvents.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
@@ -173,17 +174,7 @@ void AEnemy::InitiateDeath()
 void AEnemy::ReceiveDamage(const float Damage)
 {
 	CurrentHp -= Damage;
-	if (P_HUD)
-	{
-		P_MakeCameraShake(ReceivingDamageCameraShake);
-		P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
-		if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f)
-		{
-			UKismetSystemLibrary::K2_SetTimer(this, "P_TriggerCriticalDamageIndicator", 0.5f, true);
-			bIsCriticallyDamaged = true;
-			P_HUD->ToggleCriticalDamageIndicator();
-		}
-	}
+	if (P_HUD) P_HandlingDamageTaken();
 	else AI_ReceivedDamage();
 	if (bIsAlive && CurrentHp <= 0)
 	{
@@ -636,20 +627,39 @@ void AEnemy::P_HandleEscapeClick()
 	}
 }
 
-void AEnemy::P_TriggerGlitchingEffect()
+void AEnemy::P_TriggerGlitchingEffect() const
 {
 	AssetsManager->PlaySound2D(ESound::OnPossession);
-	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::Glitching, 1.f);
-	UKismetSystemLibrary::K2_SetTimer(this, "P_TurnOffGlitchingEffect", 0.5f, false);
+	GetWorld()->GetSubsystem<UPostProcessManager>()->TriggerGlitchingMaterial(0.5f);
 }
 
 void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
 {
-	UE_LOG(LogTemp, Warning, TEXT("RUNNING SHAKE"));
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(InCameraShake);
 }
 
-void AEnemy::P_TurnOffGlitchingEffect() const { GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::Glitching, 0.f); }
+void AEnemy::P_HandlingDamageTaken()
+{
+	P_TriggerTakeDamageEffects();
+	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
+	if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f)
+	{
+		UKismetSystemLibrary::K2_SetTimer(this, "P_TriggerCriticalDamageIndicator", 0.5f, true);
+		bIsCriticallyDamaged = true;
+		P_HUD->ToggleCriticalDamageIndicator();
+	}
+}
+
+void AEnemy::P_TriggerTakeDamageEffects() const
+{
+	P_MakeCameraShake(ReceivingDamageCameraShake);
+	if (UKismetMathLibrary::RandomInteger(100) >= 75)
+	{
+		AssetsManager->PlaySound2D(ESound::TakeDamageLayer2);
+		GetWorld()->GetSubsystem<UPostProcessManager>()->TriggerGlitchingMaterial(0.25f);
+	}
+	else AssetsManager->PlaySound2D(ESound::TakeDamageLayer1);
+}
 
 void AEnemy::P_Death()
 {

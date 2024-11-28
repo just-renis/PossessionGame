@@ -13,10 +13,13 @@ class POSSESSIONGAME_API UPostProcessManager : public UWorldSubsystem
 	GENERATED_BODY()
 public:
 	void Init(const TMap<EPostProcessMaterial, TObjectPtr<UMaterialInterface>>& InPostProcessMaterials);
-	void ToggleMaterial(const EPostProcessMaterial InMaterialName, const float InValue);
+	void TriggerGlitchingMaterial(const float InDuration);
 private:
 	UPROPERTY()
 	TObjectPtr<APostProcessVolume> PostProcessVolume;
 	UPROPERTY()
 	TMap<EPostProcessMaterial, TObjectPtr<UMaterialInterface>> Materials;
+
+	UFUNCTION()
+	void DisableGlitchingEffect();
 };
