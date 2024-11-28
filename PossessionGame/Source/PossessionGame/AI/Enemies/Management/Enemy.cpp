@@ -675,12 +675,24 @@ void AEnemy::P_ToggleCriticallyDamagedEffects(const float InValue) const
 	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::BloodPumping, InValue);
 }
 
+void AEnemy::P_InitiateDeathEvents()
+{
+	UKismetSystemLibrary::K2_ClearTimer(this, "P_Death");
+	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::DeathGlitching, 1.f);
+	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::DeathBloodPumping, 1.f);
+	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::DeathScreenCrack, 1.f);
+	AssetsManager->PlaySound2D(ESound::PlayerDeath);
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 2.f, FLinearColor::Black, false, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "P_OpenDeathMenu", 2.f, false);
+//	UGameplayStatics::OpenLevel(this, *UGameplayStatics::GetCurrentLevelName(GetWorld(), true));
+}
+
 void AEnemy::P_Death()
 {
-	if (AssetsManager->IsAsyncLoadingFinished()) RestartLevelAfterDelay();
-	else if (!bIsUnloadLevel)
+	if (AssetsManager->IsAsyncLoadingFinished()) P_InitiateDeathEvents();
+	else if (!bEnableUnloadLevel)
 	{
-		bIsUnloadLevel = true;
+		bEnableUnloadLevel = true;
 		UKismetSystemLibrary::K2_SetTimer(this, "P_Death", 0.01f, true);
 	}
 }
@@ -708,6 +720,11 @@ void AEnemy::P_TriggerCriticalDamageIndicator() const
 }
 
 void AEnemy::P_TriggerRunningCameraShake() const { P_MakeCameraShake(RunningCameraShake); }
+
+void AEnemy::P_OpenDeathMenu()
+{
+	
+}
 
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
@@ -739,13 +756,7 @@ void AEnemy::TickAbilities(float DeltaTime)
 		Abilities[i]->Tick(DeltaTime);
 		P_UpdateAbilityCooldownUITextColor(i);
 	}
-}
-
-void AEnemy::RestartLevelAfterDelay()
-{
-	UKismetSystemLibrary::K2_ClearTimer(this, "P_Death");
-	UGameplayStatics::OpenLevel(this, *UGameplayStatics::GetCurrentLevelName(GetWorld(), true));
-}
+}\
 
 void AEnemy::ClearTimers()
 {

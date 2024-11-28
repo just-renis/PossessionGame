@@ -148,7 +148,7 @@ private:
 	bool bShootPauseActive = false;
 	bool bCanPossessOtherEnemy = false;
 	bool bIsAlive = true;
-	bool bIsUnloadLevel = false;
+	bool bEnableUnloadLevel = false;
 	bool bIsRunning = false;
 	bool bIsCriticallyDamaged = false;
 	bool bIsAIBarCreated = false;
@@ -205,6 +205,7 @@ private:
 	void P_TriggerTakeDamageEffects() const;
 	void P_EnableCriticalDamage();
 	void P_ToggleCriticallyDamagedEffects(const float InValue) const;
+	void P_InitiateDeathEvents();
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()
@@ -215,11 +216,12 @@ private:
 	void P_TriggerCriticalDamageIndicator() const;
 	UFUNCTION()
 	void P_TriggerRunningCameraShake() const;
+	UFUNCTION()
+	void P_OpenDeathMenu();
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyAI();
 	void TickAbilities(const float DeltaTime);
-	void RestartLevelAfterDelay();
 	void ClearTimers();
 	void SetupStimuliSource();
 	void SetMesh(const ECharacterType PrimaryDataAssetName) const;

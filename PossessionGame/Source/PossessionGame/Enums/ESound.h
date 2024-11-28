@@ -12,5 +12,6 @@ enum class ESound : uint8
 	TakeDamageLayer1,
 	TakeDamageLayer2,
 	CriticalDamageBeep,
-	CriticalHealthEnter
+	CriticalHealthEnter,
+	PlayerDeath
 };
