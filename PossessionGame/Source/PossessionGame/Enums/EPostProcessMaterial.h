@@ -6,5 +6,8 @@ enum class EPostProcessMaterial : uint8
     None,
     Glitching,
     ScreenCrack,
-    BloodPumping
+    BloodPumping,
+    DeathGlitching,
+    DeathScreenCrack,
+    DeathBloodPumping
 };
