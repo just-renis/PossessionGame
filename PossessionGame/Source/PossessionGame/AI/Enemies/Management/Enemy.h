@@ -203,6 +203,7 @@ private:
 	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
 	void P_HandlingDamageTaken();
 	void P_TriggerTakeDamageEffects() const;
+	void P_EnableCriticalDamage();
 	void P_ToggleCriticallyDamagedEffects(const float InValue) const;
 	UFUNCTION()
 	void P_Death();

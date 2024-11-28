@@ -133,6 +133,7 @@ void AEnemy::PossessedBy(AController* NewController)
 		{
 			P_TriggerGlitchingEffect();
 			P_ToggleCriticallyDamagedEffects(0.f);
+			AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
 			P_Setup();
 		}
 	}
@@ -644,13 +645,7 @@ void AEnemy::P_HandlingDamageTaken()
 {
 	P_TriggerTakeDamageEffects();
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
-	if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f)
-	{
-		UKismetSystemLibrary::K2_SetTimer(this, "P_TriggerCriticalDamageIndicator", 0.5f, true);
-		bIsCriticallyDamaged = true;
-		P_ToggleCriticallyDamagedEffects(1.f);
-		P_HUD->ToggleCriticalDamageIndicator();
-	}
+	if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamage();
 }
 
 void AEnemy::P_TriggerTakeDamageEffects() const
@@ -662,6 +657,16 @@ void AEnemy::P_TriggerTakeDamageEffects() const
 		GetWorld()->GetSubsystem<UPostProcessManager>()->TriggerGlitchingMaterial(0.25f);
 	}
 	else AssetsManager->PlaySound2D(ESound::TakeDamageLayer1);
+}
+
+void AEnemy::P_EnableCriticalDamage()
+{
+	UKismetSystemLibrary::K2_SetTimer(this, "P_TriggerCriticalDamageIndicator", 0.5f, true);
+	bIsCriticallyDamaged = true;
+	P_ToggleCriticallyDamagedEffects(1.f);
+	P_HUD->ToggleCriticalDamageIndicator();
+	AssetsManager->PlaySound2D(ESound::CriticalHealthEnter);
+	AssetsManager->PlaySound2D(ESound::CriticalDamageBeep, true);
 }
 
 void AEnemy::P_ToggleCriticallyDamagedEffects(const float InValue) const

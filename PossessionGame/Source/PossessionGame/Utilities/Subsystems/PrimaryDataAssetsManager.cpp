@@ -95,16 +95,29 @@ void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAud
 	}
 }
 
-void UPrimaryDataAssetsManager::PlaySound2D(ESound SoundName)
+void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef)
 {
 	if (GetCanAsyncLoadHappen())
 	{
-		const FSoftObjectPath PathToLoad = GetSoundData(SoundName)->Sound.ToSoftObjectPath();
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, SoundName]
+		const FSoftObjectPath PathToLoad = GetSoundData(InSoundName)->Sound.ToSoftObjectPath();
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, InSoundName, bStoreSoundRef]
 		{
-			if (IsGameRunning()) UGameplayStatics::PlaySound2D(GetWorld(), GetSoundData(SoundName)->Sound.Get());
+			if (IsGameRunning())
+			{
+				if (bStoreSoundRef) StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), GetSoundData(InSoundName)->Sound.Get()));
+				else UGameplayStatics::PlaySound2D(GetWorld(), GetSoundData(InSoundName)->Sound.Get());
+			}
 		});
 		AddAsyncHandle(Handle);
+	}
+}
+
+void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
+{
+	if (StoredSounds.Contains(InSoundName))
+	{
+		StoredSounds[InSoundName]->Stop();
+		StoredSounds.Remove(InSoundName);
 	}
 }
 
@@ -144,6 +157,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_OnPossession", ESound::OnPossession);
 	SoundMap.Add("PA_TakeDamageLayer1", ESound::TakeDamageLayer1);
 	SoundMap.Add("PA_TakeDamageLayer2", ESound::TakeDamageLayer2);
+	SoundMap.Add("PA_CriticalDamageBeep", ESound::CriticalDamageBeep);
+	SoundMap.Add("PA_CriticalHealthEnter", ESound::CriticalHealthEnter);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

@@ -54,7 +54,8 @@ public:
 	void AddAsyncHandle(TSharedPtr<FStreamableHandle>& Handle) { AsyncHandles.Add(FAsyncHandle(Handle)); }
 	void DeleteLoadedHandles();
 	void ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, ESound InSoundName);
-	void PlaySound2D(ESound SoundName);
+	void PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef = false);
+	void RemoveStoredSound(const ESound InSoundName);
 private:
 	bool bCanAsyncLoadHappen = true;
 	UPROPERTY()
@@ -69,6 +70,8 @@ private:
 	TArray<FAsyncHandle> AsyncHandles;
 	UPROPERTY()
 	TMap<FPairWrapper, EVfx> VfxCombinationsMap;
+	UPROPERTY()
+	TMap<ESound, TObjectPtr<UAudioComponent>> StoredSounds;
 
 	bool IsGameRunning();
 	EPoolObject GetProjectileNameByCharacterName(ECharacterType InCharacterType);

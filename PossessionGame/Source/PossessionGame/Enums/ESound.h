@@ -10,5 +10,7 @@ enum class ESound : uint8
 	RangerReload,
 	OnPossession,
 	TakeDamageLayer1,
-	TakeDamageLayer2
+	TakeDamageLayer2,
+	CriticalDamageBeep,
+	CriticalHealthEnter
 };
