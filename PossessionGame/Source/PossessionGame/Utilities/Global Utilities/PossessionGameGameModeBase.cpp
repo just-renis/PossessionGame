@@ -8,7 +8,7 @@
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
-TArray<TSubclassOf<APrefab>>* APossessionGameGameModeBase::GetPrefabsByCategory(EPrefabCategory Category)
+TArray<TSubclassOf<APrefab>>* APossessionGameGameModeBase::GetPrefabsByCategory(const EPrefabCategory Category)
 {
 	if (Prefabs.Contains(Category)) return &Prefabs[Category].PrefabClasses;
 	return nullptr;
@@ -17,31 +17,31 @@ TArray<TSubclassOf<APrefab>>* APossessionGameGameModeBase::GetPrefabsByCategory(
 void APossessionGameGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
-	TObjectPtr<UWaveManager> WaveManager = GetWorld()->GetSubsystem<UWaveManager>();
+	const TObjectPtr<UWaveManager> WaveManager = GetWorld()->GetSubsystem<UWaveManager>();
 	WaveManager->Init(DelegateManager);
 	WaveManager->SetupWaveManagerSettings(EnemiesThatAreSpawnable, FirstEnemyToSpawn, EnemiesAmountToSpawnOnFirstWave);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
 	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->Init(PostProcessMaterials);
-	TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
+	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = false;
 	PlayerController->SetInputMode(FInputModeGameOnly());
 }
 
 void APossessionGameGameModeBase::LoadSettingsData()
 {
-	FString SettingsSlot = "SettingsSlot";
+	const FString SettingsSlot = "SettingsSlot";
 	if (UGameplayStatics::DoesSaveGameExist(SettingsSlot, 0))
 	{
-		TObjectPtr<USettingsSave> SavedSettings = Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot(SettingsSlot, 0));
+		const TObjectPtr<USettingsSave> SavedSettings = Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot(SettingsSlot, 0));
 		SavedSettings->LoadSettings(GetWorld());
 	}
 	else
 	{
-		TObjectPtr<USettingsSave> SavedSettings = Cast<USettingsSave>(UGameplayStatics::CreateSaveGameObject(SettingsSaveClass));
+		const TObjectPtr<USettingsSave> SavedSettings = Cast<USettingsSave>(UGameplayStatics::CreateSaveGameObject(SettingsSaveClass));
 		SavedSettings->LoadSettingsOnFirstLaunch(GetWorld());
 		UGameplayStatics::SaveGameToSlot(SavedSettings, SettingsSlot, 0);
 	}

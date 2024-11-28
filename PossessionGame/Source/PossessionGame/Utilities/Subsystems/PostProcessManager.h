@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "PostProcessManager.generated.h"
 
@@ -14,6 +13,7 @@ class POSSESSIONGAME_API UPostProcessManager : public UWorldSubsystem
 public:
 	void Init(const TMap<EPostProcessMaterial, TObjectPtr<UMaterialInterface>>& InPostProcessMaterials);
 	void TriggerGlitchingMaterial(const float InDuration);
+	void ToggleMaterial(const EPostProcessMaterial InMaterialName, const float InValue);
 private:
 	UPROPERTY()
 	TObjectPtr<APostProcessVolume> PostProcessVolume;

@@ -21,6 +21,7 @@
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerCharacterData.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
 #include "PossessionGame/Enums/EMoveMode.h"
+#include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/AIHpBarUI.h"
 #include "PossessionGame/UI/PauseMenuUI.h"
@@ -131,6 +132,7 @@ void AEnemy::PossessedBy(AController* NewController)
 		if (Cast<APlayerController>(NewController))
 		{
 			P_TriggerGlitchingEffect();
+			P_ToggleCriticallyDamagedEffects(0.f);
 			P_Setup();
 		}
 	}
@@ -646,6 +648,7 @@ void AEnemy::P_HandlingDamageTaken()
 	{
 		UKismetSystemLibrary::K2_SetTimer(this, "P_TriggerCriticalDamageIndicator", 0.5f, true);
 		bIsCriticallyDamaged = true;
+		P_ToggleCriticallyDamagedEffects(1.f);
 		P_HUD->ToggleCriticalDamageIndicator();
 	}
 }
@@ -659,6 +662,12 @@ void AEnemy::P_TriggerTakeDamageEffects() const
 		GetWorld()->GetSubsystem<UPostProcessManager>()->TriggerGlitchingMaterial(0.25f);
 	}
 	else AssetsManager->PlaySound2D(ESound::TakeDamageLayer1);
+}
+
+void AEnemy::P_ToggleCriticallyDamagedEffects(const float InValue) const
+{
+	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::ScreenCrack, InValue);
+	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::BloodPumping, InValue);
 }
 
 void AEnemy::P_Death()
