@@ -756,7 +756,7 @@ void AEnemy::TickAbilities(float DeltaTime)
 		Abilities[i]->Tick(DeltaTime);
 		P_UpdateAbilityCooldownUITextColor(i);
 	}
-}\
+}
 
 void AEnemy::ClearTimers()
 {
