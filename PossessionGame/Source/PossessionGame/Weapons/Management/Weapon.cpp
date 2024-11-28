@@ -61,7 +61,7 @@ void AWeapon::P_Reload(const int32 InOtherAmmoSource)
 void AWeapon::P_Shoot(const bool bIsFirstWeapon)
 {
 	MuzzleFlashLogic();
-	MakeCameraShake();
+	MakeShootingCameraShake();
 	CurrentAmmo--;
 	ShootTimer = 0.f;
 	bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::RangerProjectile);
@@ -206,7 +206,7 @@ void AWeapon::HitScanLogic()
 	}
 }
 
-void AWeapon::MakeCameraShake() const
+void AWeapon::MakeShootingCameraShake() const
 {
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(ShootingCameraShake);
 }

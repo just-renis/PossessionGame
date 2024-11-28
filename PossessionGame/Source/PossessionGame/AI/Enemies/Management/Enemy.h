@@ -158,6 +158,10 @@ private:
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> AI_HpBarComponent;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> RunningCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> ReceivingDamageCameraShake;
 	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
@@ -196,6 +200,7 @@ private:
 	void P_StopAllAbilities();
 	void P_HandleEscapeClick();
 	void P_TriggerGlitchingEffect();
+	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
 	UFUNCTION()
 	void P_TurnOffGlitchingEffect() const;
 	UFUNCTION()

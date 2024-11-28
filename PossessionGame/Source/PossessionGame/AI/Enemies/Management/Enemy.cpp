@@ -175,6 +175,7 @@ void AEnemy::ReceiveDamage(const float Damage)
 	CurrentHp -= Damage;
 	if (P_HUD)
 	{
+		P_MakeCameraShake(ReceivingDamageCameraShake);
 		P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
 		if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f)
 		{
@@ -565,6 +566,7 @@ void AEnemy::P_ToggleRunning(bool bState)
 	if (bCanRun)
 	{
 		bIsRunning = bState;
+		if (bIsRunning) P_MakeCameraShake(RunningCameraShake);
 		P_HUD->UpdateRunningIndicator(bState);
 		SetMaxWalkSpeed(bState ? P_Data->GetMaxRunSpeed() : P_Data->GetMaxWalkSpeed());
 	}
@@ -638,6 +640,11 @@ void AEnemy::P_TriggerGlitchingEffect()
 	AssetsManager->PlaySound2D(ESound::OnPossession);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::Glitching, 1.f);
 	UKismetSystemLibrary::K2_SetTimer(this, "P_TurnOffGlitchingEffect", 0.5f, false);
+}
+
+void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
+{
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(InCameraShake);
 }
 
 void AEnemy::P_TurnOffGlitchingEffect() const { GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::Glitching, 0.f); }

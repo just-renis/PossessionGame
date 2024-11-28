@@ -11,7 +11,7 @@ void ATricksterSingularWeapon::P_Shoot(bool bIsFirstWeapon)
 	if (ShootTimer >= ShootCooldown)
 	{
 		MuzzleFlashLogic();
-		MakeCameraShake();
+		MakeShootingCameraShake();
 		CurrentAmmo--;
 		ShootTimer = 0.f;
 		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::RangerProjectile);
