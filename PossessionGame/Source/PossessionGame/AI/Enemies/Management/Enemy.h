@@ -211,6 +211,8 @@ private:
 	void P_DetectIfPlayerPointingAtEnemy();
 	UFUNCTION()
 	void P_TriggerCriticalDamageIndicator() const;
+	UFUNCTION()
+	void P_TriggerRunningCameraShake() const;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyAI();

@@ -561,12 +561,13 @@ void AEnemy::P_Reload()
 	if (Weapon->GetIsReloadEnabled() && bCanReload && !P_InputManager->IsPressed(FKey("LeftMouseButton")) && Weapon->P_CanReload()) Weapon->P_Reload();
 }
 
-void AEnemy::P_ToggleRunning(bool bState)
+void AEnemy::P_ToggleRunning(const bool bState)
 {
 	if (bCanRun)
 	{
 		bIsRunning = bState;
-		if (bIsRunning) P_MakeCameraShake(RunningCameraShake);
+		if (bIsRunning) UKismetSystemLibrary::K2_SetTimer(this, "P_TriggerRunningCameraShake", 0.1f, true);
+		else UKismetSystemLibrary::K2_ClearTimer(this, "P_TriggerRunningCameraShake");
 		P_HUD->UpdateRunningIndicator(bState);
 		SetMaxWalkSpeed(bState ? P_Data->GetMaxRunSpeed() : P_Data->GetMaxWalkSpeed());
 	}
@@ -644,6 +645,7 @@ void AEnemy::P_TriggerGlitchingEffect()
 
 void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
 {
+	UE_LOG(LogTemp, Warning, TEXT("RUNNING SHAKE"));
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(InCameraShake);
 }
 
@@ -680,6 +682,8 @@ void AEnemy::P_TriggerCriticalDamageIndicator() const
 {
 	if (P_HUD) P_HUD->ToggleCriticalDamageIndicator();
 }
+
+void AEnemy::P_TriggerRunningCameraShake() const { P_MakeCameraShake(RunningCameraShake); }
 
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
