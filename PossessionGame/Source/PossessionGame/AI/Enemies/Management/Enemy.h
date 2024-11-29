@@ -178,6 +178,7 @@ private:
 	void AI_SetupHpBar();
 	void AI_ReceivedDamage();
 	void AI_DestroyHpBar();
+	void AI_DisableLogic();
 	UFUNCTION()
 	void AI_HideHpBar();
 	UFUNCTION()
@@ -207,6 +208,7 @@ private:
 	void P_EnableCriticalDamage();
 	void P_ToggleCriticallyDamagedEffects(const float InValue) const;
 	void P_InitiateDeathEvents();
+	void P_ConfigurePostProcessEffectsAfterDeath() const;
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()

@@ -62,6 +62,7 @@ private:
 	void SetIsTargetInMySight(bool bState);
 	void SetupEQSTarget();
 	void SetEQSTargetLocation();
+	void StopStateTreeLogic();
 
 	UFUNCTION()
 	void OnLostSightOfPawn();

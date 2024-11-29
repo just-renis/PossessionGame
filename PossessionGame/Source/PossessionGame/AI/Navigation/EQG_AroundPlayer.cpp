@@ -8,17 +8,17 @@ UEQG_AroundPlayer::UEQG_AroundPlayer() { ItemType = UEnvQueryItemType_Point::Sta
 
 void UEQG_AroundPlayer::GenerateItems(FEnvQueryInstance& QueryInstance) const
 {
-	TObjectPtr<UEnemyCommunicator> EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
-	int32 NumRings = 2;
-	int32 NumPointsInRing = 12;
-	TObjectPtr<AActor> QueryActor = Cast<AActor>(QueryInstance.Owner.Get());
+	const TObjectPtr<UEnemyCommunicator> EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
+	const int32 NumRings = 2;
+	const int32 NumPointsInRing = 12;
+	const TObjectPtr<AActor> QueryActor = Cast<AActor>(QueryInstance.Owner.Get());
 	QueryInstance.ReserveItemData(NumRings * NumPointsInRing);
 	for (int32 RingIndex = 0, i = 0; RingIndex < NumRings; RingIndex++)
 	{
-		float CurrentRadius = 400.f + RingIndex * 100.f;
+		const float CurrentRadius = 400.f + RingIndex * 100.f;
 		for (int32 PointIndex = 0; PointIndex < NumPointsInRing; PointIndex++, i++)
 		{
-			float Angle = FMath::DegreesToRadians(360.f / NumPointsInRing * PointIndex);
+			const float Angle = FMath::DegreesToRadians(360.f / NumPointsInRing * PointIndex);
 			FVector PointOffset = FVector(FMath::Cos(Angle) * CurrentRadius, FMath::Sin(Angle) * CurrentRadius, 0.f);
 			FVector PointLocation = QueryActor->GetActorLocation() + PointOffset;
 			QueryInstance.AddItemData<UEnvQueryItemType_Point>(PointLocation);

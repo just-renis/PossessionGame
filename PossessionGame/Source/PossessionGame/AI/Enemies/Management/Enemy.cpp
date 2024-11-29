@@ -680,13 +680,23 @@ void AEnemy::P_InitiateDeathEvents()
 {
 	if (P_HUD) P_HUD->PlayDeathFadeOutAnim();
 	UKismetSystemLibrary::K2_ClearTimer(this, "P_Death");
-	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::DeathGlitching, 1.f);
-	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::DeathBloodPumping, 1.f);
-	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::DeathScreenCrack, 1.f);
+	P_ConfigurePostProcessEffectsAfterDeath();
 	AssetsManager->PlaySound2D(ESound::PlayerDeath);
 	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
-	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 2.f, FLinearColor::Black, false, true);
-	UKismetSystemLibrary::K2_SetTimer(this, "P_OpenDeathMenu", 2.f, false);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDeath.Broadcast();
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor::Black, false, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "P_OpenDeathMenu", 3.f, false);
+}
+
+void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
+{
+	const TObjectPtr<UPostProcessManager> PostProcessManager = GetWorld()->GetSubsystem<UPostProcessManager>();
+	PostProcessManager->ToggleMaterial(EPostProcessMaterial::BloodPumping, 0.f);
+	PostProcessManager->ToggleMaterial(EPostProcessMaterial::ScreenCrack, 0.f);
+	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathGlitching, 1.f);
+	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathBloodPumping, 1.f);
+	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathScreenCrack, 1.f);
+	PostProcessManager->FadeOutDeathMaterials();
 }
 
 void AEnemy::P_Death()

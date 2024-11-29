@@ -13,7 +13,7 @@ FText UEnvQueryTest_CustomOverlap::GetDescriptionTitle() const { return FText::F
 
 void UEnvQueryTest_CustomOverlap::RunTest(FEnvQueryInstance& QueryInstance) const
 {
-	TObjectPtr<UEnemyCommunicator> EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
+	const TObjectPtr<UEnemyCommunicator> EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
 	const FCollisionShape CollisionShape = FCollisionShape::MakeBox(FVector(OverlapData.ExtentX, OverlapData.ExtentY, OverlapData.ExtentZ));
 	int32 i = 0;
 	for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)

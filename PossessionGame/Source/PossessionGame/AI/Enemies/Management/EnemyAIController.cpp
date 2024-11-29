@@ -39,7 +39,7 @@ void AEnemyAIController::DestroyThis()
 	EnemyCommunicator->GetEQSDelegate().RemoveAll(this);
 	UKismetSystemLibrary::K2_ClearTimer(this, "SightOnTargetLogic");
 	UKismetSystemLibrary::K2_ClearTimer(this, "OnLostSightOfPawn");
-	StateTree->Cleanup();
+	StopStateTreeLogic();
 }
 
 void AEnemyAIController::SetProprietor(TObjectPtr<AEnemy> Enemy) { Proprietor = Enemy; }
@@ -63,6 +63,7 @@ void AEnemyAIController::SetupAI()
 	EnemyCommunicator->GetEQSDelegate().AddUObject(this, &AEnemyAIController::SetEQSTargetLocation);
 	if (EnemyCommunicator->GetTarget()) SetTarget(EnemyCommunicator->GetTarget(), false);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTargetChange.AddUObject(this, &AEnemyAIController::SetTarget);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDeath.AddUObject(this, &AEnemyAIController::StopStateTreeLogic);
 }
 
 void AEnemyAIController::BeginPlay()
@@ -75,7 +76,7 @@ void AEnemyAIController::BeginPlay()
 void AEnemyAIController::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
 {
 	if (!Proprietor) return;
-	FTransform Transform = Proprietor->GetMesh()->GetSocketTransform("SensorSocket", RTS_World);
+	const FTransform Transform = Proprietor->GetMesh()->GetSocketTransform("SensorSocket", RTS_World);
 	OutLocation = Transform.GetLocation();
 	OutRotation = Transform.GetRotation().Rotator();
 }
@@ -124,8 +125,17 @@ void AEnemyAIController::SetupEQSTarget()
 
 void AEnemyAIController::SetEQSTargetLocation()
 {
-	FVector PointLocation = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetPointLocation(Proprietor->GetCharacterName(), Proprietor->GetActorLocation());
+	const FVector PointLocation = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetPointLocation(Proprietor->GetCharacterName(), Proprietor->GetActorLocation());
 	if (!PointLocation.ContainsNaN()) GetStateTreeData().SetEQSPointLocation(PointLocation);
+}
+
+void AEnemyAIController::StopStateTreeLogic()
+{
+	if (StateTree)
+	{
+		StateTree->StopLogic(TEXT("Stopping State Tree"));
+		StateTree->Cleanup();
+	}
 }
 
 void AEnemyAIController::OnLostSightOfPawn() { SetIsTargetInMySight(false); }

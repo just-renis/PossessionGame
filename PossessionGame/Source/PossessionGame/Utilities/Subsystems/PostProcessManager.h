@@ -14,12 +14,16 @@ public:
 	void Init(const TMap<EPostProcessMaterial, TObjectPtr<UMaterialInterface>>& InPostProcessMaterials);
 	void TriggerGlitchingMaterial(const float InDuration);
 	void ToggleMaterial(const EPostProcessMaterial InMaterialName, const float InValue);
+	void FadeOutDeathMaterials();
 private:
+	float FadingOutDeathMaterialsCounter;
 	UPROPERTY()
 	TObjectPtr<APostProcessVolume> PostProcessVolume;
 	UPROPERTY()
 	TMap<EPostProcessMaterial, TObjectPtr<UMaterialInterface>> Materials;
 
 	UFUNCTION()
-	void DisableGlitchingEffect();
+	void DisableGlitchingMaterial();
+	UFUNCTION()
+	void ProcessFadingOfDeathMaterials();
 };

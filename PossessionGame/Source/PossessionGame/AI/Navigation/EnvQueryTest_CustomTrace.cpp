@@ -12,9 +12,9 @@ FText UEnvQueryTest_CustomTrace::GetDescriptionTitle() const { return FText::Fro
 
 void UEnvQueryTest_CustomTrace::RunTest(FEnvQueryInstance& QueryInstance) const
 {
-	TObjectPtr<UEnemyCommunicator> EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
-    bool bTraceToItem = TraceFromContext.GetValue();
-	FVector QuerierLocation = Cast<AActor>(QueryInstance.Owner.Get())->GetActorLocation();
+	const TObjectPtr<UEnemyCommunicator> EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
+	const bool bTraceToItem = TraceFromContext.GetValue();
+	const FVector QuerierLocation = Cast<AActor>(QueryInstance.Owner.Get())->GetActorLocation();
     for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
     {
         FVector ItemLocation = GetItemLocation(QueryInstance, It.GetIndex());
@@ -24,7 +24,7 @@ void UEnvQueryTest_CustomTrace::RunTest(FEnvQueryInstance& QueryInstance) const
         if (bTraceToItem) TraceStart.Z += ContextHeightOffset.GetValue();
         else TraceEnd.Z += ContextHeightOffset.GetValue();
         FHitResult HitResult;
-        bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_WorldStatic);
+        const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_WorldStatic);
         It.SetScore(TestPurpose, FilterType, bHit, BoolValue.GetValue());
     	if (!bHit) EnemyCommunicator->RemovePoint(It.GetIndex());
     }
