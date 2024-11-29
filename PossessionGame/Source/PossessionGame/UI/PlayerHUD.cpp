@@ -110,6 +110,8 @@ void UPlayerHUD::ConfigureUIs() const
 	CriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
 }
 
+void UPlayerHUD::PlayDeathFadeOutAnim() { PlayAnimation(DeathFadeOut); }
+
 void UPlayerHUD::NativeConstruct()
 {
 	Super::NativeConstruct();

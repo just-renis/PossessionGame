@@ -152,6 +152,7 @@ private:
 	bool bIsRunning = false;
 	bool bIsCriticallyDamaged = false;
 	bool bIsAIBarCreated = false;
+	bool bPlayerDied = false;
 	float PossessionBarTimer = 0.f;
 	EMoveMode CurrentMoveMode = EMoveMode::Walk;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))

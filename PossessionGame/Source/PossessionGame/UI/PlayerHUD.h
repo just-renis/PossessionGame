@@ -34,6 +34,7 @@ public:
 	void UpdateRunningIndicator(const bool bState) const;
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs() const;
+	void PlayDeathFadeOutAnim();
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> PossessionBar;
@@ -65,6 +66,8 @@ private:
 	TObjectPtr<UImage> RunningIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> DeathFadeOut;
 
 	virtual void NativeConstruct() override;
 	void ToggleCrosshair();

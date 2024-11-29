@@ -300,6 +300,7 @@ void AEnemy::P_DisableEnemy()
 	Weapon->SetToOriginalSettings();
 	GetMesh()->SetCollisionProfileName("Enemy");
 	NavAreaModifier->Destroy();
+	if (bPlayerDied) return;
 	P_HUD->Reset();
 	P_HUD = nullptr;
 }
@@ -525,7 +526,7 @@ void AEnemy::P_PossessionBarLogic()
 {
 	PossessionBarTimer += 0.05f;
 	if (PossessionBarTimer >= P_Data->GetPossessionBarCooldown()) bCanPossessOtherEnemy = true;
-	else P_HUD->UpdateProgressBar(EUIBar::Possession, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
+	else if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Possession, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
 }
 
 void AEnemy::P_Move(const FInputActionValue& Value)
@@ -562,7 +563,7 @@ void AEnemy::P_ToggleRunning(const bool bState)
 		bIsRunning = bState;
 		if (bIsRunning) UKismetSystemLibrary::K2_SetTimer(this, "P_TriggerRunningCameraShake", 0.1f, true);
 		else UKismetSystemLibrary::K2_ClearTimer(this, "P_TriggerRunningCameraShake");
-		P_HUD->UpdateRunningIndicator(bState);
+		if (P_HUD) P_HUD->UpdateRunningIndicator(bState);
 		SetMaxWalkSpeed(bState ? P_Data->GetMaxRunSpeed() : P_Data->GetMaxWalkSpeed());
 	}
 }
@@ -677,18 +678,20 @@ void AEnemy::P_ToggleCriticallyDamagedEffects(const float InValue) const
 
 void AEnemy::P_InitiateDeathEvents()
 {
+	if (P_HUD) P_HUD->PlayDeathFadeOutAnim();
 	UKismetSystemLibrary::K2_ClearTimer(this, "P_Death");
 	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::DeathGlitching, 1.f);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::DeathBloodPumping, 1.f);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::DeathScreenCrack, 1.f);
 	AssetsManager->PlaySound2D(ESound::PlayerDeath);
+	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 2.f, FLinearColor::Black, false, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "P_OpenDeathMenu", 2.f, false);
-//	UGameplayStatics::OpenLevel(this, *UGameplayStatics::GetCurrentLevelName(GetWorld(), true));
 }
 
 void AEnemy::P_Death()
 {
+	bPlayerDied = true;
 	if (AssetsManager->IsAsyncLoadingFinished()) P_InitiateDeathEvents();
 	else if (!bEnableUnloadLevel)
 	{
@@ -710,7 +713,7 @@ void AEnemy::P_DetectIfPlayerPointingAtEnemy()
 	const FVector StartLocation = GetCamera()->GetComponentLocation();
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + GetCamera()->GetForwardVector() * 15000.f, ECC_Visibility))
 	{
-		P_HUD->UpdatePossessionIndicator(HitResult.GetActor()->ActorHasTag("Enemy"));
+		if (P_HUD) P_HUD->UpdatePossessionIndicator(HitResult.GetActor()->ActorHasTag("Enemy"));
 	}
 }
 
@@ -723,7 +726,8 @@ void AEnemy::P_TriggerRunningCameraShake() const { P_MakeCameraShake(RunningCame
 
 void AEnemy::P_OpenDeathMenu()
 {
-	
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->ChangeUIToDeathMenu();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 }
 
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -754,7 +758,7 @@ void AEnemy::TickAbilities(float DeltaTime)
 	for (int32 i = 0; i < Abilities.Num(); i++)
 	{
 		Abilities[i]->Tick(DeltaTime);
-		P_UpdateAbilityCooldownUITextColor(i);
+		if (P_HUD) P_UpdateAbilityCooldownUITextColor(i);
 	}
 }
 
