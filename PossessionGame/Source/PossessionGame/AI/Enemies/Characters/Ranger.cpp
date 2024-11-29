@@ -39,6 +39,8 @@ void ARanger::SetCustomTimeDilation(float Dilation)
 	GetWeapon()->CustomTimeDilation = Dilation;
 }
 
+void ARanger::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::AIRangerDeathVoiceLine); }
+
 void ARanger::AI_SetupWeapon()
 {
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::RangerWeapon, GetMesh());
@@ -108,7 +110,7 @@ void ARanger::GrenadeLauncherMuzzleFlashLogic()
 
 float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	float ReturnDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	const float ReturnDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (CurrentHp <= MaxHp * 0.5f) if (!bIsPossessed && CanAbilityBeExecuted(1)) AI_UseAbility(1);
 	return ReturnDamage;
 }

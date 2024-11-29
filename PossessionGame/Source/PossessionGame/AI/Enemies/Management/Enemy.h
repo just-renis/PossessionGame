@@ -117,6 +117,8 @@ protected:
 	void AI_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
 	virtual void AI_SetController();
 	virtual void AI_PlayShootMontage();
+	UFUNCTION()
+	virtual void AI_TriggerDeathVoiceLine() {}
 
 	virtual void P_SetupAbilities();
 	virtual void P_Setup();
@@ -178,7 +180,6 @@ private:
 	void AI_SetupHpBar();
 	void AI_ReceivedDamage();
 	void AI_DestroyHpBar();
-	void AI_DisableLogic();
 	UFUNCTION()
 	void AI_HideHpBar();
 	UFUNCTION()
@@ -220,7 +221,7 @@ private:
 	UFUNCTION()
 	void P_TriggerRunningCameraShake() const;
 	UFUNCTION()
-	void P_OpenDeathMenu();
+	void P_OpenDeathMenu() const;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyAI();

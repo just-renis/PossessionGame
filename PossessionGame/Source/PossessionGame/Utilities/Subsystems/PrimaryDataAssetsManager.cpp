@@ -160,6 +160,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_CriticalDamageBeep", ESound::CriticalDamageBeep);
 	SoundMap.Add("PA_CriticalHealthEnter", ESound::CriticalHealthEnter);
 	SoundMap.Add("PA_PlayerDeath", ESound::PlayerDeath);
+	SoundMap.Add("PA_AIRangerDeathVoiceLine", ESound::AIRangerDeathVoiceLine);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

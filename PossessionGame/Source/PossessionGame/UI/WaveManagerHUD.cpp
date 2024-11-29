@@ -44,3 +44,5 @@ void UWaveManagerHUD::ToggleCurrentWaveText()
 		else CurrentWaveText->SetVisibility(ESlateVisibility::Visible);
 	}
 }
+
+void UWaveManagerHUD::PlayWavePanelFadeOutAnim() { PlayAnimation(WavePanelFadeOutAnim); }

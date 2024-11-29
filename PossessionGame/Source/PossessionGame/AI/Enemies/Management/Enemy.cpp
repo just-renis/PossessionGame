@@ -133,7 +133,9 @@ void AEnemy::PossessedBy(AController* NewController)
 		{
 			P_TriggerGlitchingEffect();
 			P_ToggleCriticallyDamagedEffects(0.f);
+			AssetsManager->PlaySound2D(ESound::OnPossession);
 			AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
+			UKismetSystemLibrary::K2_SetTimer(this, "AI_TriggerDeathVoiceLine", 1.f, false);
 			P_Setup();
 		}
 	}
@@ -164,6 +166,7 @@ void AEnemy::InitiateDeath()
 	ClearTimers();
 	AI_DestroyHpBar();
 	bIsAlive = false;
+	Tags.Remove("AliveEnemy");
 	if (!bIsPossessed)
 	{
 		DestroyAI();
@@ -322,6 +325,7 @@ void AEnemy::BeginPlay()
 	SetAnimInstance();
 	GameplayTags.AddTag(UGameplayTagsManager::Get().RequestGameplayTag(FName("Enemy")));
 	Tags.Add("Enemy");
+	Tags.Add("AliveEnemy");
 	Camera->SetActive(false);
 	UKismetSystemLibrary::K2_SetTimer(this, "CheckIfFallOutOfWorld", 2.f, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_SetCharacterMovementSpeed", 0.05f, true);
@@ -631,11 +635,7 @@ void AEnemy::P_HandleEscapeClick()
 	}
 }
 
-void AEnemy::P_TriggerGlitchingEffect() const
-{
-	AssetsManager->PlaySound2D(ESound::OnPossession);
-	GetWorld()->GetSubsystem<UPostProcessManager>()->TriggerGlitchingMaterial(0.5f);
-}
+void AEnemy::P_TriggerGlitchingEffect() const { GetWorld()->GetSubsystem<UPostProcessManager>()->TriggerGlitchingMaterial(0.5f); }
 
 void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
 {
@@ -723,7 +723,7 @@ void AEnemy::P_DetectIfPlayerPointingAtEnemy()
 	const FVector StartLocation = GetCamera()->GetComponentLocation();
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + GetCamera()->GetForwardVector() * 15000.f, ECC_Visibility))
 	{
-		if (P_HUD) P_HUD->UpdatePossessionIndicator(HitResult.GetActor()->ActorHasTag("Enemy"));
+		if (P_HUD) P_HUD->UpdatePossessionIndicator(HitResult.GetActor()->ActorHasTag("AliveEnemy"));
 	}
 }
 
@@ -734,7 +734,7 @@ void AEnemy::P_TriggerCriticalDamageIndicator() const
 
 void AEnemy::P_TriggerRunningCameraShake() const { P_MakeCameraShake(RunningCameraShake); }
 
-void AEnemy::P_OpenDeathMenu()
+void AEnemy::P_OpenDeathMenu() const
 {
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->ChangeUIToDeathMenu();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
@@ -777,6 +777,7 @@ void AEnemy::ClearTimers()
 	UKismetSystemLibrary::K2_ClearTimer(this, "P_ControlLogic");
 	UKismetSystemLibrary::K2_ClearTimer(this, "P_DetectIfPlayerPointingAtEnemy");
 	UKismetSystemLibrary::K2_ClearTimer(this, "P_TriggerCriticalDamageIndicator");
+	UKismetSystemLibrary::K2_ClearTimer(this, "AI_TriggerDeathVoiceLine");
 }
 
 void AEnemy::SetupStimuliSource()

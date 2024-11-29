@@ -58,7 +58,8 @@ private:
 	void AsyncLoadAndSpawnEnemy(ECharacterType EnemyType);
 	void PlaySound(const ESound InSoundName) const;
 	void AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECharacterType EnemyType, TObjectPtr<UPrimaryDataAssetsManager> AssetsManage);
-
+	void FadeOutWavePanel() const;
+	
 	UFUNCTION()
 	void UpdateCountdown();
 	UFUNCTION()

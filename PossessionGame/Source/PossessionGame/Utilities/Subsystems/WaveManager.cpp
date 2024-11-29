@@ -20,7 +20,11 @@ void UWaveManager::Init(const TObjectPtr<UDelegateManager>& InDelegateManager)
 	SetupTimers();
 }
 
-void UWaveManager::InitDelegates() { DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount); }
+void UWaveManager::InitDelegates()
+{
+	DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount);
+	DelegateManager->OnPlayerDeath.AddUObject(this, &UWaveManager::FadeOutWavePanel);
+}
 
 void UWaveManager::SetupWaveManagerSettings(TArray<ECharacterType>& EnemiesThatAreSpawnable, ECharacterType FirstEnemy, int32 EnemiesAmountOnFirstWave)
 {
@@ -183,6 +187,8 @@ void UWaveManager::AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECh
 	GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(Weapon, Cast<UClass>(AssetsManager->GetWeaponData(Weapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
 	SpawnEnemy(EnemyType);
 }
+
+void UWaveManager::FadeOutWavePanel() const { if (WaveManagerHUD) WaveManagerHUD->PlayWavePanelFadeOutAnim(); }
 
 void UWaveManager::UpdateCountdown()
 {

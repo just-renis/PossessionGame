@@ -17,11 +17,14 @@ public:
 	void ToggleCountdownText();
 	void ToggleEnemiesLeftText();
 	void ToggleCurrentWaveText();
+	void PlayWavePanelFadeOutAnim();
 private:
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CountdownText;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> EnemiesLeftText;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CurrentWaveText;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> WavePanelFadeOutAnim;
 };
