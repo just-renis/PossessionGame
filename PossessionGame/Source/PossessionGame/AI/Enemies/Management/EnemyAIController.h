@@ -21,18 +21,18 @@ class POSSESSIONGAME_API AEnemyAIController : public AAIController
 public:
 	AEnemyAIController();
 
-	bool CanExecuteAbility(int32 AbilityIndex) { return Proprietor->CanAbilityBeExecuted(AbilityIndex); }
+	bool CanExecuteAbility(const int32 InAbilityIndex) const { return Proprietor->CanAbilityBeExecuted(InAbilityIndex); }
 	TObjectPtr<AEnemy> GetProprietor() { return Proprietor; }
 	FStateTreeData& GetStateTreeData() { return StateTreeData; }
 
-	void SetShootCooldown(float Value);
-	void SetReloadDelay(float Value);
+	void SetShootCooldown(const float InValue);
+	void SetReloadDelay(const float InValue);
 	virtual void DestroyThis();
-	void SetProprietor(TObjectPtr<AEnemy> Enemy);
+	void SetProprietor(const TObjectPtr<AEnemy> InEnemy);
 	void SetupStateTree();
-	void SetMoveMode(EMoveMode MoveMode);
+	void SetMoveMode(const EMoveMode InMoveMode) const;
 	virtual void SetupAI();
-	void SetEQSTargetLocation(FVector InLocation) { EQSTarget->SetActorLocation(InLocation); }
+	void SetEQSTargetLocation(const FVector InLocation) const { EQSTarget->SetActorLocation(InLocation); }
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStateTreeComponent> StateTree;
@@ -57,17 +57,17 @@ private:
 	TObjectPtr<AActor> EQSTarget;
 
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
-	void CustomFocusToLocation(FVector TargetLocation);
-	void SetTarget(TObjectPtr<AActor> Target, bool bIsTargetAcquiredForFirstTime);
-	void SetIsTargetInMySight(bool bState);
+	void CustomFocusToLocation(const FVector InTargetLocation) const;
+	void SetTarget(const TObjectPtr<AActor> InTarget, const bool bIsTargetAcquiredForFirstTime);
+	void SetIsTargetInMySight(const bool bState);
 	void SetupEQSTarget();
 	void SetEQSTargetLocation();
-	void StopStateTreeLogic();
+	void StopStateTreeLogic() const;
 
 	UFUNCTION()
 	void OnLostSightOfPawn();
 	UFUNCTION()
 	void SightOnTargetLogic();
 	UFUNCTION()
-	void AdjustCustomFocus();
+	void AdjustCustomFocus() const;
 };

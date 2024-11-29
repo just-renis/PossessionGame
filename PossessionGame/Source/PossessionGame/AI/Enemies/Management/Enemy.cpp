@@ -681,7 +681,6 @@ void AEnemy::P_InitiateDeathEvents()
 	if (P_HUD) P_HUD->PlayDeathFadeOutAnim();
 	UKismetSystemLibrary::K2_ClearTimer(this, "P_Death");
 	P_ConfigurePostProcessEffectsAfterDeath();
-	AssetsManager->PlaySound2D(ESound::PlayerDeath);
 	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDeath.Broadcast();
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor::Black, false, true);
@@ -701,6 +700,7 @@ void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
 
 void AEnemy::P_Death()
 {
+	if (!bPlayerDied) AssetsManager->PlaySound2D(ESound::PlayerDeath);
 	bPlayerDied = true;
 	if (AssetsManager->IsAsyncLoadingFinished()) P_InitiateDeathEvents();
 	else if (!bEnableUnloadLevel)

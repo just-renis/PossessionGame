@@ -25,9 +25,9 @@ AEnemyAIController::AEnemyAIController()
 	StateTree->SetStartLogicAutomatically(false);
 }
 
-void AEnemyAIController::SetShootCooldown(float Value) { StateTreeData.SetShootCooldown(Value); }
+void AEnemyAIController::SetShootCooldown(const float InValue) { StateTreeData.SetShootCooldown(InValue); }
 
-void AEnemyAIController::SetReloadDelay(float Value) { StateTreeData.SetReloadDelay(Value); }
+void AEnemyAIController::SetReloadDelay(const float InValue) { StateTreeData.SetReloadDelay(InValue); }
 
 void AEnemyAIController::DestroyThis()
 {
@@ -42,7 +42,7 @@ void AEnemyAIController::DestroyThis()
 	StopStateTreeLogic();
 }
 
-void AEnemyAIController::SetProprietor(TObjectPtr<AEnemy> Enemy) { Proprietor = Enemy; }
+void AEnemyAIController::SetProprietor(const TObjectPtr<AEnemy> InEnemy) { Proprietor = InEnemy; }
 
 void AEnemyAIController::SetupStateTree()
 {
@@ -55,7 +55,7 @@ void AEnemyAIController::SetupStateTree()
 	}
 }
 
-void AEnemyAIController::SetMoveMode(EMoveMode MoveMode) { Proprietor->AI_SetMoveMode(MoveMode); }
+void AEnemyAIController::SetMoveMode(const EMoveMode InMoveMode) const { Proprietor->AI_SetMoveMode(InMoveMode); }
 
 void AEnemyAIController::SetupAI()
 {
@@ -96,20 +96,20 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 	else UKismetSystemLibrary::K2_SetTimer(this, "OnLostSightOfPawn", 0.3f, false);
 }
 
-void AEnemyAIController::CustomFocusToLocation(FVector TargetLocation)
+void AEnemyAIController::CustomFocusToLocation(const FVector InTargetLocation) const
 {
 	FRotator NewControlRotation = GetControlRotation();
-	NewControlRotation.Yaw = (TargetLocation - GetPawn()->GetActorLocation()).GetSafeNormal2D().Rotation().Yaw;
+	NewControlRotation.Yaw = (InTargetLocation - GetPawn()->GetActorLocation()).GetSafeNormal2D().Rotation().Yaw;
 	GetPawn()->SetActorRotation(NewControlRotation);
 }
 
-void AEnemyAIController::SetTarget(TObjectPtr<AActor> Target, bool bWasTargetSet)
+void AEnemyAIController::SetTarget(TObjectPtr<AActor> InTarget, const bool bIsTargetAcquiredForFirstTime)
 {
-	StateTreeData.SetTargetRef(Target);
-	if (!bWasTargetSet) SetupStateTree();
+	StateTreeData.SetTargetRef(InTarget);
+	if (!bIsTargetAcquiredForFirstTime) SetupStateTree();
 }
 
-void AEnemyAIController::SetIsTargetInMySight(bool bState)
+void AEnemyAIController::SetIsTargetInMySight(const bool bState)
 {
 	StateTreeData.SetIsTargetInMySight(bState);
 	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "SightOnTargetLogic", SightOnTargetRepeat, true);
@@ -129,7 +129,7 @@ void AEnemyAIController::SetEQSTargetLocation()
 	if (!PointLocation.ContainsNaN()) GetStateTreeData().SetEQSPointLocation(PointLocation);
 }
 
-void AEnemyAIController::StopStateTreeLogic()
+void AEnemyAIController::StopStateTreeLogic() const
 {
 	if (StateTree)
 	{
@@ -150,4 +150,4 @@ void AEnemyAIController::SightOnTargetLogic()
 	}
 }
 
-void AEnemyAIController::AdjustCustomFocus() { if (EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation()); }
+void AEnemyAIController::AdjustCustomFocus() const { if (EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation()); }
