@@ -11,6 +11,8 @@ class POSSESSIONGAME_API ARanger : public AAssaultEnemy
 {
 	GENERATED_BODY()
 public:
+	ARanger();
+	
 	void LaunchGrenade();
 	void SpawnShield();
 	void SetCustomTimeDilation(float Dilation);
@@ -20,6 +22,8 @@ private:
 
 	virtual void AI_TriggerDeathVoiceLine() override;
 	virtual void AI_SetupWeapon() override;
+	UFUNCTION()
+	void AI_PlaySpawnSound();
 
 	virtual void P_Setup() override;
 	virtual void P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) override;
@@ -34,4 +38,6 @@ private:
 	void AttachGrenadeLauncherMuzzle();
 	void GrenadeLauncherMuzzleFlashLogic();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void LoadSounds() override;
+	virtual void PossessedBy(AController* NewController) override;
 };

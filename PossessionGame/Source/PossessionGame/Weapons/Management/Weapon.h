@@ -6,20 +6,18 @@
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerWeaponData.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/ESound.h"
-#include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "Weapon.generated.h"
 
+enum class EVfx : uint8;
 class UPrimaryDataAssetsManager;
 class AEnemy;
 class UHandsAnimInstance;
 class UDelegateManager;
-class UCameraComponent;
 class UNiagaraComponent;
 class UAIWeaponData;
 class UPlayerWeaponData;
 class UWeaponAnimInstance;
-class UNiagaraSystem;
 
 UCLASS()
 class POSSESSIONGAME_API AWeapon : public AActor
@@ -90,8 +88,6 @@ protected:
 	TObjectPtr<UWeaponAnimInstance> AnimInstance;
 	UPROPERTY()
 	TObjectPtr<UHandsAnimInstance> HandsAnimInstance;
-	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> LaserSight;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -100,8 +96,6 @@ protected:
 	TObjectPtr<UAIWeaponData> AI_Data;
 	UPROPERTY()
 	TObjectPtr<UPlayerWeaponData> P_Data;
-	UPROPERTY(EditAnywhere, Category = "Particles", meta = (AllowPrivateAccess = true))
-	TSoftObjectPtr<UNiagaraSystem> LaserSightSystem;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
@@ -139,9 +133,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	
-	void DeactivateLaserSight();
 	void SpawnOrLoadHitScanImpactVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
 	void SpawnHitScanImpactVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const;
-	UFUNCTION()
-	void LaserSightLogic();
 };

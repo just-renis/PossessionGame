@@ -10,6 +10,7 @@
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "Enemy.generated.h"
 
+enum class ESound : uint8;
 class UAIHpBarUI;
 class UWidgetComponent;
 class UPrimaryDataAssetsManager;
@@ -109,6 +110,8 @@ protected:
 	TObjectPtr<UPlayerCharacterData> P_Data;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
+	UPROPERTY()
+	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	virtual void AI_SetupAbilities();
 	virtual void AI_Setup();
@@ -146,6 +149,8 @@ protected:
 	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void LoadSounds() {}
+	void PlaySound(const ESound InSoundName);
 private:
 	bool bShootPauseActive = false;
 	bool bCanPossessOtherEnemy = false;

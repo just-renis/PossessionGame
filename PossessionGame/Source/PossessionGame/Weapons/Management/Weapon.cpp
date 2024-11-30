@@ -119,7 +119,6 @@ void AWeapon::SetToOriginalSettings()
 
 void AWeapon::DeactivateWeapon()
 {
-	DeactivateLaserSight();
 	bIsPossessed = false;
 	Mesh->SetAnimInstanceClass(nullptr);
 	if (HandsMesh) DisableHandsMesh();
@@ -261,15 +260,6 @@ void AWeapon::AttachAndLoadVfxs()
 	else AssetsManager->GetVfxData(VfxName)->LoadVfx(GetWorld(), [this, VfxName] { AttachMuzzleFlash(VfxName); });
 }
 
-void AWeapon::DeactivateLaserSight()
-{
-	if (LaserSight)
-	{
-		LaserSight->Deactivate();
-		LaserSight = nullptr;
-	}
-}
-
 void AWeapon::SpawnOrLoadHitScanImpactVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
 {
 	if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) SpawnHitScanImpactVfx(InVfxName, InLocation, InRotation);
@@ -279,19 +269,4 @@ void AWeapon::SpawnOrLoadHitScanImpactVfx(const EVfx InVfxName, const FVector& I
 void AWeapon::SpawnHitScanImpactVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const
 {
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().Get(), InLocation, InRotation);
-}
-
-void AWeapon::LaserSightLogic()
-{
-	if (!LaserSight) LaserSight = UNiagaraFunctionLibrary::SpawnSystemAttached(LaserSightSystem.LoadSynchronous(), Mesh, FName("LaserSightSocket"), FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
-	else
-	{
-		const FVector StartLocation = GetSocketLocation(FName("LaserSightSocket"));
-		const FVector TraceEnd = StartLocation + GetSocketRotation(FName("LaserSightSocket")).Vector() * 500;
-		FHitResult HitResult;
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(this);
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, TraceEnd, ECC_Visibility, QueryParams)) LaserSight->SetNiagaraVariableVec3(FName("User.Beam End").ToString(), HitResult.Location);
-		else LaserSight->SetNiagaraVariableVec3(FName("User.Beam End").ToString(), TraceEnd);
-	}
 }

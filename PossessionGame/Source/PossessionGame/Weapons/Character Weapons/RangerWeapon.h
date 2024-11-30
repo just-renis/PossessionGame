@@ -4,6 +4,8 @@
 #include "PossessionGame/Weapons/Categories/OneHandedWeapon.h"
 #include "RangerWeapon.generated.h"
 
+class UCameraComponent;
+
 UCLASS()
 class POSSESSIONGAME_API ARangerWeapon : public AOneHandedWeapon
 {

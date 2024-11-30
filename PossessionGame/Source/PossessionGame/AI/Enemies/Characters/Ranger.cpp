@@ -3,6 +3,9 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPoolObject.h"
@@ -14,6 +17,12 @@
 #include "PossessionGame/Weapons/Animation Instances/Hands/RangerHandsAnimInstance.h"
 #include "PossessionGame/Weapons/Character Weapons/RangerWeapon.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
+
+ARanger::ARanger()
+{
+	Sounds.Add(ESound::RangerSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
+	Sounds[ESound::RangerSpawn]->SetAutoActivate(false);
+}
 
 void ARanger::LaunchGrenade()
 {
@@ -39,13 +48,15 @@ void ARanger::SetCustomTimeDilation(float Dilation)
 	GetWeapon()->CustomTimeDilation = Dilation;
 }
 
-void ARanger::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::AIRangerDeathVoiceLine); }
+void ARanger::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::RangerOnPossession); }
 
 void ARanger::AI_SetupWeapon()
 {
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::RangerWeapon, GetMesh());
 	Super::AI_SetupWeapon();
 }
+
+void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
 
 void ARanger::P_Setup()
 {
@@ -73,6 +84,7 @@ void ARanger::BeginPlay()
 	CharacterName = ECharacterType::Ranger;
 	Super::BeginPlay();
 	AttachOrLoadGrenadeLauncherMuzzle();
+	UKismetSystemLibrary::K2_SetTimer(this, "AI_PlaySpawnSound", 3.f + UKismetMathLibrary::RandomInteger(4), false);
 }
 
 void ARanger::Tick(float DeltaTime)
@@ -113,4 +125,15 @@ float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 	const float ReturnDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (CurrentHp <= MaxHp * 0.5f) if (!bIsPossessed && CanAbilityBeExecuted(1)) AI_UseAbility(1);
 	return ReturnDamage;
+}
+
+void ARanger::LoadSounds()
+{
+	Sounds[ESound::RangerSpawn]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+}
+
+void ARanger::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	if (bIsPossessed) UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
 }

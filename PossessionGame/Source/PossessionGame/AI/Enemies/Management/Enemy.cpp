@@ -10,6 +10,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "InputMappingContext.h"
+#include "Components/AudioComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -396,6 +397,11 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		}
 	}
 	return Damage;
+}
+
+void AEnemy::PlaySound(const ESound InSoundName)
+{
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName);
 }
 
 EAbility AEnemy::GetAbilityFromCharacterName(const int32 AbilityIndex) const
