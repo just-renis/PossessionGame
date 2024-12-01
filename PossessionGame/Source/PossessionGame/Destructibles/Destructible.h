@@ -18,6 +18,13 @@ public:
 	
 	void HandleDeactivation();
 	virtual void SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation) override;
+protected:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> Mesh;
+	
+	virtual void BeginPlay() override;
+	UFUNCTION()
+	virtual void DestroyThis();
 private:
 	bool bIsDeactivated = false;
 	bool bIsAffectedByPhysics = false;
@@ -26,11 +33,6 @@ private:
 	float Hp;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UDestructibleData> Data;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UStaticMeshComponent> Mesh;
 
-	virtual void BeginPlay() override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	UFUNCTION()
-	void DestroyThis();
 };

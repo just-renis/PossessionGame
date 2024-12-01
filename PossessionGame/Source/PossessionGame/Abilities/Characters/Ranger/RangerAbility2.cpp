@@ -19,10 +19,7 @@ void URangerAbility2::P_Execute()
 	Super::P_Execute();
 }
 
-void URangerAbility2::P_StopAbility()
-{
-	if (bIsAbilityInDuration) Super::P_StopAbility();
-}
+void URangerAbility2::P_StopAbility() { if (bIsAbilityInDuration) Super::P_StopAbility(); }
 
 bool URangerAbility2::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
 

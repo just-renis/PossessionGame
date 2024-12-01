@@ -11,11 +11,11 @@ class POSSESSIONGAME_API UDestructibleData : public UDataAsset
 {
 	GENERATED_BODY()
 public:
-	bool GetIsLifeSpanImmediatelyAdded() { return bIsLifeSpanImmediatelyAdded; }
-	bool GetIsAffectedByPhysics() { return bIsAffectedByPhysics; }
-	float GetLifeSpan() { return LifeSpan; }
-	float GetHp() { return Hp; }
-	EPoolObject GetObjectName() { return ObjectName; }
+	bool GetIsLifeSpanImmediatelyAdded() const { return bIsLifeSpanImmediatelyAdded; }
+	bool GetIsAffectedByPhysics() const { return bIsAffectedByPhysics; }
+	float GetLifeSpan() const { return LifeSpan; }
+	float GetHp() const { return Hp; }
+	EPoolObject GetObjectName() const { return ObjectName; }
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsLifeSpanImmediatelyAdded;

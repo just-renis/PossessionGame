@@ -25,20 +25,24 @@ void ADestructible::HandleDeactivation()
 void ADestructible::SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation)
 {
 	Super::SetIsInUse(bIsPlayerObject, Location, Rotation);
+	LifeSpan = Data->GetLifeSpan();
 	Hp = Data->GetHp();
+	bIsAffectedByPhysics = Data->GetIsAffectedByPhysics();
 	bIsPlayerObject = bInIsPlayerObject;
 	Mesh->SetCollisionProfileName(bIsPlayerObject ? "PlayerDestructible" : "EnemyDestructible");
-	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", LifeSpan, false);
+	if (Data->GetIsLifeSpanImmediatelyAdded()) UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", LifeSpan, false);
 }
 
 void ADestructible::BeginPlay()
 {
 	Super::BeginPlay();
 	Tags.Add("Destructible");
-	LifeSpan = Data->GetLifeSpan();
-	Hp = Data->GetHp();
-	if (Data->GetIsLifeSpanImmediatelyAdded()) UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", LifeSpan, false);
-	bIsAffectedByPhysics = Data->GetIsAffectedByPhysics();
+}
+
+void ADestructible::DestroyThis()
+{
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(Data->GetObjectName(), this);
+	UKismetSystemLibrary::K2_ClearTimer(this, "DestroyThis");
 }
 
 float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -47,7 +51,7 @@ float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
 		Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-		bool bIsPlayerProjectile = Cast<AProjectile>(DamageCauser)->GetIsPlayerProjectile();
+		const bool bIsPlayerProjectile = Cast<AProjectile>(DamageCauser)->GetIsPlayerProjectile();
 		if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) Hp -= Damage;
 	}
 	else
@@ -69,10 +73,4 @@ float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 		else DestroyThis();
 	}
 	return Damage;
-}
-
-void ADestructible::DestroyThis()
-{
-	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(Data->GetObjectName(), this);
-	UKismetSystemLibrary::K2_ClearTimer(this, "DestroyThis");
 }

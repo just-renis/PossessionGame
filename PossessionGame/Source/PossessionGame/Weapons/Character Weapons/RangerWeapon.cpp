@@ -61,7 +61,7 @@ void ARangerWeapon::HitScanLogic()
 	if (bIsZoomingIn)
 	{
 		FHitResult HitResult;
-		FVector StartLocation = Crosshair->GetComponentLocation();
+		const FVector StartLocation = Crosshair->GetComponentLocation();
 		FVector EndLocation = StartLocation + Crosshair->GetForwardVector() * 15000.f;
 		EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
 		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 2.f);
