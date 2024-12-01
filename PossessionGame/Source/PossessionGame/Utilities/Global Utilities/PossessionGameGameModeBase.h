@@ -33,7 +33,7 @@ private:
 	TArray<ECharacterType> EnemiesThatAreSpawnable;
 	UPROPERTY(EditAnywhere, Category = "Level Prefabs", meta = (AllowPrivateAccess = true))
 	TMap<EPrefabCategory, FPrefabCategoryData> Prefabs;
-	UPROPERTY(EditAnywhere, Category = "Widget Manager", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = "Post Process Manager", meta = (AllowPrivateAccess = true))
 	TMap<EPostProcessMaterial, TObjectPtr<UMaterialInterface>> PostProcessMaterials;
 	UPROPERTY(EditAnywhere, Category = "Pooling Manager", meta = (AllowPrivateAccess = true))
 	TMap<EPoolObject, TSubclassOf<APoolObject>> PoolObjects;

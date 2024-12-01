@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PoolObject.h"
 #include "GameFramework/Actor.h"
+#include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
 #include "Destructible.generated.h"
 
 class UDestructibleData;
@@ -14,9 +14,10 @@ class POSSESSIONGAME_API ADestructible : public APoolObject
 public:
 	ADestructible();
 	
-	bool GetIsDeactivated() { return bIsDeactivated; }
+	bool GetIsDeactivated() const { return bIsDeactivated; }
 	
 	void HandleDeactivation();
+	virtual void SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation) override;
 private:
 	bool bIsDeactivated = false;
 	bool bIsAffectedByPhysics = false;
@@ -30,7 +31,6 @@ private:
 
 	virtual void BeginPlay() override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation) override;
 	UFUNCTION()
 	void DestroyThis();
 };

@@ -2,6 +2,15 @@
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
 
+TObjectPtr<APoolObject> UPoolingManager::SpawnObjectFromPool(bool bIsPlayerObject, EPoolObject ObjectName, const FVector& Location, const FRotator& Rotation)
+{
+	if (Pool[ObjectName].Objects.IsEmpty()) AllocatePoolObject(ObjectName);
+	TObjectPtr<APoolObject> PoolObject = Pool[ObjectName].Objects.Pop();
+	SetPoolObjectState(PoolObject, true);
+	PoolObject->SetIsInUse(bIsPlayerObject, Location, Rotation);
+	return PoolObject;
+}
+
 void UPoolingManager::Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& Map)
 {
 	for (TTuple<EPoolObject, TSubclassOf<APoolObject>>& Element : Map)
@@ -15,14 +24,6 @@ void UPoolingManager::ReturnObjectToPool(EPoolObject ObjectName, TObjectPtr<APoo
 {
 	SetPoolObjectState(PoolObject, false);
 	Pool[ObjectName].Objects.Add(PoolObject);
-}
-
-void UPoolingManager::SpawnObjectFromPool(bool bIsPlayerObject, EPoolObject ObjectName, const FVector& Location, const FRotator& Rotation)
-{
-	if (Pool[ObjectName].Objects.IsEmpty()) AllocatePoolObject(ObjectName);
-	TObjectPtr<APoolObject> PoolObject = Pool[ObjectName].Objects.Pop();
-	SetPoolObjectState(PoolObject, true);
-	PoolObject->SetIsInUse(bIsPlayerObject, Location, Rotation);
 }
 
 void UPoolingManager::SpawnObjectFromPool(const FProjectileData& ProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale)

@@ -7,6 +7,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
+#include "PossessionGame/Destructibles/RangerShield.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/UI/PlayerHUD.h"
@@ -34,7 +35,8 @@ void ARanger::LaunchGrenade()
 
 void ARanger::SpawnShield()
 {
-	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(bIsPossessed, EPoolObject::RangerShield, GetActorLocation() + GetActorForwardVector() * 100.f, GetActorRotation());
+	const TObjectPtr<APoolObject> Shield = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(bIsPossessed, EPoolObject::RangerShield, GetActorLocation() + GetActorForwardVector() * 100.f, GetActorRotation() + FRotator(0.f, 90.f, 0.f));
+	Cast<ARangerShield>(Shield)->SetProprietor(this);
 }
 
 void ARanger::SetCustomTimeDilation(float Dilation)

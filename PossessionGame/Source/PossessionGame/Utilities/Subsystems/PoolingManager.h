@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "PoolingManager.generated.h"
 
@@ -23,9 +24,10 @@ class POSSESSIONGAME_API UPoolingManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
+	TObjectPtr<APoolObject> SpawnObjectFromPool(bool bIsPlayerObject, EPoolObject ObjectName, const FVector& Location, const FRotator& Rotation);
+	
 	void Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& Map);
 	void ReturnObjectToPool(EPoolObject ObjectName, TObjectPtr<APoolObject> PoolObject);
-	void SpawnObjectFromPool(bool bIsPlayerObject, EPoolObject ObjectName, const FVector& Location, const FRotator& Rotation);
 	void SpawnObjectFromPool(const FProjectileData& ProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale); // For projectile pools, since there is no other way to setup projectile efficiently.
 private:
 	UPROPERTY()

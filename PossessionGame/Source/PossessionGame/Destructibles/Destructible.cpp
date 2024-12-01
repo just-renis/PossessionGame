@@ -22,6 +22,15 @@ void ADestructible::HandleDeactivation()
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", LifeSpan, false);
 }
 
+void ADestructible::SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation)
+{
+	Super::SetIsInUse(bIsPlayerObject, Location, Rotation);
+	Hp = Data->GetHp();
+	bIsPlayerObject = bInIsPlayerObject;
+	Mesh->SetCollisionProfileName(bIsPlayerObject ? "PlayerDestructible" : "EnemyDestructible");
+	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", LifeSpan, false);
+}
+
 void ADestructible::BeginPlay()
 {
 	Super::BeginPlay();
@@ -60,15 +69,6 @@ float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 		else DestroyThis();
 	}
 	return Damage;
-}
-
-void ADestructible::SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation)
-{
-	Super::SetIsInUse(bIsPlayerObject, Location, Rotation);
-	Hp = Data->GetHp();
-	bIsPlayerObject = bInIsPlayerObject;
-	Mesh->SetCollisionProfileName(bIsPlayerObject ? "PlayerDestructible" : "EnemyDestructible");
-	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", LifeSpan, false);
 }
 
 void ADestructible::DestroyThis()
