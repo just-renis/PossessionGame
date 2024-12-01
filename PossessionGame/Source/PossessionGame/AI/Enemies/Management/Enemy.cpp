@@ -69,7 +69,7 @@ void AEnemy::AI_SetMoveMode(const EMoveMode InMoveMode)
 
 void AEnemy::P_UseAbility(const int32 AbilityIndex)
 {
-	if (AbilityIndex < Abilities.Num() && Abilities[AbilityIndex]->CanExecute())
+	if (!bIsActionInMotion && AbilityIndex < Abilities.Num() && Abilities[AbilityIndex]->CanExecute())
 	{
 		Abilities[AbilityIndex]->P_Execute();
 		if (P_HUD && Abilities[AbilityIndex]->GetIsCooldownKill()) P_HUD->UpdateAbilityCooldown(AbilityIndex, Abilities[AbilityIndex]->GetCurrentCooldownKill());
@@ -262,7 +262,7 @@ void AEnemy::P_Setup()
 
 void AEnemy::P_Shoot(const bool bFirstWeapon)
 {
-	if (bCanShoot)
+	if (!bIsActionInMotion && bCanShoot)
 	{
 		if (Weapon->P_CanShoot(bFirstWeapon)) Weapon->P_Shoot(bFirstWeapon);
 		else if (Weapon->P_CanReload() && Weapon->GetCurrentAmmoAmount() <= 0) Weapon->P_Reload();
@@ -564,7 +564,7 @@ void AEnemy::P_Rotate(const FInputActionValue& Value)
 
 void AEnemy::P_Reload() 
 {
-	if (Weapon->GetIsReloadEnabled() && bCanReload && !P_InputManager->IsPressed(FKey("LeftMouseButton")) && Weapon->P_CanReload()) Weapon->P_Reload();
+	if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload && !P_InputManager->IsPressed(FKey("LeftMouseButton")) && Weapon->P_CanReload()) Weapon->P_Reload();
 }
 
 void AEnemy::P_ToggleRunning(const bool bState)

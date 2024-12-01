@@ -12,8 +12,8 @@ void URangerAbility1::AI_Execute()
 
 void URangerAbility1::P_Execute()
 {
+	Proprietor->SetActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::GrenadeLaunch);
-	Proprietor->SetCanShootAndReload(false);
 	Proprietor->LaunchGrenade();
 	Super::P_Execute();
 }

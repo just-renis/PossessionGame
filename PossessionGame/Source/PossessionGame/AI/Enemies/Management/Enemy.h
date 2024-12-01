@@ -77,7 +77,7 @@ public:
 	void P_StopTime(); // NOT USED ANYWHERE YET.
 
 	void SetCanReload(const bool bState) { bCanReload = bState; }
-	void SetCanShootAndReload(const bool bState) { bCanShoot = bState; bCanReload = bState; }
+	void SetActionInMotion(const bool bState) { bIsActionInMotion = bState; }
 	virtual void Tick(const float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
@@ -90,6 +90,7 @@ protected:
 	bool bCanReload = true;
 	bool bIsPossessed = false;
 	bool bCanShoot = false;
+	bool bIsActionInMotion = false;
 	float MaxHp;
 	float CurrentHp;
 	ECharacterType CharacterName;

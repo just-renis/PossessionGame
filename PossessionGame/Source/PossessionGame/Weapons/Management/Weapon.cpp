@@ -5,7 +5,6 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/AI/Base Data/AIWeaponData.h"
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerWeaponData.h"
@@ -105,11 +104,7 @@ void AWeapon::P_SetWalkSpread(const bool bState)
 	P_Data->SetAllProjectilesWalkSpread(bState);
 }
 
-void AWeapon::DestroyThis()
-{
-	UKismetSystemLibrary::K2_ClearTimer(this, "LaserSightLogic");
-	Destroy();
-}
+void AWeapon::DestroyThis() { Destroy(); }
 
 void AWeapon::SetToOriginalSettings()
 {
@@ -163,7 +158,6 @@ void AWeapon::P_Setup()
 	HitScanDamage = P_Data->GetHitScanDamage();
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
-	if (P_Data->GetLaserSightEnabled()) UKismetSystemLibrary::K2_SetTimer(this, "LaserSightLogic", 0.01f, true);
 }
 
 void AWeapon::P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName)

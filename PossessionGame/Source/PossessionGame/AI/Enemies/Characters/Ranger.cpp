@@ -68,7 +68,7 @@ void ARanger::P_Setup()
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
-	Cast<URangerHandsAnimInstance>(Weapon->GetHandsAnimInstance())->OnGrenadeLaunchEnd.BindUObject(this, &ARanger::SetCanShootAndReload);
+	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ARanger::SetActionInMotion);
 }
 
 void ARanger::P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)

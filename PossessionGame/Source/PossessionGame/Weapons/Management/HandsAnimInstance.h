@@ -2,20 +2,23 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "PossessionGame/Enums/EHandsAnimState.h"
-#include "PossessionGame/Enums/EWeapon.h"
 #include "HandsAnimInstance.generated.h"
 
+enum class EWeapon : uint8;
+enum class EHandsAnimState : uint8;
 class UDelegateManager;
 class UPrimaryDataAssetsManager;
-class AEnemy;
+
+DECLARE_DELEGATE_OneParam(FOnHandsMontageEnd, bool);
 
 UCLASS()
 class POSSESSIONGAME_API UHandsAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
-	bool GetIsReloading() { return bIsReloading; }
+	FOnHandsMontageEnd OnHandsMontageEnd;
+	
+	bool GetIsReloading() const { return bIsReloading; }
 	bool IsPlaying(EHandsAnimState State);
 	float GetMontagePosition(EHandsAnimState State);
 

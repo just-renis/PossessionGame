@@ -1,5 +1,7 @@
 ﻿#include "RangerAbility2.h"
 #include "PossessionGame/AI/Enemies/Characters/Ranger.h"
+#include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
+#include "PossessionGame/Weapons/Management/Weapon.h"
 
 void URangerAbility2::AI_Execute()
 {
@@ -10,6 +12,8 @@ void URangerAbility2::AI_Execute()
 
 void URangerAbility2::P_Execute()
 {
+	Proprietor->SetActionInMotion(true);
+	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::RangerDeployShield);
 	bIsAbilityInDuration = true;
 	Proprietor->SpawnShield();
 	Super::P_Execute();

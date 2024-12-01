@@ -12,12 +12,12 @@ class POSSESSIONGAME_API UAbility : public UObject
 {
 	GENERATED_BODY()
 public:
-	bool CanExecute() { return bIsCooldownKill ? CurrentCooldownKill <= 0 : CurrentCooldownSecs <= 0.f; }
-	bool GetIsCooldownKill() { return bIsCooldownKill; }
-	bool GetIsAbilityInDuration() { return bIsAbilityInDuration; }
-	int GetCurrentCooldownKill() { return CurrentCooldownKill; }
-	float GetCurrentCooldownSecs() { return CurrentCooldownSecs; }
-	float GetCurrentDuration() { return CurrentDuration; }
+	bool CanExecute() const { return bIsCooldownKill ? CurrentCooldownKill <= 0 : CurrentCooldownSecs <= 0.f; }
+	bool GetIsCooldownKill() const { return bIsCooldownKill; }
+	bool GetIsAbilityInDuration() const { return bIsAbilityInDuration; }
+	int GetCurrentCooldownKill() const { return CurrentCooldownKill; }
+	float GetCurrentCooldownSecs() const { return CurrentCooldownSecs; }
+	float GetCurrentDuration() const { return CurrentDuration; }
 
 	virtual void AI_Execute() { ResetCooldown(); }
 	virtual void AI_StopAbility() { ResetDuration(); }
