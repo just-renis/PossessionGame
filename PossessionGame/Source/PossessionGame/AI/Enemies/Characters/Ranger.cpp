@@ -35,7 +35,7 @@ void ARanger::LaunchGrenade()
 
 void ARanger::SpawnShield()
 {
-	const TObjectPtr<APoolObject> Shield = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(bIsPossessed, EPoolObject::RangerShield, GetActorLocation() + GetActorForwardVector() * 100.f, GetActorRotation() + FRotator(0.f, 90.f, 0.f));
+	const TObjectPtr<APoolObject> Shield = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(bIsPossessed, EPoolObject::RangerShield, GetActorLocation() + GetActorForwardVector() * 100.f, GetActorRotation() + FRotator(0.f, -90.f, 0.f));
 	Cast<ARangerShield>(Shield)->SetProprietor(this);
 }
 
