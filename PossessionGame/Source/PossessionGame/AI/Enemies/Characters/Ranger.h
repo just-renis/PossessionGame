@@ -22,6 +22,7 @@ private:
 
 	virtual void AI_TriggerDeathVoiceLine() override;
 	virtual void AI_SetupWeapon() override;
+	virtual void AI_PlayDeathSound() override;
 	UFUNCTION()
 	void AI_PlaySpawnSound();
 

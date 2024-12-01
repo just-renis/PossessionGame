@@ -170,6 +170,7 @@ void AEnemy::InitiateDeath()
 	Tags.Remove("AliveEnemy");
 	if (!bIsPossessed)
 	{
+		AI_PlayDeathSound();
 		DestroyAI();
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeath.Broadcast();
 	}

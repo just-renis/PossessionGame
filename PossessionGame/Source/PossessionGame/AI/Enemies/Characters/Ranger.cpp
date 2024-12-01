@@ -22,6 +22,8 @@ ARanger::ARanger()
 {
 	Sounds.Add(ESound::RangerSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
 	Sounds[ESound::RangerSpawn]->SetAutoActivate(false);
+	Sounds.Add(ESound::RangerDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("deathSound")));
+	Sounds[ESound::RangerDeath]->SetAutoActivate(false);
 }
 
 void ARanger::LaunchGrenade()
@@ -55,6 +57,8 @@ void ARanger::AI_SetupWeapon()
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::RangerWeapon, GetMesh());
 	Super::AI_SetupWeapon();
 }
+
+void ARanger::AI_PlayDeathSound() { PlaySound(ESound::RangerDeath); }
 
 void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
 

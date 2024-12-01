@@ -120,6 +120,7 @@ protected:
 	void AI_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
 	virtual void AI_SetController();
 	virtual void AI_PlayShootMontage();
+	virtual void AI_PlayDeathSound() {}
 	UFUNCTION()
 	virtual void AI_TriggerDeathVoiceLine() {}
 

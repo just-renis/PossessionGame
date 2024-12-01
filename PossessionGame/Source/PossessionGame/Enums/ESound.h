@@ -15,5 +15,6 @@ enum class ESound : uint8
 	CriticalHealthEnter,
 	PlayerDeath,
 	RangerOnPossession,
-	RangerSpawn
+	RangerSpawn,
+	RangerDeath
 };

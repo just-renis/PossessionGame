@@ -162,6 +162,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_PlayerDeath", ESound::PlayerDeath);
 	SoundMap.Add("PA_RangerOnPossession", ESound::RangerOnPossession);
 	SoundMap.Add("PA_RangerSpawn", ESound::RangerSpawn);
+	SoundMap.Add("PA_RangerDeath", ESound::RangerDeath);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
