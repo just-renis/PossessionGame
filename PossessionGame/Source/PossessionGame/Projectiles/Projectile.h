@@ -51,4 +51,5 @@ private:
 	void AttachAndLoadVfxs();
 	void SpawnOrLoadBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation);
 	void SpawnBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation);
+	void DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
 };

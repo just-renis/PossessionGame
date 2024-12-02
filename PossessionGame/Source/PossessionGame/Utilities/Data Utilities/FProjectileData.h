@@ -13,10 +13,6 @@ struct POSSESSIONGAME_API FProjectileData
 	UPROPERTY(EditAnywhere)
 	bool bIsPlayerProjectile = false;
 	UPROPERTY(EditAnywhere)
-	bool bBoostUpward = false;
-	UPROPERTY(EditAnywhere)
-	float BoostUpwardValue = 0.f;
-	UPROPERTY(EditAnywhere)
 	float LifeSpan = 0.f;
 	UPROPERTY(EditAnywhere)
 	float Damage = 0.f;

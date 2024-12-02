@@ -50,19 +50,18 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		DealAreaDamage();
 		return;
 	}
-	if (!OtherActor->ActorHasTag("Enemy") && !OtherActor->ActorHasTag("Destructible")) return;
 	if (OtherActor->ActorHasTag("Destructible"))
 	{
 		UGameplayStatics::ApplyPointDamage(OtherActor, ProjectileData.WeaponDamage + ProjectileData.Damage, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
 		return;
 	}
-	const bool bIsEnemyHit = Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2 && Cast<AEnemy>(OtherActor)->GetIsPossessed();
-	const bool bIsPlayerHit = Mesh->GetCollisionObjectType() == ECC_GameTraceChannel1;
-	if (bIsEnemyHit || bIsPlayerHit)
+	if (!OtherActor->ActorHasTag("Enemy")) return;
+	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel1) // If player got hit.
 	{
-		const float DamageMultiplier = Hit.BoneName == "Head" ? 2.0f : 1.0f;
-		UGameplayStatics::ApplyPointDamage(OtherActor, (ProjectileData.WeaponDamage + ProjectileData.Damage) * DamageMultiplier, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
+		DealDamageToSentientActor(OtherActor, Hit);
+		return;
 	}
+	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2 && Cast<AEnemy>(OtherActor)->GetIsPossessed()) { DealDamageToSentientActor(OtherActor, Hit); } // If enemy got hit.
 }
 
 void AProjectile::DestroyThis()
@@ -91,8 +90,7 @@ void AProjectile::SetupData()
 void AProjectile::SetIsInUse(const FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale)
 {
 	SetupProjectile(InProjectileData, Location, Rotation, Scale);
-	if (!InProjectileData.bBoostUpward) SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
-	else SetDirection(FMath::VRandCone((Rotation.Vector() + FVector(0.f, 0.f, InProjectileData.BoostUpwardValue)).GetSafeNormal(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
+	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
 	if (BulletTrailComponent) BulletTrailComponent->Activate();
 	MovementComponent->Activate();
 }
@@ -108,8 +106,8 @@ void AProjectile::DealAreaDamage()
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), ProjectileData.WeaponDamage + ProjectileData.Damage, ProjectileData.RadiusMinimumDamage,
 	GetActorLocation(), ProjectileData.DamageInnerRadius, ProjectileData.DamageOuterRadius, ProjectileData.DamageFalloff, UDamageType::StaticClass(),
 	IgnoredActors, this, nullptr, ECC_GameTraceChannel4);
-	DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 12, FColor::Green, false, 5.f);
-	DrawDebugSphere(GetWorld(), GetActorLocation(), 500.f, 12, FColor::Red, false, 5.f);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 12, FColor::Green, false, 3.f);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), 500.f, 12, FColor::Red, false, 3.f);
 }
 
 void AProjectile::AttachBulletTrail(EVfx VfxName)
@@ -137,4 +135,10 @@ void AProjectile::SpawnOrLoadBulletImpactVfx(EVfx VfxName, const FVector& InLoca
 void AProjectile::SpawnBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation)
 {
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(VfxName)->GetVfxEffect().Get(), InLocation, InRotation);
+}
+
+void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)
+{
+	const float DamageMultiplier = Hit.BoneName == "Head" ? 2.f : 1.f;
+	UGameplayStatics::ApplyPointDamage(OtherActor, (ProjectileData.WeaponDamage + ProjectileData.Damage) * DamageMultiplier, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
 }
