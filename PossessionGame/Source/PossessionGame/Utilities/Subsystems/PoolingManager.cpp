@@ -29,7 +29,7 @@ void UPoolingManager::ReturnObjectToPool(EPoolObject ObjectName, TObjectPtr<APoo
 void UPoolingManager::SpawnObjectFromPool(const FProjectileData& ProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale)
 {
 	if (Pool[ProjectileData.ProjectileName].Objects.IsEmpty()) AllocatePoolObject(ProjectileData.ProjectileName);
-	TObjectPtr<APoolObject> PoolObject = Pool[ProjectileData.ProjectileName].Objects.Pop();
+	const TObjectPtr<APoolObject> PoolObject = Pool[ProjectileData.ProjectileName].Objects.Pop();
 	SetPoolObjectState(PoolObject, true);
 	PoolObject->SetIsInUse(ProjectileData, Location, Rotation, Scale);
 }

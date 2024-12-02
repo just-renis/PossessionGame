@@ -92,7 +92,7 @@ void AProjectile::SetIsInUse(const FProjectileData& InProjectileData, const FVec
 {
 	SetupProjectile(InProjectileData, Location, Rotation, Scale);
 	if (!InProjectileData.bBoostUpward) SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
-	else SetDirection(FMath::VRandCone((Rotation.Vector() + FVector(0.0f, 0.0f, InProjectileData.BoostUpwardValue)).GetSafeNormal(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
+	else SetDirection(FMath::VRandCone((Rotation.Vector() + FVector(0.f, 0.f, InProjectileData.BoostUpwardValue)).GetSafeNormal(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
 	if (BulletTrailComponent) BulletTrailComponent->Activate();
 	MovementComponent->Activate();
 }
