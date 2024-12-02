@@ -16,5 +16,7 @@ enum class ESound : uint8
 	PlayerDeath,
 	RangerOnPossession,
 	RangerSpawn,
-	RangerDeath
+	RangerDeath,
+	RangerDeployShield,
+	RangerDissolveShield
 };

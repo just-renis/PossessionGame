@@ -163,6 +163,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_RangerOnPossession", ESound::RangerOnPossession);
 	SoundMap.Add("PA_RangerSpawn", ESound::RangerSpawn);
 	SoundMap.Add("PA_RangerDeath", ESound::RangerDeath);
+	SoundMap.Add("PA_RangerDeployShield", ESound::RangerDeployShield);
+	SoundMap.Add("PA_RangerDissolveShield", ESound::RangerDissolveShield);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
