@@ -5,6 +5,7 @@
 #include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
 #include "Projectile.generated.h"
 
+enum class ESound : uint8;
 enum class EVfxType : uint8;
 enum class EVfx : uint8;
 class UPrimaryDataAssetsManager;
@@ -27,15 +28,18 @@ public:
 	void SetDirection(FVector Direction);
 protected:
 	FProjectileData ProjectileData;
-	
-	UFUNCTION()
-	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-	UFUNCTION()
-	void DestroyThis();
-private:
-	bool bHasBeenPooled = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
+	UPROPERTY()
+	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
+
+	void PlaySound(const ESound InSoundName);
+	virtual void PlayImpactSound() {}
+	virtual void LoadSounds() {}
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+private:
+	bool bHasBeenPooled = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UProjectileMovementComponent> MovementComponent;
 	UPROPERTY()
@@ -52,4 +56,6 @@ private:
 	void SpawnOrLoadBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation);
 	void SpawnBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation);
 	void DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
+	UFUNCTION()
+	void DestroyThis();
 };

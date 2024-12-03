@@ -25,10 +25,13 @@ ARanger::ARanger()
 	Sounds[ESound::RangerSpawn]->SetAutoActivate(false);
 	Sounds.Add(ESound::RangerDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("deathSound")));
 	Sounds[ESound::RangerDeath]->SetAutoActivate(false);
+	Sounds.Add(ESound::RangerGrenadeLaunch, CreateDefaultSubobject<UAudioComponent>(TEXT("grenadeLaunchSound")));
+	Sounds[ESound::RangerGrenadeLaunch]->SetAutoActivate(false);
 }
 
 void ARanger::LaunchGrenade()
 {
+	PlaySound(ESound::RangerGrenadeLaunch);
 	Weapon->ShootProjectile(EPoolObject::RangerGrenadeLauncherProjectile);
 	GrenadeLauncherMuzzleFlashLogic();
 }
@@ -136,6 +139,8 @@ float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 void ARanger::LoadSounds()
 {
 	Sounds[ESound::RangerSpawn]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	Sounds[ESound::RangerDeath]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	Sounds[ESound::RangerGrenadeLaunch]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void ARanger::PossessedBy(AController* NewController)

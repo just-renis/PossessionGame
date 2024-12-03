@@ -1,6 +1,7 @@
 #include "Projectile.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Components/AudioComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -40,11 +41,17 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 
 void AProjectile::SetDirection(FVector Direction) { MovementComponent->Velocity = Direction * MovementComponent->MaxSpeed; }
 
+void AProjectile::PlaySound(const ESound InSoundName)
+{
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName);
+}
+
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor == this || OtherActor == nullptr) return;
 	DestroyThis();
 	SpawnOrLoadBulletImpactVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Impact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+	PlayImpactSound();
 	if (ProjectileData.bProjectileDealsAreaDamage)
 	{
 		DealAreaDamage();
@@ -62,14 +69,6 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		return;
 	}
 	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2 && Cast<AEnemy>(OtherActor)->GetIsPossessed()) { DealDamageToSentientActor(OtherActor, Hit); } // If enemy got hit.
-}
-
-void AProjectile::DestroyThis()
-{
-	UKismetSystemLibrary::K2_ClearTimer(this, "DestroyThis");
-	if (BulletTrailComponent) BulletTrailComponent->Deactivate();
-	MovementComponent->Deactivate();
-	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);
 }
 
 void AProjectile::BeginPlay()
@@ -141,4 +140,12 @@ void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor
 {
 	const float DamageMultiplier = Hit.BoneName == "Head" ? 2.f : 1.f;
 	UGameplayStatics::ApplyPointDamage(OtherActor, (ProjectileData.WeaponDamage + ProjectileData.Damage) * DamageMultiplier, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
+}
+
+void AProjectile::DestroyThis()
+{
+	UKismetSystemLibrary::K2_ClearTimer(this, "DestroyThis");
+	if (BulletTrailComponent) BulletTrailComponent->Deactivate();
+	MovementComponent->Deactivate();
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);
 }
