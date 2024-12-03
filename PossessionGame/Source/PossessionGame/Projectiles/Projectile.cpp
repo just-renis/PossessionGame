@@ -105,8 +105,8 @@ void AProjectile::DealAreaDamage()
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), ProjectileData.WeaponDamage + ProjectileData.Damage, ProjectileData.RadiusMinimumDamage,
 	GetActorLocation(), ProjectileData.DamageInnerRadius, ProjectileData.DamageOuterRadius, ProjectileData.DamageFalloff, UDamageType::StaticClass(),
 	IgnoredActors, this, nullptr, ECC_GameTraceChannel4);
-	DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 12, FColor::Green, false, 3.f);
-	DrawDebugSphere(GetWorld(), GetActorLocation(), 500.f, 12, FColor::Red, false, 3.f);
+//	DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 12, FColor::Green, false, 3.f);
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), 500.f, 12, FColor::Red, false, 3.f);
 }
 
 void AProjectile::AttachBulletTrail(EVfx VfxName)
