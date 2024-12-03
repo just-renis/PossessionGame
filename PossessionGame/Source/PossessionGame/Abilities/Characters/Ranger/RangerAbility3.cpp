@@ -1,10 +1,12 @@
 ﻿#include "RangerAbility3.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Characters/Ranger.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void URangerAbility3::P_Execute()
 {
 	bIsAbilityInDuration = true;
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::RangerSlowMotion, true);
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2f);
 	Proprietor->SetCustomTimeDilation(5.f);
 	Super::P_Execute();
@@ -14,6 +16,7 @@ void URangerAbility3::P_StopAbility()
 {
 	if (bIsAbilityInDuration)
 	{
+		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->RemoveStoredSound(ESound::RangerSlowMotion);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 		Proprietor->SetCustomTimeDilation(1.f);
 		Super::P_StopAbility();

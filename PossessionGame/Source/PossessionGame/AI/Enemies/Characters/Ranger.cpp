@@ -141,6 +141,7 @@ void ARanger::LoadSounds()
 	Sounds[ESound::RangerSpawn]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	Sounds[ESound::RangerDeath]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	Sounds[ESound::RangerGrenadeLaunch]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	Sounds[ESound::RangerSlowMotion]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void ARanger::PossessedBy(AController* NewController)

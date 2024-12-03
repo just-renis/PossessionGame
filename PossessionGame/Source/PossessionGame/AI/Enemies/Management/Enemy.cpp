@@ -135,6 +135,7 @@ void AEnemy::PossessedBy(AController* NewController)
 			P_TriggerGlitchingEffect();
 			P_ToggleCriticallyDamagedEffects(0.f);
 			AssetsManager->PlaySound2D(ESound::OnPossession);
+			AssetsManager->RemoveStoredSound(ESound::RangerSlowMotion);
 			AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
 			UKismetSystemLibrary::K2_SetTimer(this, "AI_TriggerDeathVoiceLine", 1.f, false);
 			P_Setup();
@@ -688,6 +689,7 @@ void AEnemy::P_InitiateDeathEvents()
 	if (P_HUD) P_HUD->PlayDeathFadeOutAnim();
 	UKismetSystemLibrary::K2_ClearTimer(this, "P_Death");
 	P_ConfigurePostProcessEffectsAfterDeath();
+	AssetsManager->RemoveStoredSound(ESound::RangerSlowMotion);
 	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDeath.Broadcast();
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor::Black, false, true);
