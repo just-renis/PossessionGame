@@ -5,9 +5,14 @@
 void URangerAnimationInstance::InnerPlayMontage(EEnemyAnimState State)
 {
 	Super::InnerPlayMontage(State);
-	if (State == EEnemyAnimState::GrenadeLaunch) UKismetSystemLibrary::K2_SetTimer(this, "LaunchGrenade", 0.55f, false);
+	if (State == EEnemyAnimState::GrenadeLaunch) UKismetSystemLibrary::K2_SetTimer(this, "LaunchGrenade", 1.1f, false);
 }
 
-//void URangerAnimationInstance::SetProprietor() { Proprietor = Cast<ARanger>(GetOwningActor()); }
+void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
+{
+	Super::OnMontageEnd(Montage, bIsInterrupted);
+	const TObjectPtr<UAnimMontage>* GrenadeLaunchMontage = Montages.Find(EEnemyAnimState::GrenadeLaunch);
+	if (GrenadeLaunchMontage && Montage == GrenadeLaunchMontage->Get()) Proprietor->SetActionInMotion(false);
+}
 
-void URangerAnimationInstance::LaunchGrenade() { Cast<ARanger>(Proprietor)->LaunchGrenade(); }
+void URangerAnimationInstance::LaunchGrenade() const { Cast<ARanger>(Proprietor)->LaunchGrenade(); }

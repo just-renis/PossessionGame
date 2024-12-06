@@ -6,7 +6,9 @@
 
 void URangerAbility1::AI_Execute()
 {
+	Proprietor->SetActionInMotion(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::GrenadeLaunch);
+	Proprietor->PlaySound(ESound::RangerGrenadeLaunchAim);
 	Super::AI_Execute();
 }
 

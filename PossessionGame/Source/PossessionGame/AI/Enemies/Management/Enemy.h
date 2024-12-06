@@ -85,6 +85,7 @@ public:
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override { TagContainer = GameplayTags; }
 	void InitiateDeath();
 	void ReceiveDamage(const float Damage);
+	void PlaySound(const ESound InSoundName);
 protected:
 	bool bCanRun = true;
 	bool bCanReload = true;
@@ -152,7 +153,6 @@ protected:
 	virtual void HandleDeactivation();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void LoadSounds() {}
-	void PlaySound(const ESound InSoundName);
 private:
 	bool bShootPauseActive = false;
 	bool bCanPossessOtherEnemy = false;

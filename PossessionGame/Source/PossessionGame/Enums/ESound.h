@@ -21,5 +21,6 @@ enum class ESound : uint8
 	RangerDissolveShield,
 	RangerGrenadeLaunch,
 	RangerGrenadeExplosion,
-	RangerSlowMotion
+	RangerSlowMotion,
+	RangerGrenadeLaunchAim
 };

@@ -81,19 +81,19 @@ void UEnemyAnimationInstance::SetProprietor() { Proprietor = Cast<AEnemy>(GetOwn
 
 void UEnemyAnimationInstance::InnerPlayMontage(EEnemyAnimState State) { Montage_Play(Montages.Find(State)->Get()); }
 
+void UEnemyAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
+{
+    if (Montages.Contains(EEnemyAnimState::Shoot) && Montage == Montages.Find(EEnemyAnimState::Shoot)->Get()) Proprietor->AI_SetCanShoot(false);
+    else if (Montages.Contains(EEnemyAnimState::Reload) && Montage == Montages.Find(EEnemyAnimState::Reload)->Get()) Proprietor->AI_InitiateShooting();
+}
+
 void UEnemyAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-    if (Proprietor) SetDirectionalAngle();
     Super::NativeUpdateAnimation(DeltaSeconds);
+    if (Proprietor) SetDirectionalAngle();
 }
 
 void UEnemyAnimationInstance::LoadMontageIfNotLoaded(EEnemyAnimState State)
 {
     if (!Montages.Contains(State)) Montages.Add(State, AssetsManager->GetCharacterData(Proprietor->GetCharacterName())->Montages[State].LoadSynchronous());
-}
-
-void UEnemyAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
-{
-    if (Montages.Contains(EEnemyAnimState::Shoot) && Montage == Montages.Find(EEnemyAnimState::Shoot)->Get()) Proprietor->AI_SetCanShoot(false);
-    else if (Montages.Contains(EEnemyAnimState::Reload) && Montage == Montages.Find(EEnemyAnimState::Reload)->Get()) Proprietor->AI_InitiateShooting();
 }

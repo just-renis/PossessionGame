@@ -55,9 +55,9 @@ float AEnemy::GetSkeletalMeshHeight() const { return GetMesh()->GetSocketLocatio
 
 void AEnemy::AI_InitiateShooting() { if (CurrentMoveMode != EMoveMode::Run && !AnimInstance->IsPlaying(EEnemyAnimState::Reload)) AI_PlayShootMontage(); }
 
-void AEnemy::AI_ShootLogic() { if (bCanShoot && !AnimInstance->IsPlaying(EEnemyAnimState::Reload) && CurrentMoveMode != EMoveMode::Run) AI_Shoot(); }
+void AEnemy::AI_ShootLogic() { if (!bIsActionInMotion && bCanShoot && !AnimInstance->IsPlaying(EEnemyAnimState::Reload) && CurrentMoveMode != EMoveMode::Run) AI_Shoot(); }
 
-void AEnemy::AI_ReloadLogic() { if (Weapon->GetIsReloadEnabled() && bCanReload) AI_Reload(); }
+void AEnemy::AI_ReloadLogic() { if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload) AI_Reload(); }
 
 void AEnemy::AI_UseAbility(const int32 AbilityIndex) { if (AbilityIndex < Abilities.Num()) Abilities[AbilityIndex]->AI_Execute(); }
 
@@ -190,6 +190,11 @@ void AEnemy::ReceiveDamage(const float Damage)
 		if (bIsPossessed) P_Death();
 		InitiateDeath();
 	}
+}
+
+void AEnemy::PlaySound(const ESound InSoundName)
+{
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName);
 }
 
 void AEnemy::AI_SetupAbilities() { SetupAbilities(AssetsManager->GetCharacterData(CharacterName)->AI_Abilities_Data); }
@@ -399,11 +404,6 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		}
 	}
 	return Damage;
-}
-
-void AEnemy::PlaySound(const ESound InSoundName)
-{
-	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName);
 }
 
 EAbility AEnemy::GetAbilityFromCharacterName(const int32 AbilityIndex) const

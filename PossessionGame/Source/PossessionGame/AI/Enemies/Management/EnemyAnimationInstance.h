@@ -34,8 +34,10 @@ protected:
 	virtual void NativeBeginPlay() override;
 	virtual void BeginDestroy() override;
 	virtual void AssignOnMontageEnd();
-	virtual void SetProprietor();
+	void SetProprietor();
 	virtual void InnerPlayMontage(EEnemyAnimState State);
+	UFUNCTION()
+	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted);
 private:
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	bool bIsCrouching = false;
@@ -52,6 +54,4 @@ private:
 	
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void LoadMontageIfNotLoaded(EEnemyAnimState State);
-	UFUNCTION()
-	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted);
 };

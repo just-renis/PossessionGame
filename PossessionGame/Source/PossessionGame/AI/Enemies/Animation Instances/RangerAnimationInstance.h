@@ -10,7 +10,7 @@ class POSSESSIONGAME_API URangerAnimationInstance : public UEnemyAnimationInstan
 	GENERATED_BODY()
 
 	virtual void InnerPlayMontage(EEnemyAnimState State) override;
-	//virtual void SetProprietor() override;
+	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted) override;
 	UFUNCTION()
-	void LaunchGrenade();
+	void LaunchGrenade() const;
 };
