@@ -44,6 +44,8 @@ protected:
 	virtual void BeginPlay() override;
 	UFUNCTION()
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+	UFUNCTION()
+	virtual void AdjustCustomFocus() const;
 private:
 	float SightOnTargetRepeat = 0.1f;
 	float DistanceBetweenTargetZ = 0.f;
@@ -68,6 +70,4 @@ private:
 	void OnLostSightOfPawn();
 	UFUNCTION()
 	void SightOnTargetLogic();
-	UFUNCTION()
-	void AdjustCustomFocus() const;
 };

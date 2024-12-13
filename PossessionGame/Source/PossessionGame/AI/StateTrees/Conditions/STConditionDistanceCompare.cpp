@@ -4,8 +4,9 @@
 
 bool USTConditionDistanceCompare::TestCondition(FStateTreeExecutionContext& Context) const
 {
-	bool Result = bCheckWithTargetObject ? ConditionResult(FVector::Dist(Cast<AEnemyAIController>(Context.GetOwner())->GetPawn()->GetActorLocation(), Target->GetActorLocation())) :
-	ConditionResult(FVector::Dist(Cast<AEnemyAIController>(Context.GetOwner())->GetPawn()->GetActorLocation(), TargetLocation));
+	const FVector ActorLocation = Cast<AEnemyAIController>(Context.GetOwner())->GetPawn()->GetActorLocation();
+	const FVector TargetActorLocation = Target->GetActorLocation();
+	const bool Result = bCheckWithTargetObject ? ConditionResult(FVector::Dist(ActorLocation, TargetActorLocation)) : ConditionResult(FVector::Dist(ActorLocation, TargetLocation));
 	return bInvert ? !Result : Result;
 }
 

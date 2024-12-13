@@ -53,6 +53,7 @@ public:
 	bool GetIsAlive() const { return bIsAlive; }
 	bool GetIsPossessed() const { return bIsPossessed; }
 	bool GetIsPossessable() const;
+	bool GetIsActionInMotion() const { return bIsActionInMotion; }
 	bool CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
 	virtual bool HasMatchingGameplayTag(const FGameplayTag TagToCheck) const override { return GameplayTags.HasTag(TagToCheck); }
 	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override { return GameplayTags.HasAll(TagContainer); }
@@ -77,7 +78,7 @@ public:
 	void P_StopTime(); // NOT USED ANYWHERE YET.
 
 	void SetCanReload(const bool bState) { bCanReload = bState; }
-	void SetActionInMotion(const bool bState) { bIsActionInMotion = bState; }
+	void SetActionInMotion(const bool bState);
 	virtual void Tick(const float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;

@@ -25,7 +25,7 @@ public:
 	bool GetIsPlayerProjectile() { return ProjectileData.bIsPlayerProjectile; }
 
 	void SetupProjectile(const FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale);
-	void SetDirection(FVector Direction);
+	void SetDirection(const FVector Direction) const;
 protected:
 	FProjectileData ProjectileData;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

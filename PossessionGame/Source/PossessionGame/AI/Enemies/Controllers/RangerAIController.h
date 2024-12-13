@@ -8,4 +8,6 @@ UCLASS()
 class POSSESSIONGAME_API ARangerAIController : public AEnemyAIController
 {
 	GENERATED_BODY()
+
+	virtual void AdjustCustomFocus() const override;
 };

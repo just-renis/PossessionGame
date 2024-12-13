@@ -39,7 +39,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	}
 }
 
-void AProjectile::SetDirection(FVector Direction) { MovementComponent->Velocity = Direction * MovementComponent->MaxSpeed; }
+void AProjectile::SetDirection(const FVector InDirection) const { MovementComponent->Velocity = InDirection * MovementComponent->MaxSpeed; }
 
 void AProjectile::PlaySound(const ESound InSoundName)
 {

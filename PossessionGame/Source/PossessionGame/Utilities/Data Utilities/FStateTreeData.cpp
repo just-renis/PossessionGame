@@ -2,9 +2,9 @@
 #include "GameplayTagContainer.h"
 #include "PossessionGame/AI/StateTrees/CustomStateTreeComponent.h"
 
-void FStateTreeData::SetEQSPointLocation(FVector Value)
+void FStateTreeData::SetEQSPointLocation(const FVector InValue)
 {
-	EQSTarget->SetActorLocation(Value);
+	EQSTarget->SetActorLocation(InValue);
 	bIsEQSPointAvailable = true;
 	StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Abort.IsEQSPointAvailable"));
 }

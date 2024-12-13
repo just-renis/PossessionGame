@@ -88,6 +88,12 @@ void AEnemy::P_StopTime()
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
+void AEnemy::SetActionInMotion(const bool bState)
+{
+	bIsActionInMotion = bState;
+	AI->GetStateTreeData().SetIsActionInMotion(bState);
+}
+
 void AEnemy::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);

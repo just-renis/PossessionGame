@@ -134,7 +134,7 @@ void ARanger::GrenadeLauncherMuzzleFlashLogic()
 float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float ReturnDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	if (CurrentHp <= MaxHp * 0.5f) if (!bIsPossessed && CanAbilityBeExecuted(1)) AI_UseAbility(1);
+	if (!bIsPossessed && CurrentHp <= MaxHp * 0.5f && CanAbilityBeExecuted(1)) AI_UseAbility(1);
 	return ReturnDamage;
 }
 
@@ -143,7 +143,6 @@ void ARanger::LoadSounds()
 	Sounds[ESound::RangerSpawn]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	Sounds[ESound::RangerDeath]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	Sounds[ESound::RangerGrenadeLaunch]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	Sounds[ESound::RangerSlowMotion]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	Sounds[ESound::RangerGrenadeLaunchAim]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 

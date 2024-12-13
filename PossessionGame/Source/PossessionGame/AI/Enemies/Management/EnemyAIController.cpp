@@ -96,6 +96,8 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 	else UKismetSystemLibrary::K2_SetTimer(this, "OnLostSightOfPawn", 0.3f, false);
 }
 
+void AEnemyAIController::AdjustCustomFocus() const { if (EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation()); }
+
 void AEnemyAIController::CustomFocusToLocation(const FVector InTargetLocation) const
 {
 	FRotator NewControlRotation = GetControlRotation();
@@ -149,5 +151,3 @@ void AEnemyAIController::SightOnTargetLogic()
 		Proprietor->GetAnimInstance()->SetAimPitch(UKismetMathLibrary::FindLookAtRotation(GetPawn()->GetActorLocation(), EnemyCommunicator->GetTargetLocation()).Pitch);
 	}
 }
-
-void AEnemyAIController::AdjustCustomFocus() const { if (EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation()); }
