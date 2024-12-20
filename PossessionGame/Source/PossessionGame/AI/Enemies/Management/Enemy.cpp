@@ -91,7 +91,7 @@ void AEnemy::P_StopTime()
 void AEnemy::SetActionInMotion(const bool bState)
 {
 	bIsActionInMotion = bState;
-	AI->GetStateTreeData().SetIsActionInMotion(bState);
+	if (AI) AI->GetStateTreeData().SetIsActionInMotion(bState);
 }
 
 void AEnemy::Tick(const float DeltaTime)
