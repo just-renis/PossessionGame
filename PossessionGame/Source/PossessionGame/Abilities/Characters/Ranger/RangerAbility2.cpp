@@ -12,6 +12,11 @@ void URangerAbility2::AI_Execute()
 
 void URangerAbility2::P_Execute()
 {
+	if (!this) UE_LOG(LogTemp, Warning, TEXT("ABILITY ITSELF IS GONE SOMEHOW"));
+	if (!Proprietor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PROPRIETOR NOT EXISTING"));
+	}
 	Proprietor->SetActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::RangerDeployShield);
 	bIsAbilityInDuration = true;
