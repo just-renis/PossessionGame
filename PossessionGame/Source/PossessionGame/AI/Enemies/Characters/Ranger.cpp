@@ -4,6 +4,9 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
+#include "Components/ShapeComponent.h"
+#include "Components/SphereComponent.h"
+#include "Engine/TriggerSphere.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
@@ -67,10 +70,16 @@ void ARanger::AI_SetupWeapon()
 
 void ARanger::AI_PlayDeathSound() { PlaySound(ESound::RangerDeath); }
 
+void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("OVERLAPPED ACTOR: %s, OTHER ACTOR NAME: %s"), *OverlappedActor->GetName(), *OtherActor->GetName());
+}
+
 void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
 
 void ARanger::P_Setup()
 {
+	DestroyGrenadeLaunchTriggerSphere();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ARanger::SetActionInMotion);
@@ -94,6 +103,7 @@ void ARanger::BeginPlay()
 {
 	CharacterName = ECharacterType::Ranger;
 	Super::BeginPlay();
+	SetupGrenadeLaunchTriggerSphere();
 	AttachOrLoadGrenadeLauncherMuzzle();
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_PlaySpawnSound", 3.f + UKismetMathLibrary::RandomInteger(4), false);
 }
@@ -150,4 +160,21 @@ void ARanger::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	if (bIsPossessed) UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
+}
+
+void ARanger::SetupGrenadeLaunchTriggerSphere()
+{
+	AIGrenadeLaunchTriggerSphere = GetWorld()->SpawnActor<ATriggerSphere>(ATriggerSphere::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
+	AIGrenadeLaunchTriggerSphere->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionProfileName("TriggerPlayer");
+	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->CanCharacterStepUpOn = ECB_No;
+	Cast<USphereComponent>(AIGrenadeLaunchTriggerSphere->GetCollisionComponent())->SetSphereRadius(1000.f);
+	AIGrenadeLaunchTriggerSphere->SetActorHiddenInGame(false);
+	AIGrenadeLaunchTriggerSphere->OnActorBeginOverlap.AddDynamic(this, &ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger);
+}
+
+void ARanger::DestroyGrenadeLaunchTriggerSphere() const
+{
+	AIGrenadeLaunchTriggerSphere->OnActorBeginOverlap.RemoveAll(this);
+	AIGrenadeLaunchTriggerSphere->Destroy();
 }

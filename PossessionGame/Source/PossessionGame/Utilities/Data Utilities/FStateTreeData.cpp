@@ -8,3 +8,8 @@ void FStateTreeData::SetEQSPointLocation(const FVector InValue)
 	bIsEQSPointAvailable = true;
 	StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Abort.IsEQSPointAvailable"));
 }
+
+void FStateTreeData::TriggerEvent(const FName& EventName) const
+{
+	StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag(EventName));
+}

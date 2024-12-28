@@ -251,6 +251,7 @@ void AEnemy::P_SetupAbilities()
 void AEnemy::P_Setup()
 {
 	GetMesh()->SetCollisionProfileName("Player");
+	GetMesh()->SetGenerateOverlapEvents(true);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetTarget(this);
 	P_LoadDataIfNotLoaded(CharacterName);
 	bUseControllerRotationYaw = true;

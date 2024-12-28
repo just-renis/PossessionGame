@@ -2,6 +2,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/GameplayStaticsTypes.h"
 #include "PossessionGame/AI/Enemies/Characters/Ranger.h"
+#include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -26,6 +27,7 @@ void URangerAbility1::AI_Execute()
 		FVector LandingPosition = PathResult.HitResult.Location;
 		DrawDebugSphere(GetWorld(), LandingPosition, 50.f, 12, FColor::Red, false, 10.f);
 	}
+	Proprietor->GetAI()->GetStateTreeData().TriggerEvent("StateTree.Ranger.LaunchGrenade");
 	Super::AI_Execute();
 }
 

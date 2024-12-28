@@ -44,8 +44,6 @@ public:
 	UPROPERTY()
 	TObjectPtr<UEnemyAnimationInstance> AnimInstance;
 	UPROPERTY()
-	TObjectPtr<AEnemyAIController> AI;
-	UPROPERTY()
 	TObjectPtr<UEnhancedPlayerInput> P_InputManager;
 	UPROPERTY()
 	FGameplayTagContainer GameplayTags;
@@ -60,6 +58,7 @@ public:
 	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override { return GameplayTags.HasAny(TagContainer); }
 	float GetSkeletalMeshHeight() const;
 	ECharacterType GetCharacterName() const { return CharacterName; }
+	TObjectPtr<AEnemyAIController> GetAI() const { return AI; }
 	TObjectPtr<AWeapon>& GetWeapon() { return Weapon; }
 	TObjectPtr<UCameraComponent> GetCamera() { return Camera; }
 	TObjectPtr<UEnemyAnimationInstance>& GetAnimInstance() { return AnimInstance; }
@@ -97,6 +96,8 @@ protected:
 	float CurrentHp;
 	ECharacterType CharacterName;
 	FVector2D MouseSensitivity = FVector2D(1.f, 1.f);
+	UPROPERTY()
+	TObjectPtr<AEnemyAIController> AI;
 	UPROPERTY()
 	TObjectPtr<UPlayerHUD> P_HUD;
 	UPROPERTY()

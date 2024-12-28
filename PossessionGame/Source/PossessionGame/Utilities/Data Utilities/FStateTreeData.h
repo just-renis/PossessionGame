@@ -26,8 +26,9 @@ struct POSSESSIONGAME_API FStateTreeData
     void SetWeaponRef(const TObjectPtr<AWeapon>& InWeaponRef) { Weapon = InWeaponRef; }
     void SetTargetRef(const TObjectPtr<AActor>& InTargetRef) { Target = InTargetRef; }
     void SetEQSTargetRef(const TObjectPtr<AActor>& InEQSTargetRef) { EQSTarget = InEQSTargetRef; }
-	void SetEQSPointLocation(const FVector InValue);
 	void SetEQSPointAvailability(const bool bState) { bIsEQSPointAvailable = bState; }
+	void SetEQSPointLocation(const FVector InValue);
+	void TriggerEvent(const FName& EventName) const;
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsActionInMotion = false;
