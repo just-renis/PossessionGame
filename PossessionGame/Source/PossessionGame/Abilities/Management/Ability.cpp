@@ -5,7 +5,7 @@
 void UAbility::Tick(float DeltaTime)
 {
 	if (bIsAbilityInDuration) AbilityInDurationLogic(DeltaTime);
-	else if (!bIsCooldownKill && CurrentCooldownSecs > 0.f) CurrentCooldownSecs -= DeltaTime;
+	else if (!bIsCooldownKill && CurrentCooldownSecs > 0.f) CooldownLogic(DeltaTime);
 }
 
 void UAbility::Setup(TObjectPtr<AEnemy> AbilityProprietor, TObjectPtr<UAbilityData> AbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
@@ -25,6 +25,8 @@ void UAbility::ResetCooldown()
 	else CurrentCooldownSecs = ReqCooldownSecs;
 	if (bIsRefreshingOtherAbility) RefreshOtherAbility();
 }
+
+void UAbility::CooldownLogic(const float DeltaTime) { CurrentCooldownSecs -= DeltaTime; }
 
 void UAbility::SetupAdditionalProperties(TObjectPtr<UAbilityData> AbilityData, TObjectPtr<UAbility> AbilityToRefresh)
 {

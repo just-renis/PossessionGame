@@ -14,6 +14,8 @@ class POSSESSIONGAME_API ARanger : public AAssaultEnemy
 public:
 	ARanger();
 	
+	void AI_ToggleGrenadeLaunchTrigger(const bool bState) const;
+	
 	void LaunchGrenade();
 	void SpawnShield();
 	void SetCustomTimeDilation(float Dilation);

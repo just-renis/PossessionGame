@@ -32,6 +32,7 @@ public:
 protected:
 	bool bIsAbilityInDuration = false;
 	float CurrentDuration;
+	float CurrentCooldownSecs;
 	float DurationTime;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
@@ -40,6 +41,7 @@ protected:
 	
 	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) {}
 	void ResetCooldown();
+	virtual void CooldownLogic(const float DeltaTime);
 private:
 	bool bIsCooldownKill = false;
 	bool bIsRefreshingOtherAbility = false;
@@ -47,7 +49,6 @@ private:
 	int32 CurrentCooldownKill;
 	int32 ReqCooldownKill;
 	float RefreshOtherAbilityAmount;
-	float CurrentCooldownSecs;
 	float ReqCooldownSecs;
 	UPROPERTY()
 	TObjectPtr<UAbility> RefreshableAbility;

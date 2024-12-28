@@ -42,3 +42,9 @@ void URangerAbility1::P_Execute()
 bool URangerAbility1::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
 
 void URangerAbility1::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ARanger>(AbilityProprietor); }
+
+void URangerAbility1::CooldownLogic(const float DeltaTime)
+{
+	Super::CooldownLogic(DeltaTime);
+	if (CurrentCooldownSecs <= 0.f) Proprietor->AI_ToggleGrenadeLaunchTrigger(true);
+}

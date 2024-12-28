@@ -70,8 +70,15 @@ void ARanger::AI_SetupWeapon()
 
 void ARanger::AI_PlayDeathSound() { PlaySound(ESound::RangerDeath); }
 
+void ARanger::AI_ToggleGrenadeLaunchTrigger(const bool bState) const
+{
+	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+	AIGrenadeLaunchTriggerSphere->SetActorHiddenInGame(!bState);
+}
+
 void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {
+	
 	UE_LOG(LogTemp, Warning, TEXT("OVERLAPPED ACTOR: %s, OTHER ACTOR NAME: %s"), *OverlappedActor->GetName(), *OtherActor->GetName());
 }
 
@@ -168,8 +175,8 @@ void ARanger::SetupGrenadeLaunchTriggerSphere()
 	AIGrenadeLaunchTriggerSphere->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionProfileName("TriggerPlayer");
 	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->CanCharacterStepUpOn = ECB_No;
+	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Cast<USphereComponent>(AIGrenadeLaunchTriggerSphere->GetCollisionComponent())->SetSphereRadius(1000.f);
-	AIGrenadeLaunchTriggerSphere->SetActorHiddenInGame(false);
 	AIGrenadeLaunchTriggerSphere->OnActorBeginOverlap.AddDynamic(this, &ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger);
 }
 
