@@ -1,6 +1,7 @@
 ﻿#include "RangerAnimationInstance.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Characters/Ranger.h"
+#include "PossessionGame/AI/Enemies/Controllers/RangerAIController.h"
 
 void URangerAnimationInstance::InnerPlayMontage(EEnemyAnimState State)
 {
@@ -12,7 +13,11 @@ void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInter
 {
 	Super::OnMontageEnd(Montage, bIsInterrupted);
 	const TObjectPtr<UAnimMontage>* GrenadeLaunchMontage = Montages.Find(EEnemyAnimState::GrenadeLaunch);
-	if (GrenadeLaunchMontage && Montage == GrenadeLaunchMontage->Get()) Proprietor->SetActionInMotion(false);
+	if (GrenadeLaunchMontage && Montage == GrenadeLaunchMontage->Get())
+	{
+		Proprietor->SetActionInMotion(false);
+		(void)Cast<ARangerAIController>(Proprietor->GetAI())->OnGrenadeLaunchFinished.ExecuteIfBound();
+	}
 }
 
 void URangerAnimationInstance::LaunchGrenade() const { Cast<ARanger>(Proprietor)->LaunchGrenade(); }

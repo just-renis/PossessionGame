@@ -9,6 +9,7 @@
 #include "Engine/TriggerSphere.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Destructibles/RangerShield.h"
 #include "PossessionGame/Enums/ECharacterType.h"
@@ -78,14 +79,15 @@ void ARanger::AI_ToggleGrenadeLaunchTrigger(const bool bState) const
 
 void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {
-	
-	UE_LOG(LogTemp, Warning, TEXT("OVERLAPPED ACTOR: %s, OTHER ACTOR NAME: %s"), *OverlappedActor->GetName(), *OtherActor->GetName());
+	AI_ToggleGrenadeLaunchTrigger(false);	
+	TryTriggeringGrenadeLaunch();
 }
 
 void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
 
 void ARanger::P_Setup()
 {
+	UKismetSystemLibrary::K2_ClearTimer(this, "TryTriggeringGrenadeLaunch");
 	DestroyGrenadeLaunchTriggerSphere();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
@@ -176,7 +178,7 @@ void ARanger::SetupGrenadeLaunchTriggerSphere()
 	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionProfileName("TriggerPlayer");
 	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->CanCharacterStepUpOn = ECB_No;
 	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	Cast<USphereComponent>(AIGrenadeLaunchTriggerSphere->GetCollisionComponent())->SetSphereRadius(1000.f);
+	Cast<USphereComponent>(AIGrenadeLaunchTriggerSphere->GetCollisionComponent())->SetSphereRadius(GrenadeLaunchTriggerRadiusInMetres * 100.f);
 	AIGrenadeLaunchTriggerSphere->OnActorBeginOverlap.AddDynamic(this, &ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger);
 }
 
@@ -184,4 +186,15 @@ void ARanger::DestroyGrenadeLaunchTriggerSphere() const
 {
 	AIGrenadeLaunchTriggerSphere->OnActorBeginOverlap.RemoveAll(this);
 	AIGrenadeLaunchTriggerSphere->Destroy();
+}
+
+void ARanger::TryTriggeringGrenadeLaunch()
+{
+	if (!AI) return;
+	if (AI->GetStateTreeData().GetIsTargetInMySight())
+	{
+		AI->GetStateTreeData().TriggerEvent("StateTree.Ranger.LaunchGrenade");
+		UKismetSystemLibrary::K2_ClearTimer(this, "TryTriggeringGrenadeLaunch");
+	}
+	else UKismetSystemLibrary::K2_SetTimer(this, "TryTriggeringGrenadeLaunch", 0.1f, true);
 }

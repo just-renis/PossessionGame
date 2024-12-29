@@ -84,7 +84,6 @@ void UEnemyAnimationInstance::InnerPlayMontage(EEnemyAnimState State) { Montage_
 void UEnemyAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
 {
     if (Montages.Contains(EEnemyAnimState::Shoot) && Montage == Montages.Find(EEnemyAnimState::Shoot)->Get()) Proprietor->AI_SetCanShoot(false);
-    else if (Montages.Contains(EEnemyAnimState::Reload) && Montage == Montages.Find(EEnemyAnimState::Reload)->Get()) Proprietor->AI_InitiateShooting();
 }
 
 void UEnemyAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)

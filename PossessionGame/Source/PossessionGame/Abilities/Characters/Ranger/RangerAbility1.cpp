@@ -27,7 +27,6 @@ void URangerAbility1::AI_Execute()
 		FVector LandingPosition = PathResult.HitResult.Location;
 		DrawDebugSphere(GetWorld(), LandingPosition, 50.f, 12, FColor::Red, false, 10.f);
 	}
-	Proprietor->GetAI()->GetStateTreeData().TriggerEvent("StateTree.Ranger.LaunchGrenade");
 	Super::AI_Execute();
 }
 

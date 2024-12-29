@@ -4,10 +4,14 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "RangerAIController.generated.h"
 
+DECLARE_DELEGATE(FOnGrenadeLaunchFinished);
+
 UCLASS()
 class POSSESSIONGAME_API ARangerAIController : public AEnemyAIController
 {
 	GENERATED_BODY()
-
+public:
+	FOnGrenadeLaunchFinished OnGrenadeLaunchFinished;
+private:
 	virtual void AdjustCustomFocus() const override;
 };

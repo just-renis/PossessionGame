@@ -20,10 +20,12 @@ public:
 	void SpawnShield();
 	void SetCustomTimeDilation(float Dilation);
 private:
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<ATriggerSphere> AIGrenadeLaunchTriggerSphere;
+	UPROPERTY(EditDefaultsOnly, Category = "Grenade Launcher", meta = (AllowPrivateAccess = true))
+	float GrenadeLaunchTriggerRadiusInMetres = 10.f;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> GrenadeLauncherMuzzleFlashComponent;
+	UPROPERTY()
+	TObjectPtr<ATriggerSphere> AIGrenadeLaunchTriggerSphere;
 
 	virtual void AI_TriggerDeathVoiceLine() override;
 	virtual void AI_SetupWeapon() override;
@@ -50,4 +52,6 @@ private:
 	virtual void PossessedBy(AController* NewController) override;
 	void SetupGrenadeLaunchTriggerSphere();
 	void DestroyGrenadeLaunchTriggerSphere() const;
+	UFUNCTION()
+	void TryTriggeringGrenadeLaunch();
 };

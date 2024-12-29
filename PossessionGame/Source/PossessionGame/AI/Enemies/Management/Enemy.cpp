@@ -250,6 +250,7 @@ void AEnemy::P_SetupAbilities()
 
 void AEnemy::P_Setup()
 {
+	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
 	GetMesh()->SetGenerateOverlapEvents(true);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetTarget(this);
@@ -260,13 +261,10 @@ void AEnemy::P_Setup()
 	P_SetupNavArea();
 	P_SetupData();
 	Camera->SetActive(true);
-	bIsPossessed = true;
-	bCanShoot = true;
 	UKismetSystemLibrary::K2_SetTimer(this, "P_ControlLogic", 0.05f, true);
 	Weapon->P_SetupTransfer();
 	GetMesh()->SetHiddenInGame(true);
 	P_InputManager = Cast<UEnhancedPlayerInput>(GetWorld()->GetFirstPlayerController()->PlayerInput);
-	DestroyAI();
 	P_SetupAbilities();
 	P_SetupUI();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeath.Broadcast();
@@ -490,7 +488,6 @@ void AEnemy::AI_ClearShootPause()
 {
 	bShootPauseActive = false;
 	UKismetSystemLibrary::K2_ClearTimer(this, "AI_ClearShootPause");
-	AI_InitiateShooting();
 }
 
 void AEnemy::AI_SetCharacterMovementSpeed() { AnimInstance->SetSpeed(GetCharacterMovement()->Velocity.Size()); }
@@ -500,6 +497,8 @@ void AEnemy::P_SetupData()
 	P_Data->SetIsGodModeEnabled(GetWorld()->GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetIsGodModeEnabled());
 	MaxHp = P_Data->GetMaxHp();
 	CurrentHp = MaxHp;
+	bIsPossessed = true;
+	bCanShoot = true;
 	SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed());
 }
 
@@ -772,7 +771,7 @@ void AEnemy::DestroyAI()
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnXRayThroughWallsChange.RemoveAll(this);
 		ChangeXRayState(false);
 		AI_StopAllAbilities();
-		GetMesh()->SetAnimClass(nullptr);
+		GetMesh()->SetAnimInstanceClass(nullptr);
 		AI->DestroyThis();
 		AI->UnPossess();
 		AI->Destroy();
