@@ -1,12 +1,22 @@
 ﻿#include "RangerAnimationInstance.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/GameplayStaticsTypes.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Characters/Ranger.h"
 #include "PossessionGame/AI/Enemies/Controllers/RangerAIController.h"
+#include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Weapons/Management/Weapon.h"
 
 void URangerAnimationInstance::InnerPlayMontage(EEnemyAnimState State)
 {
 	Super::InnerPlayMontage(State);
-	if (State == EEnemyAnimState::GrenadeLaunch) UKismetSystemLibrary::K2_SetTimer(this, "LaunchGrenade", 1.1f, false);
+	if (State == EEnemyAnimState::GrenadeLaunch)
+	{
+		UKismetSystemLibrary::K2_SetTimer(this, "TriggerGrenadeProjection", 0.1f, false);
+		UKismetSystemLibrary::K2_SetTimer(this, "LaunchGrenade", 1.1f, false);
+	}
 }
 
 void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
@@ -20,4 +30,31 @@ void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInter
 	}
 }
 
+void URangerAnimationInstance::SpawnOrLoadGrenadeLaunchMarker(const EVfx InVfxName, const FVector& InLandingPosition) const
+{
+	if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) SpawnGrenadeLaunchMarker(InVfxName, InLandingPosition);
+	else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLandingPosition] { SpawnGrenadeLaunchMarker(InVfxName, InLandingPosition); });
+}
+
+void URangerAnimationInstance::SpawnGrenadeLaunchMarker(const EVfx InVfxName, const FVector& InLandingPosition) const
+{
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().Get(), InLandingPosition);
+}
+
 void URangerAnimationInstance::LaunchGrenade() const { Cast<ARanger>(Proprietor)->LaunchGrenade(); }
+
+void URangerAnimationInstance::TriggerGrenadeProjection() const
+{
+	FPredictProjectilePathParams PathParams;
+	FProjectileData ProjectileData = Proprietor->GetWeapon()->GetProjectileData(EPoolObject::RangerGrenadeLauncherProjectile);
+	PathParams.StartLocation = Proprietor->GetWeapon()->GetSocketLocation(ProjectileData.ProjectileSocketName);
+	PathParams.LaunchVelocity = Proprietor->GetWeapon()->GetSocketRotation(ProjectileData.ProjectileSocketName).Vector() * ProjectileData.MaxSpeed;
+	PathParams.bTraceWithCollision = true;
+	PathParams.ProjectileRadius = 1.f;
+	PathParams.MaxSimTime = 8.f;
+	PathParams.SimFrequency = 30.f;
+	PathParams.OverrideGravityZ = GetWorld()->GetGravityZ() * ProjectileData.GravityScale;
+	PathParams.TraceChannel = ECC_GameTraceChannel6;
+	FPredictProjectilePathResult PathResult;
+	if (UGameplayStatics::PredictProjectilePath(GetWorld(), PathParams, PathResult)) SpawnOrLoadGrenadeLaunchMarker(EVfx::RangerGrenadeLauncherMarker, PathResult.HitResult.Location);
+}

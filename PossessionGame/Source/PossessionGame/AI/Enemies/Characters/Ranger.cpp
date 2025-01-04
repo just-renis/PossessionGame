@@ -7,6 +7,8 @@
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/TriggerSphere.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/GameplayStaticsTypes.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"

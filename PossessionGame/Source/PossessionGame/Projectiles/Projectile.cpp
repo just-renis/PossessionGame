@@ -80,7 +80,7 @@ void AProjectile::BeginPlay()
 
 void AProjectile::SetupData()
 {
-	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", 0.01f, false, false, ProjectileData.LifeSpan);
+	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", ProjectileData.LifeSpan, false);
 	MovementComponent->InitialSpeed = ProjectileData.InitialSpeed;
 	MovementComponent->MaxSpeed = ProjectileData.MaxSpeed;
 	MovementComponent->ProjectileGravityScale = ProjectileData.GravityScale;

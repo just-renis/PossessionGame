@@ -40,7 +40,7 @@ struct POSSESSIONGAME_API FProjectileData
 	FName ProjectileSocketName = "ProjectileSocket";
 	EPoolObject ProjectileName = EPoolObject::None;
 	
-	float GetCalcSpread() { return Spread * (bWalkSpreadEnabled ? 2.f : 1.f); }
+	float GetCalcSpread() const { return Spread * (bWalkSpreadEnabled ? 2.f : 1.f); }
 	TObjectPtr<AEnemy> GetProprietor() { return Proprietor; }
 
 	void SetWalkSpread(bool bState) { bWalkSpreadEnabled = bState; }

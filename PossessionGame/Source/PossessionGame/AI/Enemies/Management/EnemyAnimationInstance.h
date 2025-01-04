@@ -30,6 +30,8 @@ protected:
 	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
 	TMap<EEnemyAnimState, TObjectPtr<UAnimMontage>> Montages;
+	UPROPERTY()
+	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	
 	virtual void NativeBeginPlay() override;
 	virtual void BeginDestroy() override;
@@ -49,8 +51,6 @@ private:
 	float Pitch = 0.f;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	float DirectionalAngle = 0.f;
-	UPROPERTY()
-    TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void LoadMontageIfNotLoaded(EEnemyAnimState State);
