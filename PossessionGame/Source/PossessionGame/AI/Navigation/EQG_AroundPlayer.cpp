@@ -1,5 +1,4 @@
 ﻿#include "EQG_AroundPlayer.h"
-
 #include "NavigationSystem.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_Point.h"
 #include "PossessionGame/Enums/ECharacterType.h"
