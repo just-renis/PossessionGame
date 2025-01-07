@@ -10,6 +10,6 @@ class POSSESSIONGAME_API UEQG_AroundPlayer : public UEnvQueryGenerator
 	GENERATED_BODY()
 
 	UEQG_AroundPlayer();
-	
+
 	virtual void GenerateItems(FEnvQueryInstance& QueryInstance) const override;
 };
