@@ -83,7 +83,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	void ToggleCrouch();
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override { TagContainer = GameplayTags; }
-	void InitiateDeath();
+	virtual void InitiateDeath();
 	void ReceiveDamage(const float Damage);
 	void PlaySound(const ESound InSoundName);
 protected:

@@ -88,7 +88,6 @@ void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
 void ARanger::P_Setup()
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "TryTriggeringGrenadeLaunch");
-	DestroyGrenadeLaunchTriggerSphere();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ARanger::SetActionInMotion);
@@ -168,7 +167,14 @@ void ARanger::LoadSounds()
 void ARanger::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	DestroyGrenadeLaunchTriggerSphere();
 	if (bIsPossessed) UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
+}
+
+void ARanger::InitiateDeath()
+{
+	DestroyGrenadeLaunchTriggerSphere();
+	Super::InitiateDeath();
 }
 
 void ARanger::SetupGrenadeLaunchTriggerSphere()
@@ -184,8 +190,11 @@ void ARanger::SetupGrenadeLaunchTriggerSphere()
 
 void ARanger::DestroyGrenadeLaunchTriggerSphere() const
 {
-	AIGrenadeLaunchTriggerSphere->OnActorBeginOverlap.RemoveAll(this);
-	AIGrenadeLaunchTriggerSphere->Destroy();
+	if (AIGrenadeLaunchTriggerSphere)
+	{
+		AIGrenadeLaunchTriggerSphere->OnActorBeginOverlap.RemoveAll(this);
+		AIGrenadeLaunchTriggerSphere->Destroy();
+	}
 }
 
 void ARanger::TryTriggeringGrenadeLaunch()
