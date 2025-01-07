@@ -18,7 +18,7 @@ void UEQG_AroundPlayer::GenerateItems(FEnvQueryInstance& QueryInstance) const
 	QueryInstance.ReserveItemData(NumRings * NumPointsInRing);
 	for (int32 RingIndex = 0, i = 0; RingIndex < NumRings; RingIndex++)
 	{
-		const float CurrentRadius = 400.f + RingIndex * 400.f;
+		const float CurrentRadius = DefaultMetresDistance * 100.f + RingIndex * RangerMetresDistance * 100.f;
 		for (int32 PointIndex = 0; PointIndex < NumPointsInRing; PointIndex++, i++)
 		{
 			const float Angle = FMath::DegreesToRadians(360.f / NumPointsInRing * PointIndex);
