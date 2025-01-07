@@ -84,10 +84,10 @@ void UEnemyCommunicator::TargetQueryResult(TSharedPtr<FEnvQueryResult> Result)
 			switch (TSet<ECharacterType>::TConstIterator It = Data.ViableCharacters.CreateConstIterator(); *It)
 			{
 				case ECharacterType::Minion:
-					DrawDebugSphere(GetWorld(), Data.Location, 20.0f, 16, FColor::Blue, false, 1.0f);
+					DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Blue, false, 1.0f);
 					break;
 				case ECharacterType::Ranger:
-					DrawDebugSphere(GetWorld(), Data.Location, 20.0f, 16, FColor::Red, false, 1.0f);
+					DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Red, false, 1.0f);
 			}
 		}
 	}

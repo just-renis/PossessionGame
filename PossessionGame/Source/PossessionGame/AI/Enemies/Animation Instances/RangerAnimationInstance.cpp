@@ -30,15 +30,15 @@ void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInter
 	}
 }
 
-void URangerAnimationInstance::SpawnOrLoadGrenadeLaunchMarker(const EVfx InVfxName, const FVector& InLandingPosition) const
+void URangerAnimationInstance::SpawnOrLoadGrenadeLaunchMarker(const EVfx InVfxName, const FVector& InLandingPosition, const FRotator& InLandingRotation) const
 {
-	if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) SpawnGrenadeLaunchMarker(InVfxName, InLandingPosition);
-	else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLandingPosition] { SpawnGrenadeLaunchMarker(InVfxName, InLandingPosition); });
+	if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) SpawnGrenadeLaunchMarker(InVfxName, InLandingPosition, InLandingRotation);
+	else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLandingPosition, InLandingRotation] { SpawnGrenadeLaunchMarker(InVfxName, InLandingPosition, InLandingRotation); });
 }
 
-void URangerAnimationInstance::SpawnGrenadeLaunchMarker(const EVfx InVfxName, const FVector& InLandingPosition) const
+void URangerAnimationInstance::SpawnGrenadeLaunchMarker(const EVfx InVfxName, const FVector& InLandingPosition, const FRotator& InLandingRotation) const
 {
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().Get(), InLandingPosition);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().Get(), InLandingPosition, InLandingRotation);
 }
 
 void URangerAnimationInstance::LaunchGrenade() const { Cast<ARanger>(Proprietor)->LaunchGrenade(); }
@@ -56,5 +56,10 @@ void URangerAnimationInstance::TriggerGrenadeProjection() const
 	PathParams.OverrideGravityZ = GetWorld()->GetGravityZ() * ProjectileData.GravityScale;
 	PathParams.TraceChannel = ECC_GameTraceChannel6;
 	FPredictProjectilePathResult PathResult;
-	if (UGameplayStatics::PredictProjectilePath(GetWorld(), PathParams, PathResult)) SpawnOrLoadGrenadeLaunchMarker(EVfx::RangerGrenadeLauncherMarker, PathResult.HitResult.Location);
+	if (UGameplayStatics::PredictProjectilePath(GetWorld(), PathParams, PathResult))
+	{
+		FRotator MarkerRotation = PathResult.HitResult.ImpactNormal.Rotation();
+		MarkerRotation.Pitch -= 90.f; 
+		SpawnOrLoadGrenadeLaunchMarker(EVfx::RangerGrenadeLauncherMarker, PathResult.HitResult.Location, MarkerRotation);
+	}
 }
