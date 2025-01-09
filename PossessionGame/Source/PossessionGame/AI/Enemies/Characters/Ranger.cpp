@@ -73,8 +73,11 @@ void ARanger::AI_PlayDeathSound() { PlaySound(ESound::RangerDeath); }
 
 void ARanger::AI_ToggleGrenadeLaunchTrigger(const bool bState) const
 {
-	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
-	AIGrenadeLaunchTriggerSphere->SetActorHiddenInGame(!bState);
+	if (AIGrenadeLaunchTriggerSphere)
+	{
+		AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+		AIGrenadeLaunchTriggerSphere->SetActorHiddenInGame(!bState);
+	}
 }
 
 void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor)
