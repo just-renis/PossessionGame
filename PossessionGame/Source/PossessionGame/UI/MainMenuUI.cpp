@@ -22,7 +22,7 @@ void UMainMenuUI::Toggle(bool bState)
 {
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-	TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
+	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
 	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
 	else PlayerController->SetInputMode(FInputModeGameOnly());
@@ -62,7 +62,7 @@ void UMainMenuUI::TriggerQuitFadeInAnim()
 	QuitFadeInState = !QuitFadeInState;
 }
 
-void UMainMenuUI::Play() { UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Levels/Chapter1/Levels/Level_1")); }
+void UMainMenuUI::Play() { UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Levels/Chapter1/Levels/ZoneA/Level_1")); }
 
 void UMainMenuUI::QuitGame() { UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false); }
 
