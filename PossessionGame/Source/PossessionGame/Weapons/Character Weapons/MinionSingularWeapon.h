@@ -9,7 +9,7 @@ class POSSESSIONGAME_API AMinionSingularWeapon : public AOneHandedWeapon
 {
 	GENERATED_BODY()
 	
-	virtual void AI_Shoot() override { ShootProjectile(EPoolObject::RangerProjectile); }
+	virtual void AI_Shoot() override { ShootProjectile(EPoolObject::MinionProjectile); }
 
 	virtual void BeginPlay() override;
 	virtual void SetMeshes(EWeapon PrimaryDataAssetName) override;

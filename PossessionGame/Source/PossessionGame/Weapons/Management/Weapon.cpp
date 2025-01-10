@@ -27,7 +27,6 @@ void AWeapon::AI_Shoot()
 {
 	MuzzleFlashLogic();
 	ShootTimer = 0.f;
-	ShootProjectile(EPoolObject::RangerProjectile);
 }
 
 void AWeapon::AI_ResetShootCycles() { ShootCyclesUntilReload = AI_Data->GetShootCyclesUntilReload(); }
@@ -132,6 +131,13 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName)
 }
 
 void AWeapon::PostProprietorSetup() { AttachAndLoadVfxs(); }
+
+void AWeapon::AttachMuzzleFlash(const EVfx InVfxName)
+{
+	MuzzleFlashComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().Get(), Mesh, FName("MuzzleSocket"),
+	FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false);
+	MuzzleFlashComponent->Deactivate();
+}
 
 void AWeapon::AI_Setup()
 {
@@ -238,13 +244,6 @@ void AWeapon::DisableHandsMesh() const
 {
 	HandsMesh->SetHiddenInGame(true);
 	HandsMesh->SetAnimInstanceClass(nullptr);
-}
-
-void AWeapon::AttachMuzzleFlash(const EVfx InVfxName)
-{
-	MuzzleFlashComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().Get(), Mesh, FName("MuzzleSocket"),
-	FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false);
-	MuzzleFlashComponent->Deactivate();
 }
 
 void AWeapon::AttachAndLoadVfxs()

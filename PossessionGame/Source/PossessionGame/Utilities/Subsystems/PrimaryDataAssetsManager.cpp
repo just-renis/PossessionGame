@@ -56,7 +56,10 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{ FPairWrapper({ EPoolObject::RangerProjectile, EVfxType::Impact }), EVfx::RangerBulletImpact },
 		{ FPairWrapper({ EPoolObject::RangerProjectile, EVfxType::Muzzle }), EVfx::RangerMuzzle },
 		{ FPairWrapper({ EPoolObject::RangerProjectile, EVfxType::FpsTrail }), EVfx::RangerFpsBulletTrail },
-		{ FPairWrapper({ EPoolObject::RangerGrenadeLauncherProjectile, EVfxType::Impact }), EVfx::RangerGrenadeExplosion }
+		{ FPairWrapper({ EPoolObject::RangerGrenadeLauncherProjectile, EVfxType::Impact }), EVfx::RangerGrenadeExplosion },
+		{ FPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Muzzle }), EVfx::MinionMuzzle },
+		{ FPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Trail }), EVfx::MinionBulletTrail },
+		{ FPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Impact }), EVfx::MinionBulletTrail }
 	};
 	Init();
 }
@@ -128,6 +131,7 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 	switch (InCharacterType)
 	{
 		case ECharacterType::Ranger: return EPoolObject::RangerProjectile;
+		case ECharacterType::Minion: return EPoolObject::MinionProjectile;
 		default: return EPoolObject::RangerProjectile;
 	}
 }
@@ -198,6 +202,9 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_RangerGrenadeLauncherMarker", EVfx::RangerGrenadeLauncherMarker);
 	VfxsMap.Add("PA_StopTimeAbility", EVfx::StopTimeAbility);
 	VfxsMap.Add("PA_StopTimeAbilityReverse", EVfx::StopTimeAbilityReverse);
+	VfxsMap.Add("PA_MinionMuzzle", EVfx::MinionMuzzle);
+	VfxsMap.Add("PA_MinionBulletTrail", EVfx::MinionBulletTrail);
+	VfxsMap.Add("PA_MinionBulletImpact", EVfx::MinionBulletImpact);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

@@ -9,7 +9,13 @@ void AMinionWeapon::BeginPlay()
 
 void AMinionWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh)
 {
-	TObjectPtr<UWeaponManager> WeaponManager = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>();
+	const TObjectPtr<UWeaponManager> WeaponManager = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>();
 	FirstWeapon = WeaponManager->GetWeapon(GetWorld(), EWeapon::MinionSingularWeapon, CharacterMesh);
 	SecondWeapon = WeaponManager->GetWeapon(GetWorld(), EWeapon::MinionSingularWeapon, CharacterMesh, FName("AIWeaponSocket2"));
+}
+
+void AMinionWeapon::AttachMuzzleFlash(const EVfx InVfxName)
+{
+	FirstWeapon->AttachMuzzleFlash(InVfxName);
+	SecondWeapon->AttachMuzzleFlash(InVfxName);
 }

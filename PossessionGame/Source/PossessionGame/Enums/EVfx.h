@@ -12,5 +12,8 @@ enum class EVfx : uint8
 	StopTimeAbilityReverse,
 	RangerGrenadeExplosion,
 	RangerGrenadeLauncherMuzzle,
-	RangerGrenadeLauncherMarker
+	RangerGrenadeLauncherMarker,
+	MinionMuzzle,
+	MinionBulletTrail,
+	MinionBulletImpact
 };

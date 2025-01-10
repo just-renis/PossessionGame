@@ -70,6 +70,7 @@ public:
 	void AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh) const;
 	virtual void ShootProjectile(EPoolObject ProjectileName);
 	void PostProprietorSetup();
+	virtual void AttachMuzzleFlash(const EVfx InVfxName);
 protected:
 	bool bIsPossessed = false;
 	bool bIsHitScanEnabled = false;
@@ -104,6 +105,8 @@ protected:
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> MuzzleFlashComponent;
+	UPROPERTY()
+	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 
 	virtual void AI_Setup();
 	void AI_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName);
@@ -124,14 +127,11 @@ protected:
 	void PlaySound(const ESound InSoundName);
 	void MuzzleFlashLogic() const;
 	void DisableHandsMesh() const;
-	void AttachMuzzleFlash(const EVfx InVfxName);
 	void AttachAndLoadVfxs();
 private:
 	int32 ShootCyclesUntilReload;
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
-	UPROPERTY()
-	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	
 	void SpawnOrLoadHitScanImpactVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
 	void SpawnHitScanImpactVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const;
