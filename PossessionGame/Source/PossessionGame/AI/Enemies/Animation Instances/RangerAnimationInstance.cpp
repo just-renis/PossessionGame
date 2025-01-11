@@ -41,7 +41,7 @@ void URangerAnimationInstance::SpawnGrenadeLaunchMarker(const EVfx InVfxName, co
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().Get(), InLandingPosition, InLandingRotation);
 }
 
-void URangerAnimationInstance::LaunchGrenade() const { Cast<ARanger>(Proprietor)->LaunchGrenade(); }
+void URangerAnimationInstance::LaunchGrenade() const { if (Proprietor->GetIsAlive()) Cast<ARanger>(Proprietor)->LaunchGrenade(); }
 
 void URangerAnimationInstance::TriggerGrenadeProjection() const
 {
