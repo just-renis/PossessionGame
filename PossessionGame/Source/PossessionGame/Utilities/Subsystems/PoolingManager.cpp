@@ -20,7 +20,7 @@ void UPoolingManager::Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& Map)
 	}
 }
 
-void UPoolingManager::ReturnObjectToPool(EPoolObject ObjectName, TObjectPtr<APoolObject> PoolObject)
+void UPoolingManager::ReturnObjectToPool(EPoolObject ObjectName, const TObjectPtr<APoolObject>& PoolObject)
 {
 	SetPoolObjectState(PoolObject, false);
 	Pool[ObjectName].Objects.Add(PoolObject);
@@ -39,7 +39,7 @@ void UPoolingManager::AllocatePoolObject(EPoolObject ObjectName)
 	Pool[ObjectName].Objects.Push(GetWorld()->SpawnActor<APoolObject>(Pool[ObjectName].ObjectClass, FVector::ZeroVector, FRotator::ZeroRotator));
 }
 
-void UPoolingManager::SetPoolObjectState(TObjectPtr<APoolObject> PoolObject, bool bState)
+void UPoolingManager::SetPoolObjectState(const TObjectPtr<APoolObject>& PoolObject, const bool bState)
 {
 	PoolObject->SetActorEnableCollision(bState);
 	PoolObject->SetActorHiddenInGame(!bState);
