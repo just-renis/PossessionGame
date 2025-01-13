@@ -49,7 +49,7 @@ private:
 	
 	virtual void BeginPlay() override;
 	void SetupData();
-	virtual void SetIsInUse(const FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale) override;
+	virtual void SetIsInUse(FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale) override;
 	void DealAreaDamage();
 	void AttachBulletTrail(EVfx VfxName);
 	void AttachAndLoadVfxs();

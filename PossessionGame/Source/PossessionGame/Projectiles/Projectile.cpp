@@ -63,12 +63,12 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		return;
 	}
 	if (!OtherActor->ActorHasTag("Enemy")) return;
-	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel1) // If player got hit.
+	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel1) // If enemy got hit.
 	{
 		DealDamageToSentientActor(OtherActor, Hit);
 		return;
 	}
-	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2 && Cast<AEnemy>(OtherActor)->GetIsPossessed()) { DealDamageToSentientActor(OtherActor, Hit); } // If enemy got hit.
+	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2 && Cast<AEnemy>(OtherActor)->GetIsPossessed()) DealDamageToSentientActor(OtherActor, Hit); // If player got hit.
 }
 
 void AProjectile::BeginPlay()
@@ -86,7 +86,7 @@ void AProjectile::SetupData()
 	MovementComponent->ProjectileGravityScale = ProjectileData.GravityScale;
 }
 
-void AProjectile::SetIsInUse(const FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale)
+void AProjectile::SetIsInUse(FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale)
 {
 	SetupProjectile(InProjectileData, Location, Rotation, Scale);
 	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
@@ -148,4 +148,5 @@ void AProjectile::DestroyThis()
 	if (BulletTrailComponent) BulletTrailComponent->Deactivate();
 	MovementComponent->Deactivate();
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);
+	
 }

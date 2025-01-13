@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "FProjectileData.generated.h"
 
@@ -44,7 +45,7 @@ struct POSSESSIONGAME_API FProjectileData
 	TObjectPtr<AEnemy> GetProprietor() { return Proprietor; }
 
 	void SetWalkSpread(bool bState) { bWalkSpreadEnabled = bState; }
-	void SetProprietor(TObjectPtr<AEnemy> InProprietor) { Proprietor = InProprietor; }
+	void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
 private:
 	bool bWalkSpreadEnabled = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

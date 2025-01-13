@@ -28,7 +28,7 @@ public:
 	
 	void Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& Map);
 	void ReturnObjectToPool(EPoolObject ObjectName, const TObjectPtr<APoolObject>& PoolObject);
-	void SpawnObjectFromPool(const FProjectileData& ProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale); // For projectile pools, since there is no other way to setup projectile efficiently.
+	void SpawnObjectFromPool(FProjectileData& ProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale); // For projectile pools, since there is no other way to setup projectile efficiently.
 private:
 	UPROPERTY()
 	TMap<EPoolObject, FObjectPoolData> Pool;

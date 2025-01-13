@@ -126,6 +126,7 @@ void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh
 
 void AWeapon::ShootProjectile(const EPoolObject InProjectileName)
 {
+	UE_LOG(LogTemp, Warning, TEXT("PROPRIETOR NAME: %s"), *Proprietor->GetName());
 	GetProjectileData(InProjectileName).SetProprietor(Proprietor);
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(GetProjectileData(InProjectileName), GetSocketLocation(GetProjectileData(InProjectileName).ProjectileSocketName), GetSocketRotation(GetProjectileData(InProjectileName).ProjectileSocketName), GetSocketScale(GetProjectileData(InProjectileName).ProjectileSocketName));
 }

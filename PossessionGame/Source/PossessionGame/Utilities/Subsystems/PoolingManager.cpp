@@ -26,7 +26,7 @@ void UPoolingManager::ReturnObjectToPool(EPoolObject ObjectName, const TObjectPt
 	Pool[ObjectName].Objects.Add(PoolObject);
 }
 
-void UPoolingManager::SpawnObjectFromPool(const FProjectileData& ProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale)
+void UPoolingManager::SpawnObjectFromPool(FProjectileData& ProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale)
 {
 	if (Pool[ProjectileData.ProjectileName].Objects.IsEmpty()) AllocatePoolObject(ProjectileData.ProjectileName);
 	const TObjectPtr<APoolObject> PoolObject = Pool[ProjectileData.ProjectileName].Objects.Pop();

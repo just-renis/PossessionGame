@@ -12,5 +12,5 @@ class POSSESSIONGAME_API APoolObject : public AActor
 	GENERATED_BODY()
 public:
 	virtual void SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation);
-	virtual void SetIsInUse(const FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale) {} // For projectile pools, since there is no other way to setup projectile efficiently.
+	virtual void SetIsInUse(FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale) {} // For projectile pools, since there is no other way to setup projectile efficiently.
 };
