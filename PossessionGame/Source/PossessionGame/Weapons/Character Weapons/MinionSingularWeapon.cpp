@@ -1,5 +1,20 @@
 ﻿#include "MinionSingularWeapon.h"
+
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+
+AMinionSingularWeapon::AMinionSingularWeapon()
+{
+	Sounds.Add(ESound::MinionShoot, CreateDefaultSubobject<UAudioComponent>(TEXT("shootSound")));
+	Sounds[ESound::MinionShoot]->SetAutoActivate(false);
+}
+
+void AMinionSingularWeapon::AI_Shoot()
+{
+	PlaySound(ESound::MinionShoot);
+	Super::AI_Shoot();
+	ShootProjectile(EPoolObject::MinionProjectile);
+}
 
 void AMinionSingularWeapon::BeginPlay()
 {

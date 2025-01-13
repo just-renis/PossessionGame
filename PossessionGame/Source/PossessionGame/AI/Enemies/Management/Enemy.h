@@ -155,6 +155,7 @@ protected:
 	virtual void HandleDeactivation();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void LoadSounds() {}
+	virtual void ClearTimers();
 private:
 	bool bShootPauseActive = false;
 	bool bCanPossessOtherEnemy = false;
@@ -235,7 +236,6 @@ private:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyAI();
 	void TickAbilities(const float DeltaTime);
-	void ClearTimers();
 	void SetupStimuliSource();
 	void SetMesh(const ECharacterType PrimaryDataAssetName) const;
 	void P_SetupNavArea();

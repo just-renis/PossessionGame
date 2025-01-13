@@ -200,6 +200,12 @@ void ARanger::DestroyGrenadeLaunchTriggerSphere() const
 	}
 }
 
+void ARanger::ClearTimers()
+{
+	Super::ClearTimers();
+	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
+}
+
 void ARanger::TryTriggeringGrenadeLaunch()
 {
 	if (!AI) return;

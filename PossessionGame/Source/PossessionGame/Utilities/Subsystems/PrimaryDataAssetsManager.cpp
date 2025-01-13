@@ -173,6 +173,9 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_RangerGrenadeExplosion", ESound::RangerGrenadeExplosion);
 	SoundMap.Add("PA_RangerSlowMotion", ESound::RangerSlowMotion);
 	SoundMap.Add("PA_RangerGrenadeLaunchAim", ESound::RangerGrenadeLaunchAim);
+	SoundMap.Add("PA_MinionShoot", ESound::MinionShoot);
+	SoundMap.Add("PA_MinionSpawn", ESound::MinionSpawn);
+	SoundMap.Add("PA_MinionDeath", ESound::MinionDeath);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

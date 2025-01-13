@@ -8,8 +8,15 @@ UCLASS()
 class POSSESSIONGAME_API AMinion : public AEnemy
 {
 	GENERATED_BODY()
+
+	AMinion();
 	
 	virtual void AI_SetupWeapon() override;
+	virtual void AI_PlayDeathSound() override;
+	UFUNCTION()
+	void AI_PlaySpawnSound();
 
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void ClearTimers() override;
 };

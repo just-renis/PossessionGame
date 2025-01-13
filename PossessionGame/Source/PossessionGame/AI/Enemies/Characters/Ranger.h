@@ -53,6 +53,7 @@ private:
 	virtual void InitiateDeath() override;
 	void SetupGrenadeLaunchTriggerSphere();
 	void DestroyGrenadeLaunchTriggerSphere() const;
+	virtual void ClearTimers() override;
 	UFUNCTION()
 	void TryTriggeringGrenadeLaunch();
 };
