@@ -80,11 +80,6 @@ void ARangerWeapon::HitScanLogic()
 	else Super::HitScanLogic();
 }
 
-void ARangerWeapon::LoadSounds()
-{
-	
-}
-
 void ARangerWeapon::P_ZoomToCamera(bool bIsZooming, FVector2D& MouseSensitivity)
 {
 	(void)DelegateManager->OnZoomToggle.ExecuteIfBound();

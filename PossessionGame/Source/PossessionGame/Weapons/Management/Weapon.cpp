@@ -176,7 +176,6 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	LoadSounds();
 	if (Name != EWeapon::MinionWeapon) SetMeshes(Name);
 	AI_Setup();
 }

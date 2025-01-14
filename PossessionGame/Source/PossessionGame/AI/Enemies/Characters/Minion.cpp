@@ -10,8 +10,10 @@ AMinion::AMinion()
 {
 	Sounds.Add(ESound::MinionSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
 	Sounds[ESound::MinionSpawn]->SetAutoActivate(false);
+	Sounds[ESound::MinionSpawn]->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::MinionDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("deathSound")));
 	Sounds[ESound::MinionDeath]->SetAutoActivate(false);
+	Sounds[ESound::MinionDeath]->SetupAttachment(GetMesh());
 }
 
 void AMinion::AI_SetupWeapon()

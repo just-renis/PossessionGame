@@ -120,7 +120,6 @@ protected:
 	virtual void Tick(const float DeltaTime) override;
 	virtual void HitScanLogic();
 	void MakeShootingCameraShake() const;
-	virtual void LoadSounds() {}
 	virtual void SetMeshes(const EWeapon InPrimaryDataAssetName);
 	void SetupHandsAnimInstance();
 	virtual void DetachWeapon();

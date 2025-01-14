@@ -31,5 +31,4 @@ private:
 	
 	virtual void BeginPlay() override;
 	virtual void HitScanLogic() override;
-	virtual void LoadSounds() override;
 };
