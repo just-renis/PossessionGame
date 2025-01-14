@@ -27,12 +27,16 @@ ARanger::ARanger()
 {
 	Sounds.Add(ESound::RangerSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
 	Sounds[ESound::RangerSpawn]->SetAutoActivate(false);
+	Sounds[ESound::RangerSpawn]->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::RangerDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("deathSound")));
 	Sounds[ESound::RangerDeath]->SetAutoActivate(false);
+	Sounds[ESound::RangerDeath]->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::RangerGrenadeLaunch, CreateDefaultSubobject<UAudioComponent>(TEXT("grenadeLaunchSound")));
 	Sounds[ESound::RangerGrenadeLaunch]->SetAutoActivate(false);
+	Sounds[ESound::RangerGrenadeLaunch]->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::RangerGrenadeLaunchAim, CreateDefaultSubobject<UAudioComponent>(TEXT("grenadeLaunchAimSound")));
 	Sounds[ESound::RangerGrenadeLaunchAim]->SetAutoActivate(false);
+	Sounds[ESound::RangerGrenadeLaunchAim]->SetupAttachment(GetMesh());
 }
 
 void ARanger::LaunchGrenade()
@@ -157,14 +161,6 @@ float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 	const float ReturnDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (!bIsPossessed && CurrentHp <= MaxHp * 0.5f && CanAbilityBeExecuted(1)) AI_UseAbility(1);
 	return ReturnDamage;
-}
-
-void ARanger::LoadSounds()
-{
-	Sounds[ESound::RangerSpawn]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	Sounds[ESound::RangerDeath]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	Sounds[ESound::RangerGrenadeLaunch]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	Sounds[ESound::RangerGrenadeLaunchAim]->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void ARanger::PossessedBy(AController* NewController)

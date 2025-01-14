@@ -15,8 +15,10 @@ ARangerWeapon::ARangerWeapon()
 	Crosshair->SetupAttachment(RootComponent);
 	Sounds.Add(ESound::RangerShoot, CreateDefaultSubobject<UAudioComponent>(TEXT("shootSound")));
 	Sounds[ESound::RangerShoot]->SetAutoActivate(false);
+	Sounds[ESound::RangerShoot]->SetupAttachment(Mesh);
 	Sounds.Add(ESound::RangerReload, CreateDefaultSubobject<UAudioComponent>(TEXT("reloadSound")));
 	Sounds[ESound::RangerReload]->SetAutoActivate(false);
+	Sounds[ESound::RangerReload]->SetupAttachment(Mesh);
 }
 
 void ARangerWeapon::AI_Reload()
@@ -80,8 +82,7 @@ void ARangerWeapon::HitScanLogic()
 
 void ARangerWeapon::LoadSounds()
 {
-	Sounds[ESound::RangerShoot]->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	Sounds[ESound::RangerReload]->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	
 }
 
 void ARangerWeapon::P_ZoomToCamera(bool bIsZooming, FVector2D& MouseSensitivity)

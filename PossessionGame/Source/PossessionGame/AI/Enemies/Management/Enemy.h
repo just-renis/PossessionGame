@@ -154,7 +154,6 @@ protected:
 	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void LoadSounds() {}
 	virtual void ClearTimers();
 private:
 	bool bShootPauseActive = false;

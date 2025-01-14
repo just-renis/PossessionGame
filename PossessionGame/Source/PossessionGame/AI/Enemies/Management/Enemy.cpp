@@ -443,7 +443,11 @@ void AEnemy::AI_SetupData()
 void AEnemy::AI_Reload() const
 {
 	AnimInstance->PlayMontage(EEnemyAnimState::Reload);
-	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::AIReload);
+	if (Weapon->GetAnimInstance())
+	{
+		Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::AIReload);
+		Weapon->AI_Reload();
+	}
 	Weapon->AI_ResetShootCycles();
 }
 

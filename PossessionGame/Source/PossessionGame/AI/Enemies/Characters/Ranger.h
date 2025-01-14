@@ -48,7 +48,6 @@ private:
 	void AttachGrenadeLauncherMuzzle();
 	void GrenadeLauncherMuzzleFlashLogic();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void LoadSounds() override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitiateDeath() override;
 	void SetupGrenadeLaunchTriggerSphere();
