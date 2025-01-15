@@ -12,10 +12,12 @@ class POSSESSIONGAME_API UAbility : public UObject
 {
 	GENERATED_BODY()
 public:
-	bool CanExecute() const { return bIsCooldownKill ? CurrentCooldownKill <= 0 : CurrentCooldownSecs <= 0.f; }
+	bool CanExecute() const { return bIsCooldownKill ? CurrentCooldownKill >= ReqCooldownKill : CurrentCooldownSecs >= ReqCooldownSecs; }
 	bool GetIsCooldownKill() const { return bIsCooldownKill; }
 	bool GetIsAbilityInDuration() const { return bIsAbilityInDuration; }
 	int GetCurrentCooldownKill() const { return CurrentCooldownKill; }
+	int GetReqCooldownKill() const { return ReqCooldownKill; }
+	float GetReqCooldownSecs() const { return ReqCooldownSecs; }
 	float GetCurrentCooldownSecs() const { return CurrentCooldownSecs; }
 	float GetCurrentDuration() const { return CurrentDuration; }
 
@@ -26,7 +28,7 @@ public:
 	virtual void P_StopAbility() { ResetDuration(); }
 
 	virtual void Tick(float DeltaTime);
-	void ReduceKillCooldown() { CurrentCooldownKill--; }
+	void ReduceKillCooldown() { CurrentCooldownKill++; }
 	void Setup(TObjectPtr<AEnemy> AbilityOwner, TObjectPtr<UAbilityData> AbilityData, TObjectPtr<UDelegateManager> InDelegateManager);
 	void SetupAdditionalProperties(TObjectPtr<UAbilityData> AbilityData, TObjectPtr<UAbility> AbilityToRefresh);
 protected:
@@ -53,7 +55,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAbility> RefreshableAbility;
 
-	void ReduceCooldownTimer(float RefreshAmount) { CurrentCooldownSecs -= RefreshAmount; }
+	void ReduceCooldownTimer(float RefreshAmount) { CurrentCooldownSecs += RefreshAmount; }
 	void RefreshOtherAbility();
 	void SetupDuration(float AbilityDuration);
 	void SetupRefreshOtherAbility(float RefreshAmount, TObjectPtr<UAbility> AbilityToRefresh);

@@ -10,7 +10,8 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 	switch (InBar)
 	{
 		case EUIBar::Hp: if (HPBar) HPBar->SetPercent(InCurrent / InMax); break;
-		default: if (PossessionBar) PossessionBar->SetPercent(InCurrent / InMax);
+		case EUIBar::Possession: if (PossessionBar) PossessionBar->SetPercent(InCurrent / InMax); break;
+		default: TriggerAbilityIconReady(InBar, InCurrent, InMax);
 	}
 }
 
@@ -36,35 +37,23 @@ void UPlayerHUD::ToggleAbilitiesUI()
 	ToggleUI(ThirdAbilityIcon);
 }
 
-void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs) const
+void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs, const float InReqSecs) const
 {
-	const FText Text = InSecs > 0.f ? FText::FromString(FString::Printf(TEXT("%.1f"), InSecs)) : FText::FromString("USE");
 	switch (InWhichAbility)
 	{
-		case 0: FirstAbilityText->SetText(Text); break;
-		case 1: SecondAbilityText->SetText(Text); break;
-		default: ThirdAbilityText->SetText(Text);
+		case 0: UpdateProgressBar(EUIBar::FirstAbility, InSecs, InReqSecs); break;
+		case 1: UpdateProgressBar(EUIBar::SecondAbility, InSecs, InReqSecs); break;
+		default: UpdateProgressBar(EUIBar::ThirdAbility, InSecs, InReqSecs);
 	}
 }
 
-void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const int32 InKills) const
-{
-	const FText Text = InKills > 0 ? FText::FromString(FString::Printf(TEXT("%d"), InKills)) : FText::FromString("USE");
-	switch (InWhichAbility)
-	{
-		case 0: FirstAbilityText->SetText(Text); break;
-		case 1: SecondAbilityText->SetText(Text); break;
-		default: ThirdAbilityText->SetText(Text);
-	}
-}
-
-void UPlayerHUD::ChangeColorOfText(const int32 InWhichAbility, const FLinearColor InColor) const
+void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const int32 InKills, const int32 InReqKills) const
 {
 	switch (InWhichAbility)
 	{
-		case 0: FirstAbilityText->SetColorAndOpacity(InColor); break;
-		case 1: SecondAbilityText->SetColorAndOpacity(InColor); break;
-		default: ThirdAbilityText->SetColorAndOpacity(InColor);
+		case 0: UpdateProgressBar(EUIBar::FirstAbility, InKills, InReqKills); break;
+		case 1: UpdateProgressBar(EUIBar::SecondAbility, InKills, InReqKills); break;
+		default: UpdateProgressBar(EUIBar::ThirdAbility, InKills, InReqKills);
 	}
 }
 
@@ -84,9 +73,6 @@ void UPlayerHUD::Reset() const
 	Crosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	AmmoText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	HPBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	FirstAbilityText->SetText(FText());
-	SecondAbilityText->SetText(FText());
-	ThirdAbilityText->SetText(FText());
 	FirstAbilityIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	SecondAbilityIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	ThirdAbilityIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -108,9 +94,30 @@ void UPlayerHUD::ConfigureUIs() const
 	PossessionIndicator->SetOpacity(0.3f);
 	RunningIndicator->SetOpacity(0.3f);
 	CriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
+	CollapseAbilityImage(0);
+	CollapseAbilityImage(1);
+	CollapseAbilityImage(2);
 }
 
 void UPlayerHUD::PlayDeathFadeOutAnim() { PlayAnimation(DeathFadeOut); }
+
+void UPlayerHUD::CollapseAbilityImage(const int32 Index) const
+{
+	switch (Index)
+	{
+		case 0:
+			FirstAbilityImage->SetVisibility(ESlateVisibility::Collapsed); 
+			FirstAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			break;
+		case 1:
+			SecondAbilityImage->SetVisibility(ESlateVisibility::Collapsed); 
+			SecondAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			break;
+		default:
+			ThirdAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
+			ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+}
 
 void UPlayerHUD::NativeConstruct()
 {
@@ -119,6 +126,36 @@ void UPlayerHUD::NativeConstruct()
 }
 
 void UPlayerHUD::ToggleCrosshair() { ToggleUI(Crosshair); }
+
+void UPlayerHUD::TriggerAbilityIconReady(const EUIBar InBar, const float InCurrent, const float InMax) const
+{
+	switch (InBar)
+	{
+		case EUIBar::FirstAbility: 
+			FirstAbilityProgressBar->SetPercent(InCurrent / InMax);
+			if (FMath::IsNearlyEqual(InCurrent, InMax, 0.01f))
+			{
+				FirstAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				FirstAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
+			}
+			break;
+		case EUIBar::SecondAbility: 
+			SecondAbilityProgressBar->SetPercent(InCurrent / InMax);
+			if (FMath::IsNearlyEqual(InCurrent, InMax, 0.01f))
+			{
+				SecondAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				SecondAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
+			}
+			break;
+		default:
+			ThirdAbilityProgressBar->SetPercent(InCurrent / InMax);
+			if (FMath::IsNearlyEqual(InCurrent, InMax, 0.01f))
+			{
+				ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+				ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
+			}
+	}
+}
 
 template<typename T>
 void UPlayerHUD::ToggleUI(const TObjectPtr<T>& InUI)

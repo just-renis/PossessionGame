@@ -23,9 +23,8 @@ public:
 	void UpdateAmmoText(const int32 InWeaponAmmo, const int32 InMaxAmmo) const;
 	void UpdateAmmoText(const int32 InFirstWeaponAmmo, const int32 InSecondWeaponAmmo, const int32 InMaxAmmo) const;
 	void ToggleAbilitiesUI();
-	void UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs) const;
-	void UpdateAbilityCooldown(const int32 InWhichAbility, const int32 InKills) const;
-	void ChangeColorOfText(const int32 InWhichAbility, const FLinearColor InColor) const;
+	void UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs, const float InReqSecs) const;
+	void UpdateAbilityCooldown(const int32 InWhichAbility, const int32 InKills, const int32 InReqKills) const;
 	void UpdateFps(const int32 InFps) const;
 	void BindCrosshairToggleDelegate();
 	void Reset() const;
@@ -35,6 +34,7 @@ public:
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs() const;
 	void PlayDeathFadeOutAnim();
+	void CollapseAbilityImage(const int32 Index) const;
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> PossessionBar;
@@ -45,11 +45,17 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HPBar;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> FirstAbilityText;
+	TObjectPtr<UProgressBar> FirstAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> SecondAbilityText;
+	TObjectPtr<UImage> FirstAbilityImage;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ThirdAbilityText;
+	TObjectPtr<UProgressBar> SecondAbilityProgressBar;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> SecondAbilityImage;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> ThirdAbilityProgressBar;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> ThirdAbilityImage;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> FirstAbilityIcon;
 	UPROPERTY(meta = (BindWidget))
@@ -71,6 +77,7 @@ private:
 
 	virtual void NativeConstruct() override;
 	void ToggleCrosshair();
+	void TriggerAbilityIconReady(const EUIBar InBar, const float InCurrent, const float InMax) const;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };

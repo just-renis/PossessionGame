@@ -208,7 +208,7 @@ private:
 	void P_OnEnemyDeathEvents();
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
-	void P_UpdateAbilityCooldownUITextColor(const int32 Index);
+	void P_UpdateAbilityCooldownUI(const int32 Index);
 	void P_StopAllAbilities();
 	void P_HandleEscapeClick();
 	void P_TriggerGlitchingEffect() const;

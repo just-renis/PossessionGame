@@ -5,7 +5,7 @@
 void UAbility::Tick(float DeltaTime)
 {
 	if (bIsAbilityInDuration) AbilityInDurationLogic(DeltaTime);
-	else if (!bIsCooldownKill && CurrentCooldownSecs > 0.f) CooldownLogic(DeltaTime);
+	else if (!bIsCooldownKill && CurrentCooldownSecs < ReqCooldownSecs) CooldownLogic(DeltaTime);
 }
 
 void UAbility::Setup(TObjectPtr<AEnemy> AbilityProprietor, TObjectPtr<UAbilityData> AbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
@@ -13,20 +13,18 @@ void UAbility::Setup(TObjectPtr<AEnemy> AbilityProprietor, TObjectPtr<UAbilityDa
 	DelegateManager = InDelegateManager;
 	ReqCooldownSecs = AbilityData->GetCooldownSecs();
 	ReqCooldownKill = AbilityData->GetCurrentCooldownKill();
-	CurrentCooldownSecs = ReqCooldownSecs;
-	CurrentCooldownKill = ReqCooldownKill;
 	if (CurrentCooldownKill > 0) bIsCooldownKill = true;
 	SetProprietor(AbilityProprietor);
 }
 
 void UAbility::ResetCooldown()
 {
-	if (bIsCooldownKill) CurrentCooldownKill = ReqCooldownKill;
-	else CurrentCooldownSecs = ReqCooldownSecs;
+	if (bIsCooldownKill) CurrentCooldownKill = 0;
+	else CurrentCooldownSecs = 0.f;
 	if (bIsRefreshingOtherAbility) RefreshOtherAbility();
 }
 
-void UAbility::CooldownLogic(const float DeltaTime) { CurrentCooldownSecs -= DeltaTime; }
+void UAbility::CooldownLogic(const float DeltaTime) { CurrentCooldownSecs += DeltaTime; }
 
 void UAbility::SetupAdditionalProperties(TObjectPtr<UAbilityData> AbilityData, TObjectPtr<UAbility> AbilityToRefresh)
 {

@@ -72,7 +72,9 @@ void AEnemy::P_UseAbility(const int32 AbilityIndex)
 	if (!bIsActionInMotion && AbilityIndex < Abilities.Num() && Abilities[AbilityIndex]->CanExecute())
 	{
 		Abilities[AbilityIndex]->P_Execute();
-		if (P_HUD && Abilities[AbilityIndex]->GetIsCooldownKill()) P_HUD->UpdateAbilityCooldown(AbilityIndex, Abilities[AbilityIndex]->GetCurrentCooldownKill());
+		if (!P_HUD) return;
+		if (Abilities[AbilityIndex]->GetIsCooldownKill()) P_HUD->UpdateAbilityCooldown(AbilityIndex, Abilities[AbilityIndex]->GetCurrentCooldownKill(), Abilities[AbilityIndex]->GetReqCooldownKill());
+		P_HUD->CollapseAbilityImage(AbilityIndex);
 	}
 }
 
@@ -598,7 +600,7 @@ void AEnemy::P_OnEnemyDeathEvents()
 		if (Abilities[i]->GetIsCooldownKill())
 		{
 			Abilities[i]->ReduceKillCooldown();
-			if (P_HUD) P_HUD->UpdateAbilityCooldown(i, Abilities[i]->GetCurrentCooldownKill());
+			if (P_HUD) P_HUD->UpdateAbilityCooldown(i, Abilities[i]->GetCurrentCooldownKill(), Abilities[i]->GetReqCooldownKill());
 		}
 	}
 }
@@ -616,25 +618,16 @@ void AEnemy::P_UpdateAbilitiesUI()
 {
 	for (int32 i = 0; i < Abilities.Num(); i++)
 	{
-		if (!Abilities[i]->GetIsCooldownKill()) P_HUD->UpdateAbilityCooldown(i, Abilities[i]->GetCurrentCooldownSecs());
-		else P_HUD->UpdateAbilityCooldown(i, Abilities[i]->GetCurrentCooldownKill());
+		if (!Abilities[i]->GetIsCooldownKill()) P_HUD->UpdateAbilityCooldown(i, Abilities[i]->GetCurrentCooldownSecs(), Abilities[i]->GetReqCooldownSecs());
+		else P_HUD->UpdateAbilityCooldown(i, Abilities[i]->GetCurrentCooldownKill(), Abilities[i]->GetReqCooldownKill());
 	}
 }
 
-void AEnemy::P_UpdateAbilityCooldownUITextColor(int32 Index)
+void AEnemy::P_UpdateAbilityCooldownUI(int32 Index)
 {
 	if (bIsPossessed && !Abilities[Index]->GetIsCooldownKill())
 	{
-		if (!Abilities[Index]->GetIsAbilityInDuration())
-		{
-			P_HUD->ChangeColorOfText(Index, FLinearColor::Black);
-			P_HUD->UpdateAbilityCooldown(Index, Abilities[Index]->GetCurrentCooldownSecs());
-		}
-		else
-		{
-			P_HUD->ChangeColorOfText(Index, FLinearColor::Red);
-			P_HUD->UpdateAbilityCooldown(Index, Abilities[Index]->GetCurrentDuration());
-		}
+		P_HUD->UpdateAbilityCooldown(Index, !Abilities[Index]->GetIsAbilityInDuration() ? Abilities[Index]->GetCurrentCooldownSecs() : Abilities[Index]->GetCurrentDuration(), Abilities[Index]->GetReqCooldownSecs());
 	}
 }
 
@@ -787,7 +780,7 @@ void AEnemy::TickAbilities(float DeltaTime)
 	for (int32 i = 0; i < Abilities.Num(); i++)
 	{
 		Abilities[i]->Tick(DeltaTime);
-		if (P_HUD) P_UpdateAbilityCooldownUITextColor(i);
+		if (P_HUD) P_UpdateAbilityCooldownUI(i);
 	}
 }
 

@@ -5,5 +5,8 @@ enum class EUIBar : uint8
 {
 	None,
 	Hp,
-	Possession
+	Possession,
+	FirstAbility,
+	SecondAbility,
+	ThirdAbility
 };

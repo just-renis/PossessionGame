@@ -9,11 +9,11 @@ class POSSESSIONGAME_API UAbilityData : public UDataAsset
 {
 	GENERATED_BODY()
 public:
-	int32 GetRefreshableAbilityIndex() { return RefreshableAbilityIndex; }
-	int32 GetCurrentCooldownKill() { return CurrentCooldownKill; }
-	float GetAbilityDuration() { return AbilityDuration; }
-	float GetRefreshAmount() { return RefreshAmount; }
-	float GetCooldownSecs() { return CooldownSecs; }
+	int32 GetRefreshableAbilityIndex() const { return RefreshableAbilityIndex; }
+	int32 GetCurrentCooldownKill() const { return CurrentCooldownKill; }
+	float GetAbilityDuration() const { return AbilityDuration; }
+	float GetRefreshAmount() const { return RefreshAmount; }
+	float GetCooldownSecs() const { return CooldownSecs; }
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 CurrentCooldownKill;
