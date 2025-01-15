@@ -108,14 +108,17 @@ void UPlayerHUD::CollapseAbilityImage(const int32 Index) const
 		case 0:
 			FirstAbilityImage->SetVisibility(ESlateVisibility::Collapsed); 
 			FirstAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			FirstAbilityProgressBar->SetPercent(0.f);
 			break;
 		case 1:
 			SecondAbilityImage->SetVisibility(ESlateVisibility::Collapsed); 
 			SecondAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			SecondAbilityProgressBar->SetPercent(0.f);
 			break;
 		default:
 			ThirdAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
 			ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			ThirdAbilityProgressBar->SetPercent(0.f);
 	}
 }
 

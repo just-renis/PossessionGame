@@ -625,16 +625,13 @@ void AEnemy::P_UpdateAbilitiesUI()
 
 void AEnemy::P_UpdateAbilityCooldownUI(int32 Index)
 {
-	if (bIsPossessed && !Abilities[Index]->GetIsCooldownKill())
+	if (bIsPossessed && !Abilities[Index]->GetIsCooldownKill() && !Abilities[Index]->GetIsAbilityInDuration())
 	{
-		P_HUD->UpdateAbilityCooldown(Index, !Abilities[Index]->GetIsAbilityInDuration() ? Abilities[Index]->GetCurrentCooldownSecs() : Abilities[Index]->GetCurrentDuration(), Abilities[Index]->GetReqCooldownSecs());
+		P_HUD->UpdateAbilityCooldown(Index, Abilities[Index]->GetCurrentCooldownSecs(), Abilities[Index]->GetReqCooldownSecs());
 	}
 }
 
-void AEnemy::P_StopAllAbilities()
-{
-	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->P_StopAbility();
-}
+void AEnemy::P_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->P_StopAbility(); }
 
 void AEnemy::P_HandleEscapeClick()
 {
