@@ -179,7 +179,7 @@ void ARanger::InitiateDeath()
 void ARanger::SetupGrenadeLaunchTriggerSphere()
 {
 	AIGrenadeLaunchTriggerSphere = GetWorld()->SpawnActor<ATriggerSphere>(ATriggerSphere::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
-	AIGrenadeLaunchTriggerSphere->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	AIGrenadeLaunchTriggerSphere->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionProfileName("TriggerPlayer");
 	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->CanCharacterStepUpOn = ECB_No;
 	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

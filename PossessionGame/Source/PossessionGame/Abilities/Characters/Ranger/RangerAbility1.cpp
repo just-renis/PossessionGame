@@ -28,5 +28,5 @@ void URangerAbility1::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Prop
 void URangerAbility1::CooldownLogic(const float DeltaTime)
 {
 	Super::CooldownLogic(DeltaTime);
-	if (CurrentCooldownSecs <= 0.f) Proprietor->AI_ToggleGrenadeLaunchTrigger(true);
+	if (CurrentCooldownSecs >= GetReqCooldownSecs()) Proprietor->AI_ToggleGrenadeLaunchTrigger(true);
 }
