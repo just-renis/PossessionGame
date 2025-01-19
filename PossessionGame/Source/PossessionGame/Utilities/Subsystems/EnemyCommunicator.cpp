@@ -14,7 +14,7 @@ FVector UEnemyCommunicator::GetPointLocation(ECharacterType InCharacterType, FVe
 	{
 		if (!Entry.Value.bIsOccupied && Entry.Value.ViableCharacters.Contains(InCharacterType))
 		{
-			float Distance = (InLocation - Entry.Value.Location).SizeSquared();
+			const float Distance = (InLocation - Entry.Value.Location).SizeSquared();
 			if (MinDistance > Distance)
 			{
 				MinDistance = Distance;
@@ -84,10 +84,10 @@ void UEnemyCommunicator::TargetQueryResult(TSharedPtr<FEnvQueryResult> Result)
 			switch (TSet<ECharacterType>::TConstIterator It = Data.ViableCharacters.CreateConstIterator(); *It)
 			{
 				case ECharacterType::Minion:
-					DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Blue, false, 1.0f);
+				//	DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Blue, false, 1.0f);
 					break;
-				case ECharacterType::Ranger:
-					DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Red, false, 1.0f);
+				case ECharacterType::Ranger: break;
+			//		DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Red, false, 1.0f);
 			}
 		}
 	}
