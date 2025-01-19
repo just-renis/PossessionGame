@@ -18,7 +18,7 @@ void UEnvQueryTest_CustomOverlap::RunTest(FEnvQueryInstance& QueryInstance) cons
 	for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
 	{
 		FVector Location = GetItemLocation(QueryInstance, It.GetIndex());
-		const bool bHit = GetWorld()->OverlapAnyTestByChannel(Location, FQuat::Identity, ECC_Camera, CollisionShape);
+		const bool bHit = GetWorld()->OverlapAnyTestByChannel(Location, FQuat::Identity, OverlapData.OverlapChannel, CollisionShape);
 		It.SetScore(TestPurpose, FilterType, bHit, BoolValue.GetValue());
 		if (bHit) EnemyCommunicator->RemovePoint(It.GetIndex());
 	}
