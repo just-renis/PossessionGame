@@ -42,8 +42,6 @@ public:
 	AEnemy();
 	
 	UPROPERTY()
-	TObjectPtr<UEnemyAnimationInstance> AnimInstance;
-	UPROPERTY()
 	TObjectPtr<UEnhancedPlayerInput> P_InputManager;
 	UPROPERTY()
 	FGameplayTagContainer GameplayTags;
@@ -96,6 +94,8 @@ protected:
 	float CurrentHp;
 	ECharacterType CharacterName;
 	FVector2D MouseSensitivity = FVector2D(1.f, 1.f);
+	UPROPERTY()
+	TObjectPtr<UEnemyAnimationInstance> AnimInstance;
 	UPROPERTY()
 	TObjectPtr<AEnemyAIController> AI;
 	UPROPERTY()
