@@ -410,6 +410,19 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 			GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
 		}
 	}
+	else if (P_HUD)
+	{
+		if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+		{
+			const FRadialDamageEvent* RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
+			P_HUD->SetHitLocation(RadialDamageEvent->Origin);
+		}
+		else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+		{
+			const FPointDamageEvent* PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
+			P_HUD->SetHitLocation(PointDamageEvent->HitInfo.Location);
+		}
+	}
 	return Damage;
 }
 
@@ -511,6 +524,7 @@ void AEnemy::P_SetupData()
 void AEnemy::P_SetupUI()
 {
 	P_HUD = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD);
+	P_HUD->SetPlayerRef(this);
 	P_HUD->UpdateProgressBar(EUIBar::Possession, 0.f, P_Data->GetPossessionBarCooldown());
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
 	P_HUD->ConfigureUIs();
@@ -518,6 +532,7 @@ void AEnemy::P_SetupUI()
 	Weapon->P_UpdateAmmoTextHUD();
 	P_SetupColorsForUI();
 	UKismetSystemLibrary::K2_SetTimer(this, "P_DetectIfPlayerPointingAtEnemy", 0.25f, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "P_UpdateHitDamageIndicators", 0.25f, true);
 }
 
 void AEnemy::P_PossessEnemy()
@@ -747,6 +762,12 @@ void AEnemy::P_OpenDeathMenu() const
 {
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->ChangeUIToDeathMenu();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
+}
+
+void AEnemy::P_UpdateHitDamageIndicators()
+{
+	if (!P_HUD) return;
+	P_HUD->UpdateHitDamageIndicators();
 }
 
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)

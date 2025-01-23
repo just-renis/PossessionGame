@@ -5,10 +5,26 @@
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PlayerHUD.generated.h"
 
+class UOverlay;
+class AEnemy;
 class UInvalidationBox;
 class UProgressBar;
 class UImage;
 class UTextBlock;
+
+USTRUCT()
+struct POSSESSIONGAME_API FHitDamageIndicator
+{
+	GENERATED_BODY()
+
+	FHitDamageIndicator() : Image(nullptr) {}
+	FHitDamageIndicator(const TObjectPtr<UImage>& InImage) : Image(InImage) {}
+
+	float Delay = 2.f;
+	float CurrentDelay = 0.f;
+	UPROPERTY()
+	TObjectPtr<UImage> Image;
+};
 
 UCLASS()
 class POSSESSIONGAME_API UPlayerHUD : public UUserWidget
@@ -35,7 +51,12 @@ public:
 	void ConfigureUIs() const;
 	void PlayDeathFadeOutAnim();
 	void CollapseAbilityImage(const int32 Index) const;
+	void SetPlayerRef(const TObjectPtr<AEnemy>& InPlayerRef) { Player = InPlayerRef; }
+	void SetHitLocation(const FVector InHitLocation);
+	void UpdateHitDamageIndicators();
 private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_HitDamageIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> PossessionBar;
 	UPROPERTY(meta = (BindWidget))
@@ -72,12 +93,21 @@ private:
 	TObjectPtr<UImage> RunningIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UOverlay> HitDamageIndicator;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DeathFadeOut;
+	UPROPERTY()
+	TObjectPtr<AEnemy> Player;
+	UPROPERTY()
+	TArray<TObjectPtr<UImage>> HitDamageIndicatorsPool;
+	UPROPERTY()
+	TArray<FHitDamageIndicator> InUseHitDamageIndicators;
 
 	virtual void NativeConstruct() override;
 	void ToggleCrosshair();
 	void TriggerAbilityIconReady(const EUIBar InBar, const float InCurrent, const float InMax) const;
+	void SpawnHitDamageIndicator(const float InAngle);
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };

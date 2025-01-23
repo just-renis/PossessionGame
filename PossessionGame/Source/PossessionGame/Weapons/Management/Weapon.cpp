@@ -10,6 +10,7 @@
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerWeaponData.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Enums/EVfxType.h"
+#include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -127,7 +128,8 @@ void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh
 void AWeapon::ShootProjectile(const EPoolObject InProjectileName)
 {
 	GetProjectileData(InProjectileName).SetProprietor(Proprietor);
-	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(GetProjectileData(InProjectileName), GetSocketLocation(GetProjectileData(InProjectileName).ProjectileSocketName), GetSocketRotation(GetProjectileData(InProjectileName).ProjectileSocketName), GetSocketScale(GetProjectileData(InProjectileName).ProjectileSocketName));
+	const TObjectPtr<APoolObject> Projectile = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName);
+	Projectile->SetIsInUse(GetProjectileData(InProjectileName), GetSocketLocation(GetProjectileData(InProjectileName).ProjectileSocketName), GetSocketRotation(GetProjectileData(InProjectileName).ProjectileSocketName), GetSocketScale(GetProjectileData(InProjectileName).ProjectileSocketName));
 }
 
 void AWeapon::PostProprietorSetup() { AttachAndLoadVfxs(); }

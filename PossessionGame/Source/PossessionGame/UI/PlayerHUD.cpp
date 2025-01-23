@@ -1,8 +1,13 @@
 #include "PlayerHUD.h"
+#include "Blueprint/WidgetTree.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
 #include "Components/InvalidationBox.h"
+#include "Components/Overlay.h"
+#include "Components/OverlaySlot.h"
 #include "Components/TextBlock.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, const float InMax) const
@@ -122,6 +127,13 @@ void UPlayerHUD::CollapseAbilityImage(const int32 Index) const
 	}
 }
 
+void UPlayerHUD::SetHitLocation(const FVector InHitLocation)
+{
+	const FVector Diff = (Player->GetActorLocation() - InHitLocation).GetSafeNormal(0.001f);
+	const float Angle = FMath::Atan2(Player->GetActorForwardVector().X * Diff.Y - Player->GetActorForwardVector().Y * Diff.X, Player->GetActorForwardVector().Dot(Diff));
+	SpawnHitDamageIndicator(Angle);
+}
+
 void UPlayerHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -157,6 +169,45 @@ void UPlayerHUD::TriggerAbilityIconReady(const EUIBar InBar, const float InCurre
 				ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 			}
+	}
+}
+
+void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
+{
+	if (HitDamageIndicatorsPool.IsEmpty())
+	{
+		HitDamageIndicatorsPool.Push(WidgetTree->ConstructWidget<UImage>(UImage::StaticClass()));
+		HitDamageIndicator->AddChild(HitDamageIndicatorsPool[0]);
+		const TObjectPtr<UImage> HitDamageIndicatorImg = HitDamageIndicatorsPool.Pop();
+		const TObjectPtr<UMaterialInstanceDynamic> Material = UMaterialInstanceDynamic::Create(MI_HitDamageIndicator, this);
+		Material->SetScalarParameterValue("Angle", UKismetMathLibrary::MapRangeClamped(FMath::RadiansToDegrees(InAngle), 180.f, -180.f, 0.f, 1.f));
+		const TObjectPtr<UOverlaySlot> OverlaySlot = Cast<UOverlaySlot>(HitDamageIndicatorImg->Slot);
+		OverlaySlot->SetHorizontalAlignment(HAlign_Fill);
+		OverlaySlot->SetVerticalAlignment(VAlign_Fill);
+		HitDamageIndicatorImg->SetBrushFromMaterial(Material);
+		InUseHitDamageIndicators.Push(FHitDamageIndicator(HitDamageIndicatorImg));
+	}
+	else
+	{
+		HitDamageIndicator->AddChild(HitDamageIndicatorsPool[0]);
+		const TObjectPtr<UImage> HitDamageIndicatorImg = HitDamageIndicatorsPool.Pop();
+		HitDamageIndicatorImg->GetDynamicMaterial()->SetScalarParameterValue("Angle", UKismetMathLibrary::MapRangeClamped(FMath::RadiansToDegrees(InAngle), 180.f, -180.f, 0.f, 1.f));
+		HitDamageIndicatorImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		InUseHitDamageIndicators.Push(FHitDamageIndicator(HitDamageIndicatorImg));
+	}
+}
+
+void UPlayerHUD::UpdateHitDamageIndicators()
+{
+	for (int32 i = 0; i < InUseHitDamageIndicators.Num(); i++)
+	{
+		InUseHitDamageIndicators[i].CurrentDelay += 0.25f;
+		if (InUseHitDamageIndicators[i].CurrentDelay >= InUseHitDamageIndicators[i].Delay)
+		{
+			InUseHitDamageIndicators[i].Image->SetVisibility(ESlateVisibility::Collapsed);
+			HitDamageIndicatorsPool.Push(InUseHitDamageIndicators[i].Image);
+			InUseHitDamageIndicators.RemoveAt(i);
+		}
 	}
 }
 
