@@ -20,7 +20,7 @@ struct POSSESSIONGAME_API FHitDamageIndicator
 	FHitDamageIndicator() : Image(nullptr) {}
 	FHitDamageIndicator(const TObjectPtr<UImage>& InImage) : Image(InImage) {}
 
-	float Delay = 2.f;
+	float Delay = 1.f;
 	float CurrentDelay = 0.f;
 	UPROPERTY()
 	TObjectPtr<UImage> Image;
@@ -54,6 +54,7 @@ public:
 	void SetPlayerRef(const TObjectPtr<AEnemy>& InPlayerRef) { Player = InPlayerRef; }
 	void SetHitLocation(const FVector InHitLocation);
 	void UpdateHitDamageIndicators();
+	void UpdateReceiveDamageInv();
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_HitDamageIndicator;
@@ -61,6 +62,8 @@ private:
 	TObjectPtr<UProgressBar> PossessionBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> Crosshair;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInvalidationBox> ReceiveDamageInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> AmmoText;
 	UPROPERTY(meta = (BindWidget))
@@ -97,6 +100,8 @@ private:
 	TObjectPtr<UOverlay> HitDamageIndicator;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DeathFadeOut;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ReceiveDamageFadeOut;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
 	UPROPERTY()
@@ -104,6 +109,8 @@ private:
 	UPROPERTY()
 	TArray<FHitDamageIndicator> InUseHitDamageIndicators;
 
+	float GetHitDamageIndicatorSection(const float InAngle);
+	
 	virtual void NativeConstruct() override;
 	void ToggleCrosshair();
 	void TriggerAbilityIconReady(const EUIBar InBar, const float InCurrent, const float InMax) const;

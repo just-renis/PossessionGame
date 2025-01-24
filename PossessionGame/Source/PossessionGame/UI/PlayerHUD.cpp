@@ -6,7 +6,6 @@
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
 #include "Components/TextBlock.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
@@ -180,7 +179,7 @@ void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
 		HitDamageIndicator->AddChild(HitDamageIndicatorsPool[0]);
 		const TObjectPtr<UImage> HitDamageIndicatorImg = HitDamageIndicatorsPool.Pop();
 		const TObjectPtr<UMaterialInstanceDynamic> Material = UMaterialInstanceDynamic::Create(MI_HitDamageIndicator, this);
-		Material->SetScalarParameterValue("Angle", UKismetMathLibrary::MapRangeClamped(FMath::RadiansToDegrees(InAngle), 180.f, -180.f, 0.f, 1.f));
+		Material->SetScalarParameterValue("Angle", GetHitDamageIndicatorSection(FMath::RadiansToDegrees(InAngle)));
 		const TObjectPtr<UOverlaySlot> OverlaySlot = Cast<UOverlaySlot>(HitDamageIndicatorImg->Slot);
 		OverlaySlot->SetHorizontalAlignment(HAlign_Fill);
 		OverlaySlot->SetVerticalAlignment(VAlign_Fill);
@@ -191,10 +190,18 @@ void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
 	{
 		HitDamageIndicator->AddChild(HitDamageIndicatorsPool[0]);
 		const TObjectPtr<UImage> HitDamageIndicatorImg = HitDamageIndicatorsPool.Pop();
-		HitDamageIndicatorImg->GetDynamicMaterial()->SetScalarParameterValue("Angle", UKismetMathLibrary::MapRangeClamped(FMath::RadiansToDegrees(InAngle), 180.f, -180.f, 0.f, 1.f));
-		HitDamageIndicatorImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		HitDamageIndicatorImg->GetDynamicMaterial()->SetScalarParameterValue("Angle", GetHitDamageIndicatorSection(FMath::RadiansToDegrees(InAngle)));HitDamageIndicatorImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		InUseHitDamageIndicators.Push(FHitDamageIndicator(HitDamageIndicatorImg));
 	}
+}
+
+float UPlayerHUD::GetHitDamageIndicatorSection(const float InAngle)
+{
+	float SectionValue = 0.75f;
+	if (InAngle >= -90.f && InAngle < 0.f) SectionValue = 0.5f;
+	else if (InAngle >= 0.f && InAngle < 90.f) SectionValue = 0.25f;
+	else if (InAngle >= 90.f && InAngle <= 180.f) SectionValue = 0.f;
+	return SectionValue;
 }
 
 void UPlayerHUD::UpdateHitDamageIndicators()
@@ -209,6 +216,12 @@ void UPlayerHUD::UpdateHitDamageIndicators()
 			InUseHitDamageIndicators.RemoveAt(i);
 		}
 	}
+}
+
+void UPlayerHUD::UpdateReceiveDamageInv()
+{
+	ReceiveDamageInv->SetRenderOpacity(1.f);
+	PlayAnimation(ReceiveDamageFadeOut);
 }
 
 template<typename T>

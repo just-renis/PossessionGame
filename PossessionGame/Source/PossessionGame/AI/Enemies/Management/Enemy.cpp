@@ -669,6 +669,7 @@ void AEnemy::P_HandlingDamageTaken()
 {
 	P_TriggerTakeDamageEffects();
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
+	P_HUD->UpdateReceiveDamageInv();
 	if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamage();
 }
 
