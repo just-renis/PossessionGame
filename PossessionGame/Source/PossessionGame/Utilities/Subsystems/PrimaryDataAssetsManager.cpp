@@ -59,7 +59,9 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{ FPairWrapper({ EPoolObject::RangerGrenadeLauncherProjectile, EVfxType::Impact }), EVfx::RangerGrenadeExplosion },
 		{ FPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Muzzle }), EVfx::MinionMuzzle },
 		{ FPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Trail }), EVfx::MinionBulletTrail },
-		{ FPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Impact }), EVfx::MinionBulletImpact }
+		{ FPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Impact }), EVfx::MinionBulletImpact },
+		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Muzzle }), EVfx::TricksterMuzzle },
+		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::FpsTrail }), EVfx::TricksterFpsBulletTrail }
 	};
 	Init();
 }
@@ -132,6 +134,7 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 	{
 		case ECharacterType::Ranger: return EPoolObject::RangerProjectile;
 		case ECharacterType::Minion: return EPoolObject::MinionProjectile;
+		case ECharacterType::Trickster: return EPoolObject::TricksterProjectile;
 		default: return EPoolObject::RangerProjectile;
 	}
 }
@@ -208,6 +211,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_MinionMuzzle", EVfx::MinionMuzzle);
 	VfxsMap.Add("PA_MinionBulletTrail", EVfx::MinionBulletTrail);
 	VfxsMap.Add("PA_MinionBulletImpact", EVfx::MinionBulletImpact);
+	VfxsMap.Add("PA_TricksterMuzzle", EVfx::TricksterMuzzle);
+	VfxsMap.Add("PA_TricksterFpsBulletTrail", EVfx::TricksterFpsBulletTrail);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

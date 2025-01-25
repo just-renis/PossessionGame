@@ -46,3 +46,9 @@ void ATricksterWeapon::PlayShootMontage()
 	else if (ShootMontageHandler.bIsFirstWeaponShooting) HandsAnimInstance->PlayMontage(EHandsAnimState::ShootLeft);
 	else HandsAnimInstance->PlayMontage(EHandsAnimState::ShootRight);
 }
+
+void ATricksterWeapon::AttachMuzzleFlash(const EVfx InVfxName)
+{
+	FirstWeapon->AttachMuzzleFlash(InVfxName);
+	SecondWeapon->AttachMuzzleFlash(InVfxName);
+}

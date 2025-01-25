@@ -10,14 +10,16 @@ UEQG_AroundPlayer::UEQG_AroundPlayer() { ItemType = UEnvQueryItemType_Point::Sta
 void UEQG_AroundPlayer::GenerateItems(FEnvQueryInstance& QueryInstance) const
 {
 	const TObjectPtr<UEnemyCommunicator> EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
-	constexpr int32 NumRings = 2;
+	constexpr int32 NumRings = 3;
 	constexpr int32 NumPointsInRing = 12;
 	const TObjectPtr<AActor> QueryActor = Cast<AActor>(QueryInstance.Owner.Get());
 	const TObjectPtr<UNavigationSystemV1> NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
 	QueryInstance.ReserveItemData(NumRings * NumPointsInRing);
 	for (int32 RingIndex = 0, i = 0; RingIndex < NumRings; RingIndex++)
 	{
-		const float CurrentRadius = DefaultMetresDistance * 100.f + RingIndex * RangerMetresDistance * 100.f;
+		float CurrentRadius;
+		if (RingIndex == 1) CurrentRadius = DefaultMetresDistance * 100.f + RingIndex * RangerMetresDistance * 100.f;
+		else CurrentRadius = DefaultMetresDistance * 100.f + RingIndex * 100.f;
 		for (int32 PointIndex = 0; PointIndex < NumPointsInRing; PointIndex++, i++)
 		{
 			const float Angle = FMath::DegreesToRadians(360.f / NumPointsInRing * PointIndex);
@@ -29,7 +31,8 @@ void UEQG_AroundPlayer::GenerateItems(FEnvQueryInstance& QueryInstance) const
 				FVector FixedLocation = NavPoint.Location;
 				FixedLocation.Z = PointLocation.Z;
 				QueryInstance.AddItemData<UEnvQueryItemType_Point>(FixedLocation);
-				EnemyCommunicator->AddPoint(i, FEQSPointData(FixedLocation, RingIndex == 0 ? TSet{ECharacterType::Minion} : TSet{ECharacterType::Ranger}));
+				if (RingIndex == 0) EnemyCommunicator->AddPoint(i, FEQSPointData(FixedLocation, TSet{ECharacterType::Minion}));
+				else EnemyCommunicator->AddPoint(i, FEQSPointData(FixedLocation, RingIndex == 1 ? TSet{ECharacterType::Ranger} : TSet{ECharacterType::Trickster}));
 			}
 			else i--;
 		}

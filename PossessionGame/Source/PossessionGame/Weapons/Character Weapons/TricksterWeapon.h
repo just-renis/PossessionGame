@@ -30,4 +30,5 @@ private:
 	virtual void SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh) override;
 	virtual void SetMeshes(EWeapon PrimaryDataAssetName) override;
 	virtual void PlayShootMontage() override;
+	virtual void AttachMuzzleFlash(const EVfx InVfxName) override;
 };
