@@ -43,18 +43,12 @@ FAIMoveRequest USTTaskMoveToActor::SetupAndGetMoveReq()
 	return MoveReq;
 }
 
-void USTTaskMoveToActor::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
-{
-	UE_LOG(LogTemp, Warning, TEXT("FINISHED MOVEMENT TASK"));
-	FinishTask();
-}
+void USTTaskMoveToActor::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) { FinishTask(); }
 
 EStateTreeRunStatus USTTaskMoveToActor::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ENTERED MOVEMENT TASK"));
 	CachedController = Cast<AEnemyAIController>(Context.GetOwner());
 	EStateTreeRunStatus Status = PathFollowingRequestResultHandling(CachedController->MoveTo(SetupAndGetMoveReq()));
-	UE_LOG(LogTemp, Warning, TEXT("STATUS IS: %s"), *UEnum::GetValueAsString(Status));
 	if (Status != EStateTreeRunStatus::Running) return Status;
 	CachedController->SetMoveMode(MoveMode);
 	CachedController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this, &USTTaskMoveToActor::OnMoveCompleted);
