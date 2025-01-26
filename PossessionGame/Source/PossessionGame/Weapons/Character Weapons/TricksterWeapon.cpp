@@ -30,7 +30,7 @@ void ATricksterWeapon::BeginPlay()
 
 void ATricksterWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh)
 {
-	TObjectPtr<UWeaponManager> WeaponManager = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>();
+	const TObjectPtr<UWeaponManager> WeaponManager = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>();
 	FirstWeapon = WeaponManager->GetWeapon(GetWorld(), EWeapon::TricksterSingularWeapon, CharacterMesh);
 	SecondWeapon = WeaponManager->GetWeapon(GetWorld(), EWeapon::TricksterSingularWeapon, CharacterMesh, FName("AIWeaponSocket2"));
 }

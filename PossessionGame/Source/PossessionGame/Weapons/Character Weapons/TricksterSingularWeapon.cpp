@@ -1,6 +1,12 @@
 #include "TricksterSingularWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
+void ATricksterSingularWeapon::AI_Shoot()
+{
+	Super::AI_Shoot();
+	ShootProjectile(EPoolObject::TricksterProjectile);
+}
+
 bool ATricksterSingularWeapon::P_CanReload(int32 OtherAmmoSource)
 {
 	return OtherAmmoSource != -1 ? OtherAmmoSource > 0 : TotalAmmo > 0 && CurrentAmmo != MagazineCap;

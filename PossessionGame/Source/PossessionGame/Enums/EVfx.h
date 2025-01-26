@@ -17,5 +17,7 @@ enum class EVfx : uint8
 	MinionBulletTrail,
 	MinionBulletImpact,
 	TricksterMuzzle,
-	TricksterFpsBulletTrail
+	TricksterFpsBulletTrail,
+	TricksterBulletImpact,
+	TricksterBulletTrail
 };
