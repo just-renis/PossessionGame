@@ -19,8 +19,12 @@ class POSSESSIONGAME_API APossessionGameGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
+	bool GetIsDebugModeEnabled() const { return bToggleDebugMode; }
+	
 	TArray<TSubclassOf<APrefab>>* GetPrefabsByCategory(const EPrefabCategory Category);
 private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	bool bToggleDebugMode = false;
 	UPROPERTY(EditAnywhere, Category = "Wave Manager", meta = (AllowPrivateAccess = true))
 	int32 EnemiesAmountToSpawnOnFirstWave = 1;
 	UPROPERTY(EditAnywhere, Category = "Wave Manager", meta = (AllowPrivateAccess = true))

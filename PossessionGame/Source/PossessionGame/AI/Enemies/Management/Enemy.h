@@ -10,6 +10,7 @@
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "Enemy.generated.h"
 
+class APossessionGameGameModeBase;
 enum class ESound : uint8;
 class UAIHpBarUI;
 class UWidgetComponent;
@@ -56,6 +57,7 @@ public:
 	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override { return GameplayTags.HasAny(TagContainer); }
 	float GetSkeletalMeshHeight() const;
 	ECharacterType GetCharacterName() const { return CharacterName; }
+	TObjectPtr<APossessionGameGameModeBase> GetGameModeBase() const { return GameModeBase; }
 	TObjectPtr<AEnemyAIController> GetAI() const { return AI; }
 	TObjectPtr<AWeapon>& GetWeapon() { return Weapon; }
 	TObjectPtr<UCameraComponent> GetCamera() { return Camera; }
@@ -180,6 +182,8 @@ private:
 	TObjectPtr<UAIPerceptionStimuliSourceComponent> StimuliSource;
 	UPROPERTY()
 	TObjectPtr<ANavAreaModifier> NavAreaModifier;
+	UPROPERTY()
+	TObjectPtr<APossessionGameGameModeBase> GameModeBase;
 	EAbility GetAbilityFromCharacterName(const int32 AbilityIndex) const;
 
 	void AI_SetupData();

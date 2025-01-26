@@ -3,6 +3,7 @@
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Utilities/Global Utilities/PossessionGameGameModeBase.h"
 
 FVector UEnemyCommunicator::GetPointLocation(ECharacterType InCharacterType, FVector InLocation)
 {
@@ -48,6 +49,7 @@ void UEnemyCommunicator::Init(TObjectPtr<UDelegateManager> InDelegateManager, TO
 {
 	InitDelegates(InDelegateManager);
 	TargetEQS = InTargetEQS;
+	if (WITH_EDITOR) GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
 void UEnemyCommunicator::SetTarget(TObjectPtr<AActor> InTarget)
@@ -78,19 +80,22 @@ void UEnemyCommunicator::TargetQueryResult(TSharedPtr<FEnvQueryResult> Result)
 	if (Result->IsSuccessful())
 	{
 		OnEQSFinish.Broadcast();
-		for (TPair<int32, FEQSPointData> PointData : PointsAroundTarget)
+		if (GameModeBase && GameModeBase->GetIsDebugModeEnabled())
 		{
-			const FEQSPointData& Data = PointData.Value;
-			switch (TSet<ECharacterType>::TConstIterator It = Data.ViableCharacters.CreateConstIterator(); *It)
+			for (TPair<int32, FEQSPointData> PointData : PointsAroundTarget)
 			{
-				case ECharacterType::Minion:
-					DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Blue, false, 1.0f);
-					break;
-				case ECharacterType::Ranger:
-					DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Red, false, 1.0f);
-					break;
-				case ECharacterType::Trickster:
-					DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Green, false, 1.0f);
+				const FEQSPointData& Data = PointData.Value;
+				switch (TSet<ECharacterType>::TConstIterator It = Data.ViableCharacters.CreateConstIterator(); *It)
+				{
+					case ECharacterType::Minion:
+						DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Blue, false, 1.0f);
+						break;
+					case ECharacterType::Ranger:
+						DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Red, false, 1.0f);
+						break;
+					case ECharacterType::Trickster:
+						DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Green, false, 1.0f);
+				}
 			}
 		}
 	}

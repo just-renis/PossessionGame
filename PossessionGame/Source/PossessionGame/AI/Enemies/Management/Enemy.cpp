@@ -29,6 +29,7 @@
 #include "PossessionGame/UI/PauseMenuUI.h"
 #include "PossessionGame/UI/PlayerHUD.h"
 #include "PossessionGame/UI/SettingsUI.h"
+#include "PossessionGame/Utilities/Global Utilities/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Global Utilities/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/AbilityManager.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -333,6 +334,7 @@ void AEnemy::P_TemporallyToggleRunning(const bool bState) { if (bIsRunning) SetM
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 	AI_SetupHpBar();
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);

@@ -35,6 +35,8 @@ private:
 	int32 EnemiesAmount = 0;
 	FOnEQSFinish OnEQSFinish;
 	UPROPERTY()
+	TObjectPtr<APossessionGameGameModeBase> GameModeBase;
+	UPROPERTY()
 	TObjectPtr<UEnvQuery> TargetEQS;
 	UPROPERTY()
 	TObjectPtr<AActor> Target;

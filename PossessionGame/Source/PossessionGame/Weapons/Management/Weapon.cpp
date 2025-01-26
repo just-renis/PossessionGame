@@ -11,6 +11,7 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
+#include "PossessionGame/Utilities/Global Utilities/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -195,7 +196,7 @@ void AWeapon::HitScanLogic()
 	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail))->GetVfxEffect().Get(), StartLocation, HitResult.ImpactNormal.Rotation());
-	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 2.f);
+	if (Proprietor->GetGameModeBase()->GetIsDebugModeEnabled()) DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 2.f);
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
 		SpawnOrLoadHitScanImpactVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());

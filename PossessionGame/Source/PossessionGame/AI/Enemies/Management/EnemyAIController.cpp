@@ -7,6 +7,7 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "PossessionGame/Utilities/Global Utilities/EmptyActor.h"
+#include "PossessionGame/Utilities/Global Utilities/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 
@@ -90,7 +91,7 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 		{
 			Proprietor->GetAnimInstance()->SetIsTargetInSight(true);
 			SetIsTargetInMySight(true);
-			DrawDebugLine(GetWorld(), GetPawn()->GetPawnViewLocation(), Actor->GetActorLocation(), FColor::Red, false, 2.f);
+			if (Proprietor->GetGameModeBase()->GetIsDebugModeEnabled()) DrawDebugLine(GetWorld(), GetPawn()->GetPawnViewLocation(), Actor->GetActorLocation(), FColor::Red, false, 2.f);
 		}
 	}
 	else UKismetSystemLibrary::K2_SetTimer(this, "OnLostSightOfPawn", 0.3f, false);
