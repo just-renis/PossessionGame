@@ -1,10 +1,13 @@
 ﻿#include "RangerAbility2.h"
 #include "PossessionGame/AI/Enemies/Characters/Ranger.h"
+#include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
 void URangerAbility2::AI_Execute()
 {
+	Proprietor->SetActionInMotion(true);
+	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::DeployShield);
 	bIsAbilityInDuration = true;
 	Proprietor->SpawnShield();
 	Super::AI_Execute();
@@ -12,11 +15,6 @@ void URangerAbility2::AI_Execute()
 
 void URangerAbility2::P_Execute()
 {
-	if (!this) UE_LOG(LogTemp, Warning, TEXT("ABILITY ITSELF IS GONE SOMEHOW"));
-	if (!Proprietor)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PROPRIETOR NOT EXISTING"));
-	}
 	Proprietor->SetActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::RangerDeployShield);
 	bIsAbilityInDuration = true;

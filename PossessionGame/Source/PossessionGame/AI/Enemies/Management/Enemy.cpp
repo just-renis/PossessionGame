@@ -56,7 +56,10 @@ float AEnemy::GetSkeletalMeshHeight() const { return GetMesh()->GetSocketLocatio
 
 void AEnemy::AI_InitiateShooting() { if (CurrentMoveMode != EMoveMode::Run && !AnimInstance->IsPlaying(EEnemyAnimState::Reload)) AI_PlayShootMontage(); }
 
-void AEnemy::AI_ShootLogic() { if (!bIsActionInMotion && bCanShoot && !AnimInstance->IsPlaying(EEnemyAnimState::Reload) && CurrentMoveMode != EMoveMode::Run) AI_Shoot(); }
+void AEnemy::AI_ShootLogic()
+{
+	if (!bIsActionInMotion && bCanShoot && !AnimInstance->IsPlaying(EEnemyAnimState::Reload) && CurrentMoveMode != EMoveMode::Run) AI_Shoot();
+}
 
 void AEnemy::AI_ReloadLogic() { if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload) AI_Reload(); }
 
