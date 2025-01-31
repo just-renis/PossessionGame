@@ -21,14 +21,13 @@ class POSSESSIONGAME_API UPoolingManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-	TObjectPtr<APoolObject> SpawnObjectFromPool(const EPoolObject InObjectName);
+	TObjectPtr<APoolObject> SpawnObjectFromPool(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation);
 	
-	void Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& PoolMap);
-	void ReturnObjectToPool(EPoolObject ObjectName, const TObjectPtr<APoolObject>& PoolObject);
+	void Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& InPoolMap);
+	void ReturnObjectToPool(const EPoolObject InObjectName, const TObjectPtr<APoolObject>& InPoolObject);
 private:
 	UPROPERTY()
 	TMap<EPoolObject, FObjectPoolData> Pool;
 
-	void AllocatePoolObject(const EPoolObject InObjectName);
-	void SetPoolObjectState(const TObjectPtr<APoolObject>& PoolObject, const bool bState);
+	void AllocatePoolObject(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation);
 };

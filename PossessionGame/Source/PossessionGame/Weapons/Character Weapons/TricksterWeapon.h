@@ -4,7 +4,7 @@
 #include "PossessionGame/Weapons/Categories/DualWieldingWeapon.h"
 #include "TricksterWeapon.generated.h"
 
-USTRUCT(BlueprintType)
+USTRUCT()
 struct FShootMontageHandler
 {
 	GENERATED_BODY()
@@ -20,8 +20,12 @@ class POSSESSIONGAME_API ATricksterWeapon : public ADualWieldingWeapon
 public:
 	void P_SetupOnShootState();
 private:
+	ATricksterWeapon();
+	
 	UPROPERTY()
 	FShootMontageHandler ShootMontageHandler;
+
+	virtual void AI_Reload() override;
 	
 	virtual void P_Reload(int32 OtherAmmoSource) override;
 	void P_SetShootMontage(bool bFirstWeapon, bool bState);

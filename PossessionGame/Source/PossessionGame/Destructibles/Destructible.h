@@ -17,7 +17,7 @@ public:
 	bool GetIsDeactivated() const { return bIsDeactivated; }
 	
 	void HandleDeactivation();
-	virtual void SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation) override;
+	virtual void Init(bool bInIsPlayerObject) override;
 protected:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;

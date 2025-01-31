@@ -8,6 +8,8 @@ UCLASS()
 class POSSESSIONGAME_API ATricksterSingularWeapon : public AOneHandedWeapon
 {
 	GENERATED_BODY()
+
+	ATricksterSingularWeapon();
 	
 	virtual void AI_Shoot() override;
 

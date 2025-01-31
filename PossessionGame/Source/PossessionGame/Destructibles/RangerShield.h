@@ -26,7 +26,7 @@ private:
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	virtual void BeginPlay() override;
-	virtual void SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation) override;
+	virtual void Init(bool bInIsPlayerObject) override;
 	virtual void DestroyThis() override;
 	void UpdateShieldMaterialValues(const float InOpacity, const float InProgress) const;
 	virtual void LoadSounds();

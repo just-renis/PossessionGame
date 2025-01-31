@@ -1,16 +1,32 @@
 #include "Trickster.h"
 #include "InputMappingContext.h"
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/UI/PlayerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/TricksterWeapon.h"
+
+ATrickster::ATrickster()
+{
+	Sounds.Add(ESound::TricksterSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
+	Sounds[ESound::TricksterSpawn]->SetAutoActivate(false);
+	Sounds[ESound::TricksterSpawn]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::TricksterDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("deathSound")));
+	Sounds[ESound::TricksterDeath]->SetAutoActivate(false);
+	Sounds[ESound::TricksterDeath]->SetupAttachment(GetMesh());
+}
 
 void ATrickster::AI_SetupWeapon()
 {
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::TricksterWeapon, GetMesh());
 	Super::AI_SetupWeapon();
 }
+
+void ATrickster::AI_PlayDeathSound() { PlaySound(ESound::TricksterDeath); }
+
+void ATrickster::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::TricksterOnPossession); }
 
 void ATrickster::P_Setup()
 {
@@ -58,10 +74,10 @@ void ATrickster::BeginPlay()
 
 void ATrickster::StartedShootingWeapon(bool bFirstWeapon)
 {
-	OnWeaponShootStateChange.ExecuteIfBound(bFirstWeapon, true);
+	(void)OnWeaponShootStateChange.ExecuteIfBound(bFirstWeapon, true);
 }
 
 void ATrickster::StoppedShootingWeapon(bool bFirstWeapon)
 {
-	OnWeaponShootStateChange.ExecuteIfBound(bFirstWeapon, false);
+	(void)OnWeaponShootStateChange.ExecuteIfBound(bFirstWeapon, false);
 }

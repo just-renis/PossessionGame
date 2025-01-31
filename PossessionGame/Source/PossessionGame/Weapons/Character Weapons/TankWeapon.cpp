@@ -1,4 +1,6 @@
 #include "TankWeapon.h"
+
+#include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
@@ -16,7 +18,7 @@ void ATankWeapon::P_Shoot(bool bIsFirstWeapon)
 	if (AnimInstance->IsPlaying(EWeaponAnimState::Shoot))
 	{
 		Super::P_Shoot(bIsFirstWeapon);
-		if (CurrentAmmo <= 0) OnAmmoEnded.ExecuteIfBound();
+		if (CurrentAmmo <= 0) (void)OnAmmoEnded.ExecuteIfBound();
 	}
 }
 

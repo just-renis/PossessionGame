@@ -1,8 +1,18 @@
 #include "TricksterSingularWeapon.h"
+#include "Components/AudioComponent.h"
+#include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+
+ATricksterSingularWeapon::ATricksterSingularWeapon()
+{
+	Sounds.Add(ESound::TricksterShoot, CreateDefaultSubobject<UAudioComponent>(TEXT("shootSound")));
+	Sounds[ESound::TricksterShoot]->SetAutoActivate(false);
+	Sounds[ESound::TricksterShoot]->SetupAttachment(GetMesh());
+}
 
 void ATricksterSingularWeapon::AI_Shoot()
 {
+	PlaySound(ESound::TricksterShoot);
 	Super::AI_Shoot();
 	ShootProjectile(EPoolObject::TricksterProjectile);
 }
@@ -16,6 +26,7 @@ void ATricksterSingularWeapon::P_Shoot(bool bIsFirstWeapon)
 {
 	if (ShootTimer >= ShootCooldown)
 	{
+		PlaySound(ESound::TricksterShoot);
 		MuzzleFlashLogic();
 		MakeShootingCameraShake();
 		CurrentAmmo--;

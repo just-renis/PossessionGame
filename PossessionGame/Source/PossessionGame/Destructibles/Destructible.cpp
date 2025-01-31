@@ -22,9 +22,9 @@ void ADestructible::HandleDeactivation()
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", LifeSpan, false);
 }
 
-void ADestructible::SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation)
+void ADestructible::Init(bool bInIsPlayerObject)
 {
-	Super::SetIsInUse(bIsPlayerObject, Location, Rotation);
+	Super::Init(bInIsPlayerObject);
 	LifeSpan = Data->GetLifeSpan();
 	Hp = Data->GetHp();
 	bIsAffectedByPhysics = Data->GetIsAffectedByPhysics();

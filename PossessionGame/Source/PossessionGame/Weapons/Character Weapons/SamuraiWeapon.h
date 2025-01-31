@@ -5,6 +5,8 @@
 #include "PossessionGame/Weapons/Categories/OneHandedWeapon.h"
 #include "SamuraiWeapon.generated.h"
 
+enum class EWeaponAnimState : uint8;
+enum class EHandsAnimState : uint8;
 enum class EPlayerInputState : uint8;
 enum class EBowState : uint8;
 

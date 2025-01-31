@@ -4,7 +4,6 @@
 #include "GameFramework/Actor.h"
 #include "PossessionGame/Data Assets/AI/Base Data/AIWeaponData.h"
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerWeaponData.h"
-#include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "Weapon.generated.h"

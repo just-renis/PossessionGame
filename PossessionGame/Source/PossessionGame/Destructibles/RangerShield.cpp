@@ -21,12 +21,12 @@ void ARangerShield::BeginPlay()
 	Mesh->SetMaterial(1, M_Shield);
 }
 
-void ARangerShield::SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation)
+void ARangerShield::Init(bool bInIsPlayerObject)
 {
 	ShieldMaterialValueChanger = 0;
 	PlaySound(ESound::RangerDeployShield);
 	UpdateShieldMaterialValues(0.f, 0.7f);
-	Super::SetIsInUse(bInIsPlayerObject, Location, Rotation);
+	Super::Init(bInIsPlayerObject);
 	UKismetSystemLibrary::K2_SetTimer(this, "MoveShield", 0.05f, true);
 }
 

@@ -1,5 +1,6 @@
 ﻿#include "SamuraiWeapon.h"
 #include "PossessionGame/Enums/EBowState.h"
+#include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EPlayerInputState.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"

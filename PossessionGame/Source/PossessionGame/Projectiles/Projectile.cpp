@@ -25,10 +25,9 @@ AProjectile::AProjectile()
 	MovementComponent->ProjectileGravityScale = 0.0f;
 }
 
-void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale)
+void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale)
 {
 	SetActorScale3D(Scale);
-	SetActorLocationAndRotation(Location, Rotation);
 	ProjectileData = InProjectileData;
 	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
 	SetupData();
@@ -86,9 +85,10 @@ void AProjectile::SetupData()
 	MovementComponent->ProjectileGravityScale = ProjectileData.GravityScale;
 }
 
-void AProjectile::SetIsInUse(FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale)
+void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale)
 {
-	SetupProjectile(InProjectileData, Location, Rotation, Scale);
+	Super::Init(InProjectileData, Rotation, Scale);
+	SetupProjectile(InProjectileData, Scale);
 	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
 	if (BulletTrailComponent) BulletTrailComponent->Activate();
 	MovementComponent->Activate();

@@ -24,7 +24,7 @@ public:
 
 	bool GetIsPlayerProjectile() { return ProjectileData.bIsPlayerProjectile; }
 
-	void SetupProjectile(const FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale);
+	void SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale);
 	void SetDirection(const FVector Direction) const;
 protected:
 	FProjectileData ProjectileData;
@@ -49,7 +49,7 @@ private:
 	
 	virtual void BeginPlay() override;
 	void SetupData();
-	virtual void SetIsInUse(FProjectileData& InProjectileData, const FVector& Location, const FRotator& Rotation, const FVector& Scale) override;
+	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale) override;
 	void DealAreaDamage();
 	void AttachBulletTrail(EVfx VfxName);
 	void AttachAndLoadVfxs();

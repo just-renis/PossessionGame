@@ -25,5 +25,10 @@ enum class ESound : uint8
 	RangerGrenadeLaunchAim,
 	MinionShoot,
 	MinionSpawn,
-	MinionDeath
+	MinionDeath,
+	TricksterShoot,
+	TricksterReload,
+	TricksterSpawn,
+	TricksterDeath,
+	TricksterOnPossession
 };

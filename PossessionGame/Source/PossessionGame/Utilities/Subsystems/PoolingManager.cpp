@@ -2,37 +2,38 @@
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
 
-TObjectPtr<APoolObject> UPoolingManager::SpawnObjectFromPool(const EPoolObject InObjectName)
+TObjectPtr<APoolObject> UPoolingManager::SpawnObjectFromPool(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation)
 {
-	if (Pool[InObjectName].Objects.IsEmpty()) AllocatePoolObject(InObjectName);
-	TObjectPtr<APoolObject> PoolObject = Pool[InObjectName].Objects.Pop();
-	SetPoolObjectState(PoolObject, true);
+	TObjectPtr<APoolObject> PoolObject;
+	if (Pool[InObjectName].Objects.IsEmpty())
+	{
+		AllocatePoolObject(InObjectName, InLocation, InRotation);
+		PoolObject = Pool[InObjectName].Objects.Pop();
+	}
+	else
+	{
+		PoolObject = Pool[InObjectName].Objects.Pop();
+		PoolObject->SetActorLocationAndRotation(InLocation, InRotation);
+	}
 	return PoolObject;
 }
 
-void UPoolingManager::Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& PoolMap)
+void UPoolingManager::Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& InPoolMap)
 {
-	for (TTuple<EPoolObject, TSubclassOf<APoolObject>>& Element : PoolMap)
+	for (TTuple<EPoolObject, TSubclassOf<APoolObject>>& Element : InPoolMap)
 	{
 		Pool.Add(Element.Key);
 		Pool[Element.Key].ObjectClass = Element.Value;
 	}
 }
 
-void UPoolingManager::ReturnObjectToPool(EPoolObject ObjectName, const TObjectPtr<APoolObject>& PoolObject)
+void UPoolingManager::ReturnObjectToPool(const EPoolObject InObjectName, const TObjectPtr<APoolObject>& InPoolObject)
 {
-	SetPoolObjectState(PoolObject, false);
-	Pool[ObjectName].Objects.Add(PoolObject);
+	InPoolObject->Disable();
+	Pool[InObjectName].Objects.Add(InPoolObject);
 }
 
-void UPoolingManager::AllocatePoolObject(const EPoolObject InObjectName)
+void UPoolingManager::AllocatePoolObject(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation)
 {
-	Pool[InObjectName].Objects.Push(GetWorld()->SpawnActor<APoolObject>(Pool[InObjectName].ObjectClass, FVector::ZeroVector, FRotator::ZeroRotator));
-}
-
-void UPoolingManager::SetPoolObjectState(const TObjectPtr<APoolObject>& PoolObject, const bool bState)
-{
-	PoolObject->SetActorEnableCollision(bState);
-	PoolObject->SetActorHiddenInGame(!bState);
-	PoolObject->SetActorTickEnabled(bState);
+	Pool[InObjectName].Objects.Push(GetWorld()->SpawnActor<APoolObject>(Pool[InObjectName].ObjectClass, InLocation, InRotation));
 }

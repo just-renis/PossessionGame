@@ -1,7 +1,14 @@
 ﻿#include "PoolObject.h"
 
-void APoolObject::SetIsInUse(bool bInIsPlayerObject, const FVector& Location, const FRotator& Rotation)
+void APoolObject::Init(bool bInIsPlayerObject) { SetPoolObjectState(true); }
+
+void APoolObject::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale) { SetPoolObjectState(true); }
+
+void APoolObject::Disable() { SetPoolObjectState(false); }
+
+void APoolObject::SetPoolObjectState(const bool bState)
 {
-	SetActorLocation(Location);
-	SetActorRotation(Rotation);
+	SetActorEnableCollision(bState);
+	SetActorHiddenInGame(!bState);
+	SetActorTickEnabled(bState);
 }

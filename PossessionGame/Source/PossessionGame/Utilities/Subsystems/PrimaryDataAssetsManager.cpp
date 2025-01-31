@@ -181,6 +181,11 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_MinionShoot", ESound::MinionShoot);
 	SoundMap.Add("PA_MinionSpawn", ESound::MinionSpawn);
 	SoundMap.Add("PA_MinionDeath", ESound::MinionDeath);
+	SoundMap.Add("PA_TricksterShoot", ESound::TricksterShoot);
+	SoundMap.Add("PA_TricksterReload", ESound::TricksterReload);
+	SoundMap.Add("PA_TricksterSpawn", ESound::TricksterSpawn);
+	SoundMap.Add("PA_TricksterDeath", ESound::TricksterDeath);
+	SoundMap.Add("PA_TricksterOnPossession", ESound::TricksterOnPossession);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

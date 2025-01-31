@@ -4,6 +4,7 @@
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
+#include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
@@ -21,11 +22,7 @@ ARangerWeapon::ARangerWeapon()
 	Sounds[ESound::RangerReload]->SetupAttachment(Mesh);
 }
 
-void ARangerWeapon::AI_Reload()
-{
-	PlaySound(ESound::RangerReload);
-	Super::AI_Reload();
-}
+void ARangerWeapon::AI_Reload() { PlaySound(ESound::RangerReload); }
 
 void ARangerWeapon::AI_Shoot()
 {

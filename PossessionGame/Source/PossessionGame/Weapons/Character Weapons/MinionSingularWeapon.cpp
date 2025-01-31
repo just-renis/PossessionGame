@@ -1,5 +1,6 @@
 ﻿#include "MinionSingularWeapon.h"
 #include "Components/AudioComponent.h"
+#include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AMinionSingularWeapon::AMinionSingularWeapon()

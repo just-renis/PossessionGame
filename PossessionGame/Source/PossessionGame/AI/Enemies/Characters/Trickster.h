@@ -13,7 +13,11 @@ class POSSESSIONGAME_API ATrickster : public ASpecialEnemy
 public:
 	FOnWeaponShootStateChange OnWeaponShootStateChange;
 private:
+	ATrickster();
+	
 	virtual void AI_SetupWeapon() override;
+	virtual void AI_PlayDeathSound() override;
+	virtual void AI_TriggerDeathVoiceLine() override;
 
 	virtual void P_Setup() override;
 	virtual void P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) override;
