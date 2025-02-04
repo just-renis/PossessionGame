@@ -11,7 +11,7 @@ ATricksterWeapon::ATricksterWeapon()
 {
 	Sounds.Add(ESound::TricksterReload, CreateDefaultSubobject<UAudioComponent>(TEXT("reloadSound")));
 	Sounds[ESound::TricksterReload]->SetAutoActivate(false);
-	Sounds[ESound::TricksterReload]->SetupAttachment(HandsMesh);
+	Sounds[ESound::TricksterReload]->SetupAttachment(RootComponent);
 }
 
 void ATricksterWeapon::P_SetupOnShootState()
@@ -19,11 +19,7 @@ void ATricksterWeapon::P_SetupOnShootState()
 	Cast<ATrickster>(Proprietor)->OnWeaponShootStateChange.BindUObject(this, &ATricksterWeapon::P_SetShootMontage);
 }
 
-void ATricksterWeapon::AI_Reload()
-{
-	UE_LOG(LogTemp, Warning, TEXT("AI RELOAD OF TRICKSTER HAPPENED"));
-	PlaySound(ESound::TricksterReload);
-}
+void ATricksterWeapon::AI_Reload() { PlaySound(ESound::TricksterReload); }
 
 void ATricksterWeapon::P_Reload(int32 OtherAmmoSource)
 {
