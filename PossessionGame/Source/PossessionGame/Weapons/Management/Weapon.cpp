@@ -229,7 +229,6 @@ void AWeapon::SetupHandsAnimInstance()
 
 void AWeapon::DetachWeapon()
 {
-	UE_LOG(LogTemp, Warning, TEXT("DETACH WEAPON: %s"), *GetName());
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	Mesh->SetSimulatePhysics(true);
 }

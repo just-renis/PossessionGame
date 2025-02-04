@@ -449,6 +449,13 @@ EAbility AEnemy::GetAbilityFromCharacterName(const int32 AbilityIndex) const
 				case 2: return EAbility::RangerAbility2;
 				default: return EAbility::RangerAbility3;
 			}
+		case ECharacterType::Trickster:
+			switch (AbilityIndex)
+			{
+				case 1: return EAbility::TricksterAbility1;
+				case 2: return EAbility::TricksterAbility2;
+				default: return EAbility::TricksterAbility3;
+			}
 		default: return EAbility::None; 
 	}
 }

@@ -12,6 +12,8 @@ class POSSESSIONGAME_API ATrickster : public ASpecialEnemy
 	GENERATED_BODY()
 public:
 	FOnWeaponShootStateChange OnWeaponShootStateChange;
+
+	void ThrowSmokeGrenade();
 private:
 	ATrickster();
 	

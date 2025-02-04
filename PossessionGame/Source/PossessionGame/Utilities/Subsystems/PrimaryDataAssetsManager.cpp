@@ -186,6 +186,9 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TricksterSpawn", ESound::TricksterSpawn);
 	SoundMap.Add("PA_TricksterDeath", ESound::TricksterDeath);
 	SoundMap.Add("PA_TricksterOnPossession", ESound::TricksterOnPossession);
+	SoundMap.Add("PA_TricksterSmokeThrow", ESound::TricksterSmokeThrow);
+	SoundMap.Add("PA_TricksterSmokeImpact", ESound::TricksterSmokeImpact);
+	SoundMap.Add("PA_TricksterSmokeRelease", ESound::TricksterSmokeRelease);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

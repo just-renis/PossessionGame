@@ -7,6 +7,7 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/TricksterWeapon.h"
+#include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 
 ATrickster::ATrickster()
 {
@@ -16,6 +17,15 @@ ATrickster::ATrickster()
 	Sounds.Add(ESound::TricksterDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("deathSound")));
 	Sounds[ESound::TricksterDeath]->SetAutoActivate(false);
 	Sounds[ESound::TricksterDeath]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::TricksterSmokeThrow, CreateDefaultSubobject<UAudioComponent>(TEXT("smokeThrowSound")));
+	Sounds[ESound::TricksterSmokeThrow]->SetAutoActivate(false);
+	Sounds[ESound::TricksterSmokeThrow]->SetupAttachment(GetMesh());
+}
+
+void ATrickster::ThrowSmokeGrenade()
+{
+	PlaySound(ESound::TricksterSmokeThrow);
+//	Weapon->ShootProjectile(EPoolObject::TricksterSmokeProjectile);
 }
 
 void ATrickster::AI_SetupWeapon()
@@ -33,6 +43,7 @@ void ATrickster::P_Setup()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeThreeParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	Cast<ATricksterWeapon>(Weapon)->P_SetupOnShootState();
+	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ATrickster::SetActionInMotion);
 }
 
 void ATrickster::P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
