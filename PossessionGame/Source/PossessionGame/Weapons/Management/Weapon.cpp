@@ -204,7 +204,7 @@ void AWeapon::HitScanLogic()
 		SpawnOrLoadHitScanImpactVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());
 		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible"))
 		{
-			UGameplayStatics::ApplyPointDamage(HitResult.GetActor(), HitResult.BoneName == "Head" ? HitScanDamage * 2 : HitScanDamage, (HitResult.Location - GetActorLocation()).GetSafeNormal(), HitResult, nullptr, this, UDamageType::StaticClass());
+			UGameplayStatics::ApplyPointDamage(HitResult.GetActor(), HitResult.BoneName == "head" ? HitScanDamage * 2 : HitScanDamage, (HitResult.Location - GetActorLocation()).GetSafeNormal(), HitResult, nullptr, this, UDamageType::StaticClass());
 		}
 	}
 }

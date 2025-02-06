@@ -63,7 +63,9 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Muzzle }), EVfx::TricksterMuzzle },
 		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::FpsTrail }), EVfx::TricksterFpsBulletTrail },
 		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Impact }), EVfx::TricksterBulletImpact },
-		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Trail }), EVfx::TricksterBulletTrail }
+		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Trail }), EVfx::TricksterBulletTrail },
+		{ FPairWrapper({ EPoolObject::TricksterSmokeProjectile, EVfxType::Impact }), EVfx::TricksterSmokeImpact },
+		{ FPairWrapper({ EPoolObject::TricksterSmokeProjectile, EVfxType::SecondaryImpact }), EVfx::TricksterSmoke }
 	};
 	Init();
 }
@@ -225,6 +227,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TricksterFpsBulletTrail", EVfx::TricksterFpsBulletTrail);
 	VfxsMap.Add("PA_TricksterBulletImpact", EVfx::TricksterBulletImpact);
 	VfxsMap.Add("PA_TricksterBulletTrail", EVfx::TricksterBulletTrail);
+	VfxsMap.Add("PA_TricksterSmokeImpact", EVfx::TricksterSmokeImpact);
+	VfxsMap.Add("PA_TricksterSmoke", EVfx::TricksterSmoke);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

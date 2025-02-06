@@ -65,3 +65,8 @@ void ATricksterWeapon::AttachMuzzleFlash(const EVfx InVfxName)
 	FirstWeapon->AttachMuzzleFlash(InVfxName);
 	SecondWeapon->AttachMuzzleFlash(InVfxName);
 }
+
+void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName)
+{
+	SecondWeapon->ShootProjectile(InProjectileName);
+}

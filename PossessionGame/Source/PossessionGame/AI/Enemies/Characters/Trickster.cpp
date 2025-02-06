@@ -25,7 +25,7 @@ ATrickster::ATrickster()
 void ATrickster::ThrowSmokeGrenade()
 {
 	PlaySound(ESound::TricksterSmokeThrow);
-//	Weapon->ShootProjectile(EPoolObject::TricksterSmokeProjectile);
+	Weapon->ShootProjectile(EPoolObject::TricksterSmokeProjectile);
 }
 
 void ATrickster::AI_SetupWeapon()

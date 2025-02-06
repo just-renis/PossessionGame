@@ -7,5 +7,6 @@ enum class EVfxType : uint8
 	Muzzle,
 	Trail,
 	FpsTrail,
-	Impact
+	Impact,
+	SecondaryImpact
 };

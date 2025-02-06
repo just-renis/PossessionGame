@@ -35,4 +35,5 @@ private:
 	virtual void SetMeshes(EWeapon PrimaryDataAssetName) override;
 	virtual void PlayShootMontage() override;
 	virtual void AttachMuzzleFlash(const EVfx InVfxName) override;
+	virtual void ShootProjectile(const EPoolObject InProjectileName) override;
 };
