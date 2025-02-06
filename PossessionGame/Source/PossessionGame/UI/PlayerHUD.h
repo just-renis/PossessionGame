@@ -55,6 +55,7 @@ public:
 	void SetHitLocation(const FVector InHitLocation);
 	void UpdateHitDamageIndicators();
 	void UpdateReceiveDamageInv();
+	//void SetAbilityImage(const int32 InWhichAbility)
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_HitDamageIndicator;
