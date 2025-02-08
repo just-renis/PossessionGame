@@ -8,9 +8,8 @@ UCLASS()
 class POSSESSIONGAME_API ARangerGrenade : public AProjectile
 {
 	GENERATED_BODY()
-public:
+
 	ARangerGrenade();
-private:
-	virtual void LoadSounds() override;
+	
 	virtual void PlayImpactSound() override;
 };

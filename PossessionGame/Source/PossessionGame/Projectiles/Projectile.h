@@ -22,7 +22,7 @@ class POSSESSIONGAME_API AProjectile : public APoolObject
 public:
 	AProjectile();
 
-	bool GetIsPlayerProjectile() { return ProjectileData.bIsPlayerProjectile; }
+	bool GetIsPlayerProjectile() const { return ProjectileData.bIsPlayerProjectile; }
 
 	void SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale);
 	void SetDirection(const FVector Direction) const;
@@ -35,7 +35,6 @@ protected:
 
 	void PlaySound(const ESound InSoundName);
 	virtual void PlayImpactSound() {}
-	virtual void LoadSounds() {}
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:

@@ -6,11 +6,7 @@ ARangerGrenade::ARangerGrenade()
 {
 	Sounds.Add(ESound::RangerGrenadeExplosion, CreateDefaultSubobject<UAudioComponent>(TEXT("grenadeExplosionSound")));
 	Sounds[ESound::RangerGrenadeExplosion]->SetAutoActivate(false);
-}
-
-void ARangerGrenade::LoadSounds()
-{
-	Sounds[ESound::RangerGrenadeExplosion]->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	Sounds[ESound::RangerGrenadeExplosion]->SetupAttachment(Mesh);
 }
 
 void ARangerGrenade::PlayImpactSound() { PlaySound(ESound::RangerGrenadeExplosion); }
