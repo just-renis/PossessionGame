@@ -31,10 +31,13 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY()
+	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
+	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	void PlaySound(const ESound InSoundName);
 	virtual void PlayImpactSound() {}
+	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale) override;
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
@@ -43,18 +46,15 @@ private:
 	TObjectPtr<UProjectileMovementComponent> MovementComponent;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
-	UPROPERTY()
-	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	
 	virtual void BeginPlay() override;
 	void SetupData();
-	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale) override;
 	void DealAreaDamage();
 	void AttachBulletTrail(EVfx VfxName);
 	void AttachAndLoadVfxs();
-	void SpawnOrLoadBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation);
 	void SpawnBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation);
+	void SpawnOrLoadBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation);
 	void DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
 	UFUNCTION()
-	void DestroyThis();
+	virtual void DestroyThis();
 };

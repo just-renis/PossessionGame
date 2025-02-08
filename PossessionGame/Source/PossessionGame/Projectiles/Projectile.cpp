@@ -45,6 +45,15 @@ void AProjectile::PlaySound(const ESound InSoundName)
 	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName);
 }
 
+void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale)
+{
+	Super::Init(InProjectileData, Rotation, Scale);
+	SetupProjectile(InProjectileData, Scale);
+	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
+	if (BulletTrailComponent) BulletTrailComponent->Activate();
+	MovementComponent->Activate();
+}
+
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor == this || OtherActor == nullptr) return;
@@ -84,15 +93,6 @@ void AProjectile::SetupData()
 	MovementComponent->InitialSpeed = ProjectileData.InitialSpeed;
 	MovementComponent->MaxSpeed = ProjectileData.MaxSpeed;
 	MovementComponent->ProjectileGravityScale = ProjectileData.GravityScale;
-}
-
-void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale)
-{
-	Super::Init(InProjectileData, Rotation, Scale);
-	SetupProjectile(InProjectileData, Scale);
-	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
-	if (BulletTrailComponent) BulletTrailComponent->Activate();
-	MovementComponent->Activate();
 }
 
 void AProjectile::DealAreaDamage()
@@ -149,5 +149,4 @@ void AProjectile::DestroyThis()
 	if (BulletTrailComponent) BulletTrailComponent->Deactivate();
 	MovementComponent->Deactivate();
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);
-	
 }
