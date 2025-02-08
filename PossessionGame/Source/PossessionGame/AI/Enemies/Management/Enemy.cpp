@@ -533,6 +533,7 @@ void AEnemy::P_SetupData()
 void AEnemy::P_SetupUI()
 {
 	P_HUD = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD);
+	P_HUD->SetCharacterType(CharacterName);
 	P_HUD->SetPlayerRef(this);
 	P_HUD->UpdateProgressBar(EUIBar::Possession, 0.f, P_Data->GetPossessionBarCooldown());
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);

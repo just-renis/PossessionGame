@@ -2,9 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PlayerHUD.generated.h"
 
+class UAbilitiesPanelUI;
+enum class ECharacterType : uint8;
 class UOverlay;
 class AEnemy;
 class UInvalidationBox;
@@ -34,30 +37,35 @@ public:
 	void TogglePossessionBar() { ToggleUI(PossessionBar); }
 	void ToggleAmmoText() { ToggleUI(AmmoText); }
 	void ToggleHpBar() { ToggleUI(HPBar); }
-	void UpdateProgressBar(const EUIBar InBar, float InCurrent, float InMax) const;
+	void UpdateProgressBar(const EUIBar InBar, float InCurrent, float InMax);
 	void UpdateAmmoText(const int32 InWeaponAmmo) const;
 	void UpdateAmmoText(const int32 InWeaponAmmo, const int32 InMaxAmmo) const;
 	void UpdateAmmoText(const int32 InFirstWeaponAmmo, const int32 InSecondWeaponAmmo, const int32 InMaxAmmo) const;
-	void ToggleAbilitiesUI();
-	void UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs, const float InReqSecs) const;
-	void UpdateAbilityCooldown(const int32 InWhichAbility, const int32 InKills, const int32 InReqKills) const;
+	void UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs, const float InReqSecs);
+	void UpdateAbilityCooldown(const int32 InWhichAbility, const int32 InKills, const int32 InReqKills);
 	void UpdateFps(const int32 InFps) const;
 	void BindCrosshairToggleDelegate();
-	void Reset() const;
+	void Reset();
 	void SetColors(const FLinearColor InColor) const;
 	void UpdatePossessionIndicator(const bool bState) const;
 	void UpdateRunningIndicator(const bool bState) const;
 	void ToggleCriticalDamageIndicator() const;
-	void ConfigureUIs() const;
+	void ConfigureUIs();
 	void PlayDeathFadeOutAnim();
-	void CollapseAbilityImage(const int32 Index) const;
+	void CollapseAbilityImage(const int32 Index);
 	void SetPlayerRef(const TObjectPtr<AEnemy>& InPlayerRef) { Player = InPlayerRef; }
 	void SetHitLocation(const FVector InHitLocation);
 	void UpdateHitDamageIndicators();
 	void UpdateReceiveDamageInv();
+	void SetCharacterType(const ECharacterType InCharacterType);
 private:
+	ECharacterType CharacterType;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_HitDamageIndicator;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	TObjectPtr<UAbilitiesPanelUI> RangerAbilitiesPanel;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	TObjectPtr<UAbilitiesPanelUI> TricksterAbilitiesPanel;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> PossessionBar;
 	UPROPERTY(meta = (BindWidget))
@@ -68,24 +76,6 @@ private:
 	TObjectPtr<UTextBlock> AmmoText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HPBar;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> FirstAbilityProgressBar;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> FirstAbilityImage;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> SecondAbilityProgressBar;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> SecondAbilityImage;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> ThirdAbilityProgressBar;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> ThirdAbilityImage;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> FirstAbilityIcon;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> SecondAbilityIcon;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> ThirdAbilityIcon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ScreenGlow;
 	UPROPERTY(meta = (BindWidget))
@@ -110,10 +100,10 @@ private:
 	TArray<FHitDamageIndicator> InUseHitDamageIndicators;
 
 	float GetHitDamageIndicatorSection(const float InAngle);
+	TObjectPtr<UAbilitiesPanelUI> GetAbilityPanel();
 	
 	virtual void NativeConstruct() override;
 	void ToggleCrosshair();
-	void TriggerAbilityIconReady(const EUIBar InBar, const float InCurrent, const float InMax) const;
 	void SpawnHitDamageIndicator(const float InAngle);
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);

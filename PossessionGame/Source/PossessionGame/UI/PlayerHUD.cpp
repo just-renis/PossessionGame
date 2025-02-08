@@ -1,4 +1,5 @@
 #include "PlayerHUD.h"
+#include "AbilitiesPanelUI.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
@@ -9,13 +10,13 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
-void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, const float InMax) const
+void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, const float InMax)
 {
 	switch (InBar)
 	{
 		case EUIBar::Hp: if (HPBar) HPBar->SetPercent(InCurrent / InMax); break;
 		case EUIBar::Possession: if (PossessionBar) PossessionBar->SetPercent(InCurrent / InMax); break;
-		default: TriggerAbilityIconReady(InBar, InCurrent, InMax);
+		default: GetAbilityPanel()->TriggerAbilityIconReady(InBar, InCurrent, InMax);
 	}
 }
 
@@ -34,14 +35,7 @@ void UPlayerHUD::UpdateAmmoText(const int32 InFirstWeaponAmmo, const int32 InSec
 	if (AmmoText) AmmoText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d / %d"), InFirstWeaponAmmo, InSecondWeaponAmmo, InMaxAmmo)));
 }
 
-void UPlayerHUD::ToggleAbilitiesUI()
-{
-	ToggleUI(FirstAbilityIcon);
-	ToggleUI(SecondAbilityIcon);
-	ToggleUI(ThirdAbilityIcon);
-}
-
-void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs, const float InReqSecs) const
+void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs, const float InReqSecs)
 {
 	switch (InWhichAbility)
 	{
@@ -51,7 +45,7 @@ void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const float I
 	}
 }
 
-void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const int32 InKills, const int32 InReqKills) const
+void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const int32 InKills, const int32 InReqKills)
 {
 	switch (InWhichAbility)
 	{
@@ -71,15 +65,13 @@ void UPlayerHUD::BindCrosshairToggleDelegate()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnZoomToggle.BindUObject(this, &UPlayerHUD::ToggleCrosshair);
 }
 
-void UPlayerHUD::Reset() const
+void UPlayerHUD::Reset()
 {
 	PossessionBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	Crosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	AmmoText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	HPBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	FirstAbilityIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	SecondAbilityIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	ThirdAbilityIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	GetAbilityPanel()->SetOverlaysVisibility(true);
 }
 
 void UPlayerHUD::SetColors(const FLinearColor InColor) const { ScreenGlow->SetColorAndOpacity(InColor); }
@@ -93,38 +85,19 @@ void UPlayerHUD::ToggleCriticalDamageIndicator() const
 	CriticalDamageIndicator->SetVisibility(CriticalDamageIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
 }
 
-void UPlayerHUD::ConfigureUIs() const
+void UPlayerHUD::ConfigureUIs()
 {
 	PossessionIndicator->SetOpacity(0.3f);
 	RunningIndicator->SetOpacity(0.3f);
 	CriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
-	CollapseAbilityImage(0);
-	CollapseAbilityImage(1);
-	CollapseAbilityImage(2);
+	GetAbilityPanel()->CollapseAbilityIcon(0);
+	GetAbilityPanel()->CollapseAbilityIcon(1);
+	GetAbilityPanel()->CollapseAbilityIcon(2);
 }
 
 void UPlayerHUD::PlayDeathFadeOutAnim() { PlayAnimation(DeathFadeOut); }
 
-void UPlayerHUD::CollapseAbilityImage(const int32 Index) const
-{
-	switch (Index)
-	{
-		case 0:
-			FirstAbilityImage->SetVisibility(ESlateVisibility::Collapsed); 
-			FirstAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			FirstAbilityProgressBar->SetPercent(0.f);
-			break;
-		case 1:
-			SecondAbilityImage->SetVisibility(ESlateVisibility::Collapsed); 
-			SecondAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			SecondAbilityProgressBar->SetPercent(0.f);
-			break;
-		default:
-			ThirdAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
-			ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			ThirdAbilityProgressBar->SetPercent(0.f);
-	}
-}
+void UPlayerHUD::CollapseAbilityImage(const int32 Index) { GetAbilityPanel()->CollapseAbilityIcon(Index); }
 
 void UPlayerHUD::SetHitLocation(const FVector InHitLocation)
 {
@@ -140,36 +113,6 @@ void UPlayerHUD::NativeConstruct()
 }
 
 void UPlayerHUD::ToggleCrosshair() { ToggleUI(Crosshair); }
-
-void UPlayerHUD::TriggerAbilityIconReady(const EUIBar InBar, const float InCurrent, const float InMax) const
-{
-	switch (InBar)
-	{
-		case EUIBar::FirstAbility: 
-			FirstAbilityProgressBar->SetPercent(InCurrent / InMax);
-			if (FMath::IsNearlyEqual(InCurrent, InMax, 0.01f))
-			{
-				FirstAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				FirstAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
-			}
-			break;
-		case EUIBar::SecondAbility: 
-			SecondAbilityProgressBar->SetPercent(InCurrent / InMax);
-			if (FMath::IsNearlyEqual(InCurrent, InMax, 0.01f))
-			{
-				SecondAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				SecondAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
-			}
-			break;
-		default:
-			ThirdAbilityProgressBar->SetPercent(InCurrent / InMax);
-			if (FMath::IsNearlyEqual(InCurrent, InMax, 0.01f))
-			{
-				ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
-			}
-	}
-}
 
 void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
 {
@@ -204,6 +147,15 @@ float UPlayerHUD::GetHitDamageIndicatorSection(const float InAngle)
 	return SectionValue;
 }
 
+TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
+{
+	switch (CharacterType)
+	{
+		case ECharacterType::Ranger: return RangerAbilitiesPanel;
+		default: return TricksterAbilitiesPanel;
+	}
+}
+
 void UPlayerHUD::UpdateHitDamageIndicators()
 {
 	for (int32 i = 0; i < InUseHitDamageIndicators.Num(); i++)
@@ -222,6 +174,21 @@ void UPlayerHUD::UpdateReceiveDamageInv()
 {
 	ReceiveDamageInv->SetRenderOpacity(1.f);
 	PlayAnimation(ReceiveDamageFadeOut);
+}
+
+void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
+{
+	CharacterType = InCharacterType;
+	switch (InCharacterType)
+	{
+		case ECharacterType::Ranger:
+			TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			RangerAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			break;
+		default:
+			RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
 }
 
 template<typename T>
