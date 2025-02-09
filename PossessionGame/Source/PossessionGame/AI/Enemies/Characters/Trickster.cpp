@@ -17,20 +17,21 @@ ATrickster::ATrickster()
 	Sounds.Add(ESound::TricksterDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("deathSound")));
 	Sounds[ESound::TricksterDeath]->SetAutoActivate(false);
 	Sounds[ESound::TricksterDeath]->SetupAttachment(GetMesh());
-	Sounds.Add(ESound::TricksterSmokeThrow, CreateDefaultSubobject<UAudioComponent>(TEXT("smokeThrowSound")));
-	Sounds[ESound::TricksterSmokeThrow]->SetAutoActivate(false);
-	Sounds[ESound::TricksterSmokeThrow]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::TricksterGrenadeThrow, CreateDefaultSubobject<UAudioComponent>(TEXT("grenadeThrowSound")));
+	Sounds[ESound::TricksterGrenadeThrow]->SetAutoActivate(false);
+	Sounds[ESound::TricksterGrenadeThrow]->SetupAttachment(GetMesh());
 }
 
 void ATrickster::ThrowSmokeGrenade()
 {
-	PlaySound(ESound::TricksterSmokeThrow);
-	Weapon->ShootProjectile(EPoolObject::TricksterSmokeProjectile);
+	PlaySound(ESound::TricksterGrenadeThrow);
+	Weapon->ShootProjectile(EPoolObject::TricksterSmokeProjectile, false);
 }
 
 void ATrickster::ThrowEMPGrenade()
 {
-	
+	PlaySound(ESound::TricksterGrenadeThrow);
+	Weapon->ShootProjectile(EPoolObject::TricksterEMPProjectile);
 }
 
 void ATrickster::AI_SetupWeapon()

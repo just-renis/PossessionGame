@@ -65,7 +65,8 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Impact }), EVfx::TricksterBulletImpact },
 		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Trail }), EVfx::TricksterBulletTrail },
 		{ FPairWrapper({ EPoolObject::TricksterSmokeProjectile, EVfxType::Impact }), EVfx::TricksterSmokeImpact },
-		{ FPairWrapper({ EPoolObject::TricksterSmokeProjectile, EVfxType::SecondaryImpact }), EVfx::TricksterSmoke }
+		{ FPairWrapper({ EPoolObject::TricksterSmokeProjectile, EVfxType::SecondaryImpact }), EVfx::TricksterSmoke },
+		{ FPairWrapper({ EPoolObject::TricksterEMPProjectile, EVfxType::Impact }), EVfx::TricksterEMPImpact }
 	};
 	Init();
 }
@@ -188,9 +189,10 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TricksterSpawn", ESound::TricksterSpawn);
 	SoundMap.Add("PA_TricksterDeath", ESound::TricksterDeath);
 	SoundMap.Add("PA_TricksterOnPossession", ESound::TricksterOnPossession);
-	SoundMap.Add("PA_TricksterSmokeThrow", ESound::TricksterSmokeThrow);
+	SoundMap.Add("PA_TricksterGrenadeThrow", ESound::TricksterGrenadeThrow);
 	SoundMap.Add("PA_TricksterSmokeImpact", ESound::TricksterSmokeImpact);
 	SoundMap.Add("PA_TricksterSmokeRelease", ESound::TricksterSmokeRelease);
+	SoundMap.Add("PA_TricksterEMPImpact", ESound::TricksterEMPImpact);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -229,6 +231,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TricksterBulletTrail", EVfx::TricksterBulletTrail);
 	VfxsMap.Add("PA_TricksterSmokeImpact", EVfx::TricksterSmokeImpact);
 	VfxsMap.Add("PA_TricksterSmoke", EVfx::TricksterSmoke);
+	VfxsMap.Add("PA_TricksterEMPImpact", EVfx::TricksterEMPImpact);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

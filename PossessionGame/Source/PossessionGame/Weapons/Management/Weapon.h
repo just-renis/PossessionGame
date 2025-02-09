@@ -67,7 +67,7 @@ public:
 	void SubtractShootCycleUntilReload() { ShootCyclesUntilReload--; }
 	void SetCastShadow(const bool bState) const { if (Mesh) Mesh->SetCastShadow(bState); }
 	void AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh) const;
-	virtual void ShootProjectile(EPoolObject ProjectileName);
+	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bFromFirstWeapon = true);
 	void PostProprietorSetup();
 	virtual void AttachMuzzleFlash(const EVfx InVfxName);
 protected:

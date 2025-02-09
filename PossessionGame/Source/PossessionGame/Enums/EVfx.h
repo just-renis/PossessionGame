@@ -21,5 +21,6 @@ enum class EVfx : uint8
 	TricksterBulletImpact,
 	TricksterBulletTrail,
 	TricksterSmokeImpact,
-	TricksterSmoke
+	TricksterSmoke,
+	TricksterEMPImpact
 };

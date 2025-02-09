@@ -127,7 +127,7 @@ void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh
 	Mesh->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket1"));
 }
 
-void AWeapon::ShootProjectile(const EPoolObject InProjectileName)
+void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bFromFirstWeapon)
 {
 	GetProjectileData(InProjectileName).SetProprietor(Proprietor);
 	const FName& ProjectileSocketName = GetProjectileData(InProjectileName).ProjectileSocketName;

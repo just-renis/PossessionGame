@@ -22,9 +22,9 @@ void ASpyWeapon::BeginPlay()
 	SetupHandsAnimInstance();
 }
 
-void ASpyWeapon::ShootProjectile(EPoolObject ProjectileName)
+void ASpyWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bFromFirstWeapon)
 {
-	Super::ShootProjectile(ProjectileName);
+	Super::ShootProjectile(InProjectileName);
 	if (CurrentAmmo <= MagazineCap * 0.1f) OnAmmoPercentageChanged.Broadcast(10);
 	else if (CurrentAmmo <= MagazineCap * 0.5f) OnAmmoPercentageChanged.Broadcast(50);
 }
