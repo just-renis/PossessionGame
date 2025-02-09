@@ -28,6 +28,11 @@ void ATrickster::ThrowSmokeGrenade()
 	Weapon->ShootProjectile(EPoolObject::TricksterSmokeProjectile);
 }
 
+void ATrickster::ThrowEMPGrenade()
+{
+	
+}
+
 void ATrickster::AI_SetupWeapon()
 {
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::TricksterWeapon, GetMesh());

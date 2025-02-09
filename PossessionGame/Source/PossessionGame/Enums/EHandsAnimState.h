@@ -12,5 +12,6 @@ enum class EHandsAnimState : uint8
 	StretchStart,
 	StretchRelease,
 	GrenadeLaunch,
-	RangerDeployShield
+	RangerDeployShield,
+	SecondaryGrenadeLaunch
 };

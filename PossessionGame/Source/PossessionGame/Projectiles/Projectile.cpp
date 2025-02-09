@@ -139,7 +139,7 @@ void AProjectile::SpawnBulletImpactVfx(EVfx VfxName, const FVector& InLocation, 
 
 void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)
 {
-	const float DamageMultiplier = Hit.BoneName == "Head" ? 2.f : 1.f;
+	const float DamageMultiplier = Hit.BoneName == "head" ? 2.f : 1.f;
 	UGameplayStatics::ApplyPointDamage(OtherActor, (ProjectileData.WeaponDamage + ProjectileData.Damage) * DamageMultiplier, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
 }
 

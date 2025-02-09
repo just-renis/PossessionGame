@@ -7,6 +7,7 @@
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility2.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility3.h"
 #include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility1.h"
+#include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility2.h"
 
 TObjectPtr<UAbility> UAbilityManager::GetAbility(EAbility AbilityName, TObjectPtr<AActor> Proprietor)
 {
@@ -28,7 +29,7 @@ void UAbilityManager::InitAbilities()
     AddAbility(EAbility::RangerAbility2, URangerAbility2::StaticClass());
     AddAbility(EAbility::RangerAbility3, URangerAbility3::StaticClass());
     AddAbility(EAbility::TricksterAbility1, UTricksterAbility1::StaticClass());
-   // AddAbility(EAbility::TricksterAbility2, URangerAbility2::StaticClass());
+    AddAbility(EAbility::TricksterAbility2, UTricksterAbility2::StaticClass());
    // AddAbility(EAbility::TricksterAbility3, URangerAbility3::StaticClass());
 }
 
