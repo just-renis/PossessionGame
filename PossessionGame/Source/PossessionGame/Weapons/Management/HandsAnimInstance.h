@@ -4,6 +4,7 @@
 #include "Animation/AnimInstance.h"
 #include "HandsAnimInstance.generated.h"
 
+class AEnemy;
 enum class EWeapon : uint8;
 enum class EHandsAnimState : uint8;
 class UDelegateManager;
@@ -28,6 +29,7 @@ public:
 	void StopMontage(EHandsAnimState State, float BlendOut);
 	void SetWeaponName(EWeapon Name) { WeaponName = Name; }
 	void SetIsZoomedIn(bool bState) { bIsZoomedIn = bState; }
+	void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
 protected:
 	UPROPERTY()
 	TMap<EHandsAnimState, TObjectPtr<UAnimMontage>> Montages;
@@ -48,9 +50,12 @@ private:
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
+	UPROPERTY()
+	TObjectPtr<AEnemy> Proprietor;
 
 	bool IsMontageExisting(EHandsAnimState State);
 	
 	void LoadMontageIfNotLoaded(EHandsAnimState State);
 	virtual void BeginDestroy() override;
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 };

@@ -225,6 +225,7 @@ void AWeapon::SetupHandsAnimInstance()
 {
 	HandsAnimInstance = Cast<UHandsAnimInstance>(HandsMesh->GetAnimInstance());
 	HandsAnimInstance->SetWeaponName(Name);
+	HandsAnimInstance->SetProprietor(Proprietor);
 }
 
 void AWeapon::DetachWeapon()

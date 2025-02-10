@@ -29,12 +29,6 @@ bool ADualWieldingWeapon::P_CanShoot(bool bIsFirstWeapon)
 
 bool ADualWieldingWeapon::P_CanReload(int32 OtherAmmoSource) { return TotalAmmo > 0 && !HandsAnimInstance->GetIsReloading(); }
 
-void ADualWieldingWeapon::P_SetWalkingSpeed(float Speed) 
-{ 
-	FirstWeapon->P_SetWalkingSpeed(Speed);
-	SecondWeapon->P_SetWalkingSpeed(Speed);
-}
-
 void ADualWieldingWeapon::P_Shoot(bool bIsFirstWeapon)
 {
 	bIsFirstWeapon ? FirstWeapon->P_Shoot() : SecondWeapon->P_Shoot();

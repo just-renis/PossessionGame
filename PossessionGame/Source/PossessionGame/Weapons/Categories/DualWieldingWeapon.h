@@ -28,7 +28,6 @@ public:
     virtual bool P_CanShoot(bool bIsFirstWeapon) override;
     virtual bool P_CanReload(int32 OtherAmmoSource) override;
     
-    virtual void P_SetWalkingSpeed(float Speed) override;
     virtual void P_Shoot(bool bIsFirstWeapon) override;
     virtual void P_Reload(int32 OtherAmmoSource) override;
     virtual void P_SetupTransfer(bool bSetToFirstHand) override;

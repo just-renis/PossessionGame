@@ -1,4 +1,6 @@
 ﻿#include "HandsAnimInstance.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "KismetAnimationLibrary.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -78,4 +80,10 @@ void UHandsAnimInstance::BeginDestroy()
 {
     Super::BeginDestroy();
     OnMontageBlendingOut.RemoveAll(this);
+}
+
+void UHandsAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+{
+    Super::NativeUpdateAnimation(DeltaSeconds);
+    if (Proprietor) DirectionalAngle = UKismetAnimationLibrary::CalculateDirection(Proprietor->GetVelocity(), Proprietor->GetActorRotation());
 }
