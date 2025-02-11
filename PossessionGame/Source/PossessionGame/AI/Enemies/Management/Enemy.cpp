@@ -209,6 +209,11 @@ void AEnemy::PlaySound(const ESound InSoundName)
 	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName);
 }
 
+void AEnemy::SetEMPEffect()
+{
+	UE_LOG(LogTemp, Warning, TEXT("WHO GETS TRIGGERED EMP EFFECT: %s"), *GetName());
+}
+
 void AEnemy::AI_SetupAbilities() { SetupAbilities(AssetsManager->GetCharacterData(CharacterName)->AI_Abilities_Data); }
 
 void AEnemy::AI_Setup()

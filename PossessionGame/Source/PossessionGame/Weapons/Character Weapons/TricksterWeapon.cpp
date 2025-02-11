@@ -66,8 +66,8 @@ void ATricksterWeapon::AttachMuzzleFlash(const EVfx InVfxName)
 	SecondWeapon->AttachMuzzleFlash(InVfxName);
 }
 
-void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bFromFirstWeapon)
+void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const bool bFromFirstWeapon)
 {
-	if (bFromFirstWeapon) FirstWeapon->ShootProjectile(InProjectileName);
-	else SecondWeapon->ShootProjectile(InProjectileName);
+	if (bFromFirstWeapon) FirstWeapon->ShootProjectile(InProjectileName, bOverrideRotation);
+	else SecondWeapon->ShootProjectile(InProjectileName, bOverrideRotation);
 }

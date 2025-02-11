@@ -86,6 +86,7 @@ public:
 	virtual void InitiateDeath();
 	void ReceiveDamage(const float Damage);
 	void PlaySound(const ESound InSoundName);
+	void SetEMPEffect();
 protected:
 	bool bCanRun = true;
 	bool bCanReload = true;

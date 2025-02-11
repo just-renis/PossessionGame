@@ -14,7 +14,7 @@ void ATricksterSingularWeapon::AI_Shoot()
 {
 	PlaySound(ESound::TricksterShoot);
 	Super::AI_Shoot();
-	ShootProjectile(EPoolObject::TricksterProjectile);
+	ShootProjectile(EPoolObject::TricksterProjectile, false);
 }
 
 bool ATricksterSingularWeapon::P_CanReload(int32 OtherAmmoSource)
@@ -31,7 +31,7 @@ void ATricksterSingularWeapon::P_Shoot(bool bIsFirstWeapon)
 		MakeShootingCameraShake();
 		CurrentAmmo--;
 		ShootTimer = 0.f;
-		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::RangerProjectile);
+		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::TricksterProjectile);
 	}
 }
 

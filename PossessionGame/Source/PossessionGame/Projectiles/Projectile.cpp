@@ -45,6 +45,14 @@ void AProjectile::PlaySound(const ESound InSoundName)
 	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName);
 }
 
+void AProjectile::OnImpact(const FHitResult& Hit)
+{
+	DestroyThis();
+	SpawnOrLoadBulletImpactVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Impact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+	if (AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::SecondaryImpact) != EVfx::None) SpawnOrLoadBulletImpactVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::SecondaryImpact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+	PlayImpactSound();
+}
+
 void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale)
 {
 	Super::Init(InProjectileData, Rotation, Scale);
@@ -57,10 +65,7 @@ void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotati
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor == this || OtherActor == nullptr) return;
-	DestroyThis();
-	SpawnOrLoadBulletImpactVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Impact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-	if (AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::SecondaryImpact) != EVfx::None) SpawnOrLoadBulletImpactVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::SecondaryImpact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-	PlayImpactSound();
+	OnImpact(Hit);
 	if (ProjectileData.bProjectileDealsAreaDamage)
 	{
 		DealAreaDamage();

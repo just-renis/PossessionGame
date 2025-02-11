@@ -127,12 +127,13 @@ void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh
 	Mesh->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket1"));
 }
 
-void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bFromFirstWeapon)
+void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bOverrideRotation, bool bFromFirstWeapon)
 {
 	GetProjectileData(InProjectileName).SetProprietor(Proprietor);
 	const FName& ProjectileSocketName = GetProjectileData(InProjectileName).ProjectileSocketName;
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, GetSocketLocation(ProjectileSocketName),
-	GetSocketRotation(ProjectileSocketName))->Init(GetProjectileData(InProjectileName), GetSocketRotation(ProjectileSocketName), GetSocketScale(ProjectileSocketName));
+	bOverrideRotation ? Proprietor->GetActorRotation() : GetSocketRotation(ProjectileSocketName))
+	->Init(GetProjectileData(InProjectileName), bOverrideRotation ? Proprietor->GetActorRotation() : GetSocketRotation(ProjectileSocketName), GetSocketScale(ProjectileSocketName));
 }
 
 void AWeapon::PostProprietorSetup() { AttachAndLoadVfxs(); }
