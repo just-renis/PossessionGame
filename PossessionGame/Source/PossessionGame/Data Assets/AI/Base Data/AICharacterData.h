@@ -9,11 +9,14 @@ class POSSESSIONGAME_API UAICharacterData : public UCharacterData
 {
 	GENERATED_BODY()
 public:
-	bool GetIsPossessable() { return bIsPossessable; }
-	float GetShootPause() { return ShootPause; }
+	bool GetIsPossessable() const { return bIsPossessable; }
+	float GetShootPause() const { return ShootPause; }
+	float GetEmpEffectTime() const { return EmpEffectTime; }
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsPossessable = true;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float ShootPause = 0.2f;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	float EmpEffectTime;
 };

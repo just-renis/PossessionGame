@@ -1,6 +1,8 @@
 #include "EnemyAnimationInstance.h"
 #include "Enemy.h"
+#include "EnemyAIController.h"
 #include "KismetAnimationLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -20,12 +22,7 @@ float UEnemyAnimationInstance::GetMontageLength(EEnemyAnimState State)
     if (IsMontageExisting(State))
     {
         LoadMontageIfNotLoaded(State);
-        switch (State)
-        {
-            case EEnemyAnimState::Reload: return Montages.Find(EEnemyAnimState::Reload)->Get()->GetPlayLength();
-            case EEnemyAnimState::Shoot: return Montages.Find(EEnemyAnimState::Shoot)->Get()->GetPlayLength();
-            default: return 0.f;
-        }
+        return Montages.Find(State)->Get()->GetPlayLength();
     }
     UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in GetMontageLength"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(State));
     return 0.f;
@@ -46,6 +43,20 @@ void UEnemyAnimationInstance::PlayMontage(EEnemyAnimState State)
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontage"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(State));
 }
 
+void UEnemyAnimationInstance::PlayMontageWithHold(const EEnemyAnimState State, const float InHoldTime)
+{
+    if (IsMontageExisting(State))
+    {
+        LoadMontageIfNotLoaded(State);
+        InnerPlayMontage(State);
+        UKismetSystemLibrary::K2_SetTimer(this, "MontageHoldEnd", GetMontageLength(State) + InHoldTime, false);
+        FTimerHandle PauseHandle;
+        TObjectPtr<UAnimMontage> Montage = *Montages.Find(State);
+        GetWorld()->GetTimerManager().SetTimer(PauseHandle, [this, Montage] { Montage_Pause(Montage); }, GetMontageLength(State) - Montages.Find(State)->Get()->GetDefaultBlendOutTime() - 0.05f, false);
+    }
+    else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontageWithHold"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(State));
+}
+
 void UEnemyAnimationInstance::StopMontage(EEnemyAnimState State, float BlendOut)
 {
     if (IsMontageExisting(State))
@@ -55,6 +66,8 @@ void UEnemyAnimationInstance::StopMontage(EEnemyAnimState State, float BlendOut)
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in StopMontage"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(State));
 }
+
+void UEnemyAnimationInstance::ClearTimers() { UKismetSystemLibrary::K2_ClearTimer(this, "MontageHoldEnd"); }
 
 bool UEnemyAnimationInstance::IsMontageExisting(EEnemyAnimState State)
 {
@@ -95,4 +108,10 @@ void UEnemyAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UEnemyAnimationInstance::LoadMontageIfNotLoaded(EEnemyAnimState State)
 {
     if (!Montages.Contains(State)) Montages.Add(State, AssetsManager->GetCharacterData(Proprietor->GetCharacterName())->Montages[State].LoadSynchronous());
+}
+
+void UEnemyAnimationInstance::MontageHoldEnd() const
+{
+    Proprietor->SetActionInMotion(false);
+    if (Proprietor->GetAI()) Proprietor->GetAI()->ResumeLogic();
 }

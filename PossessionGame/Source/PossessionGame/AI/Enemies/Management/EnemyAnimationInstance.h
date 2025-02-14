@@ -24,7 +24,9 @@ public:
 	void SetSpeed(float Value) { Speed = Value; }
 	void SetDirectionalAngle();
 	void PlayMontage(EEnemyAnimState State);
+	void PlayMontageWithHold(const EEnemyAnimState State, const float InHoldTime);
 	void StopMontage(EEnemyAnimState State, float BlendOut = 0.f);
+	void ClearTimers();
 protected:
 	UPROPERTY()
 	TObjectPtr<AEnemy> Proprietor;
@@ -54,4 +56,6 @@ private:
 	
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void LoadMontageIfNotLoaded(EEnemyAnimState State);
+	UFUNCTION()
+	void MontageHoldEnd() const;
 };

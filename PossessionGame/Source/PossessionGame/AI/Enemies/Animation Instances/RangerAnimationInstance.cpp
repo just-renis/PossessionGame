@@ -12,7 +12,7 @@
 void URangerAnimationInstance::InnerPlayMontage(EEnemyAnimState State)
 {
 	Super::InnerPlayMontage(State);
-	UE_LOG(LogTemp, Warning, TEXT("ANIMATION PLAYED: %s"), *UEnum::GetValueAsString(State));
+//	UE_LOG(LogTemp, Warning, TEXT("ANIMATION PLAYED: %s"), *UEnum::GetValueAsString(State));
 	if (State == EEnemyAnimState::GrenadeLaunch)
 	{
 		UKismetSystemLibrary::K2_SetTimer(this, "TriggerGrenadeProjection", 0.1f, false);

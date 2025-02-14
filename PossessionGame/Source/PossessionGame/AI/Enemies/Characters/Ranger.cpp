@@ -161,7 +161,7 @@ void ARanger::GrenadeLauncherMuzzleFlashLogic()
 float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float ReturnDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	if (!bIsPossessed && CurrentHp <= MaxHp * 0.5f && CanAbilityBeExecuted(1)) AI_UseAbility(1);
+	if (!bIsActionInMotion && !bIsPossessed && CurrentHp <= MaxHp * 0.5f && CanAbilityBeExecuted(1)) AI_UseAbility(1);
 	return ReturnDamage;
 }
 

@@ -40,7 +40,7 @@ void AEnemyAIController::DestroyThis()
 	EnemyCommunicator->GetEQSDelegate().RemoveAll(this);
 	UKismetSystemLibrary::K2_ClearTimer(this, "SightOnTargetLogic");
 	UKismetSystemLibrary::K2_ClearTimer(this, "OnLostSightOfPawn");
-	StopStateTreeLogic();
+	StopStateTreeLogic(true);
 }
 
 void AEnemyAIController::SetProprietor(const TObjectPtr<AEnemy> InEnemy) { Proprietor = InEnemy; }
@@ -65,6 +65,14 @@ void AEnemyAIController::SetupAI()
 	if (EnemyCommunicator->GetTarget()) SetTarget(EnemyCommunicator->GetTarget(), false);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTargetChange.AddUObject(this, &AEnemyAIController::SetTarget);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDeath.AddUObject(this, &AEnemyAIController::StopStateTreeLogic);
+}
+
+void AEnemyAIController::ResumeLogic() const { StateTree->StartLogic(); }
+
+void AEnemyAIController::StopLogic(const bool bNeedCleanup)
+{
+	StopMovement();
+	StopStateTreeLogic(bNeedCleanup);
 }
 
 void AEnemyAIController::BeginPlay()
@@ -138,6 +146,15 @@ void AEnemyAIController::StopStateTreeLogic() const
 	{
 		StateTree->StopLogic(TEXT("Stopping State Tree"));
 		StateTree->Cleanup();
+	}
+}
+
+void AEnemyAIController::StopStateTreeLogic(const bool bNeedCleanup) const
+{
+	if (StateTree)
+	{
+		StateTree->StopLogic(TEXT("Stopping State Tree"));
+		if (bNeedCleanup) StateTree->Cleanup();
 	}
 }
 

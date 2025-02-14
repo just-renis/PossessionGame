@@ -10,9 +10,9 @@ class POSSESSIONGAME_API UCharacterData : public UDataAsset
 	GENERATED_BODY()
 public:
 	virtual float GetMaxHp() { return MaxHp; }
-	float GetMaxWalkSpeed() { return MaxWalkSpeed; }
-	float GetMaxRunSpeed() { return MaxRunSpeed; }
-	float GetMaxSlowedSpeed() { return MaxSlowedSpeed; }
+	float GetMaxWalkSpeed() const { return MaxWalkSpeed; }
+	float GetMaxRunSpeed() const { return MaxRunSpeed; }
+	float GetMaxSlowedSpeed() const { return MaxSlowedSpeed; }
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float MaxHp;

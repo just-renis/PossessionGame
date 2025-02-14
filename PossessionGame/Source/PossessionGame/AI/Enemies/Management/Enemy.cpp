@@ -144,6 +144,8 @@ void AEnemy::PossessedBy(AController* NewController)
 		Super::PossessedBy(NewController);
 		if (Cast<APlayerController>(NewController))
 		{
+			bIsActionInMotion = false;
+			AnimInstance->ClearTimers();
 			P_TriggerGlitchingEffect();
 			P_ToggleCriticallyDamagedEffects(0.f);
 			AssetsManager->PlaySound2D(ESound::OnPossession);
@@ -177,6 +179,7 @@ void AEnemy::AI_SetCanShoot(const bool bState)
 
 void AEnemy::InitiateDeath()
 {
+	AnimInstance->ClearTimers();
 	ClearTimers();
 	AI_DestroyHpBar();
 	bIsAlive = false;
@@ -211,7 +214,9 @@ void AEnemy::PlaySound(const ESound InSoundName)
 
 void AEnemy::SetEMPEffect()
 {
-	UE_LOG(LogTemp, Warning, TEXT("WHO GETS TRIGGERED EMP EFFECT: %s"), *GetName());
+	SetActionInMotion(true);
+	if (AI) AI->StopLogic(false);
+	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, AI_Data->GetEmpEffectTime());
 }
 
 void AEnemy::AI_SetupAbilities() { SetupAbilities(AssetsManager->GetCharacterData(CharacterName)->AI_Abilities_Data); }

@@ -33,6 +33,8 @@ public:
 	void SetMoveMode(const EMoveMode InMoveMode) const;
 	virtual void SetupAI();
 	void SetEQSTargetLocation(const FVector InLocation) const { EQSTarget->SetActorLocation(InLocation); }
+	void ResumeLogic() const;
+	void StopLogic(const bool bNeedCleanup);
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStateTreeComponent> StateTree;
@@ -65,6 +67,7 @@ private:
 	void SetupEQSTarget();
 	void SetEQSTargetLocation();
 	void StopStateTreeLogic() const;
+	void StopStateTreeLogic(const bool bNeedCleanup) const;
 
 	UFUNCTION()
 	void OnLostSightOfPawn();
