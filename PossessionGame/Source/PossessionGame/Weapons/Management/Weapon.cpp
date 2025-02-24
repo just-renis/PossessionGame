@@ -260,6 +260,7 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 {
 	const bool bIsCritical = InHitResult.BoneName == "head";
 	(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
+	AssetsManager->PlaySound2D(bIsCritical ? ESound::CriticalDamageTick : ESound::DamageTick);
 	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? HitScanDamage * 2 : HitScanDamage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 

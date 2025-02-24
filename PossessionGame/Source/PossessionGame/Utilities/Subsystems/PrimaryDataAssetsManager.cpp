@@ -114,6 +114,7 @@ void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool
 		{
 			if (IsGameRunning())
 			{
+				UE_LOG(LogTemp, Warning, TEXT("PLAYING 2D SOUND: %s"), *UEnum::GetValueAsString(InSoundName));
 				if (bStoreSoundRef) StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), GetSoundData(InSoundName)->Sound.Get()));
 				else UGameplayStatics::PlaySound2D(GetWorld(), GetSoundData(InSoundName)->Sound.Get());
 			}
@@ -193,6 +194,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TricksterSmokeImpact", ESound::TricksterSmokeImpact);
 	SoundMap.Add("PA_TricksterSmokeRelease", ESound::TricksterSmokeRelease);
 	SoundMap.Add("PA_TricksterEMPImpact", ESound::TricksterEMPImpact);
+	SoundMap.Add("PA_DamageTick", ESound::DamageTick);
+	SoundMap.Add("PA_CriticalDamageTick", ESound::CriticalDamageTick);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
