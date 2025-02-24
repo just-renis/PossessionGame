@@ -126,6 +126,7 @@ protected:
 	void MuzzleFlashLogic() const;
 	void DisableHandsMesh() const;
 	void AttachAndLoadVfxs();
+	void DealPointDamage(const FHitResult& InHitResult);
 private:
 	int32 ShootCyclesUntilReload;
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))

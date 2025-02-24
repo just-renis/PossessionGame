@@ -5,7 +5,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPlayerInputState.h"
 #include "PossessionGame/Enums/EWeapon.h"
-#include "PossessionGame/UI/PlayerHUD.h"
+#include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/SamuraiWeapon.h"

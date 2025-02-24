@@ -2,7 +2,7 @@
 #include "InputMappingContext.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/AI/Enemies/Controllers/SpyAIController.h"
-#include "PossessionGame/UI/PlayerHUD.h"
+#include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/SpyWeapon.h"

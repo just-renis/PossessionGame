@@ -9,5 +9,6 @@ enum class EWidget : uint8
     MainMenuUI,
     SettingsUI,
     PauseMenuUI,
+    UpgradeSelectionUI,
     NodeMapUI
 };

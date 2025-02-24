@@ -1,7 +1,7 @@
 ﻿#include "MainMenuBase.h"
 #include "SettingsSave.h"
 #include "Kismet/GameplayStatics.h"
-#include "PossessionGame/UI/MainMenuUI.h"
+#include "PossessionGame/UI/MainWidgets/MainMenuUI.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void AMainMenuBase::BeginPlay()

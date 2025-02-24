@@ -203,10 +203,7 @@ void AWeapon::HitScanLogic()
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
 		SpawnOrLoadHitScanImpactVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());
-		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible"))
-		{
-			UGameplayStatics::ApplyPointDamage(HitResult.GetActor(), HitResult.BoneName == "head" ? HitScanDamage * 2 : HitScanDamage, (HitResult.Location - GetActorLocation()).GetSafeNormal(), HitResult, nullptr, this, UDamageType::StaticClass());
-		}
+		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
 	}
 }
 
@@ -257,6 +254,13 @@ void AWeapon::AttachAndLoadVfxs()
 	const EVfx VfxName = AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle);
 	if (AssetsManager->GetVfxData(VfxName)->GetVfxEffect().IsValid()) AttachMuzzleFlash(VfxName);
 	else AssetsManager->GetVfxData(VfxName)->LoadVfx(GetWorld(), [this, VfxName] { AttachMuzzleFlash(VfxName); });
+}
+
+void AWeapon::DealPointDamage(const FHitResult& InHitResult)
+{
+	const bool bIsCritical = InHitResult.BoneName == "head";
+	(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
+	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? HitScanDamage * 2 : HitScanDamage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 
 void AWeapon::SpawnOrLoadHitScanImpactVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)

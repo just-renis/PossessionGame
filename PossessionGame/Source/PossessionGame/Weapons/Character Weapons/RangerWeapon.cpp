@@ -68,10 +68,7 @@ void ARangerWeapon::HitScanLogic()
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetVfxData(EVfx::RangerBulletImpact)->GetVfxEffect().Get(), HitResult.Location, HitResult.ImpactNormal.Rotation());
-			if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible"))
-			{
-				UGameplayStatics::ApplyPointDamage(HitResult.GetActor(), HitResult.BoneName == "Head" ? HitScanDamage * 2 : HitScanDamage, (HitResult.Location - GetActorLocation()).GetSafeNormal(), HitResult, nullptr, this, UDamageType::StaticClass());
-			}
+			if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
 		}
 	}
 	else Super::HitScanLogic();

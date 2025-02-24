@@ -8,6 +8,7 @@ DECLARE_DELEGATE(FOnZoomToggle);
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
 DECLARE_MULTICAST_DELEGATE(FOnEnemyDeath);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
+DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemiesAmountDecrease, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>);
@@ -28,6 +29,7 @@ public:
 	FOnZoomToggle OnZoomToggle;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnPlayerDeath OnPlayerDeath;
+	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemiesAmountDecrease OnEnemiesAmountDecrease;
 	FOnConcealAbilityChange OnConcealAbilityChange;
 	FOnTargetChange OnTargetChange;

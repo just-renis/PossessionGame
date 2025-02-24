@@ -7,10 +7,10 @@
 #include "InputMappingContext.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EWidget.h"
-#include "PossessionGame/UI/PauseMenuUI.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
-#include "PossessionGame/UI/SettingsUI.h"
+#include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
+#include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 
 APlayerGhost::APlayerGhost()
 {

@@ -8,7 +8,8 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EWidget.h"
-#include "PossessionGame/UI/WaveManagerHUD.h"
+#include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
+#include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Global Utilities/SpawnLocation.h"
 
 void UWaveManager::Init(const TObjectPtr<UDelegateManager>& InDelegateManager)
@@ -64,6 +65,7 @@ EWeapon UWaveManager::GetSingularWeapon(EWeapon Weapon)
 
 void UWaveManager::SetupTimers()
 {
+//	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
 	UpdateCountdown();
 	UKismetSystemLibrary::K2_SetTimer(this, "UpdateCountdown", 1.f, true);
 }
