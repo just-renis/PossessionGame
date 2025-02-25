@@ -225,6 +225,12 @@ void AEnemy::SetEMPEffect()
 	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, AI_Data->GetEmpEffectTime());
 }
 
+void AEnemy::SetPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr); }
+
+void AEnemy::SetPossessionOutlineTimer() { UKismetSystemLibrary::K2_SetTimer(this, "DisablePossessionOutline", 0.245f, false); }
+
+void AEnemy::DisablePossessionOutline() const { SetPossessionOutline(false); }
+
 void AEnemy::AI_SetupAbilities() { SetupAbilities(AssetsManager->GetCharacterData(CharacterName)->AI_Abilities_Data); }
 
 void AEnemy::AI_Setup()
@@ -765,6 +771,11 @@ void AEnemy::P_DetectIfPlayerPointingAtEnemy()
 	const FVector StartLocation = GetCamera()->GetComponentLocation();
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + GetCamera()->GetForwardVector() * 15000.f, ECC_Visibility))
 	{
+		if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor()))
+		{
+			Enemy->SetPossessionOutline(true);
+			Enemy->SetPossessionOutlineTimer();
+		}
 		if (P_HUD) P_HUD->UpdatePossessionIndicator(HitResult.GetActor()->ActorHasTag("AliveEnemy"));
 	}
 }

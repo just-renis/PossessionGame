@@ -87,6 +87,10 @@ public:
 	void ReceiveDamage(const float InDamage);
 	void PlaySound(const ESound InSoundName);
 	void SetEMPEffect();
+	void SetPossessionOutline(const bool bState) const;
+	void SetPossessionOutlineTimer();
+	UFUNCTION()
+	void DisablePossessionOutline() const;
 protected:
 	bool bCanRun = true;
 	bool bCanReload = true;
@@ -177,6 +181,8 @@ private:
 	TSubclassOf<UCameraShakeBase> RunningCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ReceivingDamageCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> PossessionOutlineMaterial;
 	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
