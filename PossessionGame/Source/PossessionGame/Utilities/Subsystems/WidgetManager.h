@@ -11,12 +11,12 @@ class POSSESSIONGAME_API UWidgetManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-	EWidget GetCurrentStateOfUI() { return CurrentState; }
+	EWidget GetCurrentStateOfUI() const { return CurrentState; }
 	template<typename T>
 	TObjectPtr<T> GetWidget(EWidget WidgetName);
 
-	void SetCurrentStateOfUI(EWidget State) { CurrentState = State; }
-	void Init(TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses);
+	void SetCurrentStateOfUI(const EWidget InState) { CurrentState = InState; }
+	void Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses);
 private:
 	EWidget CurrentState = EWidget::None;
 	UPROPERTY()

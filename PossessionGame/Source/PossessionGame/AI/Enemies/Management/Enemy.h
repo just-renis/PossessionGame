@@ -84,7 +84,7 @@ public:
 	void ToggleCrouch();
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override { TagContainer = GameplayTags; }
 	virtual void InitiateDeath();
-	void ReceiveDamage(const float Damage);
+	void ReceiveDamage(const float InDamage, const FVector& InHitLocation);
 	void PlaySound(const ESound InSoundName);
 	void SetEMPEffect();
 protected:
@@ -194,6 +194,7 @@ private:
 	void AI_SetupHpBar();
 	void AI_ReceivedDamage();
 	void AI_DestroyHpBar();
+	void AI_ShowDamageNumber(const float InDamageAmount, const FVector& InLocation) const;
 	UFUNCTION()
 	void AI_HideHpBar();
 	UFUNCTION()

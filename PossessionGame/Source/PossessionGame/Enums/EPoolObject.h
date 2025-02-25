@@ -12,5 +12,6 @@ enum class EPoolObject : uint8
 	ArrowProjectile,
 	RangerGrenadeLauncherProjectile,
 	RangerShield,
-	SamuraiHat
+	SamuraiHat,
+	DamageNumber
 };

@@ -36,6 +36,7 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
@@ -196,11 +197,15 @@ void AEnemy::InitiateDeath()
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", 5.f, false);
 }
 
-void AEnemy::ReceiveDamage(const float Damage)
+void AEnemy::ReceiveDamage(const float InDamage, const FVector& InHitLocation)
 {
-	CurrentHp -= Damage;
+	CurrentHp -= InDamage;
 	if (P_HUD) P_HandlingDamageTaken();
-	else AI_ReceivedDamage();
+	else if (bIsAlive)
+	{
+		AI_ReceivedDamage();
+		AI_ShowDamageNumber(InDamage, InHitLocation);
+	}
 	if (bIsAlive && CurrentHp <= 0)
 	{
 		if (bIsPossessed) P_Death();
@@ -412,33 +417,26 @@ void AEnemy::HandleDeactivation()
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	ReceiveDamage(Damage);
+	FVector HitLocation = FVector::ZeroVector;
+	const FRadialDamageEvent* RadialDamageEvent = nullptr;
+	const FPointDamageEvent* PointDamageEvent = nullptr;
+	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+	{
+		RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
+		HitLocation = GetActorLocation();
+	}
+	else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+	{
+		PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
+		HitLocation = PointDamageEvent->HitInfo.Location;
+	}
+	ReceiveDamage(Damage, HitLocation);
 	if (GetMesh()->IsSimulatingPhysics())
 	{
-		if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
-		{
-			const FRadialDamageEvent* RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
-			GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
-		}
-		else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
-		{
-			const FPointDamageEvent* PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
-			GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
-		}
+		if (RadialDamageEvent) GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
+		else GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, HitLocation);
 	}
-	else if (P_HUD)
-	{
-		if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
-		{
-			const FRadialDamageEvent* RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
-			P_HUD->SetHitLocation(RadialDamageEvent->Origin);
-		}
-		else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
-		{
-			const FPointDamageEvent* PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
-			P_HUD->SetHitLocation(PointDamageEvent->HitInfo.Location);
-		}
-	}
+	else if (P_HUD) P_HUD->SetHitLocation(RadialDamageEvent ? RadialDamageEvent->Origin : HitLocation);
 	return Damage;
 }
 
@@ -518,10 +516,12 @@ void AEnemy::AI_DestroyHpBar()
 	AI_HpBarComponent = nullptr;
 }
 
-void AEnemy::AI_HideHpBar()
+void AEnemy::AI_ShowDamageNumber(const float InDamageAmount, const FVector& InLocation) const
 {
-	if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed);
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::DamageNumber, InLocation + GetActorForwardVector() * 50.f, FRotator::ZeroRotator)->Init(InDamageAmount);
 }
+
+void AEnemy::AI_HideHpBar() { if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
 
 void AEnemy::AI_ClearShootPause()
 {
