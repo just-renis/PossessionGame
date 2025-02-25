@@ -197,14 +197,14 @@ void AEnemy::InitiateDeath()
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", 5.f, false);
 }
 
-void AEnemy::ReceiveDamage(const float InDamage, const FVector& InHitLocation)
+void AEnemy::ReceiveDamage(const float InDamage)
 {
 	CurrentHp -= InDamage;
 	if (P_HUD) P_HandlingDamageTaken();
 	else if (bIsAlive)
 	{
 		AI_ReceivedDamage();
-		AI_ShowDamageNumber(InDamage, InHitLocation);
+		AI_ShowDamageNumber(InDamage);
 	}
 	if (bIsAlive && CurrentHp <= 0)
 	{
@@ -417,26 +417,17 @@ void AEnemy::HandleDeactivation()
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	FVector HitLocation = FVector::ZeroVector;
 	const FRadialDamageEvent* RadialDamageEvent = nullptr;
 	const FPointDamageEvent* PointDamageEvent = nullptr;
-	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
-	{
-		RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
-		HitLocation = GetActorLocation();
-	}
-	else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
-	{
-		PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
-		HitLocation = PointDamageEvent->HitInfo.Location;
-	}
-	ReceiveDamage(Damage, HitLocation);
+	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
+	else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
+	ReceiveDamage(Damage);
 	if (GetMesh()->IsSimulatingPhysics())
 	{
 		if (RadialDamageEvent) GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
-		else GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, HitLocation);
+		else GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
 	}
-	else if (P_HUD) P_HUD->SetHitLocation(RadialDamageEvent ? RadialDamageEvent->Origin : HitLocation);
+	else if (P_HUD) P_HUD->SetHitLocation(RadialDamageEvent ? RadialDamageEvent->Origin : PointDamageEvent->HitInfo.Location);
 	return Damage;
 }
 
@@ -516,9 +507,9 @@ void AEnemy::AI_DestroyHpBar()
 	AI_HpBarComponent = nullptr;
 }
 
-void AEnemy::AI_ShowDamageNumber(const float InDamageAmount, const FVector& InLocation) const
+void AEnemy::AI_ShowDamageNumber(const float InDamageAmount) const
 {
-	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::DamageNumber, InLocation + GetActorForwardVector() * 50.f, FRotator::ZeroRotator)->Init(InDamageAmount);
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::DamageNumber, GetActorLocation() + FVector(0.f, 0.f, 60.f) + GetActorForwardVector() * 50.f, FRotator::ZeroRotator)->Init(InDamageAmount);
 }
 
 void AEnemy::AI_HideHpBar() { if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
@@ -623,7 +614,11 @@ void AEnemy::P_ToggleRunning(const bool bState)
 		bIsRunning = bState;
 		if (bIsRunning) UKismetSystemLibrary::K2_SetTimer(this, "P_TriggerRunningCameraShake", 0.1f, true);
 		else UKismetSystemLibrary::K2_ClearTimer(this, "P_TriggerRunningCameraShake");
-		if (P_HUD) P_HUD->UpdateRunningIndicator(bState);
+		if (P_HUD)
+		{
+			P_HUD->UpdateRunningIndicator(bState);
+			GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::SpeedLines, bState ? 1.f : 0.f);
+		}
 		SetMaxWalkSpeed(bState ? P_Data->GetMaxRunSpeed() : P_Data->GetMaxWalkSpeed());
 	}
 }
@@ -738,6 +733,7 @@ void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
 	const TObjectPtr<UPostProcessManager> PostProcessManager = GetWorld()->GetSubsystem<UPostProcessManager>();
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::BloodPumping, 0.f);
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::ScreenCrack, 0.f);
+	PostProcessManager->ToggleMaterial(EPostProcessMaterial::SpeedLines, 0.f);
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathGlitching, 1.f);
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathBloodPumping, 1.f);
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathScreenCrack, 1.f);

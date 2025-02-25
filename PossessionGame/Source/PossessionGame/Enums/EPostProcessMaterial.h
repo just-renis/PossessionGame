@@ -9,5 +9,6 @@ enum class EPostProcessMaterial : uint8
     BloodPumping,
     DeathGlitching,
     DeathScreenCrack,
-    DeathBloodPumping
+    DeathBloodPumping,
+    SpeedLines
 };

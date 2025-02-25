@@ -21,7 +21,6 @@ void ADamageNumber::Init(const float InData)
 {
 	Super::Init(InData);
 	DamageNumber->SetDamageAmount(InData);
-	UE_LOG(LogTemp, Warning, TEXT("ANIMATION LENGTH: %f"), DamageNumber->GetAnimationLength());
 	UKismetSystemLibrary::K2_SetTimer(this, "ReturnToPool", DamageNumber->GetAnimationLength(), false);
 }
 
