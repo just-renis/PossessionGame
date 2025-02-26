@@ -90,6 +90,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> PossessionIndicator;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> PossessionIndicatorOverlay;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> RunningIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> LeftCriticalDamageIndicator;

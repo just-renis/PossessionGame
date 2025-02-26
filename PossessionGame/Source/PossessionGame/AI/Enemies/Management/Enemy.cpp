@@ -582,7 +582,11 @@ void AEnemy::P_PossessionLogic(const TObjectPtr<AActor>& InActor)
 void AEnemy::P_PossessionBarLogic()
 {
 	PossessionBarTimer += 0.05f;
-	if (PossessionBarTimer >= P_Data->GetPossessionBarCooldown()) bCanPossessOtherEnemy = true;
+	if (PossessionBarTimer >= P_Data->GetPossessionBarCooldown())
+	{
+		bCanPossessOtherEnemy = true;
+		if (P_HUD) P_HUD->UpdatePossessionIndicator(true);
+	}
 	else if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Possession, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
 }
 
@@ -772,12 +776,12 @@ void AEnemy::P_DetectIfPlayerPointingAtEnemy()
 	const FVector StartLocation = GetCamera()->GetComponentLocation();
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + GetCamera()->GetForwardVector() * 15000.f, ECC_Visibility))
 	{
-		if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor()))
+		const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
+		if (Enemy && Enemy->GetIsAlive())
 		{
 			Enemy->SetPossessionOutline(true);
 			Enemy->SetPossessionOutlineTimer();
 		}
-		if (P_HUD) P_HUD->UpdatePossessionIndicator(HitResult.GetActor()->ActorHasTag("AliveEnemy"));
 	}
 }
 

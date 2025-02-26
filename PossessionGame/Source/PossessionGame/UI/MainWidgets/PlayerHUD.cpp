@@ -66,12 +66,17 @@ void UPlayerHUD::Reset()
 	Crosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	AmmoText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	HPBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	UpdatePossessionIndicator(false);
 	GetAbilityPanel()->SetOverlaysVisibility(true);
 }
 
 void UPlayerHUD::SetColors(const FLinearColor InColor) const { ScreenGlow->SetColorAndOpacity(InColor); }
 
-void UPlayerHUD::UpdatePossessionIndicator(const bool bState) const { PossessionIndicator->SetOpacity(bState ? 1.f : 0.3f); }
+void UPlayerHUD::UpdatePossessionIndicator(const bool bState) const
+{
+	PossessionIndicator->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	PossessionIndicatorOverlay->SetVisibility(bState ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
+}
 
 void UPlayerHUD::UpdateRunningIndicator(const bool bState) const { RunningIndicator->SetOpacity(bState ? 1.f : 0.3f); }
 
@@ -83,8 +88,8 @@ void UPlayerHUD::ToggleCriticalDamageIndicator() const
 
 void UPlayerHUD::ConfigureUIs()
 {
-	PossessionIndicator->SetOpacity(0.3f);
 	RunningIndicator->SetOpacity(0.3f);
+	PossessionIndicator->SetVisibility(ESlateVisibility::Collapsed);
 	LeftCriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
 	RightCriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
 	GetAbilityPanel()->CollapseAbilityIcon(0);
