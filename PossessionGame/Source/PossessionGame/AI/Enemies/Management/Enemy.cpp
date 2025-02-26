@@ -767,6 +767,7 @@ void AEnemy::P_ControlLogic()
 
 void AEnemy::P_DetectIfPlayerPointingAtEnemy()
 {
+	if (!bCanPossessOtherEnemy) return;
 	FHitResult HitResult;
 	const FVector StartLocation = GetCamera()->GetComponentLocation();
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + GetCamera()->GetForwardVector() * 15000.f, ECC_Visibility))

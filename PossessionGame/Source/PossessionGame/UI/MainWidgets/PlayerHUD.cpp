@@ -77,14 +77,16 @@ void UPlayerHUD::UpdateRunningIndicator(const bool bState) const { RunningIndica
 
 void UPlayerHUD::ToggleCriticalDamageIndicator() const
 {
-	CriticalDamageIndicator->SetVisibility(CriticalDamageIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
+	LeftCriticalDamageIndicator->SetVisibility(LeftCriticalDamageIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
+	RightCriticalDamageIndicator->SetVisibility(RightCriticalDamageIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UPlayerHUD::ConfigureUIs()
 {
 	PossessionIndicator->SetOpacity(0.3f);
 	RunningIndicator->SetOpacity(0.3f);
-	CriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
+	LeftCriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
+	RightCriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
 	GetAbilityPanel()->CollapseAbilityIcon(0);
 	GetAbilityPanel()->CollapseAbilityIcon(1);
 	GetAbilityPanel()->CollapseAbilityIcon(2);
