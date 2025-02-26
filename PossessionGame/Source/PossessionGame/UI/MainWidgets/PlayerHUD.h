@@ -48,7 +48,7 @@ public:
 	void UpdateFps(const int32 InFps) const;
 	void Reset();
 	void SetColors(const FLinearColor InColor) const;
-	void UpdatePossessionIndicator(const bool bState);
+	void UpdatePossessionIndicator(const bool bState, const FString& InKeyName = "");
 	void UpdateRunningIndicator(const bool bState) const;
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs();
@@ -59,6 +59,7 @@ public:
 	void UpdateHitDamageIndicators();
 	void UpdateReceiveDamageInv();
 	void SetCharacterType(const ECharacterType InCharacterType);
+	void AnnouncePossession() const;
 private:
 	ECharacterType CharacterType;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -77,6 +78,8 @@ private:
 	TObjectPtr<UInvalidationBox> Crosshair;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> DamageTickInv;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInvalidationBox> PossessionAnnouncementInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> DamageTickImage;
 	UPROPERTY(meta = (BindWidget))
@@ -101,6 +104,10 @@ private:
 	TObjectPtr<UInvalidationBox> RightCriticalDamageIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UOverlay> HitDamageIndicator;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInvalidationBox> PressKeyBindInv;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> PressKeyBindText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DeathFadeOut;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))

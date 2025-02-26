@@ -253,6 +253,7 @@ private:
 	void SetMesh(const ECharacterType PrimaryDataAssetName) const;
 	void P_SetupNavArea();
 	void ChangeXRayState(const bool bState) const;
+	void SetupUserSettings() const;
 	UFUNCTION()
 	void CheckIfFallOutOfWorld();
 	UFUNCTION()

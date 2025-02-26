@@ -74,9 +74,11 @@ void UPlayerHUD::Reset()
 
 void UPlayerHUD::SetColors(const FLinearColor InColor) const { ScreenGlow->SetColorAndOpacity(InColor); }
 
-void UPlayerHUD::UpdatePossessionIndicator(const bool bState)
+void UPlayerHUD::UpdatePossessionIndicator(const bool bState, const FString& InKeyName)
 {
 	PossessionIndicator->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	PressKeyBindInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	PressKeyBindText->SetText(FText::FromString("Press " + InKeyName + " to possess"));
 	PossessionIndicatorOverlay->SetVisibility(bState ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
 	if (bState) PlayAnimation(PossessionIndicatorPopup);
 }
@@ -92,6 +94,8 @@ void UPlayerHUD::ToggleCriticalDamageIndicator() const
 void UPlayerHUD::ConfigureUIs()
 {
 	RunningIndicator->SetOpacity(0.3f);
+	PressKeyBindInv->SetVisibility(ESlateVisibility::Collapsed);
+	PossessionAnnouncementInv->SetVisibility(ESlateVisibility::Collapsed);
 	PossessionIndicator->SetVisibility(ESlateVisibility::Collapsed);
 	LeftCriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
 	RightCriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
@@ -212,6 +216,11 @@ void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
 			RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
+}
+
+void UPlayerHUD::AnnouncePossession() const
+{
+	PossessionAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
 template<typename T>

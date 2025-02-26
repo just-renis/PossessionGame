@@ -42,6 +42,7 @@
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 
 AEnemy::AEnemy()
 {
@@ -155,6 +156,7 @@ void AEnemy::PossessedBy(AController* NewController)
 			AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
 			UKismetSystemLibrary::K2_SetTimer(this, "AI_TriggerDeathVoiceLine", 1.f, false);
 			P_Setup();
+			if (P_HUD) P_HUD->AnnouncePossession();
 		}
 	}
 }
@@ -359,6 +361,7 @@ void AEnemy::P_TemporallyToggleRunning(const bool bState) { if (bIsRunning) SetM
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	SetupUserSettings();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 	AI_SetupHpBar();
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
@@ -585,7 +588,14 @@ void AEnemy::P_PossessionBarLogic()
 	if (PossessionBarTimer >= P_Data->GetPossessionBarCooldown())
 	{
 		bCanPossessOtherEnemy = true;
-		if (P_HUD && !P_HUD->GetPossessionIndicatorIsShowing()) P_HUD->UpdatePossessionIndicator(true);
+		for (const FPlayerKeyMapping KeyBind : GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings()->GetCurrentKeyProfile()->GetPlayerMappingRows().Find("Possess")->Mappings)
+		{
+			if (P_HUD && !P_HUD->GetPossessionIndicatorIsShowing())
+			{
+				P_HUD->UpdatePossessionIndicator(true, KeyBind.GetCurrentKey().ToString());
+				return;
+			}
+		}
 	}
 	else if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Possession, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
 }
@@ -684,7 +694,7 @@ void AEnemy::P_HandleEscapeClick()
 	}
 }
 
-void AEnemy::P_TriggerGlitchingEffect() const { GetWorld()->GetSubsystem<UPostProcessManager>()->TriggerGlitchingMaterial(0.5f); }
+void AEnemy::P_TriggerGlitchingEffect() const { GetWorld()->GetSubsystem<UPostProcessManager>()->TriggerGlitchingMaterial(0.75f); }
 
 void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
 {
@@ -856,6 +866,13 @@ void AEnemy::ChangeXRayState(const bool bState) const
 {
 	GetMesh()->SetRenderCustomDepth(bState);
 	GetMesh()->SetCustomDepthStencilValue(bState);
+}
+
+void AEnemy::SetupUserSettings() const
+{
+	const TObjectPtr<UEnhancedInputUserSettings> UserSettings = GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings();
+	if (!UserSettings) return;
+	if (!UserSettings->IsMappingContextRegistered(PlayerMappingContext)) UserSettings->RegisterInputMappingContext(PlayerMappingContext);
 }
 
 void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsPossessed ? P_Death() : InitiateDeath(); }
