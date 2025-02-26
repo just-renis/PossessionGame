@@ -10,6 +10,8 @@
 #include "PossessionGame/UI/SecondaryWidgets/AbilitiesPanelUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
+bool UPlayerHUD::GetPossessionIndicatorIsShowing() const { return PossessionIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible; }
+
 void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, const float InMax)
 {
 	switch (InBar)
@@ -72,10 +74,11 @@ void UPlayerHUD::Reset()
 
 void UPlayerHUD::SetColors(const FLinearColor InColor) const { ScreenGlow->SetColorAndOpacity(InColor); }
 
-void UPlayerHUD::UpdatePossessionIndicator(const bool bState) const
+void UPlayerHUD::UpdatePossessionIndicator(const bool bState)
 {
 	PossessionIndicator->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	PossessionIndicatorOverlay->SetVisibility(bState ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
+	if (bState) PlayAnimation(PossessionIndicatorPopup);
 }
 
 void UPlayerHUD::UpdateRunningIndicator(const bool bState) const { RunningIndicator->SetOpacity(bState ? 1.f : 0.3f); }

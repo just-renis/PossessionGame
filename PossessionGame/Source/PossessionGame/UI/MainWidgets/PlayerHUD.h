@@ -34,6 +34,8 @@ class POSSESSIONGAME_API UPlayerHUD : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	bool GetPossessionIndicatorIsShowing() const;
+	
 	void TogglePossessionBar() { ToggleUI(PossessionBar); }
 	void ToggleAmmoText() { ToggleUI(AmmoText); }
 	void ToggleHpBar() { ToggleUI(HPBar); }
@@ -46,7 +48,7 @@ public:
 	void UpdateFps(const int32 InFps) const;
 	void Reset();
 	void SetColors(const FLinearColor InColor) const;
-	void UpdatePossessionIndicator(const bool bState) const;
+	void UpdatePossessionIndicator(const bool bState);
 	void UpdateRunningIndicator(const bool bState) const;
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs();
@@ -105,6 +107,8 @@ private:
 	TObjectPtr<UWidgetAnimation> ReceiveDamageFadeOut;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DamageTickFadeOut;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> PossessionIndicatorPopup;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
 	UPROPERTY()

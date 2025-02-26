@@ -518,7 +518,7 @@ void AEnemy::AI_ShowDamageNumber(const float InDamageAmount) const
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::DamageNumber, GetActorLocation() + FVector(0.f, 0.f, 60.f) + GetActorForwardVector() * 50.f, FRotator::ZeroRotator)->Init(InDamageAmount);
 }
 
-void AEnemy::AI_HideHpBar() { if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
+void AEnemy::AI_HideHpBar() const { if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
 
 void AEnemy::AI_ClearShootPause()
 {
@@ -561,21 +561,21 @@ void AEnemy::P_PossessEnemy()
 		FCollisionQueryParams QueryParams;
 		const FVector StartLocation = Camera->GetComponentLocation();
 		QueryParams.AddIgnoredActor(this);
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_GameTraceChannel5, QueryParams)) P_PossessionLogic(Cast<AEnemy>(HitResult.GetActor()));
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_GameTraceChannel5, QueryParams))
+		{
+			P_PossessionLogic(Cast<AEnemy>(HitResult.GetActor()));
+		}
 	}
 }
 
-void AEnemy::P_PossessionLogic(const TObjectPtr<AActor>& InActor)
+void AEnemy::P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy)
 {
-	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(InActor))
+	if (InEnemy && InEnemy->AI_Data->GetIsPossessable() && !InEnemy->bIsPossessed && InEnemy->bIsAlive)
 	{
-		if (Enemy->AI_Data->GetIsPossessable() && !Enemy->bIsPossessed && Enemy->bIsAlive)
-		{
-			P_StopAllAbilities();
-			GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeath.RemoveAll(this);
-			Controller->Possess(Enemy);
-			InitiateDeath();
-		}
+		P_StopAllAbilities();
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeath.RemoveAll(this);
+		Controller->Possess(InEnemy);
+		InitiateDeath();
 	}
 }
 
@@ -585,7 +585,7 @@ void AEnemy::P_PossessionBarLogic()
 	if (PossessionBarTimer >= P_Data->GetPossessionBarCooldown())
 	{
 		bCanPossessOtherEnemy = true;
-		if (P_HUD) P_HUD->UpdatePossessionIndicator(true);
+		if (P_HUD && !P_HUD->GetPossessionIndicatorIsShowing()) P_HUD->UpdatePossessionIndicator(true);
 	}
 	else if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Possession, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
 }
@@ -785,10 +785,7 @@ void AEnemy::P_DetectIfPlayerPointingAtEnemy()
 	}
 }
 
-void AEnemy::P_TriggerCriticalDamageIndicator() const
-{
-	if (P_HUD) P_HUD->ToggleCriticalDamageIndicator();
-}
+void AEnemy::P_TriggerCriticalDamageIndicator() const { if (P_HUD) P_HUD->ToggleCriticalDamageIndicator(); }
 
 void AEnemy::P_TriggerRunningCameraShake() const { P_MakeCameraShake(RunningCameraShake); }
 
@@ -798,11 +795,7 @@ void AEnemy::P_OpenDeathMenu() const
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 }
 
-void AEnemy::P_UpdateHitDamageIndicators()
-{
-	if (!P_HUD) return;
-	P_HUD->UpdateHitDamageIndicators();
-}
+void AEnemy::P_UpdateHitDamageIndicators() const { if (P_HUD) P_HUD->UpdateHitDamageIndicators(); }
 
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
@@ -851,10 +844,7 @@ void AEnemy::SetupStimuliSource()
 	StimuliSource->RegisterWithPerceptionSystem();
 }
 
-void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) const
-{
-	GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get());
-}
+void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) const { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get()); }
 
 void AEnemy::P_SetupNavArea()
 {

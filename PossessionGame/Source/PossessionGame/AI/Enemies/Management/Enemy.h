@@ -202,7 +202,7 @@ private:
 	void AI_DestroyHpBar();
 	void AI_ShowDamageNumber(const float InDamageAmount) const;
 	UFUNCTION()
-	void AI_HideHpBar();
+	void AI_HideHpBar() const;
 	UFUNCTION()
 	void AI_ClearShootPause();
 	UFUNCTION()
@@ -211,7 +211,7 @@ private:
 	void P_SetupData();
 	void P_SetupUI();
 	void P_PossessEnemy();
-	void P_PossessionLogic(const TObjectPtr<AActor>& InActor);
+	void P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy);
 	void P_PossessionBarLogic();
 	void P_Move(const FInputActionValue& Value);
 	void P_Rotate(const FInputActionValue& Value);
@@ -244,7 +244,7 @@ private:
 	UFUNCTION()
 	void P_OpenDeathMenu() const;
 	UFUNCTION()
-	void P_UpdateHitDamageIndicators();
+	void P_UpdateHitDamageIndicators() const;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyAI();
