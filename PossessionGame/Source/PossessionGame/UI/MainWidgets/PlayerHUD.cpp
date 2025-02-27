@@ -9,6 +9,7 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilitiesPanelUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 bool UPlayerHUD::GetPossessionIndicatorIsShowing() const { return PossessionIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible; }
 
@@ -80,7 +81,12 @@ void UPlayerHUD::UpdatePossessionIndicator(const bool bState, const FString& InK
 	PressKeyBindInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	PressKeyBindText->SetText(FText::FromString("Press " + InKeyName + " to possess"));
 	PossessionIndicatorOverlay->SetVisibility(bState ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
-	if (bState) PlayAnimation(PossessionIndicatorPopup);
+	if (bState)
+	{
+		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ReadyToPossess);
+		PlayAnimation(PossessionIndicatorPopup);
+		PlayAnimation(PressToPossessPopup);
+	}
 }
 
 void UPlayerHUD::UpdateRunningIndicator(const bool bState) const { RunningIndicator->SetOpacity(bState ? 1.f : 0.3f); }
@@ -218,9 +224,10 @@ void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
 	}
 }
 
-void UPlayerHUD::AnnouncePossession() const
+void UPlayerHUD::AnnouncePossession()
 {
 	PossessionAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	PlayAnimation(PossessedPopup);
 }
 
 template<typename T>

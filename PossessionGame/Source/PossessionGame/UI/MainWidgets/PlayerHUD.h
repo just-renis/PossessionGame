@@ -59,7 +59,7 @@ public:
 	void UpdateHitDamageIndicators();
 	void UpdateReceiveDamageInv();
 	void SetCharacterType(const ECharacterType InCharacterType);
-	void AnnouncePossession() const;
+	void AnnouncePossession();
 private:
 	ECharacterType CharacterType;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -116,6 +116,10 @@ private:
 	TObjectPtr<UWidgetAnimation> DamageTickFadeOut;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> PossessionIndicatorPopup;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> PressToPossessPopup;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> PossessedPopup;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
 	UPROPERTY()

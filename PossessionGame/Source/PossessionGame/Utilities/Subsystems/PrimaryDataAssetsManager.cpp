@@ -167,6 +167,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_RangerShoot", ESound::RangerShoot);
 	SoundMap.Add("PA_RangerReload", ESound::RangerReload);
 	SoundMap.Add("PA_OnPossession", ESound::OnPossession);
+	SoundMap.Add("PA_ReadyToPossess", ESound::ReadyToPossess);
 	SoundMap.Add("PA_TakeDamageLayer1", ESound::TakeDamageLayer1);
 	SoundMap.Add("PA_TakeDamageLayer2", ESound::TakeDamageLayer2);
 	SoundMap.Add("PA_CriticalDamageBeep", ESound::CriticalDamageBeep);
