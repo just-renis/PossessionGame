@@ -31,7 +31,7 @@ void UEQG_AroundPlayer::GenerateItems(FEnvQueryInstance& QueryInstance) const
 				FVector FixedLocation = NavPoint.Location;
 				FixedLocation.Z = PointLocation.Z;
 				QueryInstance.AddItemData<UEnvQueryItemType_Point>(FixedLocation);
-				if (RingIndex == 0) EnemyCommunicator->AddPoint(i, FEQSPointData(FixedLocation, TSet{ECharacterType::Minion}));
+				if (RingIndex == 0) EnemyCommunicator->AddPoint(i, FEQSPointData(FixedLocation, TSet{ECharacterType::Minion, ECharacterType::Spy}));
 				else EnemyCommunicator->AddPoint(i, FEQSPointData(FixedLocation, RingIndex == 1 ? TSet{ECharacterType::Ranger} : TSet{ECharacterType::Trickster}));
 			}
 			else i--;

@@ -787,7 +787,7 @@ void AEnemy::P_DetectIfPlayerPointingAtEnemy()
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + GetCamera()->GetForwardVector() * 15000.f, ECC_Visibility))
 	{
 		const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
-		if (Enemy && Enemy->GetIsAlive())
+		if (Enemy && Enemy->GetIsPossessable() && Enemy->GetIsAlive())
 		{
 			Enemy->SetPossessionOutline(true);
 			Enemy->SetPossessionOutlineTimer();
