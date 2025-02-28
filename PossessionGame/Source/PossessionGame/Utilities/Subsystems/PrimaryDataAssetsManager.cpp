@@ -27,25 +27,13 @@ EVfx UPrimaryDataAssetsManager::GetVfxName(ECharacterType CharacterType, EVfxTyp
 	return EVfx::None;
 }
 
-TObjectPtr<UPA_WeaponContainer>& UPrimaryDataAssetsManager::GetWeaponData(EWeapon WeaponName)
-{
-	return WeaponContainers[WeaponName];
-}
+TObjectPtr<UPA_WeaponContainer>& UPrimaryDataAssetsManager::GetWeaponData(EWeapon WeaponName) { return WeaponContainers[WeaponName]; }
 
-TObjectPtr<UPA_SoundContainer>& UPrimaryDataAssetsManager::GetSoundData(ESound SoundName)
-{
-	return SoundContainers[SoundName];
-}
+TObjectPtr<UPA_SoundContainer>& UPrimaryDataAssetsManager::GetSoundData(ESound SoundName) { return SoundContainers[SoundName]; }
 
-TObjectPtr<UPA_CharacterContainer>& UPrimaryDataAssetsManager::GetCharacterData(ECharacterType CharacterName)
-{
-	return CharacterContainers[CharacterName];
-}
+TObjectPtr<UPA_CharacterContainer>& UPrimaryDataAssetsManager::GetCharacterData(ECharacterType CharacterName) { return CharacterContainers[CharacterName]; }
 
-TObjectPtr<UPA_VfxContainer>& UPrimaryDataAssetsManager::GetVfxData(EVfx VfxName)
-{
-	return VfxContainers[VfxName];
-}
+TObjectPtr<UPA_VfxContainer>& UPrimaryDataAssetsManager::GetVfxData(EVfx VfxName) { return VfxContainers[VfxName]; }
 
 void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -70,6 +58,7 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Trail }), EVfx::SpyBulletTrail },
 		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Impact }), EVfx::SpyBulletImpact },
 		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Muzzle }), EVfx::SpyMuzzle },
+		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::FpsTrail }), EVfx::SpyFpsBulletTrail }
 	};
 	Init();
 }
@@ -143,6 +132,7 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 		case ECharacterType::Ranger: return EPoolObject::RangerProjectile;
 		case ECharacterType::Minion: return EPoolObject::MinionProjectile;
 		case ECharacterType::Trickster: return EPoolObject::TricksterProjectile;
+		case ECharacterType::Spy: return EPoolObject::SpyProjectile;
 		default: return EPoolObject::RangerProjectile;
 	}
 }
@@ -241,6 +231,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_SpyMuzzle", EVfx::SpyMuzzle);
 	VfxsMap.Add("PA_SpyBulletTrail", EVfx::SpyBulletTrail);
 	VfxsMap.Add("PA_SpyBulletImpact", EVfx::SpyBulletImpact);
+	VfxsMap.Add("PA_SpyFpsBulletTrail", EVfx::SpyFpsBulletTrail);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

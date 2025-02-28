@@ -1,10 +1,9 @@
 ﻿#include "RangerWeapon.h"
-#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
@@ -64,10 +63,10 @@ void ARangerWeapon::HitScanLogic()
 		const FVector StartLocation = Crosshair->GetComponentLocation();
 		FVector EndLocation = StartLocation + Crosshair->GetForwardVector() * 15000.f;
 		EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
-		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 2.f);
+		SpawnOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), StartLocation, Proprietor->GetCamera()->GetComponentRotation());
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetVfxData(EVfx::RangerBulletImpact)->GetVfxEffect().Get(), HitResult.Location, HitResult.ImpactNormal.Rotation());
+			SpawnOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());
 			if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
 		}
 	}

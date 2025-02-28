@@ -127,11 +127,11 @@ protected:
 	void DisableHandsMesh() const;
 	void AttachAndLoadVfxs();
 	void DealPointDamage(const FHitResult& InHitResult);
+	void SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const;
 private:
 	int32 ShootCyclesUntilReload;
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
 	
-	void SpawnOrLoadHitScanImpactVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
-	void SpawnHitScanImpactVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const;
+	void SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const;
 };

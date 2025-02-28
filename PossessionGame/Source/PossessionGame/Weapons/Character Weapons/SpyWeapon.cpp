@@ -1,12 +1,16 @@
 #include "SpyWeapon.h"
-
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 
 void ASpyWeapon::P_Shoot(bool bIsFirstWeapon)
 {
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
-	Super::P_Shoot(bIsFirstWeapon);
+//	PlaySound(ESound::TricksterShoot);
+	MuzzleFlashLogic();
+	MakeShootingCameraShake();
+	CurrentAmmo--;
+	ShootTimer = 0.f;
+	bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::SpyProjectile);
 }
 
 void ASpyWeapon::P_Reload(int32 OtherAmmoSource)
@@ -22,7 +26,7 @@ void ASpyWeapon::BeginPlay()
 	SetupHandsAnimInstance();
 }
 
-void ASpyWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const bool bFromFirstWeapon)
+void ASpyWeapon::ShootProjectile(const EPoolObject InProjectileName)
 {
 	Super::ShootProjectile(InProjectileName);
 	if (CurrentAmmo <= MagazineCap * 0.1f) OnAmmoPercentageChanged.Broadcast(10);
@@ -33,4 +37,11 @@ void ASpyWeapon::SetConceal(bool bState)
 {
 	Mesh->SetScalarParameterValueOnMaterials("Opacity", bState ? 0.2f : 1.f);
 	HandsMesh->SetScalarParameterValueOnMaterials("Opacity", bState ? 0.2f : 1.f);
+}
+
+void ASpyWeapon::AI_Shoot()
+{
+	//PlaySound(ESound::TricksterShoot);
+	Super::AI_Shoot();
+	ShootProjectile(EPoolObject::SpyProjectile);
 }

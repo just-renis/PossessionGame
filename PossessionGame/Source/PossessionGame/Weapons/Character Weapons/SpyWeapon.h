@@ -16,9 +16,11 @@ public:
 	
 	virtual void SetConceal(bool bState) override;
 private:
+	virtual void AI_Shoot() override;
+	
 	virtual void P_Shoot(bool bIsFirstWeapon) override;
 	virtual void P_Reload(int32 OtherAmmoSource) override;
 	
 	virtual void BeginPlay() override;
-	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const bool bFromFirstWeapon) override;
+	virtual void ShootProjectile(const EPoolObject InProjectileName);
 };
