@@ -198,7 +198,7 @@ void AWeapon::HitScanLogic()
 	const FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
 	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
-	SpawnOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), StartLocation, Proprietor->GetCamera()->GetComponentRotation());
+	SpawnOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"));
 	if (Proprietor->GetGameModeBase()->GetIsDebugModeEnabled()) DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 2.f);
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
