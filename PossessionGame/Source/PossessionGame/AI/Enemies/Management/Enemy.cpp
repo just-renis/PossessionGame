@@ -74,6 +74,12 @@ void AEnemy::AI_SetMoveMode(const EMoveMode InMoveMode)
 	SetMaxWalkSpeed(InMoveMode == EMoveMode::Walk ? AI_Data->GetMaxWalkSpeed() : AI_Data->GetMaxRunSpeed());
 }
 
+void AEnemy::AI_SetShootPause()
+{
+	bShootPauseActive = true;
+	UKismetSystemLibrary::K2_SetTimer(this, "AI_ClearShootPause", AI_Data->GetShootPause(), false);
+}
+
 void AEnemy::P_UseAbility(const int32 AbilityIndex)
 {
 	if (!bIsActionInMotion && AbilityIndex < Abilities.Num() && Abilities[AbilityIndex]->CanExecute())
@@ -202,6 +208,7 @@ void AEnemy::InitiateDeath()
 void AEnemy::ReceiveDamage(const float InDamage)
 {
 	CurrentHp -= InDamage;
+	UE_LOG(LogTemp, Warning, TEXT("RECEIVING DAMAGE: %f %f"), CurrentHp, InDamage);
 	if (P_HUD) P_HandlingDamageTaken();
 	else if (bIsAlive)
 	{
@@ -484,16 +491,7 @@ void AEnemy::AI_Reload() const
 	Weapon->AI_ResetShootCycles();
 }
 
-void AEnemy::AI_StopAllAbilities()
-{
-	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->AI_StopAbility();
-}
-
-void AEnemy::AI_SetShootPause()
-{
-	bShootPauseActive = true;
-	UKismetSystemLibrary::K2_SetTimer(this, "AI_ClearShootPause", AI_Data->GetShootPause(), false);
-}
+void AEnemy::AI_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->AI_StopAbility(); }
 
 void AEnemy::AI_SetupHpBar()
 {

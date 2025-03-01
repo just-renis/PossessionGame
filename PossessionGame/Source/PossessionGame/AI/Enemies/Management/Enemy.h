@@ -68,7 +68,8 @@ public:
 	virtual void AI_ReloadLogic();
 	void AI_UseAbility(const int32 AbilityIndex);
 	void AI_SetMoveMode(const EMoveMode InMoveMode);
-	void AI_SetCanShoot(const bool bState);
+	void AI_SetShootPause();
+	virtual void AI_SetCanShoot(const bool bState);
 
 	void P_UseAbility(const int32 AbilityIndex);
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo) const;
@@ -97,6 +98,7 @@ protected:
 	bool bIsPossessed = false;
 	bool bCanShoot = false;
 	bool bIsActionInMotion = false;
+	bool bShootPauseActive = false;
 	float MaxHp;
 	float CurrentHp;
 	ECharacterType CharacterName;
@@ -163,7 +165,6 @@ protected:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void ClearTimers();
 private:
-	bool bShootPauseActive = false;
 	bool bCanPossessOtherEnemy = false;
 	bool bIsAlive = true;
 	bool bEnableUnloadLevel = false;
@@ -196,7 +197,6 @@ private:
 	void AI_SetupData();
 	void AI_Reload() const;
 	void AI_StopAllAbilities();
-	void AI_SetShootPause();
 	void AI_SetupHpBar();
 	void AI_ReceivedDamage();
 	void AI_DestroyHpBar();

@@ -14,6 +14,17 @@ void ATank::P_Shoot(bool bFirstWeapon)
 	if (Weapon->P_CanShoot()) Weapon->P_Shoot();
 }
 
+void ATank::AI_SetCanShoot(const bool bState) { bCanShoot = bState; }
+
+void ATank::AI_PlayShootMontage()
+{
+	if (!bShootPauseActive && Weapon->GetAnimInstance()->IsMontageExisting(EWeaponAnimState::Shoot) && !Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot))
+	{
+		Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::Shoot);
+		AI_SetCanShoot(true);
+	}
+}
+
 void ATank::AI_SetupWeapon()
 {
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::TankWeapon, GetMesh());
