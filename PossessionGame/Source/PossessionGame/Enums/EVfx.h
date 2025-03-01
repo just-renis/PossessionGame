@@ -26,5 +26,9 @@ enum class EVfx : uint8
 	SpyBulletTrail,
 	SpyBulletImpact,
 	SpyMuzzle,
-	SpyFpsBulletTrail
+	SpyFpsBulletTrail,
+	TankBulletTrail,
+	TankBulletImpact,
+	TankMuzzle,
+	TankFpsBulletTrail
 };

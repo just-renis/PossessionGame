@@ -58,7 +58,11 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Trail }), EVfx::SpyBulletTrail },
 		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Impact }), EVfx::SpyBulletImpact },
 		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Muzzle }), EVfx::SpyMuzzle },
-		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::FpsTrail }), EVfx::SpyFpsBulletTrail }
+		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::FpsTrail }), EVfx::SpyFpsBulletTrail },
+		{ FPairWrapper({ EPoolObject::TankProjectile, EVfxType::Trail }), EVfx::TankBulletTrail },
+		{ FPairWrapper({ EPoolObject::TankProjectile, EVfxType::Impact }), EVfx::TankBulletImpact },
+		{ FPairWrapper({ EPoolObject::TankProjectile, EVfxType::Muzzle }), EVfx::TankMuzzle },
+		{ FPairWrapper({ EPoolObject::TankProjectile, EVfxType::FpsTrail }), EVfx::TankFpsBulletTrail }
 	};
 	Init();
 }
@@ -133,6 +137,7 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 		case ECharacterType::Minion: return EPoolObject::MinionProjectile;
 		case ECharacterType::Trickster: return EPoolObject::TricksterProjectile;
 		case ECharacterType::Spy: return EPoolObject::SpyProjectile;
+		case ECharacterType::Tank: return EPoolObject::TankProjectile;
 		default: return EPoolObject::RangerProjectile;
 	}
 }
@@ -232,6 +237,10 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_SpyBulletTrail", EVfx::SpyBulletTrail);
 	VfxsMap.Add("PA_SpyBulletImpact", EVfx::SpyBulletImpact);
 	VfxsMap.Add("PA_SpyFpsBulletTrail", EVfx::SpyFpsBulletTrail);
+	VfxsMap.Add("PA_TankMuzzle", EVfx::TankMuzzle);
+	VfxsMap.Add("PA_TankBulletTrail", EVfx::TankBulletTrail);
+	VfxsMap.Add("PA_TankBulletImpact", EVfx::TankBulletImpact);
+	VfxsMap.Add("PA_TankFpsBulletTrail", EVfx::TankFpsBulletTrail);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
