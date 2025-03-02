@@ -11,6 +11,8 @@ class POSSESSIONGAME_API USTTaskShoot : public UStateTreeTaskBlueprintBase
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bIsWeaponMontageOnly = false;
 	UPROPERTY()
 	TObjectPtr<AEnemyAIController> CachedController;
 

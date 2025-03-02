@@ -14,6 +14,8 @@ void ATank::P_Shoot(bool bFirstWeapon)
 	if (Weapon->P_CanShoot()) Weapon->P_Shoot();
 }
 
+void ATank::AI_ReloadLogic() { if (!bIsActionInMotion && Weapon->GetIsReloadEnabled()) AI_Reload(); }
+
 void ATank::AI_SetCanShoot(const bool bState) { bCanShoot = bState; }
 
 void ATank::AI_PlayShootMontage()

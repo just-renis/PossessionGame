@@ -11,6 +11,7 @@ class POSSESSIONGAME_API ATank : public AHeavyEnemy
 public:
 	virtual void P_Shoot(bool bFirstWeapon) override;
 private:
+	virtual void AI_ReloadLogic() override;
 	virtual void AI_SetCanShoot(const bool bState) override;
 	virtual void AI_PlayShootMontage() override;
 	virtual void AI_SetupWeapon() override;

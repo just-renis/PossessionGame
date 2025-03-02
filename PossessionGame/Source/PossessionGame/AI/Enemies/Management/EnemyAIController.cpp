@@ -105,7 +105,10 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 	else UKismetSystemLibrary::K2_SetTimer(this, "OnLostSightOfPawn", 0.3f, false);
 }
 
-void AEnemyAIController::AdjustCustomFocus() const { if (!Proprietor->GetIsActionInMotion() && EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation()); }
+void AEnemyAIController::AdjustCustomFocus() const
+{
+	if (!Proprietor->GetIsActionInMotion() && EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation());
+}
 
 void AEnemyAIController::CustomFocusToLocation(const FVector InTargetLocation) const
 {

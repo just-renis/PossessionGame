@@ -77,7 +77,6 @@ public:
 	void P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeaponAmmo, const int32 MaxAmmo) const;
 	void P_StopTime(); // NOT USED ANYWHERE YET.
 
-	void SetCanReload(const bool bState) { bCanReload = bState; }
 	void SetActionInMotion(const bool bState);
 	virtual void Tick(const float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -133,6 +132,7 @@ protected:
 	void AI_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
 	virtual void AI_SetController();
 	virtual void AI_PlayShootMontage();
+	void AI_Reload() const;
 	virtual void AI_PlayDeathSound() {}
 	UFUNCTION()
 	virtual void AI_TriggerDeathVoiceLine() {}
@@ -195,7 +195,6 @@ private:
 	EAbility GetAbilityFromCharacterName(const int32 AbilityIndex) const;
 
 	void AI_SetupData();
-	void AI_Reload() const;
 	void AI_StopAllAbilities();
 	void AI_SetupHpBar();
 	void AI_ReceivedDamage();

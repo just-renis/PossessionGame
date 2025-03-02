@@ -1,5 +1,4 @@
 #include "TankWeapon.h"
-
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"

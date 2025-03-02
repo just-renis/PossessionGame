@@ -99,9 +99,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> RunningIndicator;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> LeftCriticalDamageIndicator;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> RightCriticalDamageIndicator;
+	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UOverlay> HitDamageIndicator;
 	UPROPERTY(meta = (BindWidget))

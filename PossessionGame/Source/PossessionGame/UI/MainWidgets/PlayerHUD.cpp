@@ -93,8 +93,7 @@ void UPlayerHUD::UpdateRunningIndicator(const bool bState) const { RunningIndica
 
 void UPlayerHUD::ToggleCriticalDamageIndicator() const
 {
-	LeftCriticalDamageIndicator->SetVisibility(LeftCriticalDamageIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
-	RightCriticalDamageIndicator->SetVisibility(RightCriticalDamageIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
+	CriticalDamageIndicator->SetVisibility(CriticalDamageIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UPlayerHUD::ConfigureUIs()
@@ -103,8 +102,7 @@ void UPlayerHUD::ConfigureUIs()
 	PressKeyBindInv->SetVisibility(ESlateVisibility::Collapsed);
 	PossessionAnnouncementInv->SetVisibility(ESlateVisibility::Collapsed);
 	PossessionIndicator->SetVisibility(ESlateVisibility::Collapsed);
-	LeftCriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
-	RightCriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
+	CriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
 	GetAbilityPanel()->CollapseAbilityIcon(0);
 	GetAbilityPanel()->CollapseAbilityIcon(1);
 	GetAbilityPanel()->CollapseAbilityIcon(2);

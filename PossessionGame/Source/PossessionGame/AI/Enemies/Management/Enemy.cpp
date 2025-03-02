@@ -208,7 +208,6 @@ void AEnemy::InitiateDeath()
 void AEnemy::ReceiveDamage(const float InDamage)
 {
 	CurrentHp -= InDamage;
-	UE_LOG(LogTemp, Warning, TEXT("RECEIVING DAMAGE: %f %f"), CurrentHp, InDamage);
 	if (P_HUD) P_HandlingDamageTaken();
 	else if (bIsAlive)
 	{
@@ -277,6 +276,14 @@ void AEnemy::AI_PlayShootMontage()
 		AnimInstance->PlayMontage(EEnemyAnimState::Shoot);
 		AI_SetCanShoot(true);
 	}
+}
+
+void AEnemy::AI_Reload() const
+{
+	AnimInstance->PlayMontage(EEnemyAnimState::Reload);
+	if (Weapon->GetAnimInstance() && Weapon->GetAnimInstance()->IsMontageExisting(EWeaponAnimState::AIReload)) Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::AIReload);
+	Weapon->AI_Reload();
+	Weapon->AI_ResetShootCycles();
 }
 
 void AEnemy::P_SetupAbilities()
@@ -481,14 +488,6 @@ void AEnemy::AI_SetupData()
 	MaxHp = AI_Data->GetMaxHp();
 	CurrentHp = MaxHp;
 	SetMaxWalkSpeed(AI_Data->GetMaxWalkSpeed());
-}
-
-void AEnemy::AI_Reload() const
-{
-	AnimInstance->PlayMontage(EEnemyAnimState::Reload);
-	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::AIReload);
-	Weapon->AI_Reload();
-	Weapon->AI_ResetShootCycles();
 }
 
 void AEnemy::AI_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->AI_StopAbility(); }
