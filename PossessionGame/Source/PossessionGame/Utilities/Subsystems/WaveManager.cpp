@@ -25,6 +25,7 @@ void UWaveManager::InitDelegates()
 {
 	DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount);
 	DelegateManager->OnPlayerDeath.AddUObject(this, &UWaveManager::FadeOutWavePanel);
+	DelegateManager->OnUpgradeSelected.BindUObject(this, &UWaveManager::InitiateNextWave);
 }
 
 void UWaveManager::SetupWaveManagerSettings(TArray<ECharacterType>& EnemiesThatAreSpawnable, ECharacterType FirstEnemy, int32 EnemiesAmountOnFirstWave)
@@ -65,7 +66,6 @@ EWeapon UWaveManager::GetSingularWeapon(EWeapon Weapon)
 
 void UWaveManager::SetupTimers()
 {
-//	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
 	UpdateCountdown();
 	UKismetSystemLibrary::K2_SetTimer(this, "UpdateCountdown", 1.f, true);
 }
@@ -83,6 +83,8 @@ void UWaveManager::StartWave()
 
 void UWaveManager::InitiateNextWave()
 {
+	bShowingUpgradeSelection = false;
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->CloseUI();
 	SetupNextWave();
 	if (WaveManagerHUD)
 	{
@@ -94,7 +96,7 @@ void UWaveManager::InitiateNextWave()
 void UWaveManager::SetupNextWave()
 {
 	CurrentWave++;
-	EnemiesPerWave += FMath::RandRange(2, 5);
+	//EnemiesPerWave += FMath::RandRange(2, 5);
 	EnemiesLeftToKill = EnemiesPerWave;
 	CountdownSeconds = 3.f;
 	UpdateCountdown();
@@ -192,6 +194,12 @@ void UWaveManager::AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECh
 
 void UWaveManager::FadeOutWavePanel() const { if (WaveManagerHUD) WaveManagerHUD->PlayWavePanelFadeOutAnim(); }
 
+void UWaveManager::ShowUpgradeSelection()
+{
+	bShowingUpgradeSelection = true;
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+}
+
 void UWaveManager::UpdateCountdown()
 {
 	CountdownSeconds--;
@@ -208,7 +216,7 @@ void UWaveManager::UpdateCountdown()
 void UWaveManager::HandleSpawning()
 {
 	if (EnemiesLeftToKill > 0 && AliveEnemiesAmount < EnemiesOnSceneLimit) SpawnLogic();
-	else if (EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) InitiateNextWave();
+	else if (!bShowingUpgradeSelection && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) ShowUpgradeSelection();
 }
 
 void UWaveManager::InitiateWave() { WaveManagerHUD->ToggleCountdownText(); }

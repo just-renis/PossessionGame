@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UpgradeSelectionUI.generated.h"
 
+class UPossessionGameInstance;
 class UUpgradeCardUI;
 
 UCLASS()
@@ -16,6 +17,10 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> PlayerCardBackgroundTexture;
+	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> RangerIconTexture;
+	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> TricksterIconTexture;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> EnemyCardBackgroundTexture;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))

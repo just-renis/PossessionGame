@@ -23,6 +23,7 @@ public:
 private:
 	bool FIRSTPOSSESSABLE = true;
 	bool bIsSpawnInProcess = false;
+	bool bShowingUpgradeSelection = false;
 	int32 CurrentWave = 1;
 	int32 EnemiesPerWave = 2;
 	int32 EnemiesLeftToKill = 2;
@@ -59,6 +60,7 @@ private:
 	void PlaySound(const ESound InSoundName) const;
 	void AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECharacterType EnemyType, TObjectPtr<UPrimaryDataAssetsManager> AssetsManage);
 	void FadeOutWavePanel() const;
+	void ShowUpgradeSelection();
 	
 	UFUNCTION()
 	void UpdateCountdown();

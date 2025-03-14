@@ -3,9 +3,8 @@
 UENUM()
 enum class EUpgrade : uint8
 {
-    None,
-    P_RangerHealth,
-    P_RangerDamage,
-    AI_RangerHealth,
-    AI_RangerDamage
+	RangerBaseStat,
+    RangerAbility1,
+	RangerAbility2,
+    RangerAbility3
 };

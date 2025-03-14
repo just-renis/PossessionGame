@@ -5,6 +5,8 @@
 #include "PossessionGame/Utilities/Data Utilities/FPrefabCategoryData.h"
 #include "PossessionGameGameModeBase.generated.h"
 
+enum class EUpgrade : uint8;
+class UUpgradeData;
 enum class EPostProcessMaterial : uint8;
 class UEnvQuery;
 enum class EPrefabCategory : uint8;
@@ -43,6 +45,8 @@ private:
 	TMap<EPoolObject, TSubclassOf<APoolObject>> PoolObjects;
 	UPROPERTY(EditAnywhere, Category = "Widget Manager", meta = (AllowPrivateAccess = true))
 	TMap<EWidget, TSubclassOf<UUserWidget>> WidgetClasses;
+	UPROPERTY(EditAnywhere, Category = "Upgrades", meta = (AllowPrivateAccess = true))
+	TMap<EUpgrade, TObjectPtr<UUpgradeData>> Upgrades;
 
 	virtual void BeginPlay() override;
 	void LoadSettingsData();

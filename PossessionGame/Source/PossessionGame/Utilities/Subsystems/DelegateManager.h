@@ -6,6 +6,7 @@
 DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnZoomToggle);
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
+DECLARE_DELEGATE(FOnUpgradeSelected);
 DECLARE_MULTICAST_DELEGATE(FOnEnemyDeath);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
@@ -26,6 +27,7 @@ public:
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnHandsReloadMontageEnd OnHandsReloadMontageEnd;
 	FOnGraphicsSettingChange OnGraphicsSettingChange;
+	FOnUpgradeSelected OnUpgradeSelected;
 	FOnZoomToggle OnZoomToggle;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnPlayerDeath OnPlayerDeath;

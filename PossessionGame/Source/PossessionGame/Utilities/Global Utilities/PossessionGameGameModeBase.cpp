@@ -5,6 +5,7 @@
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
+#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -20,6 +21,7 @@ void APossessionGameGameModeBase::BeginPlay()
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
+	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
 	const TObjectPtr<UWaveManager> WaveManager = GetWorld()->GetSubsystem<UWaveManager>();
 	WaveManager->Init(DelegateManager);
 	WaveManager->SetupWaveManagerSettings(EnemiesThatAreSpawnable, FirstEnemyToSpawn, EnemiesAmountToSpawnOnFirstWave);

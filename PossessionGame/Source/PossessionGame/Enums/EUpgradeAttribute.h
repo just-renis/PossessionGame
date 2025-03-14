@@ -3,7 +3,11 @@
 UENUM()
 enum class EUpgradeAttribute : uint8
 {
-    None,
     FlatHealth,
-    FlatDamage
+    FlatDamage,
+    DamagePercentage,
+    ProjectilesAmount,
+    AbilityCooldownReduction,
+    Size,
+    AbilityDuration
 };
