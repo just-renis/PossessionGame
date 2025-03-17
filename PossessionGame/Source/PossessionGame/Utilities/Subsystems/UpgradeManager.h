@@ -5,6 +5,8 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "UpgradeManager.generated.h"
 
+enum class EPoolObject : uint8;
+enum class EAbility : uint8;
 class UPossessionGameInstance;
 enum class EUpgradeAttribute : uint8;
 enum class ECharacterType : uint8;
@@ -16,8 +18,12 @@ class POSSESSIONGAME_API UUpgradeManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
+	float GetUpgradeAttributeValue(const bool bIsPlayer, const EPoolObject InProjectileName, const EUpgradeAttribute InUpgradeAttribute);
 	float GetUpgradeAttributeValue(const bool bIsPlayer, const ECharacterType InCharacterName, const EUpgradeAttribute InUpgradeAttribute);
+	float GetUpgradeAttributeValue(const bool bIsPlayer, const EAbility InAbilityName, const EUpgradeAttribute InUpgradeAttribute);
+	TObjectPtr<UUpgradeData> GetProjectileUpgradeData(const EPoolObject InProjectileName);
 	TObjectPtr<UUpgradeData> GetCharacterBaseUpgradeData(const ECharacterType InCharacterName);
+	TObjectPtr<UUpgradeData> GetAbilityUpgradeData(const EAbility InAbilityName);
 	TArray<TObjectPtr<UUpgradeData>> GetRandomUpgrades();
 	
 	void Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpgrades);

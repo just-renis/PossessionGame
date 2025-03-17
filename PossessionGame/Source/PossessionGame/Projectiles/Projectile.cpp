@@ -32,7 +32,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	SetActorScale3D(Scale);
 	ProjectileData = InProjectileData;
 	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
-	SetupData();
+	SetupData(ProjectileData.bIsPlayerProjectile);
 	if (!bHasBeenPooled)
 	{
 		AttachAndLoadVfxs();
@@ -87,13 +87,12 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2 && Cast<AEnemy>(OtherActor)->GetIsPossessed()) DealDamageToSentientActor(OtherActor, Hit); // If player got hit.
 }
 
-void AProjectile::AI_SetupUpgradesAppliance()
+void AProjectile::AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile)
 {
-	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, ProjectileData.GetProprietor()->GetCharacterName(), EUpgradeAttribute::FlatDamage);
-	UE_LOG(LogTemp, Warning, TEXT("APPLY DAMAGE UPGRADE FOR AI %f"), GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, ProjectileData.GetProprietor()->GetCharacterName(), EUpgradeAttribute::FlatDamage));
-	const float DamagePercentage = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, ProjectileData.GetProprietor()->GetCharacterName(), EUpgradeAttribute::DamagePercentage);
-	UE_LOG(LogTemp, Warning, TEXT("APPLY DAMAGE UPGRADE FOR AI %f"), GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, ProjectileData.GetProprietor()->GetCharacterName(), EUpgradeAttribute::DamagePercentage));
+	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage);
+	const float DamagePercentage = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage);
 	if (DamagePercentage > 0.f) Damage += ProjectileData.Damage * (DamagePercentage / 100.f);
+	UE_LOG(LogTemp, Warning, TEXT("PROJECTILE DAMAGE: %s %f"), *UEnum::GetValueAsString(ProjectileData.ProjectileName), Damage);
 }
 
 void AProjectile::BeginPlay()
@@ -103,14 +102,14 @@ void AProjectile::BeginPlay()
 	Mesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 }
 
-void AProjectile::SetupData()
+void AProjectile::SetupData(const bool bIsPlayerProjectile)
 {
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", ProjectileData.LifeSpan, false);
 	MovementComponent->InitialSpeed = ProjectileData.InitialSpeed;
 	MovementComponent->MaxSpeed = ProjectileData.MaxSpeed;
 	MovementComponent->ProjectileGravityScale = ProjectileData.GravityScale;
 	Damage = ProjectileData.Damage;
-	AI_SetupUpgradesAppliance();
+	AI_SetupUpgradesAppliance(bIsPlayerProjectile);
 }
 
 void AProjectile::DealAreaDamage()

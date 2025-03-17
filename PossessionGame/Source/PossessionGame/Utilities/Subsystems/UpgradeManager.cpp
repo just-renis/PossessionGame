@@ -1,9 +1,22 @@
 ﻿#include "UpgradeManager.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
+#include "PossessionGame/Enums/EAbility.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/PossessionGameInstance.h"
+
+float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EPoolObject InProjectileName, const EUpgradeAttribute InUpgradeAttribute)
+{
+	if (const TObjectPtr<UUpgradeData> UpgradeData = GetProjectileUpgradeData(InProjectileName))
+	{
+		const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSaveSlot();
+		const TMap<EUpgradeAttribute, float> UpgradeAttributes = UpgradeData->GetAttributesForLevel(bIsPlayer, SaveSlot->GetLevelOfAnUpgrade(UpgradeData->GetUpgradeName())).Upgrades;
+		if (UpgradeAttributes.Find(InUpgradeAttribute)) return UpgradeAttributes[InUpgradeAttribute];
+	}
+	return 0.f;
+}
 
 float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const ECharacterType InCharacterName, const EUpgradeAttribute InUpgradeAttribute)
 {
@@ -14,6 +27,38 @@ float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const ECha
 		if (UpgradeAttributes.Find(InUpgradeAttribute)) return UpgradeAttributes[InUpgradeAttribute];
 	}
 	return 0.f;
+}
+
+float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EAbility InAbilityName, const EUpgradeAttribute InUpgradeAttribute)
+{
+	if (const TObjectPtr<UUpgradeData> UpgradeData = GetAbilityUpgradeData(InAbilityName))
+	{
+		const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSaveSlot();
+		const TMap<EUpgradeAttribute, float> UpgradeAttributes = UpgradeData->GetAttributesForLevel(bIsPlayer, SaveSlot->GetLevelOfAnUpgrade(UpgradeData->GetUpgradeName())).Upgrades;
+		if (UpgradeAttributes.Find(InUpgradeAttribute)) return UpgradeAttributes[InUpgradeAttribute];
+	}
+	return 0.f;
+}
+
+TObjectPtr<UUpgradeData> UUpgradeManager::GetProjectileUpgradeData(const EPoolObject InProjectileName)
+{
+	switch (InProjectileName)
+	{
+		case EPoolObject::RangerProjectile: return Upgrades[EUpgrade::RangerBaseStat];
+		case EPoolObject::RangerGrenadeLauncherProjectile: return Upgrades[EUpgrade::RangerAbility1];
+		default: return nullptr;
+	}
+}
+
+TObjectPtr<UUpgradeData> UUpgradeManager::GetAbilityUpgradeData(const EAbility InAbilityName)
+{
+	switch (InAbilityName)
+	{
+		case EAbility::RangerAbility1: return Upgrades[EUpgrade::RangerAbility1];
+//		case EAbility::RangerAbility2: return Upgrades[EUpgrade::RangerAbility2];
+//		case EAbility::RangerAbility3: return Upgrades[EUpgrade::RangerAbility3];
+		default: return nullptr;
+	}
 }
 
 TObjectPtr<UUpgradeData> UUpgradeManager::GetCharacterBaseUpgradeData(const ECharacterType InCharacterName)

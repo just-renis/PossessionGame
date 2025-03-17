@@ -210,11 +210,7 @@ void AEnemy::InitiateDeath()
 void AEnemy::ReceiveDamage(const float InDamage)
 {
 	CurrentHp -= InDamage;
-	if (P_HUD)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("PLAYER HP AND DAMAGE IS: %f %f"), CurrentHp, InDamage);
-		P_HandlingDamageTaken();
-	}
+	if (P_HUD) P_HandlingDamageTaken();
 	else if (bIsAlive)
 	{
 		AI_ReceivedDamage();
@@ -254,9 +250,9 @@ void AEnemy::AI_Setup()
 	AI->SetProprietor(this);
 	AI_SetupWeapon();
 	AI->SetupAI();
+	AI_SetupAbilities();
 	AI_SetupData();
 	if (Weapon->GetIsReloadEnabled()) AI->SetReloadDelay(AnimInstance->GetMontageLength(EEnemyAnimState::Reload));
-	AI_SetupAbilities();
 }
 
 void AEnemy::AI_SetupWeapon()
@@ -417,16 +413,13 @@ void AEnemy::SetupAbilities(const TMap<EAbility, TSoftObjectPtr<UAbilityData>>& 
 		const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 		for (int32 i = 1; i <= AbilityData.Num(); i++)
 		{
-			if (TObjectPtr<UAbility> Ability = AbilityManager->GetAbility(GetAbilityFromCharacterName(i), this))
+			if (TObjectPtr<UAbility> Ability = AbilityManager->GetAbility(AbilityManager->GetAbilityFromCharacterName(CharacterName, i), this))
 			{
-				Ability->Setup(this, AbilityData[GetAbilityFromCharacterName(i)].LoadSynchronous(), DelegateManager);
+				Ability->Setup(this, AbilityData[AbilityManager->GetAbilityFromCharacterName(CharacterName, i)].LoadSynchronous(), DelegateManager);
+				const int32 RefreshableAbilityIndex = AbilityData[AbilityManager->GetAbilityFromCharacterName(CharacterName, i)]->GetRefreshableAbilityIndex();
+				Ability->SetupAdditionalProperties(bIsPossessed, RefreshableAbilityIndex != -1 ? Abilities[RefreshableAbilityIndex] : nullptr);
 				Abilities.Add(Ability);
 			}
-		}
-		for (int32 i = 1; i <= Abilities.Num(); i++)
-		{
-			const int32 RefreshableAbilityIndex = AbilityData[GetAbilityFromCharacterName(i)]->GetRefreshableAbilityIndex();
-			Abilities[i - 1]->SetupAdditionalProperties(AbilityData[GetAbilityFromCharacterName(i)].LoadSynchronous(), RefreshableAbilityIndex != -1 ? Abilities[RefreshableAbilityIndex] : nullptr);
 		}
 	}
 }
@@ -461,41 +454,11 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	return Damage;
 }
 
-EAbility AEnemy::GetAbilityFromCharacterName(const int32 AbilityIndex) const
-{
-	switch (CharacterName)
-	{
-		case ECharacterType::Spy:
-			switch (AbilityIndex)
-			{
-				case 1: return EAbility::SpyAbility1;
-				case 2: return EAbility::SpyAbility2;
-				default: return EAbility::SpyAbility3;
-			}
-		case ECharacterType::Ranger:
-			switch (AbilityIndex)
-			{
-				case 1: return EAbility::RangerAbility1;
-				case 2: return EAbility::RangerAbility2;
-				default: return EAbility::RangerAbility3;
-			}
-		case ECharacterType::Trickster:
-			switch (AbilityIndex)
-			{
-				case 1: return EAbility::TricksterAbility1;
-				case 2: return EAbility::TricksterAbility2;
-				default: return EAbility::TricksterAbility3;
-			}
-		default: return EAbility::None; 
-	}
-}
-
 void AEnemy::AI_SetupData()
 {
 	MaxHp = AI_Data->GetMaxHp();
 	AI_SetupUpgradesAppliance();
 	CurrentHp = MaxHp;
-	UE_LOG(LogTemp, Warning, TEXT("MY HP IS: %s %f"), *GetName(), CurrentHp);
 	SetMaxWalkSpeed(AI_Data->GetMaxWalkSpeed());
 }
 
@@ -530,6 +493,7 @@ void AEnemy::AI_ShowDamageNumber(const float InDamageAmount) const
 void AEnemy::AI_SetupUpgradesAppliance()
 {
 	MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, CharacterName, EUpgradeAttribute::FlatHealth);
+	for (int32 i = 0; i < Abilities.Num(); i++) MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, Abilities[i]->GetAbilityName(), EUpgradeAttribute::FlatHealth);
 }
 
 void AEnemy::AI_HideHpBar() const { if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
