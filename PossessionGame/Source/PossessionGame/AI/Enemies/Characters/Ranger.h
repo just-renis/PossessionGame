@@ -40,6 +40,8 @@ private:
 	virtual void P_SetupRightClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) override;
 	void P_ChangeAiming(bool bIsZooming);
 	virtual void P_SetupColorsForUI() override;
+	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) override;
+	virtual void P_Destroy() override;
 	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

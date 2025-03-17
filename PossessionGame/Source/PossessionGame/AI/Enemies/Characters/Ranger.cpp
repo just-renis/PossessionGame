@@ -15,10 +15,13 @@
 #include "PossessionGame/Destructibles/RangerShield.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Enums/EUpgrade.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Animation Instances/Hands/RangerHandsAnimInstance.h"
 #include "PossessionGame/Weapons/Character Weapons/RangerWeapon.h"
@@ -115,6 +118,23 @@ void ARanger::P_SetupRightClickInputCompletedState(TObjectPtr<UEnhancedInputComp
 void ARanger::P_ChangeAiming(bool bIsZooming) { Cast<ARangerWeapon>(Weapon)->P_ZoomToCamera(bIsZooming, MouseSensitivity); }
 
 void ARanger::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.58431f, 0.11373f, 0.f)); }
+
+void ARanger::P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName)
+{
+	if (InUpgradeName == EUpgrade::RangerBaseStat)
+	{
+		const float HpValue = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, CharacterName, EUpgradeAttribute::FlatHealth);
+		MaxHp += HpValue;
+		CurrentHp += HpValue;
+	}
+}
+
+void ARanger::P_Destroy()
+{
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.RemoveAll(this);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.RemoveAll(GetWeapon());
+	Super::P_Destroy();
+}
 
 void ARanger::BeginPlay()
 {

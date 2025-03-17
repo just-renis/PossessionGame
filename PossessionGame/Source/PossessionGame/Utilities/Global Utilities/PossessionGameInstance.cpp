@@ -15,6 +15,7 @@ void UPossessionGameInstance::LoadPlayerSaveSlot()
 		PlayerSaveSlot = Cast<USaveSlot>(UGameplayStatics::CreateSaveGameObject(USaveSlot::StaticClass()));
 		UGameplayStatics::SaveGameToSlot(PlayerSaveSlot, PlayerSaveSlotName, 0);
 	}
+	PlayerSaveSlot->SetGameInstance(this);
 }
 
 void UPossessionGameInstance::Init()

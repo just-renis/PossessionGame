@@ -58,6 +58,7 @@ public:
 	void P_AttachHandsToCamera(const FVector InLocation, const FRotator InRotation, const FVector InScale = FVector::ZeroVector);
 	virtual void P_AttachWeaponToHands(const TObjectPtr<USkeletalMeshComponent>& InHandsMesh, const FName InSocketName = "PlayerWeaponSocket1");
 	void P_SetWalkSpread(const bool bState);
+	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) {}
 	
 	virtual void SetWeaponMeshScaleToOriginal() { Mesh->SetRelativeScale3D(OriginalScale); }
 	virtual void DestroyThis();
@@ -132,6 +133,8 @@ private:
 	int32 ShootCyclesUntilReload;
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
+	
+	void P_SetupUpgradesAppliance();
 	
 	void SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const;
 };

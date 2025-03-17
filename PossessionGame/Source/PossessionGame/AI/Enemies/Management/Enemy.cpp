@@ -25,6 +25,7 @@
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EUIBar.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
@@ -39,6 +40,7 @@
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
@@ -200,7 +202,7 @@ void AEnemy::InitiateDeath()
 		DestroyAI();
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeath.Broadcast();
 	}
-	else P_DisableEnemy();
+	else P_Destroy();
 	HandleDeactivation();
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", 5.f, false);
 }
@@ -208,7 +210,11 @@ void AEnemy::InitiateDeath()
 void AEnemy::ReceiveDamage(const float InDamage)
 {
 	CurrentHp -= InDamage;
-	if (P_HUD) P_HandlingDamageTaken();
+	if (P_HUD)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PLAYER HP AND DAMAGE IS: %f %f"), CurrentHp, InDamage);
+		P_HandlingDamageTaken();
+	}
 	else if (bIsAlive)
 	{
 		AI_ReceivedDamage();
@@ -294,6 +300,7 @@ void AEnemy::P_SetupAbilities()
 
 void AEnemy::P_Setup()
 {
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.AddUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
 	GetMesh()->SetGenerateOverlapEvents(true);
@@ -353,7 +360,7 @@ void AEnemy::P_SetupRightClickInput(TObjectPtr<UEnhancedInputComponent> RightCli
 	P_SetupRightClickInputCompletedState(RightClickInputComponent);
 }
 
-void AEnemy::P_DisableEnemy()
+void AEnemy::P_Destroy()
 {
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();
@@ -486,7 +493,9 @@ EAbility AEnemy::GetAbilityFromCharacterName(const int32 AbilityIndex) const
 void AEnemy::AI_SetupData()
 {
 	MaxHp = AI_Data->GetMaxHp();
+	AI_SetupUpgradesAppliance();
 	CurrentHp = MaxHp;
+	UE_LOG(LogTemp, Warning, TEXT("MY HP IS: %s %f"), *GetName(), CurrentHp);
 	SetMaxWalkSpeed(AI_Data->GetMaxWalkSpeed());
 }
 
@@ -518,6 +527,11 @@ void AEnemy::AI_ShowDamageNumber(const float InDamageAmount) const
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::DamageNumber, GetActorLocation() + FVector(0.f, 0.f, 60.f) + GetActorForwardVector() * 50.f, FRotator::ZeroRotator)->Init(InDamageAmount);
 }
 
+void AEnemy::AI_SetupUpgradesAppliance()
+{
+	MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, CharacterName, EUpgradeAttribute::FlatHealth);
+}
+
 void AEnemy::AI_HideHpBar() const { if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
 
 void AEnemy::AI_ClearShootPause()
@@ -532,6 +546,7 @@ void AEnemy::P_SetupData()
 {
 	P_Data->SetIsGodModeEnabled(GetWorld()->GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetIsGodModeEnabled());
 	MaxHp = P_Data->GetMaxHp();
+	P_SetupUpgradesAppliance();
 	CurrentHp = MaxHp;
 	bIsPossessed = true;
 	bCanShoot = true;
@@ -755,6 +770,11 @@ void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathBloodPumping, 1.f);
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathScreenCrack, 1.f);
 	PostProcessManager->FadeOutDeathMaterials();
+}
+
+void AEnemy::P_SetupUpgradesAppliance()
+{
+	MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, CharacterName, EUpgradeAttribute::FlatHealth);
 }
 
 void AEnemy::P_Death()

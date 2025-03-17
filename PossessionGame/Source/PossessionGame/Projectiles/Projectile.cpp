@@ -8,11 +8,13 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 
 AProjectile::AProjectile()
 {
@@ -73,7 +75,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	}
 	if (OtherActor->ActorHasTag("Destructible"))
 	{
-		UGameplayStatics::ApplyPointDamage(OtherActor, ProjectileData.WeaponDamage + ProjectileData.Damage, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
 		return;
 	}
 	if (!OtherActor->ActorHasTag("Enemy")) return;
@@ -83,6 +85,15 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		return;
 	}
 	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2 && Cast<AEnemy>(OtherActor)->GetIsPossessed()) DealDamageToSentientActor(OtherActor, Hit); // If player got hit.
+}
+
+void AProjectile::AI_SetupUpgradesAppliance()
+{
+	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, ProjectileData.GetProprietor()->GetCharacterName(), EUpgradeAttribute::FlatDamage);
+	UE_LOG(LogTemp, Warning, TEXT("APPLY DAMAGE UPGRADE FOR AI %f"), GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, ProjectileData.GetProprietor()->GetCharacterName(), EUpgradeAttribute::FlatDamage));
+	const float DamagePercentage = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, ProjectileData.GetProprietor()->GetCharacterName(), EUpgradeAttribute::DamagePercentage);
+	UE_LOG(LogTemp, Warning, TEXT("APPLY DAMAGE UPGRADE FOR AI %f"), GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, ProjectileData.GetProprietor()->GetCharacterName(), EUpgradeAttribute::DamagePercentage));
+	if (DamagePercentage > 0.f) Damage += ProjectileData.Damage * (DamagePercentage / 100.f);
 }
 
 void AProjectile::BeginPlay()
@@ -98,6 +109,8 @@ void AProjectile::SetupData()
 	MovementComponent->InitialSpeed = ProjectileData.InitialSpeed;
 	MovementComponent->MaxSpeed = ProjectileData.MaxSpeed;
 	MovementComponent->ProjectileGravityScale = ProjectileData.GravityScale;
+	Damage = ProjectileData.Damage;
+	AI_SetupUpgradesAppliance();
 }
 
 void AProjectile::DealAreaDamage()
@@ -108,7 +121,7 @@ void AProjectile::DealAreaDamage()
 		if (!ProjectileData.bIsPlayerProjectile) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
 		else IgnoredActors = { ProjectileData.GetProprietor() };
 	}
-	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), ProjectileData.WeaponDamage + ProjectileData.Damage, ProjectileData.RadiusMinimumDamage,
+	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Damage, ProjectileData.RadiusMinimumDamage,
 	GetActorLocation(), ProjectileData.DamageInnerRadius, ProjectileData.DamageOuterRadius, ProjectileData.DamageFalloff, UDamageType::StaticClass(),
 	IgnoredActors, this, nullptr, ECC_GameTraceChannel4);
 //	DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 12, FColor::Green, false, 3.f);
@@ -145,7 +158,7 @@ void AProjectile::SpawnBulletImpactVfx(EVfx VfxName, const FVector& InLocation, 
 void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)
 {
 	const float DamageMultiplier = Hit.BoneName == "head" ? 2.f : 1.f;
-	UGameplayStatics::ApplyPointDamage(OtherActor, (ProjectileData.WeaponDamage + ProjectileData.Damage) * DamageMultiplier, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
+	UGameplayStatics::ApplyPointDamage(OtherActor, Damage * DamageMultiplier, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
 }
 
 void AProjectile::DestroyThis()

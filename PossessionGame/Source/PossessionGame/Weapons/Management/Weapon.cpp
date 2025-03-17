@@ -10,12 +10,14 @@
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerWeaponData.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
 #include "PossessionGame/Utilities/Global Utilities/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 
 AWeapon::AWeapon()
 {
@@ -170,6 +172,8 @@ void AWeapon::P_Setup()
 	HitScanDamage = P_Data->GetHitScanDamage();
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
+	P_SetupUpgradesAppliance();
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.AddUObject(this, &AWeapon::P_ApplyUpgradeOnSelection);
 }
 
 void AWeapon::P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName)
@@ -268,6 +272,13 @@ void AWeapon::SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, co
 {
 	if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) SpawnVfx(InVfxName, InLocation, InRotation);
 	else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLocation, InRotation] { SpawnVfx(InVfxName, InLocation, InRotation); });
+}
+
+void AWeapon::P_SetupUpgradesAppliance()
+{
+	HitScanDamage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, Proprietor->GetCharacterName(), EUpgradeAttribute::FlatDamage);
+	const float DamagePercentage = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, Proprietor->GetCharacterName(), EUpgradeAttribute::DamagePercentage);
+	if (DamagePercentage > 0.f) HitScanDamage += P_Data->GetHitScanDamage() * (DamagePercentage / 100.f);
 }
 
 void AWeapon::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const

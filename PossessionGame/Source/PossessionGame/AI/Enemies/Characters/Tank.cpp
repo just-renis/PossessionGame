@@ -66,9 +66,9 @@ void ATank::P_SetupRightClickInputCompletedState(TObjectPtr<UEnhancedInputCompon
 	RightClickInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Completed, this, &ATank::P_ToggleChargeMinigun, false);
 }
 
-void ATank::P_DisableEnemy()
+void ATank::P_Destroy()
 {
-	Super::P_DisableEnemy();
+	Super::P_Destroy();
 	Weapon->AttachToSocket(GetMesh());
 }
 

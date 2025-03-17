@@ -43,10 +43,13 @@ protected:
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
 	bool bHasBeenPooled = false;
+	float Damage;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UProjectileMovementComponent> MovementComponent;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
+	
+	void AI_SetupUpgradesAppliance();
 	
 	virtual void BeginPlay() override;
 	void SetupData();

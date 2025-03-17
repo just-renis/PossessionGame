@@ -18,8 +18,6 @@ struct POSSESSIONGAME_API FProjectileData
 	UPROPERTY(EditAnywhere)
 	float Damage = 0.f;
 	UPROPERTY(EditAnywhere)
-	float WeaponDamage = 0.f;
-	UPROPERTY(EditAnywhere)
 	float InitialSpeed = 2000.f;
 	UPROPERTY(EditAnywhere)
 	float MaxSpeed = 2000.f;

@@ -8,6 +8,7 @@
 #include "GameplayTagAssetInterface.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/Enums/EMoveMode.h"
+#include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "Enemy.generated.h"
 
 class APossessionGameGameModeBase;
@@ -76,6 +77,7 @@ public:
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo, const int32 MaxAmmo) const;
 	void P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeaponAmmo, const int32 MaxAmmo) const;
 	void P_StopTime(); // NOT USED ANYWHERE YET.
+	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) {}
 
 	void SetActionInMotion(const bool bState);
 	virtual void Tick(const float DeltaTime) override;
@@ -148,7 +150,7 @@ protected:
 	virtual void P_SetupRightClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) {}
 	virtual void P_SetupRightClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) {}
 	virtual void P_SetupRightClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) {}
-	virtual void P_DisableEnemy();
+	virtual void P_Destroy();
 	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
 	void P_TemporallyToggleRunning(const bool bState);
 	virtual void P_SetupColorsForUI() {}
@@ -200,6 +202,7 @@ private:
 	void AI_ReceivedDamage();
 	void AI_DestroyHpBar();
 	void AI_ShowDamageNumber(const float InDamageAmount) const;
+	void AI_SetupUpgradesAppliance();
 	UFUNCTION()
 	void AI_HideHpBar() const;
 	UFUNCTION()
@@ -230,6 +233,7 @@ private:
 	void P_ToggleCriticallyDamagedEffects(const float InValue) const;
 	void P_InitiateDeathEvents();
 	void P_ConfigurePostProcessEffectsAfterDeath() const;
+	void P_SetupUpgradesAppliance();
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()

@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "DelegateManager.generated.h"
 
+enum class EUpgrade : uint8;
+
 DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnZoomToggle);
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
@@ -11,6 +13,7 @@ DECLARE_MULTICAST_DELEGATE(FOnEnemyDeath);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemiesAmountDecrease, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, TObjectPtr<AActor>, bool);
@@ -24,15 +27,16 @@ class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 public:
-	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnHandsReloadMontageEnd OnHandsReloadMontageEnd;
+	FOnZoomToggle OnZoomToggle;
 	FOnGraphicsSettingChange OnGraphicsSettingChange;
 	FOnUpgradeSelected OnUpgradeSelected;
-	FOnZoomToggle OnZoomToggle;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnPlayerDeath OnPlayerDeath;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemiesAmountDecrease OnEnemiesAmountDecrease;
+	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
+	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnConcealAbilityChange OnConcealAbilityChange;
 	FOnTargetChange OnTargetChange;
 	FOnXRayThroughWallsChange OnXRayThroughWallsChange;
