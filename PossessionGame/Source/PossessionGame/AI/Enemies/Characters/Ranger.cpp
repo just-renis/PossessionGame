@@ -126,7 +126,9 @@ void ARanger::P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName)
 		const float HpValue = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, CharacterName, EUpgradeAttribute::FlatHealth);
 		MaxHp += HpValue;
 		CurrentHp += HpValue;
+		if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
 	}
+	else if (InUpgradeName == EUpgrade::RangerAbility1) Abilities[0]->ApplyUpgradeOnSelection(bIsPossessed);
 }
 
 void ARanger::P_Destroy()

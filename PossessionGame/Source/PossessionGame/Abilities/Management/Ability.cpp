@@ -1,20 +1,25 @@
 #include "Ability.h"
 #include "PossessionGame/Data Assets/Base Data Assets/AbilityData.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 
-void UAbility::Tick(float DeltaTime)
+EAbility UAbility::GetAbilityName() const { return Data->GetAbilityName(); }
+
+void UAbility::Tick(const float InDeltaTime)
 {
-	if (bIsAbilityInDuration) AbilityInDurationLogic(DeltaTime);
-	else if (!bIsCooldownKill && CurrentCooldownSecs < ReqCooldownSecs) CooldownLogic(DeltaTime);
+	if (bIsAbilityInDuration) AbilityInDurationLogic(InDeltaTime);
+	else if (!bIsCooldownKill && CurrentCooldownSecs < ReqCooldownSecs) CooldownLogic(InDeltaTime);
 }
 
-void UAbility::Setup(TObjectPtr<AEnemy> AbilityProprietor, TObjectPtr<UAbilityData> AbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
+void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
 {
+	Data = InAbilityData;
 	DelegateManager = InDelegateManager;
-	ReqCooldownSecs = AbilityData->GetCooldownSecs();
-	ReqCooldownKill = AbilityData->GetCurrentCooldownKill();
+	ReqCooldownSecs = InAbilityData->GetCooldownSecs();
+	ReqCooldownKill = InAbilityData->GetCurrentCooldownKill();
 	if (CurrentCooldownKill > 0) bIsCooldownKill = true;
-	SetProprietor(AbilityProprietor);
+	SetProprietor(InAbilityProprietor);
 }
 
 void UAbility::ResetCooldown()
@@ -24,27 +29,43 @@ void UAbility::ResetCooldown()
 	if (bIsRefreshingOtherAbility) RefreshOtherAbility();
 }
 
-void UAbility::CooldownLogic(const float DeltaTime) { CurrentCooldownSecs += DeltaTime; }
+void UAbility::CooldownLogic(const float InDeltaTime) { CurrentCooldownSecs += InDeltaTime; }
 
-void UAbility::SetupAdditionalProperties(TObjectPtr<UAbilityData> AbilityData, TObjectPtr<UAbility> AbilityToRefresh)
+void UAbility::SetupUpgradeAppliance(const bool bIsPlayer)
 {
-	if (AbilityData->GetRefreshAmount() > 0.f) SetupRefreshOtherAbility(AbilityData->GetRefreshAmount(), AbilityToRefresh);
-	if (AbilityData->GetAbilityDuration() > 0.f) SetupDuration(AbilityData->GetAbilityDuration());
+	const float CooldownReduction = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityCooldownReduction);
+	ReqCooldownSecs -= Data->GetCooldownSecs() * (CooldownReduction / 100.f);
 }
 
-void UAbility::RefreshOtherAbility() { if (!RefreshableAbility->GetIsAbilityInDuration()) RefreshableAbility->ReduceCooldownTimer(RefreshOtherAbilityAmount); }
-
-void UAbility::SetupDuration(float AbilityDuration)
+void UAbility::SetupAdditionalProperties(const bool bIsPlayer, TObjectPtr<UAbility> InAbilityToRefresh)
 {
-	CurrentDuration = AbilityDuration;
-	DurationTime = AbilityDuration;
+	if (Data->GetRefreshAmount() > 0.f) SetupRefreshOtherAbility(Data->GetRefreshAmount(), InAbilityToRefresh);
+	if (Data->GetAbilityDuration() > 0.f) SetupDuration(Data->GetAbilityDuration(), bIsPlayer);
+	SetupUpgradeAppliance(bIsPlayer);
 }
 
-void UAbility::SetupRefreshOtherAbility(float RefreshAmount, TObjectPtr<UAbility> AbilityToRefresh)
+void UAbility::ApplyUpgradeOnSelection(const bool bIsPlayer)
+{
+	SetupUpgradeAppliance(bIsPlayer);
+	const float Duration = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityDuration);
+	DurationTime += Duration;
+	CurrentDuration += Duration;
+}
+
+void UAbility::RefreshOtherAbility() const { if (!RefreshableAbility->GetIsAbilityInDuration()) RefreshableAbility->ReduceCooldownTimer(RefreshOtherAbilityAmount); }
+
+void UAbility::SetupDuration(const float InAbilityDuration, const bool bIsPlayer)
+{
+	DurationTime = InAbilityDuration;
+	DurationTime += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityDuration);
+	CurrentDuration = DurationTime;
+}
+
+void UAbility::SetupRefreshOtherAbility(const float InRefreshAmount, TObjectPtr<UAbility> InAbilityToRefresh)
 {
 	bIsRefreshingOtherAbility = true;
-	RefreshOtherAbilityAmount = RefreshAmount;
-	RefreshableAbility = AbilityToRefresh;
+	RefreshOtherAbilityAmount = InRefreshAmount;
+	RefreshableAbility = InAbilityToRefresh;
 }
 
 void UAbility::ResetDuration()
@@ -53,8 +74,8 @@ void UAbility::ResetDuration()
 	bIsAbilityInDuration = false;
 }
 
-void UAbility::AbilityInDurationLogic(float DeltaTime)
+void UAbility::AbilityInDurationLogic(const float InDeltaTime)
 {
-	CurrentDuration -= DeltaTime;
+	CurrentDuration -= InDeltaTime;
 	if (CurrentDuration <= 0.f) IsProprietorPossessed() ? P_StopAbility() : AI_StopAbility();
 }

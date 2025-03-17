@@ -49,10 +49,10 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
 	
-	void AI_SetupUpgradesAppliance();
+	void AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile);
 	
 	virtual void BeginPlay() override;
-	void SetupData();
+	void SetupData(const bool bIsPlayerProjectile);
 	void DealAreaDamage();
 	void AttachBulletTrail(EVfx VfxName);
 	void AttachAndLoadVfxs();

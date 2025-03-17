@@ -194,7 +194,6 @@ private:
 	TObjectPtr<ANavAreaModifier> NavAreaModifier;
 	UPROPERTY()
 	TObjectPtr<APossessionGameGameModeBase> GameModeBase;
-	EAbility GetAbilityFromCharacterName(const int32 AbilityIndex) const;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
