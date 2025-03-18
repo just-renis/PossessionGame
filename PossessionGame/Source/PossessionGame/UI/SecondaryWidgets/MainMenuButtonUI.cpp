@@ -5,13 +5,7 @@
 void UMainMenuButtonUI::SetupEvents()
 {
 	Button->OnHovered.AddDynamic(this, &UMainMenuButtonUI::TriggerHoverAnim);
-	Button->OnUnhovered.AddDynamic(this, &UMainMenuButtonUI::TriggerHoverAnim);
-}
-
-void UMainMenuButtonUI::TriggerHoverAnim()
-{
-	ButtonHoverState ? PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim), 1, EUMGSequencePlayMode::Reverse) : PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim));
-	ButtonHoverState = !ButtonHoverState;
+	Button->OnUnhovered.AddDynamic(this, &UMainMenuButtonUI::TriggerUnHoverAnim);
 }
 
 void UMainMenuButtonUI::NativePreConstruct()
@@ -19,3 +13,7 @@ void UMainMenuButtonUI::NativePreConstruct()
 	Super::NativePreConstruct();
 	if (ButtonText) ButtonText->SetText(Text);
 }
+
+void UMainMenuButtonUI::TriggerHoverAnim() { PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim)); }
+
+void UMainMenuButtonUI::TriggerUnHoverAnim() { PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim), 1, EUMGSequencePlayMode::Reverse); }

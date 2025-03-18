@@ -17,11 +17,11 @@ class POSSESSIONGAME_API UUpgradeCardUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon = nullptr);
+	TObjectPtr<UButton> GetUpgradeButton() const { return UpgradeButton; }
+	
+	void SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon, const TObjectPtr<UTexture2D>& InPlayerIcon = nullptr);
 	void ToggleCardVisibility(const bool bState);
 private:
-	UPROPERTY(EditAnywhere, Category = "Textures", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UTexture2D> PlayerOrEnemyTexture;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UBorder> CardBackgroundBorder;
 	UPROPERTY(meta = (BindWidget))
@@ -37,16 +37,18 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> UpgradeText;
 	UPROPERTY()
+	TObjectPtr<UWidgetAnimation> CardHoverAnimation;
+	UPROPERTY()
 	TObjectPtr<UUpgradeData> Data;
 
 	FString ConvertUpgradeAttributeValueToString(const float InValue);
 	FString GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute);
 
 	virtual void NativeConstruct() override;
-	virtual void NativePreConstruct() override;
 	void SetCardBackgroundBorderImage(const TObjectPtr<UTexture2D>& InImage) const;
 	void SetCharacterIcon(const TObjectPtr<UTexture2D>& InImage) const;
-	void SetCharacterIconInvisible() const;
+	void SetPlayerIcon(const TObjectPtr<UTexture2D>& InImage) const;
+	void SetPlayerOrEnemyIconInvisible() const;
 	void SetCardIcon(const TObjectPtr<UTexture2D>& InImage) const;
 	void SetCharacterText(const FText& InText, const FColor InColor) const;
 	void SetUpgradeText(const bool bPlayerCard);

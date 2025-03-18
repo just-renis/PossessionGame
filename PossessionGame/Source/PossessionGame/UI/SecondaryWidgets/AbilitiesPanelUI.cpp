@@ -38,7 +38,7 @@ void UAbilitiesPanelUI::TriggerAbilityIconReady(const EUIBar InBar, const float 
 	{
 		case EUIBar::FirstAbility: 
 			FirstAbilityProgressBar->SetPercent(InCurrent / InMax);
-			if (FMath::IsNearlyEqual(InCurrent, InMax, 0.01f))
+			if (InCurrent >= InMax)
 			{
 				FirstAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				FirstAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
@@ -46,7 +46,7 @@ void UAbilitiesPanelUI::TriggerAbilityIconReady(const EUIBar InBar, const float 
 			break;
 		case EUIBar::SecondAbility: 
 			SecondAbilityProgressBar->SetPercent(InCurrent / InMax);
-			if (FMath::IsNearlyEqual(InCurrent, InMax, 0.01f))
+			if (InCurrent >= InMax)
 			{
 				SecondAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				SecondAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
@@ -54,7 +54,7 @@ void UAbilitiesPanelUI::TriggerAbilityIconReady(const EUIBar InBar, const float 
 			break;
 		default:
 			ThirdAbilityProgressBar->SetPercent(InCurrent / InMax);
-			if (FMath::IsNearlyEqual(InCurrent, InMax, 0.01f))
+			if (InCurrent >= InMax)
 			{
 				ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 				ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);

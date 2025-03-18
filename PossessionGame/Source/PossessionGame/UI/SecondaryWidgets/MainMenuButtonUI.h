@@ -15,10 +15,7 @@ public:
 	TObjectPtr<UButton> Get() { return Button; }
 	
 	void SetupEvents();
-	UFUNCTION()
-	void TriggerHoverAnim();
 private:
-	bool ButtonHoverState = false;
 	UPROPERTY(EditAnywhere, Category = "Button Text", meta = (AllowPrivateAccess = true))
 	FText Text;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
@@ -29,4 +26,8 @@ private:
 	TObjectPtr<UWidgetAnimation> ButtonHoverAnim;
 
 	virtual void NativePreConstruct() override;
+	UFUNCTION()
+	void TriggerHoverAnim();
+	UFUNCTION()
+	void TriggerUnHoverAnim();
 };

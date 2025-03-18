@@ -25,7 +25,7 @@ void UWaveManager::InitDelegates()
 {
 	DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount);
 	DelegateManager->OnPlayerDeath.AddUObject(this, &UWaveManager::FadeOutWavePanel);
-	DelegateManager->OnUpgradeSelected.BindUObject(this, &UWaveManager::InitiateNextWave);
+	DelegateManager->OnUpgradeSelectionFinished.BindUObject(this, &UWaveManager::InitiateNextWave);
 }
 
 void UWaveManager::SetupWaveManagerSettings(TArray<ECharacterType>& EnemiesThatAreSpawnable, ECharacterType FirstEnemy, int32 EnemiesAmountOnFirstWave)
@@ -84,7 +84,6 @@ void UWaveManager::StartWave()
 void UWaveManager::InitiateNextWave()
 {
 	bShowingUpgradeSelection = false;
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->CloseUI();
 	SetupNextWave();
 	if (WaveManagerHUD)
 	{

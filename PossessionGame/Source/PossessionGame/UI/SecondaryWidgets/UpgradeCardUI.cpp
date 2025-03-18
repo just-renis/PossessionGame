@@ -10,19 +10,20 @@
 #include "PossessionGame/Utilities/Global Utilities/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
-void UUpgradeCardUI::SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon)
+void UUpgradeCardUI::SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon, const TObjectPtr<UTexture2D>& InPlayerIcon)
 {
 	Data = InData;
 	ToggleCardVisibility(true);
 	SetCardBackgroundBorderImage(InCardBackgroundImage);
 	SetCharacterIcon(InCharacterIcon);
+	SetPlayerIcon(InPlayerIcon);
 	SetCardIcon(bPlayerCard ? Data->GetPlayerCardIcon() : Data->GetEnemyCardIcon());
 	SetUpgradeText(bPlayerCard);
 	if (bPlayerCard) SetCharacterText(FText::FromString(UEnum::GetValueAsString(Data->GetCharacter()).Replace(TEXT("ECharacterType::"), TEXT("")).ToUpper()), Data->GetCharacter() == ECharacterType::Ranger ? FColor::Red : FColor::Cyan);
 	else
 	{
 		SetCharacterText(FText::FromString("ENEMY"), FColor::Red);
-		SetCharacterIconInvisible();
+		SetPlayerOrEnemyIconInvisible();
 	}
 }
 
@@ -47,9 +48,9 @@ FString UUpgradeCardUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUp
 		case EUpgradeAttribute::FlatHealth: return " HEALTH INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " POINTS\n";
 		case EUpgradeAttribute::DamagePercentage: return " DAMAGE INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
 		case EUpgradeAttribute::ProjectilesAmount: return " PROJECTILES INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "\n";
-		case EUpgradeAttribute::AbilityCooldownReduction: return " ABILITY COOLDOWN REDUCED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
+		case EUpgradeAttribute::AbilityCooldownReduction: return " COOLDOWN REDUCED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
 		case EUpgradeAttribute::Size: return " SIZE INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
-		case EUpgradeAttribute::AbilityDuration: return " ABILITY DURATION INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
+		case EUpgradeAttribute::AbilityDuration: return " DURATION INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
 	}
 	return "";
 }
@@ -60,17 +61,13 @@ void UUpgradeCardUI::NativeConstruct()
 	UpgradeButton->OnClicked.AddDynamic(this, &UUpgradeCardUI::SelectUpgrade);
 }
 
-void UUpgradeCardUI::NativePreConstruct()
-{
-	Super::NativePreConstruct();
-	if (PlayerOrEnemyTexture && PlayerOrEnemyIcon) PlayerOrEnemyIcon->SetBrushFromAtlasInterface(PlayerOrEnemyTexture);
-}
-
 void UUpgradeCardUI::SetCardBackgroundBorderImage(const TObjectPtr<UTexture2D>& InImage) const { CardBackgroundBorder->SetBrushFromTexture(InImage); }
 
 void UUpgradeCardUI::SetCharacterIcon(const TObjectPtr<UTexture2D>& InImage) const { CharacterIcon->SetBrushFromTexture(InImage); }
 
-void UUpgradeCardUI::SetCharacterIconInvisible() const { CharacterIcon->SetVisibility(ESlateVisibility::Collapsed); }
+void UUpgradeCardUI::SetPlayerIcon(const TObjectPtr<UTexture2D>& InImage) const { if (InImage) PlayerOrEnemyIcon->SetBrushFromTexture(InImage); }
+
+void UUpgradeCardUI::SetPlayerOrEnemyIconInvisible() const { PlayerOrEnemyIcon->SetVisibility(ESlateVisibility::Collapsed); }
 
 void UUpgradeCardUI::SetCardIcon(const TObjectPtr<UTexture2D>& InImage) const { CardIcon->SetBrushFromTexture(InImage); }
 
