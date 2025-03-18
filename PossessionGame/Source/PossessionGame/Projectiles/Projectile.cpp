@@ -27,12 +27,12 @@ AProjectile::AProjectile()
 	MovementComponent->ProjectileGravityScale = 0.0f;
 }
 
-void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale)
+void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale, const int32 InWhich)
 {
 	SetActorScale3D(Scale);
 	ProjectileData = InProjectileData;
 	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
-	SetupData(ProjectileData.bIsPlayerProjectile);
+	SetupData(ProjectileData.bIsPlayerProjectile, InWhich);
 	if (!bHasBeenPooled)
 	{
 		AttachAndLoadVfxs();
@@ -55,10 +55,10 @@ void AProjectile::OnImpact(const FHitResult& Hit)
 	PlayImpactSound();
 }
 
-void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale)
+void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich)
 {
-	Super::Init(InProjectileData, Rotation, Scale);
-	SetupProjectile(InProjectileData, Scale);
+	Super::Init(InProjectileData, Rotation, Scale, InWhich);
+	SetupProjectile(InProjectileData, Scale, InWhich);
 	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
 	if (BulletTrailComponent) BulletTrailComponent->Activate();
 	MovementComponent->Activate();
@@ -92,7 +92,6 @@ void AProjectile::AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile)
 	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage);
 	const float DamagePercentage = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage);
 	if (DamagePercentage > 0.f) Damage += ProjectileData.Damage * (DamagePercentage / 100.f);
-	UE_LOG(LogTemp, Warning, TEXT("PROJECTILE DAMAGE: %s %f"), *UEnum::GetValueAsString(ProjectileData.ProjectileName), Damage);
 }
 
 void AProjectile::BeginPlay()
@@ -102,12 +101,12 @@ void AProjectile::BeginPlay()
 	Mesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 }
 
-void AProjectile::SetupData(const bool bIsPlayerProjectile)
+void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 {
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", ProjectileData.LifeSpan, false);
-	MovementComponent->InitialSpeed = ProjectileData.InitialSpeed;
-	MovementComponent->MaxSpeed = ProjectileData.MaxSpeed;
-	MovementComponent->ProjectileGravityScale = ProjectileData.GravityScale;
+	MovementComponent->InitialSpeed = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].InitialSpeed;
+	MovementComponent->MaxSpeed = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].MaxSpeed;
+	MovementComponent->ProjectileGravityScale = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].GravityScale;
 	Damage = ProjectileData.Damage;
 	AI_SetupUpgradesAppliance(bIsPlayerProjectile);
 }

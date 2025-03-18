@@ -4,7 +4,7 @@ void APoolObject::Init(bool bInIsPlayerObject) { SetPoolObjectState(true); }
 
 void APoolObject::Init(const float InData) { SetPoolObjectState(true); }
 
-void APoolObject::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale) { SetPoolObjectState(true); }
+void APoolObject::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich) { SetPoolObjectState(true); }
 
 void APoolObject::Disable() { SetPoolObjectState(false); }
 

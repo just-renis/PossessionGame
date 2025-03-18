@@ -26,7 +26,7 @@ void ASpyWeapon::BeginPlay()
 	SetupHandsAnimInstance();
 }
 
-void ASpyWeapon::ShootProjectile(const EPoolObject InProjectileName)
+void ASpyWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const int32 InAmount, const bool bFromFirstWeapon)
 {
 	Super::ShootProjectile(InProjectileName);
 	if (CurrentAmmo <= MagazineCap * 0.1f) OnAmmoPercentageChanged.Broadcast(10);

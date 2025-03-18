@@ -20,7 +20,7 @@ class POSSESSIONGAME_API ASmokeGrenade : public AProjectile
 	TSubclassOf<UNavArea> OriginalNavAreaClass;
 	
 	virtual void PlayImpactSound() override;
-	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale) override;
+	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich) override;
 	UFUNCTION()
 	void OnSmokeEnd() const;
 };

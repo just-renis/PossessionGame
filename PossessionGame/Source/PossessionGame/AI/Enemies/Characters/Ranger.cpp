@@ -46,7 +46,8 @@ ARanger::ARanger()
 void ARanger::LaunchGrenade()
 {
 	PlaySound(ESound::RangerGrenadeLaunch);
-	Weapon->ShootProjectile(EPoolObject::RangerGrenadeLauncherProjectile);
+	const int32 ProjectilesAmount = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPossessed, EPoolObject::RangerGrenadeLauncherProjectile, EUpgradeAttribute::ProjectilesAmount);
+	Weapon->ShootProjectile(EPoolObject::RangerGrenadeLauncherProjectile, false, ProjectilesAmount + 1);
 	GrenadeLauncherMuzzleFlashLogic();
 }
 

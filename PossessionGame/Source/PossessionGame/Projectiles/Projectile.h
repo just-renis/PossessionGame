@@ -24,7 +24,7 @@ public:
 
 	bool GetIsPlayerProjectile() const { return ProjectileData.bIsPlayerProjectile; }
 
-	void SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale);
+	void SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale, const int32 InWhich);
 	void SetDirection(const FVector Direction) const;
 protected:
 	FProjectileData ProjectileData;
@@ -38,7 +38,7 @@ protected:
 	void PlaySound(const ESound InSoundName);
 	virtual void PlayImpactSound() {}
 	virtual void OnImpact(const FHitResult& Hit);
-	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale) override;
+	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich) override;
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
@@ -52,7 +52,7 @@ private:
 	void AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile);
 	
 	virtual void BeginPlay() override;
-	void SetupData(const bool bIsPlayerProjectile);
+	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
 	void DealAreaDamage();
 	void AttachBulletTrail(EVfx VfxName);
 	void AttachAndLoadVfxs();

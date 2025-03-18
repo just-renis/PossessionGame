@@ -23,9 +23,9 @@ void ASmokeGrenade::PlayImpactSound()
 	PlaySound(ESound::TricksterSmokeRelease);
 }
 
-void ASmokeGrenade::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale)
+void ASmokeGrenade::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich)
 {
-	Super::Init(InProjectileData, Rotation, Scale);
+	Super::Init(InProjectileData, Rotation, Scale, InWhich);
 	if (!OriginalNavAreaClass) OriginalNavAreaClass = SmokeNavModifier->AreaClass;
 }
 

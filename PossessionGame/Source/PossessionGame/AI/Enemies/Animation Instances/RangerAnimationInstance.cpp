@@ -51,12 +51,12 @@ void URangerAnimationInstance::TriggerGrenadeProjection() const
 	FPredictProjectilePathParams PathParams;
 	FProjectileData ProjectileData = Proprietor->GetWeapon()->GetProjectileData(EPoolObject::RangerGrenadeLauncherProjectile);
 	PathParams.StartLocation = Proprietor->GetWeapon()->GetSocketLocation(ProjectileData.ProjectileSocketName);
-	PathParams.LaunchVelocity = Proprietor->GetWeapon()->GetSocketRotation(ProjectileData.ProjectileSocketName).Vector() * ProjectileData.MaxSpeed;
+	PathParams.LaunchVelocity = Proprietor->GetWeapon()->GetSocketRotation(ProjectileData.ProjectileSocketName).Vector() * ProjectileData.GetMultiProjectileData(1).Data[0].MaxSpeed;
 	PathParams.bTraceWithCollision = true;
 	PathParams.ProjectileRadius = 1.f;
 	PathParams.MaxSimTime = 8.f;
 	PathParams.SimFrequency = 30.f;
-	PathParams.OverrideGravityZ = GetWorld()->GetGravityZ() * ProjectileData.GravityScale;
+	PathParams.OverrideGravityZ = GetWorld()->GetGravityZ() * ProjectileData.GetMultiProjectileData(1).Data[0].GravityScale;
 	PathParams.TraceChannel = ECC_GameTraceChannel6;
 	FPredictProjectilePathResult PathResult;
 	if (UGameplayStatics::PredictProjectilePath(GetWorld(), PathParams, PathResult))

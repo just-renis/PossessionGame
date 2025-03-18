@@ -22,5 +22,5 @@ private:
 	virtual void P_Reload(int32 OtherAmmoSource) override;
 	
 	virtual void BeginPlay() override;
-	virtual void ShootProjectile(const EPoolObject InProjectileName);
+	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation = false, const int32 InAmount = 1, const bool bFromFirstWeapon = true) override;
 };

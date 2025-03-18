@@ -129,13 +129,26 @@ void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh
 	Mesh->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket1"));
 }
 
-void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bOverrideRotation, bool bFromFirstWeapon)
+void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bOverrideRotation, const int32 InAmount, bool bFromFirstWeapon)
 {
 	GetProjectileData(InProjectileName).SetProprietor(Proprietor);
+	GetProjectileData(InProjectileName).SetAmount(InAmount);
 	const FName& ProjectileSocketName = GetProjectileData(InProjectileName).ProjectileSocketName;
-	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, GetSocketLocation(ProjectileSocketName),
-	bOverrideRotation ? Proprietor->GetActorRotation() : GetSocketRotation(ProjectileSocketName))
-	->Init(GetProjectileData(InProjectileName), bOverrideRotation ? Proprietor->GetActorRotation() : GetSocketRotation(ProjectileSocketName), GetSocketScale(ProjectileSocketName));
+	const FRotator BaseRotation = bOverrideRotation ? Proprietor->GetActorRotation() : GetSocketRotation(ProjectileSocketName);
+	if (InAmount > 1)
+	{
+		const FAdditionalProjectiles ProjectilesData = GetProjectileData(InProjectileName).GetMultiProjectileData(InAmount);
+		for (int32 i = 0; i < ProjectilesData.Data.Num(); i++)
+		{
+			GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, GetSocketLocation(ProjectileSocketName), BaseRotation.RotateVector(ProjectilesData.Data[i].Direction).Rotation())
+			->Init(GetProjectileData(InProjectileName), BaseRotation.RotateVector(ProjectilesData.Data[i].Direction).Rotation(), GetSocketScale(ProjectileSocketName), i);
+		}
+	}
+	else
+	{
+		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, GetSocketLocation(ProjectileSocketName), BaseRotation)
+		->Init(GetProjectileData(InProjectileName), BaseRotation, GetSocketScale(ProjectileSocketName));
+	}
 }
 
 void AWeapon::PostProprietorSetup() { AttachAndLoadVfxs(); }

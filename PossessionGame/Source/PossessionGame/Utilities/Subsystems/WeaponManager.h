@@ -1,9 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/Enums/EWeapon.h"
 #include "WeaponManager.generated.h"
 
+enum class EWeapon : uint8;
 class AWeapon;
 
 UCLASS()
