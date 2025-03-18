@@ -26,7 +26,11 @@ void UUpgradeCardUI::SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture
 	}
 }
 
-void UUpgradeCardUI::ToggleCardVisibility(const bool bState) { SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed); }
+void UUpgradeCardUI::ToggleCardVisibility(const bool bState)
+{
+	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (bState) UpgradeButton->SetIsEnabled(bState);
+}
 
 FString UUpgradeCardUI::ConvertUpgradeAttributeValueToString(const float InValue)
 {
@@ -102,6 +106,8 @@ void UUpgradeCardUI::ProcessCurrentUpgradeData(const bool bPlayerCard, const int
 
 void UUpgradeCardUI::SelectUpgrade()
 {
+	if (!UpgradeButton->GetIsEnabled()) return;
+	UpgradeButton->SetIsEnabled(false);
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	SaveSlot->AddUpgrade(Data->GetUpgradeName(), SaveSlot->GetLevelOfAnUpgrade(Data->GetUpgradeName()) + 1);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUpgradeSelected.ExecuteIfBound();
