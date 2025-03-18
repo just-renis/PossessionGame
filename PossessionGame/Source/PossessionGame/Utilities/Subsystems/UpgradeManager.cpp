@@ -55,8 +55,8 @@ TObjectPtr<UUpgradeData> UUpgradeManager::GetAbilityUpgradeData(const EAbility I
 	switch (InAbilityName)
 	{
 		case EAbility::RangerAbility1: return Upgrades[EUpgrade::RangerAbility1];
-//		case EAbility::RangerAbility2: return Upgrades[EUpgrade::RangerAbility2];
-//		case EAbility::RangerAbility3: return Upgrades[EUpgrade::RangerAbility3];
+		case EAbility::RangerAbility2: return Upgrades[EUpgrade::RangerAbility2];
+		case EAbility::RangerAbility3: return Upgrades[EUpgrade::RangerAbility3];
 		default: return nullptr;
 	}
 }

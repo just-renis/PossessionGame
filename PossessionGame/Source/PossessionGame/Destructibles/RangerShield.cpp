@@ -1,8 +1,11 @@
 ﻿#include "RangerShield.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "PossessionGame/Enums/EAbility.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 
 ARangerShield::ARangerShield()
 {
@@ -24,6 +27,8 @@ void ARangerShield::BeginPlay()
 void ARangerShield::Init(bool bInIsPlayerObject)
 {
 	ShieldMaterialValueChanger = 0;
+	const float SizeIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bInIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::Size);
+	SetActorScale3D(FVector(GetActorScale3D().X + GetActorScale3D().X * (SizeIncrease / 100.f), GetActorScale3D().Y, GetActorScale3D().Z + GetActorScale3D().Z * (SizeIncrease / 100.f)));
 	PlaySound(ESound::RangerDeployShield);
 	UpdateShieldMaterialValues(0.f, 0.7f);
 	Super::Init(bInIsPlayerObject);
@@ -32,6 +37,7 @@ void ARangerShield::Init(bool bInIsPlayerObject)
 
 void ARangerShield::DestroyThis()
 {
+	SetActorEnableCollision(false);
 	ShieldMaterialValueChanger = 0;
 	PlaySound(ESound::RangerDissolveShield);
 	UKismetSystemLibrary::K2_SetTimer(this, "DissolveShield", 0.05f, true);
