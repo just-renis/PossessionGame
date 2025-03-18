@@ -3,6 +3,6 @@
 
 void UDamageNumberUI::SetDamageAmount(const float InDamageAmount)
 {
-	DamageNumberText->SetText(FText::AsNumber(static_cast<int32>(InDamageAmount)));
-	PlayAnimation(DamageNumberAnimation);
+	if (DamageNumberText) DamageNumberText->SetText(FText::AsNumber(static_cast<int32>(InDamageAmount)));
+	if (DamageNumberAnimation) PlayAnimation(DamageNumberAnimation);
 }

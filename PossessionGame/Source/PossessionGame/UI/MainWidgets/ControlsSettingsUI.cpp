@@ -63,20 +63,20 @@ void UControlsSettingsUI::AddKeyBinds(TArray<FName>& DesiredOrder, TMap<FName, F
 		TObjectPtr<UKeyBindingUI> KeyBindingWidget = CreateWidget<UKeyBindingUI>(this, KeyBindingClass);
 		KeyBindingWidget->Setup(UserSettings, *OrderedKeyBinds.Find(ActionName));
 		KeyBindings.Add(KeyBindingWidget);
-		KeyBindingsPanel->AddChild(KeyBindingWidget);
+		if (KeyBindingsPanel) KeyBindingsPanel->AddChild(KeyBindingWidget);
 	}
 }
 
 void UControlsSettingsUI::ResetKeyBindsToDefault()
 {
-	for (int32 i = 0; i < KeyBindings.Num(); i++) KeyBindings[i]->ResetKeyBind();
+	for (int32 i = 0; i < KeyBindings.Num(); i++) if (KeyBindings[i]) KeyBindings[i]->ResetKeyBind();
 }
 
 bool UControlsSettingsUI::ApplySettings()
 {
 	if (!IsKeyBindsHasDuplicates())
 	{
-		for (int32 i = 0; i < KeyBindings.Num(); i++) KeyBindings[i]->RemapKeyBind();
+		for (int32 i = 0; i < KeyBindings.Num(); i++) if (KeyBindings[i]) KeyBindings[i]->RemapKeyBind();
 		UserSettings->ApplySettings();
 		UserSettings->SaveSettings();
 		return true;
@@ -86,5 +86,5 @@ bool UControlsSettingsUI::ApplySettings()
 
 void UControlsSettingsUI::SetSavedSettings()
 {
-	for (int32 i = 0; i < KeyBindings.Num(); i++) KeyBindings[i]->SetSavedKeyBind();
+	for (int32 i = 0; i < KeyBindings.Num(); i++) if (KeyBindings[i]) KeyBindings[i]->SetSavedKeyBind();
 }

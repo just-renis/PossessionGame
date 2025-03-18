@@ -52,7 +52,7 @@ EGraphicsQuality USettingsQualityUI::SetAndGetAppliedQuality()
 void USettingsQualityUI::UpdateQuality(uint8 QualityInt)
 {
 	TemporalQuality = GetQualityEnum(QualityInt);
-	SettingQualityText->SetText(FText::FromString(UEnum::GetValueAsString(TemporalQuality).Replace(TEXT("EGraphicsQuality::"), TEXT(""))));
+	if (SettingQualityText) SettingQualityText->SetText(FText::FromString(UEnum::GetValueAsString(TemporalQuality).Replace(TEXT("EGraphicsQuality::"), TEXT(""))));
 }
 
 void USettingsQualityUI::UpdateDefaultQuality(uint8 QualityInt)
@@ -64,7 +64,7 @@ void USettingsQualityUI::UpdateDefaultQuality(uint8 QualityInt)
 void USettingsQualityUI::UpdateQuality()
 {
 	TemporalQuality = AppliedQuality;
-	SettingQualityText->SetText(FText::FromString(UEnum::GetValueAsString(AppliedQuality).Replace(TEXT("EGraphicsQuality::"), TEXT(""))));
+	if (SettingQualityText) SettingQualityText->SetText(FText::FromString(UEnum::GetValueAsString(AppliedQuality).Replace(TEXT("EGraphicsQuality::"), TEXT(""))));
 }
 
 void USettingsQualityUI::LowerQuality()
@@ -73,7 +73,7 @@ void USettingsQualityUI::LowerQuality()
 	{
 		const uint8 QualityInt = static_cast<uint8>(TemporalQuality) - 1;
 		UpdateQuality(QualityInt);
-		if (!IsGlobalGraphicsSetting) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGraphicsSettingChange.ExecuteIfBound();
+		if (!IsGlobalGraphicsSetting) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGraphicsSettingChange.ExecuteIfBound();
 		else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGlobalGraphicsSettingChange.Broadcast(QualityInt);
 	}
 }
@@ -84,7 +84,7 @@ void USettingsQualityUI::IncreaseQuality()
 	{
 		const uint8 QualityInt = static_cast<uint8>(TemporalQuality) + 1;
 		UpdateQuality(QualityInt);
-		if (!IsGlobalGraphicsSetting) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGraphicsSettingChange.ExecuteIfBound();
+		if (!IsGlobalGraphicsSetting) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGraphicsSettingChange.ExecuteIfBound();
 		else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGlobalGraphicsSettingChange.Broadcast(QualityInt);
 	}
 }

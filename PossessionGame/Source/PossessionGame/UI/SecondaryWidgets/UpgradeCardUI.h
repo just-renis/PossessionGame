@@ -37,8 +37,6 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> UpgradeText;
 	UPROPERTY()
-	TObjectPtr<UWidgetAnimation> CardHoverAnimation;
-	UPROPERTY()
 	TObjectPtr<UUpgradeData> Data;
 
 	FString ConvertUpgradeAttributeValueToString(const float InValue);

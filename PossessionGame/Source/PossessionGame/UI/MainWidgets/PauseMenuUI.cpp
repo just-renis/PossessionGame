@@ -10,15 +10,24 @@ void UPauseMenuUI::OpenUI() { Toggle(true); }
 
 void UPauseMenuUI::ChangeUIToDeathMenu()
 {
-	ContinueButton->OnClicked.RemoveAll(this);
-	ContinueText->SetText(FText::FromString("Restart Level"));
-	ContinueButton->OnClicked.AddDynamic(this, &UPauseMenuUI::RestartLevel);
-	SettingsButton->OnClicked.RemoveAll(this);
-	SettingsText->SetText(FText::FromString("Return To Menu"));
-	SettingsButton->OnClicked.AddDynamic(this, &UPauseMenuUI::ReturnToMainMenu);
-	ReturnToMainMenuButton->OnClicked.RemoveAll(this);
-	ReturnToMainMenuText->SetText(FText::FromString("Quit Game"));
-	ReturnToMainMenuButton->OnClicked.AddDynamic(this, &UPauseMenuUI::QuitGame);
+	if (ContinueButton)
+	{
+		ContinueButton->OnClicked.RemoveAll(this);
+		ContinueButton->OnClicked.AddDynamic(this, &UPauseMenuUI::RestartLevel);
+	}
+	if (ContinueText) ContinueText->SetText(FText::FromString("Restart Level"));
+	if (SettingsButton)
+	{
+		SettingsButton->OnClicked.RemoveAll(this);
+		SettingsButton->OnClicked.AddDynamic(this, &UPauseMenuUI::ReturnToMainMenu);
+	}
+	if (SettingsText) SettingsText->SetText(FText::FromString("Return To Menu"));
+	if (ReturnToMainMenuButton)
+	{
+		ReturnToMainMenuButton->OnClicked.RemoveAll(this);
+		ReturnToMainMenuButton->OnClicked.AddDynamic(this, &UPauseMenuUI::QuitGame);
+	}
+	if (ReturnToMainMenuText) ReturnToMainMenuText->SetText(FText::FromString("Quit Game"));
 }
 
 void UPauseMenuUI::CloseUI() { Toggle(false); }
@@ -35,16 +44,16 @@ void UPauseMenuUI::Toggle(bool bState)
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
-	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
+	if (bState) PlayerController->SetInputMode(FInputModeUIOnly());
 	else PlayerController->SetInputMode(FInputModeGameOnly());
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::PauseMenuUI : EWidget::None);
 }
 
 void UPauseMenuUI::SetupButtons()
 {
-	ContinueButton->OnClicked.AddDynamic(this, &UPauseMenuUI::CloseUI);
-	ReturnToMainMenuButton->OnClicked.AddDynamic(this, &UPauseMenuUI::ReturnToMainMenu);
-	SettingsButton->OnClicked.AddDynamic(this, &UPauseMenuUI::OpenSettings);
+	if (ContinueButton) ContinueButton->OnClicked.AddDynamic(this, &UPauseMenuUI::CloseUI);
+	if (ReturnToMainMenuButton) ReturnToMainMenuButton->OnClicked.AddDynamic(this, &UPauseMenuUI::ReturnToMainMenu);
+	if (SettingsButton) SettingsButton->OnClicked.AddDynamic(this, &UPauseMenuUI::OpenSettings);
 }
 
 void UPauseMenuUI::ReturnToMainMenu() { UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenuLevel")); }

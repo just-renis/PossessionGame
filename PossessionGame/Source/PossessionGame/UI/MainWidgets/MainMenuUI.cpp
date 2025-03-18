@@ -24,7 +24,7 @@ void UMainMenuUI::Toggle(bool bState)
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
-	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
+	if (bState) PlayerController->SetInputMode(FInputModeUIOnly());
 	else PlayerController->SetInputMode(FInputModeGameOnly());
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::MainMenuUI : EWidget::None);
 }
@@ -52,12 +52,14 @@ void UMainMenuUI::SetupButtons()
 
 void UMainMenuUI::TriggerMainMenuFadeOutAnim()
 {
+	if (!MainMenuFadeOut) return;
 	MainMenuFadeOutState ? PlayAnimation(MainMenuFadeOut, GetAnimationCurrentTime(MainMenuFadeOut), 1, EUMGSequencePlayMode::Reverse) : PlayAnimation(MainMenuFadeOut, GetAnimationCurrentTime(MainMenuFadeOut));
 	MainMenuFadeOutState = !MainMenuFadeOutState;
 }
 
 void UMainMenuUI::TriggerQuitFadeInAnim()
 {
+	if (!QuitConfirmationPopup) return;
 	QuitConfirmationPopup->PlayPopupFadeInAnim(QuitFadeInState);
 	QuitFadeInState = !QuitFadeInState;
 }
@@ -68,7 +70,7 @@ void UMainMenuUI::QuitGame() { UKismetSystemLibrary::QuitGame(GetWorld(), GetWor
 
 void UMainMenuUI::TriggerQuitPopup()
 {
-	MainMenuInv->SetVisibility(MainMenuInv->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::HitTestInvisible : ESlateVisibility::SelfHitTestInvisible);
+	if (MainMenuInv) MainMenuInv->SetVisibility(MainMenuInv->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::HitTestInvisible : ESlateVisibility::SelfHitTestInvisible);
 	TriggerMainMenuFadeOutAnim();
 	TriggerQuitFadeInAnim();
 }

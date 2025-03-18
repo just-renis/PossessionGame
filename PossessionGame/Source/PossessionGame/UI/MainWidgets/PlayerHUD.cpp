@@ -11,7 +11,7 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
-bool UPlayerHUD::GetPossessionIndicatorIsShowing() const { return PossessionIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible; }
+bool UPlayerHUD::GetPossessionIndicatorIsShowing() const { return PossessionIndicator ? PossessionIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible : false; }
 
 void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, const float InMax)
 {
@@ -19,7 +19,7 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 	{
 		case EUIBar::Hp: if (HPBar) HPBar->SetPercent(InCurrent / InMax); break;
 		case EUIBar::Possession: if (PossessionBar) PossessionBar->SetPercent(InCurrent / InMax); break;
-		default: GetAbilityPanel()->TriggerAbilityIconReady(InBar, InCurrent, InMax);
+		default: if (GetAbilityPanel()) GetAbilityPanel()->TriggerAbilityIconReady(InBar, InCurrent, InMax);
 	}
 }
 
@@ -60,57 +60,59 @@ void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const int32 I
 
 void UPlayerHUD::UpdateFps(const int32 InFps) const
 {
-	FpsText->SetText(FText::FromString(FString::Printf(TEXT("FPS: %i"), InFps)));
+	if (FpsText) FpsText->SetText(FText::FromString(FString::Printf(TEXT("FPS: %i"), InFps)));
 }
 
 void UPlayerHUD::Reset()
 {
-	PossessionBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	Crosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	AmmoText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	HPBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (PossessionBar) PossessionBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (Crosshair) Crosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (AmmoText) AmmoText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (HPBar) HPBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	UpdatePossessionIndicator(false);
 	GetAbilityPanel()->SetOverlaysVisibility(true);
 }
 
-void UPlayerHUD::SetColors(const FLinearColor InColor) const { ScreenGlow->SetColorAndOpacity(InColor); }
+void UPlayerHUD::SetColors(const FLinearColor InColor) const { if (ScreenGlow) ScreenGlow->SetColorAndOpacity(InColor); }
 
 void UPlayerHUD::UpdatePossessionIndicator(const bool bState, const FString& InKeyName)
 {
-	PossessionIndicator->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	PressKeyBindInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	PressKeyBindText->SetText(FText::FromString("Press " + InKeyName + " to possess"));
-	PossessionIndicatorOverlay->SetVisibility(bState ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
+	if (PossessionIndicator) PossessionIndicator->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (PressKeyBindInv) PressKeyBindInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (PressKeyBindText) PressKeyBindText->SetText(FText::FromString("Press " + InKeyName + " to possess"));
+	if (PossessionIndicatorOverlay)	PossessionIndicatorOverlay->SetVisibility(bState ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
 	if (bState)
 	{
 		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ReadyToPossess);
-		PlayAnimation(PossessionIndicatorPopup);
-		PlayAnimation(PressToPossessPopup);
+		if (PossessionIndicatorPopup) PlayAnimation(PossessionIndicatorPopup);
+		if (PressToPossessPopup) PlayAnimation(PressToPossessPopup);
 	}
 }
 
-void UPlayerHUD::UpdateRunningIndicator(const bool bState) const { RunningIndicator->SetOpacity(bState ? 1.f : 0.3f); }
+void UPlayerHUD::UpdateRunningIndicator(const bool bState) const { if (RunningIndicator) RunningIndicator->SetOpacity(bState ? 1.f : 0.3f); }
 
 void UPlayerHUD::ToggleCriticalDamageIndicator() const
 {
+	if (!CriticalDamageIndicator) return;
 	CriticalDamageIndicator->SetVisibility(CriticalDamageIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UPlayerHUD::ConfigureUIs()
 {
-	RunningIndicator->SetOpacity(0.3f);
-	PressKeyBindInv->SetVisibility(ESlateVisibility::Collapsed);
-	PossessionAnnouncementInv->SetVisibility(ESlateVisibility::Collapsed);
-	PossessionIndicator->SetVisibility(ESlateVisibility::Collapsed);
-	CriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
+	if (RunningIndicator) RunningIndicator->SetOpacity(0.3f);
+	if (PressKeyBindInv) PressKeyBindInv->SetVisibility(ESlateVisibility::Collapsed);
+	if (PossessionAnnouncementInv) PossessionAnnouncementInv->SetVisibility(ESlateVisibility::Collapsed);
+	if (PossessionIndicator) PossessionIndicator->SetVisibility(ESlateVisibility::Collapsed);
+	if (CriticalDamageIndicator) CriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
+	if (!GetAbilityPanel()) return;
 	GetAbilityPanel()->CollapseAbilityIcon(0);
 	GetAbilityPanel()->CollapseAbilityIcon(1);
 	GetAbilityPanel()->CollapseAbilityIcon(2);
 }
 
-void UPlayerHUD::PlayDeathFadeOutAnim() { PlayAnimation(DeathFadeOut); }
+void UPlayerHUD::PlayDeathFadeOutAnim() { if (DeathFadeOut) PlayAnimation(DeathFadeOut); }
 
-void UPlayerHUD::CollapseAbilityImage(const int32 Index) { GetAbilityPanel()->CollapseAbilityIcon(Index); }
+void UPlayerHUD::CollapseAbilityImage(const int32 Index) { if (GetAbilityPanel()) GetAbilityPanel()->CollapseAbilityIcon(Index); }
 
 void UPlayerHUD::SetHitLocation(const FVector InHitLocation)
 {
@@ -126,13 +128,14 @@ void UPlayerHUD::NativeConstruct()
 	BindCrosshairToggleDelegate();
 }
 
-void UPlayerHUD::ToggleCrosshair() { ToggleUI(Crosshair); }
+void UPlayerHUD::ToggleCrosshair() { if (Crosshair) ToggleUI(Crosshair); }
 
 void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
 {
 	if (HitDamageIndicatorsPool.IsEmpty())
 	{
 		HitDamageIndicatorsPool.Push(WidgetTree->ConstructWidget<UImage>(UImage::StaticClass()));
+		if (!HitDamageIndicator) return;
 		HitDamageIndicator->AddChild(HitDamageIndicatorsPool[0]);
 		const TObjectPtr<UImage> HitDamageIndicatorImg = HitDamageIndicatorsPool.Pop();
 		const TObjectPtr<UMaterialInstanceDynamic> Material = UMaterialInstanceDynamic::Create(MI_HitDamageIndicator, this);
@@ -145,6 +148,7 @@ void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
 	}
 	else
 	{
+		if (!HitDamageIndicator) return;
 		HitDamageIndicator->AddChild(HitDamageIndicatorsPool[0]);
 		const TObjectPtr<UImage> HitDamageIndicatorImg = HitDamageIndicatorsPool.Pop();
 		HitDamageIndicatorImg->GetDynamicMaterial()->SetScalarParameterValue("Angle", GetHitDamageIndicatorSection(FMath::RadiansToDegrees(InAngle)));HitDamageIndicatorImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -164,9 +168,9 @@ void UPlayerHUD::BindOnDamageDealtDelegate()
 
 void UPlayerHUD::ShowDamageTick(const bool bIsCritical)
 {
-	DamageTickInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	DamageTickImage->SetBrushFromTexture(bIsCritical ? CriticalDamageTickTexture : DamageTickTexture);
-	PlayAnimation(DamageTickFadeOut);
+	if (DamageTickInv) DamageTickInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (DamageTickImage && CriticalDamageTickTexture && DamageTickTexture) DamageTickImage->SetBrushFromTexture(bIsCritical ? CriticalDamageTickTexture : DamageTickTexture);
+	if (DamageTickFadeOut) PlayAnimation(DamageTickFadeOut);
 }
 
 float UPlayerHUD::GetHitDamageIndicatorSection(const float InAngle)
@@ -191,20 +195,23 @@ void UPlayerHUD::UpdateHitDamageIndicators()
 {
 	for (int32 i = 0; i < InUseHitDamageIndicators.Num(); i++)
 	{
-		InUseHitDamageIndicators[i].CurrentDelay += 0.25f;
-		if (InUseHitDamageIndicators[i].CurrentDelay >= InUseHitDamageIndicators[i].Delay)
+		if (InUseHitDamageIndicators[i].Image)
 		{
-			InUseHitDamageIndicators[i].Image->SetVisibility(ESlateVisibility::Collapsed);
-			HitDamageIndicatorsPool.Push(InUseHitDamageIndicators[i].Image);
-			InUseHitDamageIndicators.RemoveAt(i);
+			InUseHitDamageIndicators[i].CurrentDelay += 0.25f;
+			if (InUseHitDamageIndicators[i].CurrentDelay >= InUseHitDamageIndicators[i].Delay)
+			{
+				InUseHitDamageIndicators[i].Image->SetVisibility(ESlateVisibility::Collapsed);
+				HitDamageIndicatorsPool.Push(InUseHitDamageIndicators[i].Image);
+				InUseHitDamageIndicators.RemoveAt(i);
+			}
 		}
 	}
 }
 
 void UPlayerHUD::UpdateReceiveDamageInv()
 {
-	ReceiveDamageInv->SetRenderOpacity(1.f);
-	PlayAnimation(ReceiveDamageFadeOut);
+	if (ReceiveDamageInv) ReceiveDamageInv->SetRenderOpacity(1.f);
+	if (ReceiveDamageFadeOut) PlayAnimation(ReceiveDamageFadeOut);
 }
 
 void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
@@ -213,19 +220,19 @@ void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
 	switch (InCharacterType)
 	{
 		case ECharacterType::Ranger:
-			TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			RangerAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			break;
 		default:
-			RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
 
 void UPlayerHUD::AnnouncePossession()
 {
-	PossessionAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	PlayAnimation(PossessedPopup);
+	if (PossessionAnnouncementInv) PossessionAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (PossessedPopup) PlayAnimation(PossessedPopup);
 }
 
 template<typename T>

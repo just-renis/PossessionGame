@@ -14,26 +14,26 @@
 void UUpgradeSelectionUI::OpenUI()
 {
 	Toggle(true);
-	PlayAnimation(UpgradeMenuOpen);
+	if (UpgradeMenuOpen) PlayAnimation(UpgradeMenuOpen);
 	const TArray<TObjectPtr<UUpgradeData>> Data = GetWorld()->GetSubsystem<UUpgradeManager>()->GetRandomUpgrades();
 	if (Data.Num() > 0)
 	{
-		PlayerCardOption1->SetupCard(true, PlayerCardBackgroundTexture, Data[0], Data[0]->GetCharacter() == ECharacterType::Ranger ? RangerIconTexture : TricksterIconTexture, PlayerIconTexture);
-		EnemyCardOption1->SetupCard(false, EnemyCardBackgroundTexture, Data[0], EnemyIconTexture);
+		if (PlayerCardOption1) PlayerCardOption1->SetupCard(true, PlayerCardBackgroundTexture, Data[0], Data[0]->GetCharacter() == ECharacterType::Ranger ? RangerIconTexture : TricksterIconTexture, PlayerIconTexture);
+		if (EnemyCardOption1) EnemyCardOption1->SetupCard(false, EnemyCardBackgroundTexture, Data[0], EnemyIconTexture);
 	}
 	if (Data.Num() > 1)
 	{
-		PlayerCardOption2->SetupCard(true, PlayerCardBackgroundTexture, Data[1], Data[1]->GetCharacter() == ECharacterType::Ranger ? RangerIconTexture : TricksterIconTexture, PlayerIconTexture);
-		EnemyCardOption2->SetupCard(false, EnemyCardBackgroundTexture, Data[1], EnemyIconTexture);
+		if (PlayerCardOption2) PlayerCardOption2->SetupCard(true, PlayerCardBackgroundTexture, Data[1], Data[1]->GetCharacter() == ECharacterType::Ranger ? RangerIconTexture : TricksterIconTexture, PlayerIconTexture);
+		if (EnemyCardOption2) EnemyCardOption2->SetupCard(false, EnemyCardBackgroundTexture, Data[1], EnemyIconTexture);
 	}
 }
 
 void UUpgradeSelectionUI::CloseUI()
 {
-	PlayerCardOption1->ToggleCardVisibility(false);
-	EnemyCardOption1->ToggleCardVisibility(false);
-	PlayerCardOption2->ToggleCardVisibility(false);
-	EnemyCardOption2->ToggleCardVisibility(false);
+	if (PlayerCardOption1) PlayerCardOption1->ToggleCardVisibility(false);
+	if (EnemyCardOption1) EnemyCardOption1->ToggleCardVisibility(false);
+	if (PlayerCardOption2) PlayerCardOption2->ToggleCardVisibility(false);
+	if (EnemyCardOption2) EnemyCardOption2->ToggleCardVisibility(false);
 	Toggle(false);
 }
 
@@ -55,20 +55,35 @@ void UUpgradeSelectionUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUpgradeSelected.BindUObject(this, &UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation);
-	PlayerCardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
-	PlayerCardOption1->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForFirstOption);
-	PlayerCardOption2->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForSecondOption);
-	PlayerCardOption2->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForSecondOption);
-	EnemyCardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
-	EnemyCardOption1->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForFirstOption);
-	EnemyCardOption2->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForSecondOption);
-	EnemyCardOption2->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForSecondOption);
+	if (PlayerCardOption1)
+	{
+		PlayerCardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
+		PlayerCardOption1->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForFirstOption);
+	}
+	if (PlayerCardOption2)
+	{
+		PlayerCardOption2->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForSecondOption);
+		PlayerCardOption2->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForSecondOption);
+	}
+	if (EnemyCardOption1)
+	{
+		EnemyCardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
+		EnemyCardOption1->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForFirstOption);
+	}
+	if (EnemyCardOption2)
+	{
+		EnemyCardOption2->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForSecondOption);
+		EnemyCardOption2->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForSecondOption);
+	}
 }
 
 void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()
 {
-	PlayAnimation(UpgradeMenuClose);
-	UKismetSystemLibrary::K2_SetTimer(this, "FinishedUpgradeSelectionCloseAnimation", UpgradeMenuClose->GetEndTime(), false);
+	if (UpgradeMenuClose)
+	{
+		PlayAnimation(UpgradeMenuClose);
+		UKismetSystemLibrary::K2_SetTimer(this, "FinishedUpgradeSelectionCloseAnimation", UpgradeMenuClose->GetEndTime(), false);
+	}
 }
 
 void UUpgradeSelectionUI::FinishedUpgradeSelectionCloseAnimation() const
@@ -79,24 +94,36 @@ void UUpgradeSelectionUI::FinishedUpgradeSelectionCloseAnimation() const
 
 void UUpgradeSelectionUI::TriggerHoverAnimForFirstOption()
 {
-	PlayAnimation(PlayerCardOption1Popup, GetAnimationCurrentTime(PlayerCardOption1Popup));
-	PlayAnimation(EnemyCardOption1Popup, GetAnimationCurrentTime(EnemyCardOption1Popup));
+	if (PlayerCardOption1Popup && EnemyCardOption1Popup)
+	{
+		PlayAnimation(PlayerCardOption1Popup, GetAnimationCurrentTime(PlayerCardOption1Popup));
+		PlayAnimation(EnemyCardOption1Popup, GetAnimationCurrentTime(EnemyCardOption1Popup));
+	}
 }
 
 void UUpgradeSelectionUI::TriggerHoverAnimForSecondOption()
 {
-	PlayAnimation(PlayerCardOption2Popup, GetAnimationCurrentTime(PlayerCardOption2Popup));
-	PlayAnimation(EnemyCardOption2Popup, GetAnimationCurrentTime(EnemyCardOption2Popup));
+	if (PlayerCardOption2Popup && EnemyCardOption2Popup)
+	{
+		PlayAnimation(PlayerCardOption2Popup, GetAnimationCurrentTime(PlayerCardOption2Popup));
+		PlayAnimation(EnemyCardOption2Popup, GetAnimationCurrentTime(EnemyCardOption2Popup));
+	}
 }
 
 void UUpgradeSelectionUI::TriggerSelectAnimForFirstOption()
 {
-	PlayAnimation(PlayerCardOption1Select);
-	PlayAnimation(EnemyCardOption1Select);
+	if (PlayerCardOption1Select && EnemyCardOption1Select)
+	{
+		PlayAnimation(PlayerCardOption1Select);
+		PlayAnimation(EnemyCardOption1Select);
+	}
 }
 
 void UUpgradeSelectionUI::TriggerSelectAnimForSecondOption()
 {
-	PlayAnimation(PlayerCardOption2Select);
-	PlayAnimation(EnemyCardOption2Select);
+	if (PlayerCardOption2Select && EnemyCardOption2Select)
+	{
+		PlayAnimation(PlayerCardOption2Select);
+		PlayAnimation(EnemyCardOption2Select);
+	}
 }

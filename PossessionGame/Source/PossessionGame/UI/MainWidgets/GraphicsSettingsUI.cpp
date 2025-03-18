@@ -18,61 +18,73 @@ void UGraphicsSettingsUI::SetupUIEvents()
 
 void UGraphicsSettingsUI::UpdateDefaultGraphicsSettings()
 {
-	TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
-	GlobalGraphics->UpdateDefaultQuality(GetGlobalGraphicsQuality());
-	AntiAliasing->UpdateDefaultQuality(GameUserSettings->GetAntiAliasingQuality());
-	PostProcessing->UpdateDefaultQuality(GameUserSettings->GetPostProcessingQuality());
-	GlobalIllumination->UpdateDefaultQuality(GameUserSettings->GetGlobalIlluminationQuality());
-	Textures->UpdateDefaultQuality(GameUserSettings->GetTextureQuality());
-	Effects->UpdateDefaultQuality(GameUserSettings->GetVisualEffectQuality());
-	Shading->UpdateDefaultQuality(GameUserSettings->GetShadingQuality());
-	ScreenMode = GameUserSettings->GetFullscreenMode();
-	ScreenModeMode->SetText(FText::FromString(GetFixedScreenMode()));
+	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
+	if (GlobalGraphics) GlobalGraphics->UpdateDefaultQuality(GetGlobalGraphicsQuality());
+	if (AntiAliasing) AntiAliasing->UpdateDefaultQuality(GameUserSettings->GetAntiAliasingQuality());
+	if (PostProcessing) PostProcessing->UpdateDefaultQuality(GameUserSettings->GetPostProcessingQuality());
+	if (GlobalIllumination) GlobalIllumination->UpdateDefaultQuality(GameUserSettings->GetGlobalIlluminationQuality());
+	if (Textures) Textures->UpdateDefaultQuality(GameUserSettings->GetTextureQuality());
+	if (Effects) Effects->UpdateDefaultQuality(GameUserSettings->GetVisualEffectQuality());
+	if (Shading) Shading->UpdateDefaultQuality(GameUserSettings->GetShadingQuality());
+	if (ScreenMode) ScreenMode = GameUserSettings->GetFullscreenMode();
+	if (ScreenModeMode) ScreenModeMode->SetText(FText::FromString(GetFixedScreenMode()));
 	Resolution = GameUserSettings->GetScreenResolution();
-	ResolutionMode->SetText(FText::FromString(FString::Printf(TEXT("%dx%d"), Resolution.X, Resolution.Y)));
+	if (ResolutionMode) ResolutionMode->SetText(FText::FromString(FString::Printf(TEXT("%dx%d"), Resolution.X, Resolution.Y)));
 	Vsync = GameUserSettings->IsVSyncEnabled();
-	VsyncMode->SetText(FText::FromString(Vsync ? "Enabled" : "Disabled"));
-	BrightnessSlider->SetValue((GameUserSettings->GetGamma() - 1.f) / 4.f);
-	ApplyBrightnessValue(BrightnessSlider->GetSavedValue());
+	if (VsyncMode) VsyncMode->SetText(FText::FromString(Vsync ? "Enabled" : "Disabled"));
+	if (BrightnessSlider)
+	{
+		BrightnessSlider->SetValue((GameUserSettings->GetGamma() - 1.f) / 4.f);
+		ApplyBrightnessValue(BrightnessSlider->GetSavedValue());
+	}
 }
 
 void UGraphicsSettingsUI::SetSavedSettings()
 {
-	GlobalGraphics->UpdateQuality();
-	AntiAliasing->UpdateQuality();
-	PostProcessing->UpdateQuality();
-	GlobalIllumination->UpdateQuality();
-	Textures->UpdateQuality();
-	Effects->UpdateQuality();
-	Shading->UpdateQuality();
-	BrightnessSlider->SetSliderValue(BrightnessSlider->GetSavedValue());
-	ApplyBrightnessValue(BrightnessSlider->GetSavedValue());
+	if (GlobalGraphics) GlobalGraphics->UpdateQuality();
+	if (AntiAliasing) AntiAliasing->UpdateQuality();
+	if (PostProcessing) PostProcessing->UpdateQuality();
+	if (GlobalIllumination) GlobalIllumination->UpdateQuality();
+	if (Textures) Textures->UpdateQuality();
+	if (Effects) Effects->UpdateQuality();
+	if (Shading) Shading->UpdateQuality();
+	if (BrightnessSlider)
+	{
+		BrightnessSlider->SetSliderValue(BrightnessSlider->GetSavedValue());
+		ApplyBrightnessValue(BrightnessSlider->GetSavedValue());
+	}
 }
 
 void UGraphicsSettingsUI::ApplySettings()
 {
-	if (TObjectPtr<UPossessionGameUserSettings> UserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings()))
+	if (const TObjectPtr<UPossessionGameUserSettings> UserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings()))
 	{
-		UserSettings->SetAntiAliasingQuality(static_cast<uint8>(AntiAliasing->SetAndGetAppliedQuality()));
-		UserSettings->SetPostProcessingQuality(static_cast<uint8>(PostProcessing->SetAndGetAppliedQuality()));
-		UserSettings->SetGlobalIlluminationQuality(static_cast<uint8>(GlobalIllumination->SetAndGetAppliedQuality()));
-		UserSettings->SetTextureQuality(static_cast<uint8>(Textures->SetAndGetAppliedQuality()));
-		UserSettings->SetVisualEffectQuality(static_cast<uint8>(Effects->SetAndGetAppliedQuality()));
-		UserSettings->SetShadingQuality(static_cast<uint8>(Shading->SetAndGetAppliedQuality()));
-		GlobalGraphics->UpdateQuality(GetGlobalGraphicsQuality());
-		GlobalGraphics->SetAndGetAppliedQuality();
+		if (AntiAliasing) UserSettings->SetAntiAliasingQuality(static_cast<uint8>(AntiAliasing->SetAndGetAppliedQuality()));
+		if (PostProcessing) UserSettings->SetPostProcessingQuality(static_cast<uint8>(PostProcessing->SetAndGetAppliedQuality()));
+		if (GlobalIllumination) UserSettings->SetGlobalIlluminationQuality(static_cast<uint8>(GlobalIllumination->SetAndGetAppliedQuality()));
+		if (Textures) UserSettings->SetTextureQuality(static_cast<uint8>(Textures->SetAndGetAppliedQuality()));
+		if (Effects) UserSettings->SetVisualEffectQuality(static_cast<uint8>(Effects->SetAndGetAppliedQuality()));
+		if (Shading) UserSettings->SetShadingQuality(static_cast<uint8>(Shading->SetAndGetAppliedQuality()));
+		if (GlobalGraphics)
+		{
+			GlobalGraphics->UpdateQuality(GetGlobalGraphicsQuality());
+			GlobalGraphics->SetAndGetAppliedQuality();
+		}
 		UserSettings->SetFullscreenMode(ScreenMode);
 		UserSettings->SetScreenResolution(Resolution);
 		UserSettings->SetVSyncEnabled(Vsync);
-		BrightnessSlider->SaveValue();
-		UserSettings->SetGamma(BrightnessSlider->GetSavedValue() * 4.f + 1.f);
+		if (BrightnessSlider)
+		{
+			BrightnessSlider->SaveValue();
+			UserSettings->SetGamma(BrightnessSlider->GetSavedValue() * 4.f + 1.f);
+		}
 		UserSettings->ApplySettings(true);
 	}
 }
 
 uint8 UGraphicsSettingsUI::GetGlobalGraphicsQuality()
 {
-	TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
+	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
 	TArray QualitySettings = {
 		GameUserSettings->GetGlobalIlluminationQuality(),
 		GameUserSettings->GetAntiAliasingQuality(),
@@ -81,7 +93,7 @@ uint8 UGraphicsSettingsUI::GetGlobalGraphicsQuality()
 		GameUserSettings->GetVisualEffectQuality(),
 		GameUserSettings->GetShadingQuality()
 	};
-	int32 Value = QualitySettings[0];
+	const int32 Value = QualitySettings[0];
 	for (int32 i = 1; i < QualitySettings.Num(); i++) if (Value != QualitySettings[i]) return 5;
 	return Value;
 }

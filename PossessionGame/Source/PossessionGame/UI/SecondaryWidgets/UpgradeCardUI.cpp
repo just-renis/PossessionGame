@@ -30,7 +30,7 @@ void UUpgradeCardUI::SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture
 void UUpgradeCardUI::ToggleCardVisibility(const bool bState)
 {
 	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	if (bState) UpgradeButton->SetIsEnabled(bState);
+	if (bState && UpgradeButton) UpgradeButton->SetIsEnabled(bState);
 }
 
 FString UUpgradeCardUI::ConvertUpgradeAttributeValueToString(const float InValue)
@@ -58,21 +58,22 @@ FString UUpgradeCardUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUp
 void UUpgradeCardUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	UpgradeButton->OnClicked.AddDynamic(this, &UUpgradeCardUI::SelectUpgrade);
+	if (UpgradeButton) UpgradeButton->OnClicked.AddDynamic(this, &UUpgradeCardUI::SelectUpgrade);
 }
 
-void UUpgradeCardUI::SetCardBackgroundBorderImage(const TObjectPtr<UTexture2D>& InImage) const { CardBackgroundBorder->SetBrushFromTexture(InImage); }
+void UUpgradeCardUI::SetCardBackgroundBorderImage(const TObjectPtr<UTexture2D>& InImage) const { if (CardBackgroundBorder && InImage) CardBackgroundBorder->SetBrushFromTexture(InImage); }
 
-void UUpgradeCardUI::SetCharacterIcon(const TObjectPtr<UTexture2D>& InImage) const { CharacterIcon->SetBrushFromTexture(InImage); }
+void UUpgradeCardUI::SetCharacterIcon(const TObjectPtr<UTexture2D>& InImage) const { if (CharacterIcon && InImage) CharacterIcon->SetBrushFromTexture(InImage); }
 
-void UUpgradeCardUI::SetPlayerIcon(const TObjectPtr<UTexture2D>& InImage) const { if (InImage) PlayerOrEnemyIcon->SetBrushFromTexture(InImage); }
+void UUpgradeCardUI::SetPlayerIcon(const TObjectPtr<UTexture2D>& InImage) const { if (PlayerOrEnemyIcon && InImage) PlayerOrEnemyIcon->SetBrushFromTexture(InImage); }
 
-void UUpgradeCardUI::SetPlayerOrEnemyIconInvisible() const { PlayerOrEnemyIcon->SetVisibility(ESlateVisibility::Collapsed); }
+void UUpgradeCardUI::SetPlayerOrEnemyIconInvisible() const { if (PlayerOrEnemyIcon) PlayerOrEnemyIcon->SetVisibility(ESlateVisibility::Collapsed); }
 
-void UUpgradeCardUI::SetCardIcon(const TObjectPtr<UTexture2D>& InImage) const { CardIcon->SetBrushFromTexture(InImage); }
+void UUpgradeCardUI::SetCardIcon(const TObjectPtr<UTexture2D>& InImage) const { if (CardIcon && InImage) CardIcon->SetBrushFromTexture(InImage); }
 
 void UUpgradeCardUI::SetCharacterText(const FText& InText, const FColor InColor) const
 {
+	if (!CharacterText) return;
 	CharacterText->SetText(InText);
 	CharacterText->SetColorAndOpacity(InColor);
 }
@@ -86,7 +87,7 @@ void UUpgradeCardUI::SetUpgradeText(const bool bPlayerCard)
 	FString UpgradeTextString = "";
 	for (const TPair<EUpgradeAttribute, float> Attribute : CurrentUpgradeData.Upgrades) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute);
 	UpgradeTextString.RemoveFromEnd(TEXT("\n"));
-	UpgradeText->SetText(FText::FromString(UpgradeTextString));
+	if (UpgradeText) UpgradeText->SetText(FText::FromString(UpgradeTextString));
 }
 
 void UUpgradeCardUI::ProcessCurrentUpgradeData(const bool bPlayerCard, const int32 PreviousLevel, FLevelUpgradeData& CurrentUpgradeData) const
@@ -103,7 +104,7 @@ void UUpgradeCardUI::ProcessCurrentUpgradeData(const bool bPlayerCard, const int
 
 void UUpgradeCardUI::SelectUpgrade()
 {
-	if (!UpgradeButton->GetIsEnabled()) return;
+	if (!UpgradeButton && !UpgradeButton->GetIsEnabled()) return;
 	UpgradeButton->SetIsEnabled(false);
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	SaveSlot->AddUpgrade(Data->GetUpgradeName(), SaveSlot->GetLevelOfAnUpgrade(Data->GetUpgradeName()) + 1);

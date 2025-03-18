@@ -1,18 +1,15 @@
 ﻿#include "SliderUI.h"
 #include "Components/ProgressBar.h"
 
-void USliderUI::SaveValue() { SavedValue = Slider->GetValue(); }
+void USliderUI::SaveValue() { if (Slider) SavedValue = Slider->GetValue(); }
 
 void USliderUI::SetValue(float InValue)
 {
 	SavedValue = InValue;
-	Slider->SetValue(InValue);
+	if (Slider) Slider->SetValue(InValue);
 }
 
-void USliderUI::SetSliderValue(float InValue)
-{
-	Slider->SetValue(InValue);
-}
+void USliderUI::SetSliderValue(float InValue) { if (Slider) Slider->SetValue(InValue); }
 
 void USliderUI::NativeConstruct()
 {

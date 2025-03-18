@@ -45,4 +45,4 @@ void UWaveManagerHUD::ToggleCurrentWaveText()
 	}
 }
 
-void UWaveManagerHUD::PlayWavePanelFadeOutAnim() { PlayAnimation(WavePanelFadeOutAnim); }
+void UWaveManagerHUD::PlayWavePanelFadeOutAnim() { if (WavePanelFadeOutAnim) PlayAnimation(WavePanelFadeOutAnim); }

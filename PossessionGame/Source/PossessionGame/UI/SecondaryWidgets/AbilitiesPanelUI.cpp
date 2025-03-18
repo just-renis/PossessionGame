@@ -6,9 +6,9 @@
 
 void UAbilitiesPanelUI::SetOverlaysVisibility(const bool bState) const
 {
-	FirstAbilityOverlay->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	SecondAbilityOverlay->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	ThirdAbilityOverlay->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (FirstAbilityOverlay) FirstAbilityOverlay->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (SecondAbilityOverlay) SecondAbilityOverlay->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (ThirdAbilityOverlay) ThirdAbilityOverlay->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
 void UAbilitiesPanelUI::CollapseAbilityIcon(const int32 Index) const
@@ -16,16 +16,19 @@ void UAbilitiesPanelUI::CollapseAbilityIcon(const int32 Index) const
 	switch (Index)
 	{
 		case 0:
-			FirstAbilityImage->SetVisibility(ESlateVisibility::Collapsed); 
+			if (!FirstAbilityImage || !FirstAbilityProgressBar) return;
+			FirstAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
 			FirstAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			FirstAbilityProgressBar->SetPercent(0.f);
-			break;
+			return;
 		case 1:
-			SecondAbilityImage->SetVisibility(ESlateVisibility::Collapsed); 
+			if (!SecondAbilityImage || !SecondAbilityProgressBar) return;
+			SecondAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
 			SecondAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			SecondAbilityProgressBar->SetPercent(0.f);
-			break;
+			return;
 		default:
+			if (!ThirdAbilityImage || !ThirdAbilityProgressBar) return;
 			ThirdAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
 			ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			ThirdAbilityProgressBar->SetPercent(0.f);
@@ -37,6 +40,7 @@ void UAbilitiesPanelUI::TriggerAbilityIconReady(const EUIBar InBar, const float 
 	switch (InBar)
 	{
 		case EUIBar::FirstAbility: 
+			if (!FirstAbilityImage || !FirstAbilityProgressBar) return;
 			FirstAbilityProgressBar->SetPercent(InCurrent / InMax);
 			if (InCurrent >= InMax)
 			{
@@ -44,7 +48,8 @@ void UAbilitiesPanelUI::TriggerAbilityIconReady(const EUIBar InBar, const float 
 				FirstAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
 			}
 			break;
-		case EUIBar::SecondAbility: 
+		case EUIBar::SecondAbility:
+			if (!SecondAbilityImage || !SecondAbilityProgressBar) return;
 			SecondAbilityProgressBar->SetPercent(InCurrent / InMax);
 			if (InCurrent >= InMax)
 			{
@@ -53,6 +58,7 @@ void UAbilitiesPanelUI::TriggerAbilityIconReady(const EUIBar InBar, const float 
 			}
 			break;
 		default:
+			if (!ThirdAbilityImage || !ThirdAbilityProgressBar) return;
 			ThirdAbilityProgressBar->SetPercent(InCurrent / InMax);
 			if (InCurrent >= InMax)
 			{

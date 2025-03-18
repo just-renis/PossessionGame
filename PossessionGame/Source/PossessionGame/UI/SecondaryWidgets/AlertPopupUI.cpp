@@ -3,6 +3,7 @@
 
 void UAlertPopupUI::PlayPopupFadeInAnim(bool bState)
 {
+	if (!PopupFadeIn) return;
 	bState ? PlayAnimation(PopupFadeIn, GetAnimationCurrentTime(PopupFadeIn))
 	: PlayAnimation(PopupFadeIn, GetAnimationCurrentTime(PopupFadeIn), 1, EUMGSequencePlayMode::Reverse);
 }
