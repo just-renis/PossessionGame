@@ -122,6 +122,7 @@ void ARanger::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.58431f, 0.1
 
 void ARanger::P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName)
 {
+	Super::P_ApplyUpgradeOnSelection(InUpgradeName);
 	if (InUpgradeName == EUpgrade::RangerBaseStat)
 	{
 		const float HpValue = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, CharacterName, EUpgradeAttribute::FlatHealth);

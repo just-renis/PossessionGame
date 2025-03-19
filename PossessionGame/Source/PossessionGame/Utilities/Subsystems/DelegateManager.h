@@ -8,6 +8,7 @@ enum class EUpgrade : uint8;
 DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnZoomToggle);
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
+DECLARE_DELEGATE(FOnUpgradeSelectionOpened);
 DECLARE_DELEGATE(FOnUpgradeSelected);
 DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
 DECLARE_MULTICAST_DELEGATE(FOnEnemyDeath);
@@ -31,6 +32,7 @@ public:
 	FOnHandsReloadMontageEnd OnHandsReloadMontageEnd;
 	FOnZoomToggle OnZoomToggle;
 	FOnGraphicsSettingChange OnGraphicsSettingChange;
+	FOnUpgradeSelectionOpened OnUpgradeSelectionOpened;
 	FOnUpgradeSelected OnUpgradeSelected;
 	FOnUpgradeSelectionFinished OnUpgradeSelectionFinished;
 	FOnEnemyDeath OnEnemyDeath;

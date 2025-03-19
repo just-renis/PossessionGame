@@ -116,7 +116,7 @@ void AEnemy::Tick(const float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (bIsAlive)
 	{
-		if (Abilities.Num() > 0) TickAbilities(DeltaTime);
+		if (!bInUpgradeSelection && Abilities.Num() > 0) TickAbilities(DeltaTime);
 		if (P_HUD) P_HUD->UpdateFps(FMath::RoundToInt32(1.f / DeltaTime));
 	}
 }
@@ -297,6 +297,7 @@ void AEnemy::P_SetupAbilities()
 void AEnemy::P_Setup()
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.AddUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
 	GetMesh()->SetGenerateOverlapEvents(true);
@@ -739,6 +740,12 @@ void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
 void AEnemy::P_SetupUpgradesAppliance()
 {
 	MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, CharacterName, EUpgradeAttribute::FlatHealth);
+}
+
+void AEnemy::P_InUpgradeSelection()
+{
+	bInUpgradeSelection = true;
+	P_StopAllAbilities();
 }
 
 void AEnemy::P_Death()

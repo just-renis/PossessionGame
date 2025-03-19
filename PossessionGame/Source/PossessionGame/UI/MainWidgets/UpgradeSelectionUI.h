@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UpgradeSelectionUI.generated.h"
 
+class UDelegateManager;
 class UPossessionGameInstance;
 class UUpgradeCardUI;
 
@@ -55,6 +56,8 @@ private:
 	TObjectPtr<UWidgetAnimation> UpgradeMenuOpen;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> UpgradeMenuClose;
+	UPROPERTY()
+	TObjectPtr<UDelegateManager> DelegateManager;
 	
 	void Toggle(const bool bState);
 	virtual void NativeConstruct() override;

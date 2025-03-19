@@ -77,7 +77,7 @@ public:
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo, const int32 MaxAmmo) const;
 	void P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeaponAmmo, const int32 MaxAmmo) const;
 	void P_StopTime(); // NOT USED ANYWHERE YET.
-	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) {}
+	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) { bInUpgradeSelection = false; }
 
 	void SetActionInMotion(const bool bState);
 	virtual void Tick(const float DeltaTime) override;
@@ -167,6 +167,7 @@ protected:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void ClearTimers();
 private:
+	bool bInUpgradeSelection = false;
 	bool bCanPossessOtherEnemy = false;
 	bool bIsAlive = true;
 	bool bEnableUnloadLevel = false;
@@ -233,6 +234,7 @@ private:
 	void P_InitiateDeathEvents();
 	void P_ConfigurePostProcessEffectsAfterDeath() const;
 	void P_SetupUpgradesAppliance();
+	void P_InUpgradeSelection();
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()

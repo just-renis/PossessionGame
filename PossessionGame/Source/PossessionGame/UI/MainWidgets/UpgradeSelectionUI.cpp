@@ -1,5 +1,4 @@
 ﻿#include "UpgradeSelectionUI.h"
-
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -13,6 +12,7 @@
 
 void UUpgradeSelectionUI::OpenUI()
 {
+	(void)DelegateManager->OnUpgradeSelectionOpened.ExecuteIfBound();
 	Toggle(true);
 	if (UpgradeMenuOpen) PlayAnimation(UpgradeMenuOpen);
 	const TArray<TObjectPtr<UUpgradeData>> Data = GetWorld()->GetSubsystem<UUpgradeManager>()->GetRandomUpgrades();
@@ -42,6 +42,7 @@ void UUpgradeSelectionUI::Toggle(const bool bState)
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
+	PlayerController->bShowMouseCursor = bState;
 	if (bState)
 	{
 		PlayerController->SetInputMode(FInputModeUIOnly());
@@ -54,7 +55,8 @@ void UUpgradeSelectionUI::Toggle(const bool bState)
 void UUpgradeSelectionUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUpgradeSelected.BindUObject(this, &UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation);
+	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	DelegateManager->OnUpgradeSelected.BindUObject(this, &UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation);
 	if (PlayerCardOption1)
 	{
 		PlayerCardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
@@ -89,7 +91,7 @@ void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()
 void UUpgradeSelectionUI::FinishedUpgradeSelectionCloseAnimation() const
 {
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->CloseUI();
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUpgradeSelectionFinished.ExecuteIfBound();
+	(void)DelegateManager->OnUpgradeSelectionFinished.ExecuteIfBound();
 }
 
 void UUpgradeSelectionUI::TriggerHoverAnimForFirstOption()
