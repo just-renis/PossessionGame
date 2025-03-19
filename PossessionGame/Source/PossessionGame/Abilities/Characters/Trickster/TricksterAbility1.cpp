@@ -10,7 +10,7 @@ void UTricksterAbility1::P_Execute()
 {
 	Proprietor->SetActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::GrenadeLaunch);
-	UKismetSystemLibrary::K2_SetTimer(this, "ThrowSmokeGrenade", 0.4f, false);
+	UKismetSystemLibrary::K2_SetTimer(this, "ThrowPoisonGrenade", 0.4f, false);
 	Super::P_Execute();
 }
 
@@ -18,4 +18,4 @@ bool UTricksterAbility1::IsProprietorPossessed() { return Proprietor->GetIsPosse
 
 void UTricksterAbility1::SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ATrickster>(AbilityProprietor); }
 
-void UTricksterAbility1::ThrowSmokeGrenade() const { Proprietor->ThrowSmokeGrenade(); }
+void UTricksterAbility1::ThrowPoisonGrenade() const { Proprietor->ThrowPoisonGrenade(); }

@@ -22,10 +22,10 @@ ATrickster::ATrickster()
 	Sounds[ESound::TricksterGrenadeThrow]->SetupAttachment(GetMesh());
 }
 
-void ATrickster::ThrowSmokeGrenade()
+void ATrickster::ThrowPoisonGrenade()
 {
 	PlaySound(ESound::TricksterGrenadeThrow);
-	Weapon->ShootProjectile(EPoolObject::TricksterSmokeProjectile, true, 1, false);
+	Weapon->ShootProjectile(EPoolObject::TricksterPoisonProjectile, true, 1, false);
 }
 
 void ATrickster::ThrowEMPGrenade()

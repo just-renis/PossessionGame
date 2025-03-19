@@ -34,8 +34,8 @@ enum class ESound : uint8
 	TricksterSpawn,
 	TricksterDeath,
 	TricksterOnPossession,
-	TricksterSmokeRelease,
-	TricksterSmokeImpact,
+	TricksterPoisonRelease,
+	TricksterPoisonImpact,
 	TricksterGrenadeThrow,
 	TricksterEMPImpact
 };
