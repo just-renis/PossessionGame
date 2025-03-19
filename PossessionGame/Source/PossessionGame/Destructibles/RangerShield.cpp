@@ -11,8 +11,10 @@ ARangerShield::ARangerShield()
 {
 	Sounds.Add(ESound::RangerDeployShield, CreateDefaultSubobject<UAudioComponent>(TEXT("deploySound")));
 	Sounds[ESound::RangerDeployShield]->SetAutoActivate(false);
+	Sounds[ESound::RangerDeployShield]->SetupAttachment(Mesh);
 	Sounds.Add(ESound::RangerDissolveShield, CreateDefaultSubobject<UAudioComponent>(TEXT("dissolveSound")));
 	Sounds[ESound::RangerDissolveShield]->SetAutoActivate(false);
+	Sounds[ESound::RangerDissolveShield]->SetupAttachment(Mesh);
 }
 
 void ARangerShield::BeginPlay()
@@ -37,6 +39,7 @@ void ARangerShield::Init(bool bInIsPlayerObject)
 
 void ARangerShield::DestroyThis()
 {
+	SetActorScale3D(FVector(1.f, 1.f, 1.f));
 	SetActorEnableCollision(false);
 	ShieldMaterialValueChanger = 0;
 	PlaySound(ESound::RangerDissolveShield);
@@ -47,12 +50,6 @@ void ARangerShield::UpdateShieldMaterialValues(const float InOpacity, const floa
 {
 	M_ForceField->SetScalarParameterValue("Opacity", InOpacity);
 	M_Shield->SetScalarParameterValue("Progress", InProgress);
-}
-
-void ARangerShield::LoadSounds()
-{
-	Sounds[ESound::RangerDeployShield]->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	Sounds[ESound::RangerDissolveShield]->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void ARangerShield::PlaySound(const ESound InSoundName)

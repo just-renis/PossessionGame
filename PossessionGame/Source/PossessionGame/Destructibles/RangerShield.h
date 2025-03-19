@@ -29,7 +29,6 @@ private:
 	virtual void Init(bool bInIsPlayerObject) override;
 	virtual void DestroyThis() override;
 	void UpdateShieldMaterialValues(const float InOpacity, const float InProgress) const;
-	virtual void LoadSounds();
 	void PlaySound(const ESound InSoundName);
 	UFUNCTION()
 	void MoveShield();
