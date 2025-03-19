@@ -27,6 +27,7 @@ public:
 	void SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale, const int32 InWhich);
 	void SetDirection(const FVector Direction) const;
 protected:
+	float Damage;
 	FProjectileData ProjectileData;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
@@ -39,11 +40,11 @@ protected:
 	virtual void PlayImpactSound() {}
 	virtual void OnImpact(const FHitResult& Hit);
 	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich) override;
+	void DisableProjectileComponents() const;
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
 	bool bHasBeenPooled = false;
-	float Damage;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UProjectileMovementComponent> MovementComponent;
 	UPROPERTY()

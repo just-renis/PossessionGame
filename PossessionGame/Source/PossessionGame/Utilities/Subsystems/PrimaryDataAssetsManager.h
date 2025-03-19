@@ -41,7 +41,8 @@ class POSSESSIONGAME_API UPrimaryDataAssetsManager : public UWorldSubsystem
 	GENERATED_BODY()
 public:
 	bool IsAsyncLoadingFinished();
-	bool GetCanAsyncLoadHappen() { return bCanAsyncLoadHappen; }
+	bool GetCanAsyncLoadHappen() const { return bCanAsyncLoadHappen; }
+	float GetVfxLength(const EVfx InVfx);
 	EVfx GetVfxName(EPoolObject ProjectileName, EVfxType VfxType);
 	EVfx GetVfxName(ECharacterType CharacterType, EVfxType VfxType);
 	TObjectPtr<UPA_WeaponContainer>& GetWeaponData(EWeapon WeaponName);

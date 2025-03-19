@@ -1,6 +1,8 @@
 ﻿#include "PoisonGrenade.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Utilities/Global Utilities/OvertimeDamager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 
 APoisonGrenade::APoisonGrenade()
 {
@@ -16,4 +18,12 @@ void APoisonGrenade::PlayImpactSound()
 {
 	PlaySound(ESound::TricksterPoisonImpact);
 	PlaySound(ESound::TricksterPoisonRelease);
+}
+
+void APoisonGrenade::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+	const TObjectPtr<AOvertimeDamager> PoisonArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::PoisonArea, Hit.Location, Hit.Normal.Rotation()));
+	PoisonArea->Init(ProjectileData.bIsPlayerProjectile);
+	PoisonArea->Setup(Damage, ProjectileData.OvertimeTickTrigger, ProjectileData.OvertimeAreaLifeSpan, ProjectileData.OvertimeAreaSize);
 }

@@ -13,7 +13,11 @@ void UPA_VfxContainer::LoadVfx(const TObjectPtr<UWorld>& InWorld, TFunction<void
 		{
 			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(VfxEffect.ToSoftObjectPath(), [this, OnVfxLoaded]
 			{
-				if (IsGameRunning()) OnVfxLoaded();
+				if (IsGameRunning())
+				{
+					bIsLoaded = true;
+					OnVfxLoaded();
+				}
 			});
 			AssetsManager->AddAsyncHandle(Handle);
 		}

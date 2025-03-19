@@ -1,4 +1,5 @@
 ﻿#include "PrimaryDataAssetsManager.h"
+#include "NiagaraSystem.h"
 #include "Components/AudioComponent.h"
 #include "Engine/AssetManager.h"
 #include "Kismet/GameplayStatics.h"
@@ -13,6 +14,20 @@ bool UPrimaryDataAssetsManager::IsAsyncLoadingFinished()
 {
 	DeleteLoadedHandles();
 	return AsyncHandles.IsEmpty();
+}
+
+float UPrimaryDataAssetsManager::GetVfxLength(const EVfx InVfx)
+{
+	if (GetVfxData(InVfx)->GetIsLoaded())
+	{
+		const FNiagaraUserRedirectionParameterStore& SystemParameters = GetVfxData(InVfx)->GetVfxEffect().Get()->GetExposedParameters();
+		const FNiagaraVariable LoopDurationParam(FNiagaraTypeDefinition::GetFloatDef(), TEXT("User.Loop Duration"));
+		float LoopDuration = 0.f;
+		SystemParameters.GetParameterValue(LoopDuration, LoopDurationParam);
+		UE_LOG(LogTemp, Warning, TEXT("Loop Duration: %f"), LoopDuration);
+		return LoopDuration;
+	}
+	return 0.f;
 }
 
 EVfx UPrimaryDataAssetsManager::GetVfxName(EPoolObject ProjectileName, EVfxType VfxType)

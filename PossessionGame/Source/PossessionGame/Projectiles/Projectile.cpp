@@ -42,10 +42,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 
 void AProjectile::SetDirection(const FVector InDirection) const { MovementComponent->Velocity = InDirection * MovementComponent->MaxSpeed; }
 
-void AProjectile::PlaySound(const ESound InSoundName)
-{
-	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName);
-}
+void AProjectile::PlaySound(const ESound InSoundName) { Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName); }
 
 void AProjectile::OnImpact(const FHitResult& Hit)
 {
@@ -62,6 +59,12 @@ void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotati
 	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
 	if (BulletTrailComponent) BulletTrailComponent->Activate();
 	MovementComponent->Activate();
+}
+
+void AProjectile::DisableProjectileComponents() const
+{
+	if (BulletTrailComponent) BulletTrailComponent->Deactivate();
+	MovementComponent->Deactivate();
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -150,7 +153,8 @@ void AProjectile::SpawnOrLoadBulletImpactVfx(EVfx VfxName, const FVector& InLoca
 
 void AProjectile::SpawnBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation)
 {
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(VfxName)->GetVfxEffect().Get(), InLocation, InRotation);
+	TObjectPtr<UNiagaraComponent> Component = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(VfxName)->GetVfxEffect().Get(), InLocation, InRotation);
+	Component->SetVariableFloat(TEXT("User.Loop Duration"), 6.f);
 }
 
 void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)
@@ -162,7 +166,6 @@ void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor
 void AProjectile::DestroyThis()
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "DestroyThis");
-	if (BulletTrailComponent) BulletTrailComponent->Deactivate();
-	MovementComponent->Deactivate();
+	DisableProjectileComponents();
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);
 }

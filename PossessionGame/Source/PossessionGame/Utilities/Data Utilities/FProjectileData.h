@@ -41,6 +41,14 @@ struct POSSESSIONGAME_API FProjectileData
 	UPROPERTY(EditAnywhere)
 	float Damage = 0.f;
 	UPROPERTY(EditAnywhere)
+	bool bProjectileDealsOvertimeDamage = false;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bProjectileDealsOvertimeDamage", EditConditionHides))
+	float OvertimeTickTrigger = 0.f;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bProjectileDealsOvertimeDamage", EditConditionHides))
+	float OvertimeAreaLifeSpan = 0.f;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bProjectileDealsOvertimeDamage", EditConditionHides))
+	float OvertimeAreaSize = 0.f;
+	UPROPERTY(EditAnywhere)
 	bool bProjectileDealsAreaDamage = false;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "bProjectileDealsAreaDamage", EditConditionHides))
 	bool bCanBeDamagedByOwnProjectile = false;
