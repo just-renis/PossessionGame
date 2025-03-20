@@ -83,7 +83,7 @@ void UWaveManager::StartWave()
 
 void UWaveManager::InitiateNextWave()
 {
-	bShowingUpgradeSelection = false;
+	bWaveNotStarted = false;
 	SetupNextWave();
 	if (WaveManagerHUD)
 	{
@@ -97,7 +97,7 @@ void UWaveManager::SetupNextWave()
 	CurrentWave++;
 	//EnemiesPerWave += FMath::RandRange(2, 5);
 	EnemiesLeftToKill = EnemiesPerWave;
-	CountdownSeconds = 3.f;
+	CountdownSeconds = 4.f;
 	UpdateCountdown();
 	UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
 	UKismetSystemLibrary::K2_SetTimer(this, "UpdateCountdown", 1.f, true);
@@ -193,18 +193,25 @@ void UWaveManager::AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECh
 
 void UWaveManager::FadeOutWavePanel() const { if (WaveManagerHUD) WaveManagerHUD->PlayWavePanelFadeOutAnim(); }
 
-void UWaveManager::ShowUpgradeSelection()
+void UWaveManager::WaveCompleted()
 {
-	bShowingUpgradeSelection = true;
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+	if (!WaveManagerHUD) return;
+	bWaveNotStarted = true;
+	WaveManagerHUD->PlayWaveCompletedAnim();
+	UKismetSystemLibrary::K2_SetTimer(this, "ShowUpgradeSelection", WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
+
+void UWaveManager::ShowUpgradeSelection() const { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI(); }
 
 void UWaveManager::UpdateCountdown()
 {
-	CountdownSeconds--;
-	if (WaveManagerHUD) WaveManagerHUD->UpdateCountdown(CountdownSeconds);
-	PlaySound(ESound::WaveCountdown);
-	if (CountdownSeconds <= 0)
+	if (WaveManagerHUD)
+	{
+		WaveManagerHUD->UpdateCountdown(--CountdownSeconds);
+		WaveManagerHUD->PlayCountdownAnim();
+	}
+	if (CountdownSeconds >= 0) PlaySound(ESound::WaveCountdown);
+	else
 	{
 		StartWave();
 		UKismetSystemLibrary::K2_ClearTimer(this, "UpdateCountdown");
@@ -215,7 +222,7 @@ void UWaveManager::UpdateCountdown()
 void UWaveManager::HandleSpawning()
 {
 	if (EnemiesLeftToKill > 0 && AliveEnemiesAmount < EnemiesOnSceneLimit) SpawnLogic();
-	else if (!bShowingUpgradeSelection && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) ShowUpgradeSelection();
+	else if (!bWaveNotStarted && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) WaveCompleted();
 }
 
 void UWaveManager::InitiateWave() { WaveManagerHUD->ToggleCountdownText(); }

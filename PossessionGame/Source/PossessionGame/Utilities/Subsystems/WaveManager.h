@@ -23,13 +23,13 @@ public:
 private:
 	bool FIRSTPOSSESSABLE = true;
 	bool bIsSpawnInProcess = false;
-	bool bShowingUpgradeSelection = false;
+	bool bWaveNotStarted = false;
 	int32 CurrentWave = 1;
 	int32 EnemiesPerWave = 2;
 	int32 EnemiesLeftToKill = 2;
 	int32 EnemiesOnSceneLimit = 7;
 	int32 AliveEnemiesAmount = 0;
-	int32 CountdownSeconds = 3;
+	int32 CountdownSeconds = 4;
 	float SpawnRate = 0.2f;
 	ECharacterType FirstEnemyToSpawn = ECharacterType::Spy;
 	UPROPERTY()
@@ -60,8 +60,10 @@ private:
 	void PlaySound(const ESound InSoundName) const;
 	void AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECharacterType EnemyType, TObjectPtr<UPrimaryDataAssetsManager> AssetsManage);
 	void FadeOutWavePanel() const;
-	void ShowUpgradeSelection();
-	
+	void WaveCompleted();
+
+	UFUNCTION()
+	void ShowUpgradeSelection() const;
 	UFUNCTION()
 	void UpdateCountdown();
 	UFUNCTION()
