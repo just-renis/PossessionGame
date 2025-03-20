@@ -24,7 +24,7 @@ float UPrimaryDataAssetsManager::GetVfxLength(const EVfx InVfx)
 		const FNiagaraVariable LoopDurationParam(FNiagaraTypeDefinition::GetFloatDef(), TEXT("User.Loop Duration"));
 		float LoopDuration = 0.f;
 		SystemParameters.GetParameterValue(LoopDuration, LoopDurationParam);
-		UE_LOG(LogTemp, Warning, TEXT("Loop Duration: %f"), LoopDuration);
+		//UE_LOG(LogTemp, Warning, TEXT("Loop Duration: %f"), LoopDuration);
 		return LoopDuration;
 	}
 	return 0.f;

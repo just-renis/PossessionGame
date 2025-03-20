@@ -23,7 +23,7 @@ void AEMPGrenade::OnImpact(const FHitResult& Hit)
 	Super::OnImpact(Hit);
 }
 
-void AEMPGrenade::Disable()
+void AEMPGrenade::Disable(const bool bHide)
 {
 	Super::Disable();
 	Radius->SetGenerateOverlapEvents(false);

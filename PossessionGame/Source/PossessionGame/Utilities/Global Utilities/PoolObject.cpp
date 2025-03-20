@@ -2,15 +2,15 @@
 
 void APoolObject::Init(bool bInIsPlayerObject) { SetPoolObjectState(true); }
 
-void APoolObject::Init(const float InData) { SetPoolObjectState(true); }
+void APoolObject::Init(const float InData, const bool bHide) { SetPoolObjectState(true, bHide); }
 
 void APoolObject::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich) { SetPoolObjectState(true); }
 
-void APoolObject::Disable() { SetPoolObjectState(false); }
+void APoolObject::Disable(const bool bHide) { SetPoolObjectState(false, bHide); }
 
-void APoolObject::SetPoolObjectState(const bool bState)
+void APoolObject::SetPoolObjectState(const bool bState, const bool bHide)
 {
 	SetActorEnableCollision(bState);
-	SetActorHiddenInGame(!bState);
+	if (bHide) SetActorHiddenInGame(!bState);
 	SetActorTickEnabled(bState);
 }

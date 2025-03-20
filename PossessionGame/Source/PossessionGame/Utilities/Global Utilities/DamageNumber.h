@@ -13,9 +13,10 @@ class POSSESSIONGAME_API ADamageNumber : public APoolObject
 	GENERATED_BODY()
 
 	ADamageNumber();
-
+	
 	virtual void BeginPlay() override;
-	virtual void Init(const float InData) override;
+	virtual void Init(const float InData, const bool bHide) override;
+	virtual void Disable(const bool bHide) override;
 	UFUNCTION()
 	void ReturnToPool();
 

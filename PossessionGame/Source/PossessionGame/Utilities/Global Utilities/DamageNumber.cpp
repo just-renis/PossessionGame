@@ -17,11 +17,13 @@ void ADamageNumber::BeginPlay()
 	DamageNumber = Cast<UDamageNumberUI>(DamageNumberWidgetComponent->GetWidget());
 }
 
-void ADamageNumber::Init(const float InData)
+void ADamageNumber::Init(const float InData, const bool bHide)
 {
-	Super::Init(InData);
+	Super::Init(InData, false);
 	DamageNumber->SetDamageAmount(InData);
 	UKismetSystemLibrary::K2_SetTimer(this, "ReturnToPool", DamageNumber->GetAnimationLength(), false);
 }
+
+void ADamageNumber::Disable(const bool bHide) { Super::Disable(false); }
 
 void ADamageNumber::ReturnToPool() { GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::DamageNumber, this); }

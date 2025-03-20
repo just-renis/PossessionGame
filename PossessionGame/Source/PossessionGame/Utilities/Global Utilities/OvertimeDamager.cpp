@@ -3,15 +3,13 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EPoolObject.h"
-#include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
-#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void AOvertimeDamager::Setup(const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize)
 {
 	Damage = InDamage;
 	Radius->SetSphereRadius(InRadiusSize);
-	UE_LOG(LogTemp, Warning, TEXT("TRICKSTER POISON LENGTH: %f"), GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetVfxLength(EVfx::TricksterPoison));
+//	UE_LOG(LogTemp, Warning, TEXT("TRICKSTER POISON LENGTH: %f"), GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetVfxLength(EVfx::TricksterPoison));
 	UKismetSystemLibrary::K2_SetTimer(this, "DealOvertimeDamage", InDamageTick, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", InLifeSpan, false);
 }

@@ -153,8 +153,9 @@ void AProjectile::SpawnOrLoadBulletImpactVfx(EVfx VfxName, const FVector& InLoca
 
 void AProjectile::SpawnBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation)
 {
-	TObjectPtr<UNiagaraComponent> Component = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(VfxName)->GetVfxEffect().Get(), InLocation, InRotation);
-	Component->SetVariableFloat(TEXT("User.Loop Duration"), 6.f);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(VfxName)->GetVfxEffect().Get(), InLocation, InRotation);
+//	TObjectPtr<UNiagaraComponent> Component = 
+//	Component->SetVariableFloat(TEXT("User.Loop Duration"), 6.f);
 }
 
 void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)
