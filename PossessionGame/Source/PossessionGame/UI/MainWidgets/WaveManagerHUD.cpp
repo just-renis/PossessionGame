@@ -12,7 +12,7 @@ void UWaveManagerHUD::UpdateCountdown(const int32 InCountdown)
 {
 	if (!CountdownText) return;
 	if (InCountdown <= 0) CountdownText->SetText(FText::FromString(TEXT("FIGHT!")));
-	else CountdownText->SetText(FText::FromString(FString::Format(TEXT("Wave starts in: {0}"), { InCountdown })));
+	else CountdownText->SetText(FText::FromString(FString::Format(TEXT("{0}"), { InCountdown })));
 }
 
 void UWaveManagerHUD::UpdateEnemiesAmount(const int32 InEnemiesLeft)

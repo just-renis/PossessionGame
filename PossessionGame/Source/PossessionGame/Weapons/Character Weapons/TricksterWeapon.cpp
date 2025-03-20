@@ -60,10 +60,10 @@ void ATricksterWeapon::PlayShootMontage()
 	else HandsAnimInstance->PlayMontage(EHandsAnimState::ShootRight);
 }
 
-void ATricksterWeapon::AttachMuzzleFlash(const EVfx InVfxName)
+void ATricksterWeapon::AttachVfx(const EVfx InVfxName, const FName InSocketName)
 {
-	FirstWeapon->AttachMuzzleFlash(InVfxName);
-	SecondWeapon->AttachMuzzleFlash(InVfxName);
+	FirstWeapon->AttachVfx(InVfxName, InSocketName);
+	SecondWeapon->AttachVfx(InVfxName, InSocketName);
 }
 
 void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const int32 InAmount, const bool bFromFirstWeapon)

@@ -151,12 +151,11 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bOverride
 	}
 }
 
-void AWeapon::PostProprietorSetup() { AttachAndLoadVfxs(); }
+void AWeapon::PostProprietorSetup() { AttachAndLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle)); }
 
-void AWeapon::AttachMuzzleFlash(const EVfx InVfxName)
+void AWeapon::AttachVfx(const EVfx InVfxName, const FName InSocketName)
 {
-	MuzzleFlashComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().Get(), Mesh, FName("MuzzleSocket"),
-	FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false);
+	MuzzleFlashComponent = AssetsManager->AttachVfx(InVfxName, Mesh, InSocketName);
 	MuzzleFlashComponent->Deactivate();
 }
 
@@ -215,11 +214,11 @@ void AWeapon::HitScanLogic()
 	const FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
 	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
-	SpawnOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"));
+	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"));
 	if (Proprietor->GetGameModeBase()->GetIsDebugModeEnabled()) DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 2.f);
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
-		SpawnOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());
+		AssetsManager->SpawnOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());
 		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
 	}
 }
@@ -266,11 +265,10 @@ void AWeapon::DisableHandsMesh() const
 	HandsMesh->SetAnimInstanceClass(nullptr);
 }
 
-void AWeapon::AttachAndLoadVfxs()
+void AWeapon::AttachAndLoadVfx(const EVfx InVfxName)
 {
-	const EVfx VfxName = AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle);
-	if (AssetsManager->GetVfxData(VfxName)->GetVfxEffect().IsValid()) AttachMuzzleFlash(VfxName);
-	else AssetsManager->GetVfxData(VfxName)->LoadVfx(GetWorld(), [this, VfxName] { AttachMuzzleFlash(VfxName); });
+	if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) AttachVfx(InVfxName, FName("MuzzleSocket"));
+	else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName] { AttachVfx(InVfxName, FName("MuzzleSocket")); });
 }
 
 void AWeapon::DealPointDamage(const FHitResult& InHitResult)
@@ -281,20 +279,9 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? HitScanDamage * 2 : HitScanDamage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 
-void AWeapon::SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const
-{
-	if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) SpawnVfx(InVfxName, InLocation, InRotation);
-	else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLocation, InRotation] { SpawnVfx(InVfxName, InLocation, InRotation); });
-}
-
 void AWeapon::P_SetupUpgradesAppliance()
 {
 	HitScanDamage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, Proprietor->GetCharacterName(), EUpgradeAttribute::FlatDamage);
 	const float DamagePercentage = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, Proprietor->GetCharacterName(), EUpgradeAttribute::DamagePercentage);
 	if (DamagePercentage > 0.f) HitScanDamage += P_Data->GetHitScanDamage() * (DamagePercentage / 100.f);
-}
-
-void AWeapon::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const
-{
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().Get(), InLocation, InRotation);
 }

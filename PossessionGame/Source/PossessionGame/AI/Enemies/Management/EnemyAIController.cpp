@@ -67,7 +67,7 @@ void AEnemyAIController::SetupAI()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDeath.AddUObject(this, &AEnemyAIController::StopStateTreeLogic);
 }
 
-void AEnemyAIController::ResumeLogic() const { StateTree->StartLogic(); }
+void AEnemyAIController::ResumeLogic() const { if (StateTree) StateTree->StartLogic(); }
 
 void AEnemyAIController::StopLogic(const bool bNeedCleanup)
 {

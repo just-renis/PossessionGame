@@ -55,10 +55,8 @@ private:
 	virtual void BeginPlay() override;
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
 	void DealAreaDamage();
-	void AttachBulletTrail(EVfx VfxName);
-	void AttachAndLoadVfxs();
-	void SpawnBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation);
-	void SpawnOrLoadBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation);
+	void AttachVfx(const EVfx InVfxName, const FName InSocketName);
+	void AttachAndLoadVfx(const EVfx InVfxName);
 	void DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
 	UFUNCTION()
 	virtual void DestroyThis();

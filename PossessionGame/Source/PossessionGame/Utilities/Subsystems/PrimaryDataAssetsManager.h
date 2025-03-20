@@ -8,6 +8,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FAsyncHandle.h"
 #include "PrimaryDataAssetsManager.generated.h"
 
+class UNiagaraComponent;
 enum class EVfxType : uint8;
 enum class EPoolObject : uint8;
 class UPA_VfxContainer;
@@ -57,6 +58,9 @@ public:
 	void ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, ESound InSoundName);
 	void PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef = false);
 	void RemoveStoredSound(const ESound InSoundName);
+	void SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
+	void SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
+	TObjectPtr<UNiagaraComponent> AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotator = FRotator::ZeroRotator, const EAttachLocation::Type InAttachType = EAttachLocation::SnapToTarget, const bool bAutoDestroy = false);
 private:
 	bool bCanAsyncLoadHappen = true;
 	UPROPERTY()

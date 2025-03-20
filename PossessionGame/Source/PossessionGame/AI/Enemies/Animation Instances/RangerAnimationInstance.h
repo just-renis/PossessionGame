@@ -13,8 +13,6 @@ class POSSESSIONGAME_API URangerAnimationInstance : public UEnemyAnimationInstan
 
 	virtual void InnerPlayMontage(EEnemyAnimState State) override;
 	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted) override;
-	void SpawnOrLoadGrenadeLaunchMarker(const EVfx InVfxName, const FVector& InLandingPosition, const FRotator& InLandingRotation) const;
-	void SpawnGrenadeLaunchMarker(const EVfx InVfxName, const FVector& InLandingPosition, const FRotator& InLandingRotation) const;
 	UFUNCTION()
 	void LaunchGrenade() const;
 	UFUNCTION()

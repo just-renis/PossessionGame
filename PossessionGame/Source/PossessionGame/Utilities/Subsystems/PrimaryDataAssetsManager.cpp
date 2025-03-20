@@ -1,4 +1,6 @@
 ﻿#include "PrimaryDataAssetsManager.h"
+
+#include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
 #include "Components/AudioComponent.h"
 #include "Engine/AssetManager.h"
@@ -140,6 +142,24 @@ void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
 		StoredSounds[InSoundName]->Stop();
 		StoredSounds.Remove(InSoundName);
 	}
+}
+
+void UPrimaryDataAssetsManager::SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
+{
+	//	TObjectPtr<UNiagaraComponent> Component = 
+	//	Component->SetVariableFloat(TEXT("User.Loop Duration"), 6.f);
+	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid()) SpawnVfx(InVfxName, InLocation, InRotation);
+	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLocation, InRotation] { SpawnVfx(InVfxName, InLocation, InRotation); });
+}
+
+void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
+{
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetVfxData(InVfxName)->GetVfxEffect().Get(), InLocation, InRotation);
+}
+
+TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotator,  const EAttachLocation::Type InAttachType,  const bool bAutoDestroy)
+{
+	return UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName)->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotator, InAttachType, bAutoDestroy);
 }
 
 bool UPrimaryDataAssetsManager::IsGameRunning() { return IsValid(this) && GetWorld() && !GetWorld()->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }

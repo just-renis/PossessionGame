@@ -45,9 +45,9 @@ private:
 	
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	void SpawnStopTimeAbilityVfx(EVfx VfxName);
-	void AttachOrLoadGrenadeLauncherMuzzle();
-	void AttachGrenadeLauncherMuzzle();
+	void SpawnVfx(const EVfx InVfxName);
+	void AttachOrLoadVfx(const EVfx InVfxName);
+	void AttachVfx(const EVfx InVfxName);
 	void GrenadeLauncherMuzzleFlashLogic();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void PossessedBy(AController* NewController) override;

@@ -70,7 +70,7 @@ public:
 	void AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh) const;
 	virtual void ShootProjectile(const EPoolObject InProjectileName, bool bOverrideRotation = false, const int32 InAmount = 1, bool bFromFirstWeapon = true);
 	void PostProprietorSetup();
-	virtual void AttachMuzzleFlash(const EVfx InVfxName);
+	virtual void AttachVfx(const EVfx InVfxName, const FName InSocketName);
 protected:
 	bool bIsPossessed = false;
 	bool bIsHitScanEnabled = false;
@@ -126,15 +126,12 @@ protected:
 	void PlaySound(const ESound InSoundName);
 	void MuzzleFlashLogic() const;
 	void DisableHandsMesh() const;
-	void AttachAndLoadVfxs();
+	void AttachAndLoadVfx(const EVfx InVfxName);
 	void DealPointDamage(const FHitResult& InHitResult);
-	void SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const;
 private:
 	int32 ShootCyclesUntilReload;
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
 	
 	void P_SetupUpgradesAppliance();
-	
-	void SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation) const;
 };

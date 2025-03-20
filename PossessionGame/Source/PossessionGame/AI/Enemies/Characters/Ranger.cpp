@@ -62,11 +62,11 @@ void ARanger::SetCustomTimeDilation(float Dilation)
 {
 	if (FMath::IsNearlyEqual(Dilation, 5.f, 0.1f))
 	{
-		if (AssetsManager->GetVfxData(EVfx::StopTimeAbility)->GetVfxEffect().IsValid()) SpawnStopTimeAbilityVfx(EVfx::StopTimeAbility);
-		else AssetsManager->GetVfxData(EVfx::StopTimeAbility)->LoadVfx(GetWorld(), [this] { SpawnStopTimeAbilityVfx(EVfx::StopTimeAbility); });
+		if (AssetsManager->GetVfxData(EVfx::StopTimeAbility)->GetVfxEffect().IsValid()) SpawnVfx(EVfx::StopTimeAbility);
+		else AssetsManager->GetVfxData(EVfx::StopTimeAbility)->LoadVfx(GetWorld(), [this] { SpawnVfx(EVfx::StopTimeAbility); });
 	}
-	else if (AssetsManager->GetVfxData(EVfx::StopTimeAbilityReverse)->GetVfxEffect().IsValid()) SpawnStopTimeAbilityVfx(EVfx::StopTimeAbilityReverse);
-	else AssetsManager->GetVfxData(EVfx::StopTimeAbilityReverse)->LoadVfx(GetWorld(), [this] { SpawnStopTimeAbilityVfx(EVfx::StopTimeAbilityReverse); });
+	else if (AssetsManager->GetVfxData(EVfx::StopTimeAbilityReverse)->GetVfxEffect().IsValid()) SpawnVfx(EVfx::StopTimeAbilityReverse);
+	else AssetsManager->GetVfxData(EVfx::StopTimeAbilityReverse)->LoadVfx(GetWorld(), [this] { SpawnVfx(EVfx::StopTimeAbilityReverse); });
 	CustomTimeDilation = Dilation;
 	GetWeapon()->CustomTimeDilation = Dilation;
 }
@@ -145,7 +145,7 @@ void ARanger::BeginPlay()
 	CharacterName = ECharacterType::Ranger;
 	Super::BeginPlay();
 	SetupGrenadeLaunchTriggerSphere();
-	AttachOrLoadGrenadeLauncherMuzzle();
+	AttachOrLoadVfx(EVfx::RangerGrenadeLauncherMuzzle);
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_PlaySpawnSound", 3.f + UKismetMathLibrary::RandomInteger(4), false);
 }
 
@@ -155,21 +155,20 @@ void ARanger::Tick(float DeltaTime)
 	if (bIsPossessed) Cast<ARangerWeapon>(Weapon)->ZoomLogic(Camera, DeltaTime);
 }
 
-void ARanger::SpawnStopTimeAbilityVfx(EVfx VfxName)
+void ARanger::SpawnVfx(const EVfx InVfxName)
 {
-	UNiagaraFunctionLibrary::SpawnSystemAttached(AssetsManager->GetVfxData(VfxName)->GetVfxEffect().Get(), GetCamera(), NAME_None, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTargetIncludingScale, true);
+	AssetsManager->AttachVfx(InVfxName, GetCamera(), NAME_None, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTargetIncludingScale, true);
 }
 
-void ARanger::AttachOrLoadGrenadeLauncherMuzzle()
+void ARanger::AttachOrLoadVfx(const EVfx InVfxName)
 {
-	if (AssetsManager->GetVfxData(EVfx::RangerGrenadeLauncherMuzzle)->GetVfxEffect().IsValid()) AttachGrenadeLauncherMuzzle();
-	else AssetsManager->GetVfxData(EVfx::RangerGrenadeLauncherMuzzle)->LoadVfx(GetWorld(), [this] { AttachGrenadeLauncherMuzzle(); });
+	if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) AttachVfx(InVfxName);
+	else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName] { AttachVfx(InVfxName); });
 }
 
-void ARanger::AttachGrenadeLauncherMuzzle()
+void ARanger::AttachVfx(const EVfx InVfxName)
 {
-	GrenadeLauncherMuzzleFlashComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(AssetsManager->GetVfxData(EVfx::RangerGrenadeLauncherMuzzle)->GetVfxEffect().Get(), Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"),
-	FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false);
+	GrenadeLauncherMuzzleFlashComponent = AssetsManager->AttachVfx(InVfxName, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"));
 	GrenadeLauncherMuzzleFlashComponent->Deactivate();
 }
 

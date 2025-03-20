@@ -14,8 +14,8 @@ void AMinionWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> Cha
 	SecondWeapon = WeaponManager->GetWeapon(GetWorld(), EWeapon::MinionSingularWeapon, CharacterMesh, FName("AIWeaponSocket2"));
 }
 
-void AMinionWeapon::AttachMuzzleFlash(const EVfx InVfxName)
+void AMinionWeapon::AttachVfx(const EVfx InVfxName, const FName InSocketName)
 {
-	FirstWeapon->AttachMuzzleFlash(InVfxName);
-	SecondWeapon->AttachMuzzleFlash(InVfxName);
+	FirstWeapon->AttachVfx(InVfxName, InSocketName);
+	SecondWeapon->AttachVfx(InVfxName, InSocketName);
 }

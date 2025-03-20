@@ -35,7 +35,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	SetupData(ProjectileData.bIsPlayerProjectile, InWhich);
 	if (!bHasBeenPooled)
 	{
-		AttachAndLoadVfxs();
+		AttachAndLoadVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Trail));
 		bHasBeenPooled = true;
 	}
 }
@@ -47,8 +47,8 @@ void AProjectile::PlaySound(const ESound InSoundName) { Sounds[InSoundName]->Sou
 void AProjectile::OnImpact(const FHitResult& Hit)
 {
 	DestroyThis();
-	SpawnOrLoadBulletImpactVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Impact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-	if (AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::SecondaryImpact) != EVfx::None) SpawnOrLoadBulletImpactVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::SecondaryImpact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Impact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+	if (AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::SecondaryImpact) != EVfx::None) AssetsManager->SpawnOrLoadVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::SecondaryImpact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 	PlayImpactSound();
 }
 
@@ -129,33 +129,18 @@ void AProjectile::DealAreaDamage()
 	//DrawDebugSphere(GetWorld(), GetActorLocation(), 500.f, 12, FColor::Red, false, 3.f);
 }
 
-void AProjectile::AttachBulletTrail(EVfx VfxName)
+void AProjectile::AttachVfx(const EVfx InVfxName, const FName InSocketName)
 {
-	BulletTrailComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(AssetsManager->GetVfxData(VfxName)->GetVfxEffect().Get(), Mesh, FName("BulletTrailSocket"),
-	FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false);
+	BulletTrailComponent = AssetsManager->AttachVfx(InVfxName, Mesh, InSocketName);
 }
 
-void AProjectile::AttachAndLoadVfxs()
+void AProjectile::AttachAndLoadVfx(const EVfx InVfxName)
 {
-	EVfx VfxName = AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Trail);
-	if (VfxName != EVfx::None)
+	if (InVfxName != EVfx::None)
 	{
-		if (AssetsManager->GetVfxData(VfxName)->GetVfxEffect().IsValid()) AttachBulletTrail(VfxName);
-		else AssetsManager->GetVfxData(VfxName)->LoadVfx(GetWorld(), [this, VfxName] { AttachBulletTrail(VfxName); });
+		if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) AttachVfx(InVfxName, FName("BulletTrailSocket"));
+		else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName] { AttachVfx(InVfxName, FName("BulletTrailSocket")); });
 	}
-}
-
-void AProjectile::SpawnOrLoadBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation)
-{
-	if (AssetsManager->GetVfxData(VfxName)->GetVfxEffect().IsValid()) SpawnBulletImpactVfx(VfxName, InLocation, InRotation);
-	else AssetsManager->GetVfxData(VfxName)->LoadVfx(GetWorld(), [this, VfxName, InLocation, InRotation] { SpawnBulletImpactVfx(VfxName, InLocation, InRotation); });
-}
-
-void AProjectile::SpawnBulletImpactVfx(EVfx VfxName, const FVector& InLocation, const FRotator& InRotation)
-{
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AssetsManager->GetVfxData(VfxName)->GetVfxEffect().Get(), InLocation, InRotation);
-//	TObjectPtr<UNiagaraComponent> Component = 
-//	Component->SetVariableFloat(TEXT("User.Loop Duration"), 6.f);
 }
 
 void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)
