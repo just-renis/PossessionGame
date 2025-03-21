@@ -1,13 +1,11 @@
 #include "Projectile.h"
 #include "NiagaraComponent.h"
-#include "NiagaraFunctionLibrary.h"
 #include "Components/AudioComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
-#include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EVfxType.h"
@@ -35,7 +33,10 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	SetupData(ProjectileData.bIsPlayerProjectile, InWhich);
 	if (!bHasBeenPooled)
 	{
-		AttachAndLoadVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Trail));
+		if (const EVfx VfxName = AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Trail); VfxName != EVfx::None)
+		{
+			AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Trail), &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
+		}
 		bHasBeenPooled = true;
 	}
 }
@@ -127,20 +128,6 @@ void AProjectile::DealAreaDamage()
 	IgnoredActors, this, nullptr, ECC_GameTraceChannel4);
 //	DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 12, FColor::Green, false, 3.f);
 	//DrawDebugSphere(GetWorld(), GetActorLocation(), 500.f, 12, FColor::Red, false, 3.f);
-}
-
-void AProjectile::AttachVfx(const EVfx InVfxName, const FName InSocketName)
-{
-	BulletTrailComponent = AssetsManager->AttachVfx(InVfxName, Mesh, InSocketName);
-}
-
-void AProjectile::AttachAndLoadVfx(const EVfx InVfxName)
-{
-	if (InVfxName != EVfx::None)
-	{
-		if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) AttachVfx(InVfxName, FName("BulletTrailSocket"));
-		else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName] { AttachVfx(InVfxName, FName("BulletTrailSocket")); });
-	}
 }
 
 void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)

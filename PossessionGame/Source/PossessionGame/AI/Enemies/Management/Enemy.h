@@ -258,6 +258,7 @@ private:
 	void P_SetupNavArea();
 	void ChangeXRayState(const bool bState) const;
 	void SetupUserSettings() const;
+	virtual void Destroyed() override;
 	UFUNCTION()
 	void CheckIfFallOutOfWorld();
 	UFUNCTION()

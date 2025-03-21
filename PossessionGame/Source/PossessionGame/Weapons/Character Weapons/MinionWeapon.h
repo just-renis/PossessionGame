@@ -11,5 +11,5 @@ class POSSESSIONGAME_API AMinionWeapon : public ADualWieldingWeapon
 
 	virtual void BeginPlay() override;
 	virtual void SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh) override;
-	virtual void AttachVfx(const EVfx InVfxName, const FName InSocketName) override;
+	virtual void PostProprietorSetup() override;
 };

@@ -25,17 +25,17 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 
 void UPlayerHUD::UpdateAmmoText(const int32 InWeaponAmmo) const
 {
-	if (AmmoText) AmmoText->SetText(FText::FromString(FString::Printf(TEXT("%d"), InWeaponAmmo)));
+	if (AmmoText) AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0}"), {InWeaponAmmo})));
 }
 
 void UPlayerHUD::UpdateAmmoText(const int32 InWeaponAmmo, const int32 InMaxAmmo) const
 {
-	if (AmmoText) AmmoText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), InWeaponAmmo, InMaxAmmo)));
+	if (AmmoText) AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {InWeaponAmmo, InMaxAmmo})));
 }
 
 void UPlayerHUD::UpdateAmmoText(const int32 InFirstWeaponAmmo, const int32 InSecondWeaponAmmo, const int32 InMaxAmmo) const
 {
-	if (AmmoText) AmmoText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d / %d"), InFirstWeaponAmmo, InSecondWeaponAmmo, InMaxAmmo)));
+	if (AmmoText) AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1} / {2}"), {InFirstWeaponAmmo, InSecondWeaponAmmo, InMaxAmmo})));
 }
 
 void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs, const float InReqSecs)
@@ -60,7 +60,7 @@ void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const int32 I
 
 void UPlayerHUD::UpdateFps(const int32 InFps) const
 {
-	if (FpsText) FpsText->SetText(FText::FromString(FString::Printf(TEXT("FPS: %i"), InFps)));
+	if (FpsText) FpsText->SetText(FText::FromString(FString::Format(TEXT("FPS: {0}"), {InFps})));
 }
 
 void UPlayerHUD::Reset()
@@ -134,13 +134,16 @@ void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
 {
 	if (HitDamageIndicatorsPool.IsEmpty())
 	{
+		if (!WidgetTree) return;
 		HitDamageIndicatorsPool.Push(WidgetTree->ConstructWidget<UImage>(UImage::StaticClass()));
-		if (!HitDamageIndicator) return;
+		if (!HitDamageIndicator || HitDamageIndicatorsPool.IsEmpty()) return;
 		HitDamageIndicator->AddChild(HitDamageIndicatorsPool[0]);
 		const TObjectPtr<UImage> HitDamageIndicatorImg = HitDamageIndicatorsPool.Pop();
 		const TObjectPtr<UMaterialInstanceDynamic> Material = UMaterialInstanceDynamic::Create(MI_HitDamageIndicator, this);
 		Material->SetScalarParameterValue("Angle", GetHitDamageIndicatorSection(FMath::RadiansToDegrees(InAngle)));
+		if (!HitDamageIndicatorImg || !HitDamageIndicatorImg->Slot) return;
 		const TObjectPtr<UOverlaySlot> OverlaySlot = Cast<UOverlaySlot>(HitDamageIndicatorImg->Slot);
+		if (!OverlaySlot) return;
 		OverlaySlot->SetHorizontalAlignment(HAlign_Fill);
 		OverlaySlot->SetVerticalAlignment(VAlign_Fill);
 		HitDamageIndicatorImg->SetBrushFromMaterial(Material);
@@ -148,9 +151,10 @@ void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
 	}
 	else
 	{
-		if (!HitDamageIndicator) return;
+		if (!HitDamageIndicator || HitDamageIndicatorsPool.IsEmpty()) return;
 		HitDamageIndicator->AddChild(HitDamageIndicatorsPool[0]);
 		const TObjectPtr<UImage> HitDamageIndicatorImg = HitDamageIndicatorsPool.Pop();
+		if (!HitDamageIndicatorImg) return;
 		HitDamageIndicatorImg->GetDynamicMaterial()->SetScalarParameterValue("Angle", GetHitDamageIndicatorSection(FMath::RadiansToDegrees(InAngle)));HitDamageIndicatorImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		InUseHitDamageIndicators.Push(FHitDamageIndicator(HitDamageIndicatorImg));
 	}
@@ -193,7 +197,7 @@ TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
 
 void UPlayerHUD::UpdateHitDamageIndicators()
 {
-	for (int32 i = 0; i < InUseHitDamageIndicators.Num(); i++)
+	for (int32 i = InUseHitDamageIndicators.Num() - 1; i >= 0; i--)
 	{
 		if (InUseHitDamageIndicators[i].Image)
 		{

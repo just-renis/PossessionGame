@@ -1,7 +1,6 @@
 ﻿#include "Ranger.h"
 #include "InputMappingContext.h"
 #include "NiagaraComponent.h"
-#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/ShapeComponent.h"
@@ -11,7 +10,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
-#include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Destructibles/RangerShield.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPoolObject.h"
@@ -62,11 +60,9 @@ void ARanger::SetCustomTimeDilation(float Dilation)
 {
 	if (FMath::IsNearlyEqual(Dilation, 5.f, 0.1f))
 	{
-		if (AssetsManager->GetVfxData(EVfx::StopTimeAbility)->GetVfxEffect().IsValid()) SpawnVfx(EVfx::StopTimeAbility);
-		else AssetsManager->GetVfxData(EVfx::StopTimeAbility)->LoadVfx(GetWorld(), [this] { SpawnVfx(EVfx::StopTimeAbility); });
+		AssetsManager->AttachOrLoadVfx(EVfx::StopTimeAbility, nullptr, GetCamera(), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	}
-	else if (AssetsManager->GetVfxData(EVfx::StopTimeAbilityReverse)->GetVfxEffect().IsValid()) SpawnVfx(EVfx::StopTimeAbilityReverse);
-	else AssetsManager->GetVfxData(EVfx::StopTimeAbilityReverse)->LoadVfx(GetWorld(), [this] { SpawnVfx(EVfx::StopTimeAbilityReverse); });
+	else AssetsManager->AttachOrLoadVfx(EVfx::StopTimeAbilityReverse, nullptr, GetCamera(), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	CustomTimeDilation = Dilation;
 	GetWeapon()->CustomTimeDilation = Dilation;
 }
@@ -145,7 +141,7 @@ void ARanger::BeginPlay()
 	CharacterName = ECharacterType::Ranger;
 	Super::BeginPlay();
 	SetupGrenadeLaunchTriggerSphere();
-	AttachOrLoadVfx(EVfx::RangerGrenadeLauncherMuzzle);
+	AssetsManager->AttachOrLoadVfx(EVfx::RangerGrenadeLauncherMuzzle, &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_PlaySpawnSound", 3.f + UKismetMathLibrary::RandomInteger(4), false);
 }
 
@@ -153,23 +149,6 @@ void ARanger::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (bIsPossessed) Cast<ARangerWeapon>(Weapon)->ZoomLogic(Camera, DeltaTime);
-}
-
-void ARanger::SpawnVfx(const EVfx InVfxName)
-{
-	AssetsManager->AttachVfx(InVfxName, GetCamera(), NAME_None, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTargetIncludingScale, true);
-}
-
-void ARanger::AttachOrLoadVfx(const EVfx InVfxName)
-{
-	if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) AttachVfx(InVfxName);
-	else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName] { AttachVfx(InVfxName); });
-}
-
-void ARanger::AttachVfx(const EVfx InVfxName)
-{
-	GrenadeLauncherMuzzleFlashComponent = AssetsManager->AttachVfx(InVfxName, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"));
-	GrenadeLauncherMuzzleFlashComponent->Deactivate();
 }
 
 void ARanger::GrenadeLauncherMuzzleFlashLogic()

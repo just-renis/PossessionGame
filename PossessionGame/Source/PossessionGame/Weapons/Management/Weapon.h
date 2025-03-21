@@ -69,8 +69,7 @@ public:
 	void SetCastShadow(const bool bState) const { if (Mesh) Mesh->SetCastShadow(bState); }
 	void AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh) const;
 	virtual void ShootProjectile(const EPoolObject InProjectileName, bool bOverrideRotation = false, const int32 InAmount = 1, bool bFromFirstWeapon = true);
-	void PostProprietorSetup();
-	virtual void AttachVfx(const EVfx InVfxName, const FName InSocketName);
+	virtual void PostProprietorSetup();
 protected:
 	bool bIsPossessed = false;
 	bool bIsHitScanEnabled = false;
@@ -126,7 +125,6 @@ protected:
 	void PlaySound(const ESound InSoundName);
 	void MuzzleFlashLogic() const;
 	void DisableHandsMesh() const;
-	void AttachAndLoadVfx(const EVfx InVfxName);
 	void DealPointDamage(const FHitResult& InHitResult);
 private:
 	int32 ShootCyclesUntilReload;

@@ -55,8 +55,6 @@ private:
 	virtual void BeginPlay() override;
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
 	void DealAreaDamage();
-	void AttachVfx(const EVfx InVfxName, const FName InSocketName);
-	void AttachAndLoadVfx(const EVfx InVfxName);
 	void DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
 	UFUNCTION()
 	virtual void DestroyThis();

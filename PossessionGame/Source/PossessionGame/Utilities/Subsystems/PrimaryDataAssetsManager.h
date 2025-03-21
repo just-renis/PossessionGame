@@ -50,6 +50,7 @@ public:
 	TObjectPtr<UPA_SoundContainer>& GetSoundData(ESound SoundName);
 	TObjectPtr<UPA_CharacterContainer>& GetCharacterData(ECharacterType CharacterName);
 	TObjectPtr<UPA_VfxContainer>& GetVfxData(EVfx VfxName);
+	TObjectPtr<UNiagaraComponent> AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy);
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	void Init();
@@ -60,7 +61,7 @@ public:
 	void RemoveStoredSound(const ESound InSoundName);
 	void SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
 	void SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
-	TObjectPtr<UNiagaraComponent> AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotator = FRotator::ZeroRotator, const EAttachLocation::Type InAttachType = EAttachLocation::SnapToTarget, const bool bAutoDestroy = false);
+	void AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate = false, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EAttachLocation::Type InAttachType = EAttachLocation::SnapToTarget, const bool bAutoDestroy = false);
 private:
 	bool bCanAsyncLoadHappen = true;
 	UPROPERTY()

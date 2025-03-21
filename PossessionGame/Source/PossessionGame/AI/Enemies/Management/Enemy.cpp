@@ -863,6 +863,16 @@ void AEnemy::SetupUserSettings() const
 	if (!UserSettings->IsMappingContextRegistered(PlayerMappingContext)) UserSettings->RegisterInputMappingContext(PlayerMappingContext);
 }
 
+void AEnemy::Destroyed()
+{
+	if (GetMesh())
+	{
+		GetMesh()->SetSimulatePhysics(false);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	Super::Destroyed();
+}
+
 void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsPossessed ? P_Death() : InitiateDeath(); }
 
 void AEnemy::DestroyThis()

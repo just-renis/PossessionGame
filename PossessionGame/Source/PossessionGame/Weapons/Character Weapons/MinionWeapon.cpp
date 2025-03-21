@@ -1,4 +1,6 @@
 ﻿#include "MinionWeapon.h"
+#include "PossessionGame/Enums/EVfxType.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 
 void AMinionWeapon::BeginPlay()
@@ -14,8 +16,8 @@ void AMinionWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> Cha
 	SecondWeapon = WeaponManager->GetWeapon(GetWorld(), EWeapon::MinionSingularWeapon, CharacterMesh, FName("AIWeaponSocket2"));
 }
 
-void AMinionWeapon::AttachVfx(const EVfx InVfxName, const FName InSocketName)
+void AMinionWeapon::PostProprietorSetup()
 {
-	FirstWeapon->AttachVfx(InVfxName, InSocketName);
-	SecondWeapon->AttachVfx(InVfxName, InSocketName);
+	AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
+	AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
 }

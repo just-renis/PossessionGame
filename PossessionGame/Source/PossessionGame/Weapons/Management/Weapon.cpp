@@ -1,14 +1,12 @@
 #include "Weapon.h"
 #include "HandsAnimInstance.h"
 #include "Camera/CameraComponent.h"
-#include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/AI/Base Data/AIWeaponData.h"
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerWeaponData.h"
-#include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfxType.h"
@@ -151,12 +149,9 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bOverride
 	}
 }
 
-void AWeapon::PostProprietorSetup() { AttachAndLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle)); }
-
-void AWeapon::AttachVfx(const EVfx InVfxName, const FName InSocketName)
+void AWeapon::PostProprietorSetup()
 {
-	MuzzleFlashComponent = AssetsManager->AttachVfx(InVfxName, Mesh, InSocketName);
-	MuzzleFlashComponent->Deactivate();
+	AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true);
 }
 
 void AWeapon::AI_Setup()
@@ -263,12 +258,6 @@ void AWeapon::DisableHandsMesh() const
 {
 	HandsMesh->SetHiddenInGame(true);
 	HandsMesh->SetAnimInstanceClass(nullptr);
-}
-
-void AWeapon::AttachAndLoadVfx(const EVfx InVfxName)
-{
-	if (AssetsManager->GetVfxData(InVfxName)->GetVfxEffect().IsValid()) AttachVfx(InVfxName, FName("MuzzleSocket"));
-	else AssetsManager->GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName] { AttachVfx(InVfxName, FName("MuzzleSocket")); });
 }
 
 void AWeapon::DealPointDamage(const FHitResult& InHitResult)
