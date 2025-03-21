@@ -451,7 +451,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		if (RadialDamageEvent) GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
 		else GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
 	}
-	else if (P_HUD) P_HUD->SetHitLocation(RadialDamageEvent ? RadialDamageEvent->Origin : PointDamageEvent->HitInfo.Location);
+	//else if (P_HUD) P_HUD->SetHitLocation(RadialDamageEvent ? RadialDamageEvent->Origin : PointDamageEvent->HitInfo.Location);
 	return Damage;
 }
 
@@ -530,7 +530,7 @@ void AEnemy::P_SetupUI()
 	Weapon->P_UpdateAmmoTextHUD();
 	P_SetupColorsForUI();
 	UKismetSystemLibrary::K2_SetTimer(this, "P_DetectIfPlayerPointingAtEnemy", 0.25f, true);
-	UKismetSystemLibrary::K2_SetTimer(this, "P_UpdateHitDamageIndicators", 0.25f, true);
+	//UKismetSystemLibrary::K2_SetTimer(this, "P_UpdateHitDamageIndicators", 0.25f, true);
 }
 
 void AEnemy::P_PossessEnemy()
@@ -793,7 +793,7 @@ void AEnemy::P_OpenDeathMenu() const
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 }
 
-void AEnemy::P_UpdateHitDamageIndicators() const { if (P_HUD) P_HUD->UpdateHitDamageIndicators(); }
+//void AEnemy::P_UpdateHitDamageIndicators() const { if (P_HUD) P_HUD->UpdateHitDamageIndicators(); }
 
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {

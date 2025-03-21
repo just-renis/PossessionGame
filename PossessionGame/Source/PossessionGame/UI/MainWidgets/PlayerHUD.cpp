@@ -3,10 +3,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
 #include "Components/InvalidationBox.h"
-#include "Components/Overlay.h"
-#include "Components/OverlaySlot.h"
 #include "Components/TextBlock.h"
-#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilitiesPanelUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -114,12 +111,12 @@ void UPlayerHUD::PlayDeathFadeOutAnim() { if (DeathFadeOut) PlayAnimation(DeathF
 
 void UPlayerHUD::CollapseAbilityImage(const int32 Index) { if (GetAbilityPanel()) GetAbilityPanel()->CollapseAbilityIcon(Index); }
 
-void UPlayerHUD::SetHitLocation(const FVector InHitLocation)
+/*void UPlayerHUD::SetHitLocation(const FVector InHitLocation)
 {
 	const FVector Diff = (Player->GetActorLocation() - InHitLocation).GetSafeNormal(0.001f);
 	const float Angle = FMath::Atan2(Player->GetActorForwardVector().X * Diff.Y - Player->GetActorForwardVector().Y * Diff.X, Player->GetActorForwardVector().Dot(Diff));
 	SpawnHitDamageIndicator(Angle);
-}
+}*/
 
 void UPlayerHUD::NativeConstruct()
 {
@@ -130,7 +127,7 @@ void UPlayerHUD::NativeConstruct()
 
 void UPlayerHUD::ToggleCrosshair() { if (Crosshair) ToggleUI(Crosshair); }
 
-void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
+/*void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
 {
 	if (HitDamageIndicatorsPool.IsEmpty())
 	{
@@ -158,7 +155,7 @@ void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
 		HitDamageIndicatorImg->GetDynamicMaterial()->SetScalarParameterValue("Angle", GetHitDamageIndicatorSection(FMath::RadiansToDegrees(InAngle)));HitDamageIndicatorImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		InUseHitDamageIndicators.Push(FHitDamageIndicator(HitDamageIndicatorImg));
 	}
-}
+}*/
 
 void UPlayerHUD::BindCrosshairToggleDelegate()
 {
@@ -177,14 +174,14 @@ void UPlayerHUD::ShowDamageTick(const bool bIsCritical)
 	if (DamageTickFadeOut) PlayAnimation(DamageTickFadeOut);
 }
 
-float UPlayerHUD::GetHitDamageIndicatorSection(const float InAngle)
+/*float UPlayerHUD::GetHitDamageIndicatorSection(const float InAngle)
 {
 	float SectionValue = 0.75f;
 	if (InAngle >= -90.f && InAngle < 0.f) SectionValue = 0.5f;
 	else if (InAngle >= 0.f && InAngle < 90.f) SectionValue = 0.25f;
 	else if (InAngle >= 90.f && InAngle <= 180.f) SectionValue = 0.f;
 	return SectionValue;
-}
+}*/
 
 TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
 {
@@ -195,7 +192,7 @@ TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
 	}
 }
 
-void UPlayerHUD::UpdateHitDamageIndicators()
+/*void UPlayerHUD::UpdateHitDamageIndicators()
 {
 	for (int32 i = InUseHitDamageIndicators.Num() - 1; i >= 0; i--)
 	{
@@ -210,7 +207,7 @@ void UPlayerHUD::UpdateHitDamageIndicators()
 			}
 		}
 	}
-}
+}*/
 
 void UPlayerHUD::UpdateReceiveDamageInv()
 {

@@ -42,7 +42,6 @@ void UUpgradeSelectionUI::Toggle(const bool bState)
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
-	PlayerController->bShowMouseCursor = bState;
 	if (bState)
 	{
 		PlayerController->SetInputMode(FInputModeUIOnly());

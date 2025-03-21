@@ -11,11 +11,21 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Projectiles/Projectile.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 
 bool UPrimaryDataAssetsManager::IsAsyncLoadingFinished()
 {
 	DeleteLoadedHandles();
 	return AsyncHandles.IsEmpty();
+}
+
+float UPrimaryDataAssetsManager::GetVfxAttributeValue(const TObjectPtr<UNiagaraComponent>& InComponent, const FName InVfxAttributeName)
+{
+	float RetrievedValue = 0.f;
+	const FNiagaraUserRedirectionParameterStore& SystemParameters = InComponent->GetOverrideParameters();
+	const FNiagaraVariable FloatVar(FNiagaraTypeDefinition::GetFloatDef(), InVfxAttributeName);
+	SystemParameters.GetParameterValue(RetrievedValue, FloatVar);
+	return RetrievedValue;
 }
 
 EVfx UPrimaryDataAssetsManager::GetVfxName(EPoolObject ProjectileName, EVfxType VfxType)
@@ -158,25 +168,47 @@ void UPrimaryDataAssetsManager::AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr
 	});
 }
 
-void UPrimaryDataAssetsManager::SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const FName InAttributeName, const float InAttributeValue)
+void UPrimaryDataAssetsManager::SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (InVfxName == EVfx::None) return;
 	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
 	{
-		if (InAttributeName == NAME_None) SpawnVfx(InVfxName, InLocation, InRotation);
-		else
+		if (InAttributes.IsEmpty())
 		{
-			const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
-			Component->SetVariableFloat(InAttributeName, InAttributeValue);
+			SpawnVfx(InVfxName, InLocation, InRotation);
+			return;
+		}
+		const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
+		for (const TPair<FName, FNiagaraAttribute> Attribute : InAttributes)
+		{
+			float NewValue = Attribute.Value.Value;
+			if (!Attribute.Value.bIsReplacingValue)
+			{
+				if (FMath::IsNearlyEqual(Attribute.Value.Value, 0.f, 0.001f)) continue;
+				const float ComponentAttributeValue = GetVfxAttributeValue(Component, Attribute.Key);
+				NewValue = ComponentAttributeValue + ComponentAttributeValue * (Attribute.Value.Value / 100.f);
+			}
+			Component->SetVariableFloat(Attribute.Key, NewValue);
 		}
 	}
-	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLocation, InRotation, InAttributeName, InAttributeValue]
+	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLocation, InRotation, InAttributes]
 	{
-		if (InAttributeName == NAME_None) SpawnVfx(InVfxName, InLocation, InRotation);
-		else
+		if (InAttributes.IsEmpty())
 		{
-			const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
-			Component->SetVariableFloat(InAttributeName, InAttributeValue);
+			SpawnVfx(InVfxName, InLocation, InRotation);
+			return;
+		}
+		const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
+		for (const TPair<FName, FNiagaraAttribute> Attribute : InAttributes)
+		{
+			float NewValue = Attribute.Value.Value;
+			if (!Attribute.Value.bIsReplacingValue)
+			{
+				if (FMath::IsNearlyEqual(Attribute.Value.Value, 0.f, 0.001f)) continue;
+				const float ComponentAttributeValue = GetVfxAttributeValue(Component, Attribute.Key);
+				NewValue = ComponentAttributeValue + ComponentAttributeValue * (Attribute.Value.Value / 100.f);
+			}
+			Component->SetVariableFloat(Attribute.Key, NewValue);
 		}
 	});
 }

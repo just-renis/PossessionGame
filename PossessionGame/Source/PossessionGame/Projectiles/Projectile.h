@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
 #include "Projectile.generated.h"
 
@@ -36,12 +37,13 @@ protected:
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
+	virtual void BeginPlay() override;
 	void PlaySound(const ESound InSoundName);
 	virtual void PlayImpactSound() {}
 	virtual void OnImpact(const FHitResult& Hit);
 	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich) override;
 	void DisableProjectileComponents() const;
-	void SpawnProjectileImpactVfx(const FHitResult& Hit, const bool bFirstImpact, const FName InAttributeName = NAME_None, const float InAttributeValue = 0.f);
+	void SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
@@ -53,7 +55,6 @@ private:
 	
 	void AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile);
 	
-	virtual void BeginPlay() override;
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
 	void DealAreaDamage();
 	void DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);

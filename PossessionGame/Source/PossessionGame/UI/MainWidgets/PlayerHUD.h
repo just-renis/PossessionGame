@@ -15,7 +15,7 @@ class UProgressBar;
 class UImage;
 class UTextBlock;
 
-USTRUCT()
+/*USTRUCT()
 struct POSSESSIONGAME_API FHitDamageIndicator
 {
 	GENERATED_BODY()
@@ -27,7 +27,7 @@ struct POSSESSIONGAME_API FHitDamageIndicator
 	float CurrentDelay = 0.f;
 	UPROPERTY()
 	TObjectPtr<UImage> Image;
-};
+};*/
 
 UCLASS()
 class POSSESSIONGAME_API UPlayerHUD : public UUserWidget
@@ -55,8 +55,8 @@ public:
 	void PlayDeathFadeOutAnim();
 	void CollapseAbilityImage(const int32 Index);
 	void SetPlayerRef(const TObjectPtr<AEnemy>& InPlayerRef) { Player = InPlayerRef; }
-	void SetHitLocation(const FVector InHitLocation);
-	void UpdateHitDamageIndicators();
+//	void SetHitLocation(const FVector InHitLocation);
+	//void UpdateHitDamageIndicators();
 	void UpdateReceiveDamageInv();
 	void SetCharacterType(const ECharacterType InCharacterType);
 	void AnnouncePossession();
@@ -66,8 +66,8 @@ private:
 	TObjectPtr<UTexture2D> DamageTickTexture;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> CriticalDamageTickTexture;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UMaterialInterface> MI_HitDamageIndicator;
+//	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+//	TObjectPtr<UMaterialInterface> MI_HitDamageIndicator;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UAbilitiesPanelUI> RangerAbilitiesPanel;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
@@ -100,8 +100,8 @@ private:
 	TObjectPtr<UImage> RunningIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UOverlay> HitDamageIndicator;
+	//UPROPERTY(meta = (BindWidget))
+//	TObjectPtr<UOverlay> HitDamageIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> PressKeyBindInv;
 	UPROPERTY(meta = (BindWidget))
@@ -120,17 +120,17 @@ private:
 	TObjectPtr<UWidgetAnimation> PossessedPopup;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
-	UPROPERTY()
-	TArray<TObjectPtr<UImage>> HitDamageIndicatorsPool;
-	UPROPERTY()
-	TArray<FHitDamageIndicator> InUseHitDamageIndicators;
+	//UPROPERTY()
+	//TArray<TObjectPtr<UImage>> HitDamageIndicatorsPool;
+	//UPROPERTY()
+	//TArray<FHitDamageIndicator> InUseHitDamageIndicators;
 
-	float GetHitDamageIndicatorSection(const float InAngle);
+	//float GetHitDamageIndicatorSection(const float InAngle);
 	TObjectPtr<UAbilitiesPanelUI> GetAbilityPanel();
 	
 	virtual void NativeConstruct() override;
 	void ToggleCrosshair();
-	void SpawnHitDamageIndicator(const float InAngle);
+	//void SpawnHitDamageIndicator(const float InAngle);
 	void BindCrosshairToggleDelegate();
 	void BindOnDamageDealtDelegate();
 	void ShowDamageTick(const bool bIsCritical);

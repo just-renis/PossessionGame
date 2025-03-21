@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/FAsyncHandle.h"
 #include "PrimaryDataAssetsManager.generated.h"
 
@@ -43,6 +44,7 @@ class POSSESSIONGAME_API UPrimaryDataAssetsManager : public UWorldSubsystem
 public:
 	bool IsAsyncLoadingFinished();
 	bool GetCanAsyncLoadHappen() const { return bCanAsyncLoadHappen; }
+	float GetVfxAttributeValue(const TObjectPtr<UNiagaraComponent>& InComponent, const FName InVfxAttributeName);
 	EVfx GetVfxName(EPoolObject ProjectileName, EVfxType VfxType);
 	EVfx GetVfxName(ECharacterType CharacterType, EVfxType VfxType);
 	TObjectPtr<UPA_WeaponContainer>& GetWeaponData(EWeapon WeaponName);
@@ -60,7 +62,7 @@ public:
 	void PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef = false);
 	void RemoveStoredSound(const ESound InSoundName);
 	void AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate = false, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EAttachLocation::Type InAttachType = EAttachLocation::SnapToTarget, const bool bAutoDestroy = false);
-	void SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const FName InAttributeName = NAME_None, const float InAttributeValue = 0.f);
+	void SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
 private:
 	bool bCanAsyncLoadHappen = true;
 	UPROPERTY()

@@ -247,8 +247,8 @@ private:
 	void P_TriggerRunningCameraShake() const;
 	UFUNCTION()
 	void P_OpenDeathMenu() const;
-	UFUNCTION()
-	void P_UpdateHitDamageIndicators() const;
+	//UFUNCTION()
+	//void P_UpdateHitDamageIndicators() const;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyAI();

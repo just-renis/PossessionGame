@@ -93,14 +93,16 @@ void UUpgradeCardUI::SetUpgradeText(const bool bPlayerCard)
 
 void UUpgradeCardUI::ProcessCurrentUpgradeData(const bool bPlayerCard, const int32 PreviousLevel, FLevelUpgradeData& CurrentUpgradeData) const
 {
+	TArray<EUpgradeAttribute> KeysToRemove;
 	FLevelUpgradeData PreviousUpgradeData = Data->GetAttributesForLevel(bPlayerCard, PreviousLevel);
 	TMap<EUpgradeAttribute, float>::TIterator PrevIt = PreviousUpgradeData.Upgrades.CreateIterator();
 	TMap<EUpgradeAttribute, float>::TIterator CurrIt = CurrentUpgradeData.Upgrades.CreateIterator();
 	for (; PrevIt; ++PrevIt, ++CurrIt)
 	{
 		CurrIt->Value -= PrevIt->Value;
-		if (FMath::IsNearlyEqual(CurrIt->Value, 0.f, 0.001f)) CurrentUpgradeData.Upgrades.Remove(CurrIt->Key);
+		if (FMath::IsNearlyEqual(CurrIt->Value, 0.f, 0.001f)) KeysToRemove.Add(CurrIt->Key);
 	}
+	for (const EUpgradeAttribute Key : KeysToRemove) CurrentUpgradeData.Upgrades.Remove(Key);
 }
 
 void UUpgradeCardUI::SelectUpgrade()

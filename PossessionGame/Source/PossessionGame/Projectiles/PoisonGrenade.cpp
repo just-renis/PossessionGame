@@ -2,6 +2,7 @@
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Global Utilities/OvertimeDamager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
@@ -16,6 +17,14 @@ APoisonGrenade::APoisonGrenade()
 	Sounds[ESound::TricksterPoisonRelease]->SetupAttachment(Mesh);
 }
 
+void APoisonGrenade::BeginPlay()
+{
+	Super::BeginPlay();
+	Attributes.Add(TEXT("User.Loop Duration"), FNiagaraAttribute(true, 0.f));
+	Attributes.Add(TEXT("User.Uniform Sprite Size Max"), FNiagaraAttribute(false, 0.f));
+	Attributes.Add(TEXT("User.Uniform Sprite Size Min"), FNiagaraAttribute(false, 0.f));
+}
+
 void APoisonGrenade::PlayImpactSound()
 {
 	PlaySound(ESound::TricksterPoisonImpact);
@@ -27,7 +36,11 @@ void APoisonGrenade::SpawnSecondProjectileImpactVfx(const FHitResult& Hit)
 	const float EffectDurationIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::EffectDuration);
 	ModifiedOvertimeAreaLifeSpan = ProjectileData.OvertimeAreaLifeSpan;
 	if (EffectDurationIncrease > 0.f) ModifiedOvertimeAreaLifeSpan += ProjectileData.OvertimeAreaLifeSpan * (EffectDurationIncrease / 100.f);
-	SpawnProjectileImpactVfx(Hit, false, TEXT("User.Loop Duration"), ModifiedOvertimeAreaLifeSpan);
+	const float Size = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::Size);
+	Attributes["User.Loop Duration"].Value = ModifiedOvertimeAreaLifeSpan;
+	Attributes["User.Uniform Sprite Size Max"].Value = Size;
+	Attributes["User.Uniform Sprite Size Min"].Value = Size;
+	SpawnProjectileImpactVfx(Hit, false, Attributes);
 }
 
 void APoisonGrenade::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
