@@ -1,5 +1,4 @@
 ﻿#include "PrimaryDataAssetsManager.h"
-
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
@@ -17,20 +16,6 @@ bool UPrimaryDataAssetsManager::IsAsyncLoadingFinished()
 {
 	DeleteLoadedHandles();
 	return AsyncHandles.IsEmpty();
-}
-
-float UPrimaryDataAssetsManager::GetVfxLength(const EVfx InVfx)
-{
-	if (GetVfxData(InVfx)->GetIsLoaded())
-	{
-		const FNiagaraUserRedirectionParameterStore& SystemParameters = GetVfxData(InVfx)->GetVfxEffect().Get()->GetExposedParameters();
-		const FNiagaraVariable LoopDurationParam(FNiagaraTypeDefinition::GetFloatDef(), TEXT("User.Loop Duration"));
-		float LoopDuration = 0.f;
-		SystemParameters.GetParameterValue(LoopDuration, LoopDurationParam);
-		//UE_LOG(LogTemp, Warning, TEXT("Loop Duration: %f"), LoopDuration);
-		return LoopDuration;
-	}
-	return 0.f;
 }
 
 EVfx UPrimaryDataAssetsManager::GetVfxName(EPoolObject ProjectileName, EVfxType VfxType)
@@ -52,6 +37,16 @@ TObjectPtr<UPA_SoundContainer>& UPrimaryDataAssetsManager::GetSoundData(ESound S
 TObjectPtr<UPA_CharacterContainer>& UPrimaryDataAssetsManager::GetCharacterData(ECharacterType CharacterName) { return CharacterContainers[CharacterName]; }
 
 TObjectPtr<UPA_VfxContainer>& UPrimaryDataAssetsManager::GetVfxData(EVfx VfxName) { return VfxContainers[VfxName]; }
+
+TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation,  const EAttachLocation::Type InAttachType,  const bool bAutoDestroy)
+{
+	return UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName)->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+}
+
+TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
+{
+	return UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetVfxData(InVfxName)->GetVfxEffect().Get(), InLocation, InRotation);
+}
 
 void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -145,24 +140,6 @@ void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
 	}
 }
 
-void UPrimaryDataAssetsManager::SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
-{
-	//	TObjectPtr<UNiagaraComponent> Component = 
-	//	Component->SetVariableFloat(TEXT("User.Loop Duration"), 6.f);
-	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid()) SpawnVfx(InVfxName, InLocation, InRotation);
-	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLocation, InRotation] { SpawnVfx(InVfxName, InLocation, InRotation); });
-}
-
-void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
-{
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetVfxData(InVfxName)->GetVfxEffect().Get(), InLocation, InRotation);
-}
-
-TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation,  const EAttachLocation::Type InAttachType,  const bool bAutoDestroy)
-{
-	return UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName)->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
-}
-
 void UPrimaryDataAssetsManager::AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy)
 {
 	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
@@ -178,6 +155,29 @@ void UPrimaryDataAssetsManager::AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr
 			if (bDeactivate) InVfxComponent->Get()->Deactivate();
 		}
 		else AttachVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+	});
+}
+
+void UPrimaryDataAssetsManager::SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const FName InAttributeName, const float InAttributeValue)
+{
+	if (InVfxName == EVfx::None) return;
+	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
+	{
+		if (InAttributeName == NAME_None) SpawnVfx(InVfxName, InLocation, InRotation);
+		else
+		{
+			const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
+			Component->SetVariableFloat(InAttributeName, InAttributeValue);
+		}
+	}
+	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLocation, InRotation, InAttributeName, InAttributeValue]
+	{
+		if (InAttributeName == NAME_None) SpawnVfx(InVfxName, InLocation, InRotation);
+		else
+		{
+			const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
+			Component->SetVariableFloat(InAttributeName, InAttributeValue);
+		}
 	});
 }
 

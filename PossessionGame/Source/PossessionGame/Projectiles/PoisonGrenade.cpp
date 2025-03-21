@@ -1,8 +1,10 @@
 ﻿#include "PoisonGrenade.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Global Utilities/OvertimeDamager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 
 APoisonGrenade::APoisonGrenade()
 {
@@ -18,6 +20,14 @@ void APoisonGrenade::PlayImpactSound()
 {
 	PlaySound(ESound::TricksterPoisonImpact);
 	PlaySound(ESound::TricksterPoisonRelease);
+}
+
+void APoisonGrenade::SpawnSecondProjectileImpactVfx(const FHitResult& Hit)
+{
+	const float EffectDurationIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::EffectDuration);
+	ModifiedOvertimeAreaLifeSpan = ProjectileData.OvertimeAreaLifeSpan;
+	if (EffectDurationIncrease > 0.f) ModifiedOvertimeAreaLifeSpan += ProjectileData.OvertimeAreaLifeSpan * (EffectDurationIncrease / 100.f);
+	SpawnProjectileImpactVfx(Hit, false, TEXT("User.Loop Duration"), ModifiedOvertimeAreaLifeSpan);
 }
 
 void APoisonGrenade::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

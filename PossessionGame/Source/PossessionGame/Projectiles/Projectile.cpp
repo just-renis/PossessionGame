@@ -48,8 +48,8 @@ void AProjectile::PlaySound(const ESound InSoundName) { Sounds[InSoundName]->Sou
 void AProjectile::OnImpact(const FHitResult& Hit)
 {
 	DestroyThis();
-	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Impact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
-	if (AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::SecondaryImpact) != EVfx::None) AssetsManager->SpawnOrLoadVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::SecondaryImpact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+	SpawnFirstProjectileImpactVfx(Hit);
+	SpawnSecondProjectileImpactVfx(Hit);
 	PlayImpactSound();
 }
 
@@ -66,6 +66,11 @@ void AProjectile::DisableProjectileComponents() const
 {
 	if (BulletTrailComponent) BulletTrailComponent->Deactivate();
 	MovementComponent->Deactivate();
+}
+
+void AProjectile::SpawnProjectileImpactVfx(const FHitResult& Hit, const bool bFirstImpact, const FName InAttributeName, const float InAttributeValue)
+{
+	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), InAttributeName, InAttributeValue);
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -135,6 +140,10 @@ void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor
 	const float DamageMultiplier = Hit.BoneName == "head" ? 2.f : 1.f;
 	UGameplayStatics::ApplyPointDamage(OtherActor, Damage * DamageMultiplier, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
 }
+
+void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, true); }
+
+void AProjectile::SpawnSecondProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, false); }
 
 void AProjectile::DestroyThis()
 {

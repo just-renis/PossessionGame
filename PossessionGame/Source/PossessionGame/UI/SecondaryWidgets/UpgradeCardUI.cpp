@@ -51,6 +51,7 @@ FString UUpgradeCardUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUp
 		case EUpgradeAttribute::AbilityCooldownReduction: return " COOLDOWN REDUCED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
 		case EUpgradeAttribute::Size: return " SIZE INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
 		case EUpgradeAttribute::AbilityDuration: return " DURATION INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
+		case EUpgradeAttribute::EffectDuration: return " EFFECT DURATION INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
 	}
 	return "";
 }

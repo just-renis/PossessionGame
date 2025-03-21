@@ -5,11 +5,10 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 
-void AOvertimeDamager::Setup(const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize)
+void AOvertimeDamager::Setup(const float InDamage, const float InDamageTick, float InLifeSpan, const float InRadiusSize)
 {
 	Damage = InDamage;
 	Radius->SetSphereRadius(InRadiusSize);
-//	UE_LOG(LogTemp, Warning, TEXT("TRICKSTER POISON LENGTH: %f"), GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetVfxLength(EVfx::TricksterPoison));
 	UKismetSystemLibrary::K2_SetTimer(this, "DealOvertimeDamage", InDamageTick, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", InLifeSpan, false);
 }
@@ -21,6 +20,12 @@ AOvertimeDamager::AOvertimeDamager()
 	Radius->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	Radius->OnComponentBeginOverlap.AddDynamic(this, &AOvertimeDamager::AddOverlappedTarget);
 	Radius->OnComponentEndOverlap.AddDynamic(this, &AOvertimeDamager::RemoveOverlappedTarget);
+}
+
+void AOvertimeDamager::Init(bool bInIsPlayerObject)
+{
+	Super::Init(bInIsPlayerObject);
+	bIsPlayer = bInIsPlayerObject;
 }
 
 void AOvertimeDamager::DestroyThis()

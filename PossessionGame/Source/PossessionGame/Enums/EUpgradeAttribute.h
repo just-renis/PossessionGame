@@ -9,5 +9,6 @@ enum class EUpgradeAttribute : uint8
     ProjectilesAmount,
     AbilityCooldownReduction,
     Size,
-    AbilityDuration
+    AbilityDuration,
+    EffectDuration
 };

@@ -31,6 +31,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UPossessionGameInstance> GameInstance;
 	UPROPERTY()
+	TMap<EAbility, EUpgrade> AbilityToUpgradeMap;
+	UPROPERTY()
 	TMap<EUpgrade, TObjectPtr<UUpgradeData>> Upgrades;
 
 	void AddRandomlyChosenUpgrade(TArray<EUpgrade>& UpgradeKeys, TArray<TObjectPtr<UUpgradeData>>& ChosenUpgrades);

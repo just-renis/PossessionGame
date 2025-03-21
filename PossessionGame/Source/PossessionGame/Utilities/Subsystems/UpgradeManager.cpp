@@ -46,19 +46,18 @@ TObjectPtr<UUpgradeData> UUpgradeManager::GetProjectileUpgradeData(const EPoolOb
 	{
 		case EPoolObject::RangerProjectile: return Upgrades[EUpgrade::RangerBaseStat];
 		case EPoolObject::RangerGrenadeLauncherProjectile: return Upgrades[EUpgrade::RangerAbility1];
+		case EPoolObject::TricksterPoisonProjectile: return Upgrades[EUpgrade::TricksterAbility1];
 		default: return nullptr;
 	}
 }
 
 TObjectPtr<UUpgradeData> UUpgradeManager::GetAbilityUpgradeData(const EAbility InAbilityName)
 {
-	switch (InAbilityName)
+	if (const EUpgrade* FoundUpgrade = AbilityToUpgradeMap.Find(InAbilityName))
 	{
-		case EAbility::RangerAbility1: return Upgrades[EUpgrade::RangerAbility1];
-		case EAbility::RangerAbility2: return Upgrades[EUpgrade::RangerAbility2];
-		case EAbility::RangerAbility3: return Upgrades[EUpgrade::RangerAbility3];
-		default: return nullptr;
+		return Upgrades.Contains(*FoundUpgrade) ? Upgrades[*FoundUpgrade] : nullptr;
 	}
+	return nullptr;
 }
 
 TObjectPtr<UUpgradeData> UUpgradeManager::GetCharacterBaseUpgradeData(const ECharacterType InCharacterName)
@@ -90,6 +89,13 @@ TArray<TObjectPtr<UUpgradeData>> UUpgradeManager::GetRandomUpgrades()
 void UUpgradeManager::Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpgrades)
 {
 	Upgrades = InUpgrades;
+	AbilityToUpgradeMap = {
+		{EAbility::RangerAbility1, EUpgrade::RangerAbility1},
+		{EAbility::RangerAbility2, EUpgrade::RangerAbility2},
+		{EAbility::RangerAbility3, EUpgrade::RangerAbility3},
+		{EAbility::TricksterAbility1, EUpgrade::TricksterAbility1},
+		{EAbility::TricksterAbility2, EUpgrade::TricksterAbility2}
+	};
 	GameInstance = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance());
 }
 
