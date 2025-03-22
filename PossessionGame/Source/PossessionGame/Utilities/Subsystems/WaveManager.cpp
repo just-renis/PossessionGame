@@ -203,8 +203,8 @@ void UWaveManager::WaveCompleted()
 
 void UWaveManager::ShowUpgradeSelection()
 {
-	InitiateNextWave();
-	//GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+	//InitiateNextWave();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
 }
 
 void UWaveManager::UpdateCountdown()

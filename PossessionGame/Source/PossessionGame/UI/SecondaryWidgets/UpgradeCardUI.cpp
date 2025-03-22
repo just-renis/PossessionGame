@@ -81,14 +81,14 @@ void UUpgradeCardUI::SetCharacterText(const FText& InText, const FColor InColor)
 
 void UUpgradeCardUI::SetUpgradeText(const bool bPlayerCard)
 {
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+/*	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	const int32 NextLevel = SaveSlot->GetLevelOfAnUpgrade(Data->GetUpgradeName()) + 1;
 	FLevelUpgradeData CurrentUpgradeData = Data->GetAttributesForLevel(bPlayerCard, NextLevel);
 	if (NextLevel > 1) ProcessCurrentUpgradeData(bPlayerCard, NextLevel - 1, CurrentUpgradeData);
 	FString UpgradeTextString = "";
 	for (const TPair<EUpgradeAttribute, float> Attribute : CurrentUpgradeData.Upgrades) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute);
-	UpgradeTextString.RemoveFromEnd(TEXT("\n"));
-	if (UpgradeText) UpgradeText->SetText(FText::FromString(UpgradeTextString));
+	UpgradeTextString.RemoveFromEnd(TEXT("\n"));*/
+	if (UpgradeText) UpgradeText->SetText(FText::FromString("RALFAS NORI KAROLIO SUBINES"));
 }
 
 void UUpgradeCardUI::ProcessCurrentUpgradeData(const bool bPlayerCard, const int32 PreviousLevel, FLevelUpgradeData& CurrentUpgradeData) const
