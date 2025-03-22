@@ -37,5 +37,5 @@ enum class ESound : uint8
 	TricksterPoisonRelease,
 	TricksterPoisonImpact,
 	TricksterGrenadeThrow,
-	TricksterEMPImpact
+	TricksterEmpImpact
 };

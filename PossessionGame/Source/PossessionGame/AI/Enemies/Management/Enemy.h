@@ -88,7 +88,7 @@ public:
 	virtual void InitiateDeath();
 	void ReceiveDamage(const float InDamage);
 	void PlaySound(const ESound InSoundName);
-	void SetEMPEffect();
+	void SetEmpEffect(const float InEffectDuration);
 	void SetPossessionOutline(const bool bState) const;
 	void SetPossessionOutlineTimer();
 	UFUNCTION()
@@ -258,7 +258,6 @@ private:
 	void P_SetupNavArea();
 	void ChangeXRayState(const bool bState) const;
 	void SetupUserSettings() const;
-	virtual void Destroyed() override;
 	UFUNCTION()
 	void CheckIfFallOutOfWorld();
 	UFUNCTION()

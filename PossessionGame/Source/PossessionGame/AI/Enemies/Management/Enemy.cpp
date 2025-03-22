@@ -228,11 +228,11 @@ void AEnemy::PlaySound(const ESound InSoundName)
 	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName);
 }
 
-void AEnemy::SetEMPEffect()
+void AEnemy::SetEmpEffect(const float InEffectDuration)
 {
 	SetActionInMotion(true);
 	if (AI) AI->StopLogic(false);
-	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, AI_Data->GetEmpEffectTime());
+	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration);
 }
 
 void AEnemy::SetPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr); }
@@ -861,16 +861,6 @@ void AEnemy::SetupUserSettings() const
 	const TObjectPtr<UEnhancedInputUserSettings> UserSettings = GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings();
 	if (!UserSettings) return;
 	if (!UserSettings->IsMappingContextRegistered(PlayerMappingContext)) UserSettings->RegisterInputMappingContext(PlayerMappingContext);
-}
-
-void AEnemy::Destroyed()
-{
-	if (GetMesh())
-	{
-		GetMesh()->SetSimulatePhysics(false);
-		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
-	Super::Destroyed();
 }
 
 void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsPossessed ? P_Death() : InitiateDeath(); }

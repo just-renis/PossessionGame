@@ -5,7 +5,7 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 
-void AOvertimeDamager::Setup(const float InDamage, const float InDamageTick, float InLifeSpan, const float InRadiusSize)
+void AOvertimeDamager::Setup(const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize)
 {
 	Damage = InDamage;
 	Radius->SetSphereRadius(InRadiusSize);

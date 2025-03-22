@@ -20,5 +20,5 @@ private:
 	
 	virtual void SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) override;
 	UFUNCTION()
-	void ThrowEMPGrenade() const;
+	void ThrowEmpGrenade() const;
 };

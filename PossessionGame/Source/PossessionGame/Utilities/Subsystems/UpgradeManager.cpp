@@ -47,6 +47,7 @@ TObjectPtr<UUpgradeData> UUpgradeManager::GetProjectileUpgradeData(const EPoolOb
 		case EPoolObject::RangerProjectile: return Upgrades[EUpgrade::RangerBaseStat];
 		case EPoolObject::RangerGrenadeLauncherProjectile: return Upgrades[EUpgrade::RangerAbility1];
 		case EPoolObject::TricksterPoisonProjectile: return Upgrades[EUpgrade::TricksterAbility1];
+		case EPoolObject::TricksterEmpProjectile: return Upgrades[EUpgrade::TricksterAbility2];
 		default: return nullptr;
 	}
 }

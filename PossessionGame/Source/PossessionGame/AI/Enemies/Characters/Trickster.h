@@ -14,7 +14,7 @@ public:
 	FOnWeaponShootStateChange OnWeaponShootStateChange;
 
 	void ThrowPoisonGrenade();
-	void ThrowEMPGrenade();
+	void ThrowEmpGrenade();
 private:
 	ATrickster();
 	

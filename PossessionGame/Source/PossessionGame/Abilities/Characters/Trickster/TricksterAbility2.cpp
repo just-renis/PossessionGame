@@ -17,4 +17,4 @@ bool UTricksterAbility2::IsProprietorPossessed() { return Proprietor->GetIsPosse
 
 void UTricksterAbility2::SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ATrickster>(AbilityProprietor); }
 
-void UTricksterAbility2::ThrowEMPGrenade() const { Proprietor->ThrowEMPGrenade(); }
+void UTricksterAbility2::ThrowEmpGrenade() const { Proprietor->ThrowEmpGrenade(); }

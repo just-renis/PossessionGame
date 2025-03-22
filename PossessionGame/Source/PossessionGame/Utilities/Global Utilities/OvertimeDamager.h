@@ -13,7 +13,7 @@ class POSSESSIONGAME_API AOvertimeDamager : public APoolObject
 {
 	GENERATED_BODY()
 public:
-	void Setup(const float InDamage, const float InDamageTick, float InLifeSpan, const float InRadiusSize);
+	void Setup(const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize);
 	virtual void Init(bool bInIsPlayerObject) override;
 private:
 	AOvertimeDamager();

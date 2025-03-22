@@ -28,10 +28,10 @@ void ATrickster::ThrowPoisonGrenade()
 	Weapon->ShootProjectile(EPoolObject::TricksterPoisonProjectile, true, 1, false);
 }
 
-void ATrickster::ThrowEMPGrenade()
+void ATrickster::ThrowEmpGrenade()
 {
 	PlaySound(ESound::TricksterGrenadeThrow);
-	Weapon->ShootProjectile(EPoolObject::TricksterEMPProjectile, true);
+	Weapon->ShootProjectile(EPoolObject::TricksterEmpProjectile, true);
 }
 
 void ATrickster::AI_SetupWeapon()

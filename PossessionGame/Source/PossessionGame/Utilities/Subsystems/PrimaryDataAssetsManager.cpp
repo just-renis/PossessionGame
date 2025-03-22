@@ -77,7 +77,7 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Trail }), EVfx::TricksterBulletTrail },
 		{ FPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::Impact }), EVfx::TricksterPoisonImpact },
 		{ FPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::SecondaryImpact }), EVfx::TricksterPoison },
-		{ FPairWrapper({ EPoolObject::TricksterEMPProjectile, EVfxType::Impact }), EVfx::TricksterEMPImpact },
+		{ FPairWrapper({ EPoolObject::TricksterEmpProjectile, EVfxType::Impact }), EVfx::TricksterEmpImpact },
 		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Trail }), EVfx::SpyBulletTrail },
 		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Impact }), EVfx::SpyBulletImpact },
 		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Muzzle }), EVfx::SpyMuzzle },
@@ -168,49 +168,37 @@ void UPrimaryDataAssetsManager::AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr
 	});
 }
 
+void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes)
+{
+	if (InAttributes.IsEmpty())
+	{
+		SpawnVfx(InVfxName, InLocation, InRotation);
+		return;
+	}
+	const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
+	ApplyAttributesToVfxComponent(InAttributes, Component);
+}
+
 void UPrimaryDataAssetsManager::SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (InVfxName == EVfx::None) return;
-	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
+	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid()) SpawnVfx(InVfxName, InLocation, InRotation, InAttributes);
+	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLocation, InRotation, InAttributes] { SpawnVfx(InVfxName, InLocation, InRotation, InAttributes); });
+}
+
+void UPrimaryDataAssetsManager::ApplyAttributesToVfxComponent(const TMap<FName, FNiagaraAttribute>& InAttributes, const TObjectPtr<UNiagaraComponent>& Component)
+{
+	for (const TPair<FName, FNiagaraAttribute> Attribute : InAttributes)
 	{
-		if (InAttributes.IsEmpty())
+		float NewValue = Attribute.Value.Value;
+		if (!Attribute.Value.bIsReplacingValue)
 		{
-			SpawnVfx(InVfxName, InLocation, InRotation);
-			return;
+			if (FMath::IsNearlyEqual(Attribute.Value.Value, 0.f, 0.001f)) continue;
+			const float ComponentAttributeValue = GetVfxAttributeValue(Component, Attribute.Key);
+			NewValue = ComponentAttributeValue + ComponentAttributeValue * (Attribute.Value.Value / 100.f);
 		}
-		const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
-		for (const TPair<FName, FNiagaraAttribute> Attribute : InAttributes)
-		{
-			float NewValue = Attribute.Value.Value;
-			if (!Attribute.Value.bIsReplacingValue)
-			{
-				if (FMath::IsNearlyEqual(Attribute.Value.Value, 0.f, 0.001f)) continue;
-				const float ComponentAttributeValue = GetVfxAttributeValue(Component, Attribute.Key);
-				NewValue = ComponentAttributeValue + ComponentAttributeValue * (Attribute.Value.Value / 100.f);
-			}
-			Component->SetVariableFloat(Attribute.Key, NewValue);
-		}
+		Component->SetVariableFloat(Attribute.Key, NewValue);
 	}
-	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLocation, InRotation, InAttributes]
-	{
-		if (InAttributes.IsEmpty())
-		{
-			SpawnVfx(InVfxName, InLocation, InRotation);
-			return;
-		}
-		const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
-		for (const TPair<FName, FNiagaraAttribute> Attribute : InAttributes)
-		{
-			float NewValue = Attribute.Value.Value;
-			if (!Attribute.Value.bIsReplacingValue)
-			{
-				if (FMath::IsNearlyEqual(Attribute.Value.Value, 0.f, 0.001f)) continue;
-				const float ComponentAttributeValue = GetVfxAttributeValue(Component, Attribute.Key);
-				NewValue = ComponentAttributeValue + ComponentAttributeValue * (Attribute.Value.Value / 100.f);
-			}
-			Component->SetVariableFloat(Attribute.Key, NewValue);
-		}
-	});
 }
 
 bool UPrimaryDataAssetsManager::IsGameRunning() { return IsValid(this) && GetWorld() && !GetWorld()->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }
@@ -277,7 +265,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TricksterGrenadeThrow", ESound::TricksterGrenadeThrow);
 	SoundMap.Add("PA_TricksterPoisonImpact", ESound::TricksterPoisonImpact);
 	SoundMap.Add("PA_TricksterPoisonRelease", ESound::TricksterPoisonRelease);
-	SoundMap.Add("PA_TricksterEMPImpact", ESound::TricksterEMPImpact);
+	SoundMap.Add("PA_TricksterEmpImpact", ESound::TricksterEmpImpact);
 	SoundMap.Add("PA_DamageTick", ESound::DamageTick);
 	SoundMap.Add("PA_CriticalDamageTick", ESound::CriticalDamageTick);
 	FillContainers(SoundMap, SoundContainers, "Sound");
@@ -318,7 +306,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TricksterBulletTrail", EVfx::TricksterBulletTrail);
 	VfxsMap.Add("PA_TricksterPoisonImpact", EVfx::TricksterPoisonImpact);
 	VfxsMap.Add("PA_TricksterPoison", EVfx::TricksterPoison);
-	VfxsMap.Add("PA_TricksterEMPImpact", EVfx::TricksterEMPImpact);
+	VfxsMap.Add("PA_TricksterEmpImpact", EVfx::TricksterEmpImpact);
 	VfxsMap.Add("PA_SpyMuzzle", EVfx::SpyMuzzle);
 	VfxsMap.Add("PA_SpyBulletTrail", EVfx::SpyBulletTrail);
 	VfxsMap.Add("PA_SpyBulletImpact", EVfx::SpyBulletImpact);

@@ -12,6 +12,7 @@ class POSSESSIONGAME_API APoisonGrenade : public AProjectile
 	APoisonGrenade();
 
 	float ModifiedOvertimeAreaLifeSpan;
+	float ModifiedOvertimeAreaSize;
 	UPROPERTY()
 	TMap<FName, FNiagaraAttribute> Attributes;
 

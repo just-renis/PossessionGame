@@ -35,11 +35,13 @@ void APoisonGrenade::SpawnSecondProjectileImpactVfx(const FHitResult& Hit)
 {
 	const float EffectDurationIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::EffectDuration);
 	ModifiedOvertimeAreaLifeSpan = ProjectileData.OvertimeAreaLifeSpan;
+	ModifiedOvertimeAreaSize = ProjectileData.OvertimeAreaSize;
 	if (EffectDurationIncrease > 0.f) ModifiedOvertimeAreaLifeSpan += ProjectileData.OvertimeAreaLifeSpan * (EffectDurationIncrease / 100.f);
-	const float Size = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::Size);
+	const float SizeIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::Size);
+	if (SizeIncrease > 0.f) ModifiedOvertimeAreaSize += ProjectileData.OvertimeAreaSize * (SizeIncrease / 100.f);
 	Attributes["User.Loop Duration"].Value = ModifiedOvertimeAreaLifeSpan;
-	Attributes["User.Uniform Sprite Size Max"].Value = Size;
-	Attributes["User.Uniform Sprite Size Min"].Value = Size;
+	Attributes["User.Uniform Sprite Size Max"].Value = SizeIncrease;
+	Attributes["User.Uniform Sprite Size Min"].Value = SizeIncrease;
 	SpawnProjectileImpactVfx(Hit, false, Attributes);
 }
 
@@ -48,5 +50,5 @@ void APoisonGrenade::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 	const TObjectPtr<AOvertimeDamager> PoisonArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::PoisonArea, Hit.Location, Hit.Normal.Rotation()));
 	PoisonArea->Init(ProjectileData.bIsPlayerProjectile);
-	PoisonArea->Setup(Damage, ProjectileData.OvertimeTickTrigger, ProjectileData.OvertimeAreaLifeSpan, ProjectileData.OvertimeAreaSize);
+	PoisonArea->Setup(Damage, ProjectileData.OvertimeTickTrigger, ModifiedOvertimeAreaLifeSpan, ModifiedOvertimeAreaSize);
 }
