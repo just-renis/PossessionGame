@@ -59,21 +59,25 @@ void UUpgradeSelectionUI::NativeConstruct()
 	if (PlayerCardOption1)
 	{
 		PlayerCardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
+		PlayerCardOption1->GetUpgradeButton()->OnUnhovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerUnHoverAnimForFirstOption);
 		PlayerCardOption1->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForFirstOption);
 	}
 	if (PlayerCardOption2)
 	{
 		PlayerCardOption2->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForSecondOption);
+		PlayerCardOption2->GetUpgradeButton()->OnUnhovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerUnHoverAnimForSecondOption);
 		PlayerCardOption2->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForSecondOption);
 	}
 	if (EnemyCardOption1)
 	{
 		EnemyCardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
+		EnemyCardOption1->GetUpgradeButton()->OnUnhovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerUnHoverAnimForFirstOption);
 		EnemyCardOption1->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForFirstOption);
 	}
 	if (EnemyCardOption2)
 	{
 		EnemyCardOption2->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForSecondOption);
+		EnemyCardOption2->GetUpgradeButton()->OnUnhovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerUnHoverAnimForSecondOption);
 		EnemyCardOption2->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForSecondOption);
 	}
 }
@@ -97,8 +101,21 @@ void UUpgradeSelectionUI::TriggerHoverAnimForFirstOption()
 {
 	if (PlayerCardOption1Popup && EnemyCardOption1Popup)
 	{
-		PlayAnimation(PlayerCardOption1Popup, GetAnimationCurrentTime(PlayerCardOption1Popup));
-		PlayAnimation(EnemyCardOption1Popup, GetAnimationCurrentTime(EnemyCardOption1Popup));
+		StopAnimation(PlayerCardOption1UnHover);
+		StopAnimation(EnemyCardOption1UnHover);
+		PlayAnimation(PlayerCardOption1Popup);
+		PlayAnimation(EnemyCardOption1Popup);
+	}
+}
+
+void UUpgradeSelectionUI::TriggerUnHoverAnimForFirstOption()
+{
+	if (PlayerCardOption1UnHover && EnemyCardOption1UnHover)
+	{
+		StopAnimation(PlayerCardOption1Popup);
+		StopAnimation(EnemyCardOption1Popup);
+		PlayAnimation(PlayerCardOption1UnHover);
+		PlayAnimation(EnemyCardOption1UnHover);
 	}
 }
 
@@ -106,8 +123,21 @@ void UUpgradeSelectionUI::TriggerHoverAnimForSecondOption()
 {
 	if (PlayerCardOption2Popup && EnemyCardOption2Popup)
 	{
-		PlayAnimation(PlayerCardOption2Popup, GetAnimationCurrentTime(PlayerCardOption2Popup));
-		PlayAnimation(EnemyCardOption2Popup, GetAnimationCurrentTime(EnemyCardOption2Popup));
+		StopAnimation(PlayerCardOption2UnHover);
+		StopAnimation(EnemyCardOption2UnHover);
+		PlayAnimation(PlayerCardOption2Popup);
+		PlayAnimation(EnemyCardOption2Popup);
+	}
+}
+
+void UUpgradeSelectionUI::TriggerUnHoverAnimForSecondOption()
+{
+	if (PlayerCardOption2UnHover && EnemyCardOption2UnHover)
+	{
+		StopAnimation(PlayerCardOption2Popup);
+		StopAnimation(EnemyCardOption2Popup);
+		PlayAnimation(PlayerCardOption2UnHover);
+		PlayAnimation(EnemyCardOption2UnHover);
 	}
 }
 

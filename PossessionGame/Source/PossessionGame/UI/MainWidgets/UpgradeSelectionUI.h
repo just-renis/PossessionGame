@@ -53,6 +53,14 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> EnemyCardOption2Select;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> PlayerCardOption1UnHover;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> PlayerCardOption2UnHover;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> EnemyCardOption1UnHover;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> EnemyCardOption2UnHover;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> UpgradeMenuOpen;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> UpgradeMenuClose;
@@ -67,7 +75,11 @@ private:
 	UFUNCTION()
 	void TriggerHoverAnimForFirstOption();
 	UFUNCTION()
+	void TriggerUnHoverAnimForFirstOption();
+	UFUNCTION()
 	void TriggerHoverAnimForSecondOption();
+	UFUNCTION()
+	void TriggerUnHoverAnimForSecondOption();
 	UFUNCTION()
 	void TriggerSelectAnimForFirstOption();
 	UFUNCTION()
