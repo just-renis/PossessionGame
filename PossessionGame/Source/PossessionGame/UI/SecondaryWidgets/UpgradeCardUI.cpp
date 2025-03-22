@@ -81,26 +81,27 @@ void UUpgradeCardUI::SetCharacterText(const FText& InText, const FColor InColor)
 
 void UUpgradeCardUI::SetUpgradeText(const bool bPlayerCard)
 {
-/*	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	const int32 NextLevel = SaveSlot->GetLevelOfAnUpgrade(Data->GetUpgradeName()) + 1;
 	FLevelUpgradeData CurrentUpgradeData = Data->GetAttributesForLevel(bPlayerCard, NextLevel);
 	if (NextLevel > 1) ProcessCurrentUpgradeData(bPlayerCard, NextLevel - 1, CurrentUpgradeData);
 	FString UpgradeTextString = "";
 	for (const TPair<EUpgradeAttribute, float> Attribute : CurrentUpgradeData.Upgrades) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute);
-	UpgradeTextString.RemoveFromEnd(TEXT("\n"));*/
-	if (UpgradeText) UpgradeText->SetText(FText::FromString("RALFAS NORI KAROLIO SUBINES"));
+	UpgradeTextString.RemoveFromEnd(TEXT("\n"));
+	if (UpgradeText) UpgradeText->SetText(FText::FromString(UpgradeTextString));
 }
 
 void UUpgradeCardUI::ProcessCurrentUpgradeData(const bool bPlayerCard, const int32 PreviousLevel, FLevelUpgradeData& CurrentUpgradeData) const
 {
 	TArray<EUpgradeAttribute> KeysToRemove;
 	FLevelUpgradeData PreviousUpgradeData = Data->GetAttributesForLevel(bPlayerCard, PreviousLevel);
-	TMap<EUpgradeAttribute, float>::TIterator PrevIt = PreviousUpgradeData.Upgrades.CreateIterator();
-	TMap<EUpgradeAttribute, float>::TIterator CurrIt = CurrentUpgradeData.Upgrades.CreateIterator();
-	for (; PrevIt; ++PrevIt, ++CurrIt)
+	for (TPair<EUpgradeAttribute, float>& CurrPair : CurrentUpgradeData.Upgrades)
 	{
-		CurrIt->Value -= PrevIt->Value;
-		if (FMath::IsNearlyEqual(CurrIt->Value, 0.f, 0.001f)) KeysToRemove.Add(CurrIt->Key);
+		if (float* PrevValue = PreviousUpgradeData.Upgrades.Find(CurrPair.Key))
+		{
+			CurrPair.Value -= *PrevValue;
+			if (FMath::IsNearlyEqual(CurrPair.Value, 0.f, 0.001f)) KeysToRemove.Add(CurrPair.Key);
+		}
 	}
 	for (const EUpgradeAttribute Key : KeysToRemove) CurrentUpgradeData.Upgrades.Remove(Key);
 }
