@@ -67,7 +67,7 @@ void ATricksterWeapon::PostProprietorSetup()
 	AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
 }
 
-void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const int32 InAmount, const bool bFromFirstWeapon)
+void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const bool bFromFirstWeapon)
 {
 	if (bFromFirstWeapon) FirstWeapon->ShootProjectile(InProjectileName, bOverrideRotation);
 	else SecondWeapon->ShootProjectile(InProjectileName, bOverrideRotation);

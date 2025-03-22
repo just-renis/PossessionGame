@@ -25,7 +25,7 @@ ATrickster::ATrickster()
 void ATrickster::ThrowPoisonGrenade()
 {
 	PlaySound(ESound::TricksterGrenadeThrow);
-	Weapon->ShootProjectile(EPoolObject::TricksterPoisonProjectile, true, 1, false);
+	Weapon->ShootProjectile(EPoolObject::TricksterPoisonProjectile, true, false);
 }
 
 void ATrickster::ThrowEmpGrenade()

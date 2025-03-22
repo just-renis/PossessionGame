@@ -127,15 +127,16 @@ void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh
 	Mesh->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket1"));
 }
 
-void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bOverrideRotation, const int32 InAmount, bool bFromFirstWeapon)
+void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bOverrideRotation, bool bFromFirstWeapon)
 {
+	const int32 ProjectilesAmount = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPossessed, InProjectileName, EUpgradeAttribute::ProjectilesAmount);
 	GetProjectileData(InProjectileName).SetProprietor(Proprietor);
-	GetProjectileData(InProjectileName).SetAmount(InAmount);
+	GetProjectileData(InProjectileName).SetAmount(ProjectilesAmount + 1);
 	const FName& ProjectileSocketName = GetProjectileData(InProjectileName).ProjectileSocketName;
 	const FRotator BaseRotation = bOverrideRotation ? Proprietor->GetActorRotation() : GetSocketRotation(ProjectileSocketName);
-	if (InAmount > 1)
+	if (GetProjectileData(InProjectileName).Amount > 1)
 	{
-		const FAdditionalProjectiles ProjectilesData = GetProjectileData(InProjectileName).GetMultiProjectileData(InAmount);
+		const FAdditionalProjectiles ProjectilesData = GetProjectileData(InProjectileName).GetMultiProjectileData(GetProjectileData(InProjectileName).Amount);
 		for (int32 i = 0; i < ProjectilesData.Data.Num(); i++)
 		{
 			GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, GetSocketLocation(ProjectileSocketName), BaseRotation.RotateVector(ProjectilesData.Data[i].Direction).Rotation())

@@ -35,5 +35,5 @@ private:
 	virtual void SetMeshes(EWeapon PrimaryDataAssetName) override;
 	virtual void PlayShootMontage() override;
 	virtual void PostProprietorSetup() override;
-	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const int32 InAmount, const bool bFromFirstWeapon) override;
+	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const bool bFromFirstWeapon) override;
 };
