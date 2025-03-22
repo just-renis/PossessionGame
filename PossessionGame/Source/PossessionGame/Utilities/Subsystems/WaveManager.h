@@ -63,7 +63,7 @@ private:
 	void WaveCompleted();
 
 	UFUNCTION()
-	void ShowUpgradeSelection() const;
+	void ShowUpgradeSelection();
 	UFUNCTION()
 	void UpdateCountdown();
 	UFUNCTION()

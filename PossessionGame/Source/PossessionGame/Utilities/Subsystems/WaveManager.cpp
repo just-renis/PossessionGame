@@ -201,7 +201,11 @@ void UWaveManager::WaveCompleted()
 	UKismetSystemLibrary::K2_SetTimer(this, "ShowUpgradeSelection", WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 
-void UWaveManager::ShowUpgradeSelection() const { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI(); }
+void UWaveManager::ShowUpgradeSelection()
+{
+	InitiateNextWave();
+	//GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+}
 
 void UWaveManager::UpdateCountdown()
 {
