@@ -1,7 +1,9 @@
 #include "PossessionGameGameModeBase.h"
+#include "PossessionGameInstance.h"
 #include "Prefab.h"
 #include "SettingsSave.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
@@ -18,13 +20,17 @@ TArray<TSubclassOf<APrefab>>* APossessionGameGameModeBase::GetPrefabsByCategory(
 void APossessionGameGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
+	FString LevelName = GetWorld()->GetMapName();
+	LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+	if (!LevelName.Equals("TutorialLevel")) SaveSlot->SetTutorialFinished();
 	const TObjectPtr<UWaveManager> WaveManager = GetWorld()->GetSubsystem<UWaveManager>();
-	WaveManager->Init(DelegateManager);
-	WaveManager->SetupWaveManagerSettings(EnemiesThatAreSpawnable, FirstEnemyToSpawn, EnemiesAmountToSpawnOnFirstWave);
+	WaveManager->Init(SaveSlot->GetIsTutorialFinished(), DelegateManager);
+	if (SaveSlot->GetIsTutorialFinished()) WaveManager->SetupWaveManagerSettings(EnemiesThatAreSpawnable, FirstEnemyToSpawn, EnemiesAmountToSpawnOnFirstWave);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
 	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->Init(PostProcessMaterials);

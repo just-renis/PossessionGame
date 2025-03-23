@@ -12,9 +12,10 @@
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Global Utilities/SpawnLocation.h"
 
-void UWaveManager::Init(const TObjectPtr<UDelegateManager>& InDelegateManager)
+void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager)
 {
 	DelegateManager = InDelegateManager;
+	if (!bIsTutorialFinished) return;
 	InitDelegates();
 	SetupSpawnLocations();
 	SetupWaveManagerUI();

@@ -17,7 +17,7 @@ class POSSESSIONGAME_API UWaveManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-	void Init(const TObjectPtr<UDelegateManager>& InDelegateManager);
+	void Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager);
 	void InitDelegates();
 	void SetupWaveManagerSettings(TArray<ECharacterType>& EnemiesThatAreSpawnable, ECharacterType FirstEnemy, int32 EnemiesAmountOnFirstWave);
 private:
