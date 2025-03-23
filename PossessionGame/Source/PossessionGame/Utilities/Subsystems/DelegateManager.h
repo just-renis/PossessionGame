@@ -14,6 +14,7 @@ DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
 DECLARE_MULTICAST_DELEGATE(FOnEnemyDeath);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
+DECLARE_DELEGATE_OneParam(FOnFinishedDialogue, const int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemiesAmountDecrease, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
@@ -38,6 +39,7 @@ public:
 	FOnEnemyDeath OnEnemyDeath;
 	FOnPlayerDeath OnPlayerDeath;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
+	FOnFinishedDialogue OnFinishedDialogue;
 	FOnEnemiesAmountDecrease OnEnemiesAmountDecrease;
 	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;

@@ -5,6 +5,7 @@
 #include "InputActionValue.h"
 #include "PlayerGhost.generated.h"
 
+class UPlayerGhostUI;
 class UInputAction;
 class UCameraComponent;
 class UInputMappingContext;
@@ -17,12 +18,16 @@ class POSSESSIONGAME_API APlayerGhost : public ACharacter
 public:
 	APlayerGhost();
 private:
-	UPROPERTY()
-	TObjectPtr<UCharacterMovementComponent> CharacterMovementComponent;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TSubclassOf<UPlayerGhostUI> PlayerGhostUIClass;
+	UPROPERTY()
+	TObjectPtr<UCharacterMovementComponent> CharacterMovementComponent;
+	UPROPERTY()
+	TObjectPtr<UPlayerGhostUI> PlayerGhostUI;
 
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;

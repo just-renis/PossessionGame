@@ -10,6 +10,7 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
+#include "PossessionGame/UI/MainWidgets/PlayerGhostUI.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 
 APlayerGhost::APlayerGhost()
@@ -22,6 +23,8 @@ APlayerGhost::APlayerGhost()
 void APlayerGhost::BeginPlay()
 {
 	Super::BeginPlay();
+	PlayerGhostUI = CreateWidget<UPlayerGhostUI>(GetWorld(), PlayerGhostUIClass);
+	PlayerGhostUI->AddToViewport();
 	Tags.Add("PlayerGhost");
 	UKismetSystemLibrary::K2_SetTimer(this, "CheckIfPlayerFallOutOfWorld", 2.f, true);
 	CharacterMovementComponent = GetCharacterMovement();
@@ -53,6 +56,9 @@ void APlayerGhost::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 	UKismetSystemLibrary::K2_ClearTimer(this, "CheckIfPlayerFallOutOfWorld");
+	if (!PlayerGhostUI) return;
+ 	PlayerGhostUI->RemoveFromParent();
+	PlayerGhostUI = nullptr;
 }
 
 void APlayerGhost::Move(const FInputActionValue& InValue)
