@@ -10,9 +10,7 @@ UCLASS()
 class POSSESSIONGAME_API ATutorialDialogue : public AActor
 {
 	GENERATED_BODY()
-public:
-	void StartDialogue(const FString& InFullText, const float InSpeed = 0.05f) const;
-private:
+
 	ATutorialDialogue();
 	
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -21,4 +19,5 @@ private:
 	TObjectPtr<UDialogueUI> Dialogue;
 
 	virtual void BeginPlay() override;
+	void StartDialogue(const int32 InIndex) const;
 };

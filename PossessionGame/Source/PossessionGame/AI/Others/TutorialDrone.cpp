@@ -14,7 +14,6 @@ void ATutorialDrone::BeginPlay()
 	Super::BeginPlay();
 	Dialogue = GetWorld()->SpawnActor<ATutorialDialogue>(DialogueClass, FVector::ZeroVector, FRotator::ZeroRotator);
 	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "DialogueSocket");
-	if (DroneDialogueTexts.IsValidIndex(0)) Dialogue->StartDialogue(DroneDialogueTexts[0]);
 	RetrieveDroneWaypoints();
 	PlayDroneAnimation();
 }

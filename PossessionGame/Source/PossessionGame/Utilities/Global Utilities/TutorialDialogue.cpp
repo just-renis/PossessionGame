@@ -1,11 +1,7 @@
 ﻿#include "TutorialDialogue.h"
 #include "Components/WidgetComponent.h"
 #include "PossessionGame/UI/SecondaryWidgets/DialogueUI.h"
-
-void ATutorialDialogue::StartDialogue(const FString& InFullText, const float InSpeed) const
-{
-	if (Dialogue) Dialogue->StartDialogue(InFullText, InSpeed);
-}
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 ATutorialDialogue::ATutorialDialogue()
 {
@@ -17,4 +13,14 @@ void ATutorialDialogue::BeginPlay()
 {
 	Super::BeginPlay();
 	Dialogue = Cast<UDialogueUI>(DialogueWidgetComponent->GetWidget());
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowDialogue.AddUObject(this, &ATutorialDialogue::StartDialogue);
+}
+
+void ATutorialDialogue::StartDialogue(const int32 InIndex) const
+{
+	if (Dialogue)
+	{
+		Dialogue->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		Dialogue->StartDialogue(InIndex);
+	}
 }

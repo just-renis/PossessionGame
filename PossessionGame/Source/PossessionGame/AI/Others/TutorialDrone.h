@@ -21,8 +21,6 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TArray<FString> DroneDialogueTexts;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<ADroneWaypoint>> Waypoints;
 	UPROPERTY()
 	TObjectPtr<ATutorialDialogue> Dialogue;

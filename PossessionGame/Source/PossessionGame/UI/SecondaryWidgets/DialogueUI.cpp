@@ -3,9 +3,11 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
-void UDialogueUI::StartDialogue(const FString& InFullText, const float InSpeed)
+void UDialogueUI::StartDialogue(const int32 InIndex, const float InSpeed)
 {
-	TargetText = InFullText;
+	if (!DialogueTexts.IsValidIndex(InIndex)) return;
+	DialogueTextIndex = InIndex;
+	TargetText = DialogueTexts[DialogueTextIndex];
 	CurrentText = "";
 	CurrentIndex = 0;
 	TypeSpeed = InSpeed;
@@ -30,6 +32,6 @@ void UDialogueUI::TypeNextLetter()
 	else
 	{
 		UKismetSystemLibrary::K2_ClearTimer(this, "TypeNextLetter");
-		(void)DelegateManager->OnFinishedDialogue.ExecuteIfBound(0);
+		if (DialogueTextIndex == 0) (void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true);
 	}
 }
