@@ -48,6 +48,7 @@ private:
 	void HandleEscapeClick();
 	void SetCurrentTutorialStep(const int32 InStep) { CurrentTutorialStep = InStep; }
 	void CompleteTutorialStep() { SetCurrentTutorialStep(-1); }
+	void SetupTutorial();
 	UFUNCTION()
 	void CheckIfPlayerFallOutOfWorld() const;
 	UFUNCTION()

@@ -13,6 +13,8 @@
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerGhostUI.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 APlayerGhost::APlayerGhost()
@@ -25,18 +27,17 @@ APlayerGhost::APlayerGhost()
 void APlayerGhost::BeginPlay()
 {
 	Super::BeginPlay();
-	Target = UGameplayStatics::GetActorOfClass(GetWorld(), TutorialDroneClass);
-	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	DelegateManager->OnShowHint.AddUObject(this, &APlayerGhost::SetCurrentTutorialStep);
-	PlayerGhostUI = CreateWidget<UPlayerGhostUI>(GetWorld(), PlayerGhostUIClass);
-	PlayerGhostUI->AddToViewport();
+	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorial();
 	Tags.Add("PlayerGhost");
 	UKismetSystemLibrary::K2_SetTimer(this, "CheckIfPlayerFallOutOfWorld", 2.f, true);
 	if (const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
 	{
-		PlayerController->SetInputMode(FInputModeUIOnly());
-		PlayerGhostUI->PlayStartupAnimation();
-		UKismetSystemLibrary::K2_SetTimer(this, "EnablePlayerInput", PlayerGhostUI->GetStartupAnimationLength(), false);
+		if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
+		{
+			PlayerController->SetInputMode(FInputModeUIOnly());
+			PlayerGhostUI->PlayStartupAnimation();
+			UKismetSystemLibrary::K2_SetTimer(this, "EnablePlayerInput", PlayerGhostUI->GetStartupAnimationLength(), false);
+		}
 		if (const TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(PlayerMappingContext, 0);
@@ -125,6 +126,15 @@ void APlayerGhost::HandleEscapeClick()
 		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->CloseUI(); break;
 		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 	}
+}
+
+void APlayerGhost::SetupTutorial()
+{
+	Target = UGameplayStatics::GetActorOfClass(GetWorld(), TutorialDroneClass);
+	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	DelegateManager->OnShowHint.AddUObject(this, &APlayerGhost::SetCurrentTutorialStep);
+	PlayerGhostUI = CreateWidget<UPlayerGhostUI>(GetWorld(), PlayerGhostUIClass);
+	PlayerGhostUI->AddToViewport();
 }
 
 void APlayerGhost::CheckIfPlayerFallOutOfWorld() const
