@@ -15,11 +15,6 @@ ATricksterWeapon::ATricksterWeapon()
 	Sounds[ESound::TricksterReload]->SetupAttachment(RootComponent);
 }
 
-void ATricksterWeapon::P_SetupOnShootState()
-{
-	Cast<ATrickster>(Proprietor)->OnWeaponShootStateChange.BindUObject(this, &ATricksterWeapon::P_SetShootMontage);
-}
-
 void ATricksterWeapon::AI_Reload() { PlaySound(ESound::TricksterReload); }
 
 void ATricksterWeapon::P_Reload(int32 OtherAmmoSource)
@@ -29,10 +24,9 @@ void ATricksterWeapon::P_Reload(int32 OtherAmmoSource)
 	Super::P_Reload(OtherAmmoSource);
 }
 
-void ATricksterWeapon::P_SetShootMontage(bool bFirstWeapon, bool bState)
+void ATricksterWeapon::P_SetupOnShootState()
 {
-	if (bFirstWeapon) ShootMontageHandler.bIsFirstWeaponShooting = bState;
-	else ShootMontageHandler.bIsSecondWeaponShooting = bState;
+	Cast<ATrickster>(Proprietor)->GetOnWeaponShootStateChangeDelegate().BindUObject(this, &ADualWieldingWeapon::P_SetShootMontage);
 }
 
 void ATricksterWeapon::BeginPlay()
@@ -49,9 +43,9 @@ void ATricksterWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> 
 	SecondWeapon = WeaponManager->GetWeapon(GetWorld(), EWeapon::TricksterSingularWeapon, CharacterMesh, FName("AIWeaponSocket2"));
 }
 
-void ATricksterWeapon::SetMeshes(EWeapon PrimaryDataAssetName)
+void ATricksterWeapon::SetMeshes(const EWeapon InPrimaryDataAssetName)
 {
-	if (!HandsMesh->GetSkeletalMeshAsset()) HandsMesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(PrimaryDataAssetName)->HandsMesh.Get());
+	if (!HandsMesh->GetSkeletalMeshAsset()) HandsMesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(InPrimaryDataAssetName)->HandsMesh.Get());
 }
 
 void ATricksterWeapon::PlayShootMontage()
@@ -63,6 +57,7 @@ void ATricksterWeapon::PlayShootMontage()
 
 void ATricksterWeapon::PostProprietorSetup()
 {
+	P_SetupOnShootState();
 	AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
 	AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
 }

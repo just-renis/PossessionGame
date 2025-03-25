@@ -48,7 +48,6 @@ void ATrickster::P_Setup()
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeThreeParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
-	Cast<ATricksterWeapon>(Weapon)->P_SetupOnShootState();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ATrickster::SetActionInMotion);
 }
 

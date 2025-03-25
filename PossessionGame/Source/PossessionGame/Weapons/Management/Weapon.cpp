@@ -36,6 +36,7 @@ void AWeapon::AI_ResetShootCycles() { ShootCyclesUntilReload = AI_Data->GetShoot
 
 bool AWeapon::P_CanReload(const int32 InOtherAmmoSource)
 {
+	if (!Proprietor->GetCanReload()) return false;
 	return !HandsAnimInstance->GetIsReloading() && (InOtherAmmoSource != -1 ? InOtherAmmoSource > 0 : TotalAmmo > 0 && CurrentAmmo != MagazineCap);
 }
 

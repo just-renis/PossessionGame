@@ -22,7 +22,8 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 
 void UPlayerHUD::UpdateAmmoText(const int32 InWeaponAmmo) const
 {
-	if (AmmoText) AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0}"), {InWeaponAmmo})));
+	if (InWeaponAmmo == -1) AmmoText->SetText(FText::FromString(TEXT("∞")));
+	else if (AmmoText) AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0}"), {InWeaponAmmo})));
 }
 
 void UPlayerHUD::UpdateAmmoText(const int32 InWeaponAmmo, const int32 InMaxAmmo) const

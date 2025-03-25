@@ -15,6 +15,15 @@ struct FWeaponCyclingState
     bool bIsFirstWeaponMode = false;
 };
 
+USTRUCT()
+struct FShootMontageHandler
+{
+    GENERATED_BODY()
+
+    bool bIsFirstWeaponShooting = false;
+    bool bIsSecondWeaponShooting = false;
+};
+
 UCLASS()
 class POSSESSIONGAME_API ADualWieldingWeapon : public AWeapon
 {
@@ -32,6 +41,7 @@ public:
     virtual void P_Reload(int32 OtherAmmoSource) override;
     virtual void P_SetupTransfer(bool bSetToFirstHand) override;
     virtual void P_UpdateAmmoTextHUD() override;
+    void P_SetShootMontage(const bool bFirstWeapon, const bool bState);
 
     virtual void SetWeaponMeshScaleToOriginal() override;
     virtual void DestroyThis() override;
@@ -44,6 +54,8 @@ protected:
     TObjectPtr<AWeapon> FirstWeapon;
     UPROPERTY()
     TObjectPtr<AWeapon> SecondWeapon;
+    UPROPERTY()
+    FShootMontageHandler ShootMontageHandler;
 
     virtual void PlayShootMontage();
 private:

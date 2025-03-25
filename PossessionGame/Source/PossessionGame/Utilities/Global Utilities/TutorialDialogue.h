@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "TutorialDialogue.generated.h"
 
-class UDialogueUI;
+class UTutorialDialogueUI;
 class UWidgetComponent;
 
 UCLASS()
@@ -16,7 +16,7 @@ class POSSESSIONGAME_API ATutorialDialogue : public AActor
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> DialogueWidgetComponent;
 	UPROPERTY()
-	TObjectPtr<UDialogueUI> Dialogue;
+	TObjectPtr<UTutorialDialogueUI> Dialogue;
 
 	virtual void BeginPlay() override;
 	void StartDialogue(const int32 InIndex) const;

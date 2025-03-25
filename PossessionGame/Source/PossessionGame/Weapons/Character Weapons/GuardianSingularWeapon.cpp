@@ -1,0 +1,42 @@
+﻿#include "GuardianSingularWeapon.h"
+#include "Components/AudioComponent.h"
+#include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+
+AGuardianSingularWeapon::AGuardianSingularWeapon()
+{
+	Sounds.Add(ESound::GuardianShoot, CreateDefaultSubobject<UAudioComponent>(TEXT("shootSound")));
+	Sounds[ESound::GuardianShoot]->SetAutoActivate(false);
+	Sounds[ESound::GuardianShoot]->SetupAttachment(GetMesh());
+}
+
+void AGuardianSingularWeapon::AI_Shoot()
+{
+	PlaySound(ESound::GuardianShoot);
+	Super::AI_Shoot();
+	ShootProjectile(EPoolObject::GuardianProjectile);
+}
+
+void AGuardianSingularWeapon::P_Shoot(const bool bIsFirstWeapon)
+{
+	if (ShootTimer >= ShootCooldown)
+	{
+		PlaySound(ESound::GuardianShoot);
+		MuzzleFlashLogic();
+		MakeShootingCameraShake();
+		ShootTimer = 0.f;
+		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::GuardianProjectile);
+	}
+}
+
+void AGuardianSingularWeapon::BeginPlay()
+{
+	Name = EWeapon::GuardianSingularWeapon;
+	Super::BeginPlay();
+}
+
+void AGuardianSingularWeapon::SetMeshes(EWeapon PrimaryDataAssetName)
+{
+	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(PrimaryDataAssetName)->WeaponMesh.Get());
+	OriginalScale = Mesh->GetRelativeScale3D();
+}

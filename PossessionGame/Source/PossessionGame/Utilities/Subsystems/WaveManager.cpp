@@ -15,9 +15,13 @@
 void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager)
 {
 	DelegateManager = InDelegateManager;
-	if (!bIsTutorialFinished) return;
-	InitDelegates();
 	SetupSpawnLocations();
+	if (!bIsTutorialFinished)
+	{
+		DelegateManager->SpawnTutorialGuardian.BindUObject(this, &UWaveManager::AsyncLoadAndSpawnEnemy);
+		return;
+	}
+	InitDelegates();
 	SetupWaveManagerUI();
 	SetupTimers();
 }
@@ -51,6 +55,7 @@ EWeapon UWaveManager::GetWeaponCode(ECharacterType EnemyType)
 		case ECharacterType::Spy: return EWeapon::SpyWeapon;
 		case ECharacterType::Trickster: return EWeapon::TricksterWeapon;
 		case ECharacterType::Samurai: return EWeapon::SamuraiWeapon;
+		case ECharacterType::Guardian: return EWeapon::GuardianWeapon;
 		default: return EWeapon::None;
 	}
 }
@@ -61,6 +66,7 @@ EWeapon UWaveManager::GetSingularWeapon(EWeapon Weapon)
 	{
 		case EWeapon::MinionWeapon: return EWeapon::MinionSingularWeapon;
 		case EWeapon::TricksterWeapon: return EWeapon::TricksterSingularWeapon;
+		case EWeapon::GuardianWeapon: return EWeapon::GuardianSingularWeapon;
 		default: return EWeapon::None;
 	}
 }

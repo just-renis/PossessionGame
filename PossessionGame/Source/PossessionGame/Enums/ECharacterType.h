@@ -9,5 +9,6 @@ enum class ECharacterType : uint8
 	Trickster,
 	Tank,
 	Ranger,
-	Samurai
+	Samurai,
+	Guardian
 };

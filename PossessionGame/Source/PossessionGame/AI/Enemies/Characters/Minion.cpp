@@ -1,9 +1,8 @@
 ﻿#include "Minion.h"
 #include "Components/AudioComponent.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 
 AMinion::AMinion()
@@ -30,17 +29,4 @@ void AMinion::BeginPlay()
 {
 	CharacterName = ECharacterType::Minion;
 	Super::BeginPlay();
-	UKismetSystemLibrary::K2_SetTimer(this, "AI_PlaySpawnSound", 3.f + UKismetMathLibrary::RandomInteger(4), false);
-}
-
-void AMinion::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-	if (bIsPossessed) UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
-}
-
-void AMinion::ClearTimers()
-{
-	Super::ClearTimers();
-	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
 }

@@ -4,7 +4,7 @@
 TObjectPtr<AWeapon> UWeaponManager::GetWeapon(TObjectPtr<UWorld> World, EWeapon WeaponName, TObjectPtr<USkeletalMeshComponent> Mesh, FName SocketName)
 {
     TObjectPtr<AWeapon> Weapon = World->SpawnActor<AWeapon>(Weapons[WeaponName], FVector::ZeroVector, FRotator::ZeroRotator);
-	if (WeaponName == EWeapon::TricksterWeapon || WeaponName == EWeapon::MinionWeapon) Cast<ADualWieldingWeapon>(Weapon)->SetupOneHandedWeapons(Mesh);
+	if (WeaponName == EWeapon::TricksterWeapon || WeaponName == EWeapon::MinionWeapon || WeaponName == EWeapon::GuardianWeapon) Cast<ADualWieldingWeapon>(Weapon)->SetupOneHandedWeapons(Mesh);
 	Weapon->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 	return Weapon;
 }

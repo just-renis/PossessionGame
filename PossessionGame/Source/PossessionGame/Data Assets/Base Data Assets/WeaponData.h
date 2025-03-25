@@ -12,12 +12,12 @@ class POSSESSIONGAME_API UWeaponData : public UDataAsset
 {
 	GENERATED_BODY()
 public:
-    bool GetIsReloadEnabled() { return bIsReloadEnabled; }
-	bool GetIsCyclingEnabled() { return bIsCyclingEnabled; }
-    int32 GetCurrentAmmo() { return CurrentAmmo; }
-    int32 GetMagazineCap() { return MagazineCap; }
-	int32 GetShootCyclesUntilReload() { return ShootCyclesUntilReload; }
-    float GetShootCooldown() { return ShootCooldown; }
+    bool GetIsReloadEnabled() const { return bIsReloadEnabled; }
+	bool GetIsCyclingEnabled() const { return bIsCyclingEnabled; }
+    int32 GetCurrentAmmo() const { return CurrentAmmo; }
+    int32 GetMagazineCap() const { return MagazineCap; }
+	int32 GetShootCyclesUntilReload() const { return ShootCyclesUntilReload; }
+    float GetShootCooldown() const { return ShootCooldown; }
 	FProjectileData& GetProjectileData(EPoolObject ProjectileName);
 
 	void SetAllProjectilesWalkSpread(bool bState);

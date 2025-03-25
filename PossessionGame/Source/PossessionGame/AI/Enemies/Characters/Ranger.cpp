@@ -6,7 +6,6 @@
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/TriggerSphere.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
@@ -141,7 +140,6 @@ void ARanger::BeginPlay()
 	Super::BeginPlay();
 	SetupGrenadeLaunchTriggerSphere();
 	AssetsManager->AttachOrLoadVfx(EVfx::RangerGrenadeLauncherMuzzle, &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
-	UKismetSystemLibrary::K2_SetTimer(this, "AI_PlaySpawnSound", 3.f + UKismetMathLibrary::RandomInteger(4), false);
 }
 
 void ARanger::Tick(float DeltaTime)
@@ -170,7 +168,6 @@ void ARanger::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	DestroyGrenadeLaunchTriggerSphere();
-	if (bIsPossessed) UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
 }
 
 void ARanger::InitiateDeath()
@@ -197,12 +194,6 @@ void ARanger::DestroyGrenadeLaunchTriggerSphere() const
 		AIGrenadeLaunchTriggerSphere->OnActorBeginOverlap.RemoveAll(this);
 		AIGrenadeLaunchTriggerSphere->Destroy();
 	}
-}
-
-void ARanger::ClearTimers()
-{
-	Super::ClearTimers();
-	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
 }
 
 void ARanger::TryTriggeringGrenadeLaunch()

@@ -21,6 +21,8 @@ void UDialogueUI::NativeConstruct()
     if (DialogueText) DialogueText->SetText(FText::FromString(""));
 }
 
+void UDialogueUI::FinishedTypingDialogue() { UKismetSystemLibrary::K2_ClearTimer(this, "TypeNextLetter"); }
+
 void UDialogueUI::TypeNextLetter()
 {
 	if (!DialogueText) return;
@@ -29,9 +31,5 @@ void UDialogueUI::TypeNextLetter()
 		CurrentText.AppendChar(TargetText[CurrentIndex++]);
 		DialogueText->SetText(FText::FromString(CurrentText));
 	}
-	else
-	{
-		UKismetSystemLibrary::K2_ClearTimer(this, "TypeNextLetter");
-		if (DialogueTextIndex == 0) (void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true);
-	}
+	else FinishedTypingDialogue();
 }

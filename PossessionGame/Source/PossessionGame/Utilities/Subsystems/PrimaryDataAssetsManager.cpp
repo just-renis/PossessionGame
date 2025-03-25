@@ -152,6 +152,7 @@ void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
 
 void UPrimaryDataAssetsManager::AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy)
 {
+	if (InVfxName == EVfx::None) return;
 	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
 	{
 		if (InVfxComponent) *InVfxComponent = AttachVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
@@ -212,7 +213,8 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 		case ECharacterType::Trickster: return EPoolObject::TricksterProjectile;
 		case ECharacterType::Spy: return EPoolObject::SpyProjectile;
 		case ECharacterType::Tank: return EPoolObject::TankProjectile;
-		default: return EPoolObject::RangerProjectile;
+		case ECharacterType::Guardian: return EPoolObject::GuardianProjectile;
+		default: return EPoolObject::None;
 	}
 }
 
@@ -227,6 +229,8 @@ void UPrimaryDataAssetsManager::SetupWeaponsPrimaryAssets()
 	WeaponsMap.Add("PA_MinionWeapon", EWeapon::MinionWeapon);
 	WeaponsMap.Add("PA_MinionSingularWeapon", EWeapon::MinionSingularWeapon);
 	WeaponsMap.Add("PA_SamuraiWeapon", EWeapon::SamuraiWeapon);
+	WeaponsMap.Add("PA_GuardianWeapon", EWeapon::GuardianWeapon);
+	WeaponsMap.Add("PA_GuardianSingularWeapon", EWeapon::GuardianSingularWeapon);
 	FillContainers(WeaponsMap, WeaponContainers, "Weapon");
 	WeaponsMap.Empty();
 }
@@ -268,6 +272,9 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TricksterEmpImpact", ESound::TricksterEmpImpact);
 	SoundMap.Add("PA_DamageTick", ESound::DamageTick);
 	SoundMap.Add("PA_CriticalDamageTick", ESound::CriticalDamageTick);
+	SoundMap.Add("PA_GuardianShoot", ESound::GuardianShoot);
+	SoundMap.Add("PA_GuardianSpawn", ESound::GuardianSpawn);
+	SoundMap.Add("PA_GuardianDeath", ESound::GuardianDeath);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -281,6 +288,7 @@ void UPrimaryDataAssetsManager::SetupCharactersPrimaryAssets()
 	CharactersMap.Add("PA_Ranger", ECharacterType::Ranger);
 	CharactersMap.Add("PA_Minion", ECharacterType::Minion);
 	CharactersMap.Add("PA_Samurai", ECharacterType::Samurai);
+	CharactersMap.Add("PA_Guardian", ECharacterType::Guardian);
 	FillContainers(CharactersMap, CharacterContainers, "Character");
 	CharactersMap.Empty();
 }

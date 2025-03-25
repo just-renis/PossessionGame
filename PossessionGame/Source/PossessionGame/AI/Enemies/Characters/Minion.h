@@ -17,6 +17,4 @@ class POSSESSIONGAME_API AMinion : public AEnemy
 	void AI_PlaySpawnSound();
 
 	virtual void BeginPlay() override;
-	virtual void PossessedBy(AController* NewController) override;
-	virtual void ClearTimers() override;
 };

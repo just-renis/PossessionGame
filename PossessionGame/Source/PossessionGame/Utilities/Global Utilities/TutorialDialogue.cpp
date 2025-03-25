@@ -1,6 +1,6 @@
 ﻿#include "TutorialDialogue.h"
 #include "Components/WidgetComponent.h"
-#include "PossessionGame/UI/SecondaryWidgets/DialogueUI.h"
+#include "PossessionGame/UI/SecondaryWidgets/TutorialDialogueUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 ATutorialDialogue::ATutorialDialogue()
@@ -12,7 +12,7 @@ ATutorialDialogue::ATutorialDialogue()
 void ATutorialDialogue::BeginPlay()
 {
 	Super::BeginPlay();
-	Dialogue = Cast<UDialogueUI>(DialogueWidgetComponent->GetWidget());
+	Dialogue = Cast<UTutorialDialogueUI>(DialogueWidgetComponent->GetWidget());
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowDialogue.AddUObject(this, &ATutorialDialogue::StartDialogue);
 }
 

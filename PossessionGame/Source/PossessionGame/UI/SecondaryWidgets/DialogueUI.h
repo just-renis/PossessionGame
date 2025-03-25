@@ -13,8 +13,13 @@ class POSSESSIONGAME_API UDialogueUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void StartDialogue(const int32 InIndex, const float InSpeed = 0.05f);
-private:
+protected:
 	int32 DialogueTextIndex = -1;
+	UPROPERTY()
+	TObjectPtr<UDelegateManager> DelegateManager;
+	
+	virtual void FinishedTypingDialogue();
+private:
 	int32 CurrentIndex = 0;
 	float TypeSpeed = 0.05f;
 	FString TargetText;
@@ -23,8 +28,6 @@ private:
 	TArray<FString> DialogueTexts;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DialogueText;
-	UPROPERTY()
-	TObjectPtr<UDelegateManager> DelegateManager;
 
 	virtual void NativeConstruct() override;
 	UFUNCTION()

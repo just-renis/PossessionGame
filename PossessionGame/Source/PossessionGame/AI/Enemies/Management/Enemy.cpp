@@ -391,6 +391,7 @@ void AEnemy::BeginPlay()
 	Camera->SetActive(false);
 	UKismetSystemLibrary::K2_SetTimer(this, "CheckIfFallOutOfWorld", 2.f, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_SetCharacterMovementSpeed", 0.05f, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "AI_PlaySpawnSound", 3.f + UKismetMathLibrary::RandomInteger(4), false);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
 	AI_Setup();
 	if (GetIsPossessable()) SetupUserSettings();
@@ -455,6 +456,8 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	return Damage;
 }
 
+void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) const { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get()); }
+
 void AEnemy::AI_SetupData()
 {
 	MaxHp = AI_Data->GetMaxHp();
@@ -514,6 +517,7 @@ void AEnemy::P_SetupData()
 	P_SetupUpgradesAppliance();
 	CurrentHp = MaxHp;
 	bIsPossessed = true;
+	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
 	bCanShoot = true;
 	SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed());
 }
@@ -827,22 +831,12 @@ void AEnemy::TickAbilities(float DeltaTime)
 	}
 }
 
-void AEnemy::ClearTimers()
-{
-	UKismetSystemLibrary::K2_ClearTimer(this, "P_ControlLogic");
-	UKismetSystemLibrary::K2_ClearTimer(this, "P_DetectIfPlayerPointingAtEnemy");
-	UKismetSystemLibrary::K2_ClearTimer(this, "P_TriggerCriticalDamageIndicator");
-	UKismetSystemLibrary::K2_ClearTimer(this, "AI_TriggerDeathVoiceLine");
-}
-
 void AEnemy::SetupStimuliSource()
 {
 	StimuliSource = NewObject<UAIPerceptionStimuliSourceComponent>(this);
 	StimuliSource->RegisterForSense(UAISense_Sight::StaticClass());
 	StimuliSource->RegisterWithPerceptionSystem();
 }
-
-void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) const { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get()); }
 
 void AEnemy::P_SetupNavArea()
 {
@@ -861,6 +855,15 @@ void AEnemy::SetupUserSettings() const
 	const TObjectPtr<UEnhancedInputUserSettings> UserSettings = GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings();
 	if (!UserSettings) return;
 	if (!UserSettings->IsMappingContextRegistered(PlayerMappingContext)) UserSettings->RegisterInputMappingContext(PlayerMappingContext);
+}
+
+void AEnemy::ClearTimers()
+{
+	UKismetSystemLibrary::K2_ClearTimer(this, "P_ControlLogic");
+	UKismetSystemLibrary::K2_ClearTimer(this, "P_DetectIfPlayerPointingAtEnemy");
+	UKismetSystemLibrary::K2_ClearTimer(this, "P_TriggerCriticalDamageIndicator");
+	UKismetSystemLibrary::K2_ClearTimer(this, "AI_TriggerDeathVoiceLine");
+	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
 }
 
 void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsPossessed ? P_Death() : InitiateDeath(); }

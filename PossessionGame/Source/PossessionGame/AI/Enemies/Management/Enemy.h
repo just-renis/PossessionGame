@@ -50,6 +50,7 @@ public:
 
 	bool GetIsAlive() const { return bIsAlive; }
 	bool GetIsPossessed() const { return bIsPossessed; }
+	bool GetCanReload() const { return bCanReload; }
 	bool GetIsPossessable() const;
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
 	bool CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
@@ -165,7 +166,7 @@ protected:
 	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void ClearTimers();
+	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) const;
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanPossessOtherEnemy = false;
@@ -254,10 +255,10 @@ private:
 	void DestroyAI();
 	void TickAbilities(const float DeltaTime);
 	void SetupStimuliSource();
-	void SetMesh(const ECharacterType PrimaryDataAssetName) const;
 	void P_SetupNavArea();
 	void ChangeXRayState(const bool bState) const;
 	void SetupUserSettings() const;
+	void ClearTimers();
 	UFUNCTION()
 	void CheckIfFallOutOfWorld();
 	UFUNCTION()

@@ -11,5 +11,7 @@ enum class EWeapon : uint8
 	TricksterSingularWeapon,
 	TankWeapon,
 	RangerWeapon,
-	SamuraiWeapon
+	SamuraiWeapon,
+	GuardianWeapon,
+	GuardianSingularWeapon
 };

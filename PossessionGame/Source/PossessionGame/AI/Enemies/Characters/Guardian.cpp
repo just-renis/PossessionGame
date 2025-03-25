@@ -1,0 +1,53 @@
+﻿#include "Guardian.h"
+#include "InputMappingContext.h"
+#include "Components/AudioComponent.h"
+#include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
+
+AGuardian::AGuardian()
+{
+	Sounds.Add(ESound::GuardianSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
+	Sounds[ESound::GuardianSpawn]->SetAutoActivate(false);
+	Sounds[ESound::GuardianSpawn]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::GuardianDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("deathSound")));
+	Sounds[ESound::GuardianDeath]->SetAutoActivate(false);
+	Sounds[ESound::GuardianDeath]->SetupAttachment(GetMesh());
+}
+
+void AGuardian::AI_SetupWeapon()
+{
+	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::GuardianWeapon, GetMesh());
+	Super::AI_SetupWeapon();
+}
+
+void AGuardian::AI_PlayDeathSound() { PlaySound(ESound::GuardianDeath); }
+
+void AGuardian::AI_PlaySpawnSound() { PlaySound(ESound::GuardianSpawn); }
+
+void AGuardian::P_Setup()
+{
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
+	Super::P_Setup();
+}
+
+void AGuardian::P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
+{
+	Super::P_SetupLeftClickInputStartedState(LeftClickInputComponent);
+	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &AGuardian::P_Shoot, true);
+}
+
+void AGuardian::BeginPlay()
+{
+	CharacterName = ECharacterType::Guardian;
+	bCanReload = false;
+	Super::BeginPlay();
+}
+
+void AGuardian::SetMesh(const ECharacterType PrimaryDataAssetName) const
+{
+	Super::SetMesh(PrimaryDataAssetName);
+	GetMesh()->SetMaterial(0, GuardianMaterial);
+}

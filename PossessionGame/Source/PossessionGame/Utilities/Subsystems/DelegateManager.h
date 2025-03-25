@@ -4,6 +4,7 @@
 #include "DelegateManager.generated.h"
 
 enum class EUpgrade : uint8;
+enum class ECharacterType : uint8;
 
 DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnZoomToggle);
@@ -13,6 +14,7 @@ DECLARE_DELEGATE(FOnUpgradeSelected);
 DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
 DECLARE_DELEGATE_OneParam(FOnShowPressAnyKey, const bool);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
+DECLARE_DELEGATE_OneParam(FSpawnTutorialGuardian, const ECharacterType);
 DECLARE_MULTICAST_DELEGATE(FOnEnemyDeath);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemiesAmountDecrease, int32);
@@ -40,6 +42,7 @@ public:
 	FOnUpgradeSelectionFinished OnUpgradeSelectionFinished;
 	FOnShowPressAnyKey OnShowPressAnyKey;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
+	FSpawnTutorialGuardian SpawnTutorialGuardian;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnPlayerDeath OnPlayerDeath;
 	FOnEnemiesAmountDecrease OnEnemiesAmountDecrease;

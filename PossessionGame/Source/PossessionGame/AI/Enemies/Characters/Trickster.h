@@ -11,12 +11,14 @@ class POSSESSIONGAME_API ATrickster : public ASpecialEnemy
 {
 	GENERATED_BODY()
 public:
-	FOnWeaponShootStateChange OnWeaponShootStateChange;
-
+	FOnWeaponShootStateChange GetOnWeaponShootStateChangeDelegate() const { return OnWeaponShootStateChange; }
+	
 	void ThrowPoisonGrenade();
 	void ThrowEmpGrenade();
 private:
 	ATrickster();
+	
+	FOnWeaponShootStateChange OnWeaponShootStateChange;
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
