@@ -45,6 +45,7 @@ void UPlayerGhostUI::SetHintText(const FString& InText) const
 
 void UPlayerGhostUI::StopShowingHint(const int32 InIndex) const
 {
+	if (InIndex != 0 && InIndex != 3) return;
 	if (HintInv) HintInv->SetVisibility(ESlateVisibility::Collapsed);
 	if (InIndex == 0 && PopupInv) PopupInv->SetVisibility(ESlateVisibility::Collapsed);
 }

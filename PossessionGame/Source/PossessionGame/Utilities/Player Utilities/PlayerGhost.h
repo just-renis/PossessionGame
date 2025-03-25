@@ -20,6 +20,7 @@ class POSSESSIONGAME_API APlayerGhost : public ACharacter
 public:
 	APlayerGhost();
 private:
+	bool bTutorialModeEnabled = false;
 	int32 CurrentTutorialStep = -1;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;

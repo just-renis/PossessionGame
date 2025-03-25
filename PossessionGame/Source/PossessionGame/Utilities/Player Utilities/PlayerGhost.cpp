@@ -32,7 +32,7 @@ void APlayerGhost::BeginPlay()
 	UKismetSystemLibrary::K2_SetTimer(this, "CheckIfPlayerFallOutOfWorld", 2.f, true);
 	if (const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
 	{
-		if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
+		if (bTutorialModeEnabled)
 		{
 			PlayerController->SetInputMode(FInputModeUIOnly());
 			PlayerGhostUI->PlayStartupAnimation();
@@ -64,9 +64,6 @@ void APlayerGhost::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 	UKismetSystemLibrary::K2_ClearTimer(this, "CheckIfPlayerFallOutOfWorld");
-	if (!PlayerGhostUI) return;
- 	PlayerGhostUI->RemoveFromParent();
-	PlayerGhostUI = nullptr;
 }
 
 void APlayerGhost::Move(const FInputActionValue& InValue)
@@ -75,6 +72,7 @@ void APlayerGhost::Move(const FInputActionValue& InValue)
 	const FVector2D MovementVector = InValue.Get<FVector2D>();
 	AddMovementInput(GetActorForwardVector(), MovementVector.Y);
 	AddMovementInput(GetActorRightVector(), MovementVector.X);
+	if (!bTutorialModeEnabled) return;
 	if (CurrentTutorialStep == 0 && Target)
 	{
 		if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) < 20000.f)
@@ -110,6 +108,7 @@ void APlayerGhost::PossessEnemy()
 		const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
 		if (Enemy && Enemy->GetIsPossessable())
 		{
+			if (bTutorialModeEnabled) DelegateManager->OnShowDialogue.Broadcast(3);
 			Controller->Possess(Enemy);
 			Destroy();
 		}
@@ -130,6 +129,7 @@ void APlayerGhost::HandleEscapeClick()
 
 void APlayerGhost::SetupTutorial()
 {
+	bTutorialModeEnabled = true;
 	Target = UGameplayStatics::GetActorOfClass(GetWorld(), TutorialDroneClass);
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnShowHint.AddUObject(this, &APlayerGhost::SetCurrentTutorialStep);

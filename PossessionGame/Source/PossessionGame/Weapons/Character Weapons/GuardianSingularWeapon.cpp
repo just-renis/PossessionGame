@@ -38,5 +38,6 @@ void AGuardianSingularWeapon::BeginPlay()
 void AGuardianSingularWeapon::SetMeshes(EWeapon PrimaryDataAssetName)
 {
 	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(PrimaryDataAssetName)->WeaponMesh.Get());
+	Mesh->SetMaterial(0, MI_GuardianWeaponMaterial);
 	OriginalScale = Mesh->GetRelativeScale3D();
 }

@@ -10,4 +10,5 @@ class POSSESSIONGAME_API UTutorialDialogueUI : public UDialogueUI
 	GENERATED_BODY()
 
 	virtual void FinishedTypingDialogue() override;
+	void StartGuardianSpawn();
 };
