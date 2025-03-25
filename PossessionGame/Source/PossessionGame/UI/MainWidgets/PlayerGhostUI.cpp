@@ -25,7 +25,12 @@ FReply UPlayerGhostUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEv
 	if (PressAnyKeyToContinueInv && IsPressAnyKeyShown())
 	{
 		ShowPressAnyKey(false);
-		if (CurrentTutorialStep == 0) DelegateManager->OnShowDialogue.Broadcast(1);
+		switch (CurrentTutorialStep)
+		{
+			case 0: DelegateManager->OnShowDialogue.Broadcast(1); break;
+			case 1: (void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(0); break;
+			default: ;
+		}
 	}
 	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 }

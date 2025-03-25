@@ -9,7 +9,7 @@ void UTutorialDialogueUI::FinishedTypingDialogue()
 	{
 		case 0: (void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true); break;
 		case 1: StartGuardianSpawn(); break;
-		case 3: (void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(0); break;
+		case 3: (void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true); break;
 		default: ;
 	}
 }
