@@ -6,7 +6,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "InputMappingContext.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
-#include "PossessionGame/AI/Others/TutorialDrone.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
@@ -34,6 +33,7 @@ void APlayerGhost::BeginPlay()
 	{
 		if (bTutorialModeEnabled)
 		{
+			(void)DelegateManager->ShareLocationToTutorialDrone.ExecuteIfBound(this);
 			PlayerController->SetInputMode(FInputModeUIOnly());
 			PlayerGhostUI->PlayStartupAnimation();
 			UKismetSystemLibrary::K2_SetTimer(this, "EnablePlayerInput", PlayerGhostUI->GetStartupAnimationLength(), false);
@@ -72,15 +72,6 @@ void APlayerGhost::Move(const FInputActionValue& InValue)
 	const FVector2D MovementVector = InValue.Get<FVector2D>();
 	AddMovementInput(GetActorForwardVector(), MovementVector.Y);
 	AddMovementInput(GetActorRightVector(), MovementVector.X);
-	if (!bTutorialModeEnabled) return;
-	if (CurrentTutorialStep == 0 && Target)
-	{
-		if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) < 20000.f)
-		{
-			DelegateManager->OnShowDialogue.Broadcast(0);
-			CompleteTutorialStep();
-		}
-	}
 }
 
 void APlayerGhost::Rotate(const FInputActionValue& InValue)
@@ -108,7 +99,11 @@ void APlayerGhost::PossessEnemy()
 		const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
 		if (Enemy && Enemy->GetIsPossessable())
 		{
-			if (bTutorialModeEnabled) DelegateManager->OnShowDialogue.Broadcast(3);
+			if (bTutorialModeEnabled)
+			{
+				DelegateManager->OnShowDialogue.Broadcast(3);
+				(void)DelegateManager->ShareLocationToTutorialDrone.ExecuteIfBound(Enemy);
+			}
 			Controller->Possess(Enemy);
 			Destroy();
 		}
@@ -130,9 +125,7 @@ void APlayerGhost::HandleEscapeClick()
 void APlayerGhost::SetupTutorial()
 {
 	bTutorialModeEnabled = true;
-	Target = UGameplayStatics::GetActorOfClass(GetWorld(), TutorialDroneClass);
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	DelegateManager->OnShowHint.AddUObject(this, &APlayerGhost::SetCurrentTutorialStep);
 	PlayerGhostUI = CreateWidget<UPlayerGhostUI>(GetWorld(), PlayerGhostUIClass);
 	PlayerGhostUI->AddToViewport();
 }
@@ -145,12 +138,13 @@ void APlayerGhost::CheckIfPlayerFallOutOfWorld() const
 	}
 }
 
-void APlayerGhost::EnablePlayerInput() const
+void APlayerGhost::EnablePlayerInput()
 {
 	if (!Controller) return;
 	if (const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
 	{
 		PlayerController->SetInputMode(FInputModeGameOnly());
-		DelegateManager->OnShowHint.Broadcast(0);
+		(void)DelegateManager->OnShowHint.ExecuteIfBound(0);
+		(void)DelegateManager->OnCheckDistanceToTutorialDrone.ExecuteIfBound(0);
 	}
 }

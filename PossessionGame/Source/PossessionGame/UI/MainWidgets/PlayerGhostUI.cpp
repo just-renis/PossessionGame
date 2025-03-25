@@ -15,7 +15,7 @@ void UPlayerGhostUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	DelegateManager->OnShowHint.AddUObject(this, &UPlayerGhostUI::ShowHint);
+	DelegateManager->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
 	DelegateManager->OnShowDialogue.AddUObject(this, &UPlayerGhostUI::StopShowingHint);
 	DelegateManager->OnShowPressAnyKey.BindUObject(this, &UPlayerGhostUI::ShowPressAnyKey);
 }

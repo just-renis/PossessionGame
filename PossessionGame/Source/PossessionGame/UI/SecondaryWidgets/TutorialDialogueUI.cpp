@@ -9,6 +9,7 @@ void UTutorialDialogueUI::FinishedTypingDialogue()
 	{
 		case 0: (void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true); break;
 		case 1: StartGuardianSpawn(); break;
+		case 3: (void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(0);
 		default: ;
 	}
 }
@@ -17,5 +18,5 @@ void UTutorialDialogueUI::StartGuardianSpawn()
 {
 	(void)DelegateManager->SpawnTutorialGuardian.ExecuteIfBound(ECharacterType::Guardian);
 	DelegateManager->OnShowDialogue.Broadcast(2);
-	DelegateManager->OnShowHint.Broadcast(1);
+	(void)DelegateManager->OnShowHint.ExecuteIfBound(1);
 }

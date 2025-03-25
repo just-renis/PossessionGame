@@ -2,6 +2,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Navigation/DroneWaypoint.h"
 #include "PossessionGame/Utilities/Global Utilities/TutorialDialogue.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 ATutorialDrone::ATutorialDrone()
 {
@@ -12,10 +13,15 @@ ATutorialDrone::ATutorialDrone()
 void ATutorialDrone::BeginPlay()
 {
 	Super::BeginPlay();
+	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	Dialogue = GetWorld()->SpawnActor<ATutorialDialogue>(DialogueClass, FVector::ZeroVector, FRotator::ZeroRotator);
 	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "DialogueSocket");
+	DelegateManager->StartTutorialDroneMoveToLocation.BindUObject(this, &ATutorialDrone::SetDroneMoveLocation);
+	DelegateManager->ShareLocationToTutorialDrone.BindUObject(this, &ATutorialDrone::SetDroneLookAtLocation);
+	DelegateManager->OnCheckDistanceToTutorialDrone.BindUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
 	RetrieveDroneWaypoints();
 	PlayDroneAnimation();
+	UKismetSystemLibrary::K2_SetTimer(this, "LookAtTarget", 0.025f, true);
 }
 
 void ATutorialDrone::PlayDroneAnimation() const
@@ -28,4 +34,61 @@ void ATutorialDrone::RetrieveDroneWaypoints()
 	TArray<AActor*> Actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADroneWaypoint::StaticClass(), Actors);
 	for (TObjectPtr<AActor> Actor : Actors) Waypoints.Add(Cast<ADroneWaypoint>(Actor));
+}
+
+void ATutorialDrone::SetDroneMoveLocation(const int32 InIndex)
+{
+	if (Waypoints.IsValidIndex(InIndex))
+	{
+		WaypointIndex = InIndex;
+		WaypointLocation = Waypoints[InIndex]->GetActorLocation();
+		bIsMoving = true;
+		UKismetSystemLibrary::K2_SetTimer(this, "MoveToLocation", 0.025f, true);
+	}
+}
+
+void ATutorialDrone::EnableCheckDistanceToTarget(const int32 InIndex)
+{
+	DistanceToTargetIndex = InIndex;
+	UKismetSystemLibrary::K2_SetTimer(this, "CheckDistanceToTarget", 0.05f, true);
+}
+
+void ATutorialDrone::MoveToLocation()
+{
+	const FVector Direction = (WaypointLocation - GetActorLocation()).GetSafeNormal();
+	const FVector NewLocation = GetActorLocation() + Direction * 200.f * 0.025f;
+	SetActorLocation(NewLocation);
+	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(10.f))
+	{
+		bIsMoving = false;
+		if (WaypointIndex == 0)
+		{
+			(void)DelegateManager->DestroyTutorialForceField.ExecuteIfBound();
+			EnableCheckDistanceToTarget(1);
+		}
+		UKismetSystemLibrary::K2_ClearTimer(this, "MoveToLocation");
+	}
+}
+
+void ATutorialDrone::LookAtTarget()
+{
+	FRotator NewControlRotation = GetActorRotation();
+	NewControlRotation.Yaw = ((bIsMoving ? WaypointLocation : Target->GetActorLocation()) - GetActorLocation()).GetSafeNormal2D().Rotation().Yaw - 90.f;
+	SetActorRotation(NewControlRotation);
+}
+
+void ATutorialDrone::CheckDistanceToTarget()
+{
+	if (!Target) return;
+	TArray DistanceToTarget = { 25000.f, 40000.f };
+	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) < DistanceToTarget[DistanceToTargetIndex])
+	{
+		switch (DistanceToTargetIndex)
+		{
+			case 0: DelegateManager->OnShowDialogue.Broadcast(0); break;
+			case 1: DelegateManager->OnShowDialogue.Broadcast(4); break;
+			default: ;
+		}
+		UKismetSystemLibrary::K2_ClearTimer(this, "CheckDistanceToTarget");
+	}
 }
