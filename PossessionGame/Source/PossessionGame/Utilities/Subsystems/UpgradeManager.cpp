@@ -5,7 +5,7 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 
 float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EPoolObject InProjectileName, const EUpgradeAttribute InUpgradeAttribute)
 {

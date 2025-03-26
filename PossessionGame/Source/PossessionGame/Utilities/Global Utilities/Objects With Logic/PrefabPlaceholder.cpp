@@ -1,6 +1,6 @@
 ﻿#include "PrefabPlaceholder.h"
-#include "PossessionGameGameModeBase.h"
 #include "Prefab.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 
 void APrefabPlaceholder::BeginPlay()
 {

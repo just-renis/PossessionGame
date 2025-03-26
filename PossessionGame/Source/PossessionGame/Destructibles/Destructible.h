@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "Destructible.generated.h"
 
 class UDestructibleData;

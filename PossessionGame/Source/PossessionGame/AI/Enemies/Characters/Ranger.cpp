@@ -95,7 +95,7 @@ void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
 void ARanger::P_Setup()
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "TryTriggeringGrenadeLaunch");
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
+	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ARanger::SetActionInMotion);
 }
@@ -129,8 +129,8 @@ void ARanger::P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName)
 
 void ARanger::P_Destroy()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.RemoveAll(this);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.RemoveAll(GetWeapon());
+	DelegateManager->ApplyUpgradeOnSelection.RemoveAll(this);
+	DelegateManager->ApplyUpgradeOnSelection.RemoveAll(GetWeapon());
 	Super::P_Destroy();
 }
 

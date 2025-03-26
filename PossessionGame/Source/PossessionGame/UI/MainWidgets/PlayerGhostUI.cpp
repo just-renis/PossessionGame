@@ -16,7 +16,7 @@ void UPlayerGhostUI::NativeConstruct()
 	Super::NativeConstruct();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
-	DelegateManager->OnShowDialogue.AddUObject(this, &UPlayerGhostUI::StopShowingHint);
+	DelegateManager->StopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
 	DelegateManager->OnShowPressAnyKey.BindUObject(this, &UPlayerGhostUI::ShowPressAnyKey);
 }
 
@@ -27,13 +27,15 @@ FReply UPlayerGhostUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEv
 		ShowPressAnyKey(false);
 		switch (CurrentTutorialStep)
 		{
-			case 0: DelegateManager->OnShowDialogue.Broadcast(1); break;
+			case 0: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(1); break;
 			case 1: (void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(0); break;
 			default: ;
 		}
 	}
 	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 }
+
+FReply UPlayerGhostUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) { return FReply::Handled(); }
 
 void UPlayerGhostUI::ShowHint(const int32 InIndex)
 {
@@ -48,17 +50,22 @@ void UPlayerGhostUI::SetHintText(const FString& InText) const
 	if (HintText) HintText->SetText(FText::FromString(InText));
 }
 
-void UPlayerGhostUI::StopShowingHint(const int32 InIndex) const
+void UPlayerGhostUI::StopShowingHint() const
 {
-	if (InIndex != 0 && InIndex != 3) return;
 	if (HintInv) HintInv->SetVisibility(ESlateVisibility::Collapsed);
-	if (InIndex == 0 && PopupInv) PopupInv->SetVisibility(ESlateVisibility::Collapsed);
+	if (PopupInv) PopupInv->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UPlayerGhostUI::ShowPressAnyKey(const bool bState)
 {
 	if (PressAnyKeyToContinueInv) PressAnyKeyToContinueInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	SetIsFocusable(bState);
-	if (bState) UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(GetWorld()->GetFirstPlayerController(), this);
-	else UWidgetBlueprintLibrary::SetInputMode_GameOnly(GetWorld()->GetFirstPlayerController());
+	if (const TObjectPtr<APlayerController> Controller = GetWorld()->GetFirstPlayerController())
+	{
+		if (bState)
+		{
+			Controller->SetInputMode(FInputModeUIOnly());
+			SetKeyboardFocus();
+		}
+		else Controller->SetInputMode(FInputModeGameOnly());
+	}
 }

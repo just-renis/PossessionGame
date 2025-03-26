@@ -30,7 +30,7 @@ void ASpy::AI_SetController() { AI = Cast<ASpyAIController>(GetController()); }
 
 void ASpy::P_Setup()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
+	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 }
 

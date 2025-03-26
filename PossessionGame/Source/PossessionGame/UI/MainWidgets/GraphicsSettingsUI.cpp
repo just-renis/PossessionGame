@@ -3,7 +3,7 @@
 #include "Components/TextBlock.h"
 #include "PossessionGame/UI/SecondaryWidgets/SettingsQualityUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/SliderUI.h"
-#include "PossessionGame/Utilities/Global Utilities/PossessionGameUserSettings.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameUserSettings.h"
 
 void UGraphicsSettingsUI::SetupUIEvents()
 {

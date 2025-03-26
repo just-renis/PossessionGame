@@ -40,7 +40,7 @@ bool ATank::P_GetIsLeftOrRightInputNotPressed()
 
 void ATank::P_Setup()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
+	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 }
 

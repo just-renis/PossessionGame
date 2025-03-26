@@ -10,13 +10,14 @@ void UTutorialDialogueUI::FinishedTypingDialogue()
 		case 0: (void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true); break;
 		case 1: StartGuardianSpawn(); break;
 		case 3: (void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true); break;
+		case 5: (void)DelegateManager->OpenTutorialGate.ExecuteIfBound(); break;
 		default: ;
 	}
 }
 
 void UTutorialDialogueUI::StartGuardianSpawn()
 {
-	(void)DelegateManager->SpawnTutorialGuardian.ExecuteIfBound(ECharacterType::Guardian);
-	DelegateManager->OnShowDialogue.Broadcast(2);
+	(void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Guardian);
+	(void)DelegateManager->OnShowDialogue.ExecuteIfBound(2);
 	(void)DelegateManager->OnShowHint.ExecuteIfBound(1);
 }

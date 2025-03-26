@@ -7,7 +7,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 void UUpgradeCardUI::SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon, const TObjectPtr<UTexture2D>& InPlayerIcon)

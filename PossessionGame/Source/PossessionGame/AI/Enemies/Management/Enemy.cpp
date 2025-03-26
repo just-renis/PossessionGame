@@ -31,8 +31,8 @@
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/AIHpBarUI.h"
-#include "PossessionGame/Utilities/Global Utilities/PossessionGameGameModeBase.h"
-#include "PossessionGame/Utilities/Global Utilities/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/AbilityManager.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
@@ -189,6 +189,8 @@ void AEnemy::AI_SetCanShoot(const bool bState)
 	}
 }
 
+void AEnemy::AI_Disable() const { AI->StopLogic(true); }
+
 void AEnemy::InitiateDeath()
 {
 	AnimInstance->ClearTimers();
@@ -200,7 +202,7 @@ void AEnemy::InitiateDeath()
 	{
 		AI_PlayDeathSound();
 		DestroyAI();
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeath.Broadcast();
+		DelegateManager->OnEnemyDeath.Broadcast();
 	}
 	else P_Destroy();
 	HandleDeactivation();
@@ -296,8 +298,8 @@ void AEnemy::P_SetupAbilities()
 
 void AEnemy::P_Setup()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.AddUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
+	DelegateManager->ApplyUpgradeOnSelection.AddUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
+	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
 	GetMesh()->SetGenerateOverlapEvents(true);
@@ -315,8 +317,8 @@ void AEnemy::P_Setup()
 	P_InputManager = Cast<UEnhancedPlayerInput>(GetWorld()->GetFirstPlayerController()->PlayerInput);
 	P_SetupAbilities();
 	P_SetupUI();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeath.Broadcast();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeath.AddUObject(this, &AEnemy::P_OnEnemyDeathEvents);
+	DelegateManager->OnEnemyDeath.Broadcast();
+	DelegateManager->OnEnemyDeath.AddUObject(this, &AEnemy::P_OnEnemyDeathEvents);
 }
 
 void AEnemy::P_Shoot(const bool bFirstWeapon)
@@ -379,6 +381,7 @@ void AEnemy::P_TemporallyToggleRunning(const bool bState) { if (bIsRunning) SetM
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 	AI_SetupHpBar();
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
@@ -392,7 +395,7 @@ void AEnemy::BeginPlay()
 	UKismetSystemLibrary::K2_SetTimer(this, "CheckIfFallOutOfWorld", 2.f, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_SetCharacterMovementSpeed", 0.05f, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_PlaySpawnSound", 3.f + UKismetMathLibrary::RandomInteger(4), false);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
+	DelegateManager->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
 	AI_Setup();
 	if (GetIsPossessable()) SetupUserSettings();
 }
@@ -412,7 +415,6 @@ void AEnemy::SetupAbilities(const TMap<EAbility, TSoftObjectPtr<UAbilityData>>& 
 	if (AbilityData.Num() > 0)
 	{
 		const TObjectPtr<UAbilityManager> AbilityManager = GetWorld()->GetGameInstance()->GetSubsystem<UAbilityManager>();
-		const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 		for (int32 i = 1; i <= AbilityData.Num(); i++)
 		{
 			if (TObjectPtr<UAbility> Ability = AbilityManager->GetAbility(AbilityManager->GetAbilityFromCharacterName(CharacterName, i), this))
@@ -457,6 +459,21 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 }
 
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) const { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get()); }
+
+void AEnemy::DestroyAI()
+{
+	if (AI)
+	{
+		GetWorld()->GetSubsystem<UEnemyCommunicator>()->RemoveEnemy(this);
+		DelegateManager->OnXRayThroughWallsChange.RemoveAll(this);
+		ChangeXRayState(false);
+		AI_StopAllAbilities();
+		GetMesh()->SetAnimInstanceClass(nullptr);
+		AI->DestroyThis();
+		AI->UnPossess();
+		AI->Destroy();
+	}
+}
 
 void AEnemy::AI_SetupData()
 {
@@ -557,7 +574,7 @@ void AEnemy::P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy)
 	if (InEnemy && InEnemy->AI_Data->GetIsPossessable() && !InEnemy->bIsPossessed && InEnemy->bIsAlive)
 	{
 		P_StopAllAbilities();
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeath.RemoveAll(this);
+		DelegateManager->OnEnemyDeath.RemoveAll(this);
 		Controller->Possess(InEnemy);
 		InitiateDeath();
 	}
@@ -724,7 +741,7 @@ void AEnemy::P_InitiateDeathEvents()
 	P_ConfigurePostProcessEffectsAfterDeath();
 	AssetsManager->RemoveStoredSound(ESound::RangerSlowMotion);
 	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDeath.Broadcast();
+	DelegateManager->OnPlayerDeath.Broadcast();
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor::Black, false, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "P_OpenDeathMenu", 3.f, false);
 }
@@ -767,7 +784,7 @@ void AEnemy::P_Death()
 void AEnemy::P_ControlLogic()
 {
 	Weapon->P_SetWalkSpread(GetCharacterMovement()->Velocity.Size() >= P_Data->GetMaxWalkSpeed() - 0.1f);
-	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size());
+	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size()); // Reduce by an ability % for guardian.
 	P_PossessionBarLogic();
 }
 
@@ -805,21 +822,6 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	UKismetSystemLibrary::K2_ClearTimer(this, "DestroyThis");
 	UKismetSystemLibrary::K2_ClearTimer(this, "CheckIfFallOutOfWorld");
 	Super::EndPlay(EndPlayReason);
-}
-
-void AEnemy::DestroyAI()
-{
-	if (AI)
-	{
-		GetWorld()->GetSubsystem<UEnemyCommunicator>()->RemoveEnemy(this);
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnXRayThroughWallsChange.RemoveAll(this);
-		ChangeXRayState(false);
-		AI_StopAllAbilities();
-		GetMesh()->SetAnimInstanceClass(nullptr);
-		AI->DestroyThis();
-		AI->UnPossess();
-		AI->Destroy();
-	}
 }
 
 void AEnemy::TickAbilities(float DeltaTime)

@@ -46,5 +46,5 @@ private:
 	UFUNCTION()
 	void CheckIfPlayerFallOutOfWorld() const;
 	UFUNCTION()
-	void EnablePlayerInput();
+	void EnablePlayerInput() const;
 };

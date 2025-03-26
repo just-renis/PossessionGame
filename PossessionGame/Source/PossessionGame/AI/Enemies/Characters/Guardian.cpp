@@ -29,7 +29,7 @@ void AGuardian::AI_PlaySpawnSound() { PlaySound(ESound::GuardianSpawn); }
 
 void AGuardian::P_Setup()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
+	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 }
 

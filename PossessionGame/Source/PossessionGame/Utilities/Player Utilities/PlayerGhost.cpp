@@ -13,7 +13,7 @@
 #include "PossessionGame/UI/MainWidgets/PlayerGhostUI.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 APlayerGhost::APlayerGhost()
@@ -101,7 +101,8 @@ void APlayerGhost::PossessEnemy()
 		{
 			if (bTutorialModeEnabled)
 			{
-				DelegateManager->OnShowDialogue.Broadcast(3);
+				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(3);
+				(void)DelegateManager->StopShowingHint.ExecuteIfBound();
 				(void)DelegateManager->ShareLocationToTutorialDrone.ExecuteIfBound(Enemy);
 			}
 			Controller->Possess(Enemy);
@@ -138,7 +139,7 @@ void APlayerGhost::CheckIfPlayerFallOutOfWorld() const
 	}
 }
 
-void APlayerGhost::EnablePlayerInput()
+void APlayerGhost::EnablePlayerInput() const
 {
 	if (!Controller) return;
 	if (const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))

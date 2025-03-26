@@ -36,8 +36,9 @@ private:
 
 	virtual void NativeConstruct() override;
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	void ShowHint(const int32 InIndex);
 	void SetHintText(const FString& InText) const;
-	void StopShowingHint(const int32 InIndex) const;
+	void StopShowingHint() const;
 	void ShowPressAnyKey(const bool bState);
 };

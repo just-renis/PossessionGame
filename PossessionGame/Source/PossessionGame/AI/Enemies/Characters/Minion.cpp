@@ -3,6 +3,9 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 
 AMinion::AMinion()
@@ -29,4 +32,14 @@ void AMinion::BeginPlay()
 {
 	CharacterName = ECharacterType::Minion;
 	Super::BeginPlay();
+}
+
+void AMinion::DestroyAI()
+{
+	Super::DestroyAI();
+	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
+	{
+		(void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(1);
+		(void)DelegateManager->StopShowingHint.ExecuteIfBound();
+	}
 }

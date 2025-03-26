@@ -24,6 +24,7 @@ private:
 	bool FIRSTPOSSESSABLE = true;
 	bool bIsSpawnInProcess = false;
 	bool bWaveNotStarted = false;
+	bool bTutorialIsFinished = false;
 	int32 CurrentWave = 1;
 	int32 EnemiesPerWave = 2;
 	int32 EnemiesLeftToKill = 2;
@@ -54,13 +55,14 @@ private:
 	void SetupNextWaveUI();
 	void SetupWaveManagerUI();
 	void SetupSpawnLocations();
-	void SpawnEnemy(ECharacterType EnemyType);
+	void SpawnEnemy(const ECharacterType InEnemyType);
 	void SpawnLogic();
 	void AsyncLoadAndSpawnEnemy(ECharacterType EnemyType);
 	void PlaySound(const ESound InSoundName) const;
 	void AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECharacterType EnemyType, TObjectPtr<UPrimaryDataAssetsManager> AssetsManage);
 	void FadeOutWavePanel() const;
 	void WaveCompleted();
+	void TutorialHandleSpawning(const ECharacterType InEnemyType);
 
 	UFUNCTION()
 	void ShowUpgradeSelection();

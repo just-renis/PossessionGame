@@ -1,6 +1,6 @@
 ﻿#include "PoolingManager.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
-#include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 
 TObjectPtr<APoolObject> UPoolingManager::SpawnObjectFromPool(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation)
 {

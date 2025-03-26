@@ -72,6 +72,7 @@ public:
 	void AI_SetMoveMode(const EMoveMode InMoveMode);
 	void AI_SetShootPause();
 	virtual void AI_SetCanShoot(const bool bState);
+	void AI_Disable() const;
 
 	void P_UseAbility(const int32 AbilityIndex);
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo) const;
@@ -126,6 +127,8 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	UPROPERTY()
+	TObjectPtr<UDelegateManager> DelegateManager;
+	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	virtual void AI_SetupAbilities();
@@ -167,6 +170,7 @@ protected:
 	virtual void HandleDeactivation();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) const;
+	virtual void DestroyAI();
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanPossessOtherEnemy = false;
@@ -252,7 +256,6 @@ private:
 	//void P_UpdateHitDamageIndicators() const;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void DestroyAI();
 	void TickAbilities(const float DeltaTime);
 	void SetupStimuliSource();
 	void P_SetupNavArea();

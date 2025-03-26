@@ -1,7 +1,8 @@
 ﻿#include "TutorialDrone.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Navigation/DroneWaypoint.h"
-#include "PossessionGame/Utilities/Global Utilities/TutorialDialogue.h"
+#include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Utilities/Global Utilities/UI Actors/TutorialDialogue.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 ATutorialDrone::ATutorialDrone()
@@ -61,10 +62,14 @@ void ATutorialDrone::MoveToLocation()
 	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(10.f))
 	{
 		bIsMoving = false;
-		if (WaypointIndex == 0)
+		switch (WaypointIndex)
 		{
-			(void)DelegateManager->DestroyTutorialForceField.ExecuteIfBound();
-			EnableCheckDistanceToTarget(1);
+			case 0:
+				(void)DelegateManager->DestroyTutorialForceField.ExecuteIfBound();
+				EnableCheckDistanceToTarget(1);
+				break;
+			case 1: EnableCheckDistanceToTarget(2); break;
+			default: ;
 		}
 		UKismetSystemLibrary::K2_ClearTimer(this, "MoveToLocation");
 	}
@@ -80,13 +85,21 @@ void ATutorialDrone::LookAtTarget()
 void ATutorialDrone::CheckDistanceToTarget()
 {
 	if (!Target) return;
-	TArray DistanceToTarget = { 25000.f, 40000.f };
+	TArray DistanceToTarget = { 25000.f, 40000.f, 40000.f };
 	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) < DistanceToTarget[DistanceToTargetIndex])
 	{
 		switch (DistanceToTargetIndex)
 		{
-			case 0: DelegateManager->OnShowDialogue.Broadcast(0); break;
-			case 1: DelegateManager->OnShowDialogue.Broadcast(4); break;
+			case 0:
+				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(0);
+				(void)DelegateManager->StopShowingHint.ExecuteIfBound();
+				break;
+			case 1:
+				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(4);
+				(void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Minion);
+				(void)DelegateManager->OnShowHint.ExecuteIfBound(2);
+				break;
+			case 2: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(5); break;
 			default: ;
 		}
 		UKismetSystemLibrary::K2_ClearTimer(this, "CheckDistanceToTarget");

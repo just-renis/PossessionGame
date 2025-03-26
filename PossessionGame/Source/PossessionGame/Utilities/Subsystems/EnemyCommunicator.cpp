@@ -3,7 +3,7 @@
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/ECharacterType.h"
-#include "PossessionGame/Utilities/Global Utilities/PossessionGameGameModeBase.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 
 FVector UEnemyCommunicator::GetPointLocation(ECharacterType InCharacterType, FVector InLocation)
 {

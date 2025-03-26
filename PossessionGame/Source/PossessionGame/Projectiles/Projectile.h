@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
-#include "PossessionGame/Utilities/Global Utilities/PoolObject.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "Projectile.generated.h"
 
 enum class ESound : uint8;

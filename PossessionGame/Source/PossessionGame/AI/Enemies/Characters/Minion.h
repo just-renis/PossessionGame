@@ -17,4 +17,5 @@ class POSSESSIONGAME_API AMinion : public AEnemy
 	void AI_PlaySpawnSound();
 
 	virtual void BeginPlay() override;
+	virtual void DestroyAI() override;
 };

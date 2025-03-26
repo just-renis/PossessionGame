@@ -5,20 +5,22 @@
 #include "WidgetManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/AssetManager.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
-#include "PossessionGame/Utilities/Global Utilities/SpawnLocation.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/SpawnLocation.h"
 
 void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager)
 {
 	DelegateManager = InDelegateManager;
+	bTutorialIsFinished = bIsTutorialFinished;
 	SetupSpawnLocations();
-	if (!bIsTutorialFinished)
+	if (!bTutorialIsFinished)
 	{
-		DelegateManager->SpawnTutorialGuardian.BindUObject(this, &UWaveManager::AsyncLoadAndSpawnEnemy);
+		DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UWaveManager::AsyncLoadAndSpawnEnemy);
 		return;
 	}
 	InitDelegates();
@@ -133,9 +135,10 @@ void UWaveManager::SetupSpawnLocations()
 	for (TObjectPtr<AActor> Actor : Actors) SpawnLocations.Add(Cast<ASpawnLocation>(Actor));
 }
 
-void UWaveManager::SpawnEnemy(ECharacterType EnemyType)
+void UWaveManager::SpawnEnemy(const ECharacterType InEnemyType)
 {
-	if (SpawnLocations[FMath::RandRange(0, SpawnLocations.Num() - 1)]->SpawnEnemy(Enemies[EnemyType]))
+	if (!bTutorialIsFinished) TutorialHandleSpawning(InEnemyType);
+	else if (SpawnLocations[FMath::RandRange(0, SpawnLocations.Num() - 1)]->SpawnEnemy(Enemies[InEnemyType]))
 	{
 		AliveEnemiesAmount++;
 		EnemiesLeftToKill--;
@@ -206,6 +209,15 @@ void UWaveManager::WaveCompleted()
 	bWaveNotStarted = true;
 	WaveManagerHUD->PlayWaveCompletedAnim();
 	UKismetSystemLibrary::K2_SetTimer(this, "ShowUpgradeSelection", WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
+}
+
+void UWaveManager::TutorialHandleSpawning(const ECharacterType InEnemyType)
+{
+	for (int32 i = 0; i < SpawnLocations.Num(); i++)
+	{
+		if (InEnemyType == ECharacterType::Guardian && SpawnLocations[i]->GetOrder() == 0) SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType]);
+		else if (InEnemyType == ECharacterType::Minion && SpawnLocations[i]->GetOrder() == 1) SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType])->AI_Disable();
+	}
 }
 
 void UWaveManager::ShowUpgradeSelection() { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI(); }

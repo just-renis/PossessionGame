@@ -21,7 +21,7 @@ void ASamurai::AI_SetupWeapon()
 
 void ASamurai::P_Setup()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
+	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	SamuraiHat->HandleDeactivation();
 }

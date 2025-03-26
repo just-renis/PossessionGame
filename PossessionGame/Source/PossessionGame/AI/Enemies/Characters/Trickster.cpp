@@ -46,7 +46,7 @@ void ATrickster::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound:
 
 void ATrickster::P_Setup()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponAmmoChangeThreeParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
+	DelegateManager->OnWeaponAmmoChangeThreeParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ATrickster::SetActionInMotion);
 }
