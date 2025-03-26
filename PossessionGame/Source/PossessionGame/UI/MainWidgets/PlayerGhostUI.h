@@ -34,6 +34,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 
+	void SetCurrentTutorialStep(const int32 InStep) { CurrentTutorialStep = InStep; }
 	virtual void NativeConstruct() override;
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

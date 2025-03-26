@@ -33,7 +33,7 @@ void APlayerGhost::BeginPlay()
 	{
 		if (bTutorialModeEnabled)
 		{
-			(void)DelegateManager->ShareLocationToTutorialDrone.ExecuteIfBound(this);
+			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			PlayerController->SetInputMode(FInputModeUIOnly());
 			PlayerGhostUI->PlayStartupAnimation();
 			UKismetSystemLibrary::K2_SetTimer(this, "EnablePlayerInput", PlayerGhostUI->GetStartupAnimationLength(), false);
@@ -103,7 +103,7 @@ void APlayerGhost::PossessEnemy()
 			{
 				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(3);
 				(void)DelegateManager->StopShowingHint.ExecuteIfBound();
-				(void)DelegateManager->ShareLocationToTutorialDrone.ExecuteIfBound(Enemy);
+				(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(Enemy);
 			}
 			Controller->Possess(Enemy);
 			Destroy();

@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "TutorialDrone.generated.h"
 
+enum class ESound : uint8;
 class UDelegateManager;
 class ATutorialDialogue;
 class ADroneWaypoint;
@@ -33,6 +34,8 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
 	TObjectPtr<AActor> Target;
+	UPROPERTY()
+	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	virtual void BeginPlay() override;
 	void PlayDroneAnimation() const;
@@ -40,6 +43,7 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 	void SetDroneMoveLocation(const int32 InIndex);
 	void SetDroneLookAtLocation(const TObjectPtr<AActor>& InTarget) { Target = InTarget; }
 	void EnableCheckDistanceToTarget(const int32 InIndex);
+	void PlaySound(const ESound InSoundName);
 	UFUNCTION()
 	void MoveToLocation();
 	UFUNCTION()

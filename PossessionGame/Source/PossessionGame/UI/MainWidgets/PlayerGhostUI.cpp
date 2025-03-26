@@ -18,6 +18,7 @@ void UPlayerGhostUI::NativeConstruct()
 	DelegateManager->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
 	DelegateManager->StopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
 	DelegateManager->OnShowPressAnyKey.BindUObject(this, &UPlayerGhostUI::ShowPressAnyKey);
+	DelegateManager->OnTutorialStepChange.BindUObject(this, &UPlayerGhostUI::SetCurrentTutorialStep);
 }
 
 FReply UPlayerGhostUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -29,6 +30,8 @@ FReply UPlayerGhostUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEv
 		{
 			case 0: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(1); break;
 			case 1: (void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(0); break;
+			case 2: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(6); break;
+			case 3: (void)DelegateManager->OpenTutorialGate.ExecuteIfBound(); break;
 			default: ;
 		}
 	}
@@ -41,7 +44,6 @@ void UPlayerGhostUI::ShowHint(const int32 InIndex)
 {
 	if (HintTexts.IsValidIndex(InIndex)) SetHintText(HintTexts[InIndex]);
 	if (InIndex == 0 && PopupInv) PopupInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	CurrentTutorialStep = InIndex;
 }
 
 void UPlayerGhostUI::SetHintText(const FString& InText) const

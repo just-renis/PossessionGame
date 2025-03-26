@@ -7,10 +7,23 @@ void UTutorialDialogueUI::FinishedTypingDialogue()
 	Super::FinishedTypingDialogue();
 	switch (DialogueTextIndex)
 	{
-		case 0: (void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true); break;
+		case 0:
+			(void)DelegateManager->OnTutorialStepChange.ExecuteIfBound(0);
+			(void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true);
+			break;
 		case 1: StartGuardianSpawn(); break;
-		case 3: (void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true); break;
-		case 5: (void)DelegateManager->OpenTutorialGate.ExecuteIfBound(); break;
+		case 3:
+			(void)DelegateManager->OnTutorialStepChange.ExecuteIfBound(1);
+			(void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true);
+			break;
+		case 5:
+			(void)DelegateManager->OnTutorialStepChange.ExecuteIfBound(2);
+			(void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true);
+			break;
+		case 6:
+			(void)DelegateManager->OnTutorialStepChange.ExecuteIfBound(3);
+			(void)DelegateManager->OnShowPressAnyKey.ExecuteIfBound(true);
+			break;
 		default: ;
 	}
 }

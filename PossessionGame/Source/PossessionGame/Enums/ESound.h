@@ -40,5 +40,7 @@ enum class ESound : uint8
 	TricksterEmpImpact,
 	GuardianShoot,
 	GuardianSpawn,
-	GuardianDeath
+	GuardianDeath,
+	DroneBuzz,
+	DialogueStart
 };

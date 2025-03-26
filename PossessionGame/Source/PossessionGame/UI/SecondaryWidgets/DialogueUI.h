@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DialogueUI.generated.h"
 
+class UPrimaryDataAssetsManager;
 class UDelegateManager;
 class UTextBlock;
 
@@ -12,7 +13,7 @@ class POSSESSIONGAME_API UDialogueUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void StartDialogue(const int32 InIndex, const float InSpeed = 0.05f);
+	void StartDialogue(const int32 InIndex, const float InSpeed = 0.025f);
 protected:
 	int32 DialogueTextIndex = -1;
 	UPROPERTY()
@@ -28,6 +29,8 @@ private:
 	TArray<FString> DialogueTexts;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DialogueText;
+	UPROPERTY()
+	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 
 	virtual void NativeConstruct() override;
 	UFUNCTION()

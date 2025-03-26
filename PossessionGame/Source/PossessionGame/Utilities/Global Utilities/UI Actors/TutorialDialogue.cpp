@@ -3,6 +3,11 @@
 #include "PossessionGame/UI/SecondaryWidgets/TutorialDialogueUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
+void ATutorialDialogue::SetVisibilityState(const bool bState) const
+{
+	Dialogue->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+}
+
 ATutorialDialogue::ATutorialDialogue()
 {
 	DialogueWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("dialogueWidgetComponent");

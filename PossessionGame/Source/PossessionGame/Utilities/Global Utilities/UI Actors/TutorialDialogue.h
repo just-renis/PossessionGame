@@ -10,7 +10,9 @@ UCLASS()
 class POSSESSIONGAME_API ATutorialDialogue : public AActor
 {
 	GENERATED_BODY()
-
+public:
+	void SetVisibilityState(const bool bState) const;
+private:
 	ATutorialDialogue();
 	
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
