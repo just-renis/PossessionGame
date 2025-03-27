@@ -2,7 +2,9 @@
 #include "PossessionGameInstance.h"
 #include "SettingsSave.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
@@ -32,6 +34,7 @@ void APossessionGameGameModeBase::BeginPlay()
 	if (SaveSlot->GetIsTutorialFinished()) WaveManager->SetupWaveManagerSettings(EnemiesThatAreSpawnable, FirstEnemyToSpawn, EnemiesAmountToSpawnOnFirstWave);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
 	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::ObjectiveMarker)->Init(false);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->Init(PostProcessMaterials);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = false;

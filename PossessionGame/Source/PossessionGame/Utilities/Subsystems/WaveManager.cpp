@@ -215,8 +215,8 @@ void UWaveManager::TutorialHandleSpawning(const ECharacterType InEnemyType)
 {
 	for (int32 i = 0; i < SpawnLocations.Num(); i++)
 	{
-		if (InEnemyType == ECharacterType::Guardian && SpawnLocations[i]->GetOrder() == 0) SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType]);
-		else if (InEnemyType == ECharacterType::Minion && SpawnLocations[i]->GetOrder() == 1) SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType])->AI_Disable();
+		if (InEnemyType == ECharacterType::Guardian && SpawnLocations[i]->GetOrder() == -2) SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType]);
+		else if (InEnemyType == ECharacterType::Minion && SpawnLocations[i]->GetOrder() == -1) SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType])->AI_Disable();
 	}
 }
 
