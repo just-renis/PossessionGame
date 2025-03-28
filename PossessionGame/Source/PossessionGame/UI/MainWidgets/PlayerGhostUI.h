@@ -18,6 +18,7 @@ public:
 	
 	void PlayStartupAnimation();
 private:
+	bool bIsShowPressAnyKeyEnabled = false;
 	int32 CurrentTutorialStep = -1;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> PopupInv;

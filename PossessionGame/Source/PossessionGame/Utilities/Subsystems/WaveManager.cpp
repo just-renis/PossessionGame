@@ -20,6 +20,7 @@ void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelega
 	SetupSpawnLocations();
 	if (!bTutorialIsFinished)
 	{
+		CurrentGameMode = EGameMode::TutorialMode1;
 		DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UWaveManager::AsyncLoadAndSpawnEnemy);
 		return;
 	}
@@ -33,6 +34,7 @@ void UWaveManager::InitDelegates()
 	DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount);
 	DelegateManager->OnPlayerDeath.AddUObject(this, &UWaveManager::FadeOutWavePanel);
 	DelegateManager->OnUpgradeSelectionFinished.BindUObject(this, &UWaveManager::InitiateNextWave);
+	DelegateManager->OnGameModeInitiator.BindUObject(this, &UWaveManager::SetAndStartGameMode);
 }
 
 void UWaveManager::SetupWaveManagerSettings(TArray<ECharacterType>& EnemiesThatAreSpawnable, ECharacterType FirstEnemy, int32 EnemiesAmountOnFirstWave)
@@ -42,7 +44,7 @@ void UWaveManager::SetupWaveManagerSettings(TArray<ECharacterType>& EnemiesThatA
 	EnemiesLeftToKill = EnemiesPerWave;
 	WaveManagerHUD->UpdateEnemiesAmount(EnemiesLeftToKill + AliveEnemiesAmount);
 	for (int32 i = 0; i < EnemiesThatAreSpawnable.Num(); i++) EnemyTypes.Add(EnemiesThatAreSpawnable[i]);
-	if (EnemiesThatAreSpawnable.Num() < 1) EnemyTypes.Add(ECharacterType::Spy);
+	if (EnemiesThatAreSpawnable.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 }
 
 bool UWaveManager::IsGameRunning() { return IsValid(this) && GetWorld() && !GetWorld()->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }
@@ -132,13 +134,19 @@ void UWaveManager::SetupSpawnLocations()
 {
 	TArray<AActor*> Actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnLocation::StaticClass(), Actors);
-	for (TObjectPtr<AActor> Actor : Actors) SpawnLocations.Add(Cast<ASpawnLocation>(Actor));
+	for (TObjectPtr<AActor> Actor : Actors)
+	{
+		TObjectPtr<ASpawnLocation> SpawnLocation = Cast<ASpawnLocation>(Actor);
+		SpawnLocations.Add(SpawnLocation->GetGameMode());
+		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
+	}
 }
 
 void UWaveManager::SpawnEnemy(const ECharacterType InEnemyType)
 {
+	if (!SpawnLocations.Find(CurrentGameMode)) return;
 	if (!bTutorialIsFinished) TutorialHandleSpawning(InEnemyType);
-	else if (SpawnLocations[FMath::RandRange(0, SpawnLocations.Num() - 1)]->SpawnEnemy(Enemies[InEnemyType]))
+	else if (SpawnLocations[CurrentGameMode].SpawnLocations[FMath::RandRange(0, SpawnLocations[CurrentGameMode].SpawnLocations.Num() - 1)]->SpawnEnemy(Enemies[InEnemyType]))
 	{
 		AliveEnemiesAmount++;
 		EnemiesLeftToKill--;
@@ -213,11 +221,20 @@ void UWaveManager::WaveCompleted()
 
 void UWaveManager::TutorialHandleSpawning(const ECharacterType InEnemyType)
 {
-	for (int32 i = 0; i < SpawnLocations.Num(); i++)
+	for (int32 i = 0; i < SpawnLocations[CurrentGameMode].SpawnLocations.Num(); i++)
 	{
-		if (InEnemyType == ECharacterType::Guardian && SpawnLocations[i]->GetOrder() == -2) SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType]);
-		else if (InEnemyType == ECharacterType::Minion && SpawnLocations[i]->GetOrder() == -1) SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType])->AI_Disable();
+		if (CurrentGameMode == EGameMode::TutorialMode2) SpawnLocations[CurrentGameMode].SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType])->AI_Disable();
+		else
+		{
+			SpawnLocations[CurrentGameMode].SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType]);
+			CurrentGameMode = EGameMode::TutorialMode2;
+		}
 	}
+}
+
+void UWaveManager::SetAndStartGameMode(const EGameMode InGameMode)
+{
+	CurrentGameMode = InGameMode;
 }
 
 void UWaveManager::ShowUpgradeSelection() { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI(); }

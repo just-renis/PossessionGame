@@ -38,7 +38,10 @@ FReply UPlayerGhostUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEv
 	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
 }
 
-FReply UPlayerGhostUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) { return FReply::Handled(); }
+FReply UPlayerGhostUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	return bIsShowPressAnyKeyEnabled ? FReply::Handled() : Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+}
 
 void UPlayerGhostUI::ShowHint(const int32 InIndex)
 {
@@ -63,6 +66,7 @@ void UPlayerGhostUI::ShowPressAnyKey(const bool bState)
 	if (PressAnyKeyToContinueInv) PressAnyKeyToContinueInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	if (const TObjectPtr<APlayerController> Controller = GetWorld()->GetFirstPlayerController())
 	{
+		bIsShowPressAnyKeyEnabled = bState;
 		if (bState)
 		{
 			Controller->SetInputMode(FInputModeUIOnly());

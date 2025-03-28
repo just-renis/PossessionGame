@@ -5,7 +5,6 @@
 #include "InputActionValue.h"
 #include "InputTriggers.h"
 #include "EnhancedInputComponent.h"
-#include "GameplayTagAssetInterface.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
@@ -37,7 +36,7 @@ enum class EAbility : uint8;
 enum class ECharacterType : uint8;
 
 UCLASS(Abstract)
-class POSSESSIONGAME_API AEnemy : public ACharacter, public IGameplayTagAssetInterface
+class POSSESSIONGAME_API AEnemy : public ACharacter
 {
 	GENERATED_BODY()
 public:
@@ -45,8 +44,6 @@ public:
 	
 	UPROPERTY()
 	TObjectPtr<UEnhancedPlayerInput> P_InputManager;
-	UPROPERTY()
-	FGameplayTagContainer GameplayTags;
 
 	bool GetIsAlive() const { return bIsAlive; }
 	bool GetIsPossessed() const { return bIsPossessed; }
@@ -54,9 +51,6 @@ public:
 	bool GetIsPossessable() const;
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
 	bool CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
-	virtual bool HasMatchingGameplayTag(const FGameplayTag TagToCheck) const override { return GameplayTags.HasTag(TagToCheck); }
-	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override { return GameplayTags.HasAll(TagContainer); }
-	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override { return GameplayTags.HasAny(TagContainer); }
 	float GetSkeletalMeshHeight() const;
 	ECharacterType GetCharacterName() const { return CharacterName; }
 	TObjectPtr<APossessionGameGameModeBase> GetGameModeBase() const { return GameModeBase; }
@@ -86,7 +80,6 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 	void ToggleCrouch();
-	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override { TagContainer = GameplayTags; }
 	virtual void InitiateDeath();
 	void ReceiveDamage(const float InDamage);
 	void PlaySound(const ESound InSoundName);

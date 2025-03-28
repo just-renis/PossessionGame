@@ -6,7 +6,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnemyAIController.h"
 #include "EnemyAnimationInstance.h"
-#include "GameplayTagsManager.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "InputMappingContext.h"
@@ -388,7 +387,6 @@ void AEnemy::BeginPlay()
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
 	SetMesh(CharacterName);
 	SetAnimInstance();
-	GameplayTags.AddTag(UGameplayTagsManager::Get().RequestGameplayTag(FName("Enemy")));
 	Tags.Add("Enemy");
 	Tags.Add("AliveEnemy");
 	Camera->SetActive(false);

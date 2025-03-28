@@ -2,8 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "WaveManager.generated.h"
 
+enum class EGameMode : uint8;
 class UDelegateManager;
 class UPrimaryDataAssetsManager;
 class ASpawnLocation;
@@ -11,6 +13,14 @@ class AEnemy;
 class UWaveManagerHUD;
 enum class ESound : uint8;
 enum class EWeapon : uint8;
+
+USTRUCT()
+struct POSSESSIONGAME_API FGameModeSpawnLocations
+{
+	GENERATED_BODY()
+
+	TArray<TObjectPtr<ASpawnLocation>> SpawnLocations;
+};
 
 UCLASS()
 class POSSESSIONGAME_API UWaveManager : public UWorldSubsystem
@@ -31,12 +41,13 @@ private:
 	int32 EnemiesOnSceneLimit = 7;
 	int32 AliveEnemiesAmount = 0;
 	int32 CountdownSeconds = 4;
-	float SpawnRate = 0.2f;
-	ECharacterType FirstEnemyToSpawn = ECharacterType::Spy;
+	float SpawnRate = 1.f;
+	EGameMode CurrentGameMode = EGameMode::None;
+	ECharacterType FirstEnemyToSpawn = ECharacterType::Ranger;
 	UPROPERTY()
 	TObjectPtr<UWaveManagerHUD> WaveManagerHUD;
 	UPROPERTY()
-	TArray<TObjectPtr<ASpawnLocation>> SpawnLocations;
+	TMap<EGameMode, FGameModeSpawnLocations> SpawnLocations;
 	UPROPERTY()
 	TArray<ECharacterType> EnemyTypes;
 	UPROPERTY()
@@ -63,6 +74,7 @@ private:
 	void FadeOutWavePanel() const;
 	void WaveCompleted();
 	void TutorialHandleSpawning(const ECharacterType InEnemyType);
+	void SetAndStartGameMode(const EGameMode InGameMode);
 
 	UFUNCTION()
 	void ShowUpgradeSelection();

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "DelegateManager.generated.h"
 
+enum class EGameMode : uint8;
 enum class EUpgrade : uint8;
 enum class ECharacterType : uint8;
 
@@ -24,6 +25,7 @@ DECLARE_DELEGATE_OneParam(FOnCheckDistanceToTutorialDrone, const int32);
 DECLARE_DELEGATE_OneParam(FOnShowHint, const int32);
 DECLARE_DELEGATE_OneParam(FOnShowDialogue, const int32);
 DECLARE_DELEGATE_OneParam(FOnTutorialStepChange, const int32);
+DECLARE_DELEGATE_OneParam(FOnGameModeInitiator, const EGameMode);
 DECLARE_MULTICAST_DELEGATE(FOnEnemyDeath);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemiesAmountDecrease, int32);
@@ -59,6 +61,7 @@ public:
 	FOnShowHint OnShowHint;
 	FOnShowDialogue OnShowDialogue;
 	FOnTutorialStepChange OnTutorialStepChange;
+	FOnGameModeInitiator OnGameModeInitiator;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnPlayerDeath OnPlayerDeath;
 	FOnEnemiesAmountDecrease OnEnemiesAmountDecrease;

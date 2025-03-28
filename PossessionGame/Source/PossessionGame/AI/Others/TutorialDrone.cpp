@@ -11,6 +11,8 @@
 ATutorialDrone::ATutorialDrone()
 {
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("DroneMesh"));
+	FirstPropeller = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("firstPropellerMesh"));
+	SecondPropeller = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("secondPropellerMesh"));
 	RootComponent = Mesh;
 	Sounds.Add(ESound::DroneBuzz, CreateDefaultSubobject<UAudioComponent>(TEXT("droneBuzzSound")));
 	Sounds[ESound::DroneBuzz]->SetAutoActivate(false);
@@ -21,15 +23,12 @@ void ATutorialDrone::BeginPlay()
 {
 	Super::BeginPlay();
 	PlaySound(ESound::DroneBuzz);
-	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	Dialogue = GetWorld()->SpawnActor<ATutorialDialogue>(DialogueClass, FVector::ZeroVector, FRotator::ZeroRotator);
-	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "DialogueSocket");
-	DelegateManager->StartTutorialDroneMoveToLocation.BindUObject(this, &ATutorialDrone::SetDroneMoveLocation);
-	DelegateManager->SendTargetToTutorialDrone.BindUObject(this, &ATutorialDrone::SetDroneLookAtLocation);
-	DelegateManager->OnCheckDistanceToTutorialDrone.BindUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
+	SetupAttachments();
+	SetupDelegates();
 	RetrieveDroneWaypoints();
 	PlayDroneAnimation();
 	UKismetSystemLibrary::K2_SetTimer(this, "LookAtTarget", 0.02f, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "SpinPropellers", 0.05f, true);
 }
 
 void ATutorialDrone::PlayDroneAnimation() const
@@ -52,7 +51,7 @@ void ATutorialDrone::SetDroneMoveLocation(const int32 InIndex)
 		WaypointIndex = InIndex;
 		WaypointLocation = Waypoints[InIndex]->GetActorLocation();
 		bIsMoving = true;
-		UKismetSystemLibrary::K2_SetTimer(this, "MoveToLocation", 0.025f, true);
+		UKismetSystemLibrary::K2_SetTimer(this, "MoveToLocation", 0.015f, true);
 	}
 }
 
@@ -67,10 +66,26 @@ void ATutorialDrone::PlaySound(const ESound InSoundName)
 	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], InSoundName);
 }
 
+void ATutorialDrone::SetupAttachments()
+{
+	Dialogue = GetWorld()->SpawnActor<ATutorialDialogue>(DialogueClass);
+	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "DialogueSocket");
+	FirstPropeller->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale, "FirstPropellerSocket");
+	SecondPropeller->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale, "SecondPropellerSocket");
+}
+
+void ATutorialDrone::SetupDelegates()
+{
+	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	DelegateManager->StartTutorialDroneMoveToLocation.BindUObject(this, &ATutorialDrone::SetDroneMoveLocation);
+	DelegateManager->SendTargetToTutorialDrone.BindUObject(this, &ATutorialDrone::SetDroneLookAtLocation);
+	DelegateManager->OnCheckDistanceToTutorialDrone.BindUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
+}
+
 void ATutorialDrone::MoveToLocation()
 {
 	const FVector Direction = (WaypointLocation - GetActorLocation()).GetSafeNormal();
-	const FVector NewLocation = GetActorLocation() + Direction * 200.f * 0.025f;
+	const FVector NewLocation = GetActorLocation() + Direction * 200.f * 0.015f;
 	SetActorLocation(NewLocation);
 	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(10.f))
 	{
@@ -122,4 +137,11 @@ void ATutorialDrone::CheckDistanceToTarget()
 		}
 		UKismetSystemLibrary::K2_ClearTimer(this, "CheckDistanceToTarget");
 	}
+}
+
+void ATutorialDrone::SpinPropellers() const
+{
+	if (!FirstPropeller || !SecondPropeller) return;
+	FirstPropeller->AddLocalRotation(FRotator(0.f, 18.f, 0.f));
+	SecondPropeller->AddLocalRotation(FRotator(0.f, 18.f, 0.f));
 }

@@ -27,6 +27,10 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> FirstPropeller;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> SecondPropeller;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<ADroneWaypoint>> Waypoints;
 	UPROPERTY()
 	TObjectPtr<ATutorialDialogue> Dialogue;
@@ -44,10 +48,14 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 	void SetDroneLookAtLocation(const TObjectPtr<AActor>& InTarget) { Target = InTarget; }
 	void EnableCheckDistanceToTarget(const int32 InIndex);
 	void PlaySound(const ESound InSoundName);
+	void SetupAttachments();
+	void SetupDelegates();
 	UFUNCTION()
 	void MoveToLocation();
 	UFUNCTION()
 	void LookAtTarget();
 	UFUNCTION()
 	void CheckDistanceToTarget();
+	UFUNCTION()
+	void SpinPropellers() const;
 };
