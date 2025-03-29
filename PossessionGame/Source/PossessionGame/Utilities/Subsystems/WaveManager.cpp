@@ -18,33 +18,48 @@ void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelega
 	DelegateManager = InDelegateManager;
 	bTutorialIsFinished = bIsTutorialFinished;
 	SetupSpawnLocations();
+	DelegateManager->OnGameModeInitiator.AddUObject(this, &UWaveManager::SetAndStartGameMode);
 	if (!bTutorialIsFinished)
 	{
 		CurrentGameMode = EGameMode::TutorialMode1;
 		DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UWaveManager::AsyncLoadAndSpawnEnemy);
+		DelegateManager->OnTutorialEnd.AddUObject(this, &UWaveManager::FinishTutorial);
 		return;
 	}
-	InitDelegates();
-	SetupWaveManagerUI();
-	SetupTimers();
+	InitMode();
 }
 
-void UWaveManager::InitDelegates()
+void UWaveManager::InitMode()
 {
-	DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount);
-	DelegateManager->OnPlayerDeath.AddUObject(this, &UWaveManager::FadeOutWavePanel);
-	DelegateManager->OnUpgradeSelectionFinished.BindUObject(this, &UWaveManager::InitiateNextWave);
-	DelegateManager->OnGameModeInitiator.BindUObject(this, &UWaveManager::SetAndStartGameMode);
+	if (CurrentGameMode == EGameMode::WaveMode)
+	{
+		CurrentWave = 1;
+		DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount);
+		DelegateManager->OnPlayerDeath.AddUObject(this, &UWaveManager::FadeOutWavePanel);
+		DelegateManager->OnUpgradeSelectionFinished.BindUObject(this, &UWaveManager::InitiateNextWave);
+		SetupWaveManagerUI();
+		SetupTimers();
+	}
 }
 
-void UWaveManager::SetupWaveManagerSettings(TArray<ECharacterType>& EnemiesThatAreSpawnable, ECharacterType FirstEnemy, int32 EnemiesAmountOnFirstWave)
+void UWaveManager::FinalizeMode() const
 {
-	FirstEnemyToSpawn = FirstEnemy;
-	EnemiesPerWave = EnemiesAmountOnFirstWave;
+	if (CurrentGameMode == EGameMode::WaveMode)
+	{
+		DelegateManager->OnEnemyDeath.RemoveAll(this);
+        DelegateManager->OnPlayerDeath.RemoveAll(this);
+        DelegateManager->OnUpgradeSelectionFinished.Unbind();
+		FadeOutWavePanel();
+	}
+}
+
+void UWaveManager::SetupWaveManagerSettings(const TArray<ECharacterType>& InEnemiesThatAreSpawnable, const int32 InEnemiesAmountOnFirstWave)
+{
+	EnemiesPerWave = InEnemiesAmountOnFirstWave;
 	EnemiesLeftToKill = EnemiesPerWave;
-	WaveManagerHUD->UpdateEnemiesAmount(EnemiesLeftToKill + AliveEnemiesAmount);
-	for (int32 i = 0; i < EnemiesThatAreSpawnable.Num(); i++) EnemyTypes.Add(EnemiesThatAreSpawnable[i]);
-	if (EnemiesThatAreSpawnable.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
+	if (WaveManagerHUD) WaveManagerHUD->UpdateEnemiesAmount(EnemiesLeftToKill + AliveEnemiesAmount);
+	for (int32 i = 0; i < InEnemiesThatAreSpawnable.Num(); i++) EnemyTypes.Add(InEnemiesThatAreSpawnable[i]);
+	if (InEnemiesThatAreSpawnable.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 }
 
 bool UWaveManager::IsGameRunning() { return IsValid(this) && GetWorld() && !GetWorld()->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }
@@ -94,18 +109,21 @@ void UWaveManager::StartWave()
 
 void UWaveManager::InitiateNextWave()
 {
-	bWaveNotStarted = false;
-	SetupNextWave();
-	if (WaveManagerHUD)
+	if (++CurrentWave < 4)
 	{
-		SetupNextWaveUI();
-		InitiateWave();
+		bWaveNotStarted = false;
+		SetupNextWave();
+		if (WaveManagerHUD)
+		{
+			SetupNextWaveUI();
+			InitiateWave();
+		}
 	}
+	else FinalizeMode();
 }
 
 void UWaveManager::SetupNextWave()
 {
-	CurrentWave++;
 	//EnemiesPerWave += FMath::RandRange(2, 5);
 	EnemiesLeftToKill = EnemiesPerWave;
 	CountdownSeconds = 4.f;
@@ -150,21 +168,15 @@ void UWaveManager::SpawnEnemy(const ECharacterType InEnemyType)
 	{
 		AliveEnemiesAmount++;
 		EnemiesLeftToKill--;
-		bIsSpawnInProcess = false;
 	}
+	bIsSpawnInProcess = false;
 }
 
 void UWaveManager::SpawnLogic()
 {
 	if (!bIsSpawnInProcess)
 	{
-		ECharacterType EnemyType;
-		if (FIRSTPOSSESSABLE)
-		{
-			EnemyType = FirstEnemyToSpawn;
-			FIRSTPOSSESSABLE = false;
-		}
-		else EnemyType = EnemyTypes[FMath::RandRange(0, EnemyTypes.Num() - 1)];
+		const ECharacterType EnemyType = EnemyTypes[FMath::RandRange(0, EnemyTypes.Num() - 1)];
 		!Enemies.Contains(EnemyType) ? AsyncLoadAndSpawnEnemy(EnemyType) : SpawnEnemy(EnemyType);
 	}
 }
@@ -235,6 +247,7 @@ void UWaveManager::TutorialHandleSpawning(const ECharacterType InEnemyType)
 void UWaveManager::SetAndStartGameMode(const EGameMode InGameMode)
 {
 	CurrentGameMode = InGameMode;
+	InitMode();
 }
 
 void UWaveManager::ShowUpgradeSelection() { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI(); }

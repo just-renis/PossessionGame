@@ -19,7 +19,7 @@ void AGameModeInitiator::Initiate(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	if (Cast<AEnemy>(OtherActor)->GetIsPossessed())
 	{
-		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.ExecuteIfBound(GameMode);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		Destroy();
 	}

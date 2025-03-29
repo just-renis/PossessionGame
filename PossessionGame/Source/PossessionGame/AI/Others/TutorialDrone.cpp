@@ -106,6 +106,7 @@ void ATutorialDrone::MoveToLocation()
 
 void ATutorialDrone::LookAtTarget()
 {
+	if (!Target) return;
 	FRotator TargetRotation;
 	TargetRotation.Yaw = ((bIsMoving ? WaypointLocation : Target->GetActorLocation()) - GetActorLocation()).GetSafeNormal2D().Rotation().Yaw - 90.f;
 	FRotator NewRotation;

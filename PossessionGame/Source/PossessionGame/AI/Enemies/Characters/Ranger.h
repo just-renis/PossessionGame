@@ -30,10 +30,9 @@ private:
 	virtual void AI_TriggerDeathVoiceLine() override;
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
+	virtual void AI_PlaySpawnSound() override;
 	UFUNCTION()
 	void AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor);
-	UFUNCTION()
-	void AI_PlaySpawnSound();
 
 	virtual void P_Setup() override;
 	virtual void P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) override;

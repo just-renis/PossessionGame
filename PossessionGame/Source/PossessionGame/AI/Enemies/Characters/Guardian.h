@@ -16,8 +16,7 @@ class POSSESSIONGAME_API AGuardian : public AEnemy
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
-	UFUNCTION()
-	void AI_PlaySpawnSound();
+	virtual void AI_PlaySpawnSound() override;
 
 	virtual void P_Setup() override;
 	virtual void P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override {}

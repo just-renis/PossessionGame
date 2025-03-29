@@ -31,7 +31,7 @@ void APossessionGameGameModeBase::BeginPlay()
 	if (!LevelName.Equals("TutorialLevel")) SaveSlot->SetTutorialFinished();
 	const TObjectPtr<UWaveManager> WaveManager = GetWorld()->GetSubsystem<UWaveManager>();
 	WaveManager->Init(SaveSlot->GetIsTutorialFinished(), DelegateManager);
-	if (SaveSlot->GetIsTutorialFinished()) WaveManager->SetupWaveManagerSettings(EnemiesThatAreSpawnable, FirstEnemyToSpawn, EnemiesAmountToSpawnOnFirstWave);
+	WaveManager->SetupWaveManagerSettings(EnemiesThatAreSpawnable, EnemiesAmountToSpawnOnFirstWave);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
 	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::ObjectiveMarker)->Init(false);

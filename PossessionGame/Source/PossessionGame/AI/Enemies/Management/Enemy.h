@@ -135,6 +135,8 @@ protected:
 	virtual void AI_PlayDeathSound() {}
 	UFUNCTION()
 	virtual void AI_TriggerDeathVoiceLine() {}
+	UFUNCTION()
+	virtual void AI_PlaySpawnSound() {}
 
 	virtual void P_SetupAbilities();
 	virtual void P_Setup();

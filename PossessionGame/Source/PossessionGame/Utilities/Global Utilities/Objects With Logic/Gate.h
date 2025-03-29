@@ -1,8 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "Gate.generated.h"
 
+class UWidgetComponent;
+class UInteractableUI;
 enum class EGameMode : uint8;
 class UBoxComponent;
 
@@ -13,6 +16,8 @@ class POSSESSIONGAME_API AGate : public AActor
 
 	AGate();
 
+	bool bEventToCloseGateHappened = false;
+	bool bIsGateOpened = false;
 	float TimePassed = 0.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsTutorialGate = false;
@@ -24,11 +29,14 @@ class POSSESSIONGAME_API AGate : public AActor
 	TObjectPtr<UStaticMeshComponent> FirstGateSide;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> SecondGateSide;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UWidgetComponent> InteractableWidget;
 
 	virtual void BeginPlay() override;
 	void OpenGate();
+	void CloseGate(const EGameMode InGameMode = EGameMode::None);
 	UFUNCTION()
-	void MoveGateSides();
+	void OpenGateSides();
 	UFUNCTION()
-	void GatePassed(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void CloseGateSides();
 };

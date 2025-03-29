@@ -22,4 +22,5 @@ private:
 
 	virtual void BeginPlay() override;
 	void StartDialogue(const int32 InIndex) const;
+	void StopShowingDialogue() const;
 };

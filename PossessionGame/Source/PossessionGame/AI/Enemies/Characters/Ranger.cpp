@@ -84,13 +84,13 @@ void ARanger::AI_ToggleGrenadeLaunchTrigger(const bool bState) const
 	}
 }
 
+void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
+
 void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {
 	AI_ToggleGrenadeLaunchTrigger(false);
 	UKismetSystemLibrary::K2_SetTimer(this, "TryTriggeringGrenadeLaunch", 0.1f, true);
 }
-
-void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
 
 void ARanger::P_Setup()
 {

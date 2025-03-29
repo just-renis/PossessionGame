@@ -783,7 +783,7 @@ void AEnemy::P_ControlLogic()
 {
 	Weapon->P_SetWalkSpread(GetCharacterMovement()->Velocity.Size() >= P_Data->GetMaxWalkSpeed() - 0.1f);
 	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size()); // Reduce by an ability % for guardian.
-	P_PossessionBarLogic();
+	if (!bInUpgradeSelection) P_PossessionBarLogic();
 }
 
 void AEnemy::P_DetectIfPlayerPointingAtEnemy()

@@ -23,6 +23,7 @@ private:
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
 	virtual void AI_TriggerDeathVoiceLine() override;
+	virtual void AI_PlaySpawnSound() override;
 
 	virtual void P_Setup() override;
 	virtual void P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) override;

@@ -25,9 +25,9 @@ DECLARE_DELEGATE_OneParam(FOnCheckDistanceToTutorialDrone, const int32);
 DECLARE_DELEGATE_OneParam(FOnShowHint, const int32);
 DECLARE_DELEGATE_OneParam(FOnShowDialogue, const int32);
 DECLARE_DELEGATE_OneParam(FOnTutorialStepChange, const int32);
-DECLARE_DELEGATE_OneParam(FOnGameModeInitiator, const EGameMode);
 DECLARE_MULTICAST_DELEGATE(FOnEnemyDeath);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
+DECLARE_MULTICAST_DELEGATE(FOnTutorialEnd);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemiesAmountDecrease, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
@@ -35,6 +35,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>)
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, TObjectPtr<AActor>, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnXRayThroughWallsChange, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeaponAmmoChangeOneParam, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeInitiator, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnWeaponAmmoChangeThreeParams, int32, int32, int32);
 
@@ -61,9 +62,9 @@ public:
 	FOnShowHint OnShowHint;
 	FOnShowDialogue OnShowDialogue;
 	FOnTutorialStepChange OnTutorialStepChange;
-	FOnGameModeInitiator OnGameModeInitiator;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnPlayerDeath OnPlayerDeath;
+	FOnTutorialEnd OnTutorialEnd;
 	FOnEnemiesAmountDecrease OnEnemiesAmountDecrease;
 	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
@@ -71,6 +72,7 @@ public:
 	FOnTargetChange OnTargetChange;
 	FOnXRayThroughWallsChange OnXRayThroughWallsChange;
 	FOnWeaponAmmoChangeOneParam OnWeaponAmmoChangeOneParam;
+	FOnGameModeInitiator OnGameModeInitiator;
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
 	FOnWeaponAmmoChangeThreeParams OnWeaponAmmoChangeThreeParams;
 };

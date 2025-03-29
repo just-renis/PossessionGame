@@ -29,8 +29,6 @@ private:
 	bool bToggleDebugMode = false;
 	UPROPERTY(EditAnywhere, Category = "Wave Manager", meta = (AllowPrivateAccess = true))
 	int32 EnemiesAmountToSpawnOnFirstWave = 1;
-	UPROPERTY(EditAnywhere, Category = "Wave Manager", meta = (AllowPrivateAccess = true))
-	ECharacterType FirstEnemyToSpawn;
 	UPROPERTY(EditAnywhere, Category = "Save Data", meta = (AllowPrivateAccess = true))
 	TSubclassOf<USettingsSave> SettingsSaveClass;
 	UPROPERTY(EditAnywhere, Category = "EQS", meta = (AllowPrivateAccess = true))

@@ -13,8 +13,7 @@ class POSSESSIONGAME_API AMinion : public AEnemy
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
-	UFUNCTION()
-	void AI_PlaySpawnSound();
+	virtual void AI_PlaySpawnSound() override;
 
 	virtual void BeginPlay() override;
 	virtual void DestroyAI() override;

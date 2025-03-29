@@ -44,6 +44,8 @@ void ATrickster::AI_PlayDeathSound() { PlaySound(ESound::TricksterDeath); }
 
 void ATrickster::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::TricksterOnPossession); }
 
+void ATrickster::AI_PlaySpawnSound() { PlaySound(ESound::TricksterSpawn); }
+
 void ATrickster::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeThreeParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);

@@ -19,13 +19,16 @@ void ATutorialDialogue::BeginPlay()
 	Super::BeginPlay();
 	Dialogue = Cast<UTutorialDialogueUI>(DialogueWidgetComponent->GetWidget());
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowDialogue.BindUObject(this, &ATutorialDialogue::StartDialogue);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialEnd.AddUObject(this, &ATutorialDialogue::StopShowingDialogue);
 }
 
 void ATutorialDialogue::StartDialogue(const int32 InIndex) const
 {
 	if (Dialogue)
 	{
-		Dialogue->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		SetVisibilityState(true);
 		Dialogue->StartDialogue(InIndex);
 	}
 }
+
+void ATutorialDialogue::StopShowingDialogue() const { if (Dialogue) SetVisibilityState(false); }

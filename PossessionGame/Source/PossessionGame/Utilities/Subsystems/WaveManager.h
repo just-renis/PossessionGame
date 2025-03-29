@@ -28,10 +28,8 @@ class POSSESSIONGAME_API UWaveManager : public UWorldSubsystem
 	GENERATED_BODY()
 public:
 	void Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager);
-	void InitDelegates();
-	void SetupWaveManagerSettings(TArray<ECharacterType>& EnemiesThatAreSpawnable, ECharacterType FirstEnemy, int32 EnemiesAmountOnFirstWave);
+	void SetupWaveManagerSettings(const TArray<ECharacterType>& InEnemiesThatAreSpawnable, const int32 InEnemiesAmountOnFirstWave);
 private:
-	bool FIRSTPOSSESSABLE = true;
 	bool bIsSpawnInProcess = false;
 	bool bWaveNotStarted = false;
 	bool bTutorialIsFinished = false;
@@ -43,7 +41,6 @@ private:
 	int32 CountdownSeconds = 4;
 	float SpawnRate = 1.f;
 	EGameMode CurrentGameMode = EGameMode::None;
-	ECharacterType FirstEnemyToSpawn = ECharacterType::Ranger;
 	UPROPERTY()
 	TObjectPtr<UWaveManagerHUD> WaveManagerHUD;
 	UPROPERTY()
@@ -59,6 +56,8 @@ private:
 	EWeapon GetWeaponCode(ECharacterType EnemyType);
 	EWeapon GetSingularWeapon(EWeapon Weapon);
 
+	void InitMode();
+	void FinalizeMode() const;
 	void SetupTimers();
 	void StartWave();
 	void InitiateNextWave();
@@ -75,6 +74,7 @@ private:
 	void WaveCompleted();
 	void TutorialHandleSpawning(const ECharacterType InEnemyType);
 	void SetAndStartGameMode(const EGameMode InGameMode);
+	void FinishTutorial() { bTutorialIsFinished = true; }
 
 	UFUNCTION()
 	void ShowUpgradeSelection();

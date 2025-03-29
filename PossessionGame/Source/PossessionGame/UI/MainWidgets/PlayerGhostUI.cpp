@@ -31,7 +31,10 @@ FReply UPlayerGhostUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEv
 			case 0: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(1); break;
 			case 1: (void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(0); break;
 			case 2: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(6); break;
-			case 3: (void)DelegateManager->OpenTutorialGate.ExecuteIfBound(); break;
+			case 3:
+				(void)DelegateManager->OpenTutorialGate.ExecuteIfBound();
+				DelegateManager->OnTutorialEnd.Broadcast();
+				break;
 			default: ;
 		}
 	}
