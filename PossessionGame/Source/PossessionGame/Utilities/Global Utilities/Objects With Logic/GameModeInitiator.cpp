@@ -17,10 +17,13 @@ void AGameModeInitiator::BeginPlay()
 
 void AGameModeInitiator::Initiate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<AEnemy>(OtherActor)->GetIsPossessed())
+	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor))
 	{
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
-		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		Destroy();
+		if (Enemy->GetIsPossessed())
+		{
+			GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
+			Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			Destroy();
+		}
 	}
 }

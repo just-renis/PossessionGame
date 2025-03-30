@@ -119,8 +119,7 @@ void ATutorialDrone::LookAtTarget()
 void ATutorialDrone::CheckDistanceToTarget()
 {
 	if (!Target) return;
-	TArray DistanceToTarget = { 25000.f, 40000.f, 40000.f };
-	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) < DistanceToTarget[DistanceToTargetIndex])
+	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) < 40000.f)
 	{
 		switch (DistanceToTargetIndex)
 		{

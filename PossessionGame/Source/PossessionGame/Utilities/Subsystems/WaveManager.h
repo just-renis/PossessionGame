@@ -33,6 +33,7 @@ private:
 	bool bIsSpawnInProcess = false;
 	bool bWaveNotStarted = false;
 	bool bTutorialIsFinished = false;
+	bool bUnlimitedSpawning = false;
 	int32 CurrentWave = 1;
 	int32 EnemiesPerWave = 2;
 	int32 EnemiesLeftToKill = 2;
@@ -40,6 +41,8 @@ private:
 	int32 AliveEnemiesAmount = 0;
 	int32 CountdownSeconds = 4;
 	float SpawnRate = 1.f;
+	float TerminalHackTimer = 0.f;
+	float TerminalHackRequired = 30.f;
 	EGameMode CurrentGameMode = EGameMode::None;
 	UPROPERTY()
 	TObjectPtr<UWaveManagerHUD> WaveManagerHUD;
@@ -57,7 +60,7 @@ private:
 	EWeapon GetSingularWeapon(EWeapon Weapon);
 
 	void InitMode();
-	void FinalizeMode() const;
+	void FinalizeMode();
 	void SetupTimers();
 	void StartWave();
 	void InitiateNextWave();
@@ -74,7 +77,7 @@ private:
 	void WaveCompleted();
 	void TutorialHandleSpawning(const ECharacterType InEnemyType);
 	void SetAndStartGameMode(const EGameMode InGameMode);
-	void FinishTutorial() { bTutorialIsFinished = true; }
+	void FinishTutorial();
 
 	UFUNCTION()
 	void ShowUpgradeSelection();
@@ -86,4 +89,6 @@ private:
 	void InitiateWave();
 	UFUNCTION()
 	void UpdateEnemiesAmount();
+	UFUNCTION()
+	void UpdateTaskProgress();
 };

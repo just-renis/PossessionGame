@@ -14,7 +14,6 @@ DECLARE_DELEGATE(FOnUpgradeSelectionOpened);
 DECLARE_DELEGATE(FOnUpgradeSelected);
 DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
 DECLARE_DELEGATE(FDestroyTutorialForceField);
-DECLARE_DELEGATE(FOpenTutorialGate);
 DECLARE_DELEGATE(FStopShowingHint);
 DECLARE_DELEGATE_OneParam(FOnShowPressAnyKey, const bool);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
@@ -36,6 +35,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, TObjectPtr<AActor>, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnXRayThroughWallsChange, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeaponAmmoChangeOneParam, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeInitiator, const EGameMode);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeFinished, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnWeaponAmmoChangeThreeParams, int32, int32, int32);
 
@@ -51,7 +51,6 @@ public:
 	FOnUpgradeSelected OnUpgradeSelected;
 	FOnUpgradeSelectionFinished OnUpgradeSelectionFinished;
 	FDestroyTutorialForceField DestroyTutorialForceField;
-	FOpenTutorialGate OpenTutorialGate;
 	FStopShowingHint StopShowingHint;
 	FOnShowPressAnyKey OnShowPressAnyKey;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
@@ -73,6 +72,7 @@ public:
 	FOnXRayThroughWallsChange OnXRayThroughWallsChange;
 	FOnWeaponAmmoChangeOneParam OnWeaponAmmoChangeOneParam;
 	FOnGameModeInitiator OnGameModeInitiator;
+	FOnGameModeFinished OnGameModeFinished;
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
 	FOnWeaponAmmoChangeThreeParams OnWeaponAmmoChangeThreeParams;
 };

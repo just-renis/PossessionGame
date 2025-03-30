@@ -2,8 +2,10 @@
 
 #include "Animation/WidgetAnimation.h"
 #include "Components/InvalidationBox.h"
+#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return WaveCompletedAnnouncementAnim ? WaveCompletedAnnouncementAnim->GetEndTime() : 0.1f; }
@@ -66,5 +68,19 @@ void UWaveManagerHUD::PlayWaveCompletedAnim()
 }
 
 void UWaveManagerHUD::PlayCountdownAnim() { if (CountdownAnnouncementAnim) PlayAnimation(CountdownAnnouncementAnim); }
+
+void UWaveManagerHUD::UpdateTaskProgress(const float InProgress, const float InMaxProgress) const
+{
+	if (!TaskProgressBar || !TaskProgressPercentageText) return;
+	TaskProgressBar->SetPercent(InProgress / InMaxProgress);
+	TaskProgressPercentageText->SetText(FText::FromString(FString::FormatAsNumber(InProgress / InMaxProgress) + "%"));
+}
+
+void UWaveManagerHUD::ToggleTaskProgress(const bool bState, const EGameMode InGameMode) const
+{
+	if (!TaskProgressInv || !TaskText) return;
+	TaskProgressInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	TaskText->SetText(FText::FromString(InGameMode == EGameMode::HackTerminalsMode ? "Terminal Hack Progress" : "Charge Terminal Progress"));
+}
 
 void UWaveManagerHUD::HideWaveCompletedAnnouncement() const { if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::Collapsed); }

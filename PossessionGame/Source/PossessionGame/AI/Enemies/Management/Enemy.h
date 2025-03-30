@@ -235,6 +235,7 @@ private:
 	void P_ConfigurePostProcessEffectsAfterDeath() const;
 	void P_SetupUpgradesAppliance();
 	void P_InUpgradeSelection();
+	void P_TryInteracting();
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()

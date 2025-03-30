@@ -26,6 +26,7 @@
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EWidget.h"
+#include "PossessionGame/Interfaces/Interactable.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
@@ -144,6 +145,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		P_SetupRightClickInput(EnhancedInputComponent);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &AEnemy::P_HandleEscapeClick);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &AEnemy::P_StopTime);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_TryInteracting);
 	}
 }
 
@@ -765,6 +767,21 @@ void AEnemy::P_InUpgradeSelection()
 {
 	bInUpgradeSelection = true;
 	P_StopAllAbilities();
+}
+
+void AEnemy::P_TryInteracting()
+{
+	FHitResult Hit;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	if (GetWorld()->LineTraceSingleByChannel(Hit, GetActorLocation(), GetActorLocation() + GetControlRotation().Vector() * 450.f, ECC_Visibility, CollisionParams))
+	{
+		if (const TObjectPtr<AActor> HitActor = Hit.GetActor())
+		{
+			if (!HitActor->Implements<UInteractable>()) return;
+			Cast<IInteractable>(HitActor)->Interact();
+		}
+	}
 }
 
 void AEnemy::P_Death()
