@@ -85,7 +85,7 @@ void ATutorialDrone::SetupDelegates()
 void ATutorialDrone::MoveToLocation()
 {
 	const FVector Direction = (WaypointLocation - GetActorLocation()).GetSafeNormal();
-	const FVector NewLocation = GetActorLocation() + Direction * 200.f * 0.015f;
+	const FVector NewLocation = GetActorLocation() + Direction * 600.f * 0.015f;
 	SetActorLocation(NewLocation);
 	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(10.f))
 	{

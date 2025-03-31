@@ -35,8 +35,9 @@ void APlayerGhost::BeginPlay()
 		{
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			PlayerController->SetInputMode(FInputModeUIOnly());
-			PlayerGhostUI->PlayStartupAnimation();
-			UKismetSystemLibrary::K2_SetTimer(this, "EnablePlayerInput", PlayerGhostUI->GetStartupAnimationLength(), false);
+			const TObjectPtr<UPlayerGhostUI> TutorialUI = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI);
+			TutorialUI->PlayStartupAnimation();
+			UKismetSystemLibrary::K2_SetTimer(this, "EnablePlayerInput", TutorialUI->GetStartupAnimationLength(), false);
 		}
 		if (const TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
@@ -127,8 +128,7 @@ void APlayerGhost::SetupTutorial()
 {
 	bTutorialModeEnabled = true;
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	PlayerGhostUI = CreateWidget<UPlayerGhostUI>(GetWorld(), PlayerGhostUIClass);
-	PlayerGhostUI->AddToViewport();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI);
 }
 
 void APlayerGhost::CheckIfPlayerFallOutOfWorld() const

@@ -25,10 +25,6 @@ private:
 	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TSubclassOf<UPlayerGhostUI> PlayerGhostUIClass;
-	UPROPERTY()
-	TObjectPtr<UPlayerGhostUI> PlayerGhostUI;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 

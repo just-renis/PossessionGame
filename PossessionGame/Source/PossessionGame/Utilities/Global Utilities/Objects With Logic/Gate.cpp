@@ -52,7 +52,15 @@ void AGate::CloseGate(const EGameMode InGameMode)
 	}
 }
 
-void AGate::Interact() { OpenGate(EGameMode::None); }
+void AGate::Interact()
+{
+	if (!GetIsInteractable()) return;
+	SetIsInteractable(false);
+	Collision->OnComponentBeginOverlap.RemoveAll(this);
+	Collision->OnComponentEndOverlap.RemoveAll(this);
+	if (InteractableWidget) InteractableWidget->SetVisibility(false);
+	OpenGate(EGameMode::None);
+}
 
 void AGate::OpenGateSides()
 {

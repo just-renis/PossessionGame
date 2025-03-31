@@ -17,6 +17,7 @@ public:
 
 	void SetCurrentStateOfUI(const EWidget InState) { CurrentState = InState; }
 	void Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses);
+	void DestroyWidget(const EWidget InWidget);
 private:
 	EWidget CurrentState = EWidget::None;
 	UPROPERTY()

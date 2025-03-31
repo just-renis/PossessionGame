@@ -73,7 +73,7 @@ void UWaveManagerHUD::UpdateTaskProgress(const float InProgress, const float InM
 {
 	if (!TaskProgressBar || !TaskProgressPercentageText) return;
 	TaskProgressBar->SetPercent(InProgress / InMaxProgress);
-	TaskProgressPercentageText->SetText(FText::FromString(FString::FormatAsNumber(InProgress / InMaxProgress) + "%"));
+	TaskProgressPercentageText->SetText(FText::FromString(FString::FormatAsNumber(InProgress / InMaxProgress * 100.f) + "%"));
 }
 
 void UWaveManagerHUD::ToggleTaskProgress(const bool bState, const EGameMode InGameMode) const

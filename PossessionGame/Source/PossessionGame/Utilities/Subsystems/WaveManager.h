@@ -5,7 +5,6 @@
 #include "PossessionGame/Enums/EGameMode.h"
 #include "WaveManager.generated.h"
 
-enum class EGameMode : uint8;
 class UDelegateManager;
 class UPrimaryDataAssetsManager;
 class ASpawnLocation;
@@ -40,6 +39,7 @@ private:
 	int32 EnemiesOnSceneLimit = 7;
 	int32 AliveEnemiesAmount = 0;
 	int32 CountdownSeconds = 4;
+	int32 TerminalsLeftToHack = 2;
 	float SpawnRate = 1.f;
 	float TerminalHackTimer = 0.f;
 	float TerminalHackRequired = 30.f;
@@ -78,6 +78,8 @@ private:
 	void TutorialHandleSpawning(const ECharacterType InEnemyType);
 	void SetAndStartGameMode(const EGameMode InGameMode);
 	void FinishTutorial();
+	void StartTerminalHack();
+	void FinishTerminalHack();
 
 	UFUNCTION()
 	void ShowUpgradeSelection();

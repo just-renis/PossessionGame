@@ -19,14 +19,12 @@ void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelega
 	bTutorialIsFinished = bIsTutorialFinished;
 	SetupSpawnLocations();
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &UWaveManager::SetAndStartGameMode);
-	if (!bTutorialIsFinished)
-	{
-		CurrentGameMode = EGameMode::TutorialMode1;
-		DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UWaveManager::AsyncLoadAndSpawnEnemy);
-		DelegateManager->OnTutorialEnd.AddUObject(this, &UWaveManager::FinishTutorial);
-		return;
-	}
-	InitMode();
+	DelegateManager->OnTerminalInteraction.AddUObject(this, &UWaveManager::StartTerminalHack);
+	DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount);
+	if (bTutorialIsFinished) return;
+	CurrentGameMode = EGameMode::TutorialMode1;
+	DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UWaveManager::AsyncLoadAndSpawnEnemy);
+	DelegateManager->OnTutorialEnd.AddUObject(this, &UWaveManager::FinishTutorial);
 }
 
 void UWaveManager::InitMode()
@@ -34,25 +32,18 @@ void UWaveManager::InitMode()
 	if (CurrentGameMode == EGameMode::WaveMode)
 	{
 		CurrentWave = 1;
-		DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount);
 		DelegateManager->OnPlayerDeath.AddUObject(this, &UWaveManager::FadeOutWavePanel);
 		DelegateManager->OnUpgradeSelectionFinished.BindUObject(this, &UWaveManager::InitiateNextWave);
 		SetupWaveManagerUI();
 		SetupTimers();
 	}
-	else if (CurrentGameMode == EGameMode::HackTerminalsMode)
-	{
-		if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(true, CurrentGameMode);
-		UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate, true);
-		UKismetSystemLibrary::K2_SetTimer(this, "UpdateTaskProgress", 0.5f, true);
-	}
+	else if (CurrentGameMode == EGameMode::HackTerminalsMode) DelegateManager->OnHackModeStart.Broadcast();
 }
 
 void UWaveManager::FinalizeMode()
 {
 	if (CurrentGameMode == EGameMode::WaveMode)
 	{
-		DelegateManager->OnEnemyDeath.RemoveAll(this);
         DelegateManager->OnPlayerDeath.RemoveAll(this);
         DelegateManager->OnUpgradeSelectionFinished.Unbind();
 		FadeOutWavePanel();
@@ -168,6 +159,7 @@ void UWaveManager::SetupSpawnLocations()
 	{
 		TObjectPtr<ASpawnLocation> SpawnLocation = Cast<ASpawnLocation>(Actor);
 		SpawnLocations.Add(SpawnLocation->GetGameMode());
+//		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
 		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
 	}
 }
@@ -254,6 +246,7 @@ void UWaveManager::TutorialHandleSpawning(const ECharacterType InEnemyType)
 			CurrentGameMode = EGameMode::TutorialMode2;
 		}
 	}
+	AliveEnemiesAmount++;
 }
 
 void UWaveManager::SetAndStartGameMode(const EGameMode InGameMode)
@@ -266,6 +259,26 @@ void UWaveManager::FinishTutorial()
 {
 	bTutorialIsFinished = true;
 	DelegateManager->OnGameModeFinished.Broadcast(CurrentGameMode);
+}
+
+void UWaveManager::StartTerminalHack()
+{
+	bUnlimitedSpawning = true;
+	if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(true, CurrentGameMode);
+	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "UpdateTaskProgress", 0.5f, true);
+}
+
+void UWaveManager::FinishTerminalHack()
+{
+	ShowUpgradeSelection();
+	if (--TerminalsLeftToHack <= 0) FinalizeMode();
+	else
+	{
+		TerminalHackTimer = 0.f;
+		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
+		DelegateManager->OnTerminalHackFinish.Broadcast();
+	}
 }
 
 void UWaveManager::ShowUpgradeSelection() { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI(); }
@@ -301,8 +314,8 @@ void UWaveManager::InitiateWave() { WaveManagerHUD->ToggleCountdownText(); }
 void UWaveManager::UpdateEnemiesAmount()
 {
 	AliveEnemiesAmount--;
-	if (CurrentGameMode == EGameMode::HackTerminalsMode && AliveEnemiesAmount <= 0) FinalizeMode();
-	if (WaveManagerHUD) WaveManagerHUD->UpdateEnemiesAmount(EnemiesLeftToKill + AliveEnemiesAmount);
+	if (CurrentGameMode == EGameMode::HackTerminalsMode && !bUnlimitedSpawning && AliveEnemiesAmount <= 0) FinishTerminalHack();
+	else if (CurrentGameMode == EGameMode::WaveMode && WaveManagerHUD) WaveManagerHUD->UpdateEnemiesAmount(EnemiesLeftToKill + AliveEnemiesAmount);
 }
 
 void UWaveManager::UpdateTaskProgress()
@@ -312,6 +325,7 @@ void UWaveManager::UpdateTaskProgress()
 	if (TerminalHackTimer >= TerminalHackRequired)
 	{
 		bUnlimitedSpawning = false;
+		if (CurrentGameMode == EGameMode::HackTerminalsMode && !bUnlimitedSpawning && AliveEnemiesAmount <= 0) FinishTerminalHack();
 		UKismetSystemLibrary::K2_ClearTimer(this, "UpdateTaskProgress");
 	}
 }
