@@ -23,7 +23,7 @@ class POSSESSIONGAME_API ATerminal : public AActor, public IInteractable
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> InteractableWidget;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY()
 	TObjectPtr<APoolObject> Marker;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;

@@ -1,5 +1,4 @@
 #include "WaveManagerHUD.h"
-
 #include "Animation/WidgetAnimation.h"
 #include "Components/InvalidationBox.h"
 #include "Components/ProgressBar.h"

@@ -24,6 +24,8 @@ void ATerminal::BeginPlay()
 	DelegateManager->OnHackModeStart.AddUObject(this, &ATerminal::ShowMarker);
 	DelegateManager->OnTerminalInteraction.AddUObject(this, &ATerminal::DisableTerminal);
 	DelegateManager->OnTerminalHackFinish.AddUObject(this, &ATerminal::EnableTerminal);
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATerminal::EnableInteractionWidget);
+	Collision->OnComponentEndOverlap.AddDynamic(this, &ATerminal::DisableInteractionWidget);
 	if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	ToggleInteractableWidget(true);
 }
@@ -60,15 +62,13 @@ void ATerminal::ToggleInteractableWidget(const bool bState, const bool bMarkerIn
 {
 	if (bState)
 	{
-		Collision->OnComponentBeginOverlap.AddDynamic(this, &ATerminal::EnableInteractionWidget);
-		Collision->OnComponentEndOverlap.AddDynamic(this, &ATerminal::DisableInteractionWidget);
+		Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		if (bMarkerIncluded) ShowMarker();
 	}
 	else
 	{
-		Collision->OnComponentBeginOverlap.RemoveAll(this);
-		Collision->OnComponentEndOverlap.RemoveAll(this);
-		if (bMarkerIncluded) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
+		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		if (bMarkerIncluded && Marker) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
 		if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	}
 }

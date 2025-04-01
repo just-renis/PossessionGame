@@ -41,6 +41,7 @@
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
+#include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
@@ -201,6 +202,7 @@ void AEnemy::InitiateDeath()
 	Tags.Remove("AliveEnemy");
 	if (!bIsPossessed)
 	{
+		AI_SpawnUsbOnDeath();
 		AI_PlayDeathSound();
 		DestroyAI();
 		DelegateManager->OnEnemyDeath.Broadcast();
@@ -517,6 +519,18 @@ void AEnemy::AI_SetupUpgradesAppliance()
 	for (int32 i = 0; i < Abilities.Num(); i++) MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, Abilities[i]->GetAbilityName(), EUpgradeAttribute::FlatHealth);
 }
 
+void AEnemy::AI_SpawnUsbOnDeath() const
+{
+	if (GetWorld()->GetSubsystem<UWaveManager>()->GetCurrentGameMode() != EGameMode::ChargeTerminalMode) return;
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, GetActorLocation(), GetActorLocation() - FVector(0, 0, 500.f), ECC_Visibility, CollisionParams))
+	{
+		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Collectible, HitResult.ImpactPoint)->Init();
+	}
+}
+
 void AEnemy::AI_HideHpBar() const { if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
 
 void AEnemy::AI_ClearShootPause()
@@ -774,11 +788,15 @@ void AEnemy::P_TryInteracting()
 	FHitResult Hit;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
-	if (GetWorld()->LineTraceSingleByChannel(Hit, GetActorLocation(), GetActorLocation() + GetControlRotation().Vector() * 450.f, ECC_Visibility, CollisionParams))
+	DrawDebugLine(GetWorld(), Camera->GetComponentLocation(), Camera->GetComponentLocation() + (Camera->GetForwardVector() * 450.f), FColor::Red, false, 5.0f, 0, 2.0f);
+	if (GetWorld()->LineTraceSingleByChannel(Hit, Camera->GetComponentLocation(), Camera->GetComponentLocation() + (Camera->GetForwardVector() * 450.f), ECC_Visibility, CollisionParams))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("HITACTOR NAME: %s"), *Hit.GetActor()->GetName());
 		if (const TObjectPtr<AActor> HitActor = Hit.GetActor())
 		{
+			UE_LOG(LogTemp, Warning, TEXT("HITACTOR NAME 2: %s"), *Hit.GetActor()->GetName());
 			if (!HitActor->Implements<UInteractable>()) return;
+			UE_LOG(LogTemp, Warning, TEXT("HITACTOR NAME 3: %s"), *Hit.GetActor()->GetName());
 			Cast<IInteractable>(HitActor)->Interact();
 		}
 	}

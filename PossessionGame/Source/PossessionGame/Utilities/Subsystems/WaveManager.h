@@ -26,6 +26,8 @@ class POSSESSIONGAME_API UWaveManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
+	EGameMode GetCurrentGameMode() const { return CurrentGameMode; }
+	
 	void Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager);
 	void SetupWaveManagerSettings(const TArray<ECharacterType>& InEnemiesThatAreSpawnable, const int32 InEnemiesAmountOnFirstWave);
 private:
@@ -41,8 +43,8 @@ private:
 	int32 CountdownSeconds = 4;
 	int32 TerminalsLeftToHack = 2;
 	float SpawnRate = 1.f;
-	float TerminalHackTimer = 0.f;
-	float TerminalHackRequired = 30.f;
+	float TerminalHackProgress = 0.f;
+	float TerminalHackRequired = 5.f;
 	EGameMode CurrentGameMode = EGameMode::None;
 	UPROPERTY()
 	TObjectPtr<UWaveManagerHUD> WaveManagerHUD;
@@ -80,6 +82,7 @@ private:
 	void FinishTutorial();
 	void StartTerminalHack();
 	void FinishTerminalHack();
+	void ResetTaskProgress() const;
 
 	UFUNCTION()
 	void ShowUpgradeSelection();

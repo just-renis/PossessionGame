@@ -203,6 +203,7 @@ private:
 	void AI_DestroyHpBar();
 	void AI_ShowDamageNumber(const float InDamageAmount) const;
 	void AI_SetupUpgradesAppliance();
+	void AI_SpawnUsbOnDeath() const;
 	UFUNCTION()
 	void AI_HideHpBar() const;
 	UFUNCTION()

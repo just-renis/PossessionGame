@@ -17,5 +17,6 @@ enum class EPoolObject : uint8
 	RangerShield,
 	DamageNumber,
 	PoisonArea,
-	ObjectiveMarker
+	ObjectiveMarker,
+	Collectible
 };

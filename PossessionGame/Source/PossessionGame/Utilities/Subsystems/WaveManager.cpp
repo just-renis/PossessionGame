@@ -21,6 +21,7 @@ void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelega
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &UWaveManager::SetAndStartGameMode);
 	DelegateManager->OnTerminalInteraction.AddUObject(this, &UWaveManager::StartTerminalHack);
 	DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount);
+	DelegateManager->OnUsbInserted.AddUObject(this, &UWaveManager::UpdateTaskProgress);
 	if (bTutorialIsFinished) return;
 	CurrentGameMode = EGameMode::TutorialMode1;
 	DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UWaveManager::AsyncLoadAndSpawnEnemy);
@@ -38,6 +39,12 @@ void UWaveManager::InitMode()
 		SetupTimers();
 	}
 	else if (CurrentGameMode == EGameMode::HackTerminalsMode) DelegateManager->OnHackModeStart.Broadcast();
+	else if (CurrentGameMode == EGameMode::ChargeTerminalMode)
+	{
+		bUnlimitedSpawning = true;
+		if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(true, CurrentGameMode);
+		UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate * 3.f, true);
+	}
 }
 
 void UWaveManager::FinalizeMode()
@@ -50,7 +57,12 @@ void UWaveManager::FinalizeMode()
 	}
 	else if (CurrentGameMode == EGameMode::HackTerminalsMode)
 	{
-		if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(false, CurrentGameMode);
+		ResetTaskProgress();
+		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
+	}
+	else if (CurrentGameMode == EGameMode::ChargeTerminalMode)
+	{
+		ResetTaskProgress();
 		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
 	}
 	DelegateManager->OnGameModeFinished.Broadcast(CurrentGameMode);
@@ -275,10 +287,17 @@ void UWaveManager::FinishTerminalHack()
 	if (--TerminalsLeftToHack <= 0) FinalizeMode();
 	else
 	{
-		TerminalHackTimer = 0.f;
+		TerminalHackProgress = 0.f;
 		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
 		DelegateManager->OnTerminalHackFinish.Broadcast();
 	}
+}
+
+void UWaveManager::ResetTaskProgress() const
+{
+	if (!WaveManagerHUD) return;
+	WaveManagerHUD->ToggleTaskProgress(false, CurrentGameMode);
+	WaveManagerHUD->UpdateTaskProgress(0.f, 1.f);
 }
 
 void UWaveManager::ShowUpgradeSelection() { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI(); }
@@ -301,8 +320,8 @@ void UWaveManager::UpdateCountdown()
 
 void UWaveManager::HandleSpawning()
 {
-	if (CurrentGameMode == EGameMode::HackTerminalsMode && bUnlimitedSpawning && AliveEnemiesAmount < EnemiesOnSceneLimit) SpawnLogic();
-	else if (CurrentGameMode == EGameMode::WaveMode)
+	if (CurrentGameMode != EGameMode::WaveMode && bUnlimitedSpawning && AliveEnemiesAmount < EnemiesOnSceneLimit) SpawnLogic();
+	else
 	{
 		if (EnemiesLeftToKill > 0 && AliveEnemiesAmount < EnemiesOnSceneLimit) SpawnLogic();
 		else if (!bWaveNotStarted && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) WaveCompleted();
@@ -314,18 +333,31 @@ void UWaveManager::InitiateWave() { WaveManagerHUD->ToggleCountdownText(); }
 void UWaveManager::UpdateEnemiesAmount()
 {
 	AliveEnemiesAmount--;
-	if (CurrentGameMode == EGameMode::HackTerminalsMode && !bUnlimitedSpawning && AliveEnemiesAmount <= 0) FinishTerminalHack();
+	if ((CurrentGameMode == EGameMode::HackTerminalsMode || CurrentGameMode == EGameMode::ChargeTerminalMode) && !bUnlimitedSpawning && AliveEnemiesAmount <= 0) FinishTerminalHack();
 	else if (CurrentGameMode == EGameMode::WaveMode && WaveManagerHUD) WaveManagerHUD->UpdateEnemiesAmount(EnemiesLeftToKill + AliveEnemiesAmount);
 }
 
 void UWaveManager::UpdateTaskProgress()
 {
-	TerminalHackTimer += 0.5f;
-	if (WaveManagerHUD) WaveManagerHUD->UpdateTaskProgress(TerminalHackTimer, TerminalHackRequired);
-	if (TerminalHackTimer >= TerminalHackRequired)
+	if (CurrentGameMode == EGameMode::HackTerminalsMode)
 	{
-		bUnlimitedSpawning = false;
-		if (CurrentGameMode == EGameMode::HackTerminalsMode && !bUnlimitedSpawning && AliveEnemiesAmount <= 0) FinishTerminalHack();
-		UKismetSystemLibrary::K2_ClearTimer(this, "UpdateTaskProgress");
+		TerminalHackProgress += 0.5f;
+		if (WaveManagerHUD) WaveManagerHUD->UpdateTaskProgress(TerminalHackProgress, TerminalHackRequired);
+		if (TerminalHackProgress >= TerminalHackRequired)
+		{
+			bUnlimitedSpawning = false;
+			if (!bUnlimitedSpawning && AliveEnemiesAmount <= 0) FinishTerminalHack();
+			UKismetSystemLibrary::K2_ClearTimer(this, "UpdateTaskProgress");
+		}
+	}
+	else
+	{
+		TerminalHackProgress += TerminalHackRequired / 4.f;
+		if (WaveManagerHUD) WaveManagerHUD->UpdateTaskProgress(TerminalHackProgress, TerminalHackRequired);
+		if (TerminalHackProgress >= TerminalHackRequired)
+		{
+			bUnlimitedSpawning = false;
+			if (!bUnlimitedSpawning && AliveEnemiesAmount <= 0) FinalizeMode();
+		}
 	}
 }

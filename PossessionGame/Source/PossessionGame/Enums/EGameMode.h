@@ -8,5 +8,5 @@ enum class EGameMode : uint8
     TutorialMode2,
     WaveMode,
     HackTerminalsMode,
-    HackMainTerminalMode
+    ChargeTerminalMode
 };
