@@ -32,7 +32,6 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 
 	virtual void BeginPlay() override;
 	virtual void Init(bool bInIsPlayerObject) override;
-	virtual void Disable(const bool bHide) override;
 	virtual void Interact() override;
 	void ShowMarker();
 	void EnableCollectible();

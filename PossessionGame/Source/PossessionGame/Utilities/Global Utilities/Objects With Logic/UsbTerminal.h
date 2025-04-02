@@ -5,6 +5,7 @@
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "UsbTerminal.generated.h"
 
+class ACollectible;
 class UDelegateManager;
 class APoolObject;
 class UWidgetComponent;
@@ -17,6 +18,9 @@ class POSSESSIONGAME_API AUsbTerminal : public AActor, public IInteractable
 
 	AUsbTerminal();
 
+	int32 CurrentUsbIndex = 0;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TSubclassOf<ACollectible> UsbClass;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

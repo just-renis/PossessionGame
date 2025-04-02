@@ -1,4 +1,6 @@
 ﻿#include "UsbTerminal.h"
+
+#include "Collectible.h"
 #include "PoolObject.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -30,8 +32,12 @@ void AUsbTerminal::BeginPlay()
 void AUsbTerminal::Interact()
 {
 	if (!GetIsInteractable()) return;
-	DelegateManager->OnUsbInserted.Broadcast();
-	DelegateManager->SetAllUsbInteractable(true);
+	GetWorld()->SpawnActor<ACollectible>(UsbClass)->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Socket" + FString::FromInt(++CurrentUsbIndex)));
+	if (CurrentUsbIndex < 5)
+	{
+		DelegateManager->OnUsbInserted.Broadcast();
+		DelegateManager->SetAllUsbInteractable(true);
+	}
 	DisableInteraction();
 }
 

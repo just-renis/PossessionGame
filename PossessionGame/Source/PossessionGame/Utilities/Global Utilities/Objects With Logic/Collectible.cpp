@@ -23,28 +23,24 @@ void ACollectible::BeginPlay()
 	PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACollectible::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ACollectible::DisableInteractionWidget);
-	DelegateManager->OnUsbCollected.AddUObject(this, &ACollectible::DisableCollectible);
-	DelegateManager->OnUsbInserted.AddUObject(this, &ACollectible::EnableCollectible);
+	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ACollectible::Init(bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
-	if (InteractableWidget) InteractableWidget->SetVisibility(false);
+	DelegateManager->OnUsbCollected.AddUObject(this, &ACollectible::DisableCollectible);
+	DelegateManager->OnUsbInserted.AddUObject(this, &ACollectible::EnableCollectible);
 	if (DelegateManager->GetIsAllUsbInteractable()) ToggleInteractableWidget(true, true);
-}
-
-void ACollectible::Disable(const bool bHide)
-{
-	Super::Disable(bHide);
-	ToggleInteractableWidget(false, true);
+	else ToggleInteractableWidget(false, false);
 }
 
 void ACollectible::Interact()
 {
 	if (!GetIsInteractable()) return;
-	PoolingManager->ReturnObjectToPool(EPoolObject::Collectible, this);
 	DisableCollectible();
+	PoolingManager->ReturnObjectToPool(EPoolObject::Collectible, this);
+	DelegateManager->OnUsbInserted.RemoveAll(this);
 	DelegateManager->OnUsbCollected.RemoveAll(this);
 	DelegateManager->OnUsbCollected.Broadcast();
 	DelegateManager->SetAllUsbInteractable(false);
