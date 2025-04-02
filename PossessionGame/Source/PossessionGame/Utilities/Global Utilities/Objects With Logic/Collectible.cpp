@@ -23,7 +23,6 @@ void ACollectible::BeginPlay()
 	PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACollectible::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ACollectible::DisableInteractionWidget);
-	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ACollectible::Init(bool bInIsPlayerObject)
@@ -31,8 +30,15 @@ void ACollectible::Init(bool bInIsPlayerObject)
 	Super::Init(bInIsPlayerObject);
 	DelegateManager->OnUsbCollected.AddUObject(this, &ACollectible::DisableCollectible);
 	DelegateManager->OnUsbInserted.AddUObject(this, &ACollectible::EnableCollectible);
-	if (DelegateManager->GetIsAllUsbInteractable()) ToggleInteractableWidget(true, true);
-	else ToggleInteractableWidget(false, false);
+	DelegateManager->OnUsbTerminalCharged.AddUObject(this, &ACollectible::ReturnToPool);
+	if (DelegateManager->GetIsAllUsbInteractable()) EnableCollectible();
+	else DisableCollectible();
+}
+
+void ACollectible::Disable(const bool bHide)
+{
+	Super::Disable(bHide);
+	DelegateManager->OnUsbTerminalCharged.RemoveAll(this);
 }
 
 void ACollectible::Interact()
@@ -77,6 +83,12 @@ void ACollectible::ToggleInteractableWidget(const bool bState, const bool bMarke
 		if (bMarkerIncluded && Marker) PoolingManager->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
 		if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	}
+}
+
+void ACollectible::ReturnToPool()
+{
+	DisableCollectible();
+	PoolingManager->ReturnObjectToPool(EPoolObject::Collectible, this);
 }
 
 void ACollectible::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

@@ -22,6 +22,7 @@ void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelega
 	DelegateManager->OnTerminalInteraction.AddUObject(this, &UWaveManager::StartTerminalHack);
 	DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount);
 	DelegateManager->OnUsbInserted.AddUObject(this, &UWaveManager::UpdateTaskProgress);
+	DelegateManager->OnUsbTerminalCharged.AddUObject(this, &UWaveManager::DisableUsbDrop);
 	if (bTutorialIsFinished) return;
 	CurrentGameMode = EGameMode::TutorialMode1;
 	DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UWaveManager::AsyncLoadAndSpawnEnemy);
@@ -63,6 +64,7 @@ void UWaveManager::FinalizeMode()
 	else if (CurrentGameMode == EGameMode::ChargeTerminalMode)
 	{
 		ShowUpgradeSelection();
+		(void)DelegateManager->OnChargeTerminalModeCompletion.ExecuteIfBound();
 		ResetTaskProgress();
 		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
 	}

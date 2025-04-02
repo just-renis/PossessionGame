@@ -521,7 +521,7 @@ void AEnemy::AI_SetupUpgradesAppliance()
 
 void AEnemy::AI_SpawnUsbOnDeath() const
 {
-	if (GetWorld()->GetSubsystem<UWaveManager>()->GetCurrentGameMode() != EGameMode::ChargeTerminalMode) return;
+	if (GetWorld()->GetSubsystem<UWaveManager>()->GetCurrentGameMode() != EGameMode::ChargeTerminalMode || !GetWorld()->GetSubsystem<UWaveManager>()->GetIsUsbDropEnabled()) return;
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
@@ -791,12 +791,9 @@ void AEnemy::P_TryInteracting()
 	DrawDebugLine(GetWorld(), Camera->GetComponentLocation(), Camera->GetComponentLocation() + (Camera->GetForwardVector() * 450.f), FColor::Red, false, 5.0f, 0, 2.0f);
 	if (GetWorld()->LineTraceSingleByChannel(Hit, Camera->GetComponentLocation(), Camera->GetComponentLocation() + (Camera->GetForwardVector() * 450.f), ECC_Visibility, CollisionParams))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HITACTOR NAME: %s"), *Hit.GetActor()->GetName());
 		if (const TObjectPtr<AActor> HitActor = Hit.GetActor())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("HITACTOR NAME 2: %s"), *Hit.GetActor()->GetName());
 			if (!HitActor->Implements<UInteractable>()) return;
-			UE_LOG(LogTemp, Warning, TEXT("HITACTOR NAME 3: %s"), *Hit.GetActor()->GetName());
 			Cast<IInteractable>(HitActor)->Interact();
 		}
 	}

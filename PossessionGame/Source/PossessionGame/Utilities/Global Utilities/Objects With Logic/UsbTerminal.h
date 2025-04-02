@@ -20,17 +20,19 @@ class POSSESSIONGAME_API AUsbTerminal : public AActor, public IInteractable
 
 	int32 CurrentUsbIndex = 0;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TSubclassOf<ACollectible> UsbClass;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> Collision;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> InteractableWidget;
+	UPROPERTY(EditDefaultsOnly, Category = "Usb")
+	TObjectPtr<UStaticMesh> UsbMesh;
 	UPROPERTY()
 	TObjectPtr<APoolObject> Marker;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
+	UPROPERTY()
+	TObjectPtr<UStaticMeshComponent> UsbMeshes[4];
 
 	virtual void BeginPlay() override;
 	virtual void Interact() override;

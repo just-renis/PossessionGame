@@ -10,6 +10,8 @@ class POSSESSIONGAME_API AForceField : public AActor
 
 	AForceField();
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bIsTutorialForceField = false;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> ForceField;
 

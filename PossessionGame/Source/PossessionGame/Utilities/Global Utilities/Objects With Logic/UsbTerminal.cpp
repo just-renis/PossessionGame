@@ -1,5 +1,4 @@
 ﻿#include "UsbTerminal.h"
-
 #include "Collectible.h"
 #include "PoolObject.h"
 #include "Components/SphereComponent.h"
@@ -17,11 +16,24 @@ AUsbTerminal::AUsbTerminal()
 	RootComponent = Mesh;
 	Collision->SetupAttachment(RootComponent);
 	InteractableWidget->SetupAttachment(RootComponent);
+	for (int i = 0; i < 4; i++) UsbMeshes[i] = CreateDefaultSubobject<UStaticMeshComponent>(FName("UsbMesh" + FString::FromInt(i)));
 }
 
 void AUsbTerminal::BeginPlay()
 {
 	Super::BeginPlay();
+	for (int i = 0; i < 4; i++)
+	{
+		if (UsbMeshes[i])
+		{
+			UsbMeshes[i]->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Socket" + FString::FromInt(i + 1)));
+			UsbMeshes[i]->SetStaticMesh(UsbMesh);
+			UsbMeshes[i]->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			UsbMeshes[i]->SetGenerateOverlapEvents(false);
+			UsbMeshes[i]->CanCharacterStepUpOn = ECB_No;
+			UsbMeshes[i]->SetVisibility(false);
+		}
+	}
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnUsbCollected.AddUObject(this, &AUsbTerminal::EnableInteraction);
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AUsbTerminal::EnableInteractionWidget);
@@ -32,11 +44,12 @@ void AUsbTerminal::BeginPlay()
 void AUsbTerminal::Interact()
 {
 	if (!GetIsInteractable()) return;
-	GetWorld()->SpawnActor<ACollectible>(UsbClass)->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Socket" + FString::FromInt(++CurrentUsbIndex)));
-	if (CurrentUsbIndex < 5)
+	if (CurrentUsbIndex < 4)
 	{
+		UsbMeshes[CurrentUsbIndex]->SetVisibility(true);
 		DelegateManager->OnUsbInserted.Broadcast();
 		DelegateManager->SetAllUsbInteractable(true);
+		if (++CurrentUsbIndex == 4) DelegateManager->OnUsbTerminalCharged.Broadcast();
 	}
 	DisableInteraction();
 }

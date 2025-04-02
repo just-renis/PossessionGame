@@ -10,7 +10,8 @@ AForceField::AForceField()
 void AForceField::BeginPlay()
 {
 	Super::BeginPlay();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->DestroyTutorialForceField.BindUObject(this, &AForceField::DestroyThis);
+	if (bIsTutorialForceField) GetGameInstance()->GetSubsystem<UDelegateManager>()->DestroyTutorialForceField.BindUObject(this, &AForceField::DestroyThis);
+	else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnChargeTerminalModeCompletion.BindUObject(this, &AForceField::DestroyThis);
 }
 
 void AForceField::DestroyThis() { Destroy(); }
