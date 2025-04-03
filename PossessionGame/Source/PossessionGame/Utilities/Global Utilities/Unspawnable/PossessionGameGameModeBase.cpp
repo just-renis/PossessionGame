@@ -24,9 +24,9 @@ void APossessionGameGameModeBase::BeginPlay()
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
-	FString LevelName = GetWorld()->GetMapName();
-	LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
-	if (!LevelName.Equals("TutorialLevel")) SaveSlot->SetTutorialFinished();
+//	FString LevelName = GetWorld()->GetMapName();
+//	LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+//	if (!LevelName.Equals("TutorialLevel")) SaveSlot->SetTutorialFinished();
 	const TObjectPtr<UWaveManager> WaveManager = GetWorld()->GetSubsystem<UWaveManager>();
 	WaveManager->Init(SaveSlot->GetIsTutorialFinished(), DelegateManager);
 	WaveManager->SetupWaveManagerSettings(EnemiesThatAreSpawnable, EnemiesAmountToSpawnOnFirstWave);
