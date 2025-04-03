@@ -16,6 +16,8 @@ DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
 DECLARE_DELEGATE(FDestroyTutorialForceField);
 DECLARE_DELEGATE(FStopShowingHint);
 DECLARE_DELEGATE(FOnChargeTerminalModeCompletion);
+DECLARE_DELEGATE(FOnUsbCollected);
+DECLARE_DELEGATE(FOnUsbInserted);
 DECLARE_DELEGATE_OneParam(FOnShowPressAnyKey, const bool);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FSpawnTutorialEnemy, const ECharacterType);
@@ -31,9 +33,6 @@ DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_MULTICAST_DELEGATE(FOnTutorialEnd);
 DECLARE_MULTICAST_DELEGATE(FOnHackModeStart);
 DECLARE_MULTICAST_DELEGATE(FOnTerminalHackFinish);
-DECLARE_MULTICAST_DELEGATE(FOnUsbCollected);
-DECLARE_MULTICAST_DELEGATE(FOnUsbInserted);
-DECLARE_MULTICAST_DELEGATE(FOnUsbTerminalCharged);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemiesAmountDecrease, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
@@ -60,6 +59,8 @@ public:
 	FDestroyTutorialForceField DestroyTutorialForceField;
 	FStopShowingHint StopShowingHint;
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
+	FOnUsbCollected OnUsbCollected;
+	FOnUsbInserted OnUsbInserted;
 	FOnShowPressAnyKey OnShowPressAnyKey;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
@@ -75,9 +76,6 @@ public:
 	FOnTutorialEnd OnTutorialEnd;
 	FOnHackModeStart OnHackModeStart;
 	FOnTerminalHackFinish OnTerminalHackFinish;
-	FOnUsbCollected OnUsbCollected;
-	FOnUsbInserted OnUsbInserted;
-	FOnUsbTerminalCharged OnUsbTerminalCharged;
 	FOnEnemiesAmountDecrease OnEnemiesAmountDecrease;
 	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
@@ -90,9 +88,9 @@ public:
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
 	FOnWeaponAmmoChangeThreeParams OnWeaponAmmoChangeThreeParams;
 
-	bool GetIsAllUsbInteractable() const { return bAllUsbInteractable; }
+	bool GetIsUsbDroppable() const { return bIsUsbDroppable; }
 
-	void SetAllUsbInteractable(const bool bState) { bAllUsbInteractable = bState; }
+	void SetIsUsbDroppable(const bool bState) { bIsUsbDroppable = bState; }
 private:
-	bool bAllUsbInteractable = true;
+	bool bIsUsbDroppable = false;
 };

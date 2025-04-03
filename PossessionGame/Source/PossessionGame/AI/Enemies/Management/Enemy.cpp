@@ -41,7 +41,6 @@
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
-#include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
@@ -521,14 +520,9 @@ void AEnemy::AI_SetupUpgradesAppliance()
 
 void AEnemy::AI_SpawnUsbOnDeath() const
 {
-	if (GetWorld()->GetSubsystem<UWaveManager>()->GetCurrentGameMode() != EGameMode::ChargeTerminalMode || !GetWorld()->GetSubsystem<UWaveManager>()->GetIsUsbDropEnabled()) return;
-	FHitResult HitResult;
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(this);
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, GetActorLocation(), GetActorLocation() - FVector(0, 0, 500.f), ECC_Visibility, CollisionParams))
-	{
-		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Collectible, HitResult.ImpactPoint)->Init();
-	}
+	if (!DelegateManager->GetIsUsbDroppable()) return;
+	DelegateManager->SetIsUsbDroppable(false);
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Collectible, GetActorLocation())->Init();
 }
 
 void AEnemy::AI_HideHpBar() const { if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
@@ -788,8 +782,7 @@ void AEnemy::P_TryInteracting()
 	FHitResult Hit;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
-	DrawDebugLine(GetWorld(), Camera->GetComponentLocation(), Camera->GetComponentLocation() + (Camera->GetForwardVector() * 450.f), FColor::Red, false, 5.0f, 0, 2.0f);
-	if (GetWorld()->LineTraceSingleByChannel(Hit, Camera->GetComponentLocation(), Camera->GetComponentLocation() + (Camera->GetForwardVector() * 450.f), ECC_Visibility, CollisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(Hit, Camera->GetComponentLocation(), Camera->GetComponentLocation() + Camera->GetForwardVector() * 450.f, ECC_Visibility, CollisionParams))
 	{
 		if (const TObjectPtr<AActor> HitActor = Hit.GetActor())
 		{

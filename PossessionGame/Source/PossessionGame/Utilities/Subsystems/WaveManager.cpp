@@ -21,8 +21,7 @@ void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelega
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &UWaveManager::SetAndStartGameMode);
 	DelegateManager->OnTerminalInteraction.AddUObject(this, &UWaveManager::StartTerminalHack);
 	DelegateManager->OnEnemyDeath.AddUObject(this, &UWaveManager::UpdateEnemiesAmount);
-	DelegateManager->OnUsbInserted.AddUObject(this, &UWaveManager::UpdateTaskProgress);
-	DelegateManager->OnUsbTerminalCharged.AddUObject(this, &UWaveManager::DisableUsbDrop);
+	DelegateManager->OnUsbInserted.BindUObject(this, &UWaveManager::UpdateTaskProgress);
 	if (bTutorialIsFinished) return;
 	CurrentGameMode = EGameMode::TutorialMode1;
 	DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UWaveManager::AsyncLoadAndSpawnEnemy);

@@ -19,7 +19,6 @@ ACollectible::ACollectible()
 void ACollectible::BeginPlay()
 {
 	Super::BeginPlay();
-	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACollectible::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ACollectible::DisableInteractionWidget);
@@ -28,28 +27,16 @@ void ACollectible::BeginPlay()
 void ACollectible::Init(bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
-	DelegateManager->OnUsbCollected.AddUObject(this, &ACollectible::DisableCollectible);
-	DelegateManager->OnUsbInserted.AddUObject(this, &ACollectible::EnableCollectible);
-	DelegateManager->OnUsbTerminalCharged.AddUObject(this, &ACollectible::ReturnToPool);
-	if (DelegateManager->GetIsAllUsbInteractable()) EnableCollectible();
-	else DisableCollectible();
-}
-
-void ACollectible::Disable(const bool bHide)
-{
-	Super::Disable(bHide);
-	DelegateManager->OnUsbTerminalCharged.RemoveAll(this);
+	EnableCollectible();
+	if (InteractableWidget) InteractableWidget->SetVisibility(false);
 }
 
 void ACollectible::Interact()
 {
 	if (!GetIsInteractable()) return;
-	DisableCollectible();
 	PoolingManager->ReturnObjectToPool(EPoolObject::Collectible, this);
-	DelegateManager->OnUsbInserted.RemoveAll(this);
-	DelegateManager->OnUsbCollected.RemoveAll(this);
-	DelegateManager->OnUsbCollected.Broadcast();
-	DelegateManager->SetAllUsbInteractable(false);
+	DisableCollectible();
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.ExecuteIfBound();
 }
 
 void ACollectible::ShowMarker()
@@ -83,12 +70,6 @@ void ACollectible::ToggleInteractableWidget(const bool bState, const bool bMarke
 		if (bMarkerIncluded && Marker) PoolingManager->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
 		if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	}
-}
-
-void ACollectible::ReturnToPool()
-{
-	DisableCollectible();
-	PoolingManager->ReturnObjectToPool(EPoolObject::Collectible, this);
 }
 
 void ACollectible::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

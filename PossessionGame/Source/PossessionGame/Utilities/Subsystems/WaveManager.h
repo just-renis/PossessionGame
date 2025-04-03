@@ -26,7 +26,6 @@ class POSSESSIONGAME_API UWaveManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-	bool GetIsUsbDropEnabled() const { return bIsUsbDropEnabled; }
 	EGameMode GetCurrentGameMode() const { return CurrentGameMode; }
 	
 	void Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager);
@@ -36,7 +35,6 @@ private:
 	bool bWaveNotStarted = false;
 	bool bTutorialIsFinished = false;
 	bool bUnlimitedSpawning = false;
-	bool bIsUsbDropEnabled = true;
 	int32 CurrentWave = 1;
 	int32 EnemiesPerWave = 2;
 	int32 EnemiesLeftToKill = 2;
@@ -63,7 +61,6 @@ private:
 	EWeapon GetWeaponCode(ECharacterType EnemyType);
 	EWeapon GetSingularWeapon(EWeapon Weapon);
 
-	void DisableUsbDrop() { bIsUsbDropEnabled = false; }
 	void InitMode();
 	void FinalizeMode();
 	void SetupTimers();

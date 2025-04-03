@@ -1,6 +1,7 @@
 ﻿#include "GameModeInitiator.h"
 #include "Components/SphereComponent.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 AGameModeInitiator::AGameModeInitiator()
@@ -21,6 +22,7 @@ void AGameModeInitiator::Initiate(UPrimitiveComponent* OverlappedComponent, AAct
 	{
 		if (Enemy->GetIsPossessed())
 		{
+			if (GameMode == EGameMode::ChargeTerminalMode) GetGameInstance()->GetSubsystem<UDelegateManager>()->SetIsUsbDroppable(true);
 			GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
 			Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			Destroy();

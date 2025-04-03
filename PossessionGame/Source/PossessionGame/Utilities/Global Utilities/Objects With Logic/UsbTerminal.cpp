@@ -22,6 +22,7 @@ AUsbTerminal::AUsbTerminal()
 void AUsbTerminal::BeginPlay()
 {
 	Super::BeginPlay();
+	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	for (int i = 0; i < 4; i++)
 	{
 		if (UsbMeshes[i])
@@ -34,10 +35,9 @@ void AUsbTerminal::BeginPlay()
 			UsbMeshes[i]->SetVisibility(false);
 		}
 	}
-	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	DelegateManager->OnUsbCollected.AddUObject(this, &AUsbTerminal::EnableInteraction);
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AUsbTerminal::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &AUsbTerminal::DisableInteractionWidget);
+	DelegateManager->OnUsbCollected.BindUObject(this, &AUsbTerminal::EnableInteraction);
 	DisableInteraction();
 }
 
@@ -47,9 +47,8 @@ void AUsbTerminal::Interact()
 	if (CurrentUsbIndex < 4)
 	{
 		UsbMeshes[CurrentUsbIndex]->SetVisibility(true);
-		DelegateManager->OnUsbInserted.Broadcast();
-		DelegateManager->SetAllUsbInteractable(true);
-		if (++CurrentUsbIndex == 4) DelegateManager->OnUsbTerminalCharged.Broadcast();
+		(void)DelegateManager->OnUsbInserted.ExecuteIfBound();
+		if (++CurrentUsbIndex < 4) DelegateManager->SetIsUsbDroppable(true);
 	}
 	DisableInteraction();
 }
