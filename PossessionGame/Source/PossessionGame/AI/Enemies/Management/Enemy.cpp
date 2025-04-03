@@ -190,7 +190,7 @@ void AEnemy::AI_SetCanShoot(const bool bState)
 	}
 }
 
-void AEnemy::AI_Disable() const { AI->StopLogic(true); }
+void AEnemy::AI_Disable() const { if (AI) AI->StopLogic(true); }
 
 void AEnemy::InitiateDeath()
 {

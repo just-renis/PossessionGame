@@ -41,7 +41,7 @@ private:
 	int32 EnemiesOnSceneLimit = 7;
 	int32 AliveEnemiesAmount = 0;
 	int32 CountdownSeconds = 4;
-	int32 TerminalsLeftToHack = 2;
+	int32 TerminalsLeftToHack = 3;
 	float SpawnRate = 1.f;
 	float TerminalHackProgress = 0.f;
 	float TerminalHackRequired = 5.f;

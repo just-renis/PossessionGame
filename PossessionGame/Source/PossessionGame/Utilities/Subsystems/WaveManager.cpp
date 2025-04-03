@@ -172,8 +172,7 @@ void UWaveManager::SetupSpawnLocations()
 	for (TObjectPtr<AActor> Actor : Actors)
 	{
 		TObjectPtr<ASpawnLocation> SpawnLocation = Cast<ASpawnLocation>(Actor);
-		SpawnLocations.Add(SpawnLocation->GetGameMode());
-//		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
+		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
 		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
 	}
 }
