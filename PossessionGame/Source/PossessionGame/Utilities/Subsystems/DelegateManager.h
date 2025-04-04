@@ -26,7 +26,6 @@ DECLARE_DELEGATE_OneParam(FSendTargetToTutorialDrone, const TObjectPtr<AActor>&)
 DECLARE_DELEGATE_OneParam(FOnCheckDistanceToTutorialDrone, const int32);
 DECLARE_DELEGATE_OneParam(FOnShowHint, const int32);
 DECLARE_DELEGATE_OneParam(FOnShowDialogue, const int32);
-DECLARE_DELEGATE_OneParam(FOnTutorialStepChange, const int32);
 DECLARE_MULTICAST_DELEGATE(FOnTerminalInteraction);
 DECLARE_MULTICAST_DELEGATE(FOnEnemyDeath);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
@@ -69,7 +68,6 @@ public:
 	FOnCheckDistanceToTutorialDrone OnCheckDistanceToTutorialDrone;
 	FOnShowHint OnShowHint;
 	FOnShowDialogue OnShowDialogue;
-	FOnTutorialStepChange OnTutorialStepChange;
 	FOnTerminalInteraction OnTerminalInteraction;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnPlayerDeath OnPlayerDeath;

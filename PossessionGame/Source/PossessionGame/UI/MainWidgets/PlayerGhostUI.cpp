@@ -18,7 +18,6 @@ void UPlayerGhostUI::NativeConstruct()
 	DelegateManager->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
 	DelegateManager->StopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
 	DelegateManager->OnShowPressAnyKey.BindUObject(this, &UPlayerGhostUI::ShowPressAnyKey);
-	DelegateManager->OnTutorialStepChange.BindUObject(this, &UPlayerGhostUI::SetCurrentTutorialStep);
 }
 
 FReply UPlayerGhostUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
@@ -26,12 +25,13 @@ FReply UPlayerGhostUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEv
 	if (PressAnyKeyToContinueInv && IsPressAnyKeyShown())
 	{
 		ShowPressAnyKey(false);
-		switch (CurrentTutorialStep)
+		switch (++CurrentTutorialStep)
 		{
 			case 0: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(1); break;
-			case 1: (void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(0); break;
-			case 2: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(6); break;
-			case 3:
+			case 1: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(2); break;
+			case 2: (void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(0); break;
+			case 3: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(6); break;
+			case 4:
 				DelegateManager->OnTutorialEnd.Broadcast();
 				RemoveFromParent();
 				break;
