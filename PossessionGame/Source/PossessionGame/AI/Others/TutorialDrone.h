@@ -21,7 +21,7 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 	int32 DistanceToTargetIndex = -1;
 	int32 WaypointIndex = -1;
 	float RotationSpeed = 3.6f;
-	float MovementSpeed = 9.f;
+	float MovementSpeed = 4.5f;
 	FVector WaypointLocation = FVector::ZeroVector;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<ATutorialDialogue> DialogueClass;
