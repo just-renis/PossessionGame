@@ -28,6 +28,9 @@ void ACollectible::BeginPlay()
 void ACollectible::Init(bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
+	InitialSpawnZ = GetActorLocation().Z;
+	UKismetSystemLibrary::K2_SetTimer(this, "Float", 0.05f, true);
+	SetActorRotation(FRotator(0.f, 0.f, 45.f));
 	EnableCollectible();
 	if (InteractableWidget) InteractableWidget->SetVisibility(false);
 }
@@ -35,6 +38,7 @@ void ACollectible::Init(bool bInIsPlayerObject)
 void ACollectible::Interact()
 {
 	if (!GetIsInteractable()) return;
+	UKismetSystemLibrary::K2_ClearTimer(this, "Float");
 	PoolingManager->ReturnObjectToPool(EPoolObject::Collectible, this);
 	DisableCollectible();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.ExecuteIfBound();
@@ -77,6 +81,14 @@ void ACollectible::ChangeOutlineState(const bool bState)
 {
 	Mesh->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
 	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
+}
+
+void ACollectible::Float()
+{
+	FVector NewLocation = GetActorLocation();
+	const float FloatValue = FMath::Sin(GetWorld()->GetTimeSeconds() * 2.f) * 20.f;
+	NewLocation.Z = InitialSpawnZ + FloatValue;
+	SetActorLocation(NewLocation);
 }
 
 void ACollectible::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

@@ -17,6 +17,7 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 
 	ACollectible();
 
+	float InitialSpawnZ;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -40,6 +41,8 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	virtual void ChangeOutlineState(const bool bState) override;
 	UFUNCTION()
 	void DisableOutline() { ChangeOutlineState(false); }
+	UFUNCTION()
+	void Float();
 	UFUNCTION()
 	void EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
