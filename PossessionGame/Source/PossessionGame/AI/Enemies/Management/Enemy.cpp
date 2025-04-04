@@ -920,7 +920,7 @@ void AEnemy::DestroyThis()
 
 void AEnemy::SpawnCondenseMaterialsProcess()
 {
-	MeshBaseMaterialCondenseValue -= 0.025f;
+	MeshBaseMaterialCondenseValue -= 0.01875f;
 	MeshEmissiveMaterialOpacityValue += 0.0625f;
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
 	MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
