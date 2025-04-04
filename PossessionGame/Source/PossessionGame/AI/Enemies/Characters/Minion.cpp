@@ -39,7 +39,7 @@ void AMinion::DestroyAI()
 	Super::DestroyAI();
 	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
 	{
-		(void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(1);
+		(void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(2);
 		(void)DelegateManager->StopShowingHint.ExecuteIfBound();
 	}
 }

@@ -44,14 +44,11 @@ void ATutorialDrone::RetrieveDroneWaypoints()
 
 void ATutorialDrone::SetDroneMoveLocation(const int32 InIndex)
 {
-	if (Waypoints.IsValidIndex(InIndex))
-	{
-		Dialogue->SetVisibilityState(false);
-		WaypointIndex = InIndex;
-		WaypointLocation = Waypoints[InIndex]->GetActorLocation();
-		bIsMoving = true;
-		UKismetSystemLibrary::K2_SetTimer(this, "MoveToLocation", 0.015f, true);
-	}
+	Dialogue->SetVisibilityState(false);
+	WaypointIndex = InIndex;
+	for (int32 i = 0; i < Waypoints.Num(); i++) if (Waypoints[i]->GetOrder() == InIndex) WaypointLocation = Waypoints[i]->GetActorLocation();
+	bIsMoving = true;
+	UKismetSystemLibrary::K2_SetTimer(this, "MoveToLocation", 0.015f, true);
 }
 
 void ATutorialDrone::EnableCheckDistanceToTarget(const int32 InIndex)
@@ -90,16 +87,17 @@ void ATutorialDrone::MoveToLocation()
 	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(10.f))
 	{
 		bIsMoving = false;
+		UKismetSystemLibrary::K2_ClearTimer(this, "MoveToLocation");
 		switch (WaypointIndex)
 		{
-			case 0:
+			case 0: SetDroneMoveLocation(1); break;
+			case 1:
 				(void)DelegateManager->DestroyTutorialForceField.ExecuteIfBound();
 				EnableCheckDistanceToTarget(1);
 				break;
-			case 1: EnableCheckDistanceToTarget(2); break;
+			case 2: EnableCheckDistanceToTarget(2); break;
 			default: ;
 		}
-		UKismetSystemLibrary::K2_ClearTimer(this, "MoveToLocation");
 	}
 }
 
