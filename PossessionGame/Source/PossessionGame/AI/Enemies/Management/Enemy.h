@@ -176,6 +176,8 @@ private:
 	bool bIsAIBarCreated = false;
 	bool bPlayerDied = false;
 	float PossessionBarTimer = 0.f;
+	float MeshBaseMaterialCondenseValue = 0.7f;
+	float MeshEmissiveMaterialOpacityValue = 0.f;
 	EMoveMode CurrentMoveMode = EMoveMode::Walk;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
@@ -195,6 +197,10 @@ private:
 	TObjectPtr<ANavAreaModifier> NavAreaModifier;
 	UPROPERTY()
 	TObjectPtr<APossessionGameGameModeBase> GameModeBase;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MI_MeshBaseMaterial;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MI_MeshEmissiveMaterial;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
@@ -259,8 +265,11 @@ private:
 	void ChangeXRayState(const bool bState) const;
 	void SetupUserSettings() const;
 	void ClearTimers();
+	void RetrieveMeshMaterials();
 	UFUNCTION()
 	void CheckIfFallOutOfWorld();
 	UFUNCTION()
 	void DestroyThis();
+	UFUNCTION()
+	void SpawnCondenseMaterialsProcess();
 };

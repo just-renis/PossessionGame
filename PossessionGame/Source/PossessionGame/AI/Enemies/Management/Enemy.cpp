@@ -383,13 +383,13 @@ void AEnemy::P_TemporallyToggleRunning(const bool bState) { if (bIsRunning) SetM
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 	AI_SetupHpBar();
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
 	SetMesh(CharacterName);
+	RetrieveMeshMaterials();
 	SetAnimInstance();
 	Tags.Add("Enemy");
 	Tags.Add("AliveEnemy");
@@ -899,10 +899,30 @@ void AEnemy::ClearTimers()
 	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
 }
 
+void AEnemy::RetrieveMeshMaterials()
+{
+	if (CharacterName != ECharacterType::Guardian && CharacterName != ECharacterType::Minion) return;
+	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
+	{
+		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+	}
+	UKismetSystemLibrary::K2_SetTimer(this, "SpawnCondenseMaterialsProcess", 0.0625f, true);
+}
+
 void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsPossessed ? P_Death() : InitiateDeath(); }
 
 void AEnemy::DestroyThis()
 {
 	Weapon->DestroyThis();
 	Destroy();
+}
+
+void AEnemy::SpawnCondenseMaterialsProcess()
+{
+	MeshBaseMaterialCondenseValue -= 0.025f;
+	MeshEmissiveMaterialOpacityValue += 0.0625f;
+	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
+	MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
+	if (MeshEmissiveMaterialOpacityValue >= 1.f) UKismetSystemLibrary::K2_ClearTimer(this, "SpawnCondenseMaterialsProcess");
 }
