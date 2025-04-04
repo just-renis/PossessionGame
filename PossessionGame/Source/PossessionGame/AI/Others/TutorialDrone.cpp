@@ -22,12 +22,11 @@ ATutorialDrone::ATutorialDrone()
 void ATutorialDrone::BeginPlay()
 {
 	Super::BeginPlay();
-	PlaySound(ESound::DroneBuzz);
+	//PlaySound(ESound::DroneBuzz);
 	SetupAttachments();
 	SetupDelegates();
 	RetrieveDroneWaypoints();
 	PlayDroneAnimation();
-	UKismetSystemLibrary::K2_SetTimer(this, "LookAtTarget", 0.02f, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "SpinPropellers", 0.05f, true);
 }
 
@@ -84,13 +83,13 @@ void ATutorialDrone::SetupDelegates()
 
 void ATutorialDrone::MoveToLocation()
 {
+	if (bIsRotating) return;
 	const FVector Direction = (WaypointLocation - GetActorLocation()).GetSafeNormal();
-	const FVector NewLocation = GetActorLocation() + Direction * 600.f * 0.015f;
+	const FVector NewLocation = GetActorLocation() + Direction * MovementSpeed;
 	SetActorLocation(NewLocation);
 	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(10.f))
 	{
 		bIsMoving = false;
-		Dialogue->SetVisibilityState(true);
 		switch (WaypointIndex)
 		{
 			case 0:
@@ -109,11 +108,16 @@ void ATutorialDrone::LookAtTarget()
 	if (!Target) return;
 	FRotator TargetRotation;
 	TargetRotation.Yaw = ((bIsMoving ? WaypointLocation : Target->GetActorLocation()) - GetActorLocation()).GetSafeNormal2D().Rotation().Yaw - 90.f;
-	FRotator NewRotation;
-	NewRotation.Yaw = FMath::FixedTurn(GetActorRotation().Yaw, TargetRotation.Yaw, 1.8f);
-	NewRotation.Pitch = GetActorRotation().Pitch;
-	NewRotation.Roll = GetActorRotation().Roll;
-	SetActorRotation(NewRotation);
+	if (FMath::Abs(FMath::FindDeltaAngleDegrees(GetActorRotation().Yaw, TargetRotation.Yaw)) > 2.f)
+	{
+		bIsRotating = true;
+		FRotator NewRotation;
+		NewRotation.Yaw = FMath::FixedTurn(GetActorRotation().Yaw, TargetRotation.Yaw, RotationSpeed);
+		NewRotation.Pitch = GetActorRotation().Pitch;
+		NewRotation.Roll = GetActorRotation().Roll;
+		SetActorRotation(NewRotation);
+	}
+	else bIsRotating = false;
 }
 
 void ATutorialDrone::CheckDistanceToTarget()
@@ -126,6 +130,7 @@ void ATutorialDrone::CheckDistanceToTarget()
 			case 0:
 				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(0);
 				(void)DelegateManager->StopShowingHint.ExecuteIfBound();
+				UKismetSystemLibrary::K2_SetTimer(this, "LookAtTarget", 0.02f, true);
 				break;
 			case 1:
 				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(4);

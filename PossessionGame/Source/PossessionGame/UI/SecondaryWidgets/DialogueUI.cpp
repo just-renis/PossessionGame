@@ -7,6 +7,7 @@
 void UDialogueUI::StartDialogue(const int32 InIndex, const float InSpeed)
 {
 	if (!DialogueTexts.IsValidIndex(InIndex)) return;
+	if (GetVisibility() == ESlateVisibility::Collapsed) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	AssetsManager->PlaySound2D(ESound::DialogueStart);
 	DialogueTextIndex = InIndex;
 	TargetText = DialogueTexts[DialogueTextIndex];
