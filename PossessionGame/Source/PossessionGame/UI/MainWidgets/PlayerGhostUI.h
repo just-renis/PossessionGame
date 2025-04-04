@@ -31,7 +31,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TArray<FString> HintTexts;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> StartupAnimation;
+	TObjectPtr<UWidgetAnimation> StartupAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> HintAppearAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> PopupAppearAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> PressAnyKeyAppearAnim;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 

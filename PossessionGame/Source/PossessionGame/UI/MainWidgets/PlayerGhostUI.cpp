@@ -7,9 +7,9 @@
 
 bool UPlayerGhostUI::IsPressAnyKeyShown() const { return PressAnyKeyToContinueInv->GetVisibility() == ESlateVisibility::SelfHitTestInvisible; }
 
-float UPlayerGhostUI::GetStartupAnimationLength() const { return StartupAnimation ? StartupAnimation->GetEndTime() : 0.f; }
+float UPlayerGhostUI::GetStartupAnimationLength() const { return StartupAnim ? StartupAnim->GetEndTime() : 0.f; }
 
-void UPlayerGhostUI::PlayStartupAnimation() { if (StartupAnimation) PlayAnimation(StartupAnimation); }
+void UPlayerGhostUI::PlayStartupAnimation() { if (StartupAnim) PlayAnimation(StartupAnim); }
 
 void UPlayerGhostUI::NativeConstruct()
 {
@@ -48,8 +48,16 @@ FReply UPlayerGhostUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, cons
 
 void UPlayerGhostUI::ShowHint(const int32 InIndex)
 {
-	if (HintTexts.IsValidIndex(InIndex)) SetHintText(HintTexts[InIndex]);
-	if (InIndex == 0 && PopupInv) PopupInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (HintTexts.IsValidIndex(InIndex))
+	{
+		if (HintAppearAnim) PlayAnimation(HintAppearAnim);
+		SetHintText(HintTexts[InIndex]);
+	}
+	if (InIndex == 0 && PopupInv)
+	{
+		PopupInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		if (PopupAppearAnim) PlayAnimation(PopupAppearAnim);
+	}
 }
 
 void UPlayerGhostUI::SetHintText(const FString& InText) const
@@ -72,6 +80,7 @@ void UPlayerGhostUI::ShowPressAnyKey(const bool bState)
 		bIsShowPressAnyKeyEnabled = bState;
 		if (bState)
 		{
+			if (PressAnyKeyAppearAnim) PlayAnimation(PressAnyKeyAppearAnim);
 			Controller->SetInputMode(FInputModeUIOnly());
 			SetKeyboardFocus();
 		}
