@@ -290,7 +290,7 @@ void UWaveManager::FinishTerminalHack()
 	else
 	{
 		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
-		DelegateManager->OnTerminalHackFinish.Broadcast();
+		DelegateManager->OnTerminalHackFinish.Broadcast(CurrentGameMode);
 	}
 }
 

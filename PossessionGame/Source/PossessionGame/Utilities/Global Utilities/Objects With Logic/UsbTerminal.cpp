@@ -3,6 +3,7 @@
 #include "PoolObject.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -49,41 +50,48 @@ void AUsbTerminal::Interact()
 		UsbMeshes[CurrentUsbIndex]->SetVisibility(true);
 		(void)DelegateManager->OnUsbInserted.ExecuteIfBound();
 		if (++CurrentUsbIndex < 4) DelegateManager->SetIsUsbDroppable(true);
+		else if (Marker) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
 	}
 	DisableInteraction();
 }
 
 void AUsbTerminal::ShowMarker()
 {
-	Marker = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::ObjectiveMarker, GetActorLocation() + FVector(0.f, 0.f, 50.f));
+	if (!Marker) Marker = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::ObjectiveMarker, GetActorLocation() + FVector(0.f, 0.f, 140.f));
 	Marker->Init();
 }
 
 void AUsbTerminal::EnableInteraction()
 {
-	ToggleInteractableWidget(true, true);
+	ToggleInteractableWidget(true);
 	SetIsInteractable(true);
 }
 
 void AUsbTerminal::DisableInteraction()
 {
-	ToggleInteractableWidget(false, true);
+	ToggleInteractableWidget(false);
 	SetIsInteractable(false);
 }
 
-void AUsbTerminal::ToggleInteractableWidget(const bool bState, const bool bMarkerIncluded)
+void AUsbTerminal::ToggleInteractableWidget(const bool bState)
 {
 	if (bState)
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		if (bMarkerIncluded) ShowMarker();
+		ShowMarker();
 	}
 	else
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (bMarkerIncluded && Marker) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
+		if (Marker) Marker->Disable();
 		if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	}
+}
+
+void AUsbTerminal::ChangeOutlineState(const bool bState)
+{
+	Mesh->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
+	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
 }
 
 void AUsbTerminal::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

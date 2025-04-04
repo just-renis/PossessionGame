@@ -16,6 +16,7 @@ public:
 
 	void SetIsInteractable(const bool bState) { bIsInteractable = bState; }
 	virtual void Interact() = 0;
+	virtual void ChangeOutlineState(const bool bState) = 0;
 private:
-	bool bIsInteractable = true;
+	bool bIsInteractable = false;
 };

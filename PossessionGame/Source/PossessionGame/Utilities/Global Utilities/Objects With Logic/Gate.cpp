@@ -27,6 +27,7 @@ void AGate::BeginPlay()
 		Collision->OnComponentBeginOverlap.AddDynamic(this, &AGate::EnableInteractionWidget);
 		Collision->OnComponentEndOverlap.AddDynamic(this, &AGate::DisableInteractionWidget);
 		Collision->SetBoxExtent(FVector(250.f, 450.f, 175.f));
+		SetIsInteractable(true);
 	}
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGate);
 }
@@ -60,6 +61,13 @@ void AGate::Interact()
 	Collision->OnComponentEndOverlap.RemoveAll(this);
 	if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	OpenGate(EGameMode::None);
+}
+
+void AGate::ChangeOutlineState(const bool bState)
+{
+	FirstGateSide->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
+	SecondGateSide->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
+	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
 }
 
 void AGate::OpenGateSides()

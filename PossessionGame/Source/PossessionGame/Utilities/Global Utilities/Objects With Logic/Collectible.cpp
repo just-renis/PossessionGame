@@ -1,6 +1,7 @@
 ﻿#include "Collectible.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -70,6 +71,12 @@ void ACollectible::ToggleInteractableWidget(const bool bState, const bool bMarke
 		if (bMarkerIncluded && Marker) PoolingManager->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
 		if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	}
+}
+
+void ACollectible::ChangeOutlineState(const bool bState)
+{
+	Mesh->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
+	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
 }
 
 void ACollectible::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

@@ -242,7 +242,7 @@ private:
 	UFUNCTION()
 	void P_ControlLogic();
 	UFUNCTION()
-	void P_DetectIfPlayerPointingAtEnemy();
+	void P_DetectIfPlayerPointingAtOutlineObjects();
 	UFUNCTION()
 	void P_TriggerCriticalDamageIndicator() const;
 	UFUNCTION()

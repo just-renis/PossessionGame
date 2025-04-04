@@ -2,7 +2,9 @@
 #include "PoolObject.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -24,53 +26,62 @@ void ATerminal::BeginPlay()
 	DelegateManager->OnHackModeStart.AddUObject(this, &ATerminal::ShowMarker);
 	DelegateManager->OnTerminalInteraction.AddUObject(this, &ATerminal::DisableTerminal);
 	DelegateManager->OnTerminalHackFinish.AddUObject(this, &ATerminal::EnableTerminal);
+	DelegateManager->OnGameModeInitiator.AddUObject(this, &ATerminal::EnableTerminal);
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATerminal::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ATerminal::DisableInteractionWidget);
 	if (InteractableWidget) InteractableWidget->SetVisibility(false);
-	ToggleInteractableWidget(true);
 }
 
 void ATerminal::Interact()
 {
 	if (!GetIsInteractable()) return;
+	if (Marker) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
 	DelegateManager->OnTerminalInteraction.RemoveAll(this);
 	DelegateManager->OnTerminalHackFinish.RemoveAll(this);
-	ToggleInteractableWidget(false, true);
+	DisableTerminal();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTerminalInteraction.Broadcast();
-	SetIsInteractable(false);
 }
 
 void ATerminal::ShowMarker()
 {
-	Marker = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::ObjectiveMarker, GetActorLocation() + FVector(0.f, 0.f, 140.f));
+	if (!Marker) Marker = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::ObjectiveMarker, GetActorLocation() + FVector(0.f, 0.f, 140.f));
 	Marker->Init();
 }
 
-void ATerminal::EnableTerminal()
+void ATerminal::EnableTerminal(const EGameMode InGameMode)
 {
-	ToggleInteractableWidget(true, true);
-	SetIsInteractable(true);
+	if (InGameMode == EGameMode::HackTerminalsMode)
+	{
+		ToggleInteractableWidget(true);
+		SetIsInteractable(true);
+	}
 }
 
 void ATerminal::DisableTerminal()
 {
-	ToggleInteractableWidget(false, true);
+	ToggleInteractableWidget(false);
 	SetIsInteractable(false);
 }
 
-void ATerminal::ToggleInteractableWidget(const bool bState, const bool bMarkerIncluded)
+void ATerminal::ToggleInteractableWidget(const bool bState)
 {
 	if (bState)
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		if (bMarkerIncluded) ShowMarker();
+		ShowMarker();
 	}
 	else
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (bMarkerIncluded && Marker) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
+		if (Marker) Marker->Disable();
 		if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	}
+}
+
+void ATerminal::ChangeOutlineState(const bool bState)
+{
+	Mesh->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
+	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
 }
 
 void ATerminal::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

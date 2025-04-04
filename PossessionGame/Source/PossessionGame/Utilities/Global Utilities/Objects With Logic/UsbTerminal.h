@@ -27,6 +27,8 @@ class POSSESSIONGAME_API AUsbTerminal : public AActor, public IInteractable
 	TObjectPtr<UWidgetComponent> InteractableWidget;
 	UPROPERTY(EditDefaultsOnly, Category = "Usb")
 	TObjectPtr<UStaticMesh> UsbMesh;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
 	UPROPERTY()
 	TObjectPtr<APoolObject> Marker;
 	UPROPERTY()
@@ -39,7 +41,10 @@ class POSSESSIONGAME_API AUsbTerminal : public AActor, public IInteractable
 	void ShowMarker();
 	void EnableInteraction();
 	void DisableInteraction();
-	void ToggleInteractableWidget(const bool bState, const bool bMarkerIncluded = false);
+	void ToggleInteractableWidget(const bool bState);
+	virtual void ChangeOutlineState(const bool bState) override;
+	UFUNCTION()
+	void DisableOutline() { ChangeOutlineState(false); }
 	UFUNCTION()
 	void EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

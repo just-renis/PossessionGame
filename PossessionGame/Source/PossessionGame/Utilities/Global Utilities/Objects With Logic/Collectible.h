@@ -23,6 +23,8 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	TObjectPtr<USphereComponent> Collision;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> InteractableWidget;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
 	UPROPERTY()
 	TObjectPtr<APoolObject> Marker;
 	UPROPERTY()
@@ -35,6 +37,9 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	void EnableCollectible();
 	void DisableCollectible();
 	void ToggleInteractableWidget(const bool bState, const bool bMarkerIncluded = false);
+	virtual void ChangeOutlineState(const bool bState) override;
+	UFUNCTION()
+	void DisableOutline() { ChangeOutlineState(false); }
 	UFUNCTION()
 	void EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

@@ -33,15 +33,20 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	TObjectPtr<UStaticMeshComponent> SecondGateSide;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> InteractableWidget;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
 
 	virtual void BeginPlay() override;
 	void OpenGate(const EGameMode InGameMode);
 	void CloseGate(const EGameMode InGameMode = EGameMode::None);
 	virtual void Interact() override;
+	virtual void ChangeOutlineState(const bool bState) override;
 	UFUNCTION()
 	void OpenGateSides();
 	UFUNCTION()
 	void CloseGateSides();
+	UFUNCTION()
+	void DisableOutline() { ChangeOutlineState(false); }
 	UFUNCTION()
 	void EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

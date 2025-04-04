@@ -559,7 +559,7 @@ void AEnemy::P_SetupUI()
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
 	P_SetupColorsForUI();
-	UKismetSystemLibrary::K2_SetTimer(this, "P_DetectIfPlayerPointingAtEnemy", 0.25f, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "P_DetectIfPlayerPointingAtOutlineObjects", 0.25f, true);
 	//UKismetSystemLibrary::K2_SetTimer(this, "P_UpdateHitDamageIndicators", 0.25f, true);
 }
 
@@ -812,18 +812,25 @@ void AEnemy::P_ControlLogic()
 	if (!bInUpgradeSelection) P_PossessionBarLogic();
 }
 
-void AEnemy::P_DetectIfPlayerPointingAtEnemy()
+void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 {
-	if (!bCanPossessOtherEnemy) return;
 	FHitResult HitResult;
 	const FVector StartLocation = GetCamera()->GetComponentLocation();
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + GetCamera()->GetForwardVector() * 15000.f, ECC_Visibility))
 	{
-		const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
-		if (Enemy && Enemy->GetIsPossessable() && Enemy->GetIsAlive())
+		if (const TObjectPtr<AActor> HitActor = HitResult.GetActor(); HitActor->Implements<UInteractable>())
 		{
-			Enemy->SetPossessionOutline(true);
-			Enemy->SetPossessionOutlineTimer();
+			IInteractable* Interactable = Cast<IInteractable>(HitActor);
+			if (Interactable->GetIsInteractable()) Interactable->ChangeOutlineState(true);
+		}
+		else
+		{
+			const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
+			if (Enemy && Enemy->GetIsPossessable() && Enemy->GetIsAlive())
+			{
+				Enemy->SetPossessionOutline(true);
+				Enemy->SetPossessionOutlineTimer();
+			}
 		}
 	}
 }
@@ -886,7 +893,7 @@ void AEnemy::SetupUserSettings() const
 void AEnemy::ClearTimers()
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "P_ControlLogic");
-	UKismetSystemLibrary::K2_ClearTimer(this, "P_DetectIfPlayerPointingAtEnemy");
+	UKismetSystemLibrary::K2_ClearTimer(this, "P_DetectIfPlayerPointingAtOutlineObjects");
 	UKismetSystemLibrary::K2_ClearTimer(this, "P_TriggerCriticalDamageIndicator");
 	UKismetSystemLibrary::K2_ClearTimer(this, "AI_TriggerDeathVoiceLine");
 	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");

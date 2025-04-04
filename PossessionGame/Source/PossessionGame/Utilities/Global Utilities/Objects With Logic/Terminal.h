@@ -5,6 +5,7 @@
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "Terminal.generated.h"
 
+enum class EGameMode : uint8;
 class UDelegateManager;
 class APoolObject;
 class USphereComponent;
@@ -23,6 +24,8 @@ class POSSESSIONGAME_API ATerminal : public AActor, public IInteractable
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> InteractableWidget;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
 	UPROPERTY()
 	TObjectPtr<APoolObject> Marker;
 	UPROPERTY()
@@ -31,9 +34,12 @@ class POSSESSIONGAME_API ATerminal : public AActor, public IInteractable
 	virtual void BeginPlay() override;
 	virtual void Interact() override;
 	void ShowMarker();
-	void EnableTerminal();
+	void EnableTerminal(const EGameMode InGameMode);
 	void DisableTerminal();
-	void ToggleInteractableWidget(const bool bState, const bool bMarkerIncluded = false);
+	void ToggleInteractableWidget(const bool bState);
+	virtual void ChangeOutlineState(const bool bState) override;
+	UFUNCTION()
+	void DisableOutline() { ChangeOutlineState(false); }
 	UFUNCTION()
 	void EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
