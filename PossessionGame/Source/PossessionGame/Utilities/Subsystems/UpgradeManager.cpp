@@ -44,10 +44,10 @@ TObjectPtr<UUpgradeData> UUpgradeManager::GetProjectileUpgradeData(const EPoolOb
 {
 	switch (InProjectileName)
 	{
-		case EPoolObject::RangerProjectile: return Upgrades[EUpgrade::RangerBaseStat];
-		case EPoolObject::RangerGrenadeLauncherProjectile: return Upgrades[EUpgrade::RangerAbility1];
-		case EPoolObject::TricksterPoisonProjectile: return Upgrades[EUpgrade::TricksterAbility1];
-		case EPoolObject::TricksterEmpProjectile: return Upgrades[EUpgrade::TricksterAbility2];
+		case EPoolObject::RangerProjectile: return Upgrades.Contains(EUpgrade::RangerBaseStat) ? Upgrades[EUpgrade::RangerBaseStat] : nullptr;
+		case EPoolObject::RangerGrenadeLauncherProjectile: return Upgrades.Contains(EUpgrade::RangerAbility1) ? Upgrades[EUpgrade::RangerAbility1] : nullptr;
+		case EPoolObject::TricksterPoisonProjectile: return Upgrades.Contains(EUpgrade::TricksterAbility1) ? Upgrades[EUpgrade::TricksterAbility1] : nullptr;
+		case EPoolObject::TricksterEmpProjectile: return Upgrades.Contains(EUpgrade::TricksterAbility2) ? Upgrades[EUpgrade::TricksterAbility2] : nullptr;
 		default: return nullptr;
 	}
 }
@@ -63,11 +63,12 @@ TObjectPtr<UUpgradeData> UUpgradeManager::GetAbilityUpgradeData(const EAbility I
 
 TObjectPtr<UUpgradeData> UUpgradeManager::GetCharacterBaseUpgradeData(const ECharacterType InCharacterName)
 {
-	switch (InCharacterName)
+	return nullptr;
+	/*switch (InCharacterName)
 	{
-		case ECharacterType::Ranger: return Upgrades[EUpgrade::RangerBaseStat];
+		//case ECharacterType::Ranger: return Upgrades[EUpgrade::RangerBaseStat];
 		default: return nullptr;
-	}
+	}*/
 }
 
 TArray<TObjectPtr<UUpgradeData>> UUpgradeManager::GetRandomUpgrades()
