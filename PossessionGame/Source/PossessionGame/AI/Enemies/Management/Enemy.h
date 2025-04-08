@@ -167,6 +167,7 @@ protected:
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) const;
 	virtual void DestroyAI();
 private:
+	bool bPressKeyEnabled = false;
 	bool bInUpgradeSelection = false;
 	bool bCanPossessOtherEnemy = false;
 	bool bIsAlive = true;
@@ -243,6 +244,7 @@ private:
 	void P_SetupUpgradesAppliance();
 	void P_InUpgradeSelection();
 	void P_TryInteracting();
+	void P_TutorialPressKeyToContinueLogic();
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()
@@ -258,6 +260,7 @@ private:
 	//UFUNCTION()
 	//void P_UpdateHitDamageIndicators() const;
 
+	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void TickAbilities(const float DeltaTime);
 	void SetupStimuliSource();

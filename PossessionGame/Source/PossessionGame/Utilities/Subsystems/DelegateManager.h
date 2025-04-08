@@ -18,7 +18,6 @@ DECLARE_DELEGATE(FStopShowingHint);
 DECLARE_DELEGATE(FOnChargeTerminalModeCompletion);
 DECLARE_DELEGATE(FOnUsbCollected);
 DECLARE_DELEGATE(FOnUsbInserted);
-DECLARE_DELEGATE_OneParam(FOnShowPressAnyKey, const bool);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FSpawnTutorialEnemy, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FStartTutorialDroneMoveToLocation, const int32);
@@ -41,6 +40,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeaponAmmoChangeOneParam, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeInitiator, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTerminalHackFinish, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeFinished, const EGameMode);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnWeaponAmmoChangeThreeParams, int32, int32, int32);
 
@@ -60,7 +60,6 @@ public:
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
 	FOnUsbCollected OnUsbCollected;
 	FOnUsbInserted OnUsbInserted;
-	FOnShowPressAnyKey OnShowPressAnyKey;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FStartTutorialDroneMoveToLocation StartTutorialDroneMoveToLocation;
@@ -83,6 +82,7 @@ public:
 	FOnGameModeInitiator OnGameModeInitiator;
 	FOnTerminalHackFinish OnTerminalHackFinish;
 	FOnGameModeFinished OnGameModeFinished;
+	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
 	FOnWeaponAmmoChangeThreeParams OnWeaponAmmoChangeThreeParams;
 

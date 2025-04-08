@@ -20,6 +20,7 @@ class POSSESSIONGAME_API APlayerGhost : public ACharacter
 public:
 	APlayerGhost();
 private:
+	bool bPressKeyEnabled = false;
 	bool bTutorialModeEnabled = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;
@@ -28,6 +29,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 
+	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -39,6 +41,7 @@ private:
 	void RestartLevel() const;
 	void HandleEscapeClick();
 	void SetupTutorial();
+	void PressKeyToContinue();
 	UFUNCTION()
 	void CheckIfPlayerFallOutOfWorld() const;
 	UFUNCTION()

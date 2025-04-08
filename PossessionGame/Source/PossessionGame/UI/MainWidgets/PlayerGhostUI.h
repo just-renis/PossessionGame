@@ -13,19 +13,18 @@ class POSSESSIONGAME_API UPlayerGhostUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	bool IsPressAnyKeyShown() const;
+	bool IsPressKeyShown() const;
 	float GetStartupAnimationLength() const;
 	
 	void PlayStartupAnimation();
 private:
-	bool bIsShowPressAnyKeyEnabled = false;
-	int32 CurrentTutorialStep = -1;
+	int32 CurrentTutorialStep = 0;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> PopupInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> HintInv;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> PressAnyKeyToContinueInv;
+	TObjectPtr<UInvalidationBox> PressKeyToContinueInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> HintText;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -37,15 +36,13 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> PopupAppearAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PressAnyKeyAppearAnim;
+	TObjectPtr<UWidgetAnimation> PressKeyAppearAnim;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 
 	virtual void NativeConstruct() override;
-	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	void ShowHint(const int32 InIndex);
 	void SetHintText(const FString& InText) const;
 	void StopShowingHint() const;
-	void ShowPressAnyKey(const bool bState);
+	void ShowPressKey(const bool bState);
 };

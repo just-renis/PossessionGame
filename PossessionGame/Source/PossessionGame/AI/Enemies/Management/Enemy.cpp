@@ -302,6 +302,7 @@ void AEnemy::P_Setup()
 {
 	DelegateManager->ApplyUpgradeOnSelection.AddUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
+	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
 	GetMesh()->SetGenerateOverlapEvents(true);
@@ -780,6 +781,11 @@ void AEnemy::P_InUpgradeSelection()
 
 void AEnemy::P_TryInteracting()
 {
+	if (bPressKeyEnabled)
+	{
+		P_TutorialPressKeyToContinueLogic();
+		return;
+	}
 	FHitResult Hit;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
@@ -791,6 +797,12 @@ void AEnemy::P_TryInteracting()
 			Cast<IInteractable>(HitActor)->Interact();
 		}
 	}
+}
+
+void AEnemy::P_TutorialPressKeyToContinueLogic()
+{
+	bPressKeyEnabled = false;
+	DelegateManager->OnShowPressKeyToContinue.Broadcast(false);
 }
 
 void AEnemy::P_Death()
@@ -907,7 +919,7 @@ void AEnemy::RetrieveMeshMaterials()
 		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
 		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
 	}
-	UKismetSystemLibrary::K2_SetTimer(this, "SpawnCondenseMaterialsProcess", 0.0625f, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "SpawnCondenseMaterialsProcess", 0.05f, true);
 }
 
 void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsPossessed ? P_Death() : InitiateDeath(); }
@@ -920,8 +932,8 @@ void AEnemy::DestroyThis()
 
 void AEnemy::SpawnCondenseMaterialsProcess()
 {
-	MeshBaseMaterialCondenseValue -= 0.01875f;
-	MeshEmissiveMaterialOpacityValue += 0.0625f;
+	MeshBaseMaterialCondenseValue -= 0.0075f;
+	MeshEmissiveMaterialOpacityValue += 0.025f;
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
 	MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
 	if (MeshEmissiveMaterialOpacityValue >= 1.f) UKismetSystemLibrary::K2_ClearTimer(this, "SpawnCondenseMaterialsProcess");

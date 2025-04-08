@@ -34,6 +34,7 @@ void APlayerGhost::BeginPlay()
 		if (bTutorialModeEnabled)
 		{
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
+			DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &APlayerGhost::SetPressKeyState);
 			PlayerController->SetInputMode(FInputModeUIOnly());
 			const TObjectPtr<UPlayerGhostUI> TutorialUI = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI);
 			TutorialUI->PlayStartupAnimation();
@@ -58,6 +59,7 @@ void APlayerGhost::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &APlayerGhost::StopRunning);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &APlayerGhost::PossessEnemy);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &APlayerGhost::HandleEscapeClick);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &APlayerGhost::PressKeyToContinue);
 	}
 }
 
@@ -91,6 +93,7 @@ void APlayerGhost::StopRunning() {  GetCharacterMovement()->MaxWalkSpeed = 600; 
 
 void APlayerGhost::PossessEnemy()
 {
+	if (bPressKeyEnabled) return;
 	FHitResult HitResult;
 	FCollisionQueryParams QueryParams;
 	const FVector StartLocation = Camera->GetComponentLocation();
@@ -129,6 +132,13 @@ void APlayerGhost::SetupTutorial()
 	bTutorialModeEnabled = true;
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI);
+}
+
+void APlayerGhost::PressKeyToContinue()
+{
+	if (!bPressKeyEnabled) return;
+	SetPressKeyState(false);
+	DelegateManager->OnShowPressKeyToContinue.Broadcast(false);
 }
 
 void APlayerGhost::CheckIfPlayerFallOutOfWorld() const
