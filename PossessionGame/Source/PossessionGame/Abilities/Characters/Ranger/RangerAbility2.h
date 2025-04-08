@@ -14,7 +14,6 @@ public:
 	virtual void AI_Execute() override;
 	
 	virtual void P_Execute() override;
-	virtual void P_StopAbility() override;
 private:
 	UPROPERTY()
 	TObjectPtr<ARanger> Proprietor;

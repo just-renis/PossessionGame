@@ -17,6 +17,7 @@ public:
 	void SetOverlaysVisibility(const bool bState) const;
 	void CollapseAbilityIcon(const int32 Index) const;
 	void TriggerAbilityIconReady(const EUIBar InBar, const float InCurrent, const float InMax) const;
+	void SetAsCurrent();
 private:
 	UPROPERTY(EditAnywhere, Category = "Ability Icons", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> AbilityIcon1;
@@ -42,7 +43,20 @@ private:
 	TObjectPtr<UOverlay> SecondAbilityOverlay;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UOverlay> ThirdAbilityOverlay;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> Ability1UseAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> Ability2UseAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> Ability3UseAnim;
+	UPROPERTY()
+	TArray<FTimerHandle> TimerHandles;
 
 	virtual void NativePreConstruct() override;
+	virtual void NativeDestruct() override;
 	void SetAbilitySlot(const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay);
+	void PlayAbilityUseAnim(const int32 InAbilityIndex, const bool bPlayReverseAfterwards);
+	void PlayAbilityAnim(const int32 InAbilityIndex, const bool bState);
+	UFUNCTION()
+	void PlayAbilityEndAnim(const int32 InAbilityIndex);
 };

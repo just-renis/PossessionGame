@@ -26,7 +26,7 @@ public:
 	virtual void AI_Execute() { ResetCooldown(); }
 	virtual void AI_StopAbility() { ResetDuration(); }
 
-	virtual void P_Execute() { ResetCooldown(); }
+	virtual void P_Execute();
 	virtual void P_StopAbility() { ResetDuration(); }
 
 	virtual void Tick(const float InDeltaTime);

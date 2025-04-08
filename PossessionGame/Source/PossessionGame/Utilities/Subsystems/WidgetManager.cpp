@@ -10,7 +10,6 @@ void UWidgetManager::DestroyWidget(const EWidget InWidget)
 		{
 			Widget->RemoveFromParent();
 			Widget = nullptr;
-			UE_LOG(LogTemp, Warning, TEXT("REMOVED WIDGET"));
 			Widgets.Remove(InWidget);
 		}
 	}

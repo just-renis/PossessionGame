@@ -12,8 +12,10 @@ class POSSESSIONGAME_API UAbilityData : public UDataAsset
 	GENERATED_BODY()
 public:
 	EAbility GetAbilityName() const { return AbilityName; }
+	bool GetIsAbilityWithDuration() const { return bHasDuration; }
 	int32 GetRefreshableAbilityIndex() const { return RefreshableAbilityIndex; }
 	int32 GetCurrentCooldownKill() const { return CurrentCooldownKill; }
+	int32 GetAbilityIndex() const { return AbilityIndex; }
 	float GetAbilityDuration() const { return AbilityDuration; }
 	float GetRefreshAmount() const { return RefreshAmount; }
 	float GetCooldownSecs() const { return CooldownSecs; }
@@ -21,11 +23,15 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EAbility AbilityName;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bHasDuration = false;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bHasDuration", EditConditionHides))
+	float AbilityDuration;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 CurrentCooldownKill;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 RefreshableAbilityIndex = -1;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	float AbilityDuration;
+	int32 AbilityIndex;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float RefreshAmount;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

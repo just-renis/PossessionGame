@@ -9,7 +9,6 @@ void URangerAbility2::AI_Execute()
 {
 	Proprietor->SetActionInMotion(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::DeployShield);
-	bIsAbilityInDuration = true;
 	Proprietor->SpawnShield();
 	Super::AI_Execute();
 }
@@ -18,12 +17,9 @@ void URangerAbility2::P_Execute()
 {
 	Proprietor->SetActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::RangerDeployShield);
-	bIsAbilityInDuration = true;
 	Proprietor->SpawnShield();
 	Super::P_Execute();
 }
-
-void URangerAbility2::P_StopAbility() { if (bIsAbilityInDuration) Super::P_StopAbility(); }
 
 bool URangerAbility2::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
 

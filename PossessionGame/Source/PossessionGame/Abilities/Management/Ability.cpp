@@ -6,6 +6,12 @@
 
 EAbility UAbility::GetAbilityName() const { return Data->GetAbilityName(); }
 
+void UAbility::P_Execute()
+{
+	ResetCooldown();
+	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(Data->GetAbilityIndex(), !bIsAbilityInDuration);
+}
+
 void UAbility::Tick(const float InDeltaTime)
 {
 	if (bIsAbilityInDuration) AbilityInDurationLogic(InDeltaTime);
@@ -40,7 +46,7 @@ void UAbility::SetupUpgradeAppliance(const bool bIsPlayer)
 void UAbility::SetupAdditionalProperties(const bool bIsPlayer, TObjectPtr<UAbility> InAbilityToRefresh)
 {
 	if (Data->GetRefreshAmount() > 0.f) SetupRefreshOtherAbility(Data->GetRefreshAmount(), InAbilityToRefresh);
-	if (Data->GetAbilityDuration() > 0.f) SetupDuration(Data->GetAbilityDuration(), bIsPlayer);
+	if (Data->GetIsAbilityWithDuration()) SetupDuration(Data->GetAbilityDuration(), bIsPlayer);
 	SetupUpgradeAppliance(bIsPlayer);
 }
 
@@ -72,6 +78,7 @@ void UAbility::ResetDuration()
 {
 	CurrentDuration = DurationTime;
 	bIsAbilityInDuration = false;
+	(void)DelegateManager->OnAbilityEnd.ExecuteIfBound(Data->GetAbilityIndex());
 }
 
 void UAbility::AbilityInDurationLogic(const float InDeltaTime)

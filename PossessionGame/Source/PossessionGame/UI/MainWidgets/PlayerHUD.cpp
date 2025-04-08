@@ -223,17 +223,17 @@ void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
 	switch (InCharacterType)
 	{
 		case ECharacterType::Ranger:
-			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetAsCurrent();
 			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			break;
 		case ECharacterType::Trickster:
-			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetAsCurrent();
 			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			break;
 		default:
-			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetAsCurrent();
 			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 	}

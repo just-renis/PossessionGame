@@ -1,8 +1,10 @@
 ﻿#include "AbilitiesPanelUI.h"
+#include "Animation/WidgetAnimation.h"
 #include "Components/Image.h"
 #include "Components/Overlay.h"
 #include "Components/ProgressBar.h"
 #include "PossessionGame/Enums/EUIBar.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 void UAbilitiesPanelUI::SetOverlaysVisibility(const bool bState) const
 {
@@ -68,12 +70,31 @@ void UAbilitiesPanelUI::TriggerAbilityIconReady(const EUIBar InBar, const float 
 	}
 }
 
+void UAbilitiesPanelUI::SetAsCurrent()
+{
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAbilityUse.BindUObject(this, &UAbilitiesPanelUI::PlayAbilityUseAnim);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAbilityEnd.BindUObject(this, &UAbilitiesPanelUI::PlayAbilityEndAnim);
+}
+
 void UAbilitiesPanelUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 	SetAbilitySlot(AbilityIcon1, FirstAbilityImage, FirstAbilityOverlay);
 	SetAbilitySlot(AbilityIcon2, SecondAbilityImage, SecondAbilityOverlay);
 	SetAbilitySlot(AbilityIcon3, ThirdAbilityImage, ThirdAbilityOverlay);
+}
+
+void UAbilitiesPanelUI::NativeDestruct()
+{
+	if (!GetWorld()) return;
+	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+	for (FTimerHandle& Handle : TimerHandles)
+	{
+		if (TimerManager.IsTimerActive(Handle)) TimerManager.ClearTimer(Handle);
+	}
+	TimerHandles.Empty();
+	Super::NativeDestruct();
 }
 
 void UAbilitiesPanelUI::SetAbilitySlot(const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay)
@@ -85,3 +106,27 @@ void UAbilitiesPanelUI::SetAbilitySlot(const TObjectPtr<UTexture2D>& InIcon, con
 		InOverlay->SetRenderScale(FVector2D(0.8f, 0.8f));
 	}
 }
+
+void UAbilitiesPanelUI::PlayAbilityUseAnim(const int32 InAbilityIndex, const bool bPlayReverseAfterwards)
+{
+	PlayAbilityAnim(InAbilityIndex, true);
+	if (!bPlayReverseAfterwards) return;
+	FTimerDelegate TimerDel;
+	TimerDel.BindUFunction(this, "PlayAbilityEndAnim", InAbilityIndex);
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, Ability1UseAnim->GetEndTime(), false);
+	TimerHandles.Add(TimerHandle);
+}
+
+void UAbilitiesPanelUI::PlayAbilityAnim(const int32 InAbilityIndex, const bool bState)
+{
+	switch (InAbilityIndex)
+	{
+		case 0: if (Ability1UseAnim) bState ? PlayAnimation(Ability1UseAnim) : PlayAnimation(Ability1UseAnim, 0.f, 1, EUMGSequencePlayMode::Reverse); break;
+		case 1: if (Ability2UseAnim) bState ? PlayAnimation(Ability2UseAnim) : PlayAnimation(Ability2UseAnim, 0.f, 1, EUMGSequencePlayMode::Reverse); break;
+		case 2: if (Ability3UseAnim) bState ? PlayAnimation(Ability3UseAnim) : PlayAnimation(Ability3UseAnim, 0.f, 1, EUMGSequencePlayMode::Reverse); break;
+		default: ;
+	}
+}
+
+void UAbilitiesPanelUI::PlayAbilityEndAnim(const int32 InAbilityIndex) { PlayAbilityAnim(InAbilityIndex, false); }

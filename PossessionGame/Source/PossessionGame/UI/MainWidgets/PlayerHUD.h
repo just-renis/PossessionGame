@@ -60,7 +60,6 @@ public:
 	void UpdateReceiveDamageInv();
 	void SetCharacterType(const ECharacterType InCharacterType);
 	void AnnouncePossession();
-	void SetAbilityAmountShown(const int32 InAmount);
 private:
 	ECharacterType CharacterType;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
