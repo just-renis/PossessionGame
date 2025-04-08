@@ -12,5 +12,6 @@ enum class EAbility : uint8
     RangerAbility3,
     TricksterAbility1,
     TricksterAbility2,
-    TricksterAbility3
+    TricksterAbility3,
+    GuardianAbility1
 };

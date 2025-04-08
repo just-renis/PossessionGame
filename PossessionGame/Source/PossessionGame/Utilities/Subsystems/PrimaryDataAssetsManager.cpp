@@ -275,6 +275,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_GuardianShoot", ESound::GuardianShoot);
 	SoundMap.Add("PA_GuardianSpawn", ESound::GuardianSpawn);
 	SoundMap.Add("PA_GuardianDeath", ESound::GuardianDeath);
+	SoundMap.Add("PA_GuardianOverChargeStart", ESound::GuardianOverChargeStart);
+	SoundMap.Add("PA_GuardianOverChargeEnd", ESound::GuardianOverChargeEnd);
 	SoundMap.Add("PA_DroneBuzz", ESound::DroneBuzz);
 	SoundMap.Add("PA_DialogueStart", ESound::DialogueStart);
 	FillContainers(SoundMap, SoundContainers, "Sound");

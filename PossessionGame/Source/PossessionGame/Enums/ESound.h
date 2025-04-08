@@ -41,6 +41,8 @@ enum class ESound : uint8
 	GuardianShoot,
 	GuardianSpawn,
 	GuardianDeath,
+	GuardianOverChargeStart,
+	GuardianOverChargeEnd,
 	DroneBuzz,
 	DialogueStart
 };

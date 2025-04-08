@@ -6,6 +6,8 @@
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
+#include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
+#include "PossessionGame/Weapons/Management/Weapon.h"
 
 AGuardian::AGuardian()
 {
@@ -31,6 +33,7 @@ void AGuardian::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
+	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &AGuardian::SetActionInMotion);
 }
 
 void AGuardian::P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
