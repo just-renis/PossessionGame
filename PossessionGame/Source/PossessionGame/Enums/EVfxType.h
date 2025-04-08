@@ -8,5 +8,6 @@ enum class EVfxType : uint8
 	Trail,
 	FpsTrail,
 	Impact,
-	SecondaryImpact
+	SecondaryImpact,
+	Spawn
 };

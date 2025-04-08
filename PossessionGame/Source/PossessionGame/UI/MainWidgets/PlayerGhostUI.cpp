@@ -50,8 +50,11 @@ void UPlayerGhostUI::StopShowingHint() const
 void UPlayerGhostUI::ShowPressKey(const bool bState)
 {
 	if (PressKeyToContinueInv) PressKeyToContinueInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	if (bState && PressKeyAppearAnim) PlayAnimation(PressKeyAppearAnim);
-	if (bState) return;
+	if (bState)
+	{
+		if (PressKeyAppearAnim) PlayAnimation(PressKeyAppearAnim);
+		return;
+	}
 	switch (CurrentTutorialStep++)
 	{
 		case 0: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(1); break;

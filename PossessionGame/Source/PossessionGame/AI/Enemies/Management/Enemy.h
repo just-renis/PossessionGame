@@ -268,7 +268,7 @@ private:
 	void ChangeXRayState(const bool bState) const;
 	void SetupUserSettings() const;
 	void ClearTimers();
-	void RetrieveMeshMaterials();
+	void ProcessSpawnEffects();
 	UFUNCTION()
 	void CheckIfFallOutOfWorld();
 	UFUNCTION()

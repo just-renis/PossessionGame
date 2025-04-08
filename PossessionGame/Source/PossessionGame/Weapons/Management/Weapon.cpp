@@ -153,7 +153,7 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bOverride
 
 void AWeapon::PostProprietorSetup()
 {
-	AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true);
+	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true);
 }
 
 void AWeapon::AI_Setup()
@@ -211,11 +211,11 @@ void AWeapon::HitScanLogic()
 	const FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
 	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
-	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"));
+	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"));
 	if (Proprietor->GetGameModeBase()->GetIsDebugModeEnabled()) DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 2.f);
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
-		AssetsManager->SpawnOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());
+		AssetsManager->SpawnOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());
 		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
 	}
 }

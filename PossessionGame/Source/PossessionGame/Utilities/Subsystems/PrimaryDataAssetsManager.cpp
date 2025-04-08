@@ -28,15 +28,21 @@ float UPrimaryDataAssetsManager::GetVfxAttributeValue(const TObjectPtr<UNiagaraC
 	return RetrievedValue;
 }
 
-EVfx UPrimaryDataAssetsManager::GetVfxName(EPoolObject ProjectileName, EVfxType VfxType)
+EVfx UPrimaryDataAssetsManager::GetProjectileVfxName(const EPoolObject InProjectileName, const EVfxType InVfxType)
 {
-	if (const EVfx* FoundVfx = VfxCombinationsMap.Find(FPairWrapper({ ProjectileName, VfxType }))) return *FoundVfx;
+	if (const EVfx* FoundVfx = ProjectileVfxCombinationsMap.Find(FPoolObjectPairWrapper({ InProjectileName, InVfxType }))) return *FoundVfx;
 	return EVfx::None;
 }
 
-EVfx UPrimaryDataAssetsManager::GetVfxName(ECharacterType CharacterType, EVfxType VfxType)
+EVfx UPrimaryDataAssetsManager::GetProjectileVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType)
 {
-	if (const EVfx* FoundVfx = VfxCombinationsMap.Find(FPairWrapper({ GetProjectileNameByCharacterName(CharacterType), VfxType }))) return *FoundVfx;
+	if (const EVfx* FoundVfx = ProjectileVfxCombinationsMap.Find(FPoolObjectPairWrapper({ GetProjectileNameByCharacterName(InCharacterType), InVfxType }))) return *FoundVfx;
+	return EVfx::None;
+}
+
+EVfx UPrimaryDataAssetsManager::GetCharacterVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType)
+{
+	if (const EVfx* FoundVfx = CharacterVfxCombinationsMap.Find(FCharacterPairWrapper({ InCharacterType, InVfxType }))) return *FoundVfx;
 	return EVfx::None;
 }
 
@@ -48,44 +54,39 @@ TObjectPtr<UPA_CharacterContainer>& UPrimaryDataAssetsManager::GetCharacterData(
 
 TObjectPtr<UPA_VfxContainer>& UPrimaryDataAssetsManager::GetVfxData(EVfx VfxName) { return VfxContainers[VfxName]; }
 
-TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation,  const EAttachLocation::Type InAttachType,  const bool bAutoDestroy)
-{
-	return UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName)->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
-}
-
-TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
-{
-	return UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetVfxData(InVfxName)->GetVfxEffect().Get(), InLocation, InRotation);
-}
-
 void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	VfxCombinationsMap =
+	ProjectileVfxCombinationsMap =
 	{
-		{ FPairWrapper({ EPoolObject::RangerProjectile, EVfxType::Trail }), EVfx::RangerBulletTrail },
-		{ FPairWrapper({ EPoolObject::RangerProjectile, EVfxType::Impact }), EVfx::RangerBulletImpact },
-		{ FPairWrapper({ EPoolObject::RangerProjectile, EVfxType::Muzzle }), EVfx::RangerMuzzle },
-		{ FPairWrapper({ EPoolObject::RangerProjectile, EVfxType::FpsTrail }), EVfx::RangerFpsBulletTrail },
-		{ FPairWrapper({ EPoolObject::RangerGrenadeLauncherProjectile, EVfxType::Impact }), EVfx::RangerGrenadeExplosion },
-		{ FPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Muzzle }), EVfx::MinionMuzzle },
-		{ FPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Trail }), EVfx::MinionBulletTrail },
-		{ FPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Impact }), EVfx::MinionBulletImpact },
-		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Muzzle }), EVfx::TricksterMuzzle },
-		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::FpsTrail }), EVfx::TricksterFpsBulletTrail },
-		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Impact }), EVfx::TricksterBulletImpact },
-		{ FPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Trail }), EVfx::TricksterBulletTrail },
-		{ FPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::Impact }), EVfx::TricksterPoisonImpact },
-		{ FPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::SecondaryImpact }), EVfx::TricksterPoison },
-		{ FPairWrapper({ EPoolObject::TricksterEmpProjectile, EVfxType::Impact }), EVfx::TricksterEmpImpact },
-		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Trail }), EVfx::SpyBulletTrail },
-		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Impact }), EVfx::SpyBulletImpact },
-		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Muzzle }), EVfx::SpyMuzzle },
-		{ FPairWrapper({ EPoolObject::SpyProjectile, EVfxType::FpsTrail }), EVfx::SpyFpsBulletTrail },
-		{ FPairWrapper({ EPoolObject::TankProjectile, EVfxType::Trail }), EVfx::TankBulletTrail },
-		{ FPairWrapper({ EPoolObject::TankProjectile, EVfxType::Impact }), EVfx::TankBulletImpact },
-		{ FPairWrapper({ EPoolObject::TankProjectile, EVfxType::Muzzle }), EVfx::TankMuzzle },
-		{ FPairWrapper({ EPoolObject::TankProjectile, EVfxType::FpsTrail }), EVfx::TankFpsBulletTrail }
+		{FPoolObjectPairWrapper({ EPoolObject::RangerProjectile, EVfxType::Trail }), EVfx::RangerBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::RangerProjectile, EVfxType::Impact }), EVfx::RangerBulletImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::RangerProjectile, EVfxType::Muzzle }), EVfx::RangerMuzzle },
+		{FPoolObjectPairWrapper({ EPoolObject::RangerProjectile, EVfxType::FpsTrail }), EVfx::RangerFpsBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::RangerGrenadeLauncherProjectile, EVfxType::Impact }), EVfx::RangerGrenadeExplosion },
+		{FPoolObjectPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Muzzle }), EVfx::MinionMuzzle },
+		{FPoolObjectPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Trail }), EVfx::MinionBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Impact }), EVfx::MinionBulletImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Muzzle }), EVfx::TricksterMuzzle },
+		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::FpsTrail }), EVfx::TricksterFpsBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Impact }), EVfx::TricksterBulletImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Trail }), EVfx::TricksterBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::Impact }), EVfx::TricksterPoisonImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::SecondaryImpact }), EVfx::TricksterPoison },
+		{FPoolObjectPairWrapper({ EPoolObject::TricksterEmpProjectile, EVfxType::Impact }), EVfx::TricksterEmpImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Trail }), EVfx::SpyBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Impact }), EVfx::SpyBulletImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Muzzle }), EVfx::SpyMuzzle },
+		{FPoolObjectPairWrapper({ EPoolObject::SpyProjectile, EVfxType::FpsTrail }), EVfx::SpyFpsBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::TankProjectile, EVfxType::Trail }), EVfx::TankBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::TankProjectile, EVfxType::Impact }), EVfx::TankBulletImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::TankProjectile, EVfxType::Muzzle }), EVfx::TankMuzzle },
+		{FPoolObjectPairWrapper({ EPoolObject::TankProjectile, EVfxType::FpsTrail }), EVfx::TankFpsBulletTrail }
+	};
+	CharacterVfxCombinationsMap =
+	{
+		{FCharacterPairWrapper({ ECharacterType::Guardian, EVfxType::Spawn }), EVfx::GuardianSpawn },
+		{FCharacterPairWrapper({ ECharacterType::Minion, EVfxType::Spawn }), EVfx::MinionSpawn }
 	};
 	Init();
 }
@@ -169,17 +170,6 @@ void UPrimaryDataAssetsManager::AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr
 	});
 }
 
-void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes)
-{
-	if (InAttributes.IsEmpty())
-	{
-		SpawnVfx(InVfxName, InLocation, InRotation);
-		return;
-	}
-	const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
-	ApplyAttributesToVfxComponent(InAttributes, Component);
-}
-
 void UPrimaryDataAssetsManager::SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (InVfxName == EVfx::None) return;
@@ -216,6 +206,16 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 		case ECharacterType::Guardian: return EPoolObject::GuardianProjectile;
 		default: return EPoolObject::None;
 	}
+}
+
+TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation,  const EAttachLocation::Type InAttachType,  const bool bAutoDestroy)
+{
+	return UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName)->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+}
+
+TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
+{
+	return UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetVfxData(InVfxName)->GetVfxEffect().Get(), InLocation, InRotation);
 }
 
 void UPrimaryDataAssetsManager::SetupWeaponsPrimaryAssets()
@@ -325,6 +325,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TankBulletTrail", EVfx::TankBulletTrail);
 	VfxsMap.Add("PA_TankBulletImpact", EVfx::TankBulletImpact);
 	VfxsMap.Add("PA_TankFpsBulletTrail", EVfx::TankFpsBulletTrail);
+	VfxsMap.Add("PA_GuardianSpawn", EVfx::GuardianSpawn);
+	VfxsMap.Add("PA_MinionSpawn", EVfx::MinionSpawn);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
@@ -333,6 +335,17 @@ void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const TObjectPtr<UAudioC
 {
 	InAudioComp->SetSound(GetSoundData(InSoundName)->Sound.Get());
 	InAudioComp->Play();
+}
+
+void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes)
+{
+	if (InAttributes.IsEmpty())
+	{
+		SpawnVfx(InVfxName, InLocation, InRotation);
+		return;
+	}
+	const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
+	ApplyAttributesToVfxComponent(InAttributes, Component);
 }
 
 template<typename T, typename U>

@@ -25,6 +25,7 @@
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
@@ -390,7 +391,7 @@ void AEnemy::BeginPlay()
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
 	SetMesh(CharacterName);
-	RetrieveMeshMaterials();
+	ProcessSpawnEffects();
 	SetAnimInstance();
 	Tags.Add("Enemy");
 	Tags.Add("AliveEnemy");
@@ -911,9 +912,10 @@ void AEnemy::ClearTimers()
 	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
 }
 
-void AEnemy::RetrieveMeshMaterials()
+void AEnemy::ProcessSpawnEffects()
 {
 	if (CharacterName != ECharacterType::Guardian && CharacterName != ECharacterType::Minion) return;
+	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), GetMesh()->GetSocketLocation("SpawnSocket"));
 	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
 	{
 		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);

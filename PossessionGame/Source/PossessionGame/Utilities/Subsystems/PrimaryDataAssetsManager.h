@@ -18,19 +18,39 @@ class UPA_WeaponContainer;
 class UPA_SoundContainer;
 
 USTRUCT()
-struct FPairWrapper
+struct FPoolObjectPairWrapper
 {
 	GENERATED_BODY()
 	
 	TPair<EPoolObject, EVfxType> Pair;
 
-	bool operator==(const FPairWrapper& Other) const
+	bool operator==(const FPoolObjectPairWrapper& Other) const
 	{
 		return Pair.Key == Other.Pair.Key && Pair.Value == Other.Pair.Value;
 	}
 };
 
-FORCEINLINE uint32 GetTypeHash(const FPairWrapper& PairWrapper)
+USTRUCT()
+struct FCharacterPairWrapper
+{
+	GENERATED_BODY()
+	
+	TPair<ECharacterType, EVfxType> Pair;
+
+	bool operator==(const FCharacterPairWrapper& Other) const
+	{
+		return Pair.Key == Other.Pair.Key && Pair.Value == Other.Pair.Value;
+	}
+};
+
+FORCEINLINE uint32 GetTypeHash(const FPoolObjectPairWrapper& PairWrapper)
+{
+	uint32 Hash1 = GetTypeHash(PairWrapper.Pair.Key);
+	uint32 Hash2 = GetTypeHash(PairWrapper.Pair.Value);
+	return HashCombine(Hash1, Hash2);
+}
+
+FORCEINLINE uint32 GetTypeHash(const FCharacterPairWrapper& PairWrapper)
 {
 	uint32 Hash1 = GetTypeHash(PairWrapper.Pair.Key);
 	uint32 Hash2 = GetTypeHash(PairWrapper.Pair.Value);
@@ -45,14 +65,13 @@ public:
 	bool IsAsyncLoadingFinished();
 	bool GetCanAsyncLoadHappen() const { return bCanAsyncLoadHappen; }
 	float GetVfxAttributeValue(const TObjectPtr<UNiagaraComponent>& InComponent, const FName InVfxAttributeName);
-	EVfx GetVfxName(EPoolObject ProjectileName, EVfxType VfxType);
-	EVfx GetVfxName(ECharacterType CharacterType, EVfxType VfxType);
+	EVfx GetProjectileVfxName(const EPoolObject InProjectileName, const EVfxType InVfxType);
+	EVfx GetProjectileVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType);
+	EVfx GetCharacterVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType);
 	TObjectPtr<UPA_WeaponContainer>& GetWeaponData(EWeapon WeaponName);
 	TObjectPtr<UPA_SoundContainer>& GetSoundData(ESound SoundName);
 	TObjectPtr<UPA_CharacterContainer>& GetCharacterData(ECharacterType CharacterName);
 	TObjectPtr<UPA_VfxContainer>& GetVfxData(EVfx VfxName);
-	TObjectPtr<UNiagaraComponent> AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy);
-	TObjectPtr<UNiagaraComponent> SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	void Init();
@@ -62,8 +81,7 @@ public:
 	void PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef = false);
 	void RemoveStoredSound(const ESound InSoundName);
 	void AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate = false, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EAttachLocation::Type InAttachType = EAttachLocation::SnapToTarget, const bool bAutoDestroy = false);
-	void SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes);
-	void SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
+	void SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
 	void ApplyAttributesToVfxComponent(const TMap<FName, FNiagaraAttribute>& InAttributes, const TObjectPtr<UNiagaraComponent>& Component);
 private:
 	bool bCanAsyncLoadHappen = true;
@@ -78,18 +96,23 @@ private:
 	UPROPERTY()
 	TArray<FAsyncHandle> AsyncHandles;
 	UPROPERTY()
-	TMap<FPairWrapper, EVfx> VfxCombinationsMap;
+	TMap<FPoolObjectPairWrapper, EVfx> ProjectileVfxCombinationsMap;
+	UPROPERTY()
+	TMap<FCharacterPairWrapper, EVfx> CharacterVfxCombinationsMap;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> StoredSounds;
 
 	bool IsGameRunning();
 	EPoolObject GetProjectileNameByCharacterName(ECharacterType InCharacterType);
+	TObjectPtr<UNiagaraComponent> AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy);
+	TObjectPtr<UNiagaraComponent> SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
 
 	void SetupWeaponsPrimaryAssets();
 	void SetupSoundsPrimaryAssets();
 	void SetupCharactersPrimaryAssets();
 	void SetupVfxsPrimaryAssets();
 	void SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, ESound InSoundName);
+	void SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes);
 	template<typename T, typename U>
 	void FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type);
 };

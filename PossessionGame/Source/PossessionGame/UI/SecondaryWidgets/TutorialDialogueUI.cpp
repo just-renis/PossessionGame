@@ -15,11 +15,7 @@ void UTutorialDialogueUI::FinishedTypingDialogue()
 			StartGuardianSpawn();
 			DelegateManager->OnShowPressKeyToContinue.Broadcast(true);
 			break;
-		case 3:
-			DelegateManager->OnShowPressKeyToContinue.Broadcast(true);
-			SetVisibility(ESlateVisibility::Collapsed);
-			ClearDialogueText();
-			break;
+		case 3: DelegateManager->OnShowPressKeyToContinue.Broadcast(true); break;
 		case 5: DelegateManager->OnShowPressKeyToContinue.Broadcast(true); break;
 		case 6: DelegateManager->OnShowPressKeyToContinue.Broadcast(true); break;
 		default: ;

@@ -18,6 +18,6 @@ void AMinionWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> Cha
 
 void AMinionWeapon::PostProprietorSetup()
 {
-	AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
-	AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
+	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
+	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
 }

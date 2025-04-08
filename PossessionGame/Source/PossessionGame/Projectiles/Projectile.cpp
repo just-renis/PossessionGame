@@ -34,9 +34,9 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	SetupData(ProjectileData.bIsPlayerProjectile, InWhich);
 	if (!bHasBeenPooled)
 	{
-		if (const EVfx VfxName = AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Trail); VfxName != EVfx::None)
+		if (const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail); VfxName != EVfx::None)
 		{
-			AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, EVfxType::Trail), &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
+			AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
 		}
 		bHasBeenPooled = true;
 	}
@@ -78,7 +78,7 @@ void AProjectile::DisableProjectileComponents() const
 
 void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
-	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), InAttributes);
+	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), InAttributes);
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

@@ -58,8 +58,8 @@ void ATricksterWeapon::PlayShootMontage()
 void ATricksterWeapon::PostProprietorSetup()
 {
 	P_SetupOnShootState();
-	AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
-	AssetsManager->AttachOrLoadVfx(AssetsManager->GetVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
+	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
+	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
 }
 
 void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const bool bFromFirstWeapon)
