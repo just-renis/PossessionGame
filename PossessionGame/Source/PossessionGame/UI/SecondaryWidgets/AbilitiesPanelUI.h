@@ -44,4 +44,5 @@ private:
 	TObjectPtr<UOverlay> ThirdAbilityOverlay;
 
 	virtual void NativePreConstruct() override;
+	void SetAbilitySlot(const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay);
 };

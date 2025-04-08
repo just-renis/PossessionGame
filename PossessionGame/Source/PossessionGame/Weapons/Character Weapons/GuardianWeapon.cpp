@@ -7,10 +7,7 @@
 
 bool AGuardianWeapon::P_CanShoot(const bool InbIsFirstWeapon) { return !HandsAnimInstance->IsPlaying(EHandsAnimState::Shoot); }
 
-void AGuardianWeapon::P_UpdateAmmoTextHUD()
-{
-	DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(-1);
-}
+void AGuardianWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(-1); }
 
 void AGuardianWeapon::BeginPlay()
 {

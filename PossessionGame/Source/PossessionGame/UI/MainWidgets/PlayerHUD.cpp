@@ -189,6 +189,7 @@ TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
 	switch (CharacterType)
 	{
 		case ECharacterType::Ranger: return RangerAbilitiesPanel;
+		case ECharacterType::Guardian: return GuardianAbilitiesPanel;
 		default: return TricksterAbilitiesPanel;
 	}
 }
@@ -222,12 +223,19 @@ void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
 	switch (InCharacterType)
 	{
 		case ECharacterType::Ranger:
-			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			break;
+		case ECharacterType::Trickster:
+			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			break;
 		default:
+			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 

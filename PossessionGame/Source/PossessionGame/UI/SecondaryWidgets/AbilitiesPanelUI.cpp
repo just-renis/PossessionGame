@@ -71,7 +71,17 @@ void UAbilitiesPanelUI::TriggerAbilityIconReady(const EUIBar InBar, const float 
 void UAbilitiesPanelUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-	if (AbilityIcon1 && FirstAbilityImage) FirstAbilityImage->SetBrushFromAtlasInterface(AbilityIcon1);
-	if (AbilityIcon2 && SecondAbilityImage) SecondAbilityImage->SetBrushFromAtlasInterface(AbilityIcon2);
-	if (AbilityIcon3 && ThirdAbilityImage) ThirdAbilityImage->SetBrushFromAtlasInterface(AbilityIcon3);
+	SetAbilitySlot(AbilityIcon1, FirstAbilityImage, FirstAbilityOverlay);
+	SetAbilitySlot(AbilityIcon2, SecondAbilityImage, SecondAbilityOverlay);
+	SetAbilitySlot(AbilityIcon3, ThirdAbilityImage, ThirdAbilityOverlay);
+}
+
+void UAbilitiesPanelUI::SetAbilitySlot(const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay)
+{
+	if (InIcon && InImage) InImage->SetBrushFromAtlasInterface(InIcon);
+	else
+	{
+		InOverlay->SetRenderOpacity(0.8f);
+		InOverlay->SetRenderScale(FVector2D(0.8f, 0.8f));
+	}
 }
