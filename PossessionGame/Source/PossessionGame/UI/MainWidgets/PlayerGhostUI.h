@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerGhostUI.generated.h"
 
+class UImage;
 class UInvalidationBox;
 class UDelegateManager;
 class UTextBlock;
@@ -27,6 +28,8 @@ private:
 	TObjectPtr<UInvalidationBox> PressKeyToContinueInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> HintText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> HintImage;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TArray<FString> HintTexts;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))

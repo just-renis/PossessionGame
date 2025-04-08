@@ -1,6 +1,7 @@
 ﻿#include "PlayerGhostUI.h"
 #include "Animation/WidgetAnimation.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/Image.h"
 #include "Components/InvalidationBox.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -28,7 +29,7 @@ void UPlayerGhostUI::ShowHint(const int32 InIndex)
 		if (HintAppearAnim) PlayAnimation(HintAppearAnim);
 		SetHintText(HintTexts[InIndex]);
 	}
-	if (InIndex == 0 && PopupInv)
+	if (InIndex == 0 && PopupInv && HintImage)
 	{
 		PopupInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		if (PopupAppearAnim) PlayAnimation(PopupAppearAnim);
@@ -45,6 +46,7 @@ void UPlayerGhostUI::StopShowingHint() const
 {
 	if (HintInv) HintInv->SetVisibility(ESlateVisibility::Collapsed);
 	if (PopupInv) PopupInv->SetVisibility(ESlateVisibility::Collapsed);
+	if (HintImage) HintImage->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UPlayerGhostUI::ShowPressKey(const bool bState)
