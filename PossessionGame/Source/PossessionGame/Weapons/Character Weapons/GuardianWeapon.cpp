@@ -28,5 +28,11 @@ void AGuardianWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> C
 
 void AGuardianWeapon::SetMeshes(const EWeapon InPrimaryDataAssetName)
 {
-	if (!HandsMesh->GetSkeletalMeshAsset()) HandsMesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(InPrimaryDataAssetName)->HandsMesh.Get());
+	if (!HandsMesh->GetSkeletalMeshAsset())
+	{
+		HandsMesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(InPrimaryDataAssetName)->HandsMesh.Get());
+		if (!HandsMesh) return;
+		const TObjectPtr<UMaterialInstanceDynamic> MI_Hands = HandsMesh->CreateAndSetMaterialInstanceDynamic(0);
+		if (MI_Hands) MI_Hands->SetScalarParameterValue("Progress", 0.4f);
+	}
 }
