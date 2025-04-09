@@ -5,7 +5,7 @@
 void UPA_VfxContainer::LoadVfx(const TObjectPtr<UWorld>& InWorld, const TFunction<void()>& OnVfxLoaded)
 {
 	World = InWorld;
-	VfxLoadedCallbacks.Add(FTFunction(OnVfxLoaded));
+	VfxLoadedCallbacks.Add(FTFunctionCallback(OnVfxLoaded));
 	if (!bIsInLoad)
 	{
 		bIsInLoad = true;
@@ -17,7 +17,7 @@ void UPA_VfxContainer::LoadVfx(const TObjectPtr<UWorld>& InWorld, const TFunctio
 				if (IsGameRunning())
 				{
 					bIsLoaded = true;
-					for (const FTFunction Function : VfxLoadedCallbacks) Function.Function();
+					for (const FTFunctionCallback Callback : VfxLoadedCallbacks) if (Callback.Function) Callback.Function();
 					VfxLoadedCallbacks.Empty();
 				}
 			});

@@ -7,7 +7,7 @@
 class UNiagaraSystem;
 
 USTRUCT()
-struct FTFunction
+struct FTFunctionCallback
 {
 	GENERATED_BODY()
 
@@ -34,7 +34,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UWorld> World;
 	UPROPERTY()
-	TArray<FTFunction> VfxLoadedCallbacks;
+	TArray<FTFunctionCallback> VfxLoadedCallbacks;
 	
 	bool IsGameRunning() { return IsValid(this) && World && !World->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }
 };
