@@ -73,6 +73,7 @@ public:
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo, const int32 MaxAmmo) const;
 	void P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeaponAmmo, const int32 MaxAmmo) const;
 	void P_StopTime(); // NOT USED ANYWHERE YET.
+	void P_SetFov(const float InFov);
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) { bInUpgradeSelection = false; }
 
 	void SetActionInMotion(const bool bState);
@@ -179,6 +180,8 @@ private:
 	float PossessionBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
+	float FovChangeTick;
+	float TargetFov;
 	EMoveMode CurrentMoveMode = EMoveMode::Walk;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
@@ -257,6 +260,8 @@ private:
 	void P_TriggerRunningCameraShake() const;
 	UFUNCTION()
 	void P_OpenDeathMenu() const;
+	UFUNCTION()
+	void P_ContinuousFovChange();
 	//UFUNCTION()
 	//void P_UpdateHitDamageIndicators() const;
 

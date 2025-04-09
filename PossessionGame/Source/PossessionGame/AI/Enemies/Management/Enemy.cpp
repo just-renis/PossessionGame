@@ -106,6 +106,13 @@ void AEnemy::P_StopTime()
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
+void AEnemy::P_SetFov(const float InFov)
+{
+	TargetFov = InFov;
+	FovChangeTick = (TargetFov - Camera->FieldOfView) * 0.05f;
+	UKismetSystemLibrary::K2_SetTimer(this, "P_ContinuousFovChange", 0.05f, true);
+}
+
 void AEnemy::SetActionInMotion(const bool bState)
 {
 	bIsActionInMotion = bState;
@@ -856,6 +863,16 @@ void AEnemy::P_OpenDeathMenu() const
 {
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->ChangeUIToDeathMenu();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
+}
+
+void AEnemy::P_ContinuousFovChange()
+{
+	Camera->SetFieldOfView(Camera->FieldOfView + FovChangeTick);
+	if ((FovChangeTick < 0.f && Camera->FieldOfView <= TargetFov) || (FovChangeTick > 0.f && Camera->FieldOfView >= TargetFov))
+	{
+		Camera->SetFieldOfView(TargetFov);
+		UKismetSystemLibrary::K2_ClearTimer(this, "P_ContinuousFovChange");
+	}
 }
 
 //void AEnemy::P_UpdateHitDamageIndicators() const { if (P_HUD) P_HUD->UpdateHitDamageIndicators(); }

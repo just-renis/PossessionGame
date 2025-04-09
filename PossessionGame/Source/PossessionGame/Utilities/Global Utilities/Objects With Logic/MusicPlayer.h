@@ -20,5 +20,5 @@ class POSSESSIONGAME_API AMusicPlayer : public AAmbientSound
 	virtual void BeginPlay() override;
 	void ChangeSoundTrack(const EGameMode InGameMode);
 	UFUNCTION()
-	void OnMusicFinished();
+	void OnFadeOutFinished() const;
 };
