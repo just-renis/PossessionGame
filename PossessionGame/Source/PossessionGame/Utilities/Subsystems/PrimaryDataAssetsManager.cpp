@@ -280,7 +280,6 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_DroneBuzz", ESound::DroneBuzz);
 	SoundMap.Add("PA_DialogueStart", ESound::DialogueStart);
 	SoundMap.Add("PA_RestSoundtrack", ESound::RestSoundtrack);
-	SoundMap.Add("PA_RestSoundtrackLooping", ESound::RestSoundtrackLooping);
 	SoundMap.Add("PA_BattleModeSoundtrack", ESound::BattleModeSoundtrack);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
@@ -331,6 +330,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TankBulletImpact", EVfx::TankBulletImpact);
 	VfxsMap.Add("PA_TankFpsBulletTrail", EVfx::TankFpsBulletTrail);
 	VfxsMap.Add("PA_GuardianSpawn", EVfx::GuardianSpawn);
+	VfxsMap.Add("PA_GuardianOverCharge", EVfx::GuardianOverCharge);
 	VfxsMap.Add("PA_MinionSpawn", EVfx::MinionSpawn);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();

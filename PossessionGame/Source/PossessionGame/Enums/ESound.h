@@ -46,6 +46,5 @@ enum class ESound : uint8
 	DroneBuzz,
 	DialogueStart,
 	RestSoundtrack,
-	RestSoundtrackLooping,
 	BattleModeSoundtrack
 };

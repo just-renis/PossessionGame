@@ -109,8 +109,8 @@ void AEnemy::P_StopTime()
 void AEnemy::P_SetFov(const float InFov)
 {
 	TargetFov = InFov;
-	FovChangeTick = (TargetFov - Camera->FieldOfView) * 0.05f;
-	UKismetSystemLibrary::K2_SetTimer(this, "P_ContinuousFovChange", 0.05f, true);
+	FovChangeTick = (TargetFov - Camera->FieldOfView) * 0.1f;
+	UKismetSystemLibrary::K2_SetTimer(this, "P_ContinuousFovChange", 0.025f, true);
 }
 
 void AEnemy::SetActionInMotion(const bool bState)

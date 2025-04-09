@@ -4,8 +4,15 @@
 #include "Engine/DataAsset.h"
 #include "PA_VfxContainer.generated.h"
 
-enum class EVfx : uint8;
 class UNiagaraSystem;
+
+USTRUCT()
+struct FTFunction
+{
+	GENERATED_BODY()
+
+	TFunction<void()> Function;
+};
 
 UCLASS()
 class POSSESSIONGAME_API UPA_VfxContainer : public UPrimaryDataAsset
@@ -15,7 +22,7 @@ public:
 	bool GetIsLoaded () const { return bIsLoaded; }
 	TSoftObjectPtr<UNiagaraSystem>& GetVfxEffect() { return VfxEffect; }
 
-	void LoadVfx(const TObjectPtr<UWorld>& InWorld, TFunction<void()> OnVfxLoaded);
+	void LoadVfx(const TObjectPtr<UWorld>& InWorld, const TFunction<void()>& OnVfxLoaded);
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 private:
 	bool bIsInLoad = false;
@@ -26,6 +33,8 @@ private:
 	TSoftObjectPtr<UNiagaraSystem> VfxEffect;
 	UPROPERTY()
 	TObjectPtr<UWorld> World;
-
+	UPROPERTY()
+	TArray<FTFunction> VfxLoadedCallbacks;
+	
 	bool IsGameRunning() { return IsValid(this) && World && !World->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }
 };

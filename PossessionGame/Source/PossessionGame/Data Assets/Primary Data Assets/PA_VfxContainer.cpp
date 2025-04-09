@@ -2,21 +2,23 @@
 #include "Engine/AssetManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
-void UPA_VfxContainer::LoadVfx(const TObjectPtr<UWorld>& InWorld, TFunction<void()> OnVfxLoaded)
+void UPA_VfxContainer::LoadVfx(const TObjectPtr<UWorld>& InWorld, const TFunction<void()>& OnVfxLoaded)
 {
 	World = InWorld;
+	VfxLoadedCallbacks.Add(FTFunction(OnVfxLoaded));
 	if (!bIsInLoad)
 	{
 		bIsInLoad = true;
-		TObjectPtr<UPrimaryDataAssetsManager> AssetsManager = World->GetSubsystem<UPrimaryDataAssetsManager>();
+		const TObjectPtr<UPrimaryDataAssetsManager> AssetsManager = World->GetSubsystem<UPrimaryDataAssetsManager>();
 		if (AssetsManager->GetCanAsyncLoadHappen())
 		{
-			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(VfxEffect.ToSoftObjectPath(), [this, OnVfxLoaded]
+			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(VfxEffect.ToSoftObjectPath(), [this]
 			{
 				if (IsGameRunning())
 				{
 					bIsLoaded = true;
-					OnVfxLoaded();
+					for (const FTFunction Function : VfxLoadedCallbacks) Function.Function();
+					VfxLoadedCallbacks.Empty();
 				}
 			});
 			AssetsManager->AddAsyncHandle(Handle);

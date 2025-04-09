@@ -16,6 +16,7 @@ enum class EVfx : uint8
 	MinionMuzzle,
 	MinionBulletTrail,
 	MinionBulletImpact,
+	MinionSpawn,
 	TricksterMuzzle,
 	TricksterFpsBulletTrail,
 	TricksterBulletImpact,
@@ -32,5 +33,5 @@ enum class EVfx : uint8
 	TankMuzzle,
 	TankFpsBulletTrail,
 	GuardianSpawn,
-	MinionSpawn
+	GuardianOverCharge,
 };

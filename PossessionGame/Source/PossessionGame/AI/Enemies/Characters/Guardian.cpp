@@ -6,8 +6,13 @@
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
+#include "PossessionGame/Weapons/Character Weapons/GuardianWeapon.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
+
+void AGuardian::PlayOverChargeVfx() const { Cast<AGuardianWeapon>(Weapon)->PlayOverChargeVfx(); }
+
+void AGuardian::StopOverChargeVfx() const { Cast<AGuardianWeapon>(Weapon)->StopOverChargeVfx(); }
 
 AGuardian::AGuardian()
 {

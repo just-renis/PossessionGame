@@ -1,9 +1,33 @@
 ﻿#include "GuardianWeapon.h"
+#include "NiagaraComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
+
+void AGuardianWeapon::PlayOverChargeVfx()
+{
+	if (FirstWeaponOverChargeComponent && SecondWeaponOverChargeComponent)
+	{
+		FirstWeaponOverChargeComponent->Activate();
+		SecondWeaponOverChargeComponent->Activate();
+	}
+	else
+	{
+		AssetsManager->AttachOrLoadVfx(EVfx::GuardianOverCharge, &FirstWeaponOverChargeComponent, FirstWeapon->GetMesh(), "OverChargeSocket");
+		AssetsManager->AttachOrLoadVfx(EVfx::GuardianOverCharge, &SecondWeaponOverChargeComponent, SecondWeapon->GetMesh(), "OverChargeSocket");
+	}
+}
+
+void AGuardianWeapon::StopOverChargeVfx() const
+{
+	if (FirstWeaponOverChargeComponent && SecondWeaponOverChargeComponent)
+	{
+		FirstWeaponOverChargeComponent->Deactivate();
+		SecondWeaponOverChargeComponent->Deactivate();
+	}
+}
 
 bool AGuardianWeapon::P_CanShoot(const bool InbIsFirstWeapon) { return !HandsAnimInstance->IsPlaying(EHandsAnimState::Shoot); }
 
