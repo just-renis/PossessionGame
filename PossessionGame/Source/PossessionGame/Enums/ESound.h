@@ -44,5 +44,8 @@ enum class ESound : uint8
 	GuardianOverChargeStart,
 	GuardianOverChargeEnd,
 	DroneBuzz,
-	DialogueStart
+	DialogueStart,
+	RestSoundtrack,
+	RestSoundtrackLooping,
+	BattleModeSoundtrack
 };
