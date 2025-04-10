@@ -90,7 +90,6 @@ void AEnemy::P_UseAbility(const int32 AbilityIndex)
 		Abilities[AbilityIndex]->P_Execute();
 		if (!P_HUD) return;
 		if (Abilities[AbilityIndex]->GetIsCooldownKill()) P_HUD->UpdateAbilityCooldown(AbilityIndex, Abilities[AbilityIndex]->GetCurrentCooldownKill(), Abilities[AbilityIndex]->GetReqCooldownKill());
-		P_HUD->CollapseAbilityImage(AbilityIndex);
 	}
 }
 

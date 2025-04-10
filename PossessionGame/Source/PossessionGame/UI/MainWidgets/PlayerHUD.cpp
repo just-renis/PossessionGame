@@ -110,8 +110,6 @@ void UPlayerHUD::ConfigureUIs()
 
 void UPlayerHUD::PlayDeathFadeOutAnim() { if (DeathFadeOut) PlayAnimation(DeathFadeOut); }
 
-void UPlayerHUD::CollapseAbilityImage(const int32 Index) { if (GetAbilityPanel()) GetAbilityPanel()->CollapseAbilityIcon(Index); }
-
 /*void UPlayerHUD::SetHitLocation(const FVector InHitLocation)
 {
 	const FVector Diff = (Player->GetActorLocation() - InHitLocation).GetSafeNormal(0.001f);

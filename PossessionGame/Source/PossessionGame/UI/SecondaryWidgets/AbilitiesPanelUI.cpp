@@ -129,4 +129,8 @@ void UAbilitiesPanelUI::PlayAbilityAnim(const int32 InAbilityIndex, const bool b
 	}
 }
 
-void UAbilitiesPanelUI::PlayAbilityEndAnim(const int32 InAbilityIndex) { PlayAbilityAnim(InAbilityIndex, false); }
+void UAbilitiesPanelUI::PlayAbilityEndAnim(const int32 InAbilityIndex)
+{
+	CollapseAbilityIcon(InAbilityIndex);
+	PlayAbilityAnim(InAbilityIndex, false);
+}

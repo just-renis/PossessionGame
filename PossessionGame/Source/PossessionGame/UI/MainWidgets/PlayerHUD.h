@@ -53,7 +53,6 @@ public:
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs();
 	void PlayDeathFadeOutAnim();
-	void CollapseAbilityImage(const int32 Index);
 	void SetPlayerRef(const TObjectPtr<AEnemy>& InPlayerRef) { Player = InPlayerRef; }
 //	void SetHitLocation(const FVector InHitLocation);
 	//void UpdateHitDamageIndicators();
