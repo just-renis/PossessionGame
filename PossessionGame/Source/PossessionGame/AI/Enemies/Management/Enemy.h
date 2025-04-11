@@ -10,6 +10,7 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "Enemy.generated.h"
 
+class UPossessionGameInstance;
 class APossessionGameGameModeBase;
 enum class ESound : uint8;
 class UAIHpBarUI;
@@ -205,6 +206,8 @@ private:
 	TObjectPtr<UMaterialInstanceDynamic> MI_MeshBaseMaterial;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MI_MeshEmissiveMaterial;
+	UPROPERTY()
+	TObjectPtr<UPossessionGameInstance> GameInstance;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
@@ -230,7 +233,7 @@ private:
 	void P_Rotate(const FInputActionValue& Value);
 	void P_Reload();
 	void P_ToggleRunning(bool bState);
-	void P_OnEnemyDeathEvents();
+	void P_OnEnemyDeathEvents(const int32 InXp);
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
 	void P_UpdateAbilityCooldownUI(const int32 Index);

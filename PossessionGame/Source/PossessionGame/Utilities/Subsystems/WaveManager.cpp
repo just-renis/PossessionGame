@@ -331,7 +331,7 @@ void UWaveManager::HandleSpawning()
 
 void UWaveManager::InitiateWave() { WaveManagerHUD->ToggleCountdownText(); }
 
-void UWaveManager::UpdateEnemiesAmount()
+void UWaveManager::UpdateEnemiesAmount(const int32 InXp)
 {
 	AliveEnemiesAmount--;
 	if (CurrentGameMode == EGameMode::TutorialMode1 || CurrentGameMode == EGameMode::TutorialMode2) return;

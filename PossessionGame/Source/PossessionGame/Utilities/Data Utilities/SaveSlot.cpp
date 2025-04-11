@@ -10,3 +10,13 @@ void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel)
 	else UnlockedUpgrades.Add(InUpgrade, InLevel);
 	GameInstance->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.Broadcast(InUpgrade);
 }
+
+void USaveSlot::AddXp(const int32 InXp)
+{
+	CurrentXp += InXp;
+	if (CurrentXp >= GetCurrentLevelNeededXp())
+	{
+		CurrentXp -= GetCurrentLevelNeededXp();
+		CurrentLevel++;
+	}
+}

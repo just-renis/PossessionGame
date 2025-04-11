@@ -14,8 +14,9 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 {
 	switch (InBar)
 	{
-		case EUIBar::Hp: if (HPBar) HPBar->SetPercent(InCurrent / InMax); break;
-		case EUIBar::Possession: if (PossessionBar) PossessionBar->SetPercent(InCurrent / InMax); break;
+		case EUIBar::Hp: if (HPBar && HpNumberText) UpdateProgressBar(HPBar, HpNumberText, InCurrent, InMax); break;
+		case EUIBar::Possession: if (PossessionBar && PossessionNumberText) UpdateProgressBar(PossessionBar, PossessionNumberText, InCurrent, InMax); break;
+		case EUIBar::Xp: if (XpBar && XpNumberText) UpdateProgressBar(XpBar, XpNumberText, InCurrent, InMax); break;
 		default: if (GetAbilityPanel()) GetAbilityPanel()->TriggerAbilityIconReady(InBar, InCurrent, InMax);
 	}
 }
@@ -64,6 +65,7 @@ void UPlayerHUD::UpdateFps(const int32 InFps) const
 void UPlayerHUD::Reset()
 {
 	if (PossessionBar) PossessionBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (XpBar) XpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (Crosshair) Crosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (AmmoText) AmmoText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (HPBar) HPBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -241,6 +243,18 @@ void UPlayerHUD::AnnouncePossession()
 {
 	if (PossessionAnnouncementInv) PossessionAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (PossessedPopup) PlayAnimation(PossessedPopup);
+}
+
+void UPlayerHUD::UpdateProgressBar(const TObjectPtr<UProgressBar>& InProgressBar, const TObjectPtr<UTextBlock>& InTextBlock, const float InCurrent, const float InMax)
+{
+	InProgressBar->SetPercent(InCurrent / InMax);
+	InTextBlock->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
+}
+
+void UPlayerHUD::UpdateProgressBar(const TObjectPtr<UProgressBar>& InProgressBar, const TObjectPtr<UTextBlock>& InTextBlock, const int32 InCurrent, const int32 InMax)
+{
+	InProgressBar->SetPercent(InCurrent / InMax);
+	InTextBlock->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {InCurrent, InMax})));
 }
 
 template<typename T>

@@ -32,6 +32,7 @@
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/AIHpBarUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/AbilityManager.h"
@@ -101,7 +102,7 @@ void AEnemy::P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeap
 
 void AEnemy::P_StopTime()
 {
-	if (FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), 1.f, 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Cast<UPossessionGameInstance>(GetGameInstance())->GetTimeDilation());
+	if (FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), 1.f, 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), GameInstance->GetTimeDilation());
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
@@ -211,7 +212,7 @@ void AEnemy::InitiateDeath()
 		AI_SpawnUsbOnDeath();
 		AI_PlayDeathSound();
 		DestroyAI();
-		DelegateManager->OnEnemyDeath.Broadcast();
+		DelegateManager->OnEnemyDeath.Broadcast(AI_Data->GetXp());
 	}
 	else P_Destroy();
 	HandleDeactivation();
@@ -327,7 +328,7 @@ void AEnemy::P_Setup()
 	P_InputManager = Cast<UEnhancedPlayerInput>(GetWorld()->GetFirstPlayerController()->PlayerInput);
 	P_SetupAbilities();
 	P_SetupUI();
-	DelegateManager->OnEnemyDeath.Broadcast();
+	DelegateManager->OnEnemyDeath.Broadcast(AI_Data->GetXp());
 	DelegateManager->OnEnemyDeath.AddUObject(this, &AEnemy::P_OnEnemyDeathEvents);
 }
 
@@ -391,7 +392,8 @@ void AEnemy::P_TemporallyToggleRunning(const bool bState) { if (bIsRunning) SetM
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+	DelegateManager = GameInstance->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 	AI_SetupHpBar();
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
@@ -424,7 +426,7 @@ void AEnemy::SetupAbilities(const TMap<EAbility, TSoftObjectPtr<UAbilityData>>& 
 {
 	if (AbilityData.Num() > 0)
 	{
-		const TObjectPtr<UAbilityManager> AbilityManager = GetWorld()->GetGameInstance()->GetSubsystem<UAbilityManager>();
+		const TObjectPtr<UAbilityManager> AbilityManager = GameInstance->GetSubsystem<UAbilityManager>();
 		for (int32 i = 1; i <= AbilityData.Num(); i++)
 		{
 			if (TObjectPtr<UAbility> Ability = AbilityManager->GetAbility(AbilityManager->GetAbilityFromCharacterName(CharacterName, i), this))
@@ -546,7 +548,7 @@ void AEnemy::AI_SetCharacterMovementSpeed() { AnimInstance->SetSpeed(GetCharacte
 
 void AEnemy::P_SetupData()
 {
-	P_Data->SetIsGodModeEnabled(GetWorld()->GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetIsGodModeEnabled());
+	P_Data->SetIsGodModeEnabled(GameInstance->GetSubsystem<UGlobalSettingsManager>()->GetIsGodModeEnabled());
 	MaxHp = P_Data->GetMaxHp();
 	P_SetupUpgradesAppliance();
 	CurrentHp = MaxHp;
@@ -563,6 +565,7 @@ void AEnemy::P_SetupUI()
 	P_HUD->SetPlayerRef(this);
 	P_HUD->UpdateProgressBar(EUIBar::Possession, 0.f, P_Data->GetPossessionBarCooldown());
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
+	P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSaveSlot()->GetXp(), GameInstance->GetSaveSlot()->GetCurrentLevelNeededXp());
 	P_HUD->ConfigureUIs();
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
@@ -605,14 +608,10 @@ void AEnemy::P_PossessionBarLogic()
 		bCanPossessOtherEnemy = true;
 		for (const FPlayerKeyMapping KeyBind : GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings()->GetCurrentKeyProfile()->GetPlayerMappingRows().Find("Possess")->Mappings)
 		{
-			if (P_HUD && !P_HUD->GetPossessionIndicatorIsShowing())
-			{
-				P_HUD->UpdatePossessionIndicator(true, KeyBind.GetCurrentKey().ToString());
-				return;
-			}
+			if (P_HUD && !P_HUD->GetPossessionIndicatorIsShowing()) P_HUD->UpdatePossessionIndicator(true, KeyBind.GetCurrentKey().ToString());
 		}
 	}
-	else if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Possession, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
+	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Possession, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
 }
 
 void AEnemy::P_Move(const FInputActionValue& Value)
@@ -658,9 +657,14 @@ void AEnemy::P_ToggleRunning(const bool bState)
 	}
 }
 
-void AEnemy::P_OnEnemyDeathEvents()
+void AEnemy::P_OnEnemyDeathEvents(const int32 InXp)
 {
 	PossessionBarTimer += 1.f;
+	if (P_HUD)
+	{
+		GameInstance->GetSaveSlot()->AddXp(InXp);
+		P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSaveSlot()->GetXp(), GameInstance->GetSaveSlot()->GetCurrentLevelNeededXp());
+	}
 	for (int32 i = 0; i < Abilities.Num(); i++)
 	{
 		if (Abilities[i]->GetIsCooldownKill())
@@ -673,7 +677,7 @@ void AEnemy::P_OnEnemyDeathEvents()
 
 void AEnemy::P_ToggleGodMode()
 {
-	const TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager = GetWorld()->GetGameInstance()->GetSubsystem<UGlobalSettingsManager>();
+	const TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager = GameInstance->GetSubsystem<UGlobalSettingsManager>();
 	GlobalSettingsManager->ToggleGodModeEnabled();
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
 	MaxHp = P_Data->GetMaxHp();
@@ -828,7 +832,7 @@ void AEnemy::P_ControlLogic()
 {
 	Weapon->P_SetWalkSpread(GetCharacterMovement()->Velocity.Size() >= P_Data->GetMaxWalkSpeed() - 0.1f);
 	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size()); // Reduce by an ability % for guardian.
-	if (!bInUpgradeSelection) P_PossessionBarLogic();
+	if (!bCanPossessOtherEnemy && !bInUpgradeSelection) P_PossessionBarLogic();
 }
 
 void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()

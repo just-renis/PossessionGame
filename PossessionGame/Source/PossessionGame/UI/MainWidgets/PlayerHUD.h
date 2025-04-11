@@ -39,7 +39,7 @@ public:
 	void TogglePossessionBar() { ToggleUI(PossessionBar); }
 	void ToggleAmmoText() { ToggleUI(AmmoText); }
 	void ToggleHpBar() { ToggleUI(HPBar); }
-	void UpdateProgressBar(const EUIBar InBar, float InCurrent, float InMax);
+	void UpdateProgressBar(const EUIBar InBar, const float InCurrent, const float InMax);
 	void UpdateAmmoText(const int32 InWeaponAmmo) const;
 	void UpdateAmmoText(const int32 InWeaponAmmo, const int32 InMaxAmmo) const;
 	void UpdateAmmoText(const int32 InFirstWeaponAmmo, const int32 InSecondWeaponAmmo, const int32 InMaxAmmo) const;
@@ -76,6 +76,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> PossessionBar;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> XpBar;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> Crosshair;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> DamageTickInv;
@@ -107,6 +109,12 @@ private:
 	TObjectPtr<UInvalidationBox> PressKeyBindInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> PressKeyBindText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> HpNumberText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> PossessionNumberText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> XpNumberText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DeathFadeOut;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -135,6 +143,8 @@ private:
 	void BindCrosshairToggleDelegate();
 	void BindOnDamageDealtDelegate();
 	void ShowDamageTick(const bool bIsCritical);
+	void UpdateProgressBar(const TObjectPtr<UProgressBar>& InProgressBar, const TObjectPtr<UTextBlock>& InTextBlock, const float InCurrent, const float InMax);
+	void UpdateProgressBar(const TObjectPtr<UProgressBar>& InProgressBar, const TObjectPtr<UTextBlock>& InTextBlock, const int32 InCurrent, const int32 InMax);
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };

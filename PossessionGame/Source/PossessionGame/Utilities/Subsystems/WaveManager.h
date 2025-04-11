@@ -93,7 +93,7 @@ private:
 	UFUNCTION()
 	void InitiateWave();
 	UFUNCTION()
-	void UpdateEnemiesAmount();
+	void UpdateEnemiesAmount(const int32 InXp);
 	UFUNCTION()
 	void UpdateTaskProgress();
 };

@@ -13,14 +13,21 @@ class POSSESSIONGAME_API USaveSlot : public USaveGame
 	GENERATED_BODY()
 public:
 	bool GetIsTutorialFinished() const { return bTutorialFinished; }
+	int32 GetXp() const { return CurrentXp; }
+	int32 GetCurrentLevelNeededXp() const { return 10 + CurrentLevel * 5; }
 	int32 GetLevelOfAnUpgrade(const EUpgrade InUpgrade);
 	
+	void SetTutorialFinished() { bTutorialFinished = true; }
 	void SetGameInstance(const TObjectPtr<UPossessionGameInstance>& InGameInstance) { GameInstance = InGameInstance; }
 	void AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel);
-	void SetTutorialFinished() { bTutorialFinished = true; }
+	void AddXp(const int32 InXp);
 private:
 	UPROPERTY()
 	bool bTutorialFinished = false;
+	UPROPERTY()
+	int32 CurrentXp = 0;
+	UPROPERTY()
+	int32 CurrentLevel = 0;
 	UPROPERTY()
 	TObjectPtr<UPossessionGameInstance> GameInstance;
 	UPROPERTY()
