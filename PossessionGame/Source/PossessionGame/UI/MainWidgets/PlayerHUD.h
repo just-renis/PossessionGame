@@ -111,10 +111,6 @@ private:
 	TObjectPtr<UTextBlock> PressKeyBindText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> HpNumberText;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> PossessionNumberText;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> XpNumberText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DeathFadeOut;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -143,8 +139,6 @@ private:
 	void BindCrosshairToggleDelegate();
 	void BindOnDamageDealtDelegate();
 	void ShowDamageTick(const bool bIsCritical);
-	void UpdateProgressBar(const TObjectPtr<UProgressBar>& InProgressBar, const TObjectPtr<UTextBlock>& InTextBlock, const float InCurrent, const float InMax);
-	void UpdateProgressBar(const TObjectPtr<UProgressBar>& InProgressBar, const TObjectPtr<UTextBlock>& InTextBlock, const int32 InCurrent, const int32 InMax);
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };
