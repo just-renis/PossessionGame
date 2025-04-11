@@ -36,9 +36,6 @@ class POSSESSIONGAME_API UPlayerHUD : public UUserWidget
 public:
 	bool GetPossessionIndicatorIsShowing() const;
 	
-	void TogglePossessionBar() { ToggleUI(PossessionBar); }
-	void ToggleAmmoText() { ToggleUI(AmmoText); }
-	void ToggleHpBar() { ToggleUI(HPBar); }
 	void UpdateProgressBar(const EUIBar InBar, const float InCurrent, const float InMax);
 	void UpdateAmmoText(const int32 InWeaponAmmo) const;
 	void UpdateAmmoText(const int32 InWeaponAmmo, const int32 InMaxAmmo) const;
@@ -60,6 +57,7 @@ public:
 	void SetCharacterType(const ECharacterType InCharacterType);
 	void AnnouncePossession();
 private:
+	float StepHpPercentage;
 	ECharacterType CharacterType;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> DamageTickTexture;
@@ -90,7 +88,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> AmmoText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> HPBar;
+	TObjectPtr<UProgressBar> HpBar;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> HpWhiteBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ScreenGlow;
 	UPROPERTY(meta = (BindWidget))
@@ -141,4 +141,6 @@ private:
 	void ShowDamageTick(const bool bIsCritical);
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
+	UFUNCTION()
+	void UpdateWhiteHpBar();
 };

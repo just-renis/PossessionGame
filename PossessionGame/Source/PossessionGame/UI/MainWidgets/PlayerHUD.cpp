@@ -4,6 +4,7 @@
 #include "Components/Image.h"
 #include "Components/InvalidationBox.h"
 #include "Components/TextBlock.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilitiesPanelUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -15,10 +16,13 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 	switch (InBar)
 	{
 		case EUIBar::Hp:
-			if (HPBar && HpNumberText)
+			if (HpBar && HpWhiteBar && HpNumberText)
 			{
-				HPBar->SetPercent(InCurrent / InMax);
+				StepHpPercentage = (HpBar->GetPercent() - InCurrent / InMax) / 10.f;
+				HpWhiteBar->SetPercent(HpBar->GetPercent());
+				HpBar->SetPercent(InCurrent / InMax);
 				HpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
+				UKismetSystemLibrary::K2_SetTimer(this, "UpdateWhiteHpBar", 0.02f, true);
 				break;
 			}
 		case EUIBar::Possession: if (PossessionBar) PossessionBar->SetPercent(InCurrent / InMax); break;
@@ -29,18 +33,21 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 
 void UPlayerHUD::UpdateAmmoText(const int32 InWeaponAmmo) const
 {
+	if (!AmmoText) return;
 	if (InWeaponAmmo == -1) AmmoText->SetText(FText::FromString(TEXT("∞")));
-	else if (AmmoText) AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0}"), {InWeaponAmmo})));
+	else AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0}"), {InWeaponAmmo})));
 }
 
 void UPlayerHUD::UpdateAmmoText(const int32 InWeaponAmmo, const int32 InMaxAmmo) const
 {
-	if (AmmoText) AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {InWeaponAmmo, InMaxAmmo})));
+	if (!AmmoText) return;
+	AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {InWeaponAmmo, InMaxAmmo})));
 }
 
 void UPlayerHUD::UpdateAmmoText(const int32 InFirstWeaponAmmo, const int32 InSecondWeaponAmmo, const int32 InMaxAmmo) const
 {
-	if (AmmoText) AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1} / {2}"), {InFirstWeaponAmmo, InSecondWeaponAmmo, InMaxAmmo})));
+	if (!AmmoText) return;
+	AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1} / {2}"), {InFirstWeaponAmmo, InSecondWeaponAmmo, InMaxAmmo})));
 }
 
 void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs, const float InReqSecs)
@@ -65,7 +72,8 @@ void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const int32 I
 
 void UPlayerHUD::UpdateFps(const int32 InFps) const
 {
-	if (FpsText) FpsText->SetText(FText::FromString(FString::Format(TEXT("FPS: {0}"), {InFps})));
+	if (!FpsText) return;
+	FpsText->SetText(FText::FromString(FString::Format(TEXT("FPS: {0}"), {InFps})));
 }
 
 void UPlayerHUD::Reset()
@@ -74,7 +82,7 @@ void UPlayerHUD::Reset()
 	if (XpBar) XpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (Crosshair) Crosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (AmmoText) AmmoText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (HPBar) HPBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (HpBar) HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	UpdatePossessionIndicator(false);
 	GetAbilityPanel()->SetOverlaysVisibility(true);
 }
@@ -254,5 +262,18 @@ void UPlayerHUD::AnnouncePossession()
 template<typename T>
 void UPlayerHUD::ToggleUI(const TObjectPtr<T>& InUI)
 {
-	if (InUI) InUI->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? InUI->SetVisibility(ESlateVisibility::Collapsed) : InUI->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (!InUI) return;
+	InUI->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? InUI->SetVisibility(ESlateVisibility::Collapsed) : InUI->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+}
+
+void UPlayerHUD::UpdateWhiteHpBar()
+{
+	if (!HpWhiteBar || !HpBar) return;
+	float NewPercentage = HpWhiteBar->GetPercent() - StepHpPercentage;
+	if (NewPercentage <= HpBar->GetPercent())
+	{
+		NewPercentage = HpBar->GetPercent();
+		UKismetSystemLibrary::K2_ClearTimer(this, "UpdateWhiteHpBar");
+	}
+	HpWhiteBar->SetPercent(NewPercentage);
 }
