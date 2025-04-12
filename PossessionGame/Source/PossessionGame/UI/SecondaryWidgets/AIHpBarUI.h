@@ -11,8 +11,14 @@ class POSSESSIONGAME_API UAIHpBarUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void UpdateHpBar(const float InCurrentHp, const float InMaxHp) const;
+	void UpdateHpBar(const float InCurrentHp, const float InMaxHp);
 private:
+	float StepHpPercentage;
 	UPROPERTY(meta = (BindWIdget))
 	TObjectPtr<UProgressBar> HpBar;
+	UPROPERTY(meta = (BindWIdget))
+	TObjectPtr<UProgressBar> HpWhiteBar;
+
+	UFUNCTION()
+	void UpdateWhiteHpBar();
 };
