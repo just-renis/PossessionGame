@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UpgradeCardUI.generated.h"
 
+enum class EUpgrade : uint8;
 enum class EUpgradeAttribute : uint8;
 struct FLevelUpgradeData;
 class UButton;
@@ -40,6 +41,7 @@ private:
 	TObjectPtr<UUpgradeData> Data;
 
 	FString ConvertUpgradeAttributeValueToString(const float InValue);
+	FString GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade);
 	FString GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute);
 
 	virtual void NativeConstruct() override;
