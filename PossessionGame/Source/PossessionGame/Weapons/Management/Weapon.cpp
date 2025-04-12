@@ -10,8 +10,10 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfxType.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -107,7 +109,11 @@ void AWeapon::P_SetWalkSpread(const bool bState)
 	P_Data->SetAllProjectilesWalkSpread(bState);
 }
 
-void AWeapon::DestroyThis() { Destroy(); }
+void AWeapon::DestroyThis()
+{
+	DelegateManager->OnLevelUp.RemoveAll(this);
+	Destroy();
+}
 
 void AWeapon::SetToOriginalSettings()
 {
@@ -179,10 +185,12 @@ void AWeapon::P_Setup()
 	MagazineCap = P_Data->GetMagazineCap();
 	TotalAmmo = P_Data->GetTotalAmmo();
 	HitScanDamage = P_Data->GetHitScanDamage();
+	HitScanDamage += P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(false) / 100.f);
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
 	P_SetupUpgradesAppliance();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.AddUObject(this, &AWeapon::P_ApplyUpgradeOnSelection);
+	DelegateManager->ApplyUpgradeOnSelection.AddUObject(this, &AWeapon::P_ApplyUpgradeOnSelection);
+	DelegateManager->OnLevelUp.AddUObject(this, &AWeapon::P_SetupLevelUpAppliance);
 }
 
 void AWeapon::P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName)
@@ -275,4 +283,10 @@ void AWeapon::P_SetupUpgradesAppliance()
 	HitScanDamage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, Proprietor->GetCharacterName(), EUpgradeAttribute::FlatDamage);
 	const float DamagePercentage = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, Proprietor->GetCharacterName(), EUpgradeAttribute::DamagePercentage);
 	if (DamagePercentage > 0.f) HitScanDamage += P_Data->GetHitScanDamage() * (DamagePercentage / 100.f);
+}
+
+void AWeapon::P_SetupLevelUpAppliance()
+{
+	HitScanDamage -= P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(true) / 100.f);
+	HitScanDamage += P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(false) / 100.f);
 }

@@ -132,4 +132,5 @@ private:
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
 	
 	void P_SetupUpgradesAppliance();
+	void P_SetupLevelUpAppliance();
 };

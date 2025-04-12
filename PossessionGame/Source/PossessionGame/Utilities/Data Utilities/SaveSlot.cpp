@@ -4,6 +4,8 @@
 
 int32 USaveSlot::GetLevelOfAnUpgrade(const EUpgrade InUpgrade) { return UnlockedUpgrades.Find(InUpgrade) ? UnlockedUpgrades[InUpgrade] : 0; }
 
+int32 USaveSlot::GetLevelDamageIncrease(const bool bOneLower) { return PlayerLevelData.GetDamageIncrease(bOneLower ? CurrentLevel - 1 : CurrentLevel); }
+
 void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel)
 {
 	if (UnlockedUpgrades.Find(InUpgrade)) UnlockedUpgrades[InUpgrade] = InLevel;
@@ -18,5 +20,6 @@ void USaveSlot::AddXp(const int32 InXp)
 	{
 		CurrentXp -= GetCurrentLevelNeededXp();
 		CurrentLevel++;
+		GameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast();
 	}
 }
