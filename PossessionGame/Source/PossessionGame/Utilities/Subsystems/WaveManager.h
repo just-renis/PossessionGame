@@ -10,7 +10,7 @@ class UPrimaryDataAssetsManager;
 class ASpawnLocation;
 class AEnemy;
 class UWaveManagerHUD;
-enum class ESound : uint8;
+enum class ESound : uint16;
 enum class EWeapon : uint8;
 
 USTRUCT()

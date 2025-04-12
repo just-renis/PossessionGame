@@ -4,7 +4,7 @@
 #include "Destructible.h"
 #include "RangerShield.generated.h"
 
-enum class ESound : uint8;
+enum class ESound : uint16;
 
 UCLASS()
 class POSSESSIONGAME_API ARangerShield : public ADestructible

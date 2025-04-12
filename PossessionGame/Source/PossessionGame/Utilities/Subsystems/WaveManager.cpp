@@ -243,6 +243,7 @@ void UWaveManager::FadeOutWavePanel() const { if (WaveManagerHUD) WaveManagerHUD
 void UWaveManager::WaveCompleted()
 {
 	if (!WaveManagerHUD) return;
+	PlaySound(ESound::WaveCompleted);
 	bWaveNotStarted = true;
 	WaveManagerHUD->PlayWaveCompletedAnim();
 	UKismetSystemLibrary::K2_SetTimer(this, "ShowUpgradeSelection", WaveManagerHUD->GetWaveAnnouncementEndTime(), false);

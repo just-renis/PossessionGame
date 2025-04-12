@@ -1,11 +1,12 @@
 ﻿#pragma once
 
 UENUM()
-enum class ESound : uint8
+enum class ESound : uint16
 {
 	None,
 	WaveStart,
 	WaveCountdown,
+	WaveCompleted,
 	RangerShoot,
 	RangerReload,
 	OnPossession,
@@ -46,5 +47,8 @@ enum class ESound : uint8
 	DroneBuzz,
 	DialogueStart,
 	RestSoundtrack,
-	BattleModeSoundtrack
+	BattleModeSoundtrack,
+	UpgradePanelAppear,
+	UpgradeCardHover,
+	UpgradeCardSelect
 };

@@ -6,7 +6,7 @@
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "Projectile.generated.h"
 
-enum class ESound : uint8;
+enum class ESound : uint16;
 enum class EVfxType : uint8;
 enum class EVfx : uint8;
 class UPrimaryDataAssetsManager;

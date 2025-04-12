@@ -281,6 +281,10 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_DialogueStart", ESound::DialogueStart);
 	SoundMap.Add("PA_RestSoundtrack", ESound::RestSoundtrack);
 	SoundMap.Add("PA_BattleModeSoundtrack", ESound::BattleModeSoundtrack);
+	SoundMap.Add("PA_UpgradeCardHover", ESound::UpgradeCardHover);
+	SoundMap.Add("PA_UpgradeCardSelect", ESound::UpgradeCardSelect);
+	SoundMap.Add("PA_UpgradePanelAppear", ESound::UpgradePanelAppear);
+	SoundMap.Add("PA_WaveCompleted", ESound::WaveCompleted);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

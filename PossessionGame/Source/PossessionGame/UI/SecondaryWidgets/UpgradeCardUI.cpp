@@ -10,6 +10,7 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UUpgradeCardUI::SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon, const TObjectPtr<UTexture2D>& InPlayerIcon)
 {
@@ -131,6 +132,7 @@ void UUpgradeCardUI::ProcessCurrentUpgradeData(const bool bPlayerCard, const int
 void UUpgradeCardUI::SelectUpgrade()
 {
 	if (!UpgradeButton && !UpgradeButton->GetIsEnabled()) return;
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
 	UpgradeButton->SetIsEnabled(false);
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	SaveSlot->AddUpgrade(Data->GetUpgradeName(), SaveSlot->GetLevelOfAnUpgrade(Data->GetUpgradeName()) + 1);

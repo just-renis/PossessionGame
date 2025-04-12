@@ -4,7 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "TutorialDrone.generated.h"
 
-enum class ESound : uint8;
+enum class ESound : uint16;
 class UDelegateManager;
 class ATutorialDialogue;
 class ADroneWaypoint;

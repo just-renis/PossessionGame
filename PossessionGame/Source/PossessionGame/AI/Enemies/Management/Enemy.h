@@ -12,7 +12,7 @@
 
 class UPossessionGameInstance;
 class APossessionGameGameModeBase;
-enum class ESound : uint8;
+enum class ESound : uint16;
 class UAIHpBarUI;
 class UWidgetComponent;
 class UPrimaryDataAssetsManager;

@@ -7,11 +7,13 @@
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeCardUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UUpgradeSelectionUI::OpenUI()
 {
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradePanelAppear);
 	(void)DelegateManager->OnUpgradeSelectionOpened.ExecuteIfBound();
 	Toggle(true);
 	if (UpgradeMenuOpen) PlayAnimation(UpgradeMenuOpen);
@@ -101,6 +103,7 @@ void UUpgradeSelectionUI::TriggerHoverAnimForFirstOption()
 {
 	if (PlayerCardOption1Popup && EnemyCardOption1Popup)
 	{
+		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardHover);
 		StopAnimation(PlayerCardOption1UnHover);
 		StopAnimation(EnemyCardOption1UnHover);
 		PlayAnimation(PlayerCardOption1Popup);
@@ -123,6 +126,7 @@ void UUpgradeSelectionUI::TriggerHoverAnimForSecondOption()
 {
 	if (PlayerCardOption2Popup && EnemyCardOption2Popup)
 	{
+		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardHover);
 		StopAnimation(PlayerCardOption2UnHover);
 		StopAnimation(EnemyCardOption2UnHover);
 		PlayAnimation(PlayerCardOption2Popup);
