@@ -12,12 +12,14 @@ class POSSESSIONGAME_API UDamageNumberUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	float GetAnimationLength() const { return DamageNumberAnimation->GetEndTime(); }
+	float GetAnimationLength() const { return DamageNumberAnim1->GetEndTime(); }
 	
 	void SetDamageAmount(const float InDamageAmount);
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DamageNumberText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> DamageNumberAnimation;
+	TObjectPtr<UWidgetAnimation> DamageNumberAnim1;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> DamageNumberAnim2;
 };
