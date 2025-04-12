@@ -25,13 +25,13 @@ ATrickster::ATrickster()
 void ATrickster::ThrowPoisonGrenade()
 {
 	PlaySound(ESound::TricksterGrenadeThrow);
-	Weapon->ShootProjectile(EPoolObject::TricksterPoisonProjectile, true, false);
+	Weapon->ShootProjectile(EPoolObject::TricksterPoisonProjectile, true);
 }
 
 void ATrickster::ThrowEmpGrenade()
 {
 	PlaySound(ESound::TricksterGrenadeThrow);
-	Weapon->ShootProjectile(EPoolObject::TricksterEmpProjectile, true);
+	Weapon->ShootProjectile(EPoolObject::TricksterEmpProjectile, true, false);
 }
 
 void ATrickster::AI_SetupWeapon()

@@ -19,6 +19,4 @@ private:
 	virtual bool IsProprietorPossessed() override;
 	
 	virtual void SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) override;
-	UFUNCTION()
-	void ThrowEmpGrenade() const;
 };
