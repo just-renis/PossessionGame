@@ -22,6 +22,7 @@ public:
 	
 	void SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon, const TObjectPtr<UTexture2D>& InPlayerIcon = nullptr);
 	void ToggleCardVisibility(const bool bState);
+	void SetUpgradeText(const FString& InText) const;
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UBorder> CardBackgroundBorder;
@@ -40,10 +41,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<UUpgradeData> Data;
 
-	FString ConvertUpgradeAttributeValueToString(const float InValue);
-	FString GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade);
-	FString GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute);
-
 	virtual void NativeConstruct() override;
 	void SetCardBackgroundBorderImage(const TObjectPtr<UTexture2D>& InImage) const;
 	void SetCharacterIcon(const TObjectPtr<UTexture2D>& InImage) const;
@@ -51,8 +48,6 @@ private:
 	void SetPlayerOrEnemyIconInvisible() const;
 	void SetCardIcon(const TObjectPtr<UTexture2D>& InImage) const;
 	void SetCharacterText(const FText& InText, const FColor InColor) const;
-	void SetUpgradeText(const bool bPlayerCard);
-	void ProcessCurrentUpgradeData(const bool bPlayerCard, const int32 PreviousLevel, FLevelUpgradeData& CurrentUpgradeData) const;
 	UFUNCTION()
 	void SelectUpgrade();
 };

@@ -5,8 +5,6 @@
 #include "Components/TextBlock.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/ECharacterType.h"
-#include "PossessionGame/Enums/EUpgrade.h"
-#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -20,7 +18,6 @@ void UUpgradeCardUI::SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture
 	SetCharacterIcon(InCharacterIcon);
 	SetPlayerIcon(InPlayerIcon);
 	SetCardIcon(bPlayerCard ? Data->GetPlayerCardIcon() : Data->GetEnemyCardIcon());
-	SetUpgradeText(bPlayerCard);
 	if (bPlayerCard) SetCharacterText(FText::FromString(UEnum::GetValueAsString(Data->GetCharacter()).Replace(TEXT("ECharacterType::"), TEXT("")).ToUpper()), Data->GetCharacter() == ECharacterType::Ranger ? FColor::Red : FColor::Cyan);
 	else
 	{
@@ -35,41 +32,10 @@ void UUpgradeCardUI::ToggleCardVisibility(const bool bState)
 	if (bState && UpgradeButton) UpgradeButton->SetIsEnabled(bState);
 }
 
-FString UUpgradeCardUI::ConvertUpgradeAttributeValueToString(const float InValue)
+void UUpgradeCardUI::SetUpgradeText(const FString& InText) const
 {
-	FString FloatValueString = FString::SanitizeFloat(InValue);
-	if (FloatValueString.EndsWith(TEXT(".0"))) FloatValueString.RemoveFromEnd(TEXT(".0"));
-	return FloatValueString;
-}
-
-FString UUpgradeCardUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
-{
-	switch (InUpgrade)
-	{
-		case EUpgrade::RangerAbility1: return " GRENADE LAUNCHER UPGRADE";
-		case EUpgrade::RangerAbility2: return " SHIELD UPGRADE";
-		case EUpgrade::RangerAbility3: return " SLOWMOTION UPGRADE";
-		case EUpgrade::TricksterAbility1: return " POISON UPGRADE";
-		case EUpgrade::TricksterAbility2: return " EMP UPGRADE";
-		case EUpgrade::RangerBaseStat: return " RANGER BASE STATS UPGRADE";
-	}
-	return "";
-}
-
-FString UUpgradeCardUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute)
-{
-	switch (InAttribute.Key)
-	{
-		case EUpgradeAttribute::FlatDamage: return " DAMAGE INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " POINTS\n";
-		case EUpgradeAttribute::FlatHealth: return " HEALTH INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " POINTS\n";
-		case EUpgradeAttribute::DamagePercentage: return " DAMAGE INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
-		case EUpgradeAttribute::ProjectilesAmount: return " PROJECTILES INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "\n";
-		case EUpgradeAttribute::AbilityCooldownReduction: return " COOLDOWN REDUCED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
-		case EUpgradeAttribute::Size: return " SIZE INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
-		case EUpgradeAttribute::AbilityDuration: return " DURATION INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
-		case EUpgradeAttribute::EffectDuration: return " EFFECT DURATION INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
-	}
-	return "";
+	if (!UpgradeText) return;
+	UpgradeText->SetText(FText::FromString(InText));
 }
 
 void UUpgradeCardUI::NativeConstruct()
@@ -93,40 +59,6 @@ void UUpgradeCardUI::SetCharacterText(const FText& InText, const FColor InColor)
 	if (!CharacterText) return;
 	CharacterText->SetText(InText);
 	CharacterText->SetColorAndOpacity(InColor);
-}
-
-void UUpgradeCardUI::SetUpgradeText(const bool bPlayerCard)
-{
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
-	const int32 NextLevel = SaveSlot->GetLevelOfAnUpgrade(Data->GetUpgradeName()) + 1;
-	FLevelUpgradeData CurrentUpgradeData = Data->GetAttributesForLevel(bPlayerCard, NextLevel);
-	if (NextLevel > 1) ProcessCurrentUpgradeData(bPlayerCard, NextLevel - 1, CurrentUpgradeData);
-	//for (const TPair<EUpgradeAttribute, float> Attribute : CurrentUpgradeData.Upgrades) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute);
-	//UpgradeTextString.RemoveFromEnd(TEXT("\n"));
-	if (!UpgradeText) return;
-	if (bPlayerCard) UpgradeText->SetText(FText::FromString(GetUpgradeTextFromUpgrade(Data->GetUpgradeName())));
-	else
-	{
-		FString UpgradeTextString = "";
-		for (const TPair<EUpgradeAttribute, float> Attribute : CurrentUpgradeData.Upgrades) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute);
-		UpgradeTextString.RemoveFromEnd(TEXT("\n"));
-		UpgradeText->SetText(FText::FromString(UpgradeTextString));
-	}
-}
-
-void UUpgradeCardUI::ProcessCurrentUpgradeData(const bool bPlayerCard, const int32 PreviousLevel, FLevelUpgradeData& CurrentUpgradeData) const
-{
-	TArray<EUpgradeAttribute> KeysToRemove;
-	FLevelUpgradeData PreviousUpgradeData = Data->GetAttributesForLevel(bPlayerCard, PreviousLevel);
-	for (TPair<EUpgradeAttribute, float>& CurrPair : CurrentUpgradeData.Upgrades)
-	{
-		if (float* PrevValue = PreviousUpgradeData.Upgrades.Find(CurrPair.Key))
-		{
-			CurrPair.Value -= *PrevValue;
-			if (FMath::IsNearlyEqual(CurrPair.Value, 0.f, 0.001f)) KeysToRemove.Add(CurrPair.Key);
-		}
-	}
-	for (const EUpgradeAttribute Key : KeysToRemove) CurrentUpgradeData.Upgrades.Remove(Key);
 }
 
 void UUpgradeCardUI::SelectUpgrade()

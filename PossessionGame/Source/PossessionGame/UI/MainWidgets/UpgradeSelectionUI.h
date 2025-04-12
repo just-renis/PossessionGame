@@ -4,6 +4,11 @@
 #include "Blueprint/UserWidget.h"
 #include "UpgradeSelectionUI.generated.h"
 
+enum class EUpgrade : uint8;
+enum class EUpgradeAttribute : uint8;
+struct FLevelUpgradeData;
+class UUpgradeData;
+class UUpgradeDetailsPanelUI;
 class UDelegateManager;
 class UPossessionGameInstance;
 class UUpgradeCardUI;
@@ -36,6 +41,8 @@ private:
 	TObjectPtr<UUpgradeCardUI> EnemyCardOption1;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UUpgradeCardUI> EnemyCardOption2;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUpgradeDetailsPanelUI> UpgradeDetailsPanel;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> PlayerCardOption1Popup;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -66,10 +73,18 @@ private:
 	TObjectPtr<UWidgetAnimation> UpgradeMenuClose;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
+	UPROPERTY()
+	TArray<TObjectPtr<UUpgradeData>> UpgradesData;
+
+	FString ConvertUpgradeAttributeValueToString(const float InValue);
+	FString GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade);
+	FString GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute);
+	FString ReceiveUpgradeText(const bool bPlayerCard, const TObjectPtr<UUpgradeData>& InUpgradeData, const bool bIsForDetailsPanel = false);
 	
 	void Toggle(const bool bState);
 	virtual void NativeConstruct() override;
 	void TriggerUpgradeMenuCloseAnimation();
+	void ProcessCurrentUpgradeData(const bool bPlayerCard, const int32 PreviousLevel, const TObjectPtr<UUpgradeData>& InUpgradeData, FLevelUpgradeData& CurrentUpgradeData);
 	UFUNCTION()
 	void FinishedUpgradeSelectionCloseAnimation() const;
 	UFUNCTION()

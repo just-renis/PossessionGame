@@ -251,6 +251,7 @@ void UWaveManager::WaveCompleted()
 
 void UWaveManager::TutorialHandleSpawning(const ECharacterType InEnemyType)
 {
+	ShowUpgradeSelection();
 	for (int32 i = 0; i < SpawnLocations[CurrentGameMode].SpawnLocations.Num(); i++)
 	{
 		if (CurrentGameMode == EGameMode::TutorialMode2) SpawnLocations[CurrentGameMode].SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType])->AI_Disable();
