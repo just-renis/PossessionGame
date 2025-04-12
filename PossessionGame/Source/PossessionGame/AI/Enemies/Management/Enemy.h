@@ -59,6 +59,7 @@ public:
 	TObjectPtr<AWeapon>& GetWeapon() { return Weapon; }
 	TObjectPtr<UCameraComponent> GetCamera() { return Camera; }
 	TObjectPtr<UEnemyAnimationInstance>& GetAnimInstance() { return AnimInstance; }
+	TObjectPtr<UPossessionGameInstance>& GetGameInstance() { return GameInstance; }
 
 	void AI_InitiateShooting();
 	virtual void AI_ShootLogic();

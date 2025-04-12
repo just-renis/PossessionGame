@@ -54,6 +54,8 @@ private:
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
 	
 	void AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile);
+
+	void P_SetupLevelUpAppliance();
 	
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
 	void DealAreaDamage();

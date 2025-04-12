@@ -10,6 +10,9 @@
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -111,6 +114,12 @@ void AProjectile::AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile)
 	if (DamagePercentage > 0.f) Damage += ProjectileData.Damage * (DamagePercentage / 100.f);
 }
 
+void AProjectile::P_SetupLevelUpAppliance()
+{
+	Damage -= ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(true) / 100.f);
+	Damage += ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(false) / 100.f);
+}
+
 void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 {
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", ProjectileData.LifeSpan, false);
@@ -118,6 +127,11 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 	MovementComponent->MaxSpeed = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].MaxSpeed;
 	MovementComponent->ProjectileGravityScale = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].GravityScale;
 	Damage = ProjectileData.Damage;
+	if (bIsPlayerProjectile)
+	{
+		Damage += ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(false) / 100.f);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
+	}
 	AI_SetupUpgradesAppliance(bIsPlayerProjectile);
 }
 
@@ -149,6 +163,7 @@ void AProjectile::SpawnSecondProjectileImpactVfx(const FHitResult& Hit) { SpawnP
 void AProjectile::DestroyThis()
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "DestroyThis");
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	DisableProjectileComponents();
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);
 }

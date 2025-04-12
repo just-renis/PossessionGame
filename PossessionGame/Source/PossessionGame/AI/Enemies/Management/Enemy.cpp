@@ -392,7 +392,7 @@ void AEnemy::P_TemporallyToggleRunning(const bool bState) { if (bIsRunning) SetM
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+	GameInstance = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance());
 	DelegateManager = GameInstance->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 	AI_SetupHpBar();
