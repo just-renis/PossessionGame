@@ -23,6 +23,7 @@ public:
 	void SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon, const TObjectPtr<UTexture2D>& InPlayerIcon = nullptr);
 	void ToggleCardVisibility(const bool bState);
 	void SetUpgradeText(const FString& InText) const;
+	void PlayBlinkAnim() { if (BlinkAnim) PlayAnimation(BlinkAnim); }
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UBorder> CardBackgroundBorder;
@@ -38,6 +39,8 @@ private:
 	TObjectPtr<UTextBlock> CharacterText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> UpgradeText;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> BlinkAnim;
 	UPROPERTY()
 	TObjectPtr<UUpgradeData> Data;
 

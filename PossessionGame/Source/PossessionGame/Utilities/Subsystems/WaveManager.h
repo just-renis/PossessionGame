@@ -58,6 +58,7 @@ private:
 	TObjectPtr<UDelegateManager> DelegateManager;
 
 	bool IsGameRunning();
+	int32 ConvertGameModeToDroneLocation() const;
 	EWeapon GetWeaponCode(ECharacterType EnemyType);
 	EWeapon GetSingularWeapon(EWeapon Weapon);
 

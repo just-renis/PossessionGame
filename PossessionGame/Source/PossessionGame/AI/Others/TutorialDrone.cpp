@@ -44,6 +44,7 @@ void ATutorialDrone::RetrieveDroneWaypoints()
 
 void ATutorialDrone::SetDroneMoveLocation(const int32 InIndex, const bool bInstantMove)
 {
+	bMoveInstantly = bInstantMove;
 	Dialogue->SetVisibilityState(false);
 	WaypointIndex = InIndex;
 	for (int32 i = 0; i < Waypoints.Num(); i++) if (Waypoints[i]->GetOrder() == InIndex) WaypointLocation = Waypoints[i]->GetActorLocation();
@@ -81,9 +82,13 @@ void ATutorialDrone::SetupDelegates()
 void ATutorialDrone::MoveToLocation()
 {
 	if (bIsRotating) return;
-	const FVector Direction = (WaypointLocation - GetActorLocation()).GetSafeNormal();
-	const FVector NewLocation = GetActorLocation() + Direction * MovementSpeed;
-	SetActorLocation(NewLocation);
+	if (!bMoveInstantly)
+	{
+		const FVector Direction = (WaypointLocation - GetActorLocation()).GetSafeNormal();
+		const FVector NewLocation = GetActorLocation() + Direction * MovementSpeed;
+		SetActorLocation(NewLocation);
+	}
+	else SetActorLocation(WaypointLocation);
 	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(10.f))
 	{
 		bIsMoving = false;

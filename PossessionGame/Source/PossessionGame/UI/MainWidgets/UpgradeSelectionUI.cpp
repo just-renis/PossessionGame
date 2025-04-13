@@ -246,6 +246,8 @@ void UUpgradeSelectionUI::TriggerSelectAnimForFirstOption()
 	{
 		PlayAnimation(PlayerCardOption1Select);
 		PlayAnimation(EnemyCardOption1Select);
+		PlayerCardOption1->PlayBlinkAnim();
+		EnemyCardOption1->PlayBlinkAnim();
 	}
 }
 
@@ -255,6 +257,8 @@ void UUpgradeSelectionUI::TriggerSelectAnimForSecondOption()
 	{
 		PlayAnimation(PlayerCardOption2Select);
 		PlayAnimation(EnemyCardOption2Select);
+		PlayerCardOption2->PlayBlinkAnim();
+		EnemyCardOption2->PlayBlinkAnim();
 	}
 }
 

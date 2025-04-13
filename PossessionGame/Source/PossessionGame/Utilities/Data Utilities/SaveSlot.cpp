@@ -15,7 +15,7 @@ void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel)
 
 void USaveSlot::AddXp(const int32 InXp)
 {
-	CurrentXp += InXp;
+	CurrentXp += 10;
 	if (CurrentXp >= GetCurrentLevelNeededXp())
 	{
 		CurrentXp -= GetCurrentLevelNeededXp();

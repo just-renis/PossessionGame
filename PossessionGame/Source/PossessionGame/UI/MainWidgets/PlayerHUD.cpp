@@ -126,6 +126,40 @@ void UPlayerHUD::ConfigureUIs()
 
 void UPlayerHUD::PlayDeathFadeOutAnim() { if (DeathFadeOut) PlayAnimation(DeathFadeOut); }
 
+void UPlayerHUD::UpdateReceiveDamageInv()
+{
+	if (ReceiveDamageInv) ReceiveDamageInv->SetRenderOpacity(1.f);
+	if (ReceiveDamageFadeOut) PlayAnimation(ReceiveDamageFadeOut);
+}
+
+void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
+{
+	CharacterType = InCharacterType;
+	switch (InCharacterType)
+	{
+	case ECharacterType::Ranger:
+		if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetAsCurrent();
+		if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+		if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+		break;
+	case ECharacterType::Trickster:
+		if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetAsCurrent();
+		if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+		if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+		break;
+	default:
+		if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetAsCurrent();
+		if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+		if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
+void UPlayerHUD::AnnouncePossession()
+{
+	if (PossessionAnnouncementInv) PossessionAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (PossessedPopup) PlayAnimation(PossessedPopup);
+}
+
 /*void UPlayerHUD::SetHitLocation(const FVector InHitLocation)
 {
 	const FVector Diff = (Player->GetActorLocation() - InHitLocation).GetSafeNormal(0.001f);
@@ -133,11 +167,23 @@ void UPlayerHUD::PlayDeathFadeOutAnim() { if (DeathFadeOut) PlayAnimation(DeathF
 	SpawnHitDamageIndicator(Angle);
 }*/
 
+TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
+{
+	switch (CharacterType)
+	{
+		case ECharacterType::Ranger: return RangerAbilitiesPanel;
+		case ECharacterType::Guardian: return GuardianAbilitiesPanel;
+		default: return TricksterAbilitiesPanel;
+	}
+}
+
 void UPlayerHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
-	BindOnDamageDealtDelegate();
-	BindCrosshairToggleDelegate();
+	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	DelegateManager->OnPlayerDamageDealt.BindUObject(this, &UPlayerHUD::ShowDamageTick);
+	DelegateManager->OnZoomToggle.BindUObject(this, &UPlayerHUD::ToggleCrosshair);
+	DelegateManager->OnLevelUp.AddUObject(this, &UPlayerHUD::PlayLevelUpAnim);
 }
 
 void UPlayerHUD::ToggleCrosshair() { if (Crosshair) ToggleUI(Crosshair); }
@@ -172,21 +218,18 @@ void UPlayerHUD::ToggleCrosshair() { if (Crosshair) ToggleUI(Crosshair); }
 	}
 }*/
 
-void UPlayerHUD::BindCrosshairToggleDelegate()
-{
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnZoomToggle.BindUObject(this, &UPlayerHUD::ToggleCrosshair);
-}
-
-void UPlayerHUD::BindOnDamageDealtDelegate()
-{
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.BindUObject(this, &UPlayerHUD::ShowDamageTick);
-}
-
 void UPlayerHUD::ShowDamageTick(const bool bIsCritical)
 {
 	if (DamageTickInv) DamageTickInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (DamageTickImage && CriticalDamageTickTexture && DamageTickTexture) DamageTickImage->SetBrushFromTexture(bIsCritical ? CriticalDamageTickTexture : DamageTickTexture);
 	if (DamageTickFadeOut) PlayAnimation(DamageTickFadeOut);
+}
+
+void UPlayerHUD::PlayLevelUpAnim()
+{
+	if (!LevelUpAnim || !LevelUpAnnouncementInv) return;
+	LevelUpAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	PlayAnimation(LevelUpAnim);
 }
 
 /*float UPlayerHUD::GetHitDamageIndicatorSection(const float InAngle)
@@ -197,16 +240,6 @@ void UPlayerHUD::ShowDamageTick(const bool bIsCritical)
 	else if (InAngle >= 90.f && InAngle <= 180.f) SectionValue = 0.f;
 	return SectionValue;
 }*/
-
-TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
-{
-	switch (CharacterType)
-	{
-		case ECharacterType::Ranger: return RangerAbilitiesPanel;
-		case ECharacterType::Guardian: return GuardianAbilitiesPanel;
-		default: return TricksterAbilitiesPanel;
-	}
-}
 
 /*void UPlayerHUD::UpdateHitDamageIndicators()
 {
@@ -224,40 +257,6 @@ TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
 		}
 	}
 }*/
-
-void UPlayerHUD::UpdateReceiveDamageInv()
-{
-	if (ReceiveDamageInv) ReceiveDamageInv->SetRenderOpacity(1.f);
-	if (ReceiveDamageFadeOut) PlayAnimation(ReceiveDamageFadeOut);
-}
-
-void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
-{
-	CharacterType = InCharacterType;
-	switch (InCharacterType)
-	{
-		case ECharacterType::Ranger:
-			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetAsCurrent();
-			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			break;
-		case ECharacterType::Trickster:
-			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetAsCurrent();
-			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			break;
-		default:
-			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetAsCurrent();
-			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-	}
-}
-
-void UPlayerHUD::AnnouncePossession()
-{
-	if (PossessionAnnouncementInv) PossessionAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (PossessedPopup) PlayAnimation(PossessedPopup);
-}
 
 template<typename T>
 void UPlayerHUD::ToggleUI(const TObjectPtr<T>& InUI)

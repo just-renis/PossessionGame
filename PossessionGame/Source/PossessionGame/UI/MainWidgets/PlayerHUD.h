@@ -36,6 +36,7 @@ class POSSESSIONGAME_API UPlayerHUD : public UUserWidget
 public:
 	bool GetPossessionIndicatorIsShowing() const;
 	
+	void SetPlayerRef(const TObjectPtr<AEnemy>& InPlayerRef) { Player = InPlayerRef; }
 	void UpdateProgressBar(const EUIBar InBar, const float InCurrent, const float InMax);
 	void UpdateAmmoText(const int32 InWeaponAmmo) const;
 	void UpdateAmmoText(const int32 InWeaponAmmo, const int32 InMaxAmmo) const;
@@ -50,7 +51,6 @@ public:
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs();
 	void PlayDeathFadeOutAnim();
-	void SetPlayerRef(const TObjectPtr<AEnemy>& InPlayerRef) { Player = InPlayerRef; }
 //	void SetHitLocation(const FVector InHitLocation);
 	//void UpdateHitDamageIndicators();
 	void UpdateReceiveDamageInv();
@@ -85,6 +85,8 @@ private:
 	TObjectPtr<UImage> DamageTickImage;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> ReceiveDamageInv;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInvalidationBox> LevelUpAnnouncementInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> AmmoText;
 	UPROPERTY(meta = (BindWidget))
@@ -123,6 +125,8 @@ private:
 	TObjectPtr<UWidgetAnimation> PressToPossessPopup;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> PossessedPopup;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> LevelUpAnim;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
 	//UPROPERTY()
@@ -136,9 +140,8 @@ private:
 	virtual void NativeConstruct() override;
 	void ToggleCrosshair();
 	//void SpawnHitDamageIndicator(const float InAngle);
-	void BindCrosshairToggleDelegate();
-	void BindOnDamageDealtDelegate();
 	void ShowDamageTick(const bool bIsCritical);
+	void PlayLevelUpAnim();
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 	UFUNCTION()

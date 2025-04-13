@@ -18,6 +18,7 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 
 	bool bIsMoving = false;
 	bool bIsRotating = false;
+	bool bMoveInstantly = false;
 	int32 DistanceToTargetIndex = -1;
 	int32 WaypointIndex = -1;
 	float RotationSpeed = 3.6f;

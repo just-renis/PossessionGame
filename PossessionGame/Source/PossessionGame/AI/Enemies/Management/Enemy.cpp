@@ -164,6 +164,7 @@ void AEnemy::PossessedBy(AController* NewController)
 		Super::PossessedBy(NewController);
 		if (Cast<APlayerController>(NewController))
 		{
+			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			bIsActionInMotion = false;
 			AnimInstance->ClearTimers();
 			P_TriggerGlitchingEffect();

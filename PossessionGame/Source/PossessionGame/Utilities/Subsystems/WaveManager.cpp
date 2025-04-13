@@ -68,6 +68,7 @@ void UWaveManager::FinalizeMode()
 		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
 	}
 	DelegateManager->OnGameModeFinished.Broadcast(CurrentGameMode);
+	(void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(ConvertGameModeToDroneLocation(), true);
 }
 
 void UWaveManager::SetupWaveManagerSettings(const TArray<ECharacterType>& InEnemiesThatAreSpawnable, const int32 InEnemiesAmountOnFirstWave)
@@ -80,6 +81,18 @@ void UWaveManager::SetupWaveManagerSettings(const TArray<ECharacterType>& InEnem
 }
 
 bool UWaveManager::IsGameRunning() { return IsValid(this) && GetWorld() && !GetWorld()->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }
+
+int32 UWaveManager::ConvertGameModeToDroneLocation() const
+{
+	switch (CurrentGameMode)
+	{
+		case EGameMode::WaveMode: return 3;
+		case EGameMode::HackTerminalsMode: return 4;
+		case EGameMode::ChargeTerminalMode: return 5;
+		default: ;
+	}
+	return 0;
+}
 
 EWeapon UWaveManager::GetWeaponCode(ECharacterType EnemyType)
 {
