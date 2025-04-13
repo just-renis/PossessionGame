@@ -42,7 +42,7 @@ void ATutorialDrone::RetrieveDroneWaypoints()
 	for (TObjectPtr<AActor> Actor : Actors) Waypoints.Add(Cast<ADroneWaypoint>(Actor));
 }
 
-void ATutorialDrone::SetDroneMoveLocation(const int32 InIndex)
+void ATutorialDrone::SetDroneMoveLocation(const int32 InIndex, const bool bInstantMove)
 {
 	Dialogue->SetVisibilityState(false);
 	WaypointIndex = InIndex;
@@ -90,7 +90,7 @@ void ATutorialDrone::MoveToLocation()
 		UKismetSystemLibrary::K2_ClearTimer(this, "MoveToLocation");
 		switch (WaypointIndex)
 		{
-			case 0: SetDroneMoveLocation(1); break;
+			case 0: SetDroneMoveLocation(1, false); break;
 			case 1:
 				(void)DelegateManager->DestroyTutorialForceField.ExecuteIfBound();
 				EnableCheckDistanceToTarget(1);

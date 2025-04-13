@@ -47,7 +47,7 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 	virtual void BeginPlay() override;
 	void PlayDroneAnimation() const;
 	void RetrieveDroneWaypoints();
-	void SetDroneMoveLocation(const int32 InIndex);
+	void SetDroneMoveLocation(const int32 InIndex, const bool bInstantMove);
 	void SetDroneLookAtLocation(const TObjectPtr<AActor>& InTarget) { Target = InTarget; }
 	void EnableCheckDistanceToTarget(const int32 InIndex);
 	void PlaySound(const ESound InSoundName);
