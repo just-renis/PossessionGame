@@ -34,4 +34,7 @@ enum class EVfx : uint8
 	TankFpsBulletTrail,
 	GuardianSpawn,
 	GuardianOverCharge,
+	GuardianMuzzle,
+	GuardianBulletImpact,
+	GuardianFpsBulletTrail
 };

@@ -114,7 +114,7 @@ void UUpgradeSelectionUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	DelegateManager->OnUpgradeSelected.BindUObject(this, &UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation);
+	DelegateManager->OnUpgradeSelected.BindUObject(this, &UUpgradeSelectionUI::SetTriggerUpgradeMenuCloseAnimation);
 	if (PlayerCardOption1)
 	{
 		PlayerCardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
@@ -141,13 +141,9 @@ void UUpgradeSelectionUI::NativeConstruct()
 	}
 }
 
-void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()
+void UUpgradeSelectionUI::SetTriggerUpgradeMenuCloseAnimation()
 {
-	if (UpgradeMenuClose)
-	{
-		PlayAnimation(UpgradeMenuClose);
-		UKismetSystemLibrary::K2_SetTimer(this, "FinishedUpgradeSelectionCloseAnimation", UpgradeMenuClose->GetEndTime(), false);
-	}
+	UKismetSystemLibrary::K2_SetTimer(this, "TriggerUpgradeMenuCloseAnimation", 0.5f, false);
 }
 
 FString UUpgradeSelectionUI::ReceiveUpgradeText(const bool bPlayerCard, const TObjectPtr<UUpgradeData>& InUpgradeData, const bool bIsForDetailsPanel)
@@ -259,5 +255,14 @@ void UUpgradeSelectionUI::TriggerSelectAnimForSecondOption()
 	{
 		PlayAnimation(PlayerCardOption2Select);
 		PlayAnimation(EnemyCardOption2Select);
+	}
+}
+
+void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()
+{
+	if (UpgradeMenuClose)
+	{
+		PlayAnimation(UpgradeMenuClose);
+		UKismetSystemLibrary::K2_SetTimer(this, "FinishedUpgradeSelectionCloseAnimation", UpgradeMenuClose->GetEndTime(), false);
 	}
 }

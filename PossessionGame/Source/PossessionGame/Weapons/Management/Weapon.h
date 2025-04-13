@@ -41,6 +41,7 @@ public:
 	TObjectPtr<UWeaponAnimInstance>& GetAnimInstance() { return AnimInstance; }
 	TObjectPtr<UHandsAnimInstance>& GetHandsAnimInstance() { return HandsAnimInstance; }
 	TObjectPtr<USkeletalMeshComponent>& GetMesh() { return Mesh; }
+	TObjectPtr<UNiagaraComponent>& GetMuzzleFlashComponent() { return MuzzleFlashComponent; }
 	
 	virtual void AI_Shoot();
 	void AI_ResetShootCycles();

@@ -19,6 +19,7 @@ private:
 	
 	virtual bool P_CanShoot(const bool InbIsFirstWeapon) override;
 	virtual void P_UpdateAmmoTextHUD() override;
+	virtual void P_Shoot(const bool bIsFirstWeapon) override;
 
 	virtual void BeginPlay() override;
 	virtual void SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh) override;

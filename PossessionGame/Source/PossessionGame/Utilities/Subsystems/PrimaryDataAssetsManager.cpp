@@ -81,7 +81,10 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::TankProjectile, EVfxType::Trail }), EVfx::TankBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::TankProjectile, EVfxType::Impact }), EVfx::TankBulletImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::TankProjectile, EVfxType::Muzzle }), EVfx::TankMuzzle },
-		{FPoolObjectPairWrapper({ EPoolObject::TankProjectile, EVfxType::FpsTrail }), EVfx::TankFpsBulletTrail }
+		{FPoolObjectPairWrapper({ EPoolObject::TankProjectile, EVfxType::FpsTrail }), EVfx::TankFpsBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::FpsTrail }), EVfx::GuardianFpsBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::Muzzle }), EVfx::GuardianMuzzle },
+		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::Impact }), EVfx::GuardianBulletImpact }
 	};
 	CharacterVfxCombinationsMap =
 	{
@@ -318,6 +321,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_MinionMuzzle", EVfx::MinionMuzzle);
 	VfxsMap.Add("PA_MinionBulletTrail", EVfx::MinionBulletTrail);
 	VfxsMap.Add("PA_MinionBulletImpact", EVfx::MinionBulletImpact);
+	VfxsMap.Add("PA_MinionSpawn", EVfx::MinionSpawn);
 	VfxsMap.Add("PA_TricksterMuzzle", EVfx::TricksterMuzzle);
 	VfxsMap.Add("PA_TricksterFpsBulletTrail", EVfx::TricksterFpsBulletTrail);
 	VfxsMap.Add("PA_TricksterBulletImpact", EVfx::TricksterBulletImpact);
@@ -335,7 +339,9 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TankFpsBulletTrail", EVfx::TankFpsBulletTrail);
 	VfxsMap.Add("PA_GuardianSpawn", EVfx::GuardianSpawn);
 	VfxsMap.Add("PA_GuardianOverCharge", EVfx::GuardianOverCharge);
-	VfxsMap.Add("PA_MinionSpawn", EVfx::MinionSpawn);
+	VfxsMap.Add("PA_GuardianMuzzle", EVfx::GuardianMuzzle);
+	VfxsMap.Add("PA_GuardianFpsBulletTrail", EVfx::GuardianFpsBulletTrail);
+	VfxsMap.Add("PA_GuardianBulletImpact", EVfx::GuardianBulletImpact);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

@@ -33,6 +33,18 @@ bool AGuardianWeapon::P_CanShoot(const bool InbIsFirstWeapon) { return !HandsAni
 
 void AGuardianWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(-1); }
 
+void AGuardianWeapon::P_Shoot(const bool bIsFirstWeapon)
+{
+	FirstWeapon->P_Shoot();
+	SecondWeapon->P_Shoot();
+	if (ShootTimer >= ShootCooldown)
+	{
+		PlayShootMontage();
+		ShootTimer = 0.f;
+		DelegateManager->OnWeaponAmmoChangeThreeParams.Broadcast(FirstWeapon->GetCurrentAmmoAmount(), SecondWeapon->GetCurrentAmmoAmount(), TotalAmmo);
+	}
+}
+
 void AGuardianWeapon::BeginPlay()
 {
 	Name = EWeapon::GuardianWeapon;

@@ -3,7 +3,6 @@
 #include "PossessionGame/AI/Enemies/Characters/Trickster.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
-#include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
@@ -58,8 +57,7 @@ void ATricksterWeapon::PlayShootMontage()
 void ATricksterWeapon::PostProprietorSetup()
 {
 	P_SetupOnShootState();
-	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
-	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
+	Super::PostProprietorSetup();
 }
 
 void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const bool bFromFirstWeapon)

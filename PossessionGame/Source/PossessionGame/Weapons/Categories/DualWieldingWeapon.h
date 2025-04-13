@@ -58,6 +58,7 @@ protected:
     FShootMontageHandler ShootMontageHandler;
 
     virtual void PlayShootMontage();
+	virtual void PostProprietorSetup() override;
 private:
     UPROPERTY()
     FWeaponCyclingState CyclingState;

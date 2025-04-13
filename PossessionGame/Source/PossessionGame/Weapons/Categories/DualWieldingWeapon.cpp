@@ -3,7 +3,9 @@
 #include "PossessionGame/Data Assets/AI/Base Data/AIWeaponData.h"
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerWeaponData.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 
 ADualWieldingWeapon::ADualWieldingWeapon()
@@ -107,6 +109,12 @@ void ADualWieldingWeapon::SetProprietor(TObjectPtr<AEnemy> InProprietor)
 }
 
 void ADualWieldingWeapon::PlayShootMontage() { HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot); }
+
+void ADualWieldingWeapon::PostProprietorSetup()
+{
+	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &FirstWeapon->GetMuzzleFlashComponent(), FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
+	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &SecondWeapon->GetMuzzleFlashComponent(), SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
+}
 
 void ADualWieldingWeapon::CyclingModeLogic()
 {

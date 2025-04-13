@@ -83,7 +83,7 @@ private:
 	
 	void Toggle(const bool bState);
 	virtual void NativeConstruct() override;
-	void TriggerUpgradeMenuCloseAnimation();
+	void SetTriggerUpgradeMenuCloseAnimation();
 	void ProcessCurrentUpgradeData(const bool bPlayerCard, const int32 PreviousLevel, const TObjectPtr<UUpgradeData>& InUpgradeData, FLevelUpgradeData& CurrentUpgradeData);
 	UFUNCTION()
 	void FinishedUpgradeSelectionCloseAnimation() const;
@@ -99,4 +99,6 @@ private:
 	void TriggerSelectAnimForFirstOption();
 	UFUNCTION()
 	void TriggerSelectAnimForSecondOption();
+	UFUNCTION()
+	void TriggerUpgradeMenuCloseAnimation();
 };
