@@ -23,7 +23,7 @@ public:
 	void ToggleEnemiesLeftText();
 	void ToggleCurrentWaveText();
 	void PlayWavePanelFadeOutAnim();
-	void PlayWaveCompletedAnim();
+	void PlayAnnouncementAnim(const FString& InAnnouncementText);
 	void PlayCountdownAnim();
 	void UpdateTaskProgress(const float InProgress, const float InMaxProgress) const;
 	void ToggleTaskProgress(const bool bState, const EGameMode InGameMode) const;
@@ -39,6 +39,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TaskProgressPercentageText;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> AnnouncementText;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> TaskProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> TaskProgressInv;
@@ -47,7 +49,7 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> WavePanelFadeOutAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> WaveCompletedAnnouncementAnim;
+	TObjectPtr<UWidgetAnimation> AnnouncementAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> CountdownAnnouncementAnim;
 

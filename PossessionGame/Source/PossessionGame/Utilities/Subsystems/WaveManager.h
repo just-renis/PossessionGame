@@ -56,6 +56,8 @@ private:
 	TMap<ECharacterType, TSubclassOf<AEnemy>> Enemies;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
+	UPROPERTY()
+	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 
 	bool IsGameRunning();
 	int32 ConvertGameModeToDroneLocation() const;
@@ -75,7 +77,7 @@ private:
 	void SpawnLogic();
 	void AsyncLoadAndSpawnEnemy(ECharacterType EnemyType);
 	void PlaySound(const ESound InSoundName) const;
-	void AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECharacterType EnemyType, TObjectPtr<UPrimaryDataAssetsManager> AssetsManage);
+	void AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECharacterType EnemyType);
 	void FadeOutWavePanel() const;
 	void WaveCompleted();
 	void TutorialHandleSpawning(const ECharacterType InEnemyType);

@@ -243,6 +243,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	TMap<FName, ESound> SoundMap;
 	SoundMap.Add("PA_WaveStart", ESound::WaveStart);
 	SoundMap.Add("PA_WaveCountdown", ESound::WaveCountdown);
+	SoundMap.Add("PA_WaveCompleted", ESound::WaveCompleted);
 	SoundMap.Add("PA_RangerShoot", ESound::RangerShoot);
 	SoundMap.Add("PA_RangerReload", ESound::RangerReload);
 	SoundMap.Add("PA_OnPossession", ESound::OnPossession);
@@ -287,7 +288,11 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_UpgradeCardHover", ESound::UpgradeCardHover);
 	SoundMap.Add("PA_UpgradeCardSelect", ESound::UpgradeCardSelect);
 	SoundMap.Add("PA_UpgradePanelAppear", ESound::UpgradePanelAppear);
-	SoundMap.Add("PA_WaveCompleted", ESound::WaveCompleted);
+	SoundMap.Add("PA_TaskAnnouncement", ESound::TaskAnnouncement);
+	SoundMap.Add("PA_LevelUp", ESound::LevelUp);
+	SoundMap.Add("PA_GeneratorCompleted", ESound::GeneratorCompleted);
+	SoundMap.Add("PA_GeneratorInitiate", ESound::GeneratorInitiate);
+	SoundMap.Add("PA_GeneratorDisableAnnouncement", ESound::GeneratorDisableAnnouncement);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

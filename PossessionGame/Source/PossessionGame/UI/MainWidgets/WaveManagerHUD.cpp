@@ -7,7 +7,7 @@
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
-float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return WaveCompletedAnnouncementAnim ? WaveCompletedAnnouncementAnim->GetEndTime() : 0.1f; }
+float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return AnnouncementAnim ? AnnouncementAnim->GetEndTime() : 0.1f; }
 
 void UWaveManagerHUD::UpdateCountdown(const int32 InCountdown)
 {
@@ -56,13 +56,14 @@ void UWaveManagerHUD::ToggleCurrentWaveText()
 
 void UWaveManagerHUD::PlayWavePanelFadeOutAnim() { if (WavePanelFadeOutAnim) PlayAnimation(WavePanelFadeOutAnim); }
 
-void UWaveManagerHUD::PlayWaveCompletedAnim()
+void UWaveManagerHUD::PlayAnnouncementAnim(const FString& InAnnouncementText)
 {
+	if (AnnouncementText) AnnouncementText->SetText(FText::FromString(InAnnouncementText));
 	if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (WaveCompletedAnnouncementAnim)
+	if (AnnouncementAnim)
 	{
-		PlayAnimation(WaveCompletedAnnouncementAnim);
-		UKismetSystemLibrary::K2_SetTimer(this, "HideWaveCompletedAnnouncement", WaveCompletedAnnouncementAnim->GetEndTime(), false);
+		PlayAnimation(AnnouncementAnim);
+		UKismetSystemLibrary::K2_SetTimer(this, "HideWaveCompletedAnnouncement", AnnouncementAnim->GetEndTime(), false);
 	}
 }
 

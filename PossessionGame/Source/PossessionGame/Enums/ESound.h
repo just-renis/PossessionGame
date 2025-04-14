@@ -50,5 +50,10 @@ enum class ESound : uint16
 	BattleModeSoundtrack,
 	UpgradePanelAppear,
 	UpgradeCardHover,
-	UpgradeCardSelect
+	UpgradeCardSelect,
+	LevelUp,
+	GeneratorInitiate,
+	GeneratorCompleted,
+	GeneratorDisableAnnouncement,
+	TaskAnnouncement
 };

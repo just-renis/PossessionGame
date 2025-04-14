@@ -16,6 +16,7 @@
 void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager)
 {
 	DelegateManager = InDelegateManager;
+	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	bTutorialIsFinished = bIsTutorialFinished;
 	SetupSpawnLocations();
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &UWaveManager::SetAndStartGameMode);
@@ -38,9 +39,14 @@ void UWaveManager::InitMode()
 		SetupWaveManagerUI();
 		SetupTimers();
 	}
-	else if (CurrentGameMode == EGameMode::HackTerminalsMode) DelegateManager->OnHackModeStart.Broadcast();
+	else if (CurrentGameMode == EGameMode::HackTerminalsMode)
+	{
+		AssetsManager->PlaySound2D(ESound::GeneratorDisableAnnouncement);
+		DelegateManager->OnHackModeStart.Broadcast();
+	}
 	else if (CurrentGameMode == EGameMode::ChargeTerminalMode)
 	{
+		AssetsManager->PlaySound2D(ESound::TaskAnnouncement);
 		bUnlimitedSpawning = true;
 		if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(true, CurrentGameMode);
 		UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate * 3.f, true);
@@ -135,6 +141,7 @@ void UWaveManager::StartWave()
 		WaveManagerHUD->ToggleCurrentWaveText();
 	}
 	PlaySound(ESound::WaveStart);
+	AssetsManager->PlaySound2D(ESound::TaskAnnouncement);
 }
 
 void UWaveManager::InitiateNextWave()
@@ -214,7 +221,6 @@ void UWaveManager::SpawnLogic()
 void UWaveManager::AsyncLoadAndSpawnEnemy(ECharacterType EnemyType)
 {
 	bIsSpawnInProcess = true;
-	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	if (AssetsManager->GetCanAsyncLoadHappen())
 	{
 		TArray<FSoftObjectPath> PathsToLoad;
@@ -230,9 +236,9 @@ void UWaveManager::AsyncLoadAndSpawnEnemy(ECharacterType EnemyType)
 			PathsToLoad.Add(AssetsManager->GetWeaponData(SingularWeapon)->WeaponMesh.ToSoftObjectPath());
 		}
 		else PathsToLoad.Add(AssetsManager->GetWeaponData(Weapon)->WeaponMesh.ToSoftObjectPath());
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, SingularWeapon, Weapon, EnemyType, AssetsManager]
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, SingularWeapon, Weapon, EnemyType]
 		{
-			if (IsGameRunning()) AsyncLoadCallback(SingularWeapon, Weapon, EnemyType, AssetsManager);
+			if (IsGameRunning()) AsyncLoadCallback(SingularWeapon, Weapon, EnemyType);
 		});
 		AssetsManager->AddAsyncHandle(Handle);
 	}
@@ -240,7 +246,7 @@ void UWaveManager::AsyncLoadAndSpawnEnemy(ECharacterType EnemyType)
 
 void UWaveManager::PlaySound(const ESound InSoundName) const { GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(InSoundName); }
 
-void UWaveManager::AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECharacterType EnemyType, TObjectPtr<UPrimaryDataAssetsManager> AssetsManager)
+void UWaveManager::AsyncLoadCallback(EWeapon SingularWeapon, EWeapon Weapon, ECharacterType EnemyType)
 {
 	Enemies.Add(EnemyType, Cast<UClass>(AssetsManager->GetCharacterData(EnemyType)->CharacterClass.ToSoftObjectPath().TryLoad()));
 	if (SingularWeapon != EWeapon::None)
@@ -258,7 +264,7 @@ void UWaveManager::WaveCompleted()
 	if (!WaveManagerHUD) return;
 	PlaySound(ESound::WaveCompleted);
 	bWaveNotStarted = true;
-	WaveManagerHUD->PlayWaveCompletedAnim();
+	WaveManagerHUD->PlayAnnouncementAnim("Wave Completed");
 	UKismetSystemLibrary::K2_SetTimer(this, "ShowUpgradeSelection", WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 
@@ -291,14 +297,22 @@ void UWaveManager::FinishTutorial()
 
 void UWaveManager::StartTerminalHack()
 {
+	AssetsManager->PlaySound2D(ESound::GeneratorInitiate);
+	AssetsManager->PlaySound2D(ESound::TaskAnnouncement);
 	bUnlimitedSpawning = true;
-	if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(true, CurrentGameMode);
+	if (WaveManagerHUD)
+	{
+		WaveManagerHUD->ToggleTaskProgress(true, CurrentGameMode);
+		WaveManagerHUD->PlayAnnouncementAnim("Hack Initiated");
+	}
 	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "UpdateTaskProgress", 0.5f, true);
 }
 
 void UWaveManager::FinishTerminalHack()
 {
+	if (WaveManagerHUD) WaveManagerHUD->PlayAnnouncementAnim("Hack Completed");
+	AssetsManager->PlaySound2D(ESound::GeneratorCompleted);
 	ShowUpgradeSelection();
 	TerminalHackProgress = 0.f;
 	if (--TerminalsLeftToHack <= 0) FinalizeMode();

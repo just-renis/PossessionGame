@@ -1,6 +1,7 @@
 ﻿#include "SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 int32 USaveSlot::GetLevelOfAnUpgrade(const EUpgrade InUpgrade) { return UnlockedUpgrades.Find(InUpgrade) ? UnlockedUpgrades[InUpgrade] : 0; }
 
@@ -15,9 +16,10 @@ void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel)
 
 void USaveSlot::AddXp(const int32 InXp)
 {
-	CurrentXp += 10;
+	CurrentXp += InXp;
 	if (CurrentXp >= GetCurrentLevelNeededXp())
 	{
+		GameInstance->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::LevelUp);
 		CurrentXp -= GetCurrentLevelNeededXp();
 		CurrentLevel++;
 		GameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast();
