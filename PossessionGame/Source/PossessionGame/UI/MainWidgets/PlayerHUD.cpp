@@ -23,10 +23,16 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 				HpBar->SetPercent(InCurrent / InMax);
 				HpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
 				UKismetSystemLibrary::K2_SetTimer(this, "UpdateWhiteHpBar", 0.02f, true);
-				break;
 			}
+			break;
 		case EUIBar::Possession: if (PossessionBar) PossessionBar->SetPercent(InCurrent / InMax); break;
-		case EUIBar::Xp: if (XpBar) XpBar->SetPercent(InCurrent / InMax);; break;
+		case EUIBar::Xp:
+			if (XpBar && XpNumberText)
+			{
+				XpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
+				XpBar->SetPercent(InCurrent / InMax);;
+			}
+			break;
 		default: if (GetAbilityPanel()) GetAbilityPanel()->TriggerAbilityIconReady(InBar, InCurrent, InMax);
 	}
 }
@@ -183,7 +189,7 @@ void UPlayerHUD::NativeConstruct()
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnPlayerDamageDealt.BindUObject(this, &UPlayerHUD::ShowDamageTick);
 	DelegateManager->OnZoomToggle.BindUObject(this, &UPlayerHUD::ToggleCrosshair);
-	DelegateManager->OnLevelUp.AddUObject(this, &UPlayerHUD::PlayLevelUpAnim);
+	DelegateManager->OnLevelUp.AddUObject(this, &UPlayerHUD::LevelUp);
 }
 
 void UPlayerHUD::ToggleCrosshair() { if (Crosshair) ToggleUI(Crosshair); }
@@ -225,12 +231,20 @@ void UPlayerHUD::ShowDamageTick(const bool bIsCritical)
 	if (DamageTickFadeOut) PlayAnimation(DamageTickFadeOut);
 }
 
+void UPlayerHUD::LevelUp(const int32 InLevel)
+{
+	PlayLevelUpAnim();
+	SetLevelText(InLevel);
+}
+
 void UPlayerHUD::PlayLevelUpAnim()
 {
 	if (!LevelUpAnim || !LevelUpAnnouncementInv) return;
 	LevelUpAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	PlayAnimation(LevelUpAnim);
 }
+
+void UPlayerHUD::SetLevelText(const int32 InLevel) const { if (LevelNumberText) LevelNumberText->SetText(FText::FromString(FString::FromInt(InLevel))); }
 
 /*float UPlayerHUD::GetHitDamageIndicatorSection(const float InAngle)
 {

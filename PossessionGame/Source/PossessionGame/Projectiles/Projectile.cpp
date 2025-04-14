@@ -114,10 +114,10 @@ void AProjectile::AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile)
 	if (DamagePercentage > 0.f) Damage += ProjectileData.Damage * (DamagePercentage / 100.f);
 }
 
-void AProjectile::P_SetupLevelUpAppliance()
+void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)
 {
-	Damage -= ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(true) / 100.f);
-	Damage += ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(false) / 100.f);
+	Damage -= ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) / 100.f);
+	Damage += ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) / 100.f);
 }
 
 void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
@@ -129,7 +129,7 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 	Damage = ProjectileData.Damage;
 	if (bIsPlayerProjectile)
 	{
-		Damage += ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(false) / 100.f);
+		Damage += ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() / 100.f);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
 	AI_SetupUpgradesAppliance(bIsPlayerProjectile);

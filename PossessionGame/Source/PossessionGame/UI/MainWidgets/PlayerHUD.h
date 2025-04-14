@@ -113,6 +113,10 @@ private:
 	TObjectPtr<UTextBlock> PressKeyBindText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> HpNumberText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> XpNumberText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> LevelNumberText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DeathFadeOut;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -141,7 +145,9 @@ private:
 	void ToggleCrosshair();
 	//void SpawnHitDamageIndicator(const float InAngle);
 	void ShowDamageTick(const bool bIsCritical);
+	void LevelUp(const int32 InLevel);
 	void PlayLevelUpAnim();
+	void SetLevelText(const int32 InLevel) const;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 	UFUNCTION()

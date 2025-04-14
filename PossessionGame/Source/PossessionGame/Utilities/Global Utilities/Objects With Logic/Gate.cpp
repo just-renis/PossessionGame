@@ -80,10 +80,10 @@ void AGate::ChangeOutlineState(const bool bState)
 
 void AGate::OpenGateSides()
 {
-	FirstGateSide->SetRelativeLocation(FirstGateSide->GetRelativeLocation() + FVector(0.f, 6.f, 0.f));
-	SecondGateSide->SetRelativeLocation(SecondGateSide->GetRelativeLocation() - FVector(0.f, 6.f, 0.f));
+	FirstGateSide->SetRelativeLocation(FirstGateSide->GetRelativeLocation() + FVector(0.f, 9.f, 0.f));
+	SecondGateSide->SetRelativeLocation(SecondGateSide->GetRelativeLocation() - FVector(0.f, 9.f, 0.f));
 	TimePassed += 0.025f;
-	if (TimePassed >= 1.5f)
+	if (TimePassed >= 1.f)
 	{
 		bIsGateOpened = true;
 		TimePassed = 0.f;
@@ -94,10 +94,10 @@ void AGate::OpenGateSides()
 
 void AGate::CloseGateSides()
 {
-	FirstGateSide->SetRelativeLocation(FirstGateSide->GetRelativeLocation() - FVector(0.f, 6.f, 0.f));
-	SecondGateSide->SetRelativeLocation(SecondGateSide->GetRelativeLocation() + FVector(0.f, 6.f, 0.f));
+	FirstGateSide->SetRelativeLocation(FirstGateSide->GetRelativeLocation() - FVector(0.f, 9.f, 0.f));
+	SecondGateSide->SetRelativeLocation(SecondGateSide->GetRelativeLocation() + FVector(0.f, 9.f, 0.f));
 	TimePassed += 0.025f;
-	if (TimePassed >= 1.5f) UKismetSystemLibrary::K2_ClearTimer(this, "CloseGateSides");
+	if (TimePassed >= 1.f) UKismetSystemLibrary::K2_ClearTimer(this, "CloseGateSides");
 }
 
 void AGate::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

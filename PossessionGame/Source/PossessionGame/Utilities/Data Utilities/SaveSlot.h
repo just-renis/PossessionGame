@@ -17,7 +17,7 @@ public:
 	int32 GetXp() const { return CurrentXp; }
 	int32 GetCurrentLevelNeededXp() const { return 10 + CurrentLevel * 5; }
 	int32 GetLevelOfAnUpgrade(const EUpgrade InUpgrade);
-	int32 GetLevelDamageIncrease(const bool bOneLower);
+	int32 GetLevelDamageIncrease(const int32 InLevel = -1);
 	
 	void SetTutorialFinished() { bTutorialFinished = true; }
 	void SetGameInstance(const TObjectPtr<UPossessionGameInstance>& InGameInstance) { GameInstance = InGameInstance; }

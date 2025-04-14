@@ -185,7 +185,7 @@ void AWeapon::P_Setup()
 	MagazineCap = P_Data->GetMagazineCap();
 	TotalAmmo = P_Data->GetTotalAmmo();
 	HitScanDamage = P_Data->GetHitScanDamage();
-	HitScanDamage += P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(false) / 100.f);
+	HitScanDamage += P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() / 100.f);
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
 	P_SetupUpgradesAppliance();
@@ -285,8 +285,8 @@ void AWeapon::P_SetupUpgradesAppliance()
 	if (DamagePercentage > 0.f) HitScanDamage += P_Data->GetHitScanDamage() * (DamagePercentage / 100.f);
 }
 
-void AWeapon::P_SetupLevelUpAppliance()
+void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
 {
-	HitScanDamage -= P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(true) / 100.f);
-	HitScanDamage += P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(false) / 100.f);
+	HitScanDamage -= P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) / 100.f);
+	HitScanDamage += P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) / 100.f);
 }

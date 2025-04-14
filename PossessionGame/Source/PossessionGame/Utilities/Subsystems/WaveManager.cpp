@@ -201,12 +201,25 @@ void UWaveManager::SpawnEnemy(const ECharacterType InEnemyType)
 {
 	if (!SpawnLocations.Find(CurrentGameMode)) return;
 	if (!bTutorialIsFinished) TutorialHandleSpawning(InEnemyType);
-	else if (SpawnLocations[CurrentGameMode].SpawnLocations[FMath::RandRange(0, SpawnLocations[CurrentGameMode].SpawnLocations.Num() - 1)]->SpawnEnemy(Enemies[InEnemyType]))
+	else if (SpawnLocations[CurrentGameMode].SpawnLocations.Num() > 0)
 	{
-		AliveEnemiesAmount++;
-		EnemiesLeftToKill--;
+		const int32 LastIndex = SpawnLocations[CurrentGameMode].SpawnLocations.Num() - 1;
+		for (int32 i = 0; i <= LastIndex; i++)
+		{
+			const int32 Index = FMath::RandRange(i, LastIndex);
+			if (i != Index) SpawnLocations[CurrentGameMode].SpawnLocations.Swap(i, Index);
+		}
+		for (const TObjectPtr<ASpawnLocation>& Location : SpawnLocations[CurrentGameMode].SpawnLocations)
+		{
+			if (Location->SpawnEnemy(Enemies[InEnemyType]))
+			{
+				AliveEnemiesAmount++;
+				EnemiesLeftToKill--;
+				bIsSpawnInProcess = false;
+				break;
+			}
+		}
 	}
-	bIsSpawnInProcess = false;
 }
 
 void UWaveManager::SpawnLogic()
@@ -271,16 +284,17 @@ void UWaveManager::WaveCompleted()
 void UWaveManager::TutorialHandleSpawning(const ECharacterType InEnemyType)
 {
 	ShowUpgradeSelection();
-	for (int32 i = 0; i < SpawnLocations[CurrentGameMode].SpawnLocations.Num(); i++)
+	for (const TObjectPtr<ASpawnLocation> Location : SpawnLocations[CurrentGameMode].SpawnLocations)
 	{
-		if (CurrentGameMode == EGameMode::TutorialMode2) SpawnLocations[CurrentGameMode].SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType])->AI_Disable();
-		else
+		if (const TObjectPtr<AEnemy> SpawnedEnemy = Location->SpawnEnemy(Enemies[InEnemyType]))
 		{
-			SpawnLocations[CurrentGameMode].SpawnLocations[i]->SpawnEnemy(Enemies[InEnemyType]);
-			CurrentGameMode = EGameMode::TutorialMode2;
+			if (CurrentGameMode == EGameMode::TutorialMode2) SpawnedEnemy->AI_Disable();
+			else CurrentGameMode = EGameMode::TutorialMode2;
+			AliveEnemiesAmount++;
+			bIsSpawnInProcess = false;
+			break;
 		}
 	}
-	AliveEnemiesAmount++;
 }
 
 void UWaveManager::SetAndStartGameMode(const EGameMode InGameMode)
@@ -311,9 +325,12 @@ void UWaveManager::StartTerminalHack()
 
 void UWaveManager::FinishTerminalHack()
 {
-	if (WaveManagerHUD) WaveManagerHUD->PlayAnnouncementAnim("Hack Completed");
+	if (WaveManagerHUD)
+	{
+		WaveManagerHUD->PlayAnnouncementAnim("Hack Completed");
+		UKismetSystemLibrary::K2_SetTimer(this, "ShowUpgradeSelection", WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
+	}
 	AssetsManager->PlaySound2D(ESound::GeneratorCompleted);
-	ShowUpgradeSelection();
 	TerminalHackProgress = 0.f;
 	if (--TerminalsLeftToHack <= 0) FinalizeMode();
 	else

@@ -133,5 +133,5 @@ private:
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
 	
 	void P_SetupUpgradesAppliance();
-	void P_SetupLevelUpAppliance();
+	void P_SetupLevelUpAppliance(const int32 InLevel);
 };

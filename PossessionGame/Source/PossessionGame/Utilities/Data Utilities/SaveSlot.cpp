@@ -5,7 +5,7 @@
 
 int32 USaveSlot::GetLevelOfAnUpgrade(const EUpgrade InUpgrade) { return UnlockedUpgrades.Find(InUpgrade) ? UnlockedUpgrades[InUpgrade] : 0; }
 
-int32 USaveSlot::GetLevelDamageIncrease(const bool bOneLower) { return PlayerLevelData.GetDamageIncrease(bOneLower ? CurrentLevel - 1 : CurrentLevel); }
+int32 USaveSlot::GetLevelDamageIncrease(const int32 InLevel) { return PlayerLevelData.GetDamageIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
 
 void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel)
 {
@@ -21,7 +21,6 @@ void USaveSlot::AddXp(const int32 InXp)
 	{
 		GameInstance->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::LevelUp);
 		CurrentXp -= GetCurrentLevelNeededXp();
-		CurrentLevel++;
-		GameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast();
+		GameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast(++CurrentLevel);
 	}
 }

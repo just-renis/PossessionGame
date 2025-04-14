@@ -55,7 +55,7 @@ private:
 	
 	void AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile);
 
-	void P_SetupLevelUpAppliance();
+	void P_SetupLevelUpAppliance(const int32 InLevel);
 	
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
 	void DealAreaDamage();

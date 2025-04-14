@@ -84,14 +84,14 @@ FString UUpgradeSelectionUI::GetUpgradeTextFromSingularAttributeValue(const TPai
 {
 	switch (InAttribute.Key)
 	{
-		case EUpgradeAttribute::FlatDamage: return " DAMAGE INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " POINTS\n";
-		case EUpgradeAttribute::FlatHealth: return " HEALTH INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " POINTS\n";
-		case EUpgradeAttribute::DamagePercentage: return " DAMAGE INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
-		case EUpgradeAttribute::ProjectilesAmount: return " PROJECTILES INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "\n";
-		case EUpgradeAttribute::AbilityCooldownReduction: return " COOLDOWN REDUCED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
-		case EUpgradeAttribute::Size: return " SIZE INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
-		case EUpgradeAttribute::AbilityDuration: return " DURATION INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
-		case EUpgradeAttribute::EffectDuration: return " EFFECT DURATION INCREASED BY " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "%\n";
+		case EUpgradeAttribute::FlatDamage: return "+" + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " DAMAGE\n";
+		case EUpgradeAttribute::FlatHealth: return "+" + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " HEALTH\n";
+		case EUpgradeAttribute::DamagePercentage: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% DAMAGE\n";
+		case EUpgradeAttribute::ProjectilesAmount: return "+" + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " PROJECTILES\n";
+		case EUpgradeAttribute::AbilityCooldownReduction: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% COOLDOWN\n";
+		case EUpgradeAttribute::Size: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% AREA\n";
+		case EUpgradeAttribute::AbilityDuration: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% ABILITY DURATION\n";
+		case EUpgradeAttribute::EffectDuration: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% EFFECT DURATION\n";
 	}
 	return "";
 }
