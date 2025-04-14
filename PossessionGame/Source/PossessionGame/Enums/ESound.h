@@ -55,5 +55,9 @@ enum class ESound : uint16
 	GeneratorInitiate,
 	GeneratorCompleted,
 	GeneratorDisableAnnouncement,
-	TaskAnnouncement
+	TaskAnnouncement,
+	UsbInsert,
+	UsbCollect,
+	ForceFieldDissolve,
+	GatesOpen
 };

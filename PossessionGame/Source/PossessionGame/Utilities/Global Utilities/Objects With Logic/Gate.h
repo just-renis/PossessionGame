@@ -35,6 +35,8 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	TObjectPtr<UWidgetComponent> InteractableWidget;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> OpenGatesSfx;
 
 	virtual void BeginPlay() override;
 	void OpenGate(const EGameMode InGameMode);

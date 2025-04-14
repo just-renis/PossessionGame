@@ -1,11 +1,16 @@
 ﻿#include "ForceField.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AForceField::AForceField()
 {
 	ForceField = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("forceField"));
 	RootComponent = ForceField;
+	DissolveSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("dissolveSfx"));
+	DissolveSfx->SetAutoActivate(false);
+	DissolveSfx->SetupAttachment(ForceField);
 }
 
 void AForceField::BeginPlay()
@@ -22,7 +27,11 @@ void AForceField::DestroyThis()
 	Destroy();
 }
 
-void AForceField::StartDissolveForceField() { UKismetSystemLibrary::K2_SetTimer(this, "DissolveForceField", 0.025f, true); }
+void AForceField::StartDissolveForceField()
+{
+	DissolveSfx->Sound ? DissolveSfx->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(DissolveSfx, ESound::ForceFieldDissolve);
+	UKismetSystemLibrary::K2_SetTimer(this, "DissolveForceField", 0.025f, true);
+}
 
 void AForceField::DissolveForceField()
 {

@@ -36,5 +36,6 @@ enum class EVfx : uint8
 	GuardianOverCharge,
 	GuardianMuzzle,
 	GuardianBulletImpact,
-	GuardianFpsBulletTrail
+	GuardianFpsBulletTrail,
+	UsbAura
 };

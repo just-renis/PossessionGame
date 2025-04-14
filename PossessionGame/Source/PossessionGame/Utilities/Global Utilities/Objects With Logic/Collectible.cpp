@@ -1,4 +1,6 @@
 ﻿#include "Collectible.h"
+
+#include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -6,6 +8,7 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 ACollectible::ACollectible()
 {
@@ -20,6 +23,7 @@ ACollectible::ACollectible()
 void ACollectible::BeginPlay()
 {
 	Super::BeginPlay();
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachOrLoadVfx(EVfx::UsbAura, &UsbAura, Collision, NAME_None);
 	PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACollectible::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ACollectible::DisableInteractionWidget);
@@ -28,6 +32,7 @@ void ACollectible::BeginPlay()
 void ACollectible::Init(bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
+	if (UsbAura) UsbAura->Activate();
 	InitialSpawnZ = GetActorLocation().Z;
 	UKismetSystemLibrary::K2_SetTimer(this, "Float", 0.05f, true);
 	SetActorRotation(FRotator(0.f, 0.f, 45.f));
@@ -38,6 +43,8 @@ void ACollectible::Init(bool bInIsPlayerObject)
 void ACollectible::Interact()
 {
 	if (!GetIsInteractable()) return;
+	if (UsbAura) UsbAura->Deactivate();
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbCollect);
 	UKismetSystemLibrary::K2_ClearTimer(this, "Float");
 	PoolingManager->ReturnObjectToPool(EPoolObject::Collectible, this);
 	DisableCollectible();
@@ -86,9 +93,11 @@ void ACollectible::ChangeOutlineState(const bool bState)
 void ACollectible::Float()
 {
 	FVector NewLocation = GetActorLocation();
+	FRotator NewRotation = GetActorRotation();
 	const float FloatValue = FMath::Sin(GetWorld()->GetTimeSeconds() * 2.f) * 20.f;
 	NewLocation.Z = InitialSpawnZ + FloatValue;
-	SetActorLocation(NewLocation);
+	NewRotation.Yaw += 3.f;
+	SetActorLocationAndRotation(NewLocation, NewRotation);
 }
 
 void ACollectible::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

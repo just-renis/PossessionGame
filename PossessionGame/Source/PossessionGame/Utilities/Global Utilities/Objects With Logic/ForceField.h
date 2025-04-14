@@ -17,6 +17,8 @@ class POSSESSIONGAME_API AForceField : public AActor
 	TObjectPtr<UStaticMeshComponent> ForceField;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MI_Material;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> DissolveSfx;
 
 	virtual void BeginPlay() override;
 	void DestroyThis();

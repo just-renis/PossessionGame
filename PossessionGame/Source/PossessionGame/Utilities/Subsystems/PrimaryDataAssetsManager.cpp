@@ -293,6 +293,10 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_GeneratorCompleted", ESound::GeneratorCompleted);
 	SoundMap.Add("PA_GeneratorInitiate", ESound::GeneratorInitiate);
 	SoundMap.Add("PA_GeneratorDisableAnnouncement", ESound::GeneratorDisableAnnouncement);
+	SoundMap.Add("PA_UsbCollect", ESound::UsbCollect);
+	SoundMap.Add("PA_UsbInsert", ESound::UsbInsert);
+	SoundMap.Add("PA_GatesOpen", ESound::GatesOpen);
+	SoundMap.Add("PA_ForceFieldDissolve", ESound::ForceFieldDissolve);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -347,6 +351,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_GuardianMuzzle", EVfx::GuardianMuzzle);
 	VfxsMap.Add("PA_GuardianFpsBulletTrail", EVfx::GuardianFpsBulletTrail);
 	VfxsMap.Add("PA_GuardianBulletImpact", EVfx::GuardianBulletImpact);
+	VfxsMap.Add("PA_UsbAura", EVfx::UsbAura);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

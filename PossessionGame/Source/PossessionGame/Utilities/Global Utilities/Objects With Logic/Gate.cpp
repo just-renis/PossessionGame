@@ -1,10 +1,14 @@
 ﻿#include "Gate.h"
+
+#include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EGameMode.h"
+#include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AGate::AGate()
 {
@@ -16,6 +20,9 @@ AGate::AGate()
 	FirstGateSide->SetupAttachment(RootComponent);
 	SecondGateSide->SetupAttachment(RootComponent);
 	InteractableWidget->SetupAttachment(RootComponent);
+	OpenGatesSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("openGatesSfx"));
+	OpenGatesSfx->SetAutoActivate(false);
+	OpenGatesSfx->SetupAttachment(RootComponent);
 }
 
 void AGate::BeginPlay()
@@ -36,6 +43,7 @@ void AGate::OpenGate(const EGameMode InGameMode)
 {
 	if (GameModeToFinish == InGameMode)
 	{
+		OpenGatesSfx->Sound ? OpenGatesSfx->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(OpenGatesSfx, ESound::GatesOpen);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AGate::CloseGate);
 		UKismetSystemLibrary::K2_SetTimer(this, "OpenGateSides", 0.025f, true);
 	}

@@ -8,6 +8,7 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AUsbTerminal::AUsbTerminal()
 {
@@ -47,6 +48,7 @@ void AUsbTerminal::Interact()
 	if (!GetIsInteractable()) return;
 	if (CurrentUsbIndex < 4)
 	{
+		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbInsert);
 		UsbMeshes[CurrentUsbIndex]->SetVisibility(true);
 		(void)DelegateManager->OnUsbInserted.ExecuteIfBound();
 		if (++CurrentUsbIndex < 4) DelegateManager->SetIsUsbDroppable(true);
