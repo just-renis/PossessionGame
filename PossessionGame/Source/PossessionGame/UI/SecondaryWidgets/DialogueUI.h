@@ -29,6 +29,8 @@ private:
 	FString CurrentText;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TArray<FString> DialogueTexts;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TArray<FString> TipTexts;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 

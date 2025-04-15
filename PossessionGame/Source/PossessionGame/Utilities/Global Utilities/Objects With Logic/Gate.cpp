@@ -36,7 +36,8 @@ void AGate::BeginPlay()
 		Collision->SetBoxExtent(FVector(250.f, 450.f, 175.f));
 		SetIsInteractable(true);
 	}
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGate);
+	if (!bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGate);
+	else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialEnd.AddUObject(this, &AGate::OpenAsTutorialEndGate);
 }
 
 void AGate::OpenGate(const EGameMode InGameMode)
@@ -48,6 +49,8 @@ void AGate::OpenGate(const EGameMode InGameMode)
 		UKismetSystemLibrary::K2_SetTimer(this, "OpenGateSides", 0.025f, true);
 	}
 }
+
+void AGate::OpenAsTutorialEndGate() { OpenGate(EGameMode::TutorialMode2); }
 
 void AGate::CloseGate(const EGameMode InGameMode)
 {

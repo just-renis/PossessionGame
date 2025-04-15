@@ -303,11 +303,7 @@ void UWaveManager::SetAndStartGameMode(const EGameMode InGameMode)
 	InitMode();
 }
 
-void UWaveManager::FinishTutorial()
-{
-	bTutorialIsFinished = true;
-	DelegateManager->OnGameModeFinished.Broadcast(CurrentGameMode);
-}
+void UWaveManager::FinishTutorial() { bTutorialIsFinished = true; }
 
 void UWaveManager::StartTerminalHack()
 {

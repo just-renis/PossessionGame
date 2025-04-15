@@ -22,6 +22,8 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsUnlockableByInteraction = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bIsTutorialGate = false;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EGameMode GameModeToFinish;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EGameMode NextGameMode;
@@ -40,6 +42,7 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 
 	virtual void BeginPlay() override;
 	void OpenGate(const EGameMode InGameMode);
+	void OpenAsTutorialEndGate();
 	void CloseGate(const EGameMode InGameMode = EGameMode::None);
 	virtual void Interact() override;
 	virtual void ChangeOutlineState(const bool bState) override;

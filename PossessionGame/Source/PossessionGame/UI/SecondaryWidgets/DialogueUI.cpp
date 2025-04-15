@@ -6,11 +6,11 @@
 
 void UDialogueUI::StartDialogue(const int32 InIndex, const float InSpeed)
 {
-	if (!DialogueTexts.IsValidIndex(InIndex)) return;
+	if (!DialogueTexts.IsValidIndex(InIndex) && InIndex != -1) return;
 	if (GetVisibility() == ESlateVisibility::Collapsed) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	AssetsManager->PlaySound2D(ESound::DialogueStart);
 	DialogueTextIndex = InIndex;
-	TargetText = DialogueTexts[DialogueTextIndex];
+	TargetText = DialogueTextIndex == -1 ? TipTexts[FMath::RandRange(0, TipTexts.Num() - 1)] : DialogueTexts[InIndex];
 	CurrentText = "";
 	CurrentIndex = 0;
 	TypeSpeed = InSpeed;

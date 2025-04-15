@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "TutorialDrone.generated.h"
 
+enum class EGameMode : uint8;
 enum class ESound : uint16;
 class UDelegateManager;
 class ATutorialDialogue;
@@ -51,9 +52,11 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 	void SetDroneMoveLocation(const int32 InIndex, const bool bInstantMove);
 	void SetDroneLookAtLocation(const TObjectPtr<AActor>& InTarget) { Target = InTarget; }
 	void EnableCheckDistanceToTarget(const int32 InIndex);
+	void EnableCheckDistanceToTarget(const EGameMode InGameMode);
 	void PlaySound(const ESound InSoundName);
 	void SetupAttachments();
 	void SetupDelegates();
+	void ShowRandomTip() const;
 	UFUNCTION()
 	void MoveToLocation();
 	UFUNCTION()

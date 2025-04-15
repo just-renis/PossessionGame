@@ -27,6 +27,7 @@ void ATutorialDrone::BeginPlay()
 	SetupDelegates();
 	RetrieveDroneWaypoints();
 	PlayDroneAnimation();
+	DelegateManager->OnGameModeFinished.AddUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
 	UKismetSystemLibrary::K2_SetTimer(this, "SpinPropellers", 0.05f, true);
 }
 
@@ -58,6 +59,12 @@ void ATutorialDrone::EnableCheckDistanceToTarget(const int32 InIndex)
 	UKismetSystemLibrary::K2_SetTimer(this, "CheckDistanceToTarget", 0.05f, true);
 }
 
+void ATutorialDrone::EnableCheckDistanceToTarget(const EGameMode InGameMode)
+{
+	DistanceToTargetIndex = -1;
+	UKismetSystemLibrary::K2_SetTimer(this, "CheckDistanceToTarget", 0.05f, true);
+}
+
 void ATutorialDrone::PlaySound(const ESound InSoundName)
 {
 	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], InSoundName);
@@ -77,6 +84,12 @@ void ATutorialDrone::SetupDelegates()
 	DelegateManager->StartTutorialDroneMoveToLocation.BindUObject(this, &ATutorialDrone::SetDroneMoveLocation);
 	DelegateManager->SendTargetToTutorialDrone.BindUObject(this, &ATutorialDrone::SetDroneLookAtLocation);
 	DelegateManager->OnCheckDistanceToTutorialDrone.BindUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
+}
+
+void ATutorialDrone::ShowRandomTip() const
+{
+	UE_LOG(LogTemp, Warning, TEXT("SHOW RANDOM TIP"));
+	(void)DelegateManager->OnShowDialogue.ExecuteIfBound(-1);
 }
 
 void ATutorialDrone::MoveToLocation()
@@ -141,7 +154,7 @@ void ATutorialDrone::CheckDistanceToTarget()
 				(void)DelegateManager->OnShowHint.ExecuteIfBound(2);
 				break;
 			case 2: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(5); break;
-			default: ;
+			default: ShowRandomTip();
 		}
 		UKismetSystemLibrary::K2_ClearTimer(this, "CheckDistanceToTarget");
 	}

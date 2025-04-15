@@ -515,6 +515,8 @@ void AEnemy::AI_ReceivedDamage()
 void AEnemy::AI_DestroyHpBar()
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "AI_HideHpBar");
+	if (!AI_HpBar || !AI_HpBarComponent) return;
+	AI_HpBarComponent->DestroyComponent();
 	AI_HpBar = nullptr;
 	AI_HpBarComponent = nullptr;
 }

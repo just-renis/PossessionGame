@@ -32,4 +32,8 @@ void ATutorialDialogue::StartDialogue(const int32 InIndex) const
 	}
 }
 
-void ATutorialDialogue::StopShowingDialogue() const { if (Dialogue) SetVisibilityState(false); }
+void ATutorialDialogue::StopShowingDialogue() const
+{
+	if (!Dialogue) return;
+	SetVisibilityState(false);
+}
