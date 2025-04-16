@@ -10,6 +10,7 @@ enum class EPoolObject : uint8
 	SpyProjectile,
 	TricksterProjectile,
 	TankProjectile,
+	MinionBossProjectile,
 	TricksterPoisonProjectile,
 	TricksterEmpProjectile,
 	ArrowProjectile,
