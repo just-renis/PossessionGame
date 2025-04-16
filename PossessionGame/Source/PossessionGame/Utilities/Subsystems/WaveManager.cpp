@@ -111,6 +111,7 @@ EWeapon UWaveManager::GetWeaponCode(ECharacterType EnemyType)
 		case ECharacterType::Trickster: return EWeapon::TricksterWeapon;
 		case ECharacterType::Samurai: return EWeapon::SamuraiWeapon;
 		case ECharacterType::Guardian: return EWeapon::GuardianWeapon;
+		case ECharacterType::MinionBoss: return EWeapon::MinionBossHandWeapon;
 		default: return EWeapon::None;
 	}
 }
@@ -195,10 +196,14 @@ void UWaveManager::SetupSpawnLocations()
 		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
 		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
 	}
+	AsyncLoadAndSpawnEnemy(ECharacterType::MinionBoss);
+	AsyncLoadAndSpawnEnemy(ECharacterType::Guardian);
 }
 
 void UWaveManager::SpawnEnemy(const ECharacterType InEnemyType)
 {
+	if (InEnemyType == ECharacterType::MinionBoss) SpawnLocations[EGameMode::BossMode].SpawnLocations[0]->SpawnEnemy(Enemies[InEnemyType]);
+	if (InEnemyType == ECharacterType::Guardian) SpawnLocations[EGameMode::None].SpawnLocations[0]->SpawnEnemy(Enemies[InEnemyType]);
 	if (!SpawnLocations.Find(CurrentGameMode)) return;
 	if (!bTutorialIsFinished) TutorialHandleSpawning(InEnemyType);
 	else if (SpawnLocations[CurrentGameMode].SpawnLocations.Num() > 0)
@@ -283,7 +288,6 @@ void UWaveManager::WaveCompleted()
 
 void UWaveManager::TutorialHandleSpawning(const ECharacterType InEnemyType)
 {
-	ShowUpgradeSelection();
 	for (const TObjectPtr<ASpawnLocation> Location : SpawnLocations[CurrentGameMode].SpawnLocations)
 	{
 		if (const TObjectPtr<AEnemy> SpawnedEnemy = Location->SpawnEnemy(Enemies[InEnemyType]))

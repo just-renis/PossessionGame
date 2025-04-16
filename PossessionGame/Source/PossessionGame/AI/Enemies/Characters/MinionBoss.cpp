@@ -9,6 +9,11 @@ void AMinionBoss::AI_SetupWeapon()
 	Super::AI_SetupWeapon();
 }
 
+void AMinionBoss::AI_ShootLogic()
+{
+	if (!bIsActionInMotion && bCanShoot && CurrentMoveMode != EMoveMode::Run) AI_Shoot();
+}
+
 void AMinionBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::MinionBoss;

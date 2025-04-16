@@ -101,6 +101,7 @@ protected:
 	float MaxHp;
 	float CurrentHp;
 	ECharacterType CharacterName;
+	EMoveMode CurrentMoveMode = EMoveMode::Walk;
 	FVector2D MouseSensitivity = FVector2D(1.f, 1.f);
 	UPROPERTY()
 	TObjectPtr<UEnemyAnimationInstance> AnimInstance;
@@ -184,7 +185,6 @@ private:
 	float MeshEmissiveMaterialOpacityValue = 0.f;
 	float FovChangeTick;
 	float TargetFov;
-	EMoveMode CurrentMoveMode = EMoveMode::Walk;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))

@@ -10,6 +10,7 @@ class POSSESSIONGAME_API AMinionBoss : public AEnemy
 	GENERATED_BODY()
 	
 	virtual void AI_SetupWeapon() override;
+	virtual void AI_ShootLogic() override;
 
 	virtual void BeginPlay() override;
 };
