@@ -13,5 +13,7 @@ enum class EWeapon : uint8
 	RangerWeapon,
 	SamuraiWeapon,
 	GuardianWeapon,
-	GuardianSingularWeapon
+	GuardianSingularWeapon,
+	MinionBossHandWeapon,
+	MinionBossBackWeapon
 };

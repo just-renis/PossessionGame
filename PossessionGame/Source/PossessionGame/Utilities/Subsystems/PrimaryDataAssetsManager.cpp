@@ -207,6 +207,7 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 		case ECharacterType::Spy: return EPoolObject::SpyProjectile;
 		case ECharacterType::Tank: return EPoolObject::TankProjectile;
 		case ECharacterType::Guardian: return EPoolObject::GuardianProjectile;
+		case ECharacterType::MinionBoss: return EPoolObject::MinionBossProjectile;
 		default: return EPoolObject::None;
 	}
 }
@@ -234,6 +235,7 @@ void UPrimaryDataAssetsManager::SetupWeaponsPrimaryAssets()
 	WeaponsMap.Add("PA_SamuraiWeapon", EWeapon::SamuraiWeapon);
 	WeaponsMap.Add("PA_GuardianWeapon", EWeapon::GuardianWeapon);
 	WeaponsMap.Add("PA_GuardianSingularWeapon", EWeapon::GuardianSingularWeapon);
+	WeaponsMap.Add("PA_MinionBossHandWeapon", EWeapon::MinionBossHandWeapon);
 	FillContainers(WeaponsMap, WeaponContainers, "Weapon");
 	WeaponsMap.Empty();
 }
@@ -311,6 +313,7 @@ void UPrimaryDataAssetsManager::SetupCharactersPrimaryAssets()
 	CharactersMap.Add("PA_Minion", ECharacterType::Minion);
 	CharactersMap.Add("PA_Samurai", ECharacterType::Samurai);
 	CharactersMap.Add("PA_Guardian", ECharacterType::Guardian);
+	CharactersMap.Add("PA_MinionBoss", ECharacterType::MinionBoss);
 	FillContainers(CharactersMap, CharacterContainers, "Character");
 	CharactersMap.Empty();
 }
