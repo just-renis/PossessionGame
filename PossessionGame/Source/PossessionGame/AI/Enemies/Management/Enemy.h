@@ -56,12 +56,12 @@ public:
 	ECharacterType GetCharacterName() const { return CharacterName; }
 	TObjectPtr<APossessionGameGameModeBase> GetGameModeBase() const { return GameModeBase; }
 	TObjectPtr<AEnemyAIController> GetAI() const { return AI; }
-	TObjectPtr<AWeapon>& GetWeapon() { return Weapon; }
+	virtual TObjectPtr<AWeapon>& GetWeapon() { return Weapon; }
 	TObjectPtr<UCameraComponent> GetCamera() { return Camera; }
 	TObjectPtr<UEnemyAnimationInstance>& GetAnimInstance() { return AnimInstance; }
 	TObjectPtr<UPossessionGameInstance>& GetGameInstance() { return GameInstance; }
 
-	void AI_InitiateShooting();
+	virtual void AI_InitiateShooting();
 	virtual void AI_ShootLogic();
 	virtual void AI_ReloadLogic();
 	void AI_UseAbility(const int32 AbilityIndex);
@@ -69,6 +69,7 @@ public:
 	void AI_SetShootPause();
 	virtual void AI_SetCanShoot(const bool bState);
 	void AI_Disable() const;
+	virtual void AI_CancelShooting() {}
 
 	void P_UseAbility(const int32 AbilityIndex);
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo) const;
@@ -170,6 +171,8 @@ protected:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) const;
 	virtual void DestroyAI();
+	UFUNCTION()
+	virtual void DestroyThis();
 private:
 	bool bPressKeyEnabled = false;
 	bool bInUpgradeSelection = false;
@@ -280,8 +283,6 @@ private:
 	void ProcessSpawnEffects();
 	UFUNCTION()
 	void CheckIfFallOutOfWorld();
-	UFUNCTION()
-	void DestroyThis();
 	UFUNCTION()
 	void SpawnCondenseMaterialsProcess();
 };

@@ -27,6 +27,7 @@ public:
 
 	bool GetIsReloadEnabled() const { return bIsReloadEnabled; }
 	bool GetIsPossessed() const { return bIsPossessed; }
+	bool GetIsFirstShotWasShot() const { return bFirstShotWasShot; }
 	int32 GetShootCyclesUntilReload() const { return ShootCyclesUntilReload; }
 	int32 GetCurrentAmmoAmount() const { return CurrentAmmo; }
 	int32 GetTotalAmmoAmount() const { return TotalAmmo; }
@@ -62,6 +63,7 @@ public:
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) {}
 	
 	virtual void SetWeaponMeshScaleToOriginal() { Mesh->SetRelativeScale3D(OriginalScale); }
+	void SetFirstShotWasShot() { bFirstShotWasShot = true; }
 	virtual void DestroyThis();
 	virtual void SetToOriginalSettings();
 	virtual void DeactivateWeapon();
@@ -128,6 +130,7 @@ protected:
 	void DisableHandsMesh() const;
 	void DealPointDamage(const FHitResult& InHitResult);
 private:
+	bool bFirstShotWasShot = false;
 	int32 ShootCyclesUntilReload;
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;

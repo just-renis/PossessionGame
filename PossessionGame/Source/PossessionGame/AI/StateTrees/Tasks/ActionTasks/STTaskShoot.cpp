@@ -11,12 +11,18 @@ EStateTreeRunStatus USTTaskShoot::EnterState(FStateTreeExecutionContext& Context
 {
 	CachedController = Cast<AEnemyAIController>(Context.GetOwner());
 	UKismetSystemLibrary::K2_SetTimer(this, "ShootLogic", CachedController->GetProprietor()->GetWeapon()->GetShootCooldown(), true);
+	if (!CachedController->GetProprietor()->GetWeapon()->GetIsFirstShotWasShot())
+	{
+		CachedController->GetProprietor()->GetWeapon()->SetFirstShotWasShot();
+		ShootLogic();
+	}
 	return Super::EnterState(Context, Transition);
 }
 
 void USTTaskShoot::ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "ShootLogic");
+	CachedController->GetProprietor()->AI_CancelShooting();
 	Super::ExitState(Context, Transition);
 }
 

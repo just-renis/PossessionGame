@@ -84,7 +84,9 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::TankProjectile, EVfxType::FpsTrail }), EVfx::TankFpsBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::FpsTrail }), EVfx::GuardianFpsBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::Muzzle }), EVfx::GuardianMuzzle },
-		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::Impact }), EVfx::GuardianBulletImpact }
+		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::Impact }), EVfx::GuardianBulletImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Trail }), EVfx::MinionBossBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Muzzle }), EVfx::MinionBossMuzzle }
 	};
 	CharacterVfxCombinationsMap =
 	{
@@ -354,6 +356,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_GuardianMuzzle", EVfx::GuardianMuzzle);
 	VfxsMap.Add("PA_GuardianFpsBulletTrail", EVfx::GuardianFpsBulletTrail);
 	VfxsMap.Add("PA_GuardianBulletImpact", EVfx::GuardianBulletImpact);
+	VfxsMap.Add("PA_MinionBossBulletTrail", EVfx::MinionBossBulletTrail);
+	VfxsMap.Add("PA_MinionBossMuzzle", EVfx::MinionBossMuzzle);
 	VfxsMap.Add("PA_UsbAura", EVfx::UsbAura);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();

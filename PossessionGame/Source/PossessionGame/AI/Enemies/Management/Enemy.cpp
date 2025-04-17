@@ -265,7 +265,7 @@ void AEnemy::AI_Setup()
 	AI->SetupAI();
 	AI_SetupAbilities();
 	AI_SetupData();
-	if (Weapon->GetIsReloadEnabled()) AI->SetReloadDelay(AnimInstance->GetMontageLength(EEnemyAnimState::Reload));
+	if (Weapon && Weapon->GetIsReloadEnabled()) AI->SetReloadDelay(AnimInstance->GetMontageLength(EEnemyAnimState::Reload));
 }
 
 void AEnemy::AI_SetupWeapon()
@@ -448,7 +448,7 @@ void AEnemy::AttachDestructible(const TObjectPtr<ADestructible>& Destructible, c
 
 void AEnemy::HandleDeactivation()
 {
-	Weapon->DeactivateWeapon();
+	if (Weapon) Weapon->DeactivateWeapon();
 	GetCapsuleComponent()->DestroyComponent();
 	GetMesh()->SetAnimInstanceClass(nullptr);
 	GetMesh()->SetSimulatePhysics(true);
@@ -486,6 +486,12 @@ void AEnemy::DestroyAI()
 		AI->UnPossess();
 		AI->Destroy();
 	}
+}
+
+void AEnemy::DestroyThis()
+{
+	if (Weapon) Weapon->DestroyThis();
+	Destroy();
 }
 
 void AEnemy::AI_SetupData()
@@ -948,12 +954,6 @@ void AEnemy::ProcessSpawnEffects()
 }
 
 void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsPossessed ? P_Death() : InitiateDeath(); }
-
-void AEnemy::DestroyThis()
-{
-	Weapon->DestroyThis();
-	Destroy();
-}
 
 void AEnemy::SpawnCondenseMaterialsProcess()
 {
