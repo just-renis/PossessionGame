@@ -9,7 +9,7 @@ void UMinionBossAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsI
 	if (StompMontage && Montage == StompMontage->Get())
 	{
 		Proprietor->SetActionInMotion(false);
+		SetStompIsPlaying(false);
 		(void)Cast<AMinionBossAIController>(Proprietor->GetAI())->OnStompFinished.ExecuteIfBound();
-		UE_LOG(LogTemp, Warning, TEXT("STOMP ENDED"));
 	}
 }

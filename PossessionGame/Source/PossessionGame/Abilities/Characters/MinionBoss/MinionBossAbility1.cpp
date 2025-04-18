@@ -1,4 +1,5 @@
 ﻿#include "MinionBossAbility1.h"
+#include "PossessionGame/AI/Enemies/Animation Instances/MinionBossAnimationInstance.h"
 #include "PossessionGame/AI/Enemies/Characters/MinionBoss.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 
@@ -6,7 +7,7 @@ void UMinionBossAbility1::AI_Execute()
 {
 	Proprietor->SetActionInMotion(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Stomp);
-	UE_LOG(LogTemp, Warning, TEXT("STOMP STARTED"));
+	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetStompIsPlaying(true);
 	Super::AI_Execute();
 }
 
@@ -17,9 +18,5 @@ void UMinionBossAbility1::SetProprietor(const TObjectPtr<AEnemy> AbilityPropriet
 void UMinionBossAbility1::CooldownLogic(const float InDeltaTime)
 {
 	Super::CooldownLogic(InDeltaTime);
-	if (CurrentCooldownSecs >= GetReqCooldownSecs())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("TOGGLE STOMP TRIGGER - ABILITY CHARGED"));
-		Proprietor->AI_ToggleStompTrigger(true);
-	}
+	if (CurrentCooldownSecs >= GetReqCooldownSecs()) Proprietor->AI_ToggleStompTrigger(true);
 }

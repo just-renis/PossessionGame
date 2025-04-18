@@ -57,7 +57,6 @@ void AMinionBoss::AI_InitiateShooting() { AI_PlayShootMontage(); }
 
 void AMinionBoss::AI_OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ENTERED STOMP TRIGGER"));
 	AI->GetStateTreeData().TriggerEvent("StateTree.MinionBoss.Stomp");
 	AI_ToggleStompTrigger(false);
 }
