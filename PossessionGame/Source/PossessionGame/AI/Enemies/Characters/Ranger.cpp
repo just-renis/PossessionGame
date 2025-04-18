@@ -40,6 +40,15 @@ ARanger::ARanger()
 	Sounds[ESound::RangerGrenadeLaunchAim]->SetupAttachment(GetMesh());
 }
 
+void ARanger::AI_ToggleGrenadeLaunchTrigger(const bool bState) const
+{
+	if (AIGrenadeLaunchTriggerSphere)
+	{
+		AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+		AIGrenadeLaunchTriggerSphere->SetActorHiddenInGame(!bState);
+	}
+}
+
 void ARanger::LaunchGrenade()
 {
 	PlaySound(ESound::RangerGrenadeLaunch);
@@ -74,15 +83,6 @@ void ARanger::AI_SetupWeapon()
 }
 
 void ARanger::AI_PlayDeathSound() { PlaySound(ESound::RangerDeath); }
-
-void ARanger::AI_ToggleGrenadeLaunchTrigger(const bool bState) const
-{
-	if (AIGrenadeLaunchTriggerSphere)
-	{
-		AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
-		AIGrenadeLaunchTriggerSphere->SetActorHiddenInGame(!bState);
-	}
-}
 
 void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
 
