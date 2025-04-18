@@ -20,4 +20,6 @@ class POSSESSIONGAME_API UMinionBossAbility1 : public UAbility
 	
 	virtual void SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) override;
 	virtual void CooldownLogic(const float InDeltaTime) override;
+	UFUNCTION()
+	void StompHitTheGround() const;
 };

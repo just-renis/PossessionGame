@@ -285,6 +285,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_GuardianDeath", ESound::GuardianDeath);
 	SoundMap.Add("PA_GuardianOverChargeStart", ESound::GuardianOverChargeStart);
 	SoundMap.Add("PA_GuardianOverChargeEnd", ESound::GuardianOverChargeEnd);
+	SoundMap.Add("PA_MinionBossStomp", ESound::MinionBossStomp);
 	SoundMap.Add("PA_DroneBuzz", ESound::DroneBuzz);
 	SoundMap.Add("PA_DialogueStart", ESound::DialogueStart);
 	SoundMap.Add("PA_RestSoundtrack", ESound::RestSoundtrack);
@@ -358,6 +359,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_GuardianBulletImpact", EVfx::GuardianBulletImpact);
 	VfxsMap.Add("PA_MinionBossBulletTrail", EVfx::MinionBossBulletTrail);
 	VfxsMap.Add("PA_MinionBossMuzzle", EVfx::MinionBossMuzzle);
+	VfxsMap.Add("PA_MinionBossStompCrack", EVfx::MinionBossStompCrack);
 	VfxsMap.Add("PA_UsbAura", EVfx::UsbAura);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();

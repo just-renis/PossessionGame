@@ -39,5 +39,6 @@ enum class EVfx : uint8
 	GuardianFpsBulletTrail,
 	MinionBossMuzzle,
 	MinionBossBulletTrail,
+	MinionBossStompCrack,
 	UsbAura
 };

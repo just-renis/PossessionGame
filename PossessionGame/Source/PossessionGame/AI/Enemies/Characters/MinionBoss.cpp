@@ -1,4 +1,6 @@
 ﻿#include "MinionBoss.h"
+
+#include "Components/AudioComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/TriggerSphere.h"
@@ -16,6 +18,13 @@ void AMinionBoss::AI_ToggleStompTrigger(const bool bState) const
 		StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
 		StompTriggerSphere->SetActorHiddenInGame(!bState);
 	}
+}
+
+AMinionBoss::AMinionBoss()
+{
+	Sounds.Add(ESound::MinionBossStomp, CreateDefaultSubobject<UAudioComponent>(TEXT("stompSfx")));
+	Sounds[ESound::MinionBossStomp]->SetAutoActivate(false);
+	Sounds[ESound::MinionBossStomp]->SetupAttachment(GetMesh());
 }
 
 void AMinionBoss::AI_SetupWeapon()

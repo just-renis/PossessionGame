@@ -13,6 +13,8 @@ class POSSESSIONGAME_API AMinionBoss : public AEnemy
 public:
 	void AI_ToggleStompTrigger(const bool bState) const;
 private:
+	AMinionBoss();
+	
 	int32 CurrentWeaponIndex = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Stomp", meta = (AllowPrivateAccess = true))
 	float StompTriggerRadiusInMetres = 5.f;
