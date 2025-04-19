@@ -12,12 +12,16 @@ class POSSESSIONGAME_API AMinionBoss : public AEnemy
 	GENERATED_BODY()
 public:
 	void AI_ToggleStompTrigger(const bool bState) const;
+
+	void TriggerStompCameraShake() const;
 private:
 	AMinionBoss();
 	
 	int32 CurrentWeaponIndex = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Stomp", meta = (AllowPrivateAccess = true))
-	float StompTriggerRadiusInMetres = 5.f;
+	float StompTriggerRadiusInMetres = 3.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> StompCameraShake;
 	UPROPERTY()
 	TArray<TObjectPtr<AWeapon>> Weapons;
 	UPROPERTY()

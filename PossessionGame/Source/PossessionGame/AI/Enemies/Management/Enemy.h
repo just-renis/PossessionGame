@@ -72,13 +72,13 @@ public:
 	void AI_Disable() const;
 	virtual void AI_CancelShooting() {}
 
+	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) { bInUpgradeSelection = false; }
 	void P_UseAbility(const int32 AbilityIndex);
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo) const;
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo, const int32 MaxAmmo) const;
 	void P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeaponAmmo, const int32 MaxAmmo) const;
 	void P_StopTime(); // NOT USED ANYWHERE YET.
 	void P_SetFov(const float InFov);
-	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) { bInUpgradeSelection = false; }
 
 	void SetActionInMotion(const bool bState);
 	virtual void Tick(const float DeltaTime) override;
@@ -88,6 +88,7 @@ public:
 	virtual void InitiateDeath();
 	void ReceiveDamage(const float InDamage);
 	void PlaySound(const ESound InSoundName);
+	void StopSound(const ESound InSoundName);
 	void SetEmpEffect(const float InEffectDuration);
 	void SetPossessionOutline(const bool bState) const;
 	void SetPossessionOutlineTimer();

@@ -1,5 +1,4 @@
 ﻿#include "MinionBoss.h"
-
 #include "Components/AudioComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
@@ -8,6 +7,7 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
@@ -19,6 +19,8 @@ void AMinionBoss::AI_ToggleStompTrigger(const bool bState) const
 		StompTriggerSphere->SetActorHiddenInGame(!bState);
 	}
 }
+
+void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->OnMinionBossStomp.ExecuteIfBound(StompCameraShake); }
 
 AMinionBoss::AMinionBoss()
 {

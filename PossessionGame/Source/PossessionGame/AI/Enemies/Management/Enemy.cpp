@@ -241,6 +241,12 @@ void AEnemy::PlaySound(const ESound InSoundName)
 	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName);
 }
 
+void AEnemy::StopSound(const ESound InSoundName)
+{
+	if (!Sounds.Contains(InSoundName)) return;
+	Sounds[InSoundName]->Stop();
+}
+
 void AEnemy::SetEmpEffect(const float InEffectDuration)
 {
 	SetActionInMotion(true);
@@ -312,6 +318,7 @@ void AEnemy::P_Setup()
 	DelegateManager->ApplyUpgradeOnSelection.AddUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
+	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
 	GetMesh()->SetGenerateOverlapEvents(true);
@@ -373,6 +380,7 @@ void AEnemy::P_SetupRightClickInput(TObjectPtr<UEnhancedInputComponent> RightCli
 
 void AEnemy::P_Destroy()
 {
+	DelegateManager->OnMinionBossStomp.Unbind();
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();
 	Weapon->SetToOriginalSettings();
@@ -465,7 +473,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	if (GetMesh()->IsSimulatingPhysics())
 	{
 		if (RadialDamageEvent) GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
-		else GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
+		else if (PointDamageEvent) GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
 	}
 	//else if (P_HUD) P_HUD->SetHitLocation(RadialDamageEvent ? RadialDamageEvent->Origin : PointDamageEvent->HitInfo.Location);
 	return Damage;

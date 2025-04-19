@@ -25,6 +25,7 @@ DECLARE_DELEGATE_OneParam(FOnCheckDistanceToTutorialDrone, const int32);
 DECLARE_DELEGATE_OneParam(FOnShowHint, const int32);
 DECLARE_DELEGATE_OneParam(FOnShowDialogue, const int32);
 DECLARE_DELEGATE_OneParam(FOnAbilityEnd, const int32);
+DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
 DECLARE_DELEGATE_TwoParams(FOnAbilityUse, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FStartTutorialDroneMoveToLocation, const int32, const bool);
 DECLARE_MULTICAST_DELEGATE(FOnTerminalInteraction);
@@ -70,6 +71,7 @@ public:
 	FOnShowHint OnShowHint;
 	FOnShowDialogue OnShowDialogue;
 	FOnAbilityEnd OnAbilityEnd;
+	FOnMinionBossStomp OnMinionBossStomp;
 	FOnAbilityUse OnAbilityUse;
 	FStartTutorialDroneMoveToLocation StartTutorialDroneMoveToLocation;
 	FOnTerminalInteraction OnTerminalInteraction;

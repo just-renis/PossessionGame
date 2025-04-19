@@ -1,4 +1,6 @@
 ﻿#include "MinionBossAbility1.h"
+#include "Engine/OverlapResult.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Animation Instances/MinionBossAnimationInstance.h"
 #include "PossessionGame/AI/Enemies/Characters/MinionBoss.h"
@@ -15,6 +17,13 @@ void UMinionBossAbility1::AI_Execute()
 	Super::AI_Execute();
 }
 
+void UMinionBossAbility1::AI_StopAbility()
+{
+	Proprietor->StopSound(ESound::MinionBossStomp);
+	UKismetSystemLibrary::K2_ClearTimer(this, "StompHitTheGround");
+	Super::AI_StopAbility();
+}
+
 bool UMinionBossAbility1::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
 
 void UMinionBossAbility1::SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<AMinionBoss>(AbilityProprietor); }
@@ -27,5 +36,21 @@ void UMinionBossAbility1::CooldownLogic(const float InDeltaTime)
 
 void UMinionBossAbility1::StompHitTheGround() const
 {
-	Proprietor->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnOrLoadVfx(EVfx::MinionBossStompCrack, Proprietor->GetSocketLocation("StompSocket"));
+	Proprietor->TriggerStompCameraShake();
+	const FVector StompLocation = Proprietor->GetSocketLocation("StompSocket");
+	Proprietor->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnOrLoadVfx(EVfx::MinionBossStompCrack, StompLocation);
+	TArray<FOverlapResult> Overlaps;
+	Proprietor->GetWorld()->OverlapMultiByProfile(Overlaps, StompLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(300.f));
+	DrawDebugSphere(Proprietor->GetWorld(), StompLocation, 300.f, 12, FColor::Red, false, 5.f);
+	TSet<TObjectPtr<AActor>> UniqueActors;
+	for (const FOverlapResult& Result : Overlaps)
+	{
+		TObjectPtr<AActor> HitActor = Result.GetActor();
+		if (!HitActor || UniqueActors.Contains(HitActor)) continue;
+		UniqueActors.Add(HitActor);
+		if (TObjectPtr<AEnemy> Player = Cast<AEnemy>(HitActor); Player && Player->GetIsPossessed())
+		{
+			UGameplayStatics::ApplyDamage(Player, 50.f, nullptr, Proprietor, UDamageType::StaticClass());
+		}
+	}
 }

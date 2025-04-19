@@ -15,6 +15,7 @@ class POSSESSIONGAME_API UMinionBossAbility1 : public UAbility
 	TObjectPtr<AMinionBoss> Proprietor;
 	
 	virtual void AI_Execute() override;
+	virtual void AI_StopAbility() override;
 
 	virtual bool IsProprietorPossessed() override;
 	
