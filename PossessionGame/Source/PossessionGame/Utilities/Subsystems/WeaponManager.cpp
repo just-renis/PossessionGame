@@ -5,7 +5,7 @@ TObjectPtr<AWeapon> UWeaponManager::GetWeapon(TObjectPtr<UWorld> World, EWeapon 
 {
     TObjectPtr<AWeapon> Weapon = World->SpawnActor<AWeapon>(Weapons[WeaponName], FVector::ZeroVector, FRotator::ZeroRotator);
 	if (WeaponName == EWeapon::TricksterWeapon || WeaponName == EWeapon::MinionWeapon || WeaponName == EWeapon::GuardianWeapon) Cast<ADualWieldingWeapon>(Weapon)->SetupOneHandedWeapons(Mesh);
-	Weapon->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+	Weapon->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
 	return Weapon;
 }
 

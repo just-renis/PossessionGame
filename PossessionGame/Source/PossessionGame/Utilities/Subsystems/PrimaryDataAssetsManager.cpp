@@ -286,6 +286,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_GuardianOverChargeStart", ESound::GuardianOverChargeStart);
 	SoundMap.Add("PA_GuardianOverChargeEnd", ESound::GuardianOverChargeEnd);
 	SoundMap.Add("PA_MinionBossStomp", ESound::MinionBossStomp);
+	SoundMap.Add("PA_MinionBossShoot", ESound::MinionBossShoot);
 	SoundMap.Add("PA_DroneBuzz", ESound::DroneBuzz);
 	SoundMap.Add("PA_DialogueStart", ESound::DialogueStart);
 	SoundMap.Add("PA_RestSoundtrack", ESound::RestSoundtrack);

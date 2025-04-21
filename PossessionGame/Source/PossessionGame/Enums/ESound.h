@@ -45,6 +45,7 @@ enum class ESound : uint16
 	GuardianOverChargeStart,
 	GuardianOverChargeEnd,
 	MinionBossStomp,
+	MinionBossShoot,
 	DroneBuzz,
 	DialogueStart,
 	RestSoundtrack,

@@ -11,7 +11,7 @@ class POSSESSIONGAME_API AGuardianSingularWeapon : public AOneHandedWeapon
 
 	AGuardianSingularWeapon();
 
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_GuardianWeaponMaterial;
 	
 	virtual void AI_Shoot() override;
