@@ -251,7 +251,7 @@ void AEnemy::SetEmpEffect(const float InEffectDuration)
 {
 	SetActionInMotion(true);
 	if (AI) AI->StopLogic(false);
-	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration);
+	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
 }
 
 void AEnemy::SetPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr); }

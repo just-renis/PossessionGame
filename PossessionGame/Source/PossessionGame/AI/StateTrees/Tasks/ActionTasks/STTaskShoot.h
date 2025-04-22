@@ -15,6 +15,8 @@ class POSSESSIONGAME_API USTTaskShoot : public UStateTreeTaskBlueprintBase
 	bool bIsWeaponMontageOnly = false;
 	UPROPERTY()
 	TObjectPtr<AEnemyAIController> CachedController;
+	UPROPERTY()
+	FTimerHandle ShootLogicHandle;
 
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
 	virtual void ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;

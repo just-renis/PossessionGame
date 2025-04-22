@@ -9,5 +9,8 @@ enum class EEnemyAnimState : uint8
 	GrenadeLaunch,
 	DeployShield,
 	EmpEffect,
-	Stomp
+	Stomp,
+	PrepareLaser,
+	HoldLaser,
+	StopLaser
 };

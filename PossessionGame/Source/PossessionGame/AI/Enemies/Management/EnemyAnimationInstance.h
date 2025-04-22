@@ -24,7 +24,7 @@ public:
 	void SetSpeed(float Value) { Speed = Value; }
 	void SetDirectionalAngle();
 	void PlayMontage(EEnemyAnimState State);
-	void PlayMontageWithHold(const EEnemyAnimState State, const float InHoldTime);
+	void PlayMontageWithHold(const EEnemyAnimState State, const float InHoldTime, const bool bDisableActionInMotion);
 	void StopMontage(EEnemyAnimState State, float BlendOut = 0.f);
 	void ClearTimers();
 protected:
@@ -53,9 +53,12 @@ private:
 	float Pitch = 0.f;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	float DirectionalAngle = 0.f;
+	UPROPERTY()
+	FTimerHandle MontageHoldEndHandle;
+	UPROPERTY()
+    FTimerHandle PauseHandle;
 	
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void LoadMontageIfNotLoaded(EEnemyAnimState State);
-	UFUNCTION()
-	void MontageHoldEnd() const;
+	void MontageHoldEnd(const bool bDisableActionInMotion) const;
 };

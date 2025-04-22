@@ -14,5 +14,6 @@ enum class EAbility : uint8
     TricksterAbility2,
     TricksterAbility3,
     GuardianAbility1,
-    MinionBossAbility1
+    MinionBossAbility1,
+    MinionBossAbility2
 };

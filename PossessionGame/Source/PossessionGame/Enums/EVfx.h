@@ -40,5 +40,7 @@ enum class EVfx : uint8
 	MinionBossMuzzle,
 	MinionBossBulletTrail,
 	MinionBossStompCrack,
+	MinionBossLaserBall,
+	MinionBossLaser,
 	UsbAura
 };

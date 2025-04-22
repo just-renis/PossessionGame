@@ -39,6 +39,7 @@ protected:
 	float CurrentDuration;
 	float CurrentCooldownSecs;
 	float DurationTime;
+	float ReqCooldownSecs;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 
@@ -55,7 +56,6 @@ private:
 	int32 CurrentCooldownKill;
 	int32 ReqCooldownKill;
 	float RefreshOtherAbilityAmount;
-	float ReqCooldownSecs;
 	UPROPERTY()
 	TObjectPtr<UAbilityData> Data;
 	UPROPERTY()
