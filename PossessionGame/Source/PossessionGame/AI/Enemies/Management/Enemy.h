@@ -80,6 +80,7 @@ public:
 	void P_StopTime(); // NOT USED ANYWHERE YET.
 	void P_SetFov(const float InFov);
 
+	void SetAbilityInAction(const bool bState) { bAbilityInAction = bState; }
 	void SetActionInMotion(const bool bState);
 	virtual void Tick(const float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -101,6 +102,7 @@ protected:
 	bool bCanShoot = false;
 	bool bIsActionInMotion = false;
 	bool bShootPauseActive = false;
+	bool bAbilityInAction = false;
 	float MaxHp;
 	float CurrentHp;
 	ECharacterType CharacterName;

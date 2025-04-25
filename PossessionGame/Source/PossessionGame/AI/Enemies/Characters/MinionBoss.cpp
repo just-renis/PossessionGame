@@ -1,5 +1,4 @@
 ﻿#include "MinionBoss.h"
-
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/ShapeComponent.h"
@@ -16,19 +15,17 @@
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
-void AMinionBoss::AI_ToggleStompTrigger(const bool bState) const
+void AMinionBoss::ActivateStompTrigger()
 {
-	if (StompTriggerSphere)
-	{
-		StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
-		StompTriggerSphere->SetActorHiddenInGame(!bState);
-	}
+	bStompIsReady = true;
+	if (!bAbilityInAction) ToggleStompTrigger(true);
 }
 
 void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->OnMinionBossStomp.ExecuteIfBound(StompCameraShake); }
 
 void AMinionBoss::EnableLaserEyeBall()
 {
+	if (bStompIsReady) ToggleStompTrigger(false);
 	if (!LaserEyeBallVfx) AssetsManager->AttachOrLoadVfx(EVfx::MinionBossLaserBall, &LaserEyeBallVfx, GetMesh(), "LaserSocket");
 	else LaserEyeBallVfx->Activate();
 }
@@ -40,6 +37,13 @@ void AMinionBoss::EnableLaser()
 }
 
 void AMinionBoss::EnableDistanceCheckForLaserEye() { UKismetSystemLibrary::K2_SetTimer(this, "CheckDistanceOfLaserEyeTrigger", 0.2f, true); }
+
+void AMinionBoss::OnLaserFinish()
+{
+	SetActionInMotion(false);
+	SetAbilityInAction(false);
+	if (bStompIsReady) ToggleStompTrigger(true);
+}
 
 AMinionBoss::AMinionBoss()
 {
@@ -138,16 +142,26 @@ void AMinionBoss::InitiateDeath()
 	Super::InitiateDeath();
 }
 
+void AMinionBoss::ToggleStompTrigger(const bool bState) const
+{
+	if (StompTriggerSphere)
+	{
+		StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+		StompTriggerSphere->SetActorHiddenInGame(!bState);
+	}
+}
+
 void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {
 	if (!AI) return;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
-	AI_ToggleStompTrigger(false);
+	ToggleStompTrigger(false);
+	bStompIsReady = false;
 }
 
 void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 {
-	if (!AI) return;
+	if (!AI || bAbilityInAction) return;
 	const TObjectPtr<AActor> Target = AI->GetStateTreeData().GetTarget();
 	if (!Target) return;
 	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) >= FMath::Square(1000.f))

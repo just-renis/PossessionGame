@@ -12,18 +12,19 @@ class POSSESSIONGAME_API AMinionBoss : public AEnemy
 {
 	GENERATED_BODY()
 public:
-	void AI_ToggleStompTrigger(const bool bState) const;
-
 	TObjectPtr<UNiagaraComponent> GetLaser() const { return LaserVfx; }
 	TObjectPtr<UNiagaraComponent> GetLaserEyeBall() const { return LaserEyeBallVfx; }
-	
+
+	void ActivateStompTrigger();
 	void TriggerStompCameraShake() const;
 	void EnableLaserEyeBall();
 	void EnableLaser();
 	void EnableDistanceCheckForLaserEye();
+	void OnLaserFinish();
 private:
 	AMinionBoss();
-	
+
+	bool bStompIsReady = false;
 	int32 CurrentWeaponIndex = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Stomp", meta = (AllowPrivateAccess = true))
 	float StompTriggerRadiusInMetres = 3.f;
@@ -53,6 +54,7 @@ private:
 	void SetupStompTrigger();
 	void DestroyStompTriggerSphere() const;
 	virtual void InitiateDeath() override;
+	void ToggleStompTrigger(const bool bState) const;
 	UFUNCTION()
 	void OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor);
 	UFUNCTION()

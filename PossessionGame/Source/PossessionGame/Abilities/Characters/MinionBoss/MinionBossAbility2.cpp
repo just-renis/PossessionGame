@@ -12,6 +12,7 @@ void UMinionBossAbility2::AI_Execute()
 	Proprietor->SetActionInMotion(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::PrepareLaser);
 	Proprietor->PlaySound(ESound::MinionBossLaserEyeCharge);
+	Proprietor->SetAbilityInAction(true);
 	Proprietor->EnableLaserEyeBall();
 	UKismetSystemLibrary::K2_SetTimer(this, "ShootLaser", 1.65f, false);
 }
