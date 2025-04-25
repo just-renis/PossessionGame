@@ -1,15 +1,21 @@
 ﻿#include "FStateTreeData.h"
 #include "GameplayTagContainer.h"
 #include "PossessionGame/AI/StateTrees/CustomStateTreeComponent.h"
+#include "PossessionGame/Enums/EStateTreeEvent.h"
 
 void FStateTreeData::SetEQSPointLocation(const FVector InValue)
 {
 	EQSTarget->SetActorLocation(InValue);
 	bIsEQSPointAvailable = true;
-	StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Abort.IsEQSPointAvailable"));
 }
 
-void FStateTreeData::TriggerEvent(const FName& EventName) const
+void FStateTreeData::TriggerEvent(const EStateTreeEvent InEventName) const
 {
-	StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag(EventName));
+	(void)OnStateTreeEvent.ExecuteIfBound(InEventName);
+	switch (InEventName)
+	{
+		case EStateTreeEvent::RangerLaunchGrenade: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Ranger.LaunchGrenade")); break;
+		case EStateTreeEvent::MinionBossStomp: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MinionBoss.Stomp")); break;
+		case EStateTreeEvent::MinionBossLaserEye: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MinionBoss.LaserEye"));
+	}
 }

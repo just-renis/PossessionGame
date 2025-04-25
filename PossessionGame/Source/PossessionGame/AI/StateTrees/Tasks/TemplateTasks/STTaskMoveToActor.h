@@ -21,8 +21,11 @@ protected:
 	UPROPERTY()
 	TObjectPtr<AEnemyAIController> CachedController;
 	
+	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
 	virtual void ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
 private:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bFinishTaskOnMoveCompleted = true;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bMoveToTargetLocation = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -46,5 +49,6 @@ private:
 	FAIMoveRequest SetupAndGetMoveReq();
 	
 	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result);
-	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
+	UFUNCTION()
+	void CheckForNewMoveReq();
 };

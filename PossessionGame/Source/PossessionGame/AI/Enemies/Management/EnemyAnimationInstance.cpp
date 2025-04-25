@@ -52,7 +52,7 @@ void UEnemyAnimationInstance::PlayMontageWithHold(const EEnemyAnimState State, c
         { MontageHoldEnd(bDisableActionInMotion); }, GetMontageLength(State) + InHoldTime, false);
         TObjectPtr<UAnimMontage> Montage = *Montages.Find(State);
         GetWorld()->GetTimerManager().SetTimer(PauseHandle, [this, Montage]
-        { UE_LOG(LogTemp, Warning, TEXT("PAUSE HAPPENED")); Montage_Pause(Montage); }, GetMontageLength(State) - Montages.Find(State)->Get()->GetDefaultBlendOutTime() - 0.02f, false);
+        { Montage_Pause(Montage); }, GetMontageLength(State) - Montages.Find(State)->Get()->GetDefaultBlendOutTime() - 0.02f, false);
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontageWithHold"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(State));
 }
@@ -96,11 +96,7 @@ void UEnemyAnimationInstance::AssignOnMontageEnd() { OnMontageBlendingOut.AddDyn
 
 void UEnemyAnimationInstance::SetProprietor() { Proprietor = Cast<AEnemy>(GetOwningActor()); }
 
-void UEnemyAnimationInstance::InnerPlayMontage(EEnemyAnimState State)
-{
-    UE_LOG(LogTemp, Warning, TEXT("PLAYING MONTAGE: %s"), *UEnum::GetValueAsString(State));
-    Montage_Play(Montages.Find(State)->Get());
-}
+void UEnemyAnimationInstance::InnerPlayMontage(EEnemyAnimState State) { Montage_Play(Montages.Find(State)->Get()); }
 
 void UEnemyAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
 {
@@ -120,6 +116,7 @@ void UEnemyAnimationInstance::LoadMontageIfNotLoaded(EEnemyAnimState State)
 
 void UEnemyAnimationInstance::MontageHoldEnd(const bool bDisableActionInMotion) const
 {
-    if (bDisableActionInMotion) Proprietor->SetActionInMotion(false);
+    if (!bDisableActionInMotion) return;
+    Proprietor->SetActionInMotion(false);
     if (Proprietor->GetAI()) Proprietor->GetAI()->ResumeLogic();
 }

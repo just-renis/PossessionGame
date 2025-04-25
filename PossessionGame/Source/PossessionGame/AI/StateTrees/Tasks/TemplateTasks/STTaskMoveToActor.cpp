@@ -1,9 +1,20 @@
 ﻿#include "STTaskMoveToActor.h"
 #include "StateTreeExecutionContext.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "NavFilters/NavigationQueryFilter.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
+
+EStateTreeRunStatus USTTaskMoveToActor::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
+{
+	CachedController = Cast<AEnemyAIController>(Context.GetOwner());
+	const EStateTreeRunStatus Status = PathFollowingRequestResultHandling(CachedController->MoveTo(SetupAndGetMoveReq()));
+	if (Status != EStateTreeRunStatus::Running) return Status;
+	CachedController->SetMoveMode(MoveMode);
+	CachedController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this, &USTTaskMoveToActor::OnMoveCompleted);
+	return Super::EnterState(Context, Transition);
+}
 
 void USTTaskMoveToActor::ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
 {
@@ -43,14 +54,21 @@ FAIMoveRequest USTTaskMoveToActor::SetupAndGetMoveReq()
 	return MoveReq;
 }
 
-void USTTaskMoveToActor::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) { FinishTask(); }
-
-EStateTreeRunStatus USTTaskMoveToActor::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
+void USTTaskMoveToActor::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
-	CachedController = Cast<AEnemyAIController>(Context.GetOwner());
-	EStateTreeRunStatus Status = PathFollowingRequestResultHandling(CachedController->MoveTo(SetupAndGetMoveReq()));
-	if (Status != EStateTreeRunStatus::Running) return Status;
+	CachedController->GetStateTreeData().SetEQSPointAvailability(false);
+	if (bFinishTaskOnMoveCompleted)
+	{
+		FinishTask();
+		return;
+	}
+	UKismetSystemLibrary::K2_SetTimer(this, "CheckForNewMoveReq", 0.01f, true);
+}
+
+void USTTaskMoveToActor::CheckForNewMoveReq()
+{
+	if (!CachedController->GetStateTreeData().GetIsEQSPointAvailable()) return;
+	PathFollowingRequestResultHandling(CachedController->MoveTo(SetupAndGetMoveReq()));
 	CachedController->SetMoveMode(MoveMode);
-	CachedController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this, &USTTaskMoveToActor::OnMoveCompleted);
-	return Super::EnterState(Context, Transition);
+	UKismetSystemLibrary::K2_ClearTimer(this, "CheckForNewMoveReq");
 }

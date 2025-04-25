@@ -9,6 +9,7 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -140,7 +141,7 @@ void AMinionBoss::InitiateDeath()
 void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {
 	if (!AI) return;
-	AI->GetStateTreeData().TriggerEvent("StateTree.MinionBoss.Stomp");
+	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
 	AI_ToggleStompTrigger(false);
 }
 
@@ -151,7 +152,7 @@ void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 	if (!Target) return;
 	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) >= FMath::Square(1000.f))
 	{
-		AI->GetStateTreeData().TriggerEvent("StateTree.MinionBoss.LaserEye");
+		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossLaserEye);
 		UKismetSystemLibrary::K2_ClearTimer(this, "CheckDistanceOfLaserEyeTrigger");
 	}
 }

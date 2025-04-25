@@ -5,6 +5,7 @@
 EStateTreeRunStatus USTTaskRangerGrenadeLaunch::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
 {
 	const TObjectPtr<ARangerAIController> CachedController = Cast<ARangerAIController>(Context.GetOwner());
+	//CachedController->GetStateTreeData().OnStateTreeEvent.BindU MAYBE NEED IDK
 	CachedController->GetProprietor()->AI_UseAbility(0);
 	CachedController->OnGrenadeLaunchFinished.BindUObject(this, &USTTaskRangerGrenadeLaunch::GrenadeLaunchFinished);
 	return EStateTreeRunStatus::Running;

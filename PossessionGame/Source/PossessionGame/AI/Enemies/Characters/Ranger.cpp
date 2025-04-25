@@ -12,6 +12,7 @@
 #include "PossessionGame/Destructibles/RangerShield.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
@@ -201,7 +202,7 @@ void ARanger::TryTriggeringGrenadeLaunch()
 	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload)) return;
 	if (AI->GetStateTreeData().GetIsTargetInMySight())
 	{
-		AI->GetStateTreeData().TriggerEvent("StateTree.Ranger.LaunchGrenade");
+		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerLaunchGrenade);
 		UKismetSystemLibrary::K2_ClearTimer(this, "TryTriggeringGrenadeLaunch");
 	}
 }

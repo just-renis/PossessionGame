@@ -32,6 +32,8 @@ void AEnemyAIController::SetReloadDelay(const float InValue) { StateTreeData.Set
 
 void AEnemyAIController::DestroyThis()
 {
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTargetChange.RemoveAll(this);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDeath.RemoveAll(this);
 	if (Perception)
 	{
 		Perception->Deactivate();

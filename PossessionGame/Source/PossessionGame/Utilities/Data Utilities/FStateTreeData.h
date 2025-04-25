@@ -4,11 +4,16 @@
 
 class UStateTreeComponent;
 class AWeapon;
+enum class EStateTreeEvent : uint8;
+
+DECLARE_DELEGATE_OneParam(FOnStateTreeEvent, const EStateTreeEvent)
 
 USTRUCT(BlueprintType)
 struct POSSESSIONGAME_API FStateTreeData
 {
 	GENERATED_BODY()
+
+	FOnStateTreeEvent OnStateTreeEvent;
 
 	bool GetIsTargetInMySight() const { return bIsTargetInMySight; }
 	bool GetIsEQSPointAvailable() const { return bIsEQSPointAvailable; }
@@ -28,7 +33,7 @@ struct POSSESSIONGAME_API FStateTreeData
     void SetEQSTargetRef(const TObjectPtr<AActor>& InEQSTargetRef) { EQSTarget = InEQSTargetRef; }
 	void SetEQSPointAvailability(const bool bState) { bIsEQSPointAvailable = bState; }
 	void SetEQSPointLocation(const FVector InValue);
-	void TriggerEvent(const FName& EventName) const;
+	void TriggerEvent(const EStateTreeEvent InEventName) const;
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsActionInMotion = false;
