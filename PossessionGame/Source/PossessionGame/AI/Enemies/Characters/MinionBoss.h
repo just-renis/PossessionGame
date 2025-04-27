@@ -12,6 +12,7 @@ class POSSESSIONGAME_API AMinionBoss : public AEnemy
 {
 	GENERATED_BODY()
 public:
+	TObjectPtr<UCapsuleComponent> GetLaserCollision() const { return LaserCollision; }
 	TObjectPtr<UNiagaraComponent> GetLaser() const { return LaserVfx; }
 	TObjectPtr<UNiagaraComponent> GetLaserEyeBall() const { return LaserEyeBallVfx; }
 
@@ -30,6 +31,8 @@ private:
 	float StompTriggerRadiusInMetres = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> StompCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Laser Collision", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCapsuleComponent> LaserCollision;
 	UPROPERTY()
 	TArray<TObjectPtr<AWeapon>> Weapons;
 	UPROPERTY()

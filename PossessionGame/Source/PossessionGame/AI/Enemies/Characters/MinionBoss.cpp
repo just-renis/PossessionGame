@@ -1,6 +1,7 @@
 ﻿#include "MinionBoss.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/TriggerSphere.h"
@@ -47,6 +48,8 @@ void AMinionBoss::OnLaserFinish()
 
 AMinionBoss::AMinionBoss()
 {
+	LaserCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("laserCollision"));
+	LaserCollision->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::MinionBossStomp, CreateDefaultSubobject<UAudioComponent>(TEXT("stompSfx")));
 	Sounds[ESound::MinionBossStomp]->SetAutoActivate(false);
 	Sounds[ESound::MinionBossStomp]->SetupAttachment(GetMesh());

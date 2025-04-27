@@ -1,5 +1,6 @@
 ﻿#include "MinionBossAbility2.h"
 #include "NiagaraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Characters/MinionBoss.h"
@@ -50,7 +51,7 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	if (!Player) return;
 	const FVector Start = Proprietor->GetMesh()->GetSocketTransform(TEXT("LaserSocket"), RTS_World).GetLocation();
 	FVector Direction = Player->GetActorLocation() - Start;
-	const float Distance = Direction.Size();
+	float Distance = Direction.Size();
 	Direction /= Distance;
 	const FRotator DesiredRot = Direction.Rotation();
 	const FRotator CurrentRot = Proprietor->GetLaser()->GetComponentRotation();
@@ -60,7 +61,22 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	NewRot.Pitch += FMath::Clamp(DeltaRot.Pitch, -0.75f, 0.75f);
 	NewRot.Roll = 0.f;
 	Proprietor->GetLaser()->SetWorldLocationAndRotation(Start, NewRot);
-	Proprietor->GetLaser()->SetFloatParameter(TEXT("_Length"), Distance * 0.001f);
+	
+	const FVector LaserForward = NewRot.Vector();
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(Proprietor);
+	FHitResult LaserHit;
+	const FVector LaserEnd = Start + LaserForward * 10000.f;
+	GetWorld()->LineTraceSingleByChannel(LaserHit, Start, LaserEnd, ECC_Visibility, QueryParams);
+	if (LaserHit.bBlockingHit) Distance = (LaserHit.ImpactPoint - Start).Size();
+	
+	FRotator CapsuleRotation = NewRot;
+	CapsuleRotation.Pitch -= 90.f;
+	Proprietor->GetLaserCollision()->SetWorldLocation(Start + LaserForward * Distance * 0.45f);
+	Proprietor->GetLaserCollision()->SetWorldRotation(CapsuleRotation);
+	Proprietor->GetLaserCollision()->SetCapsuleSize(25.f, Distance * 0.5f);
+	
+	Proprietor->GetLaser()->SetFloatParameter(TEXT("_Length"), Distance * 0.0007f);
 	LaserTime += 0.025f;
 	if (LaserTime < 3.f) return;
 	StopLaser();
