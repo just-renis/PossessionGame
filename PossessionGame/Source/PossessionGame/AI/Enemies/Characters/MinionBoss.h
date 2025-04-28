@@ -41,6 +41,8 @@ private:
 	TObjectPtr<UNiagaraComponent> LaserEyeBallVfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> LaserVfx;
+	UPROPERTY()
+	TObjectPtr<AEnemy> Player;
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_ShootLogic() override;
@@ -62,4 +64,10 @@ private:
 	void OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor);
 	UFUNCTION()
 	void CheckDistanceOfLaserEyeTrigger();
+	UFUNCTION()
+	void OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnLaserCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UFUNCTION()
+	void DealLaserDamageToPlayer();
 };

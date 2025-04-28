@@ -50,6 +50,7 @@ AMinionBoss::AMinionBoss()
 {
 	LaserCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("laserCollision"));
 	LaserCollision->SetupAttachment(GetMesh());
+	LaserCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Sounds.Add(ESound::MinionBossStomp, CreateDefaultSubobject<UAudioComponent>(TEXT("stompSfx")));
 	Sounds[ESound::MinionBossStomp]->SetAutoActivate(false);
 	Sounds[ESound::MinionBossStomp]->SetupAttachment(GetMesh());
@@ -104,6 +105,8 @@ void AMinionBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::MinionBoss;
 	Super::BeginPlay();
+	LaserCollision->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionBeginOverlap);
+	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
 	SetupStompTrigger();
 }
 
@@ -173,3 +176,23 @@ void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 		UKismetSystemLibrary::K2_ClearTimer(this, "CheckDistanceOfLaserEyeTrigger");
 	}
 }
+
+void AMinionBoss::OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor); Enemy->GetIsPossessed())
+	{
+		Player = Enemy;
+		UKismetSystemLibrary::K2_SetTimer(this, "DealLaserDamageToPlayer", 0.05f, true);
+	}
+}
+
+void AMinionBoss::OnLaserCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor); Enemy->GetIsPossessed())
+	{
+		Player = nullptr;
+		UKismetSystemLibrary::K2_ClearTimer(this, "DealLaserDamageToPlayer");
+	}
+}
+
+void AMinionBoss::DealLaserDamageToPlayer() { if (Player) Player->ReceiveDamage(2.f); }
