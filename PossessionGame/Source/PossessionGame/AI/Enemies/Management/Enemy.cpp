@@ -137,11 +137,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Move);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Triggered, this, &AEnemy::Jump);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Rotate);
-		if (bCanRun)
-		{
-			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleRunning, true);
-			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &AEnemy::P_ToggleRunning, false);
-		}
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Dash);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &AEnemy::P_PossessEnemy);
 		P_SetupLeftClickInput(EnhancedInputComponent);
 		if (bCanReload) EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(9).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Reload);
@@ -319,6 +315,7 @@ void AEnemy::P_Setup()
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
+	P_SetupCharacterMovement();
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
 	GetMesh()->SetGenerateOverlapEvents(true);
@@ -326,7 +323,6 @@ void AEnemy::P_Setup()
 	P_LoadDataIfNotLoaded(CharacterName);
 	bUseControllerRotationYaw = true;
 	SetupStimuliSource();
-	GetCharacterMovement()->bUseRVOAvoidance = false;
 	P_SetupNavArea();
 	P_SetupData();
 	Camera->SetActive(true);
@@ -356,19 +352,9 @@ void AEnemy::P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> Lef
 	P_SetupLeftClickInputCompletedState(LeftClickInputComponent);
 }
 
-void AEnemy::P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
-{
-	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &AEnemy::P_TemporallyToggleRunning, true);
-}
-
 void AEnemy::P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
 {
 	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Shoot, true);
-}
-
-void AEnemy::P_SetupLeftClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
-{
-	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Completed, this, &AEnemy::P_TemporallyToggleRunning, false);
 }
 
 void AEnemy::P_SetupRightClickInput(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
@@ -396,7 +382,12 @@ void AEnemy::P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 	if (!P_Data) P_Data = AssetsManager->GetCharacterData(PrimaryDataAssetName)->P_Data.LoadSynchronous();
 }
 
-void AEnemy::P_TemporallyToggleRunning(const bool bState) { if (bIsRunning) SetMaxWalkSpeed(bState ? P_Data->GetMaxWalkSpeed() : P_Data->GetMaxRunSpeed()); }
+void AEnemy::P_SetupCharacterMovement() const
+{
+	GetCharacterMovement()->MaxAcceleration = 20000.f;
+	GetCharacterMovement()->BrakingFrictionFactor = 1.f;
+	GetCharacterMovement()->bUseRVOAvoidance = false;
+}
 
 void AEnemy::BeginPlay()
 {
@@ -658,19 +649,18 @@ void AEnemy::P_Reload()
 	if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload && !P_InputManager->IsPressed(FKey("LeftMouseButton")) && Weapon->P_CanReload()) Weapon->P_Reload();
 }
 
-void AEnemy::P_ToggleRunning(const bool bState)
+void AEnemy::P_Dash()
 {
-	if (bCanRun)
+	if (CurrentDashCooldown >= DashCooldown)
 	{
-		bIsRunning = bState;
-		if (bIsRunning) UKismetSystemLibrary::K2_SetTimer(this, "P_TriggerRunningCameraShake", 0.1f, true);
-		else UKismetSystemLibrary::K2_ClearTimer(this, "P_TriggerRunningCameraShake");
-		if (P_HUD)
-		{
-			P_HUD->UpdateRunningIndicator(bState);
-			GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::SpeedLines, bState ? 1.f : 0.f);
-		}
-		SetMaxWalkSpeed(bState ? P_Data->GetMaxRunSpeed() : P_Data->GetMaxWalkSpeed());
+		UE_LOG(LogTemp, Warning, TEXT("DASHING"));
+		CurrentDashCooldown = 0.f;
+		FVector DashDirection = GetVelocity().GetSafeNormal();
+		if (DashDirection.IsNearlyZero()) DashDirection = GetActorForwardVector();
+		float DashStrength = 4500.f; // Customize this
+		GetCharacterMovement()->StopMovementImmediately();
+		LaunchCharacter(DashDirection * DashStrength, true, true);
+		UKismetSystemLibrary::K2_SetTimer(this, "P_StopDash", 0.2f, false);
 	}
 }
 
@@ -847,6 +837,7 @@ void AEnemy::P_Death()
 
 void AEnemy::P_ControlLogic()
 {
+	CurrentDashCooldown += 0.05f;
 	Weapon->P_SetWalkSpread(GetCharacterMovement()->Velocity.Size() >= P_Data->GetMaxWalkSpeed() - 0.1f);
 	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size()); // Reduce by an ability % for guardian.
 	if (!bCanPossessOtherEnemy && !bInUpgradeSelection) P_PossessionBarLogic();
@@ -877,8 +868,6 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 
 void AEnemy::P_TriggerCriticalDamageIndicator() const { if (P_HUD) P_HUD->ToggleCriticalDamageIndicator(); }
 
-void AEnemy::P_TriggerRunningCameraShake() const { P_MakeCameraShake(RunningCameraShake); }
-
 void AEnemy::P_OpenDeathMenu() const
 {
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->ChangeUIToDeathMenu();
@@ -894,6 +883,8 @@ void AEnemy::P_ContinuousFovChange()
 		UKismetSystemLibrary::K2_ClearTimer(this, "P_ContinuousFovChange");
 	}
 }
+
+void AEnemy::P_StopDash() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
 
 //void AEnemy::P_UpdateHitDamageIndicators() const { if (P_HUD) P_HUD->UpdateHitDamageIndicators(); }
 

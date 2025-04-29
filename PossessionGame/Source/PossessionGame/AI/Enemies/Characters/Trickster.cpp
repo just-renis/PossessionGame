@@ -55,7 +55,6 @@ void ATrickster::P_Setup()
 
 void ATrickster::P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
 {
-	RightClickInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &ATrickster::P_TemporallyToggleRunning, true);
 	RightClickInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &ATrickster::StartedShootingWeapon, false);
 }
 
@@ -66,7 +65,6 @@ void ATrickster::P_SetupRightClickInputTriggeredState(TObjectPtr<UEnhancedInputC
 
 void ATrickster::P_SetupRightClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
 {
-	RightClickInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Completed, this, &ATrickster::P_TemporallyToggleRunning, false);
 	RightClickInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Completed, this, &ATrickster::StoppedShootingWeapon, false);
 }
 

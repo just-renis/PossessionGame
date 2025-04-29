@@ -12,7 +12,6 @@
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -220,7 +219,6 @@ void AWeapon::HitScanLogic()
 	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
 	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"));
-	if (Proprietor->GetGameModeBase()->GetIsDebugModeEnabled()) DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 2.f);
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
 		AssetsManager->SpawnOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());

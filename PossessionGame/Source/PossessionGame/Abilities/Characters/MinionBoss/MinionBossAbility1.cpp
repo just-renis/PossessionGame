@@ -42,7 +42,6 @@ void UMinionBossAbility1::StompHitTheGround() const
 	Proprietor->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnOrLoadVfx(EVfx::MinionBossStompCrack, StompLocation);
 	TArray<FOverlapResult> Overlaps;
 	Proprietor->GetWorld()->OverlapMultiByProfile(Overlaps, StompLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(300.f));
-	DrawDebugSphere(Proprietor->GetWorld(), StompLocation, 300.f, 12, FColor::Red, false, 5.f);
 	TSet<TObjectPtr<AActor>> UniqueActors;
 	for (const FOverlapResult& Result : Overlaps)
 	{

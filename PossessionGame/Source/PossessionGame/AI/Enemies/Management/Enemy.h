@@ -96,7 +96,6 @@ public:
 	UFUNCTION()
 	void DisablePossessionOutline() const;
 protected:
-	bool bCanRun = true;
 	bool bCanReload = true;
 	bool bIsPossessed = false;
 	bool bCanShoot = false;
@@ -151,16 +150,16 @@ protected:
 	virtual void P_Setup();
 	virtual void P_Shoot(const bool bFirstWeapon);
 	virtual void P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent);
-	virtual void P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent);
+	virtual void P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) {}
 	virtual void P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent);
-	virtual void P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent);
+	virtual void P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) {}
 	virtual void P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent);
 	virtual void P_SetupRightClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) {}
 	virtual void P_SetupRightClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) {}
 	virtual void P_SetupRightClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) {}
 	virtual void P_Destroy();
 	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
-	void P_TemporallyToggleRunning(const bool bState);
+	void P_SetupCharacterMovement() const;
 	virtual void P_SetupColorsForUI() {}
 
 	void SetCurrentHp(const float NewCurrentHp) { CurrentHp = NewCurrentHp; }
@@ -183,7 +182,6 @@ private:
 	bool bCanPossessOtherEnemy = false;
 	bool bIsAlive = true;
 	bool bEnableUnloadLevel = false;
-	bool bIsRunning = false;
 	bool bIsCriticallyDamaged = false;
 	bool bIsAIBarCreated = false;
 	bool bPlayerDied = false;
@@ -192,12 +190,12 @@ private:
 	float MeshEmissiveMaterialOpacityValue = 0.f;
 	float FovChangeTick;
 	float TargetFov;
+	float DashCooldown = 2.f;
+	float CurrentDashCooldown = 2.f;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> AI_HpBarComponent;
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
-	TSubclassOf<UCameraShakeBase> RunningCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ReceivingDamageCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
@@ -240,7 +238,7 @@ private:
 	void P_Move(const FInputActionValue& Value);
 	void P_Rotate(const FInputActionValue& Value);
 	void P_Reload();
-	void P_ToggleRunning(bool bState);
+	void P_Dash();
 	void P_OnEnemyDeathEvents(const int32 InXp);
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
@@ -268,11 +266,11 @@ private:
 	UFUNCTION()
 	void P_TriggerCriticalDamageIndicator() const;
 	UFUNCTION()
-	void P_TriggerRunningCameraShake() const;
-	UFUNCTION()
 	void P_OpenDeathMenu() const;
 	UFUNCTION()
 	void P_ContinuousFovChange();
+	UFUNCTION()
+	void P_StopDash() const;
 	//UFUNCTION()
 	//void P_UpdateHitDamageIndicators() const;
 

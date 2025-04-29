@@ -13,6 +13,8 @@ public:
 	float GetMaxWalkSpeed() const { return MaxWalkSpeed; }
 	float GetMaxRunSpeed() const { return MaxRunSpeed; }
 	float GetMaxSlowedSpeed() const { return MaxSlowedSpeed; }
+	float GetDashCooldown() const { return DashCooldown; }
+	float GetDashStrength() const { return DashStrength; }
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float MaxHp;
@@ -22,4 +24,8 @@ private:
 	float MaxRunSpeed;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float MaxSlowedSpeed;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	float DashCooldown;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	float DashStrength;
 };

@@ -101,7 +101,6 @@ void ATank::P_StopMinigun()
 void ATank::BeginPlay()
 {
 	CharacterName = ECharacterType::Tank;
-	bCanRun = false;
 	bCanReload = false;
 	Super::BeginPlay();
 	Cast<ATankWeapon>(Weapon)->OnAmmoEnded.BindUObject(this, &ATank::P_StopMinigun);
