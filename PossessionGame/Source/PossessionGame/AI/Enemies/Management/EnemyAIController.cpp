@@ -1,7 +1,6 @@
 #include "EnemyAIController.h"
 #include "Enemy.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "EnemyAnimationInstance.h"
 #include "Components/StateTreeComponent.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -62,7 +61,7 @@ void AEnemyAIController::SetMoveMode(const EMoveMode InMoveMode) const { Proprie
 
 void AEnemyAIController::SetupAI()
 {
-	UKismetSystemLibrary::K2_SetTimer(this, "AdjustCustomFocus", 0.02f, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "AdjustCustomFocus", 0.01f, true);
 	EnemyCommunicator->GetEQSDelegate().AddUObject(this, &AEnemyAIController::SetEQSTargetLocation);
 	if (EnemyCommunicator->GetTarget()) SetTarget(EnemyCommunicator->GetTarget(), false);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTargetChange.AddUObject(this, &AEnemyAIController::SetTarget);
@@ -165,12 +164,7 @@ void AEnemyAIController::StopStateTreeLogic(const bool bNeedCleanup) const
 
 void AEnemyAIController::OnLostSightOfPawn() { SetIsTargetInMySight(false); }
 
-void AEnemyAIController::SightOnTargetLogic()
+void AEnemyAIController::SightOnTargetLogic() const
 {
-	const float CurrentDistanceBetweenPlayerZ = FMath::Abs(EnemyCommunicator->GetTargetLocation().Z - GetPawn()->GetActorLocation().Z);
-	if (!FMath::IsNearlyEqual(DistanceBetweenTargetZ, CurrentDistanceBetweenPlayerZ, 0.01f))
-	{
-		DistanceBetweenTargetZ = CurrentDistanceBetweenPlayerZ;
-		Proprietor->GetAnimInstance()->SetAimPitch(UKismetMathLibrary::FindLookAtRotation(GetPawn()->GetActorLocation(), EnemyCommunicator->GetTargetLocation()).Pitch);
-	}
+	if (!Proprietor->GetIsActionInMotion()) Proprietor->GetAnimInstance()->SetLookAtLocation(EnemyCommunicator->GetTargetLocation());
 }

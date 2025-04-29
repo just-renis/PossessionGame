@@ -13,15 +13,15 @@ class POSSESSIONGAME_API UEnemyAnimationInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
-	bool GetIsCrouching() { return bIsCrouching; }
+	bool GetIsCrouching() const { return bIsCrouching; }
 	bool IsPlaying(EEnemyAnimState State);
 	bool IsMontageExisting(EEnemyAnimState State);
 	float GetMontageLength(EEnemyAnimState State);
 
-	void SetIsCrouching(bool bState) { bIsCrouching = bState; }
-	void SetIsTargetInSight(bool bState) { bIsTargetInSight = bState; }
-	void SetAimPitch(float Value) { Pitch = Value; }
-	void SetSpeed(float Value) { Speed = Value; }
+	void SetIsCrouching(const bool bState) { bIsCrouching = bState; }
+	void SetIsTargetInSight(const bool bState) { bIsTargetInSight = bState; }
+	void SetSpeed(const float InValue) { Speed = InValue; }
+	void SetLookAtLocation(const FVector& InLookAtLocation) { LookAtLocation = InLookAtLocation; }
 	void SetDirectionalAngle();
 	void PlayMontage(EEnemyAnimState State);
 	void PlayMontageWithHold(const EEnemyAnimState State, const float InHoldTime, const bool bDisableActionInMotion);
@@ -53,6 +53,8 @@ private:
 	float Pitch = 0.f;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	float DirectionalAngle = 0.f;
+	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
+	FVector LookAtLocation = FVector::ZeroVector;
 	UPROPERTY()
 	FTimerHandle MontageHoldEndHandle;
 	UPROPERTY()
