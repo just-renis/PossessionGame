@@ -135,7 +135,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Move);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Triggered, this, &AEnemy::Jump);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Started, this, &AEnemy::Jump);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Rotate);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Dash);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &AEnemy::P_PossessEnemy);
@@ -315,7 +315,6 @@ void AEnemy::P_Setup()
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
-	P_SetupCharacterMovement();
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
 	GetMesh()->SetGenerateOverlapEvents(true);
@@ -325,6 +324,7 @@ void AEnemy::P_Setup()
 	SetupStimuliSource();
 	P_SetupNavArea();
 	P_SetupData();
+	P_SetupCharacterMovement();
 	Camera->SetActive(true);
 	UKismetSystemLibrary::K2_SetTimer(this, "P_ControlLogic", 0.05f, true);
 	Weapon->P_SetupTransfer();
@@ -382,11 +382,16 @@ void AEnemy::P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 	if (!P_Data) P_Data = AssetsManager->GetCharacterData(PrimaryDataAssetName)->P_Data.LoadSynchronous();
 }
 
-void AEnemy::P_SetupCharacterMovement() const
+void AEnemy::P_SetupCharacterMovement()
 {
+	CurrentDashCooldown = P_Data->GetDashCooldown();
+	GetCharacterMovement()->GravityScale = 2.5f;
+	GetCharacterMovement()->JumpZVelocity = 1000.f;
+	GetCharacterMovement()->AirControl = 1.f;
 	GetCharacterMovement()->MaxAcceleration = 20000.f;
 	GetCharacterMovement()->BrakingFrictionFactor = 1.f;
 	GetCharacterMovement()->bUseRVOAvoidance = false;
+	GetCharacterMovement()->GetCharacterOwner()->JumpMaxCount = 2;
 }
 
 void AEnemy::BeginPlay()
@@ -651,15 +656,13 @@ void AEnemy::P_Reload()
 
 void AEnemy::P_Dash()
 {
-	if (CurrentDashCooldown >= DashCooldown)
+	if (CurrentDashCooldown >= P_Data->GetDashCooldown())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("DASHING"));
 		CurrentDashCooldown = 0.f;
 		FVector DashDirection = GetVelocity().GetSafeNormal();
 		if (DashDirection.IsNearlyZero()) DashDirection = GetActorForwardVector();
-		float DashStrength = 4500.f; // Customize this
 		GetCharacterMovement()->StopMovementImmediately();
-		LaunchCharacter(DashDirection * DashStrength, true, true);
+		LaunchCharacter(DashDirection * P_Data->GetDashStrength(), true, true);
 		UKismetSystemLibrary::K2_SetTimer(this, "P_StopDash", 0.2f, false);
 	}
 }

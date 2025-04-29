@@ -159,7 +159,7 @@ protected:
 	virtual void P_SetupRightClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) {}
 	virtual void P_Destroy();
 	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
-	void P_SetupCharacterMovement() const;
+	void P_SetupCharacterMovement();
 	virtual void P_SetupColorsForUI() {}
 
 	void SetCurrentHp(const float NewCurrentHp) { CurrentHp = NewCurrentHp; }
@@ -190,8 +190,7 @@ private:
 	float MeshEmissiveMaterialOpacityValue = 0.f;
 	float FovChangeTick;
 	float TargetFov;
-	float DashCooldown = 2.f;
-	float CurrentDashCooldown = 2.f;
+	float CurrentDashCooldown;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
