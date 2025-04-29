@@ -49,8 +49,7 @@ protected:
 	UFUNCTION()
 	virtual void AdjustCustomFocus() const;
 private:
-	float SightOnTargetRepeat = 0.1f;
-	float DistanceBetweenTargetZ = 0.f;
+	float SightOnTargetRepeat = 0.01f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	FStateTreeData StateTreeData;
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
@@ -72,5 +71,5 @@ private:
 	UFUNCTION()
 	void OnLostSightOfPawn();
 	UFUNCTION()
-	void SightOnTargetLogic();
+	void SightOnTargetLogic() const;
 };
