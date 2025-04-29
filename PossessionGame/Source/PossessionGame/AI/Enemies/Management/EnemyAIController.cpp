@@ -108,7 +108,7 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 
 void AEnemyAIController::AdjustCustomFocus() const
 {
-	if (!Proprietor->GetIsActionInMotion() && EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation());
+//	if (!Proprietor->GetIsActionInMotion() && EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation());
 }
 
 void AEnemyAIController::CustomFocusToLocation(const FVector InTargetLocation) const
