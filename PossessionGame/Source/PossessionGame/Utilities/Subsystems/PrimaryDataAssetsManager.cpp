@@ -367,6 +367,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_MinionBossLaserBall", EVfx::MinionBossLaserBall);
 	VfxsMap.Add("PA_MinionBossLaser", EVfx::MinionBossLaser);
 	VfxsMap.Add("PA_UsbAura", EVfx::UsbAura);
+	VfxsMap.Add("PA_EliteAura", EVfx::EliteAura);
+	VfxsMap.Add("PA_MutantAura", EVfx::MutantAura);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

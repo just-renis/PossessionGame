@@ -26,5 +26,5 @@ private:
 	virtual void P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
 
 	virtual void BeginPlay() override;
-	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) const override;
+	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) override;
 };

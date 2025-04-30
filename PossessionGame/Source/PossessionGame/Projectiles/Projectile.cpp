@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Data Assets/AI/Base Data/AICharacterData.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EVfxType.h"
@@ -132,6 +133,7 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 		Damage += ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() / 100.f);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
+	else if (ProjectileData.GetProprietor()->GetIsElite()) Damage += Damage / 100.f * ProjectileData.GetProprietor()->GetAIData()->GetEliteDamageIncreasePercentage();
 	AI_SetupUpgradesAppliance(bIsPlayerProjectile);
 }
 

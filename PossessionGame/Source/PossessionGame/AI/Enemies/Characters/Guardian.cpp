@@ -54,7 +54,7 @@ void AGuardian::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AGuardian::SetMesh(const ECharacterType PrimaryDataAssetName) const
+void AGuardian::SetMesh(const ECharacterType PrimaryDataAssetName)
 {
 	Super::SetMesh(PrimaryDataAssetName);
 	GetMesh()->SetMaterial(0, GuardianMaterial);

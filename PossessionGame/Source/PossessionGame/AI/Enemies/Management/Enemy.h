@@ -10,6 +10,7 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "Enemy.generated.h"
 
+class UNiagaraComponent;
 class UPossessionGameInstance;
 class APossessionGameGameModeBase;
 enum class ESound : uint16;
@@ -52,11 +53,13 @@ public:
 	bool GetIsPossessable() const;
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
 	bool CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
+	bool GetIsElite() const { return bIsElite; }
 	float GetSkeletalMeshHeight() const;
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
 	TObjectPtr<APossessionGameGameModeBase> GetGameModeBase() const { return GameModeBase; }
 	TObjectPtr<AEnemyAIController> GetAI() const { return AI; }
+	TObjectPtr<UAICharacterData> GetAIData() const { return AI_Data; }
 	virtual TObjectPtr<AWeapon>& GetWeapon() { return Weapon; }
 	TObjectPtr<UCameraComponent> GetCamera() { return Camera; }
 	TObjectPtr<UEnemyAnimationInstance>& GetAnimInstance() { return AnimInstance; }
@@ -172,7 +175,7 @@ protected:
 	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) const;
+	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
 	virtual void DestroyAI();
 	UFUNCTION()
 	virtual void DestroyThis();
@@ -185,6 +188,8 @@ private:
 	bool bIsCriticallyDamaged = false;
 	bool bIsAIBarCreated = false;
 	bool bPlayerDied = false;
+	bool bIsElite = false;
+	bool bIsMutant = false;
 	float PossessionBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -213,6 +218,8 @@ private:
 	TObjectPtr<UMaterialInstanceDynamic> MI_MeshEmissiveMaterial;
 	UPROPERTY()
 	TObjectPtr<UPossessionGameInstance> GameInstance;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> EliteAura;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
