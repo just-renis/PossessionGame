@@ -46,6 +46,7 @@ void UMinionBossAbility2::StopLaser()
 void UMinionBossAbility2::ShootLaser()
 {
 	Proprietor->EnableLaser();
+	Proprietor->PlaySound(ESound::MinionBossLaserEyeHold);
 	Proprietor->GetLaserCollision()->SetCapsuleSize(0.f, 0.f);
 	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	UKismetSystemLibrary::K2_SetTimer(this, "UpdateLaserEndLocation", 0.025f, true);

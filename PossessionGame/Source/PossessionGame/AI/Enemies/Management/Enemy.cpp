@@ -658,6 +658,7 @@ void AEnemy::P_Dash()
 {
 	if (CurrentDashCooldown >= P_Data->GetDashCooldown())
 	{
+		AssetsManager->PlaySound2D(ESound::Dash);
 		CurrentDashCooldown = 0.f;
 		FVector DashDirection = GetVelocity().GetSafeNormal();
 		if (DashDirection.IsNearlyZero()) DashDirection = GetActorForwardVector();
