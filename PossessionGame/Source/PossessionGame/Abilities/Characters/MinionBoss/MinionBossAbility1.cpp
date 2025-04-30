@@ -13,7 +13,7 @@ void UMinionBossAbility1::AI_Execute()
 	Proprietor->SetAbilityInAction(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Stomp);
 	Proprietor->PlaySound(ESound::MinionBossStomp);
-	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetStompIsPlaying(true);
+	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetIsActionMontagePlaying(true);
 	UKismetSystemLibrary::K2_SetTimer(this, "StompHitTheGround", 1.22f, false);
 	Super::AI_Execute();
 }

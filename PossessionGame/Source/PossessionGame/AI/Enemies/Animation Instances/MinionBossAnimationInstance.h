@@ -9,10 +9,10 @@ class POSSESSIONGAME_API UMinionBossAnimationInstance : public UEnemyAnimationIn
 {
 	GENERATED_BODY()
 public:
-	void SetStompIsPlaying(const bool bState) { bStompIsPlaying = bState; }
+	void SetIsActionMontagePlaying(const bool bState) { bIsActionMontagePlaying = bState; }
 private:
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
-	bool bStompIsPlaying = false;
+	bool bIsActionMontagePlaying = false;
 	
 	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted) override;
 };

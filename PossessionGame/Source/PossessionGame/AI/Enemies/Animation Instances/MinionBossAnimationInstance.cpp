@@ -12,7 +12,7 @@ void UMinionBossAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsI
 		(void)Cast<AMinionBossAIController>(Proprietor->GetAI())->OnStompFinished.ExecuteIfBound();
 		Proprietor->SetActionInMotion(false);
 		Proprietor->SetAbilityInAction(false);
-		SetStompIsPlaying(false);
+		SetIsActionMontagePlaying(false);
 		return;
 	}
 	const TObjectPtr<UAnimMontage>* PrepareLaserMontage = Montages.Find(EEnemyAnimState::PrepareLaser);
@@ -26,5 +26,6 @@ void UMinionBossAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsI
 	{
 		(void)Cast<AMinionBossAIController>(Proprietor->GetAI())->OnLaserEyeFinished.ExecuteIfBound();
 		Cast<AMinionBoss>(Proprietor)->OnLaserFinish();
+		SetIsActionMontagePlaying(false);
 	}
 }

@@ -661,6 +661,7 @@ void AEnemy::P_Dash()
 		CurrentDashCooldown = 0.f;
 		FVector DashDirection = GetVelocity().GetSafeNormal();
 		if (DashDirection.IsNearlyZero()) DashDirection = GetActorForwardVector();
+		DashDirection.Z = 0.f;
 		GetCharacterMovement()->StopMovementImmediately();
 		LaunchCharacter(DashDirection * P_Data->GetDashStrength(), true, true);
 		UKismetSystemLibrary::K2_SetTimer(this, "P_StopDash", 0.2f, false);

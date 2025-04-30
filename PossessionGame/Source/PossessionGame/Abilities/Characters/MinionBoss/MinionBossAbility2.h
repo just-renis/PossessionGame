@@ -11,7 +11,9 @@ class POSSESSIONGAME_API UMinionBossAbility2 : public UAbility
 {
 	GENERATED_BODY()
 
+	bool bLaserUpdateFirstFrame = true;
 	float LaserTime = 0.f;
+	FVector PlayerLocationAtInitiation;
 	UPROPERTY()
 	TObjectPtr<AMinionBoss> Proprietor;
 

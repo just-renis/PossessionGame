@@ -3,6 +3,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "PossessionGame/AI/Enemies/Animation Instances/MinionBossAnimationInstance.h"
 #include "PossessionGame/AI/Enemies/Characters/MinionBoss.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
@@ -14,8 +15,9 @@ void UMinionBossAbility2::AI_Execute()
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::PrepareLaser);
 	Proprietor->PlaySound(ESound::MinionBossLaserEyeCharge);
 	Proprietor->SetAbilityInAction(true);
-	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	Proprietor->EnableLaserEyeBall();
+	PlayerLocationAtInitiation = Proprietor->GetAI()->GetStateTreeData().GetTarget()->GetActorLocation();
+	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetIsActionMontagePlaying(true);
 	UKismetSystemLibrary::K2_SetTimer(this, "ShootLaser", 1.65f, false);
 }
 
@@ -32,6 +34,7 @@ void UMinionBossAbility2::CooldownLogic(const float InDeltaTime)
 void UMinionBossAbility2::StopLaser()
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "UpdateLaserEndLocation");
+	bLaserUpdateFirstFrame = true;
 	LaserTime = 0.f;
 	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Proprietor->GetLaser()->Deactivate();
@@ -43,6 +46,8 @@ void UMinionBossAbility2::StopLaser()
 void UMinionBossAbility2::ShootLaser()
 {
 	Proprietor->EnableLaser();
+	Proprietor->GetLaserCollision()->SetCapsuleSize(0.f, 0.f);
+	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	UKismetSystemLibrary::K2_SetTimer(this, "UpdateLaserEndLocation", 0.025f, true);
 }
 
@@ -52,17 +57,24 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	const TObjectPtr<AActor> Player = Proprietor->GetAI()->GetStateTreeData().GetTarget();
 	if (!Player) return;
 	// Laser calculation logic.
-	const FVector Start = Proprietor->GetMesh()->GetSocketTransform(TEXT("LaserSocket"), RTS_World).GetLocation();
-	FVector Direction = Player->GetActorLocation() - Start;
-	float Distance = Direction.Size();
-	Direction /= Distance;
+	const FVector Start = Proprietor->GetMesh()->GetSocketLocation(TEXT("LaserSocket"));
+	FVector Direction = (Player->GetActorLocation() - Start).GetSafeNormal();
 	const FRotator CurrentRotation = Proprietor->GetLaser()->GetComponentRotation();
 	const FRotator DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(Direction.Rotation(), CurrentRotation);
 	FRotator NewRotation = CurrentRotation;
 	NewRotation.Yaw += FMath::Clamp(DeltaRotation.Yaw, -0.75f, 0.75f);
 	NewRotation.Pitch += FMath::Clamp(DeltaRotation.Pitch, -0.75f, 0.75f);
 	NewRotation.Roll = 0.f;
-	Proprietor->GetLaser()->SetWorldLocationAndRotation(Start, NewRotation);
+	if (bLaserUpdateFirstFrame)
+	{
+		Direction = (PlayerLocationAtInitiation - Start).GetSafeNormal();
+		NewRotation = Direction.Rotation();
+		NewRotation.Roll = 0.f;
+		bLaserUpdateFirstFrame = false;
+	}
+	float Distance = Direction.Size();
+	Direction /= Distance;
+	Proprietor->GetLaser()->SetWorldRotation(NewRotation);
 	// Laser blocking logic.
 	const FVector LaserForward = NewRotation.Vector();
 	FCollisionQueryParams QueryParams;
