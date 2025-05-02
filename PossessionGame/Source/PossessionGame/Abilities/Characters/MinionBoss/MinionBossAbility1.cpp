@@ -48,9 +48,6 @@ void UMinionBossAbility1::StompHitTheGround() const
 		TObjectPtr<AActor> HitActor = Result.GetActor();
 		if (!HitActor || UniqueActors.Contains(HitActor)) continue;
 		UniqueActors.Add(HitActor);
-		if (TObjectPtr<AEnemy> Player = Cast<AEnemy>(HitActor); Player && Player->GetIsPossessed())
-		{
-			UGameplayStatics::ApplyDamage(Player, 50.f, nullptr, Proprietor, UDamageType::StaticClass());
-		}
+		if (HitActor->ActorHasTag("Player")) UGameplayStatics::ApplyDamage(HitActor, 50.f, nullptr, Proprietor, UDamageType::StaticClass());
 	}
 }

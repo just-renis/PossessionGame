@@ -1,6 +1,5 @@
 ﻿#include "GameModeInitiator.h"
 #include "Components/SphereComponent.h"
-#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
@@ -18,14 +17,11 @@ void AGameModeInitiator::BeginPlay()
 
 void AGameModeInitiator::Initiate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor))
+	if (OtherActor->ActorHasTag("Player"))
 	{
-		if (Enemy->GetIsPossessed())
-		{
-			if (GameMode == EGameMode::ChargeTerminalMode) GetGameInstance()->GetSubsystem<UDelegateManager>()->SetIsUsbDroppable(true);
-			GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
-			Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			Destroy();
-		}
+		if (GameMode == EGameMode::ChargeTerminalMode) GetGameInstance()->GetSubsystem<UDelegateManager>()->SetIsUsbDroppable(true);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
+		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		Destroy();
 	}
 }

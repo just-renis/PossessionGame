@@ -21,7 +21,6 @@ enum class EVfx : uint8;
 class ADestructible;
 enum class EMoveMode : uint8;
 class ANavAreaModifier;
-class USphereComponent;
 class UAIPerceptionStimuliSourceComponent;
 class UAbilityData;
 class UInputAction;
@@ -232,6 +231,7 @@ private:
 	void AI_ShowDamageNumber(const float InDamageAmount) const;
 	void AI_SetupUpgradesAppliance();
 	void AI_SpawnUsbOnDeath() const;
+	void AI_TriggerMutantExplosion();
 	UFUNCTION()
 	void AI_HideHpBar() const;
 	UFUNCTION()

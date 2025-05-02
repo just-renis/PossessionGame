@@ -17,7 +17,8 @@ void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelega
 {
 	DelegateManager = InDelegateManager;
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
-	bTutorialIsFinished = bIsTutorialFinished;
+	bTutorialIsFinished = true;
+	CurrentGameMode = EGameMode::WaveMode;
 	SetupSpawnLocations();
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &UWaveManager::SetAndStartGameMode);
 	DelegateManager->OnTerminalInteraction.AddUObject(this, &UWaveManager::StartTerminalHack);
@@ -196,7 +197,7 @@ void UWaveManager::SetupSpawnLocations()
 		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
 		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
 	}
-	AsyncLoadAndSpawnEnemy(ECharacterType::MinionBoss);
+//	AsyncLoadAndSpawnEnemy(ECharacterType::MinionBoss);
 	AsyncLoadAndSpawnEnemy(ECharacterType::Guardian);
 }
 

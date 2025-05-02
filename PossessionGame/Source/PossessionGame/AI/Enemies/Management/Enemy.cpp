@@ -13,6 +13,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/DamageEvents.h"
+#include "Engine/OverlapResult.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
@@ -210,6 +211,7 @@ void AEnemy::InitiateDeath()
 		AI_SpawnUsbOnDeath();
 		AI_PlayDeathSound();
 		DestroyAI();
+		if (bIsMutant) AI_TriggerMutantExplosion();
 		DelegateManager->OnEnemyDeath.Broadcast(AI_Data->GetXp());
 	}
 	else P_Destroy();
@@ -318,6 +320,7 @@ void AEnemy::P_Setup()
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
+	Tags.Add("Player");
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
 	GetMesh()->SetGenerateOverlapEvents(true);
@@ -484,7 +487,7 @@ void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName)
 {
 	GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get());
 	if (bIsElite) AssetsManager->AttachOrLoadVfx(EVfx::EliteAura, &Aura, GetMesh(), FName("SpawnSocket"));
-	else if (bIsMutant) AssetsManager->AttachOrLoadVfx(EVfx::MutantAura, &Aura, GetMesh(), FName("SpawnSocket"));
+	else if (bIsMutant) AssetsManager->AttachOrLoadVfx(EVfx::MutantAura, &Aura, GetMesh(), FName("MutantAuraSocket"));
 }
 
 void AEnemy::DestroyAI()
@@ -560,6 +563,21 @@ void AEnemy::AI_SpawnUsbOnDeath() const
 	if (!DelegateManager->GetIsUsbDroppable()) return;
 	DelegateManager->SetIsUsbDroppable(false);
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Collectible, GetActorLocation())->Init();
+}
+
+void AEnemy::AI_TriggerMutantExplosion()
+{
+	AssetsManager->SpawnOrLoadVfx(EVfx::MutantExplosion, GetActorLocation());
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(200.f));
+	TSet<TObjectPtr<AActor>> UniqueActors;
+	for (const FOverlapResult& Result : Overlaps)
+	{
+		TObjectPtr<AActor> HitActor = Result.GetActor();
+		if (!HitActor || UniqueActors.Contains(HitActor)) continue;
+		UniqueActors.Add(HitActor);
+		if (HitActor->ActorHasTag("Player")) UGameplayStatics::ApplyDamage(HitActor, 50.f, nullptr, this, UDamageType::StaticClass());
+	}
 }
 
 void AEnemy::AI_HideHpBar() const { if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
