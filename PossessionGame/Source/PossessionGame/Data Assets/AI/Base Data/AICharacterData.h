@@ -12,8 +12,10 @@ public:
 	bool GetIsPossessable() const { return bIsPossessable; }
 	float GetShootPause() const { return ShootPause; }
 	float GetMaxRunSpeed() const { return MaxRunSpeed; }
-	float GetEliteHpIncreasePercentage() const { return HpIncreasePercentage; }
-	float GetEliteDamageIncreasePercentage() const { return DamageIncreasePercentage; }
+	float GetEliteHpIncreasePercentage() const { return EliteHpIncreasePercentage; }
+	float GetEliteDamageIncreasePercentage() const { return EliteDamageIncreasePercentage; }
+	float GetMutantHpIncreasePercentage() const { return MutantHpIncreasePercentage; }
+	float GetMutantDamageIncreasePercentage() const { return MutantDamageIncreasePercentage; }
 	int32 GetXp() const { return Xp; }
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -25,7 +27,11 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 Xp = 0;
 	UPROPERTY(EditAnywhere, Category = "Elite", meta = (AllowPrivateAccess = true))
-	float HpIncreasePercentage = 30.f;
+	float EliteHpIncreasePercentage = 30.f;
 	UPROPERTY(EditAnywhere, Category = "Elite", meta = (AllowPrivateAccess = true))
-	float DamageIncreasePercentage = 30.f;
+	float EliteDamageIncreasePercentage = 30.f;
+	UPROPERTY(EditAnywhere, Category = "Mutant", meta = (AllowPrivateAccess = true))
+	float MutantHpIncreasePercentage = 30.f;
+	UPROPERTY(EditAnywhere, Category = "Mutant", meta = (AllowPrivateAccess = true))
+	float MutantDamageIncreasePercentage = 30.f;
 };

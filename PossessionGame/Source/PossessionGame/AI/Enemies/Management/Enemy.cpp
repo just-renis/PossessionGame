@@ -9,6 +9,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "InputMappingContext.h"
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/DamageEvents.h"
@@ -252,9 +253,11 @@ void AEnemy::SetEmpEffect(const float InEffectDuration)
 
 void AEnemy::SetPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr); }
 
+void AEnemy::SetUnPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? UnPossessionOutlineMaterial : nullptr); }
+
 void AEnemy::SetPossessionOutlineTimer() { UKismetSystemLibrary::K2_SetTimer(this, "DisablePossessionOutline", 0.245f, false); }
 
-void AEnemy::DisablePossessionOutline() const { SetPossessionOutline(false); }
+void AEnemy::SetUnPossessionOutlineTimer() { UKismetSystemLibrary::K2_SetTimer(this, "DisableUnPossessionOutline", 0.245f, false); }
 
 void AEnemy::AI_SetupAbilities() { SetupAbilities(AssetsManager->GetCharacterData(CharacterName)->AI_Abilities_Data); }
 
@@ -397,7 +400,8 @@ void AEnemy::P_SetupCharacterMovement()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	bIsElite = true;
+	//bIsElite = true;
+	if (FMath::RandBool()) bIsMutant = true;
 	GameInstance = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance());
 	DelegateManager = GameInstance->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
@@ -479,11 +483,13 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName)
 {
 	GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get());
-	if (bIsElite) AssetsManager->AttachOrLoadVfx(EVfx::EliteAura, &EliteAura, GetMesh(), FName("SpawnSocket"));
+	if (bIsElite) AssetsManager->AttachOrLoadVfx(EVfx::EliteAura, &Aura, GetMesh(), FName("SpawnSocket"));
+	else if (bIsMutant) AssetsManager->AttachOrLoadVfx(EVfx::MutantAura, &Aura, GetMesh(), FName("SpawnSocket"));
 }
 
 void AEnemy::DestroyAI()
 {
+	if (Aura) Aura->Deactivate();
 	if (AI)
 	{
 		GetWorld()->GetSubsystem<UEnemyCommunicator>()->RemoveEnemy(this);
@@ -507,6 +513,7 @@ void AEnemy::AI_SetupData()
 {
 	MaxHp = AI_Data->GetMaxHp();
 	if (bIsElite) MaxHp += MaxHp / 100.f * AI_Data->GetEliteHpIncreasePercentage();
+	else if (bIsMutant) MaxHp -= MaxHp / 100.f * AI_Data->GetMutantHpIncreasePercentage();
 	AI_SetupUpgradesAppliance();
 	CurrentHp = MaxHp;
 	SetMaxWalkSpeed(AI_Data->GetMaxWalkSpeed());
@@ -610,7 +617,7 @@ void AEnemy::P_PossessEnemy()
 
 void AEnemy::P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy)
 {
-	if (InEnemy && InEnemy->AI_Data->GetIsPossessable() && !InEnemy->bIsPossessed && InEnemy->bIsAlive)
+	if (InEnemy && InEnemy->GetIsPossessable() && !InEnemy->GetIsMutant() && !InEnemy->bIsPossessed && InEnemy->bIsAlive)
 	{
 		P_StopAllAbilities();
 		DelegateManager->OnEnemyDeath.RemoveAll(this);
@@ -868,10 +875,16 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 		else
 		{
 			const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
-			if (Enemy && Enemy->GetIsPossessable() && Enemy->GetIsAlive())
+			if (!Enemy || !Enemy->GetIsAlive()) return;
+			if (Enemy->GetIsPossessable() && !Enemy->GetIsMutant())
 			{
 				Enemy->SetPossessionOutline(true);
 				Enemy->SetPossessionOutlineTimer();
+			}
+			else
+			{
+				Enemy->SetUnPossessionOutline(true);
+				Enemy->SetUnPossessionOutlineTimer();
 			}
 		}
 	}
@@ -973,3 +986,7 @@ void AEnemy::SpawnCondenseMaterialsProcess()
 	MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
 	if (MeshEmissiveMaterialOpacityValue >= 1.f) UKismetSystemLibrary::K2_ClearTimer(this, "SpawnCondenseMaterialsProcess");
 }
+
+void AEnemy::DisablePossessionOutline() const { SetPossessionOutline(false); }
+
+void AEnemy::DisableUnPossessionOutline() const { SetUnPossessionOutline(false); }

@@ -134,6 +134,7 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
 	else if (ProjectileData.GetProprietor()->GetIsElite()) Damage += Damage / 100.f * ProjectileData.GetProprietor()->GetAIData()->GetEliteDamageIncreasePercentage();
+	else if (ProjectileData.GetProprietor()->GetIsMutant()) Damage -= Damage / 100.f * ProjectileData.GetProprietor()->GetAIData()->GetMutantDamageIncreasePercentage();
 	AI_SetupUpgradesAppliance(bIsPlayerProjectile);
 }
 

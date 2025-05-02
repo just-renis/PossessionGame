@@ -101,7 +101,7 @@ void APlayerGhost::PossessEnemy()
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_Visibility, QueryParams))
 	{
 		const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
-		if (Enemy && Enemy->GetIsPossessable())
+		if (Enemy && Enemy->GetIsPossessable() && !Enemy->GetIsMutant())
 		{
 			if (bTutorialModeEnabled)
 			{

@@ -54,6 +54,7 @@ public:
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
 	bool CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
 	bool GetIsElite() const { return bIsElite; }
+	bool GetIsMutant() const { return bIsMutant; }
 	float GetSkeletalMeshHeight() const;
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
@@ -95,9 +96,9 @@ public:
 	void StopSound(const ESound InSoundName);
 	void SetEmpEffect(const float InEffectDuration);
 	void SetPossessionOutline(const bool bState) const;
+	void SetUnPossessionOutline(const bool bState) const;
 	void SetPossessionOutlineTimer();
-	UFUNCTION()
-	void DisablePossessionOutline() const;
+	void SetUnPossessionOutlineTimer();
 protected:
 	bool bCanReload = true;
 	bool bIsPossessed = false;
@@ -204,6 +205,8 @@ private:
 	TSubclassOf<UCameraShakeBase> ReceivingDamageCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> PossessionOutlineMaterial;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> UnPossessionOutlineMaterial;
 	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
@@ -219,7 +222,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UPossessionGameInstance> GameInstance;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> EliteAura;
+	TObjectPtr<UNiagaraComponent> Aura;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
@@ -293,4 +296,8 @@ private:
 	void CheckIfFallOutOfWorld();
 	UFUNCTION()
 	void SpawnCondenseMaterialsProcess();
+	UFUNCTION()
+	void DisablePossessionOutline() const;
+	UFUNCTION()
+	void DisableUnPossessionOutline() const;
 };
