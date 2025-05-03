@@ -270,6 +270,7 @@ private:
 	void P_TutorialPressKeyToContinueLogic();
 	void P_QuickMeleeAttack();
 	void P_ProcessMeleeAttack();
+	void P_ApplySecretReward(const int32 InIndex);
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()
@@ -296,6 +297,8 @@ private:
 	void SetupUserSettings() const;
 	void ClearTimers();
 	void ProcessSpawnEffects();
+	void AddXp(const int32 InXp) const;
+	void AddHp(const int32 InHp);
 	UFUNCTION()
 	void CheckIfFallOutOfWorld();
 	UFUNCTION()

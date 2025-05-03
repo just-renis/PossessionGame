@@ -323,6 +323,7 @@ void AEnemy::P_Setup()
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
+	DelegateManager->OnSecretRewardCollected.BindUObject(this, &AEnemy::P_ApplySecretReward);
 	Tags.Add("Player");
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
@@ -407,7 +408,7 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	//bIsElite = true;
-	if (FMath::RandBool()) bIsMutant = true;
+	//if (FMath::RandBool()) bIsMutant = true;
 	GameInstance = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance());
 	DelegateManager = GameInstance->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
@@ -706,11 +707,7 @@ void AEnemy::P_Dash()
 void AEnemy::P_OnEnemyDeathEvents(const int32 InXp)
 {
 	PossessionBarTimer += 1.f;
-	if (P_HUD)
-	{
-		GameInstance->GetSaveSlot()->AddXp(InXp);
-		P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSaveSlot()->GetXp(), GameInstance->GetSaveSlot()->GetCurrentLevelNeededXp());
-	}
+	AddXp(InXp);
 	for (int32 i = 0; i < Abilities.Num(); i++)
 	{
 		if (Abilities[i]->GetIsCooldownKill())
@@ -886,6 +883,17 @@ void AEnemy::P_ProcessMeleeAttack()
 	}
 }
 
+void AEnemy::P_ApplySecretReward(const int32 InIndex)
+{
+	UE_LOG(LogTemp, Warning, TEXT("IN Index %i"), InIndex);
+	switch (InIndex)
+	{
+		case 0: AddHp(30); break; // Hp.
+		case 1: PossessionBarTimer += 5.f; break; // Possession.
+		default: AddXp(10); // Xp.
+	}
+}
+
 void AEnemy::P_Death()
 {
 	if (!bPlayerDied) AssetsManager->PlaySound2D(ESound::PlayerDeath);
@@ -1019,6 +1027,19 @@ void AEnemy::ProcessSpawnEffects()
 		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
 	}
 	UKismetSystemLibrary::K2_SetTimer(this, "SpawnCondenseMaterialsProcess", 0.05f, true);
+}
+
+void AEnemy::AddXp(const int32 InXp) const
+{
+	GameInstance->GetSaveSlot()->AddXp(InXp);
+	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSaveSlot()->GetXp(), GameInstance->GetSaveSlot()->GetCurrentLevelNeededXp());
+}
+
+void AEnemy::AddHp(const int32 InHp)
+{
+	CurrentHp += InHp;
+	if (CurrentHp > MaxHp) CurrentHp = MaxHp;
+	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
 }
 
 void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsPossessed ? P_Death() : InitiateDeath(); }
