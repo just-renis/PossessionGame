@@ -1,10 +1,10 @@
 ﻿#include "Collectible.h"
-
 #include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Data Assets/Base Data Assets/CollectibleData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -23,7 +23,7 @@ ACollectible::ACollectible()
 void ACollectible::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachOrLoadVfx(EVfx::UsbAura, &UsbAura, Collision, NAME_None);
+	if (Data->HasAura()) GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachOrLoadVfx(Data->GetAuraName(), &Aura, Collision, NAME_None);
 	PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACollectible::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ACollectible::DisableInteractionWidget);
@@ -32,10 +32,13 @@ void ACollectible::BeginPlay()
 void ACollectible::Init(bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
-	if (UsbAura) UsbAura->Activate();
-	InitialSpawnZ = GetActorLocation().Z;
-	UKismetSystemLibrary::K2_SetTimer(this, "Float", 0.05f, true);
-	SetActorRotation(FRotator(0.f, 0.f, 45.f));
+	if (Aura) Aura->Activate();
+	if (Data->GetIsFloating())
+	{
+		InitialSpawnZ = GetActorLocation().Z;
+		UKismetSystemLibrary::K2_SetTimer(this, "Float", 0.05f, true);
+		SetActorRotation(FRotator(0.f, 0.f, 45.f));
+	}
 	EnableCollectible();
 	if (InteractableWidget) InteractableWidget->SetVisibility(false);
 }
@@ -43,12 +46,13 @@ void ACollectible::Init(bool bInIsPlayerObject)
 void ACollectible::Interact()
 {
 	if (!GetIsInteractable()) return;
-	if (UsbAura) UsbAura->Deactivate();
+	if (Aura) Aura->Deactivate();
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbCollect);
 	UKismetSystemLibrary::K2_ClearTimer(this, "Float");
-	PoolingManager->ReturnObjectToPool(EPoolObject::Collectible, this);
+	PoolingManager->ReturnObjectToPool(Data->GetCollectibleName(), this);
 	DisableCollectible();
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.ExecuteIfBound();
+	if (Data->GetCollectibleName() == EPoolObject::Usb) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.ExecuteIfBound();
+	else if (Data->GetCollectibleName() == EPoolObject::Artifact) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.ExecuteIfBound();
 }
 
 void ACollectible::ShowMarker()
@@ -74,12 +78,12 @@ void ACollectible::ToggleInteractableWidget(const bool bState, const bool bMarke
 	if (bState)
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		if (bMarkerIncluded) ShowMarker();
+		if (bMarkerIncluded && Data->GetIsMarkerEnabled()) ShowMarker();
 	}
 	else
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (bMarkerIncluded && Marker) PoolingManager->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
+		if (bMarkerIncluded && Marker && Data->GetIsMarkerEnabled()) PoolingManager->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
 		if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	}
 }

@@ -48,4 +48,5 @@ private:
 
 	virtual void BeginPlay() override;
 	void LoadSettingsData();
+	void SpawnArtifact() const;
 };

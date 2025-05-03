@@ -1,10 +1,8 @@
 ﻿#include "Gate.h"
-
 #include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -25,6 +23,8 @@ AGate::AGate()
 	OpenGatesSfx->SetupAttachment(RootComponent);
 }
 
+bool AGate::GetIsInteractable() const { return IInteractable::GetIsInteractable() && !bNeedsArtifact; }
+
 void AGate::BeginPlay()
 {
 	Super::BeginPlay();
@@ -38,6 +38,7 @@ void AGate::BeginPlay()
 	}
 	if (!bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGate);
 	else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialEnd.AddUObject(this, &AGate::OpenAsTutorialEndGate);
+	if (bNeedsArtifact) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.BindUObject(this, &AGate::SetArtifactCollected);
 }
 
 void AGate::OpenGate(const EGameMode InGameMode)
@@ -66,7 +67,7 @@ void AGate::CloseGate(const EGameMode InGameMode)
 
 void AGate::Interact()
 {
-	if (!GetIsInteractable()) return;
+	if (!GetIsInteractable() || bNeedsArtifact) return;
 	SetIsInteractable(false);
 	Collision->OnComponentBeginOverlap.RemoveAll(this);
 	Collision->OnComponentEndOverlap.RemoveAll(this);
@@ -105,16 +106,12 @@ void AGate::CloseGateSides()
 
 void AGate::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor))
-	{
-		if (Enemy->GetIsPossessed()) InteractableWidget->SetVisibility(true);
-	}
+	if (bNeedsArtifact) return;
+	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(true);
 }
 
 void AGate::DisableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor))
-	{
-		if (Enemy->GetIsPossessed()) InteractableWidget->SetVisibility(false);
-	}
+	if (bNeedsArtifact) return;
+	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(false);
 }

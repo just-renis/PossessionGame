@@ -43,6 +43,7 @@ enum class EVfx : uint8
 	MinionBossLaserBall,
 	MinionBossLaser,
 	UsbAura,
+	ArtifactAura,
 	EliteAura,
 	MutantAura,
 	MutantExplosion

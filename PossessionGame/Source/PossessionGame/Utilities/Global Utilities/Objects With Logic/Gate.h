@@ -20,6 +20,8 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	bool bIsGateOpened = false;
 	float TimePassed = 0.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bNeedsArtifact = false;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsUnlockableByInteraction = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsTutorialGate = false;
@@ -40,12 +42,15 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> OpenGatesSfx;
 
+	virtual bool GetIsInteractable() const override;
+
 	virtual void BeginPlay() override;
 	void OpenGate(const EGameMode InGameMode);
 	void OpenAsTutorialEndGate();
 	void CloseGate(const EGameMode InGameMode = EGameMode::None);
 	virtual void Interact() override;
 	virtual void ChangeOutlineState(const bool bState) override;
+	void SetArtifactCollected() { bNeedsArtifact = false; }
 	UFUNCTION()
 	void OpenGateSides();
 	UFUNCTION()

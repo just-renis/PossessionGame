@@ -18,6 +18,7 @@ DECLARE_DELEGATE(FStopShowingHint);
 DECLARE_DELEGATE(FOnChargeTerminalModeCompletion);
 DECLARE_DELEGATE(FOnUsbCollected);
 DECLARE_DELEGATE(FOnUsbInserted);
+DECLARE_DELEGATE(FOnArtifactCollected);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FSpawnTutorialEnemy, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FSendTargetToTutorialDrone, const TObjectPtr<AActor>&);
@@ -64,6 +65,7 @@ public:
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
 	FOnUsbCollected OnUsbCollected;
 	FOnUsbInserted OnUsbInserted;
+	FOnArtifactCollected OnArtifactCollected;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FSendTargetToTutorialDrone SendTargetToTutorialDrone;

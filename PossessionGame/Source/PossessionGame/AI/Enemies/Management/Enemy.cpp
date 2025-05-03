@@ -565,7 +565,7 @@ void AEnemy::AI_SpawnUsbOnDeath() const
 {
 	if (!DelegateManager->GetIsUsbDroppable()) return;
 	DelegateManager->SetIsUsbDroppable(false);
-	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Collectible, GetActorLocation())->Init();
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Usb, GetActorLocation())->Init();
 }
 
 void AEnemy::AI_TriggerMutantExplosion()

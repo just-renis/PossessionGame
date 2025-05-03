@@ -3,6 +3,7 @@
 #include "SettingsSave.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/ArtifactSpawnLocation.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
@@ -36,6 +37,7 @@ void APossessionGameGameModeBase::BeginPlay()
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = false;
 	PlayerController->SetInputMode(FInputModeGameOnly());
+	SpawnArtifact();
 }
 
 void APossessionGameGameModeBase::LoadSettingsData()
@@ -52,4 +54,12 @@ void APossessionGameGameModeBase::LoadSettingsData()
 		SavedSettings->LoadSettingsOnFirstLaunch(GetWorld());
 		UGameplayStatics::SaveGameToSlot(SavedSettings, SettingsSlot, 0);
 	}
+}
+
+void APossessionGameGameModeBase::SpawnArtifact() const
+{
+	TArray<AActor*> SpawnLocations;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AArtifactSpawnLocation::StaticClass(), SpawnLocations);
+	if (SpawnLocations.IsEmpty()) return;
+	Cast<AArtifactSpawnLocation>(SpawnLocations[FMath::RandRange(0, SpawnLocations.Num() - 1)])->SpawnArtifact();
 }

@@ -12,7 +12,7 @@ class POSSESSIONGAME_API IInteractable
 {
 	GENERATED_BODY()
 public:
-	bool GetIsInteractable() const { return bIsInteractable; }
+	virtual bool GetIsInteractable() const { return bIsInteractable; }
 
 	void SetIsInteractable(const bool bState) { bIsInteractable = bState; }
 	virtual void Interact() = 0;

@@ -5,6 +5,8 @@
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "Collectible.generated.h"
 
+enum class EPoolObject : uint8;
+class UCollectibleData;
 class UNiagaraComponent;
 class UDelegateManager;
 class UPoolingManager;
@@ -27,8 +29,10 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	TObjectPtr<UWidgetComponent> InteractableWidget;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
+	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCollectibleData> Data;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> UsbAura;
+	TObjectPtr<UNiagaraComponent> Aura;
 	UPROPERTY()
 	TObjectPtr<APoolObject> Marker;
 	UPROPERTY()

@@ -4,7 +4,6 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -98,16 +97,10 @@ void AUsbTerminal::ChangeOutlineState(const bool bState)
 
 void AUsbTerminal::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor))
-	{
-		if (Enemy->GetIsPossessed()) InteractableWidget->SetVisibility(true);
-	}
+	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(true);
 }
 
 void AUsbTerminal::DisableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor))
-	{
-		if (Enemy->GetIsPossessed()) InteractableWidget->SetVisibility(false);
-	}
+	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(false);
 }
