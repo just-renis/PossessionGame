@@ -128,6 +128,11 @@ void AWeapon::DeactivateWeapon()
 	DetachWeapon();
 }
 
+void AWeapon::SetProprietor(const TObjectPtr<AEnemy> InProprietor)
+{
+	Proprietor = InProprietor;
+}
+
 void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh) const
 {
 	Mesh->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket1"));
@@ -158,6 +163,7 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bOverride
 
 void AWeapon::PostProprietorSetup()
 {
+	SetupHandsAnimInstance();
 	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true);
 }
 

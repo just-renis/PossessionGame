@@ -49,7 +49,6 @@ void AGuardianWeapon::BeginPlay()
 {
 	Name = EWeapon::GuardianWeapon;
 	Super::BeginPlay();
-	SetupHandsAnimInstance();
 }
 
 void AGuardianWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh)

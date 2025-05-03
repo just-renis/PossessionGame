@@ -202,6 +202,8 @@ private:
 	TObjectPtr<UWidgetComponent> AI_HpBarComponent;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ReceivingDamageCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> QuickMeleeCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> PossessionOutlineMaterial;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
@@ -266,6 +268,8 @@ private:
 	void P_InUpgradeSelection();
 	void P_TryInteracting();
 	void P_TutorialPressKeyToContinueLogic();
+	void P_QuickMeleeAttack();
+	void P_ProcessMeleeAttack();
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()

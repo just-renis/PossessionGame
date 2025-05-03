@@ -112,6 +112,7 @@ void ADualWieldingWeapon::PlayShootMontage() { HandsAnimInstance->PlayMontage(EH
 
 void ADualWieldingWeapon::PostProprietorSetup()
 {
+	SetupHandsAnimInstance();
 	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &FirstWeapon->GetMuzzleFlashComponent(), FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
 	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &SecondWeapon->GetMuzzleFlashComponent(), SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
 }

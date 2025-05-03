@@ -32,7 +32,6 @@ void ATricksterWeapon::BeginPlay()
 {
 	Name = EWeapon::TricksterWeapon;
 	Super::BeginPlay();
-	SetupHandsAnimInstance();
 }
 
 void ATricksterWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh)

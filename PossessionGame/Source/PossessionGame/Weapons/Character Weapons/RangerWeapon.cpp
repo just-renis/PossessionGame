@@ -65,7 +65,6 @@ void ARangerWeapon::BeginPlay()
 	AnimInstance = Cast<UWeaponAnimInstance>(Mesh->GetAnimInstance());
 	AnimInstance->SetWeaponName(Name);
 	Crosshair->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale, "CrosshairSocket");
-	SetupHandsAnimInstance();
 }
 
 void ARangerWeapon::HitScanLogic()

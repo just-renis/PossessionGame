@@ -38,6 +38,7 @@ public:
 	FVector GetSocketLocation(const FName InSocketName) const { return Mesh->GetSocketLocation(InSocketName); }
 	FRotator GetSocketRotation(const FName InSocketName) const { return Mesh->GetSocketRotation(InSocketName); }
 	FVector GetSocketScale(const FName InSocketName) const { return Mesh->GetSocketTransform(InSocketName).GetScale3D(); }
+	FVector GetHandsSocketLocation(const FName InSocketName) const { return HandsMesh->GetSocketLocation(InSocketName); }
 	FProjectileData& GetProjectileData(const EPoolObject InProjectileName) const { return bIsPossessed ? P_Data->GetProjectileData(InProjectileName) : AI_Data->GetProjectileData(InProjectileName); }
 	TObjectPtr<UWeaponAnimInstance>& GetAnimInstance() { return AnimInstance; }
 	TObjectPtr<UHandsAnimInstance>& GetHandsAnimInstance() { return HandsAnimInstance; }
@@ -67,7 +68,7 @@ public:
 	virtual void DestroyThis();
 	virtual void SetToOriginalSettings();
 	virtual void DeactivateWeapon();
-	virtual void SetProprietor(const TObjectPtr<AEnemy> InProprietor) { Proprietor = InProprietor; }
+	virtual void SetProprietor(const TObjectPtr<AEnemy> InProprietor);
 	void SubtractShootCycleUntilReload() { ShootCyclesUntilReload--; }
 	void SetCastShadow(const bool bState) const { if (Mesh) Mesh->SetCastShadow(bState); }
 	void AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh) const;

@@ -23,6 +23,7 @@
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerCharacterData.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
 #include "PossessionGame/Destructibles/Destructible.h"
+#include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EUIBar.h"
@@ -46,6 +47,7 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
+#include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
@@ -152,6 +154,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &AEnemy::P_HandleEscapeClick);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &AEnemy::P_StopTime);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_TryInteracting);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(19).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack);
 	}
 }
 
@@ -857,6 +860,30 @@ void AEnemy::P_TutorialPressKeyToContinueLogic()
 {
 	bPressKeyEnabled = false;
 	DelegateManager->OnShowPressKeyToContinue.Broadcast(false);
+}
+
+void AEnemy::P_QuickMeleeAttack()
+{
+	if (bIsActionInMotion) return;
+	P_MakeCameraShake(QuickMeleeCameraShake);
+	bIsActionInMotion = true;
+	GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::QuickMelee);
+	P_ProcessMeleeAttack();
+}
+
+void AEnemy::P_ProcessMeleeAttack()
+{
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(50.f), Params);
+	for (const FOverlapResult& Overlap : Overlaps)
+	{
+		if (TObjectPtr<AActor> HitActor = Overlap.GetActor(); HitActor && HitActor != this && HitActor->ActorHasTag("AliveEnemy"))
+		{
+			UGameplayStatics::ApplyDamage(HitActor, 20.f, GetController(), this, UDamageType::StaticClass());
+		}
+	}
 }
 
 void AEnemy::P_Death()

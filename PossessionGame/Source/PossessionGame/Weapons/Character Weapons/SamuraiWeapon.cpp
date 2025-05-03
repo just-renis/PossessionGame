@@ -60,7 +60,6 @@ void ASamuraiWeapon::BeginPlay()
 	Super::BeginPlay();
 	AnimInstance = Cast<UWeaponAnimInstance>(Mesh->GetAnimInstance());
 	AnimInstance->SetWeaponName(Name);
-	SetupHandsAnimInstance();
 }
 
 void ASamuraiWeapon::PlayHandsAndWeaponMontage(EHandsAnimState HandsState, EWeaponAnimState WeaponState, float StartSeconds)

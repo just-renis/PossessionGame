@@ -42,5 +42,4 @@ void ATankWeapon::BeginPlay()
 	Super::BeginPlay();
 	AnimInstance = Cast<UWeaponAnimInstance>(Mesh->GetAnimInstance());
 	AnimInstance->SetWeaponName(Name);
-	SetupHandsAnimInstance();
 }

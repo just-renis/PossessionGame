@@ -23,7 +23,6 @@ void ASpyWeapon::BeginPlay()
 {
 	Name = EWeapon::SpyWeapon;
 	Super::BeginPlay();
-	SetupHandsAnimInstance();
 }
 
 void ASpyWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const bool bFromFirstWeapon)
