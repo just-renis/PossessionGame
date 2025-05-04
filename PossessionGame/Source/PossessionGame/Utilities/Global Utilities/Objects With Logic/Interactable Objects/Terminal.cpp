@@ -1,34 +1,25 @@
 ﻿#include "Terminal.h"
-#include "PoolObject.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 
 ATerminal::ATerminal()
 {
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("terminalMesh"));
-	InteractableWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("interactableWidgetComponent"));
-	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("collision"));
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("mesh"));
 	RootComponent = Mesh;
-	Collision->SetupAttachment(RootComponent);
-	InteractableWidget->SetupAttachment(RootComponent);
 }
 
 void ATerminal::BeginPlay()
 {
 	Super::BeginPlay();
-	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnHackModeStart.AddUObject(this, &ATerminal::ShowMarker);
 	DelegateManager->OnTerminalInteraction.AddUObject(this, &ATerminal::DisableTerminal);
 	DelegateManager->OnTerminalHackFinish.AddUObject(this, &ATerminal::EnableTerminal);
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &ATerminal::EnableTerminal);
-	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATerminal::EnableInteractionWidget);
-	Collision->OnComponentEndOverlap.AddDynamic(this, &ATerminal::DisableInteractionWidget);
-	if (InteractableWidget) InteractableWidget->SetVisibility(false);
 }
 
 void ATerminal::Interact()
@@ -75,20 +66,4 @@ void ATerminal::ToggleInteractableWidget(const bool bState)
 		if (Marker) Marker->Disable();
 		if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	}
-}
-
-void ATerminal::ChangeOutlineState(const bool bState)
-{
-	Mesh->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
-	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
-}
-
-void ATerminal::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(true);
-}
-
-void ATerminal::DisableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(false);
 }

@@ -247,6 +247,7 @@ void AWeapon::SetMeshes(const EWeapon InPrimaryDataAssetName)
 void AWeapon::SetupHandsAnimInstance()
 {
 	HandsAnimInstance = Cast<UHandsAnimInstance>(HandsMesh->GetAnimInstance());
+	if (!HandsAnimInstance) return;
 	HandsAnimInstance->SetWeaponName(Name);
 	HandsAnimInstance->SetProprietor(Proprietor);
 }

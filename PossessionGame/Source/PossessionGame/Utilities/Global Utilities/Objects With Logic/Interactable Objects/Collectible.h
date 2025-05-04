@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PoolObject.h"
 #include "PossessionGame/Interfaces/Interactable.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "Collectible.generated.h"
 
 enum class EPoolObject : uint8;

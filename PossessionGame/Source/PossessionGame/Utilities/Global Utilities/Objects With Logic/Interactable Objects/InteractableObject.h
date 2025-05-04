@@ -3,40 +3,37 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PossessionGame/Interfaces/Interactable.h"
-#include "Terminal.generated.h"
+#include "InteractableObject.generated.h"
 
-enum class EGameMode : uint8;
 class UDelegateManager;
-class APoolObject;
-class USphereComponent;
 class UWidgetComponent;
+class USphereComponent;
 
 UCLASS()
-class POSSESSIONGAME_API ATerminal : public AActor, public IInteractable
+class POSSESSIONGAME_API AInteractableObject : public AActor, public IInteractable
 {
 	GENERATED_BODY()
-
-	ATerminal();
+protected:
+	AInteractableObject();
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> Collision;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UStaticMeshComponent> Mesh;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> InteractableWidget;
-	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
-	UPROPERTY()
-	TObjectPtr<APoolObject> Marker;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
+
+	virtual TObjectPtr<UStaticMeshComponent> GetMesh() { return nullptr; }
+	virtual TObjectPtr<USkeletalMeshComponent> GetSkeletalMesh() { return nullptr; }
 	
 	virtual void BeginPlay() override;
-	virtual void Interact() override;
-	void ShowMarker();
-	void EnableTerminal(const EGameMode InGameMode);
-	void DisableTerminal();
-	void ToggleInteractableWidget(const bool bState);
+	virtual void Interact() override {}
+private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	bool bIsSkeletalMesh = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
+
 	virtual void ChangeOutlineState(const bool bState) override;
 	UFUNCTION()
 	void DisableOutline() { ChangeOutlineState(false); }

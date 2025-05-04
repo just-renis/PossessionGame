@@ -1,9 +1,7 @@
 ﻿#include "UsbTerminal.h"
 #include "Collectible.h"
-#include "PoolObject.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -11,19 +9,14 @@
 
 AUsbTerminal::AUsbTerminal()
 {
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("collectibleMesh"));
-	InteractableWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("interactableWidgetComponent"));
-	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("collision"));
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("mesh"));
 	RootComponent = Mesh;
-	Collision->SetupAttachment(RootComponent);
-	InteractableWidget->SetupAttachment(RootComponent);
 	for (int i = 0; i < 4; i++) UsbMeshes[i] = CreateDefaultSubobject<UStaticMeshComponent>(FName("UsbMesh" + FString::FromInt(i)));
 }
 
 void AUsbTerminal::BeginPlay()
 {
 	Super::BeginPlay();
-	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	for (int i = 0; i < 4; i++)
 	{
 		if (UsbMeshes[i])
@@ -36,8 +29,6 @@ void AUsbTerminal::BeginPlay()
 			UsbMeshes[i]->SetVisibility(false);
 		}
 	}
-	Collision->OnComponentBeginOverlap.AddDynamic(this, &AUsbTerminal::EnableInteractionWidget);
-	Collision->OnComponentEndOverlap.AddDynamic(this, &AUsbTerminal::DisableInteractionWidget);
 	DelegateManager->OnUsbCollected.BindUObject(this, &AUsbTerminal::EnableInteraction);
 	DisableInteraction();
 }
@@ -87,20 +78,4 @@ void AUsbTerminal::ToggleInteractableWidget(const bool bState)
 		if (Marker) Marker->Disable();
 		if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	}
-}
-
-void AUsbTerminal::ChangeOutlineState(const bool bState)
-{
-	Mesh->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
-	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
-}
-
-void AUsbTerminal::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(true);
-}
-
-void AUsbTerminal::DisableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(false);
 }
