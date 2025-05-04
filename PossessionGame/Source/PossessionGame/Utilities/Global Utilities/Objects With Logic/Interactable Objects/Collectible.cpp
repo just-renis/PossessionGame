@@ -36,7 +36,7 @@ void ACollectible::Init(bool bInIsPlayerObject)
 	if (Data->GetIsFloating())
 	{
 		InitialSpawnZ = GetActorLocation().Z;
-		UKismetSystemLibrary::K2_SetTimer(this, "Float", 0.05f, true);
+		UKismetSystemLibrary::K2_SetTimer(this, "Float", 0.025f, true);
 		SetActorRotation(FRotator(0.f, 0.f, 45.f));
 	}
 	EnableCollectible();
@@ -100,7 +100,7 @@ void ACollectible::Float()
 	FRotator NewRotation = GetActorRotation();
 	const float FloatValue = FMath::Sin(GetWorld()->GetTimeSeconds() * 2.f) * 20.f;
 	NewLocation.Z = InitialSpawnZ + FloatValue;
-	NewRotation.Yaw += 3.f;
+	NewRotation.Yaw += 1.5f;
 	SetActorLocationAndRotation(NewLocation, NewRotation);
 }
 

@@ -28,7 +28,7 @@ void ASecretCrate::Interact()
 	if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	SetIsInteractable(false);
 	GiveReward();
-	UKismetSystemLibrary::K2_SetTimer(this, "RewardMeshMoveUpwards", 0.05f, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "RewardMeshMoveUpwards", 0.025f, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "StopRewardMesh", 3.f, false);
 }
 
@@ -42,7 +42,7 @@ void ASecretCrate::GiveReward()
 
 void ASecretCrate::RewardMeshMoveUpwards() const
 {
-	RewardMesh->SetRelativeLocation(RewardMesh->GetRelativeLocation() + FVector(0.f, 0.f, 1.f));
+	RewardMesh->SetRelativeLocation(RewardMesh->GetRelativeLocation() + FVector(0.f, 0.f, 0.5f));
 }
 
 void ASecretCrate::StopRewardMesh()
