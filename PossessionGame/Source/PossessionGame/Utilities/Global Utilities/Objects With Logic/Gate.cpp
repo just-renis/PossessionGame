@@ -28,6 +28,7 @@ bool AGate::GetIsInteractable() const { return IInteractable::GetIsInteractable(
 void AGate::BeginPlay()
 {
 	Super::BeginPlay();
+	bNeededArtifact = bNeedsArtifact;
 	if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	if (bIsUnlockableByInteraction)
 	{
@@ -68,6 +69,7 @@ void AGate::CloseGate(const EGameMode InGameMode)
 void AGate::Interact()
 {
 	if (!GetIsInteractable() || bNeedsArtifact) return;
+	if (bNeededArtifact) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSecretDoorOpened.ExecuteIfBound();
 	SetIsInteractable(false);
 	Collision->OnComponentBeginOverlap.RemoveAll(this);
 	Collision->OnComponentEndOverlap.RemoveAll(this);

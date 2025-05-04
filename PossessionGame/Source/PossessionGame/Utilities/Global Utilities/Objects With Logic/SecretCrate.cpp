@@ -29,6 +29,7 @@ void ASecretCrate::BeginPlay()
 void ASecretCrate::Interact()
 {
 	if (!GetIsInteractable()) return;
+	Mesh->PlayAnimation(OpenAnim, false);
 	Collision->OnComponentBeginOverlap.RemoveAll(this);
 	Collision->OnComponentEndOverlap.RemoveAll(this);
 	if (InteractableWidget) InteractableWidget->SetVisibility(false);

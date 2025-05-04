@@ -306,6 +306,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_GatesOpen", ESound::GatesOpen);
 	SoundMap.Add("PA_ForceFieldDissolve", ESound::ForceFieldDissolve);
 	SoundMap.Add("PA_Dash", ESound::Dash);
+	SoundMap.Add("PA_QuickMelee", ESound::QuickMelee);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

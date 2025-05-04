@@ -862,6 +862,7 @@ void AEnemy::P_TutorialPressKeyToContinueLogic()
 void AEnemy::P_QuickMeleeAttack()
 {
 	if (bIsActionInMotion) return;
+	AssetsManager->PlaySound2D(ESound::QuickMelee);
 	P_MakeCameraShake(QuickMeleeCameraShake);
 	bIsActionInMotion = true;
 	GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::QuickMelee);
@@ -873,11 +874,13 @@ void AEnemy::P_ProcessMeleeAttack()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	TArray<FOverlapResult> Overlaps;
-	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(50.f), Params);
+	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(125.f), Params);
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
 		if (TObjectPtr<AActor> HitActor = Overlap.GetActor(); HitActor && HitActor != this && HitActor->ActorHasTag("AliveEnemy"))
 		{
+			AssetsManager->PlaySound2D(ESound::DamageTick);
+			(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
 			UGameplayStatics::ApplyDamage(HitActor, 20.f, GetController(), this, UDamageType::StaticClass());
 		}
 	}
@@ -885,7 +888,6 @@ void AEnemy::P_ProcessMeleeAttack()
 
 void AEnemy::P_ApplySecretReward(const int32 InIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("IN Index %i"), InIndex);
 	switch (InIndex)
 	{
 		case 0: AddHp(30); break; // Hp.

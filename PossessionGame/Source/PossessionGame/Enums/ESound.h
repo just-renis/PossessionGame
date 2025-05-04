@@ -64,5 +64,6 @@ enum class ESound : uint16
 	UsbCollect,
 	ForceFieldDissolve,
 	GatesOpen,
-	Dash
+	Dash,
+	QuickMelee
 };

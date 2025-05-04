@@ -22,6 +22,8 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bNeedsArtifact = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bNeededArtifact = false;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsUnlockableByInteraction = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsTutorialGate = false;
