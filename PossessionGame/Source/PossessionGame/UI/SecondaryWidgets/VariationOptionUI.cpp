@@ -17,11 +17,11 @@ void UVariationOptionUI::NativeOnMouseEnter(const FGeometry& InGeometry, const F
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardHover);
-	if (VariationOptionBorder) (void)ShowDetailsPanel.ExecuteIfBound(true, DetailsPanelText, UnlockText);
+	if (VariationOptionBorder) (void)ShowDetailsPanel.ExecuteIfBound(true, bIsLocked ? UnlockText : DetailsPanelText);
 }
 
 void UVariationOptionUI::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
-	if (VariationOptionBorder) (void)ShowDetailsPanel.ExecuteIfBound(false, FText(), FText());
+	if (VariationOptionBorder) (void)ShowDetailsPanel.ExecuteIfBound(false, FText());
 }

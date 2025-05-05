@@ -8,7 +8,7 @@ class UImage;
 class UTextBlock;
 class UBorder;
 
-DECLARE_DELEGATE_ThreeParams(FShowDetailsPanel, const bool, const FText&, const FText&);
+DECLARE_DELEGATE_TwoParams(FShowDetailsPanel, const bool, const FText&);
 
 UCLASS()
 class POSSESSIONGAME_API UVariationOptionUI : public UUserWidget

@@ -37,10 +37,9 @@ void UVariationsUI::Toggle(const bool bState)
 
 void UVariationsUI::SwitchVariation(const int32 InIndex) const { VariationsSwitcher->SetActiveWidgetIndex(InIndex); }
 
-void UVariationsUI::ToggleDetailsPanel(const bool bState, const FText& InDetailsText, const FText& InUnlockText) const
+void UVariationsUI::ToggleDetailsPanel(const bool bState, const FText& InDetailsText) const
 {
 	if (!UnlockDetailsPanel) return;
 	UnlockDetailsPanel->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
 	UnlockDetailsPanel->SetDetailsText(InDetailsText);
-	UnlockDetailsPanel->SetUnlockText(InUnlockText);
 }

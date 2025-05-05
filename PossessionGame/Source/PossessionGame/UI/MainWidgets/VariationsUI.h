@@ -46,5 +46,5 @@ private:
 	UFUNCTION()
 	void SwitchVariation(const int32 InIndex) const;
 	UFUNCTION()
-	void ToggleDetailsPanel(const bool bState, const FText& InDetailsText, const FText& InUnlockText) const;
+	void ToggleDetailsPanel(const bool bState, const FText& InDetailsText) const;
 };
