@@ -1,5 +1,6 @@
 ﻿#include "VariationsComputer.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 AVariationsComputer::AVariationsComputer()
@@ -11,5 +12,5 @@ AVariationsComputer::AVariationsComputer()
 void AVariationsComputer::Interact()
 {
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->OpenUI();
-	UE_LOG(LogTemp, Warning, TEXT("INTERACTED"));
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradePanelAppear);
 }

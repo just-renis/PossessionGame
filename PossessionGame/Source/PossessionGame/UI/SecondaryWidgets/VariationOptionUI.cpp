@@ -1,6 +1,7 @@
 ﻿#include "VariationOptionUI.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UVariationOptionUI::NativePreConstruct()
 {
@@ -15,6 +16,7 @@ void UVariationOptionUI::NativePreConstruct()
 void UVariationOptionUI::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardHover);
 	if (VariationOptionBorder) (void)ShowDetailsPanel.ExecuteIfBound(true, DetailsPanelText, UnlockText);
 }
 
