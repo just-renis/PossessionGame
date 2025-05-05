@@ -11,8 +11,11 @@ class POSSESSIONGAME_API UVariationUnlockDetailsUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	void SetUnlockText(const FText& InText) const;
 	void SetDetailsText(const FText& InText) const;
 private:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> UnlockText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DetailsText;
 };
