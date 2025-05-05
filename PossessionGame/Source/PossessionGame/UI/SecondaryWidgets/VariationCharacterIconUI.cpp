@@ -1,5 +1,6 @@
 ﻿#include "VariationCharacterIconUI.h"
 #include "Components/Border.h"
+#include "Components/Button.h"
 
 void UVariationCharacterIconUI::NativePreConstruct()
 {
@@ -11,3 +12,11 @@ void UVariationCharacterIconUI::NativePreConstruct()
 		VariationCharacterBorder->SetBrush(Brush);
 	}
 }
+
+void UVariationCharacterIconUI::NativeConstruct()
+{
+	Super::NativeConstruct();
+	if (VariationCharacterButton) VariationCharacterButton->OnClicked.AddDynamic(this, &UVariationCharacterIconUI::HandleClicked);
+}
+
+void UVariationCharacterIconUI::HandleClicked() { (void)OnVariationClicked.ExecuteIfBound(VariationIndex); }
