@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "VariationOptionUI.generated.h"
 
+class UButton;
 class UImage;
 class UTextBlock;
 class UBorder;
@@ -31,10 +32,19 @@ private:
 	TObjectPtr<UBorder> VariationOptionBorder;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> LockedImage;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> OptionButton;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> HoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> SelectAnim;
 	UPROPERTY()
 	FString UnlockProgressText;
 
 	virtual void NativePreConstruct() override;
+	virtual void NativeConstruct() override;
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	UFUNCTION()
+	void SelectVariation();
 };

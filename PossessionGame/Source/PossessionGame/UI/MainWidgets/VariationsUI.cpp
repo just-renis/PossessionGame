@@ -1,4 +1,5 @@
 ﻿#include "VariationsUI.h"
+#include "Animation/WidgetAnimation.h"
 #include "Components/WidgetSwitcher.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationCharacterIconUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationOptionUI.h"
@@ -8,13 +9,17 @@
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "Kismet/GameplayStatics.h"
 
-void UVariationsUI::OpenUI() { Toggle(true); }
+void UVariationsUI::OpenUI()
+{
+	
+	Toggle(true);
+}
 
 void UVariationsUI::CloseUI() { Toggle(false); }
 
 FString UVariationsUI::GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot, const EVariationUnlock InVariationUnlockName)
 {
-	return FString::Printf(TEXT("[%d / %d]"), InSaveSlot->GetVariationUnlockProgress(InVariationUnlockName), InSaveSlot->GetVariationUnlockRequirement(InVariationUnlockName));
+	return FString::Printf(TEXT(" [%d / %d]"), InSaveSlot->GetVariationUnlockProgress(InVariationUnlockName), InSaveSlot->GetVariationUnlockRequirement(InVariationUnlockName));
 }
 
 void UVariationsUI::NativeConstruct()
@@ -32,16 +37,23 @@ void UVariationsUI::NativeConstruct()
 void UVariationsUI::Toggle(const bool bState)
 {
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
-	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
+	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::VariationsUI : EWidget::None);
 	if (bState)
 	{
+		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		UpdateVariationUnlocksProgress();
 		PlayerController->SetInputMode(FInputModeGameAndUI());
 	}
-	else PlayerController->SetInputMode(FInputModeGameOnly());
-	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::VariationsUI : EWidget::None);
+	else
+	{
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		UKismetSystemLibrary::K2_ClearTimer(this, "HideDetailsPanel");
+		if (VariationMenuFadeInAnim) UKismetSystemLibrary::K2_SetTimer(this, "HideVariationsPanel", VariationMenuFadeInAnim->GetEndTime() - GetAnimationCurrentTime(VariationMenuFadeInAnim), false);
+	}
+	if (!VariationMenuFadeInAnim) return;
+	PlayAnimation(VariationMenuFadeInAnim, GetAnimationCurrentTime(VariationMenuFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
 
 void UVariationsUI::UpdateVariationUnlocksProgress()
@@ -52,11 +64,32 @@ void UVariationsUI::UpdateVariationUnlocksProgress()
 	if (TricksterVariationPurple) TricksterVariationPurple->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::DamageDealtWithTricksterPoisonGrenade));
 }
 
-void UVariationsUI::SwitchVariation(const int32 InIndex) const { VariationsSwitcher->SetActiveWidgetIndex(InIndex); }
+void UVariationsUI::SwitchVariation(const int32 InIndex)
+{
+	VariationsSwitcher->SetActiveWidgetIndex(InIndex);
+	switch (CurrentCharacterSelected)
+	{
+		case 0: GuardianCharacterIcon->SetEventsEnabled(true); break;
+		case 1: RangerCharacterIcon->SetEventsEnabled(true); break;
+		case 2: TricksterCharacterIcon->SetEventsEnabled(true);
+		default: ;
+	}
+	CurrentCharacterSelected = InIndex;
+}
 
-void UVariationsUI::ToggleDetailsPanel(const bool bState, const FString& InDetailsText) const
+void UVariationsUI::ToggleDetailsPanel(const bool bState, const FString& InDetailsText)
 {
 	if (!UnlockDetailsPanel) return;
-	UnlockDetailsPanel->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
-	UnlockDetailsPanel->SetDetailsText(FText::FromString(InDetailsText));
+	if (bState)
+	{
+		UnlockDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		UnlockDetailsPanel->SetDetailsText(FText::FromString(InDetailsText));
+	}
+	if (!DetailPanelFadeInAnim) return;
+	UKismetSystemLibrary::K2_SetTimer(this, "HideDetailsPanel", DetailPanelFadeInAnim->GetEndTime() - GetAnimationCurrentTime(DetailPanelFadeInAnim), false);
+	PlayAnimation(DetailPanelFadeInAnim, GetAnimationCurrentTime(DetailPanelFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
+
+void UVariationsUI::HideDetailsPanel() const { if (UnlockDetailsPanel) UnlockDetailsPanel->SetVisibility(ESlateVisibility::Hidden); }
+
+void UVariationsUI::HideVariationsPanel() { if (this) SetVisibility(ESlateVisibility::Collapsed); }

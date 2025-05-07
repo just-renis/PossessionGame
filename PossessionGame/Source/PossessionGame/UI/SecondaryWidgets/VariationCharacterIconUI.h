@@ -15,7 +15,10 @@ class POSSESSIONGAME_API UVariationCharacterIconUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	FOnVariationClicked OnVariationClicked;
+
+	void SetEventsEnabled(const bool bState);
 private:
+	bool bEventsEnabled = true;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 VariationIndex = 0;
 	UPROPERTY(EditAnywhere, Category = "Icon", meta = (AllowPrivateAccess = true))
@@ -24,9 +27,17 @@ private:
 	TObjectPtr<UBorder> VariationCharacterBorder;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> VariationCharacterButton;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> HoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> SelectAnim;
 
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	UFUNCTION()
 	void HandleClicked();
+	UFUNCTION()
+	void PlayHoverAnim();
+	UFUNCTION()
+	void PlayUnHoverAnim();
 };

@@ -20,6 +20,7 @@ public:
 	void OpenUI();
 	void CloseUI();
 private:
+	int32 CurrentCharacterSelected = 0;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> GuardianCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
@@ -42,6 +43,10 @@ private:
 	TObjectPtr<UVariationOptionUI> TricksterVariationDefault;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationOptionUI> TricksterVariationPurple;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> VariationMenuFadeInAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> DetailPanelFadeInAnim;
 
 	FString GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot, const EVariationUnlock InVariationUnlockName);
 
@@ -49,7 +54,11 @@ private:
 	void Toggle(const bool bState);
 	void UpdateVariationUnlocksProgress();
 	UFUNCTION()
-	void SwitchVariation(const int32 InIndex) const;
+	void SwitchVariation(const int32 InIndex);
 	UFUNCTION()
-	void ToggleDetailsPanel(const bool bState, const FString& InDetailsText) const;
+	void ToggleDetailsPanel(const bool bState, const FString& InDetailsText);
+	UFUNCTION()
+	void HideDetailsPanel() const;
+	UFUNCTION()
+	void HideVariationsPanel();
 };
