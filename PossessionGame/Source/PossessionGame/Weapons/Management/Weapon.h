@@ -6,6 +6,7 @@
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerWeaponData.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Interfaces/DamageReasonProvider.h"
 #include "Weapon.generated.h"
 
 enum class EVfx : uint8;
@@ -19,7 +20,7 @@ class UPlayerWeaponData;
 class UWeaponAnimInstance;
 
 UCLASS()
-class POSSESSIONGAME_API AWeapon : public AActor
+class POSSESSIONGAME_API AWeapon : public AActor, public IDamageReasonProvider
 {
 	GENERATED_BODY()
 public:
@@ -138,4 +139,6 @@ private:
 	
 	void P_SetupUpgradesAppliance();
 	void P_SetupLevelUpAppliance(const int32 InLevel);
+
+	virtual EDamageReason GetDamageReason() const override { return P_Data->GetDamageReason(); } // It does not matter from which data i will get damage reason, since it would be the same.
 };

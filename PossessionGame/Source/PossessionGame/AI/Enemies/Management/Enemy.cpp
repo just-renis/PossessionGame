@@ -23,17 +23,20 @@
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerCharacterData.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
 #include "PossessionGame/Destructibles/Destructible.h"
+#include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Enums/EVariationUnlock.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
+#include "PossessionGame/UI/MainWidgets/VariationsUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/AIHpBarUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
@@ -222,18 +225,19 @@ void AEnemy::InitiateDeath()
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", 5.f, false);
 }
 
-void AEnemy::ReceiveDamage(const float InDamage)
+void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
 {
 	CurrentHp -= InDamage;
 	if (P_HUD) P_HandlingDamageTaken();
 	else if (bIsAlive)
 	{
-		AI_ReceivedDamage();
+		AI_ReceivedDamage(InDamageReason);
 		AI_ShowDamageNumber(InDamage);
 	}
 	if (bIsAlive && CurrentHp <= 0)
 	{
 		if (bIsPossessed) P_Death();
+		else ProcessKillDamageReason(InDamageReason);
 		InitiateDeath();
 	}
 }
@@ -477,7 +481,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	const FPointDamageEvent* PointDamageEvent = nullptr;
 	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
 	else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
-	ReceiveDamage(Damage);
+	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None);
 	if (GetMesh()->IsSimulatingPhysics())
 	{
 		if (RadialDamageEvent) GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
@@ -534,9 +538,10 @@ void AEnemy::AI_SetupHpBar()
 	AI_HideHpBar();
 }
 
-void AEnemy::AI_ReceivedDamage()
+void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason)
 {
 	if (!AI_HpBar) return;
+	ProcessDamageReason(InDamageReason);
 	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
 	AI_HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_HideHpBar", 2.f, false);
@@ -752,6 +757,7 @@ void AEnemy::P_HandleEscapeClick()
 	{
 		case EWidget::PauseMenuUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->CloseUI(); break;
 		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->CloseUI(); break;
+		case EWidget::VariationsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI(); break;
 		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 	}
 }
@@ -896,6 +902,12 @@ void AEnemy::P_ApplySecretReward(const int32 InIndex)
 	}
 }
 
+void AEnemy::P_SetupNavArea()
+{
+	NavAreaModifier = GetWorld()->SpawnActor<ANavAreaModifier>(P_NavAreaDefaultClass, GetActorLocation(), GetActorRotation());
+	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+}
+
 void AEnemy::P_Death()
 {
 	if (!bPlayerDied) AssetsManager->PlaySound2D(ESound::PlayerDeath);
@@ -991,12 +1003,6 @@ void AEnemy::SetupStimuliSource()
 	StimuliSource->RegisterWithPerceptionSystem();
 }
 
-void AEnemy::P_SetupNavArea()
-{
-	NavAreaModifier = GetWorld()->SpawnActor<ANavAreaModifier>(P_NavAreaDefaultClass, GetActorLocation(), GetActorRotation());
-	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-}
-
 void AEnemy::ChangeXRayState(const bool bState) const
 {
 	GetMesh()->SetRenderCustomDepth(bState);
@@ -1042,6 +1048,25 @@ void AEnemy::AddHp(const int32 InHp)
 	CurrentHp += InHp;
 	if (CurrentHp > MaxHp) CurrentHp = MaxHp;
 	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
+}
+
+void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason) const
+{
+	switch (InDamageReason)
+	{
+		case EDamageReason::TricksterPoisonDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariationUnlock::DamageDealtWithTricksterPoisonGrenade); break;
+		default: ;
+	}
+}
+
+void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
+{
+	switch (InDamageReason)
+	{
+		case EDamageReason::GuardianDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariationUnlock::KillsWithGuardian); break;
+		case EDamageReason::RangerGrenadeDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariationUnlock::KillsWithRangerGrenade); break;
+		default: ;
+	}
 }
 
 void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsPossessed ? P_Death() : InitiateDeath(); }

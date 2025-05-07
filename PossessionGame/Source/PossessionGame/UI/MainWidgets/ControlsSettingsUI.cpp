@@ -28,7 +28,7 @@ void UControlsSettingsUI::SetupKeyBinds()
 		FName("MoveLeft"),
 		FName("MoveRight"),
 		FName("Possess"),
-		FName("Run"),
+		FName("Dash"),
 		FName("Jump"),
 		FName("Crouch"),
 		FName("Reload"),
@@ -37,7 +37,9 @@ void UControlsSettingsUI::SetupKeyBinds()
 		FName("FirstAbility"),
 		FName("SecondAbility"),
 		FName("ThirdAbility"),
-		FName("Escape")
+		FName("Escape"),
+		FName("Interact"),
+		FName("QuickMelee")
 	};
 	TMap<FName, FPlayerKeyMapping> OrderedKeyBinds;
 	SetupOrderOfKeyBinds(DesiredOrder, OrderedKeyBinds);

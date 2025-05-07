@@ -10,6 +10,7 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "Enemy.generated.h"
 
+enum class EDamageReason : uint8;
 class UNiagaraComponent;
 class UPossessionGameInstance;
 class APossessionGameGameModeBase;
@@ -90,7 +91,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	void ToggleCrouch();
 	virtual void InitiateDeath();
-	void ReceiveDamage(const float InDamage);
+	void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason);
 	void PlaySound(const ESound InSoundName);
 	void StopSound(const ESound InSoundName);
 	void SetEmpEffect(const float InEffectDuration);
@@ -228,7 +229,7 @@ private:
 	void AI_SetupData();
 	void AI_StopAllAbilities();
 	void AI_SetupHpBar();
-	void AI_ReceivedDamage();
+	void AI_ReceivedDamage(const EDamageReason InDamageReason);
 	void AI_DestroyHpBar();
 	void AI_ShowDamageNumber(const float InDamageAmount) const;
 	void AI_SetupUpgradesAppliance();
@@ -271,6 +272,7 @@ private:
 	void P_QuickMeleeAttack();
 	void P_ProcessMeleeAttack();
 	void P_ApplySecretReward(const int32 InIndex);
+	void P_SetupNavArea();
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()
@@ -292,13 +294,14 @@ private:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void TickAbilities(const float DeltaTime);
 	void SetupStimuliSource();
-	void P_SetupNavArea();
 	void ChangeXRayState(const bool bState) const;
 	void SetupUserSettings() const;
 	void ClearTimers();
 	void ProcessSpawnEffects();
 	void AddXp(const int32 InXp) const;
 	void AddHp(const int32 InHp);
+	void ProcessDamageReason(const EDamageReason InDamageReason) const;
+	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;
 	UFUNCTION()
 	void CheckIfFallOutOfWorld();
 	UFUNCTION()

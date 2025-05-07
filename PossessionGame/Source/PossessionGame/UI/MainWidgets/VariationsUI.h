@@ -4,6 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "VariationsUI.generated.h"
 
+enum class EVariationUnlock : uint8;
+class USaveSlot;
 class UInvalidationBox;
 class UVariationOptionUI;
 class UVariationUnlockDetailsUI;
@@ -41,10 +43,13 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationOptionUI> TricksterVariationPurple;
 
+	FString GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot, const EVariationUnlock InVariationUnlockName);
+
 	virtual void NativeConstruct() override;
 	void Toggle(const bool bState);
+	void UpdateVariationUnlocksProgress();
 	UFUNCTION()
 	void SwitchVariation(const int32 InIndex) const;
 	UFUNCTION()
-	void ToggleDetailsPanel(const bool bState, const FText& InDetailsText) const;
+	void ToggleDetailsPanel(const bool bState, const FString& InDetailsText) const;
 };

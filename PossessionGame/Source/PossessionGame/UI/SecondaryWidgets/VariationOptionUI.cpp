@@ -3,6 +3,8 @@
 #include "Components/Image.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
+void UVariationOptionUI::UpdateUnlockProgressText(const FString& InText) { UnlockProgressText = DefaultUnlockText + " " +  InText; }
+
 void UVariationOptionUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
@@ -17,11 +19,11 @@ void UVariationOptionUI::NativeOnMouseEnter(const FGeometry& InGeometry, const F
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardHover);
-	if (VariationOptionBorder) (void)ShowDetailsPanel.ExecuteIfBound(true, bIsLocked ? UnlockText : DetailsPanelText);
+	if (VariationOptionBorder) (void)ShowDetailsPanel.ExecuteIfBound(true, bIsLocked ? UnlockProgressText : DetailsPanelText);
 }
 
 void UVariationOptionUI::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
-	if (VariationOptionBorder) (void)ShowDetailsPanel.ExecuteIfBound(false, FText());
+	if (VariationOptionBorder) (void)ShowDetailsPanel.ExecuteIfBound(false, "");
 }

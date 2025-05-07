@@ -1,5 +1,6 @@
 ﻿#include "PoisonGrenade.h"
 #include "Components/AudioComponent.h"
+#include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
@@ -50,5 +51,5 @@ void APoisonGrenade::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 	const TObjectPtr<AOvertimeDamager> PoisonArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::PoisonArea, Hit.Location, Hit.Normal.Rotation()));
 	PoisonArea->Init(ProjectileData.bIsPlayerProjectile);
-	PoisonArea->Setup(Damage, ProjectileData.OvertimeTickTrigger, ModifiedOvertimeAreaLifeSpan, ModifiedOvertimeAreaSize);
+	PoisonArea->Setup(Damage, ProjectileData.OvertimeTickTrigger, ModifiedOvertimeAreaLifeSpan, ModifiedOvertimeAreaSize, EDamageReason::TricksterPoisonDamage);
 }

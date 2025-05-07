@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PossessionGame/Interfaces/DamageReasonProvider.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
@@ -17,7 +18,7 @@ class UProjectileMovementComponent;
 class UStaticMeshComponent;
 
 UCLASS()
-class POSSESSIONGAME_API AProjectile : public APoolObject
+class POSSESSIONGAME_API AProjectile : public APoolObject, public IDamageReasonProvider
 {
 	GENERATED_BODY()
 public:
@@ -56,6 +57,8 @@ private:
 	void AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile);
 
 	void P_SetupLevelUpAppliance(const int32 InLevel);
+
+	virtual EDamageReason GetDamageReason() const override;
 	
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
 	void DealAreaDamage();

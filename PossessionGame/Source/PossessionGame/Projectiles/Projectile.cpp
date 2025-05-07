@@ -91,6 +91,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	OnImpact(Hit);
 	if (ProjectileData.bProjectileDealsAreaDamage)
 	{
+		if (ProjectileData.ProjectileName == EPoolObject::RangerGrenadeLauncherProjectile)
 		DealAreaDamage();
 		return;
 	}
@@ -120,6 +121,8 @@ void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)
 	Damage -= ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) / 100.f);
 	Damage += ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) / 100.f);
 }
+
+EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.DamageReason; }
 
 void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 {

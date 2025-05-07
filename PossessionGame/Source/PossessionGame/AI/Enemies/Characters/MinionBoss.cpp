@@ -9,6 +9,7 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -195,4 +196,4 @@ void AMinionBoss::OnLaserCollisionEndOverlap(UPrimitiveComponent* OverlappedComp
 	}
 }
 
-void AMinionBoss::DealLaserDamageToPlayer() { if (Player) Player->ReceiveDamage(2.f); }
+void AMinionBoss::DealLaserDamageToPlayer() { if (Player) Player->ReceiveDamage(2.f, EDamageReason::MinionBossDamage); }

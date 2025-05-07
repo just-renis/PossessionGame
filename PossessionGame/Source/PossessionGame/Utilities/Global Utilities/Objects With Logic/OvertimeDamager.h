@@ -4,6 +4,7 @@
 #include "PoolObject.h"
 #include "OvertimeDamager.generated.h"
 
+enum class EDamageReason : uint8;
 enum class EAbility : uint8;
 class AEnemy;
 class USphereComponent;
@@ -13,13 +14,14 @@ class POSSESSIONGAME_API AOvertimeDamager : public APoolObject
 {
 	GENERATED_BODY()
 public:
-	void Setup(const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize);
+	void Setup(const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason);
 	virtual void Init(bool bInIsPlayerObject) override;
 private:
 	AOvertimeDamager();
 
 	bool bIsPlayer;
 	float Damage;
+	EDamageReason DamageReason;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> Radius;
 	UPROPERTY()

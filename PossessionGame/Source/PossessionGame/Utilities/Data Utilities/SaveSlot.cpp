@@ -7,6 +7,10 @@ int32 USaveSlot::GetLevelOfAnUpgrade(const EUpgrade InUpgrade) { return Unlocked
 
 int32 USaveSlot::GetLevelDamageIncrease(const int32 InLevel) { return PlayerLevelData.GetDamageIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
 
+int32 USaveSlot::GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockProgress(InVariationUnlockName); }
+
+int32 USaveSlot::GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockRequirement(InVariationUnlockName); }
+
 void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel)
 {
 	if (UnlockedUpgrades.Find(InUpgrade)) UnlockedUpgrades[InUpgrade] = InLevel;
@@ -24,3 +28,5 @@ void USaveSlot::AddXp(const int32 InXp)
 		GameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast(++CurrentLevel);
 	}
 }
+
+void USaveSlot::ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName) { VariationUnlockData.ProgressVariationUnlock(InVariationUnlockName); }

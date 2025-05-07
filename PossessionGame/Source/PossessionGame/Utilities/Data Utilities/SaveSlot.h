@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "FPlayerLevelData.h"
+#include "FVariationUnlockData.h"
 #include "GameFramework/SaveGame.h"
 #include "SaveSlot.generated.h"
 
@@ -18,13 +19,18 @@ public:
 	int32 GetCurrentLevelNeededXp() const { return 10 + CurrentLevel * 5; }
 	int32 GetLevelOfAnUpgrade(const EUpgrade InUpgrade);
 	int32 GetLevelDamageIncrease(const int32 InLevel = -1);
+	int32 GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const;
+	int32 GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const;
 	
 	void SetTutorialFinished() { bTutorialFinished = true; }
 	void SetGameInstance(const TObjectPtr<UPossessionGameInstance>& InGameInstance) { GameInstance = InGameInstance; }
 	void AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel);
 	void AddXp(const int32 InXp);
+	void ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName);
 private:
 	FPlayerLevelData PlayerLevelData;
+	UPROPERTY()
+	FVariationUnlockData VariationUnlockData;
 	UPROPERTY()
 	bool bTutorialFinished = false;
 	UPROPERTY()

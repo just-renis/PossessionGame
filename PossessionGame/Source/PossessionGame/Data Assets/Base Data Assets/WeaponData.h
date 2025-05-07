@@ -18,6 +18,7 @@ public:
     int32 GetMagazineCap() const { return MagazineCap; }
 	int32 GetShootCyclesUntilReload() const { return ShootCyclesUntilReload; }
     float GetShootCooldown() const { return ShootCooldown; }
+	EDamageReason GetDamageReason() const { return DamageReason; }
 	FProjectileData& GetProjectileData(EPoolObject ProjectileName);
 
 	void SetAllProjectilesWalkSpread(bool bState);
@@ -33,7 +34,9 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ShootCyclesUntilReload;
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-    float ShootCooldown;
+	float ShootCooldown;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	EDamageReason DamageReason;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TMap<EPoolObject, FProjectileData> ProjectilesData;
 };
