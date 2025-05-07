@@ -20,6 +20,7 @@ public:
 	void OpenUI();
 	void CloseUI();
 private:
+	bool bHasAlreadyOpened = false;
 	int32 CurrentCharacterSelected = 0;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> GuardianCharacterIcon;

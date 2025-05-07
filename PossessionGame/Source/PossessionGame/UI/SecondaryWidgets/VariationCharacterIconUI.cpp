@@ -1,17 +1,14 @@
 ﻿#include "VariationCharacterIconUI.h"
-#include "Animation/WidgetAnimation.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
 
 void UVariationCharacterIconUI::SetEventsEnabled(const bool bState)
 {
 	bEventsEnabled = bState;
-	if (bEventsEnabled && HoverAnim)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("HOVER ANIMATION PLAYED: %s"), *HoverAnim->GetName());
-		PlayAnimation(HoverAnim, 0, 1, EUMGSequencePlayMode::Reverse);
-	}
+	if (bEventsEnabled && HoverAnim) PlayAnimation(HoverAnim, 0, 1, EUMGSequencePlayMode::Reverse);
 }
+
+void UVariationCharacterIconUI::PlaySelectedAnim() { if (SelectAnim) PlayAnimation(SelectAnim); }
 
 void UVariationCharacterIconUI::NativePreConstruct()
 {

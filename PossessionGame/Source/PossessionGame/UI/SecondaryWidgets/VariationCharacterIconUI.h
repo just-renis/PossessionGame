@@ -17,6 +17,7 @@ public:
 	FOnVariationClicked OnVariationClicked;
 
 	void SetEventsEnabled(const bool bState);
+	void PlaySelectedAnim();
 private:
 	bool bEventsEnabled = true;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

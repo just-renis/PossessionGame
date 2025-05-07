@@ -11,7 +11,12 @@
 
 void UVariationsUI::OpenUI()
 {
-	
+	if (!bHasAlreadyOpened)
+	{
+		bHasAlreadyOpened = true;
+		GuardianCharacterIcon->SetEventsEnabled(false);
+		GuardianCharacterIcon->PlaySelectedAnim();
+	}
 	Toggle(true);
 }
 
@@ -50,7 +55,7 @@ void UVariationsUI::Toggle(const bool bState)
 	{
 		PlayerController->SetInputMode(FInputModeGameOnly());
 		UKismetSystemLibrary::K2_ClearTimer(this, "HideDetailsPanel");
-		if (VariationMenuFadeInAnim) UKismetSystemLibrary::K2_SetTimer(this, "HideVariationsPanel", VariationMenuFadeInAnim->GetEndTime() - GetAnimationCurrentTime(VariationMenuFadeInAnim), false);
+		if (VariationMenuFadeInAnim) UKismetSystemLibrary::K2_SetTimer(this, "HideVariationsPanel", VariationMenuFadeInAnim->GetEndTime(), false);
 	}
 	if (!VariationMenuFadeInAnim) return;
 	PlayAnimation(VariationMenuFadeInAnim, GetAnimationCurrentTime(VariationMenuFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
@@ -86,7 +91,7 @@ void UVariationsUI::ToggleDetailsPanel(const bool bState, const FString& InDetai
 		UnlockDetailsPanel->SetDetailsText(FText::FromString(InDetailsText));
 	}
 	if (!DetailPanelFadeInAnim) return;
-	UKismetSystemLibrary::K2_SetTimer(this, "HideDetailsPanel", DetailPanelFadeInAnim->GetEndTime() - GetAnimationCurrentTime(DetailPanelFadeInAnim), false);
+	UKismetSystemLibrary::K2_SetTimer(this, "HideDetailsPanel", DetailPanelFadeInAnim->GetEndTime(), false);
 	PlayAnimation(DetailPanelFadeInAnim, GetAnimationCurrentTime(DetailPanelFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
 

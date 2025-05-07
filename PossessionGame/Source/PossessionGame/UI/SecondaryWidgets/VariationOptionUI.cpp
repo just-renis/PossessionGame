@@ -21,11 +21,24 @@ void UVariationOptionUI::NativeConstruct()
 	Super::NativeConstruct();
 	if (!OptionButton) return;
 	OptionButton->OnClicked.AddDynamic(this, &UVariationOptionUI::SelectVariation);
+	OptionButton->OnHovered.AddDynamic(this, &UVariationOptionUI::VariationOptionHovered);
+	OptionButton->OnUnhovered.AddDynamic(this, &UVariationOptionUI::VariationOptionUnHovered);
 }
 
-void UVariationOptionUI::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+FReply UVariationOptionUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+	if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton) return FReply::Handled();
+	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+}
+
+void UVariationOptionUI::SelectVariation()
+{
+	if (!SelectAnim || bIsLocked) return;
+	PlayAnimation(SelectAnim);
+}
+
+void UVariationOptionUI::VariationOptionHovered()
+{
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardHover);
 	if (!VariationOptionBorder) return;
 	(void)ShowDetailsPanel.ExecuteIfBound(true, bIsLocked ? UnlockProgressText : DetailsPanelText);
@@ -33,17 +46,10 @@ void UVariationOptionUI::NativeOnMouseEnter(const FGeometry& InGeometry, const F
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward);
 }
 
-void UVariationOptionUI::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+void UVariationOptionUI::VariationOptionUnHovered()
 {
-	Super::NativeOnMouseLeave(InMouseEvent);
 	if (!VariationOptionBorder) return;
 	(void)ShowDetailsPanel.ExecuteIfBound(false, "");
 	if (!HoverAnim) return;
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Reverse);
-}
-
-void UVariationOptionUI::SelectVariation()
-{
-	if (!SelectAnim) return;
-	PlayAnimation(SelectAnim);
 }
