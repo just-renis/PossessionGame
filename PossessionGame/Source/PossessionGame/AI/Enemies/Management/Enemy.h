@@ -10,6 +10,7 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "Enemy.generated.h"
 
+enum class EVariation : uint8;
 enum class EDamageReason : uint8;
 class UNiagaraComponent;
 class UPossessionGameInstance;
@@ -273,6 +274,7 @@ private:
 	void P_ProcessMeleeAttack();
 	void P_ApplySecretReward(const int32 InIndex);
 	void P_SetupNavArea();
+	void P_SetWeaponVariationMaterial(const EVariation InVariationName) const;
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()

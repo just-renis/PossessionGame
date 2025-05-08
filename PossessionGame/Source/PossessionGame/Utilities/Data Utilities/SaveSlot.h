@@ -15,12 +15,14 @@ class POSSESSIONGAME_API USaveSlot : public USaveGame
 	GENERATED_BODY()
 public:
 	bool GetIsTutorialFinished() const { return bTutorialFinished; }
+	bool GetIsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const;
 	int32 GetXp() const { return CurrentXp; }
 	int32 GetCurrentLevelNeededXp() const { return 10 + CurrentLevel * 5; }
 	int32 GetLevelOfAnUpgrade(const EUpgrade InUpgrade);
 	int32 GetLevelDamageIncrease(const int32 InLevel = -1);
 	int32 GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const;
 	int32 GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const;
+	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
 	void SetTutorialFinished() { bTutorialFinished = true; }
 	void SetGameInstance(const TObjectPtr<UPossessionGameInstance>& InGameInstance) { GameInstance = InGameInstance; }

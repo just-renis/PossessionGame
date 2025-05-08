@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "VariationsUI.generated.h"
 
+enum class EVariation : uint8;
 enum class EVariationUnlock : uint8;
 class USaveSlot;
 class UInvalidationBox;
@@ -54,6 +55,7 @@ private:
 	virtual void NativeConstruct() override;
 	void Toggle(const bool bState);
 	void UpdateVariationUnlocksProgress();
+	void SetSelectedVariation(const EVariation InVariation);
 	UFUNCTION()
 	void SwitchVariation(const int32 InIndex);
 	UFUNCTION()

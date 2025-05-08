@@ -4,6 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "VariationOptionUI.generated.h"
 
+enum class EVariation : uint8;
+enum class ECharacterType : uint8;
 class UButton;
 class UImage;
 class UTextBlock;
@@ -18,10 +20,18 @@ class POSSESSIONGAME_API UVariationOptionUI : public UUserWidget
 public:
 	FShowDetailsPanel ShowDetailsPanel;
 
+	bool GetIsLocked() const { return bIsLocked; }
+
 	void UpdateUnlockProgressText(const FString& InText);
+	void UnlockVariation();
+	void SetSelected(const bool bState) const;
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsLocked = false;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	EVariation Variation;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	ECharacterType CharacterType;
 	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true))
 	FString DetailsPanelText;
 	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true))
@@ -34,16 +44,20 @@ private:
 	TObjectPtr<UImage> LockedImage;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> OptionButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> SelectedText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> HoverAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> SelectAnim;
 	UPROPERTY()
 	FString UnlockProgressText;
+	
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	void SelectionChange(const ECharacterType InCharacterType) const;
 	UFUNCTION()
 	void SelectVariation();
 	UFUNCTION()

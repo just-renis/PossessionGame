@@ -3,6 +3,8 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
+bool USaveSlot::GetIsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.IsVariationUnlocked(InVariationUnlockName); }
+
 int32 USaveSlot::GetLevelOfAnUpgrade(const EUpgrade InUpgrade) { return UnlockedUpgrades.Find(InUpgrade) ? UnlockedUpgrades[InUpgrade] : 0; }
 
 int32 USaveSlot::GetLevelDamageIncrease(const int32 InLevel) { return PlayerLevelData.GetDamageIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
@@ -10,6 +12,8 @@ int32 USaveSlot::GetLevelDamageIncrease(const int32 InLevel) { return PlayerLeve
 int32 USaveSlot::GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockProgress(InVariationUnlockName); }
 
 int32 USaveSlot::GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockRequirement(InVariationUnlockName); }
+
+EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
 
 void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel)
 {

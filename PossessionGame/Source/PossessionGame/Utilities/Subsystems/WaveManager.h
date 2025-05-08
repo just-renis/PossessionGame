@@ -36,7 +36,7 @@ private:
 	bool bTutorialIsFinished = false;
 	bool bUnlimitedSpawning = false;
 	int32 CurrentWave = 1;
-	int32 EnemiesPerWave = 2;
+	int32 EnemiesPerWave = 5;
 	int32 EnemiesLeftToKill = 2;
 	int32 EnemiesOnSceneLimit = 7;
 	int32 AliveEnemiesAmount = 0;

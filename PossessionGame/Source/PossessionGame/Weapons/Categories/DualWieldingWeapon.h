@@ -62,6 +62,8 @@ protected:
 private:
     UPROPERTY()
     FWeaponCyclingState CyclingState;
+    
+    virtual void P_SetVariationMaterial(const EVariation InVariationName) override;
 
     void CyclingModeLogic();
     void NonCyclingModeLogic();

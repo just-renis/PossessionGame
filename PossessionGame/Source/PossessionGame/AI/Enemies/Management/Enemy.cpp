@@ -328,6 +328,7 @@ void AEnemy::P_Setup()
 	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
 	DelegateManager->OnSecretRewardCollected.BindUObject(this, &AEnemy::P_ApplySecretReward);
+	DelegateManager->OnVariationSelection.BindUObject(this, &AEnemy::P_SetWeaponVariationMaterial);
 	Tags.Add("Player");
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
@@ -907,6 +908,8 @@ void AEnemy::P_SetupNavArea()
 	NavAreaModifier = GetWorld()->SpawnActor<ANavAreaModifier>(P_NavAreaDefaultClass, GetActorLocation(), GetActorRotation());
 	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
+
+void AEnemy::P_SetWeaponVariationMaterial(const EVariation InVariationName) const { if (Weapon) Weapon->P_SetVariationMaterial(InVariationName); }
 
 void AEnemy::P_Death()
 {

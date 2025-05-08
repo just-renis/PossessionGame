@@ -117,6 +117,14 @@ void ADualWieldingWeapon::PostProprietorSetup()
 	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &SecondWeapon->GetMuzzleFlashComponent(), SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
 }
 
+void ADualWieldingWeapon::P_SetVariationMaterial(const EVariation InVariationName)
+{
+	if (!P_Data) return;
+	UE_LOG(LogTemp, Warning, TEXT("MATERIAL NAME: %s"), *P_Data->GetVariationMaterial(InVariationName)->GetName());
+	FirstWeapon->GetMesh()->SetMaterial(0, P_Data->GetVariationMaterial(InVariationName));
+	SecondWeapon->GetMesh()->SetMaterial(0, P_Data->GetVariationMaterial(InVariationName));
+}
+
 void ADualWieldingWeapon::CyclingModeLogic()
 {
 	CurrentAmmo--;

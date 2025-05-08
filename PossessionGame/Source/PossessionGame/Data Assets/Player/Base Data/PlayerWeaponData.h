@@ -4,6 +4,8 @@
 #include "PossessionGame/Data Assets/Base Data Assets/WeaponData.h"
 #include "PlayerWeaponData.generated.h"
 
+enum class EVariation : uint8;
+
 UCLASS()
 class POSSESSIONGAME_API UPlayerWeaponData : public UWeaponData
 {
@@ -20,6 +22,7 @@ public:
     FRotator GetSecondWeaponRotation() const { return SecondWeaponRotation; }
     FVector GetSecondWeaponScale() const { return SecondWeaponScale; }
     FVector GetAimLocation() const { return AimLocation; }
+    TObjectPtr<UMaterialInterface> GetVariationMaterial(const EVariation InVariation);
 private:
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
     bool bHitScan = true;
@@ -43,4 +46,6 @@ private:
     FVector SecondWeaponScale;
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
     FVector AimLocation;
+    UPROPERTY(EditAnywhere, Category = "Variation Materials", meta = (AllowPrivateAccess = true))
+    TMap<EVariation, TObjectPtr<UMaterialInterface>> VariationMaterials;
 };

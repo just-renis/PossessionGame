@@ -2,9 +2,38 @@
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UVariationOptionUI::UpdateUnlockProgressText(const FString& InText) { UnlockProgressText = DefaultUnlockText + InText; }
+
+void UVariationOptionUI::UnlockVariation()
+{
+	bIsLocked = false;
+	if (LockedImage) LockedImage->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UVariationOptionUI::SetSelected(const bool bState) const
+{
+	if (!SelectedText) return;
+	SelectedText->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+}
+
+void UVariationOptionUI::SelectVariation()
+{
+	if (bIsLocked || !SelectAnim || !SelectedText) return;
+	PlayAnimation(SelectAnim);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionChange.Broadcast(CharacterType);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.ExecuteIfBound(Variation);
+	SetSelected(true);
+}
+
+FReply UVariationOptionUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton) return FReply::Handled();
+	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+}
 
 void UVariationOptionUI::NativePreConstruct()
 {
@@ -19,22 +48,17 @@ void UVariationOptionUI::NativePreConstruct()
 void UVariationOptionUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionChange.AddUObject(this, &UVariationOptionUI::SelectionChange);
 	if (!OptionButton) return;
 	OptionButton->OnClicked.AddDynamic(this, &UVariationOptionUI::SelectVariation);
 	OptionButton->OnHovered.AddDynamic(this, &UVariationOptionUI::VariationOptionHovered);
 	OptionButton->OnUnhovered.AddDynamic(this, &UVariationOptionUI::VariationOptionUnHovered);
 }
 
-FReply UVariationOptionUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+void UVariationOptionUI::SelectionChange(const ECharacterType InCharacterType) const
 {
-	if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton) return FReply::Handled();
-	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-}
-
-void UVariationOptionUI::SelectVariation()
-{
-	if (!SelectAnim || bIsLocked) return;
-	PlayAnimation(SelectAnim);
+	if (InCharacterType != CharacterType) return;
+	SetSelected(false);
 }
 
 void UVariationOptionUI::VariationOptionHovered()

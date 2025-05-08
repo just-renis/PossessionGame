@@ -108,6 +108,12 @@ void AWeapon::P_SetWalkSpread(const bool bState)
 	P_Data->SetAllProjectilesWalkSpread(bState);
 }
 
+void AWeapon::P_SetVariationMaterial(const EVariation InVariationName)
+{
+	if (!P_Data) return;
+	GetMesh()->SetMaterial(0, P_Data->GetVariationMaterial(InVariationName));
+}
+
 void AWeapon::DestroyThis()
 {
 	DelegateManager->OnLevelUp.RemoveAll(this);

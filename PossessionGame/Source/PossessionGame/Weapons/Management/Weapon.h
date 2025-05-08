@@ -9,6 +9,7 @@
 #include "PossessionGame/Interfaces/DamageReasonProvider.h"
 #include "Weapon.generated.h"
 
+enum class EVariation : uint8;
 enum class EVfx : uint8;
 class UPrimaryDataAssetsManager;
 class AEnemy;
@@ -62,6 +63,7 @@ public:
 	void P_AttachHandsToCamera(const FVector InLocation, const FRotator InRotation, const FVector InScale = FVector::ZeroVector);
 	virtual void P_AttachWeaponToHands(const TObjectPtr<USkeletalMeshComponent>& InHandsMesh, const FName InSocketName = "PlayerWeaponSocket1");
 	void P_SetWalkSpread(const bool bState);
+	virtual void P_SetVariationMaterial(const EVariation InVariationName);
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) {}
 	
 	virtual void SetWeaponMeshScaleToOriginal() { Mesh->SetRelativeScale3D(OriginalScale); }

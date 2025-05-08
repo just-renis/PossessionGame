@@ -8,11 +8,18 @@
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EVariation.h"
+#include "PossessionGame/Enums/EVariationUnlock.h"
 
 void UVariationsUI::OpenUI()
 {
 	if (!bHasAlreadyOpened)
 	{
+		const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Guardian));
+		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Ranger));
+		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Trickster));
 		bHasAlreadyOpened = true;
 		GuardianCharacterIcon->SetEventsEnabled(false);
 		GuardianCharacterIcon->PlaySelectedAnim();
@@ -64,9 +71,34 @@ void UVariationsUI::Toggle(const bool bState)
 void UVariationsUI::UpdateVariationUnlocksProgress()
 {
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
-	if (GuardianVariationGold) GuardianVariationGold->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::KillsWithGuardian));
-	if (RangerVariationBlue) RangerVariationBlue->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::KillsWithRangerGrenade));
-	if (TricksterVariationPurple) TricksterVariationPurple->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::DamageDealtWithTricksterPoisonGrenade));
+	if (GuardianVariationGold && GuardianVariationGold->GetIsLocked())
+	{
+		if (SaveSlot->GetIsVariationUnlocked(EVariationUnlock::KillsWithGuardian)) GuardianVariationGold->UnlockVariation();
+		else GuardianVariationGold->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::KillsWithGuardian));
+	}
+	if (RangerVariationBlue && RangerVariationBlue->GetIsLocked())
+	{
+		if (SaveSlot->GetIsVariationUnlocked(EVariationUnlock::KillsWithRangerGrenade)) RangerVariationBlue->UnlockVariation();
+		else RangerVariationBlue->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::KillsWithRangerGrenade));
+	}
+	if (TricksterVariationPurple && TricksterVariationPurple->GetIsLocked())
+	{
+		if (SaveSlot->GetIsVariationUnlocked(EVariationUnlock::DamageDealtWithTricksterPoisonGrenade)) TricksterVariationPurple->UnlockVariation();
+		else TricksterVariationPurple->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::DamageDealtWithTricksterPoisonGrenade));
+	}
+}
+
+void UVariationsUI::SetSelectedVariation(const EVariation InVariation)
+{
+	switch (InVariation)
+	{
+		case EVariation::GuardianVariationDefault: GuardianVariationDefault->SetSelected(true); break;
+		case EVariation::GuardianVariationGold: GuardianVariationGold->SetSelected(true); break;
+		case EVariation::RangerVariationDefault: RangerVariationDefault->SetSelected(true); break;
+		case EVariation::RangerVariationBlue: RangerVariationBlue->SetSelected(true); break;
+		case EVariation::TricksterVariationDefault: TricksterVariationDefault->SetSelected(true); break;
+		case EVariation::TricksterVariationPurple: TricksterVariationPurple->SetSelected(true);
+	}
 }
 
 void UVariationsUI::SwitchVariation(const int32 InIndex)

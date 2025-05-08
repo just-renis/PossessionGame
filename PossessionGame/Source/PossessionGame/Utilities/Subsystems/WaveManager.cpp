@@ -147,7 +147,7 @@ void UWaveManager::StartWave()
 
 void UWaveManager::InitiateNextWave()
 {
-	if (++CurrentWave < 2)
+	if (++CurrentWave < 5)
 	{
 		bWaveNotStarted = false;
 		SetupNextWave();

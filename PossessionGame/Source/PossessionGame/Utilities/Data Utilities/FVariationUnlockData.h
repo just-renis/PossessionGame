@@ -1,8 +1,9 @@
 ﻿#pragma once
-#include "PossessionGame/Enums/EVariationUnlock.h"
 
 #include "FVariationUnlockData.generated.h"
 
+enum class EVariation : uint8;
+enum class ECharacterType : uint8;
 enum class EVariationUnlock : uint8;
 
 USTRUCT()
@@ -27,9 +28,12 @@ struct FVariationUnlockData
 	bool IsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const;
 	int32 GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const;
 	int32 GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const;
+	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
 	void ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName);
 private:
+	UPROPERTY()
+	TMap<ECharacterType, EVariation> SelectedVariations;
 	UPROPERTY()
 	TMap<EVariationUnlock, FVariationUnlockGoal> VariationUnlocks;
 };
