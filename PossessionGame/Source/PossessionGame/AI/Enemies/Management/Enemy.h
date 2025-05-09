@@ -274,7 +274,7 @@ private:
 	void P_ProcessMeleeAttack();
 	void P_ApplySecretReward(const int32 InIndex);
 	void P_SetupNavArea();
-	void P_SetWeaponVariationMaterial(const EVariation InVariationName) const;
+	void P_SetWeaponVariationMaterial(const ECharacterType InCharacterType, const EVariation InVariationName) const;
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()

@@ -25,7 +25,7 @@ public:
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
 	void SetTutorialFinished() { bTutorialFinished = true; }
-	void SetGameInstance(const TObjectPtr<UPossessionGameInstance>& InGameInstance) { GameInstance = InGameInstance; }
+	void SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance);
 	void AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel);
 	void AddXp(const int32 InXp);
 	void ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName);
@@ -43,4 +43,6 @@ private:
 	TObjectPtr<UPossessionGameInstance> GameInstance;
 	UPROPERTY()
 	TMap<EUpgrade, int32> UnlockedUpgrades;
+
+	void UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation);
 };

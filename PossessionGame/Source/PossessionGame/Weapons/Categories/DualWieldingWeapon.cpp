@@ -55,7 +55,7 @@ void ADualWieldingWeapon::P_Reload(int32 OtherAmmoSource)
 
 void ADualWieldingWeapon::P_SetupTransfer(bool bSetToFirstHand)
 {
-	Super::P_SetupTransfer(true);
+	Super::P_SetupTransfer();
 	FirstWeapon->P_InitialSetupTransfer();
 	FirstWeapon->P_AttachWeaponToHands(HandsMesh, "PlayerWeaponSocket1");
 	SecondWeapon->P_InitialSetupTransfer();

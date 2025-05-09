@@ -57,7 +57,7 @@ private:
 
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
-	void SelectionChange(const ECharacterType InCharacterType) const;
+	void SelectionChange(const ECharacterType InCharacterType, const EVariation InVariationName) const;
 	UFUNCTION()
 	void SelectVariation();
 	UFUNCTION()

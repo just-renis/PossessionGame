@@ -30,7 +30,6 @@ DECLARE_DELEGATE_OneParam(FOnShowDialogue, const int32);
 DECLARE_DELEGATE_OneParam(FOnAbilityEnd, const int32);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
 DECLARE_DELEGATE_OneParam(FOnSecretRewardCollected, const int32);
-DECLARE_DELEGATE_OneParam(FOnVariationSelection, const EVariation);
 DECLARE_DELEGATE_TwoParams(FOnAbilityUse, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FStartTutorialDroneMoveToLocation, const int32, const bool);
 DECLARE_MULTICAST_DELEGATE(FOnTerminalInteraction);
@@ -49,10 +48,10 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeInitiator, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTerminalHackFinish, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeFinished, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnVariationSelectionChange, const ECharacterType);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnWeaponAmmoChangeThreeParams, int32, int32, int32);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType, const EVariation);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, TObjectPtr<AActor>, bool);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnWeaponAmmoChangeThreeParams, int32, int32, int32);
 
 UCLASS()
 class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
@@ -81,7 +80,6 @@ public:
 	FOnAbilityEnd OnAbilityEnd;
 	FOnMinionBossStomp OnMinionBossStomp;
 	FOnSecretRewardCollected OnSecretRewardCollected;
-	FOnVariationSelection OnVariationSelection;
 	FOnAbilityUse OnAbilityUse;
 	FStartTutorialDroneMoveToLocation StartTutorialDroneMoveToLocation;
 	FOnTerminalInteraction OnTerminalInteraction;
@@ -100,10 +98,10 @@ public:
 	FOnTerminalHackFinish OnTerminalHackFinish;
 	FOnGameModeFinished OnGameModeFinished;
 	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
-	FOnVariationSelectionChange OnVariationSelectionChange;
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
-	FOnWeaponAmmoChangeThreeParams OnWeaponAmmoChangeThreeParams;
+	FOnVariationSelection OnVariationSelection;
 	FOnTargetChange OnTargetChange;
+	FOnWeaponAmmoChangeThreeParams OnWeaponAmmoChangeThreeParams;
 
 	bool GetIsUsbDroppable() const { return bIsUsbDroppable; }
 

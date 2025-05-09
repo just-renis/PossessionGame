@@ -24,8 +24,7 @@ void UVariationOptionUI::SelectVariation()
 {
 	if (bIsLocked || !SelectAnim || !SelectedText) return;
 	PlayAnimation(SelectAnim);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionChange.Broadcast(CharacterType);
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.ExecuteIfBound(Variation);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.Broadcast(CharacterType, Variation);
 	SetSelected(true);
 }
 
@@ -48,16 +47,16 @@ void UVariationOptionUI::NativePreConstruct()
 void UVariationOptionUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionChange.AddUObject(this, &UVariationOptionUI::SelectionChange);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &UVariationOptionUI::SelectionChange);
 	if (!OptionButton) return;
 	OptionButton->OnClicked.AddDynamic(this, &UVariationOptionUI::SelectVariation);
 	OptionButton->OnHovered.AddDynamic(this, &UVariationOptionUI::VariationOptionHovered);
 	OptionButton->OnUnhovered.AddDynamic(this, &UVariationOptionUI::VariationOptionUnHovered);
 }
 
-void UVariationOptionUI::SelectionChange(const ECharacterType InCharacterType) const
+void UVariationOptionUI::SelectionChange(const ECharacterType InCharacterType, const EVariation InVariationName) const
 {
-	if (InCharacterType != CharacterType) return;
+	if (InCharacterType != CharacterType || Variation == InVariationName) return;
 	SetSelected(false);
 }
 

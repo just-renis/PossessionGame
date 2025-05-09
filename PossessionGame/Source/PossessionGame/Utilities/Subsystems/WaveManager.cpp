@@ -162,7 +162,7 @@ void UWaveManager::InitiateNextWave()
 
 void UWaveManager::SetupNextWave()
 {
-	//EnemiesPerWave += FMath::RandRange(2, 5);
+	EnemiesPerWave += 2;
 	EnemiesLeftToKill = EnemiesPerWave;
 	CountdownSeconds = 4.f;
 	UpdateCountdown();

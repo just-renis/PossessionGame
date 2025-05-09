@@ -15,6 +15,12 @@ int32 USaveSlot::GetVariationUnlockRequirement(const EVariationUnlock InVariatio
 
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
 
+void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance)
+{
+	GameInstance = InGameInstance;
+	GameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
+}
+
 void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel)
 {
 	if (UnlockedUpgrades.Find(InUpgrade)) UnlockedUpgrades[InUpgrade] = InLevel;
@@ -34,3 +40,5 @@ void USaveSlot::AddXp(const int32 InXp)
 }
 
 void USaveSlot::ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName) { VariationUnlockData.ProgressVariationUnlock(InVariationUnlockName); }
+
+void USaveSlot::UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation) { VariationUnlockData.UpdateSelectedVariation(InCharacter, InVariation); }

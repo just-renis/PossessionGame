@@ -31,6 +31,7 @@ struct FVariationUnlockData
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
 	void ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName);
+	void UpdateSelectedVariation(const ECharacterType InCharacterType, const EVariation InVariationName);
 private:
 	UPROPERTY()
 	TMap<ECharacterType, EVariation> SelectedVariations;
