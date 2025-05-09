@@ -3,8 +3,10 @@
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/GuardianWeapon.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
@@ -43,8 +45,20 @@ void AGuardian::P_Setup()
 
 void AGuardian::P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
 {
-	Super::P_SetupLeftClickInputStartedState(LeftClickInputComponent);
-	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &AGuardian::P_Shoot, true);
+	const ETriggerEvent TriggerEvent = EVariation::GuardianVariationGold == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName) ? ETriggerEvent::Triggered : ETriggerEvent::Started;
+	ShootBindingHandle = &LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, TriggerEvent, this, &AGuardian::P_Shoot, true);
+}
+
+void AGuardian::P_ChangeShootingInputEvent(const ECharacterType InCharacterType, const EVariation InVariationName)
+{
+	if (!EnhancedInputComponent || !PlayerMappingContext) return;
+	if (ShootBindingHandle)
+	{
+		EnhancedInputComponent->RemoveBinding(*ShootBindingHandle);
+		ShootBindingHandle = nullptr;
+	}
+	const ETriggerEvent TriggerEvent = EVariation::GuardianVariationGold == InVariationName ? ETriggerEvent::Triggered : ETriggerEvent::Started;
+	ShootBindingHandle = &EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, TriggerEvent, this, &AGuardian::P_Shoot, true);
 }
 
 void AGuardian::BeginPlay()
@@ -52,10 +66,18 @@ void AGuardian::BeginPlay()
 	CharacterName = ECharacterType::Guardian;
 	bCanReload = false;
 	Super::BeginPlay();
+	DelegateManager->OnVariationSelection.AddUObject(this, &AGuardian::P_ChangeShootingInputEvent);
 }
 
 void AGuardian::SetMesh(const ECharacterType PrimaryDataAssetName)
 {
 	Super::SetMesh(PrimaryDataAssetName);
 	GetMesh()->SetMaterial(0, GuardianMaterial);
+}
+
+void AGuardian::DestroyThis()
+{
+	if (ShootBindingHandle) ShootBindingHandle = nullptr;
+	DelegateManager->OnVariationSelection.RemoveAll(this);
+	Super::DestroyThis();
 }

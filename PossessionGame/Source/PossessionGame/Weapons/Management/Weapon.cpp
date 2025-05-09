@@ -195,8 +195,9 @@ void AWeapon::P_Setup()
 	CurrentAmmo = P_Data->GetCurrentAmmo();
 	MagazineCap = P_Data->GetMagazineCap();
 	TotalAmmo = P_Data->GetTotalAmmo();
-	HitScanDamage = P_Data->GetHitScanDamage();
-	HitScanDamage += P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() / 100.f);
+	HitScanDamage = DefaultHitScanDamage = P_Data->GetHitScanDamage();
+	//P_ApplyCurrentVariation();
+	HitScanDamage += DefaultHitScanDamage * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() / 100.f);
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
 	DelegateManager->OnLevelUp.AddUObject(this, &AWeapon::P_SetupLevelUpAppliance);
@@ -290,6 +291,12 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 
 void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
 {
-	HitScanDamage -= P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) / 100.f);
-	HitScanDamage += P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) / 100.f);
+	HitScanDamage -= DefaultHitScanDamage * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) / 100.f);
+	HitScanDamage += DefaultHitScanDamage * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) / 100.f);
+}
+
+void AWeapon::P_ApplyCurrentVariation(const ECharacterType InCharacterType, const EVariation InVariationName)
+{
+	//if ()
+	//DefaultHitScanDamage 
 }

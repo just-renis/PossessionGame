@@ -14,6 +14,7 @@ public:
 private:
 	AGuardian();
 
+	FEnhancedInputActionEventBinding* ShootBindingHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> GuardianMaterial;
 	
@@ -24,7 +25,9 @@ private:
 	virtual void P_Setup() override;
 	virtual void P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override {}
 	virtual void P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
+	void P_ChangeShootingInputEvent(const ECharacterType InCharacterType, const EVariation InVariationName);
 
 	virtual void BeginPlay() override;
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) override;
+	virtual void DestroyThis() override;
 };

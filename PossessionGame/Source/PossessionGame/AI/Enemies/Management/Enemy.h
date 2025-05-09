@@ -135,6 +135,8 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
+	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent;
+	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	virtual void AI_SetupAbilities();
