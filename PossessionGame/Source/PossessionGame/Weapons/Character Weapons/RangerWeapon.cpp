@@ -48,16 +48,6 @@ void ARangerWeapon::P_Reload(int32 OtherAmmoSource)
 	Super::P_Reload(OtherAmmoSource);
 }
 
-void ARangerWeapon::P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName)
-{
-	if (InUpgradeName == EUpgrade::RangerBaseStat)
-	{
-		const float PercentageDamageValue = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, Proprietor->GetCharacterName(), EUpgradeAttribute::DamagePercentage);
-		HitScanDamage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, Proprietor->GetCharacterName(), EUpgradeAttribute::FlatDamage);
-		HitScanDamage += P_Data->GetHitScanDamage() * (PercentageDamageValue / 100.f);
-	}
-}
-
 void ARangerWeapon::BeginPlay()
 {
 	Name = EWeapon::RangerWeapon;

@@ -30,6 +30,7 @@ public:
 	void SetDirection(const FVector Direction) const;
 protected:
 	float Damage;
+	float DefaultDamage;
 	FProjectileData ProjectileData;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
@@ -65,6 +66,7 @@ private:
 	void DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
 	virtual void SpawnFirstProjectileImpactVfx(const FHitResult& Hit);
 	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit);
+	void ApplyCurrentVariation();
 	UFUNCTION()
 	virtual void DestroyThis();
 };

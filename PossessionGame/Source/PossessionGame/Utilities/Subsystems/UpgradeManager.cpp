@@ -1,7 +1,6 @@
 ﻿#include "UpgradeManager.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/EAbility.h"
-#include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
@@ -10,17 +9,6 @@
 float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EPoolObject InProjectileName, const EUpgradeAttribute InUpgradeAttribute)
 {
 	if (const TObjectPtr<UUpgradeData> UpgradeData = GetProjectileUpgradeData(InProjectileName))
-	{
-		const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSaveSlot();
-		const TMap<EUpgradeAttribute, float> UpgradeAttributes = UpgradeData->GetAttributesForLevel(bIsPlayer, SaveSlot->GetLevelOfAnUpgrade(UpgradeData->GetUpgradeName())).Upgrades;
-		if (UpgradeAttributes.Find(InUpgradeAttribute)) return UpgradeAttributes[InUpgradeAttribute];
-	}
-	return 0.f;
-}
-
-float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const ECharacterType InCharacterName, const EUpgradeAttribute InUpgradeAttribute)
-{
-	if (const TObjectPtr<UUpgradeData> UpgradeData = GetCharacterBaseUpgradeData(InCharacterName))
 	{
 		const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSaveSlot();
 		const TMap<EUpgradeAttribute, float> UpgradeAttributes = UpgradeData->GetAttributesForLevel(bIsPlayer, SaveSlot->GetLevelOfAnUpgrade(UpgradeData->GetUpgradeName())).Upgrades;
@@ -59,16 +47,6 @@ TObjectPtr<UUpgradeData> UUpgradeManager::GetAbilityUpgradeData(const EAbility I
 		return Upgrades.Contains(*FoundUpgrade) ? Upgrades[*FoundUpgrade] : nullptr;
 	}
 	return nullptr;
-}
-
-TObjectPtr<UUpgradeData> UUpgradeManager::GetCharacterBaseUpgradeData(const ECharacterType InCharacterName)
-{
-	return nullptr;
-	/*switch (InCharacterName)
-	{
-		//case ECharacterType::Ranger: return Upgrades[EUpgrade::RangerBaseStat];
-		default: return nullptr;
-	}*/
 }
 
 TArray<TObjectPtr<UUpgradeData>> UUpgradeManager::GetRandomUpgrades()

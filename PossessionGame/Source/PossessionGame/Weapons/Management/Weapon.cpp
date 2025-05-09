@@ -199,8 +199,6 @@ void AWeapon::P_Setup()
 	HitScanDamage += P_Data->GetHitScanDamage() * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() / 100.f);
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
-	P_SetupUpgradesAppliance();
-	DelegateManager->ApplyUpgradeOnSelection.AddUObject(this, &AWeapon::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnLevelUp.AddUObject(this, &AWeapon::P_SetupLevelUpAppliance);
 }
 
@@ -288,13 +286,6 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	AssetsManager->PlaySound2D(bIsCritical ? ESound::CriticalDamageTick : ESound::DamageTick);
 	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? HitScanDamage * 2 : HitScanDamage,
 	(InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
-}
-
-void AWeapon::P_SetupUpgradesAppliance()
-{
-	HitScanDamage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, Proprietor->GetCharacterName(), EUpgradeAttribute::FlatDamage);
-	const float DamagePercentage = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, Proprietor->GetCharacterName(), EUpgradeAttribute::DamagePercentage);
-	if (DamagePercentage > 0.f) HitScanDamage += P_Data->GetHitScanDamage() * (DamagePercentage / 100.f);
 }
 
 void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)

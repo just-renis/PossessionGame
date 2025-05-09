@@ -8,6 +8,7 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/AI/Base Data/AICharacterData.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
@@ -18,6 +19,7 @@
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
+#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 
 AProjectile::AProjectile()
 {
@@ -113,13 +115,13 @@ void AProjectile::AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile)
 {
 	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage);
 	const float DamagePercentage = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage);
-	if (DamagePercentage > 0.f) Damage += ProjectileData.Damage * (DamagePercentage / 100.f);
+	if (DamagePercentage > 0.f) Damage += DefaultDamage * (DamagePercentage / 100.f);
 }
 
 void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)
 {
-	Damage -= ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) / 100.f);
-	Damage += ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) / 100.f);
+	Damage -= DefaultDamage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) / 100.f);
+	Damage += DefaultDamage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) / 100.f);
 }
 
 EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.DamageReason; }
@@ -130,14 +132,15 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 	MovementComponent->InitialSpeed = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].InitialSpeed;
 	MovementComponent->MaxSpeed = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].MaxSpeed;
 	MovementComponent->ProjectileGravityScale = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].GravityScale;
-	Damage = ProjectileData.Damage;
+	Damage = DefaultDamage = ProjectileData.Damage;
 	if (bIsPlayerProjectile)
 	{
-		Damage += ProjectileData.Damage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() / 100.f);
+		ApplyCurrentVariation();
+		Damage += DefaultDamage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() / 100.f);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
-	else if (ProjectileData.GetProprietor()->GetIsElite()) Damage += Damage / 100.f * ProjectileData.GetProprietor()->GetAIData()->GetEliteDamageIncreasePercentage();
-	else if (ProjectileData.GetProprietor()->GetIsMutant()) Damage -= Damage / 100.f * ProjectileData.GetProprietor()->GetAIData()->GetMutantDamageIncreasePercentage();
+	else if (ProjectileData.GetProprietor()->GetIsElite()) Damage += DefaultDamage / 100.f * ProjectileData.GetProprietor()->GetAIData()->GetEliteDamageIncreasePercentage();
+	else if (ProjectileData.GetProprietor()->GetIsMutant()) Damage -= DefaultDamage / 100.f * ProjectileData.GetProprietor()->GetAIData()->GetMutantDamageIncreasePercentage();
 	AI_SetupUpgradesAppliance(bIsPlayerProjectile);
 }
 
@@ -165,6 +168,14 @@ void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor
 void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, true); }
 
 void AProjectile::SpawnSecondProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, false); }
+
+void AProjectile::ApplyCurrentVariation()
+{
+	if (EVariation::TricksterVariationPurple == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ProjectileData.GetProprietor()->GetCharacterName()))
+	{
+		Damage = DefaultDamage = DefaultDamage * 2.5f;
+	}
+}
 
 void AProjectile::DestroyThis()
 {

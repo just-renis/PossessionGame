@@ -14,12 +14,10 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EUpgrade.h"
-#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
-#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Animation Instances/Hands/RangerHandsAnimInstance.h"
 #include "PossessionGame/Weapons/Character Weapons/RangerWeapon.h"
@@ -118,20 +116,12 @@ void ARanger::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.58431f, 0.1
 void ARanger::P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName)
 {
 	Super::P_ApplyUpgradeOnSelection(InUpgradeName);
-	if (InUpgradeName == EUpgrade::RangerBaseStat)
-	{
-		const float HpValue = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, CharacterName, EUpgradeAttribute::FlatHealth);
-		MaxHp += HpValue;
-		CurrentHp += HpValue;
-		if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
-	}
-	else if (InUpgradeName == EUpgrade::RangerAbility1) Abilities[0]->ApplyUpgradeOnSelection(bIsPossessed);
+	if (InUpgradeName == EUpgrade::RangerAbility1) Abilities[0]->ApplyUpgradeOnSelection(bIsPossessed);
 }
 
 void ARanger::P_Destroy()
 {
 	DelegateManager->ApplyUpgradeOnSelection.RemoveAll(this);
-	DelegateManager->ApplyUpgradeOnSelection.RemoveAll(GetWeapon());
 	Super::P_Destroy();
 }
 

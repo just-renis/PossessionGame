@@ -566,7 +566,6 @@ void AEnemy::AI_ShowDamageNumber(const float InDamageAmount) const
 
 void AEnemy::AI_SetupUpgradesAppliance()
 {
-	MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, CharacterName, EUpgradeAttribute::FlatHealth);
 	for (int32 i = 0; i < Abilities.Num(); i++) MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, Abilities[i]->GetAbilityName(), EUpgradeAttribute::FlatHealth);
 }
 
@@ -606,7 +605,6 @@ void AEnemy::P_SetupData()
 {
 	P_Data->SetIsGodModeEnabled(GameInstance->GetSubsystem<UGlobalSettingsManager>()->GetIsGodModeEnabled());
 	MaxHp = P_Data->GetMaxHp();
-	P_SetupUpgradesAppliance();
 	CurrentHp = MaxHp;
 	bIsPossessed = true;
 	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
@@ -829,11 +827,6 @@ void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathBloodPumping, 1.f);
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathScreenCrack, 1.f);
 	PostProcessManager->FadeOutDeathMaterials();
-}
-
-void AEnemy::P_SetupUpgradesAppliance()
-{
-	MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, CharacterName, EUpgradeAttribute::FlatHealth);
 }
 
 void AEnemy::P_InUpgradeSelection()

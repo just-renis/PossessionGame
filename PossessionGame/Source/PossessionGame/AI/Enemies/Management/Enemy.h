@@ -266,7 +266,6 @@ private:
 	void P_ToggleCriticallyDamagedEffects(const float InValue) const;
 	void P_InitiateDeathEvents();
 	void P_ConfigurePostProcessEffectsAfterDeath() const;
-	void P_SetupUpgradesAppliance();
 	void P_InUpgradeSelection();
 	void P_TryInteracting();
 	void P_TutorialPressKeyToContinueLogic();

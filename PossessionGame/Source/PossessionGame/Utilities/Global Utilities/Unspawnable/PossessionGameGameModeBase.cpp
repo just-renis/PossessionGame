@@ -8,6 +8,7 @@
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
+#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -23,6 +24,7 @@ void APossessionGameGameModeBase::BeginPlay()
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	LoadSettingsData();
+	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
 	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
 //	FString LevelName = GetWorld()->GetMapName();
