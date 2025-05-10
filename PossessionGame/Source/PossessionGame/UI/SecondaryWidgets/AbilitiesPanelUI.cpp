@@ -2,7 +2,6 @@
 #include "Animation/WidgetAnimation.h"
 #include "Components/Image.h"
 #include "Components/Overlay.h"
-#include "Components/ProgressBar.h"
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
@@ -21,19 +20,19 @@ void UAbilitiesPanelUI::CollapseAbilityIcon(const int32 Index) const
 			if (!FirstAbilityImage || !FirstAbilityProgressBar) return;
 			FirstAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
 			FirstAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			FirstAbilityProgressBar->SetPercent(0.f);
+			MI_AbilityRadials[0]->SetScalarParameterValue("Progress", 0.f);
 			return;
 		case 1:
 			if (!SecondAbilityImage || !SecondAbilityProgressBar) return;
 			SecondAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
 			SecondAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			SecondAbilityProgressBar->SetPercent(0.f);
+			MI_AbilityRadials[1]->SetScalarParameterValue("Progress", 0.f);
 			return;
 		default:
 			if (!ThirdAbilityImage || !ThirdAbilityProgressBar) return;
 			ThirdAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
 			ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			ThirdAbilityProgressBar->SetPercent(0.f);
+			MI_AbilityRadials[2]->SetScalarParameterValue("Progress", 0.f);
 	}
 }
 
@@ -43,7 +42,7 @@ void UAbilitiesPanelUI::TriggerAbilityIconReady(const EUIBar InBar, const float 
 	{
 		case EUIBar::FirstAbility: 
 			if (!FirstAbilityImage || !FirstAbilityProgressBar) return;
-			FirstAbilityProgressBar->SetPercent(InCurrent / InMax);
+			MI_AbilityRadials[0]->SetScalarParameterValue("Progress", InCurrent / InMax);
 			if (InCurrent >= InMax)
 			{
 				FirstAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -52,7 +51,7 @@ void UAbilitiesPanelUI::TriggerAbilityIconReady(const EUIBar InBar, const float 
 			break;
 		case EUIBar::SecondAbility:
 			if (!SecondAbilityImage || !SecondAbilityProgressBar) return;
-			SecondAbilityProgressBar->SetPercent(InCurrent / InMax);
+			MI_AbilityRadials[1]->SetScalarParameterValue("Progress", InCurrent / InMax);
 			if (InCurrent >= InMax)
 			{
 				SecondAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -61,7 +60,7 @@ void UAbilitiesPanelUI::TriggerAbilityIconReady(const EUIBar InBar, const float 
 			break;
 		default:
 			if (!ThirdAbilityImage || !ThirdAbilityProgressBar) return;
-			ThirdAbilityProgressBar->SetPercent(InCurrent / InMax);
+			MI_AbilityRadials[2]->SetScalarParameterValue("Progress", InCurrent / InMax);
 			if (InCurrent >= InMax)
 			{
 				ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -83,6 +82,27 @@ void UAbilitiesPanelUI::NativePreConstruct()
 	SetAbilitySlot(AbilityIcon1, FirstAbilityImage, FirstAbilityOverlay);
 	SetAbilitySlot(AbilityIcon2, SecondAbilityImage, SecondAbilityOverlay);
 	SetAbilitySlot(AbilityIcon3, ThirdAbilityImage, ThirdAbilityOverlay);
+}
+
+void UAbilitiesPanelUI::NativeConstruct()
+{
+	Super::NativeConstruct();
+	if (!FirstAbilityProgressBar || !SecondAbilityProgressBar || !ThirdAbilityProgressBar) return;
+	if (const TObjectPtr<UMaterialInterface> Material = Cast<UMaterialInterface>(FirstAbilityProgressBar->GetBrush().GetResourceObject()))
+	{
+		MI_AbilityRadials.Add(UMaterialInstanceDynamic::Create(Material, this));
+		FirstAbilityProgressBar->SetBrushFromMaterial(MI_AbilityRadials[0]);
+	}
+	if (const TObjectPtr<UMaterialInterface> Material = Cast<UMaterialInterface>(SecondAbilityProgressBar->GetBrush().GetResourceObject()))
+	{
+		MI_AbilityRadials.Add(UMaterialInstanceDynamic::Create(Material, this));
+		SecondAbilityProgressBar->SetBrushFromMaterial(MI_AbilityRadials[1]);
+	}
+	if (const TObjectPtr<UMaterialInterface> Material = Cast<UMaterialInterface>(ThirdAbilityProgressBar->GetBrush().GetResourceObject()))
+	{
+		MI_AbilityRadials.Add(UMaterialInstanceDynamic::Create(Material, this));
+		ThirdAbilityProgressBar->SetBrushFromMaterial(MI_AbilityRadials[2]);
+	}
 }
 
 void UAbilitiesPanelUI::NativeDestruct()

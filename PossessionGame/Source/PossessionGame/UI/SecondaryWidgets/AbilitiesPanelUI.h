@@ -7,7 +7,6 @@
 enum class EUIBar : uint8;
 class UOverlay;
 class UImage;
-class UProgressBar;
 
 UCLASS()
 class POSSESSIONGAME_API UAbilitiesPanelUI : public UUserWidget
@@ -26,15 +25,15 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Ability Icons", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> AbilityIcon3;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> FirstAbilityProgressBar;
+	TObjectPtr<UImage> FirstAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> FirstAbilityImage;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> SecondAbilityProgressBar;
+	TObjectPtr<UImage> SecondAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> SecondAbilityImage;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> ThirdAbilityProgressBar;
+	TObjectPtr<UImage> ThirdAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ThirdAbilityImage;
 	UPROPERTY(meta = (BindWidget))
@@ -50,9 +49,12 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> Ability3UseAnim;
 	UPROPERTY()
+	TArray<TObjectPtr<UMaterialInstanceDynamic>> MI_AbilityRadials;
+	UPROPERTY()
 	TArray<FTimerHandle> TimerHandles;
 
 	virtual void NativePreConstruct() override;
+	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	void SetAbilitySlot(const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay);
 	void PlayAbilityUseAnim(const int32 InAbilityIndex, const bool bPlayReverseAfterwards);
