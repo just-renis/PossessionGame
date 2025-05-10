@@ -25,6 +25,7 @@ void UVariationOptionUI::SelectVariation()
 	if (bIsLocked || !SelectAnim || !SelectedText) return;
 	PlayAnimation(SelectAnim);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.Broadcast(CharacterType, Variation);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(CharacterType);
 	SetSelected(true);
 }
 

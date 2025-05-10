@@ -30,6 +30,7 @@ DECLARE_DELEGATE_OneParam(FOnShowDialogue, const int32);
 DECLARE_DELEGATE_OneParam(FOnAbilityEnd, const int32);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
 DECLARE_DELEGATE_OneParam(FOnSecretRewardCollected, const int32);
+DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
 DECLARE_DELEGATE_TwoParams(FOnAbilityUse, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FStartTutorialDroneMoveToLocation, const int32, const bool);
 DECLARE_MULTICAST_DELEGATE(FOnTerminalInteraction);
@@ -80,6 +81,7 @@ public:
 	FOnAbilityEnd OnAbilityEnd;
 	FOnMinionBossStomp OnMinionBossStomp;
 	FOnSecretRewardCollected OnSecretRewardCollected;
+	FOnVariationSelectionEnd OnVariationSelectionEnd;
 	FOnAbilityUse OnAbilityUse;
 	FStartTutorialDroneMoveToLocation StartTutorialDroneMoveToLocation;
 	FOnTerminalInteraction OnTerminalInteraction;

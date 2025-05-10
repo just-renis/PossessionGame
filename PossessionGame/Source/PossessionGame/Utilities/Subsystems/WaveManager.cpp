@@ -13,6 +13,11 @@
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/SpawnLocation.h"
 
+TObjectPtr<AEnemy> UWaveManager::SpawnVariationReplacement(const ECharacterType InCharacterType)
+{
+	return SpawnLocations[EGameMode::None].SpawnLocations[0]->SpawnEnemy(Enemies[InCharacterType]);
+}
+
 void UWaveManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager)
 {
 	DelegateManager = InDelegateManager;
@@ -200,7 +205,7 @@ void UWaveManager::SetupSpawnLocations()
 
 void UWaveManager::SpawnEnemy(const ECharacterType InEnemyType)
 {
-	if (InEnemyType == ECharacterType::Guardian) SpawnLocations[EGameMode::None].SpawnLocations[0]->SpawnEnemy(Enemies[InEnemyType]);
+	//if (InEnemyType == ECharacterType::Guardian) SpawnLocations[EGameMode::None].SpawnLocations[0]->SpawnEnemy(Enemies[InEnemyType]);
 	if (!SpawnLocations.Find(CurrentGameMode)) return;
 	if (!bTutorialIsFinished) TutorialHandleSpawning(InEnemyType);
 	else if (SpawnLocations[CurrentGameMode].SpawnLocations.Num() > 0)

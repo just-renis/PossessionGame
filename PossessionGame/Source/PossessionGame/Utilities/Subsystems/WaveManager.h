@@ -27,6 +27,7 @@ class POSSESSIONGAME_API UWaveManager : public UWorldSubsystem
 	GENERATED_BODY()
 public:
 	EGameMode GetCurrentGameMode() const { return CurrentGameMode; }
+	TObjectPtr<AEnemy> SpawnVariationReplacement(const ECharacterType InCharacterType);
 	
 	void Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager);
 	void SetupWaveManagerSettings(const TArray<ECharacterType>& InEnemiesThatAreSpawnable, const int32 InEnemiesAmountOnFirstWave);

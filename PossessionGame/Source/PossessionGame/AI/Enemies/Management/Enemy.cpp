@@ -49,6 +49,7 @@
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
+#include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -329,7 +330,7 @@ void AEnemy::P_Setup()
 	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
 	DelegateManager->OnSecretRewardCollected.BindUObject(this, &AEnemy::P_ApplySecretReward);
-	DelegateManager->OnVariationSelection.AddUObject(this, &AEnemy::P_SetWeaponVariationMaterial);
+	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
 	Tags.Add("Player");
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
@@ -344,7 +345,7 @@ void AEnemy::P_Setup()
 	Camera->SetActive(true);
 	UKismetSystemLibrary::K2_SetTimer(this, "P_ControlLogic", 0.05f, true);
 	Weapon->P_SetupTransfer();
-	P_SetWeaponVariationMaterial(CharacterName, GameInstance->GetSaveSlot()->GetSelectedVariation(CharacterName));
+	P_ApplyCurrentVariation();
 	GetMesh()->SetHiddenInGame(true);
 	P_InputManager = Cast<UEnhancedPlayerInput>(GetWorld()->GetFirstPlayerController()->PlayerInput);
 	P_SetupAbilities();
@@ -384,7 +385,6 @@ void AEnemy::P_SetupRightClickInput(TObjectPtr<UEnhancedInputComponent> RightCli
 void AEnemy::P_Destroy()
 {
 	DelegateManager->OnMinionBossStomp.Unbind();
-	DelegateManager->OnVariationSelection.RemoveAll(this);
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();
 	Weapon->SetToOriginalSettings();
@@ -848,10 +848,9 @@ void AEnemy::P_TryInteracting()
 	CollisionParams.AddIgnoredActor(this);
 	if (GetWorld()->LineTraceSingleByChannel(Hit, Camera->GetComponentLocation(), Camera->GetComponentLocation() + Camera->GetForwardVector() * 450.f, ECC_Visibility, CollisionParams))
 	{
-		if (const TObjectPtr<AActor> HitActor = Hit.GetActor())
+		if (const TObjectPtr<AActor> HitActor = Hit.GetActor(); HitActor->Implements<UInteractable>())
 		{
-			if (!HitActor->Implements<UInteractable>()) return;
-			Cast<IInteractable>(HitActor)->Interact();
+			if (IInteractable* Interactable = Cast<IInteractable>(HitActor); Interactable->GetIsInteractable()) Interactable->Interact();
 		}
 	}
 }
@@ -905,7 +904,17 @@ void AEnemy::P_SetupNavArea()
 	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
-void AEnemy::P_SetWeaponVariationMaterial(const ECharacterType InCharacterType, const EVariation InVariationName) const { if (Weapon) Weapon->P_SetVariationMaterial(InVariationName); }
+void AEnemy::P_ApplyCurrentVariation() const
+{
+	if (Weapon) Weapon->P_SetVariationMaterial(GameInstance->GetSaveSlot()->GetSelectedVariation(CharacterName));
+}
+
+void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
+{
+	if (CharacterName != InCharacterType) return;
+	P_PossessionLogic(GetWorld()->GetSubsystem<UWaveManager>()->SpawnVariationReplacement(InCharacterType));
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
+}
 
 void AEnemy::P_Death()
 {
