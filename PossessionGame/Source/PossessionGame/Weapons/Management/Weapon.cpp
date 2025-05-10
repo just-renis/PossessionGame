@@ -9,6 +9,7 @@
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerWeaponData.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
@@ -196,7 +197,7 @@ void AWeapon::P_Setup()
 	MagazineCap = P_Data->GetMagazineCap();
 	TotalAmmo = P_Data->GetTotalAmmo();
 	HitScanDamage = DefaultHitScanDamage = P_Data->GetHitScanDamage();
-	//P_ApplyCurrentVariation();
+	P_ApplyCurrentVariation();
 	HitScanDamage += DefaultHitScanDamage * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() / 100.f);
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
@@ -285,7 +286,7 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	const bool bIsCritical = InHitResult.BoneName == "head";
 	(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 	AssetsManager->PlaySound2D(bIsCritical ? ESound::CriticalDamageTick : ESound::DamageTick);
-	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? HitScanDamage * 2 : HitScanDamage,
+	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? P_ReceiveHitScanDamage() * 2 : P_ReceiveHitScanDamage(),
 	(InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 
@@ -293,10 +294,4 @@ void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
 {
 	HitScanDamage -= DefaultHitScanDamage * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) / 100.f);
 	HitScanDamage += DefaultHitScanDamage * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) / 100.f);
-}
-
-void AWeapon::P_ApplyCurrentVariation(const ECharacterType InCharacterType, const EVariation InVariationName)
-{
-	//if ()
-	//DefaultHitScanDamage 
 }

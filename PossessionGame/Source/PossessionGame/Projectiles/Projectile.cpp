@@ -171,7 +171,7 @@ void AProjectile::SpawnSecondProjectileImpactVfx(const FHitResult& Hit) { SpawnP
 
 void AProjectile::ApplyCurrentVariation()
 {
-	if (EVariation::TricksterVariationPurple == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ProjectileData.GetProprietor()->GetCharacterName()))
+	if (ProjectileData.ProjectileName == EPoolObject::TricksterPoisonProjectile && EVariation::TricksterVariationPurple == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ProjectileData.GetProprietor()->GetCharacterName()))
 	{
 		Damage = DefaultDamage = DefaultDamage * 2.5f;
 	}

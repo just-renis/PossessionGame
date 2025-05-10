@@ -49,6 +49,7 @@
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
+#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
@@ -140,8 +141,7 @@ void AEnemy::Tick(const float DeltaTime)
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-	if (EnhancedInputComponent)
+	if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Move);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Started, this, &AEnemy::Jump);
@@ -205,7 +205,7 @@ void AEnemy::AI_SetCanShoot(const bool bState)
 	}
 }
 
-void AEnemy::AI_Disable() const { if (AI) AI->StopLogic(true); }
+void AEnemy::AI_Disable() { if (AI) AI->StopLogic(true); }
 
 void AEnemy::InitiateDeath()
 {
@@ -332,6 +332,7 @@ void AEnemy::P_Setup()
 	DelegateManager->OnSecretRewardCollected.BindUObject(this, &AEnemy::P_ApplySecretReward);
 	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
 	Tags.Add("Player");
+	P_ReceiveCurrentlySelectedVariation();
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
 	GetMesh()->SetGenerateOverlapEvents(true);
@@ -410,6 +411,16 @@ void AEnemy::P_SetupCharacterMovement()
 	GetCharacterMovement()->BrakingFrictionFactor = 1.f;
 	GetCharacterMovement()->bUseRVOAvoidance = false;
 	GetCharacterMovement()->GetCharacterOwner()->JumpMaxCount = 2;
+}
+
+void AEnemy::P_Move(const FInputActionValue& Value)
+{
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+	if (Controller)
+	{
+		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
+		AddMovementInput(GetActorRightVector(), MovementVector.X);
+	}
 }
 
 void AEnemy::BeginPlay()
@@ -669,16 +680,6 @@ void AEnemy::P_PossessionBarLogic()
 	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Possession, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
 }
 
-void AEnemy::P_Move(const FInputActionValue& Value)
-{
-	const FVector2D MovementVector = Value.Get<FVector2D>();
-	if (Controller)
-	{
-		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-		AddMovementInput(GetActorRightVector(), MovementVector.X);
-	}
-}
-
 void AEnemy::P_Rotate(const FInputActionValue& Value)
 {
 	const FVector2D RotationVector = Value.Get<FVector2D>();
@@ -904,10 +905,7 @@ void AEnemy::P_SetupNavArea()
 	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
-void AEnemy::P_ApplyCurrentVariation() const
-{
-	if (Weapon) Weapon->P_SetVariationMaterial(GameInstance->GetSaveSlot()->GetSelectedVariation(CharacterName));
-}
+void AEnemy::P_ApplyCurrentVariation() const { if (Weapon) Weapon->P_SetVariationMaterial(Variation); }
 
 void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {
@@ -915,6 +913,8 @@ void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 	P_PossessionLogic(GetWorld()->GetSubsystem<UWaveManager>()->SpawnVariationReplacement(InCharacterType));
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
 }
+
+void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName); }
 
 void AEnemy::P_Death()
 {

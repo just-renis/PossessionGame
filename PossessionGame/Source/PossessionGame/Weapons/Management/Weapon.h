@@ -65,6 +65,7 @@ public:
 	void P_SetWalkSpread(const bool bState);
 	virtual void P_SetVariationMaterial(const EVariation InVariationName);
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) {}
+	void P_SetHitScanDamage(const float InDamageMultiplier) { P_HitScanDamage = InDamageMultiplier; }
 	
 	virtual void SetWeaponMeshScaleToOriginal() { Mesh->SetRelativeScale3D(OriginalScale); }
 	void SetFirstShotWasShot() { bFirstShotWasShot = true; }
@@ -87,6 +88,8 @@ protected:
 	float ShootCooldown;
 	float HitScanDamage;
 	float ShootTimer = 0.f;
+	float DefaultHitScanDamage;
+	float P_HitScanDamage = 0.f; // For guardian hitscan multiplier end result variation.
 	EWeapon Name;
 	FVector OriginalScale;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -118,6 +121,7 @@ protected:
 	void AI_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName);
 	
 	float P_GetHitScanCalcSpread() const { return P_Data->GetHitScanSpread() * (bWalkSpreadEnabled ? 2.f : 1.f); }
+	virtual float P_ReceiveHitScanDamage() { return HitScanDamage; }
 	
 	virtual void P_Setup();
 	void P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName);
@@ -135,13 +139,12 @@ protected:
 	void DealPointDamage(const FHitResult& InHitResult);
 private:
 	bool bFirstShotWasShot = false;
-	float DefaultHitScanDamage;
 	int32 ShootCyclesUntilReload;
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
 	
 	void P_SetupLevelUpAppliance(const int32 InLevel);
-	void P_ApplyCurrentVariation(const ECharacterType InCharacterType, const EVariation InVariationName);
+	virtual void P_ApplyCurrentVariation() {}
 
 	virtual EDamageReason GetDamageReason() const override { return P_Data->GetDamageReason(); } // It does not matter from which data i will get damage reason, since it would be the same.
 };

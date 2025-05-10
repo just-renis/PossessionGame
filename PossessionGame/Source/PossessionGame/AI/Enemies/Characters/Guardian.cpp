@@ -36,6 +36,12 @@ void AGuardian::AI_PlayDeathSound() { PlaySound(ESound::GuardianDeath); }
 
 void AGuardian::AI_PlaySpawnSound() { PlaySound(ESound::GuardianSpawn); }
 
+void AGuardian::AI_Disable()
+{
+	Super::AI_Disable();
+	MaxHp = CurrentHp = 1000000.f;
+}
+
 void AGuardian::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
@@ -46,19 +52,29 @@ void AGuardian::P_Setup()
 void AGuardian::P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
 {
 	const ETriggerEvent TriggerEvent = EVariation::GuardianVariationGold == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName) ? ETriggerEvent::Triggered : ETriggerEvent::Started;
-	ShootBindingHandle = &LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, TriggerEvent, this, &AGuardian::P_Shoot, true);
+	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, TriggerEvent, this, &AGuardian::P_Shoot, true);
+	if (TriggerEvent == ETriggerEvent::Triggered)
+	{
+		LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &AGuardian::P_OnShootStarted);
+	}
 }
 
-void AGuardian::P_ChangeShootingInputEvent(const ECharacterType InCharacterType, const EVariation InVariationName)
+void AGuardian::P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
 {
-	if (!EnhancedInputComponent || !PlayerMappingContext) return;
-	if (ShootBindingHandle)
-	{
-		EnhancedInputComponent->RemoveBinding(*ShootBindingHandle);
-		ShootBindingHandle = nullptr;
-	}
-	const ETriggerEvent TriggerEvent = EVariation::GuardianVariationGold == InVariationName ? ETriggerEvent::Triggered : ETriggerEvent::Started;
-	ShootBindingHandle = &EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, TriggerEvent, this, &AGuardian::P_Shoot, true);
+	if (EVariation::GuardianVariationGold != GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName)) return;
+	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Completed, this, &AGuardian::P_CancelShootingHold);
+}
+
+void AGuardian::P_OnShootStarted() { Cast<AGuardianWeapon>(Weapon)->ShootingHoldStarted(); }
+
+void AGuardian::P_ResetShootHoldDuration() const { Cast<AGuardianWeapon>(Weapon)->ResetShootingHoldDuration(); }
+
+void AGuardian::P_CancelShootingHold() { Cast<AGuardianWeapon>(Weapon)->CancelShootingHold(); }
+
+void AGuardian::P_Move(const FInputActionValue& Value)
+{
+	Super::P_Move(Value);
+	if (Variation == EVariation::GuardianVariationGold) P_ResetShootHoldDuration();
 }
 
 void AGuardian::BeginPlay()
@@ -66,18 +82,10 @@ void AGuardian::BeginPlay()
 	CharacterName = ECharacterType::Guardian;
 	bCanReload = false;
 	Super::BeginPlay();
-	DelegateManager->OnVariationSelection.AddUObject(this, &AGuardian::P_ChangeShootingInputEvent);
 }
 
 void AGuardian::SetMesh(const ECharacterType PrimaryDataAssetName)
 {
 	Super::SetMesh(PrimaryDataAssetName);
 	GetMesh()->SetMaterial(0, GuardianMaterial);
-}
-
-void AGuardian::DestroyThis()
-{
-	if (ShootBindingHandle) ShootBindingHandle = nullptr;
-	DelegateManager->OnVariationSelection.RemoveAll(this);
-	Super::DestroyThis();
 }

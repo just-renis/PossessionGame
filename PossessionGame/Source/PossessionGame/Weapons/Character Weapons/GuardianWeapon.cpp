@@ -1,4 +1,5 @@
 ﻿#include "GuardianWeapon.h"
+#include "GuardianSingularWeapon.h"
 #include "NiagaraComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -27,6 +28,24 @@ void AGuardianWeapon::StopOverChargeVfx() const
 		FirstWeaponOverChargeComponent->Deactivate();
 		SecondWeaponOverChargeComponent->Deactivate();
 	}
+}
+
+void AGuardianWeapon::CancelShootingHold() const
+{
+	Cast<AGuardianSingularWeapon>(FirstWeapon)->CancelShootingHold();
+	Cast<AGuardianSingularWeapon>(SecondWeapon)->CancelShootingHold();
+}
+
+void AGuardianWeapon::ShootingHoldStarted() const
+{
+	Cast<AGuardianSingularWeapon>(FirstWeapon)->ShootingHoldStarted();
+	Cast<AGuardianSingularWeapon>(SecondWeapon)->ShootingHoldStarted();
+}
+
+void AGuardianWeapon::ResetShootingHoldDuration() const
+{
+	Cast<AGuardianSingularWeapon>(FirstWeapon)->ResetShootingHoldDuration();
+	Cast<AGuardianSingularWeapon>(SecondWeapon)->ResetShootingHoldDuration();
 }
 
 bool AGuardianWeapon::P_CanShoot(const bool InbIsFirstWeapon) { return !HandsAnimInstance->IsPlaying(EHandsAnimState::Shoot); }
@@ -64,7 +83,6 @@ void AGuardianWeapon::SetMeshes(const EWeapon InPrimaryDataAssetName)
 	{
 		HandsMesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(InPrimaryDataAssetName)->HandsMesh.Get());
 		if (!HandsMesh) return;
-		const TObjectPtr<UMaterialInstanceDynamic> MI_Hands = HandsMesh->CreateAndSetMaterialInstanceDynamic(0);
-		if (MI_Hands) MI_Hands->SetScalarParameterValue("Progress", 0.4f);
+		if (const TObjectPtr<UMaterialInstanceDynamic> MI_Hands = HandsMesh->CreateAndSetMaterialInstanceDynamic(0)) MI_Hands->SetScalarParameterValue("Progress", 0.4f);
 	}
 }

@@ -44,9 +44,6 @@ class POSSESSIONGAME_API AEnemy : public ACharacter
 	GENERATED_BODY()
 public:
 	AEnemy();
-	
-	UPROPERTY()
-	TObjectPtr<UEnhancedPlayerInput> P_InputManager;
 
 	bool GetIsAlive() const { return bIsAlive; }
 	bool GetIsPossessed() const { return bIsPossessed; }
@@ -74,7 +71,7 @@ public:
 	void AI_SetMoveMode(const EMoveMode InMoveMode);
 	void AI_SetShootPause();
 	virtual void AI_SetCanShoot(const bool bState);
-	void AI_Disable() const;
+	virtual void AI_Disable();
 	virtual void AI_CancelShooting() {}
 
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) { bInUpgradeSelection = false; }
@@ -110,6 +107,7 @@ protected:
 	float MaxHp;
 	float CurrentHp;
 	ECharacterType CharacterName;
+	EVariation Variation;
 	EMoveMode CurrentMoveMode = EMoveMode::Walk;
 	FVector2D MouseSensitivity = FVector2D(1.f, 1.f);
 	UPROPERTY()
@@ -135,7 +133,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
-	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent;
+	TObjectPtr<UEnhancedPlayerInput> P_InputManager;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
@@ -168,6 +166,7 @@ protected:
 	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
 	void P_SetupCharacterMovement();
 	virtual void P_SetupColorsForUI() {}
+	virtual void P_Move(const FInputActionValue& Value);
 
 	void SetCurrentHp(const float NewCurrentHp) { CurrentHp = NewCurrentHp; }
 	void SetMaxHp(const float NewMaxHp) { MaxHp = NewMaxHp; }
@@ -250,7 +249,6 @@ private:
 	void P_PossessEnemy();
 	void P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy);
 	void P_PossessionBarLogic();
-	void P_Move(const FInputActionValue& Value);
 	void P_Rotate(const FInputActionValue& Value);
 	void P_Reload();
 	void P_Dash();
@@ -277,6 +275,7 @@ private:
 	void P_SetupNavArea();
 	void P_ApplyCurrentVariation() const;
 	void P_OnVariationSelection(const ECharacterType InCharacterType);
+	void P_ReceiveCurrentlySelectedVariation();
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()
