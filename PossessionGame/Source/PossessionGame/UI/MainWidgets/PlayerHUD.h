@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PlayerHUD.generated.h"
 
+class UAbility;
 class UAbilitiesPanelUI;
 enum class ECharacterType : uint8;
 class UOverlay;
@@ -41,8 +42,7 @@ public:
 	void UpdateAmmoText(const int32 InWeaponAmmo) const;
 	void UpdateAmmoText(const int32 InWeaponAmmo, const int32 InMaxAmmo) const;
 	void UpdateAmmoText(const int32 InFirstWeaponAmmo, const int32 InSecondWeaponAmmo, const int32 InMaxAmmo) const;
-	void UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs, const float InReqSecs);
-	void UpdateAbilityCooldown(const int32 InWhichAbility, const int32 InKills, const int32 InReqKills);
+	void UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility);
 	void UpdateFps(const int32 InFps) const;
 	void Reset();
 	void SetColors(const FLinearColor InColor) const;

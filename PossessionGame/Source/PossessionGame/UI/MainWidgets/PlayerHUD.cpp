@@ -5,6 +5,7 @@
 #include "Components/InvalidationBox.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilitiesPanelUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -33,7 +34,7 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 				XpBar->SetPercent(InCurrent / InMax);;
 			}
 			break;
-		default: if (GetAbilityPanel()) GetAbilityPanel()->TriggerAbilityIconReady(InBar, InCurrent, InMax);
+		default: ;
 	}
 }
 
@@ -56,25 +57,7 @@ void UPlayerHUD::UpdateAmmoText(const int32 InFirstWeaponAmmo, const int32 InSec
 	AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1} / {2}"), {InFirstWeaponAmmo, InSecondWeaponAmmo, InMaxAmmo})));
 }
 
-void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const float InSecs, const float InReqSecs)
-{
-	switch (InWhichAbility)
-	{
-		case 0: UpdateProgressBar(EUIBar::FirstAbility, InSecs, InReqSecs); break;
-		case 1: UpdateProgressBar(EUIBar::SecondAbility, InSecs, InReqSecs); break;
-		default: UpdateProgressBar(EUIBar::ThirdAbility, InSecs, InReqSecs);
-	}
-}
-
-void UPlayerHUD::UpdateAbilityCooldown(const int32 InWhichAbility, const int32 InKills, const int32 InReqKills)
-{
-	switch (InWhichAbility)
-	{
-		case 0: UpdateProgressBar(EUIBar::FirstAbility, InKills, InReqKills); break;
-		case 1: UpdateProgressBar(EUIBar::SecondAbility, InKills, InReqKills); break;
-		default: UpdateProgressBar(EUIBar::ThirdAbility, InKills, InReqKills);
-	}
-}
+void UPlayerHUD::UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility) { if (GetAbilityPanel()) GetAbilityPanel()->UpdateAbilityUI(InAbility); }
 
 void UPlayerHUD::UpdateFps(const int32 InFps) const
 {

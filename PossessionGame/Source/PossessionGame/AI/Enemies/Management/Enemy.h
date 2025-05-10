@@ -255,7 +255,6 @@ private:
 	void P_OnEnemyDeathEvents(const int32 InXp);
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
-	void P_UpdateAbilityCooldownUI(const int32 Index);
 	void P_StopAllAbilities();
 	void P_HandleEscapeClick();
 	void P_TriggerGlitchingEffect() const;
@@ -295,7 +294,7 @@ private:
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void TickAbilities(const float DeltaTime);
+	void TickAbilities(const float InDeltaTime);
 	void SetupStimuliSource();
 	void ChangeXRayState(const bool bState) const;
 	void SetupUserSettings() const;

@@ -22,4 +22,4 @@ void UTutorialDialogueUI::FinishedTypingDialogue()
 	}
 }
 
-void UTutorialDialogueUI::StartGuardianSpawn() { (void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Guardian); }
+void UTutorialDialogueUI::StartGuardianSpawn() { (void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Trickster); }
