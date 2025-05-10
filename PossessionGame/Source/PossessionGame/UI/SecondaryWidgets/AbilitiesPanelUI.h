@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "AbilitiesPanelUI.generated.h"
 
+class UAbility;
 enum class EUIBar : uint8;
 class UOverlay;
 class UImage;
@@ -15,7 +16,7 @@ class POSSESSIONGAME_API UAbilitiesPanelUI : public UUserWidget
 public:
 	void SetOverlaysVisibility(const bool bState) const;
 	void CollapseAbilityIcon(const int32 Index) const;
-	void TriggerAbilityIconReady(const EUIBar InBar, const float InCurrent, const float InMax) const;
+	void UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility) const;
 	void SetAsCurrent();
 private:
 	UPROPERTY(EditAnywhere, Category = "Ability Icons", meta = (AllowPrivateAccess = true))
@@ -49,7 +50,11 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> Ability3UseAnim;
 	UPROPERTY()
-	TArray<TObjectPtr<UMaterialInstanceDynamic>> MI_AbilityRadials;
+	TObjectPtr<UMaterialInstanceDynamic> MI_FirstAbilityRadial;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MI_SecondAbilityRadial;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MI_ThirdAbilityRadial;
 	UPROPERTY()
 	TArray<FTimerHandle> TimerHandles;
 
@@ -57,8 +62,8 @@ private:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	void SetAbilitySlot(const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay);
-	void PlayAbilityUseAnim(const int32 InAbilityIndex, const bool bPlayReverseAfterwards);
+	void PlayAbilityUseAnim(const int32 InAbilityIndex, const bool bIsCharged, const bool bPlayReverseAfterwards);
 	void PlayAbilityAnim(const int32 InAbilityIndex, const bool bState);
 	UFUNCTION()
-	void PlayAbilityEndAnim(const int32 InAbilityIndex);
+	void PlayAbilityEndAnim(const int32 InAbilityIndex, const bool bIsCharged);
 };

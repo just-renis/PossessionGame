@@ -14,16 +14,19 @@ class POSSESSIONGAME_API UAbility : public UObject
 	GENERATED_BODY()
 public:
 	EAbility GetAbilityName() const;
-	bool CanExecute() const { return bIsCooldownKill ? CurrentCooldownKill >= ReqCooldownKill : CurrentCooldownSecs >= ReqCooldownSecs; }
+	bool CanExecute() const { return bIsCooldownKill ? CurrentCooldownKill >= ReqCooldownKill : CurrentChargesAmount >= 1; }
 	bool GetIsCooldownKill() const { return bIsCooldownKill; }
 	bool GetIsAbilityInDuration() const { return bIsAbilityInDuration; }
+	bool GetIsAbilityCharged() const { return CurrentChargesAmount > 0; }
+	bool GetIsMaxCharged() const { return CurrentChargesAmount >= MaxChargesAmount; }
 	int32 GetCurrentCooldownKill() const { return CurrentCooldownKill; }
 	int32 GetReqCooldownKill() const { return ReqCooldownKill; }
+	int32 GetAbilityIndex() const;
 	float GetReqCooldownSecs() const { return ReqCooldownSecs; }
 	float GetCurrentCooldownSecs() const { return CurrentCooldownSecs; }
 	float GetCurrentDuration() const { return CurrentDuration; }
 
-	virtual void AI_Execute() { ResetCooldown(); }
+	virtual void AI_Execute() { UseCharge(); }
 	virtual void AI_StopAbility() { ResetDuration(); }
 
 	virtual void P_Execute();
@@ -36,6 +39,7 @@ public:
 	void ApplyUpgradeOnSelection(const bool bIsPlayer);
 protected:
 	bool bIsAbilityInDuration = false;
+	int32 CurrentChargesAmount = 0;
 	float CurrentDuration;
 	float CurrentCooldownSecs;
 	float DurationTime;
@@ -46,7 +50,7 @@ protected:
 	virtual bool IsProprietorPossessed() { return false; }
 	
 	virtual void SetProprietor(TObjectPtr<AEnemy> InAbilityProprietor) {}
-	void ResetCooldown();
+	void UseCharge();
 	virtual void CooldownLogic(const float InDeltaTime);
 	virtual void SetupUpgradeAppliance(const bool bIsPlayer);
 private:
@@ -55,6 +59,7 @@ private:
 	bool bIsDurational = false;
 	int32 CurrentCooldownKill;
 	int32 ReqCooldownKill;
+	int32 MaxChargesAmount;
 	float RefreshOtherAbilityAmount;
 	UPROPERTY()
 	TObjectPtr<UAbilityData> Data;

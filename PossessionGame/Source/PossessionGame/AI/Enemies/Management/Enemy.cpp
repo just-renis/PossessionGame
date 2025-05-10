@@ -99,7 +99,7 @@ void AEnemy::P_UseAbility(const int32 AbilityIndex)
 	{
 		Abilities[AbilityIndex]->P_Execute();
 		if (!P_HUD) return;
-		if (Abilities[AbilityIndex]->GetIsCooldownKill()) P_HUD->UpdateAbilityCooldown(AbilityIndex, Abilities[AbilityIndex]->GetCurrentCooldownKill(), Abilities[AbilityIndex]->GetReqCooldownKill());
+		if (Abilities[AbilityIndex]->GetIsCooldownKill()) P_HUD->UpdateAbilityUI(Abilities[AbilityIndex]);
 	}
 }
 
@@ -721,7 +721,7 @@ void AEnemy::P_OnEnemyDeathEvents(const int32 InXp)
 		if (Abilities[i]->GetIsCooldownKill())
 		{
 			Abilities[i]->ReduceKillCooldown();
-			if (P_HUD) P_HUD->UpdateAbilityCooldown(i, Abilities[i]->GetCurrentCooldownKill(), Abilities[i]->GetReqCooldownKill());
+			if (P_HUD) P_HUD->UpdateAbilityUI(Abilities[i]);
 		}
 	}
 }
@@ -735,22 +735,7 @@ void AEnemy::P_ToggleGodMode()
 	CurrentHp = MaxHp;
 }
 
-void AEnemy::P_UpdateAbilitiesUI()
-{
-	for (int32 i = 0; i < Abilities.Num(); i++)
-	{
-		if (!Abilities[i]->GetIsCooldownKill()) P_HUD->UpdateAbilityCooldown(i, Abilities[i]->GetCurrentCooldownSecs(), Abilities[i]->GetReqCooldownSecs());
-		else P_HUD->UpdateAbilityCooldown(i, Abilities[i]->GetCurrentCooldownKill(), Abilities[i]->GetReqCooldownKill());
-	}
-}
-
-void AEnemy::P_UpdateAbilityCooldownUI(int32 Index)
-{
-	if (bIsPossessed && !Abilities[Index]->GetIsCooldownKill() && !Abilities[Index]->GetIsAbilityInDuration())
-	{
-		P_HUD->UpdateAbilityCooldown(Index, Abilities[Index]->GetCurrentCooldownSecs(), Abilities[Index]->GetReqCooldownSecs());
-	}
-}
+void AEnemy::P_UpdateAbilitiesUI() { for (int32 i = 0; i < Abilities.Num(); i++) if (bIsPossessed && !Abilities[i]->GetIsCooldownKill() && !Abilities[i]->GetIsAbilityInDuration()) P_HUD->UpdateAbilityUI(Abilities[i]); }
 
 void AEnemy::P_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->P_StopAbility(); }
 
@@ -995,13 +980,10 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void AEnemy::TickAbilities(float DeltaTime)
+void AEnemy::TickAbilities(const float InDeltaTime)
 {
-	for (int32 i = 0; i < Abilities.Num(); i++)
-	{
-		Abilities[i]->Tick(DeltaTime);
-		if (P_HUD) P_UpdateAbilityCooldownUI(i);
-	}
+	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->Tick(InDeltaTime);
+	P_UpdateAbilitiesUI();
 }
 
 void AEnemy::SetupStimuliSource()

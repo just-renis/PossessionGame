@@ -6,16 +6,18 @@
 
 EAbility UAbility::GetAbilityName() const { return Data->GetAbilityName(); }
 
+int32 UAbility::GetAbilityIndex() const { return Data->GetAbilityIndex(); }
+
 void UAbility::P_Execute()
 {
-	ResetCooldown();
-	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(Data->GetAbilityIndex(), !bIsAbilityInDuration);
+	UseCharge();
+	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(GetAbilityIndex(), GetIsAbilityCharged(), !bIsAbilityInDuration);
 }
 
 void UAbility::Tick(const float InDeltaTime)
 {
 	if (bIsAbilityInDuration) AbilityInDurationLogic(InDeltaTime);
-	else if (!bIsCooldownKill && CurrentCooldownSecs < ReqCooldownSecs) CooldownLogic(InDeltaTime);
+	else if (!bIsCooldownKill && CurrentChargesAmount < MaxChargesAmount) CooldownLogic(InDeltaTime);
 }
 
 void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
@@ -24,18 +26,25 @@ void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbility
 	DelegateManager = InDelegateManager;
 	ReqCooldownSecs = InAbilityData->GetCooldownSecs();
 	ReqCooldownKill = InAbilityData->GetCurrentCooldownKill();
+	MaxChargesAmount = InAbilityData->GetChargesAmount();
 	if (CurrentCooldownKill > 0) bIsCooldownKill = true;
 	SetProprietor(InAbilityProprietor);
 }
 
-void UAbility::ResetCooldown()
+void UAbility::UseCharge()
 {
 	if (bIsCooldownKill) CurrentCooldownKill = 0;
-	else CurrentCooldownSecs = 0.f;
+	else CurrentChargesAmount--;
 	if (bIsRefreshingOtherAbility) RefreshOtherAbility();
 }
 
-void UAbility::CooldownLogic(const float InDeltaTime) { CurrentCooldownSecs += InDeltaTime; }
+void UAbility::CooldownLogic(const float InDeltaTime)
+{
+	CurrentCooldownSecs += InDeltaTime;
+	if (CurrentCooldownSecs < ReqCooldownSecs) return;
+	CurrentChargesAmount++;
+	CurrentCooldownSecs = 0.f;
+}
 
 void UAbility::SetupUpgradeAppliance(const bool bIsPlayer)
 {
@@ -78,7 +87,8 @@ void UAbility::ResetDuration()
 {
 	CurrentDuration = DurationTime;
 	bIsAbilityInDuration = false;
-	(void)DelegateManager->OnAbilityEnd.ExecuteIfBound(Data->GetAbilityIndex());
+	UE_LOG(LogTemp, Warning, TEXT("RESETDURATION(): %i %i"), Data->GetAbilityIndex(), GetAbilityIndex());
+	(void)DelegateManager->OnAbilityEnd.ExecuteIfBound(GetAbilityIndex(), GetIsAbilityCharged());
 }
 
 void UAbility::AbilityInDurationLogic(const float InDeltaTime)

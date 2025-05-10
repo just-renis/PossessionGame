@@ -28,7 +28,7 @@ void UMinionBossAbility2::SetProprietor(const TObjectPtr<AEnemy> AbilityPropriet
 void UMinionBossAbility2::CooldownLogic(const float InDeltaTime)
 {
 	Super::CooldownLogic(InDeltaTime);
-	if (CurrentCooldownSecs >= ReqCooldownSecs) Proprietor->EnableDistanceCheckForLaserEye();
+	if (CurrentChargesAmount > 0) Proprietor->EnableDistanceCheckForLaserEye();
 }
 
 void UMinionBossAbility2::StopLaser()
@@ -40,7 +40,7 @@ void UMinionBossAbility2::StopLaser()
 	Proprietor->GetLaser()->Deactivate();
 	Proprietor->GetLaserEyeBall()->Deactivate();
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::StopLaser);
-	ResetCooldown();
+	UseCharge();
 }
 
 void UMinionBossAbility2::ShootLaser()
