@@ -90,11 +90,7 @@ void UAbilitiesPanelUI::NativeDestruct()
 void UAbilitiesPanelUI::SetAbilitySlot(const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay)
 {
 	if (InIcon && InImage) InImage->SetBrushFromAtlasInterface(InIcon);
-	else
-	{
-		InOverlay->SetRenderOpacity(0.8f);
-		InOverlay->SetRenderScale(FVector2D(0.8f, 0.8f));
-	}
+	else InOverlay->SetRenderOpacity(0.8f);
 }
 
 void UAbilitiesPanelUI::PlayAbilityUseAnim(const int32 InAbilityIndex, const bool bIsCharged, const bool bPlayReverseAfterwards)
