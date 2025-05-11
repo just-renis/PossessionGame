@@ -1,7 +1,9 @@
 ﻿#include "AbilitiesPanelUI.h"
 #include "Animation/WidgetAnimation.h"
+#include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/Overlay.h"
+#include "Components/TextBlock.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
@@ -16,23 +18,9 @@ void UAbilitiesPanelUI::CollapseAbilityIcon(const int32 Index) const
 {
 	switch (Index)
 	{
-		case 0:
-			if (!FirstAbilityImage || !FirstAbilityProgressBar || !MI_FirstAbilityRadial) return;
-			FirstAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
-			FirstAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			MI_FirstAbilityRadial->SetScalarParameterValue("Progress", 0.f);
-			return;
-		case 1:
-			if (!SecondAbilityImage || !SecondAbilityProgressBar || !MI_SecondAbilityRadial) return;
-			SecondAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
-			SecondAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			MI_SecondAbilityRadial->SetScalarParameterValue("Progress", 0.f);
-			return;
-		default:
-			if (!ThirdAbilityImage || !ThirdAbilityProgressBar || !MI_ThirdAbilityRadial) return;
-			ThirdAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
-			ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			MI_ThirdAbilityRadial->SetScalarParameterValue("Progress", 0.f);
+		case 0: if (FirstAbilityImage) FirstAbilityImage->SetVisibility(ESlateVisibility::Collapsed); break;
+		case 1: if (SecondAbilityImage) SecondAbilityImage->SetVisibility(ESlateVisibility::Collapsed); break;
+		default: if (ThirdAbilityImage) ThirdAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -41,34 +29,22 @@ void UAbilitiesPanelUI::UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility) c
 	switch (InAbility->GetAbilityIndex())
 	{
 		case 0: 
-			if (!FirstAbilityImage || !FirstAbilityProgressBar || !MI_FirstAbilityRadial) return;
-			MI_FirstAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
-			if (InAbility->GetIsAbilityCharged())
-			{
-				if (FirstAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) FirstAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				if (InAbility->GetIsMaxCharged() && FirstAbilityProgressBar->GetVisibility() != ESlateVisibility::Collapsed) FirstAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
-				else if (FirstAbilityProgressBar->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) FirstAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
+			if (!FirstAbilityImage || !FirstChargesText || !MI_FirstAbilityRadial) return;
+			MI_FirstAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetIsMaxCharged() ? 0.f : InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
+			FirstChargesText->SetText(FText::FromString(FString::FromInt(InAbility->GetCurrentCharges())));
+			if (InAbility->GetIsAbilityCharged() && FirstAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) FirstAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			break;
 		case 1:
-			if (!SecondAbilityImage || !SecondAbilityProgressBar || !MI_SecondAbilityRadial) return;
-			MI_SecondAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
-			if (InAbility->GetIsAbilityCharged())
-			{
-				if (SecondAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) SecondAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				if (InAbility->GetIsMaxCharged() && SecondAbilityProgressBar->GetVisibility() != ESlateVisibility::Collapsed) SecondAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
-				else if (SecondAbilityProgressBar->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) SecondAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
+			if (!SecondAbilityImage || !SecondChargesText || !MI_SecondAbilityRadial) return;
+			MI_SecondAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetIsMaxCharged() ? 0.f : InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
+			SecondChargesText->SetText(FText::FromString(FString::FromInt(InAbility->GetCurrentCharges())));
+			if (InAbility->GetIsAbilityCharged() && SecondAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) SecondAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			break;
 		default:
-			if (!ThirdAbilityImage || !ThirdAbilityProgressBar || !MI_ThirdAbilityRadial) return;
-			MI_ThirdAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
-			if (InAbility->GetIsAbilityCharged())
-			{
-				if (ThirdAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-				if (InAbility->GetIsMaxCharged() && ThirdAbilityProgressBar->GetVisibility() != ESlateVisibility::Collapsed) ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::Collapsed);
-				else if (ThirdAbilityProgressBar->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) ThirdAbilityProgressBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
+			if (!ThirdAbilityImage || !ThirdChargesText || !MI_ThirdAbilityRadial) return;
+			MI_ThirdAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetIsMaxCharged() ? 0.f : InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
+			ThirdChargesText->SetText(FText::FromString(FString::FromInt(InAbility->GetCurrentCharges())));
+			if (InAbility->GetIsAbilityCharged() && ThirdAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
 
@@ -90,22 +66,13 @@ void UAbilitiesPanelUI::NativePreConstruct()
 void UAbilitiesPanelUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (!FirstAbilityProgressBar || !SecondAbilityProgressBar || !ThirdAbilityProgressBar) return;
-	if (const TObjectPtr<UMaterialInterface> Material = Cast<UMaterialInterface>(FirstAbilityProgressBar->GetBrush().GetResourceObject()))
-	{
-		MI_FirstAbilityRadial = UMaterialInstanceDynamic::Create(Material, this);
-		FirstAbilityProgressBar->SetBrushFromMaterial(MI_FirstAbilityRadial);
-	}
-	if (const TObjectPtr<UMaterialInterface> Material = Cast<UMaterialInterface>(SecondAbilityProgressBar->GetBrush().GetResourceObject()))
-	{
-		MI_SecondAbilityRadial = UMaterialInstanceDynamic::Create(Material, this);
-		SecondAbilityProgressBar->SetBrushFromMaterial(MI_SecondAbilityRadial);
-	}
-	if (const TObjectPtr<UMaterialInterface> Material = Cast<UMaterialInterface>(ThirdAbilityProgressBar->GetBrush().GetResourceObject()))
-	{
-		MI_ThirdAbilityRadial = UMaterialInstanceDynamic::Create(Material, this);
-		ThirdAbilityProgressBar->SetBrushFromMaterial(MI_ThirdAbilityRadial);
-	}
+	if (!FirstAbilityProgressBar || !SecondAbilityProgressBar || !ThirdAbilityProgressBar || !MI_RadialProgress) return;
+	MI_FirstAbilityRadial = UMaterialInstanceDynamic::Create(MI_RadialProgress, this);
+	FirstAbilityProgressBar->SetBrushFromMaterial(MI_FirstAbilityRadial);
+	MI_SecondAbilityRadial = UMaterialInstanceDynamic::Create(MI_RadialProgress, this);
+	SecondAbilityProgressBar->SetBrushFromMaterial(MI_SecondAbilityRadial);
+	MI_ThirdAbilityRadial = UMaterialInstanceDynamic::Create(MI_RadialProgress, this);
+	ThirdAbilityProgressBar->SetBrushFromMaterial(MI_ThirdAbilityRadial);
 }
 
 void UAbilitiesPanelUI::NativeDestruct()

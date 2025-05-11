@@ -4,10 +4,12 @@
 #include "Blueprint/UserWidget.h"
 #include "AbilitiesPanelUI.generated.h"
 
+class UTextBlock;
+class UImage;
+class UBorder;
 class UAbility;
 enum class EUIBar : uint8;
 class UOverlay;
-class UImage;
 
 UCLASS()
 class POSSESSIONGAME_API UAbilitiesPanelUI : public UUserWidget
@@ -25,16 +27,18 @@ private:
 	TObjectPtr<UTexture2D> AbilityIcon2;
 	UPROPERTY(EditAnywhere, Category = "Ability Icons", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> AbilityIcon3;
+	UPROPERTY(EditDefaultsOnly, Category = "Material", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_RadialProgress;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> FirstAbilityProgressBar;
+	TObjectPtr<UBorder> FirstAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> FirstAbilityImage;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> SecondAbilityProgressBar;
+	TObjectPtr<UBorder> SecondAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> SecondAbilityImage;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> ThirdAbilityProgressBar;
+	TObjectPtr<UBorder> ThirdAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ThirdAbilityImage;
 	UPROPERTY(meta = (BindWidget))
@@ -43,6 +47,12 @@ private:
 	TObjectPtr<UOverlay> SecondAbilityOverlay;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UOverlay> ThirdAbilityOverlay;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> FirstChargesText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> SecondChargesText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ThirdChargesText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> Ability1UseAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))

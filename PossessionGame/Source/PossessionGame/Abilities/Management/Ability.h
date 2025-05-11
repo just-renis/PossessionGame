@@ -22,6 +22,7 @@ public:
 	int32 GetCurrentCooldownKill() const { return CurrentCooldownKill; }
 	int32 GetReqCooldownKill() const { return ReqCooldownKill; }
 	int32 GetAbilityIndex() const;
+	int32 GetCurrentCharges() const { return CurrentChargesAmount; }
 	float GetReqCooldownSecs() const { return ReqCooldownSecs; }
 	float GetCurrentCooldownSecs() const { return CurrentCooldownSecs; }
 	float GetCurrentDuration() const { return CurrentDuration; }
