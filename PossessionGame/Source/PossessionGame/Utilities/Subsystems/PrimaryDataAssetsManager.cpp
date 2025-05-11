@@ -307,6 +307,13 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_ForceFieldDissolve", ESound::ForceFieldDissolve);
 	SoundMap.Add("PA_Dash", ESound::Dash);
 	SoundMap.Add("PA_QuickMelee", ESound::QuickMelee);
+	SoundMap.Add("PA_SecretCrateOpen", ESound::SecretCrateOpen);
+	SoundMap.Add("PA_SecretCratePassive", ESound::SecretCratePassive);
+	SoundMap.Add("PA_SecretCrateReceivePowerUp", ESound::SecretCrateReceivePowerUp);
+	SoundMap.Add("PA_PlayerStompLand", ESound::PlayerStompLand);
+	SoundMap.Add("PA_PlayerStompDashDown", ESound::PlayerStompDashDown);
+	SoundMap.Add("PA_Jump", ESound::Jump);
+	SoundMap.Add("PA_DoubleJump", ESound::DoubleJump);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

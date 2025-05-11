@@ -275,6 +275,7 @@ private:
 	void P_ApplyCurrentVariation() const;
 	void P_OnVariationSelection(const ECharacterType InCharacterType);
 	void P_ReceiveCurrentlySelectedVariation();
+	void P_Jump();
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()

@@ -65,5 +65,12 @@ enum class ESound : uint16
 	ForceFieldDissolve,
 	GatesOpen,
 	Dash,
-	QuickMelee
+	QuickMelee,
+	SecretCrateOpen,
+	SecretCratePassive,
+	SecretCrateReceivePowerUp,
+	PlayerStompLand,
+	PlayerStompDashDown,
+	Jump,
+	DoubleJump
 };
