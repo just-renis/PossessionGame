@@ -18,6 +18,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<ARanger> Proprietor;
 
+	virtual void P_ApplyVariation() override;
+
 	virtual bool IsProprietorPossessed() override;
 	
 	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) override;

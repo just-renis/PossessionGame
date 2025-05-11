@@ -1,6 +1,5 @@
 ﻿#include "VariationsComputer.h"
 #include "Components/WidgetComponent.h"
-#include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
@@ -13,7 +12,7 @@ AVariationsComputer::AVariationsComputer()
 
 void AVariationsComputer::Interact()
 {
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->OpenUI();
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradePanelAppear);
 }
 

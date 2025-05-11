@@ -41,12 +41,15 @@ public:
 protected:
 	bool bIsAbilityInDuration = false;
 	int32 CurrentChargesAmount = 0;
+	int32 MaxChargesAmount;
 	float CurrentDuration;
 	float CurrentCooldownSecs;
 	float DurationTime;
 	float ReqCooldownSecs;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
+	
+	virtual void P_ApplyVariation() {}
 
 	virtual bool IsProprietorPossessed() { return false; }
 	
@@ -60,7 +63,6 @@ private:
 	bool bIsDurational = false;
 	int32 CurrentCooldownKill;
 	int32 ReqCooldownKill;
-	int32 MaxChargesAmount;
 	float RefreshOtherAbilityAmount;
 	UPROPERTY()
 	TObjectPtr<UAbilityData> Data;

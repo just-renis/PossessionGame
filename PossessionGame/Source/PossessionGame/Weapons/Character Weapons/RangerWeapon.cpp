@@ -3,12 +3,11 @@
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
-#include "PossessionGame/Enums/EUpgrade.h"
-#include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
-#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
+#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
@@ -46,6 +45,11 @@ void ARangerWeapon::P_Reload(int32 OtherAmmoSource)
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
 	if (AnimInstance) AnimInstance->PlayMontage(EWeaponAnimState::Reload);
 	Super::P_Reload(OtherAmmoSource);
+}
+
+void ARangerWeapon::P_ApplyCurrentVariation()
+{
+	if (EVariation::RangerVariationBlue == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(Proprietor->GetCharacterName())) HitScanDamage = DefaultHitScanDamage *= 0.6f;
 }
 
 void ARangerWeapon::BeginPlay()

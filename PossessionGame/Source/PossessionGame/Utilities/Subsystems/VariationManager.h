@@ -14,7 +14,6 @@ class POSSESSIONGAME_API UVariationManager : public UWorldSubsystem
 	GENERATED_BODY()
 public:
 	EVariation GetCurrentVariation(const ECharacterType InCharacterType) const;
-	TObjectPtr<USaveSlot> GetSaveSlot() { return SaveSlot; }
 	
 	void Init(const TObjectPtr<USaveSlot>& InSaveSlot);
 private:

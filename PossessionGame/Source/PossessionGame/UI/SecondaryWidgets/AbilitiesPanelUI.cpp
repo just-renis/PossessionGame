@@ -121,7 +121,6 @@ void UAbilitiesPanelUI::PlayAbilityAnim(const int32 InAbilityIndex, const bool b
 
 void UAbilitiesPanelUI::PlayAbilityEndAnim(const int32 InAbilityIndex, const bool bIsCharged)
 {
-	UE_LOG(LogTemp, Warning, TEXT("PlayAbilityEndAnim: %i InAbilityIndex: %i"), bIsCharged, InAbilityIndex);
 	if (!bIsCharged) CollapseAbilityIcon(InAbilityIndex);
 	PlayAbilityAnim(InAbilityIndex, false);
 }

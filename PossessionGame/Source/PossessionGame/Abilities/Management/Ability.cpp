@@ -1,4 +1,6 @@
 #include "Ability.h"
+
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/AbilityData.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -29,6 +31,7 @@ void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbility
 	MaxChargesAmount = InAbilityData->GetChargesAmount();
 	if (CurrentCooldownKill > 0) bIsCooldownKill = true;
 	SetProprietor(InAbilityProprietor);
+	if (InAbilityProprietor->GetIsPossessed()) P_ApplyVariation();
 }
 
 void UAbility::UseCharge()
@@ -87,7 +90,6 @@ void UAbility::ResetDuration()
 {
 	CurrentDuration = DurationTime;
 	bIsAbilityInDuration = false;
-	UE_LOG(LogTemp, Warning, TEXT("RESETDURATION(): %i %i"), Data->GetAbilityIndex(), GetAbilityIndex());
 	(void)DelegateManager->OnAbilityEnd.ExecuteIfBound(GetAbilityIndex(), GetIsAbilityCharged());
 }
 

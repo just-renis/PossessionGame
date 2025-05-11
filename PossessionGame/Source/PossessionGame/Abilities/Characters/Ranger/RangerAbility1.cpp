@@ -3,6 +3,8 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Enums/EVariation.h"
+#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
@@ -20,6 +22,15 @@ void URangerAbility1::P_Execute()
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::GrenadeLaunch);
 	Proprietor->LaunchGrenade();
 	Super::P_Execute();
+}
+
+void URangerAbility1::P_ApplyVariation()
+{
+	if (EVariation::RangerVariationBlue == Proprietor->GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(Proprietor->GetCharacterName()))
+	{
+		MaxChargesAmount += 2;
+		ReqCooldownSecs *= 0.7f;
+	}
 }
 
 bool URangerAbility1::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
