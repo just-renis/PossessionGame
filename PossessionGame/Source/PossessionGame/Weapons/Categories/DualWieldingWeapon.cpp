@@ -119,9 +119,8 @@ void ADualWieldingWeapon::PostProprietorSetup()
 
 void ADualWieldingWeapon::P_SetVariationMaterial(const EVariation InVariationName)
 {
-	if (!P_Data) return;
-	FirstWeapon->GetMesh()->SetMaterial(0, P_Data->GetVariationMaterial(InVariationName));
-	SecondWeapon->GetMesh()->SetMaterial(0, P_Data->GetVariationMaterial(InVariationName));
+	FirstWeapon->P_SetVariationMaterial(InVariationName);
+	SecondWeapon->P_SetVariationMaterial(InVariationName);
 }
 
 void ADualWieldingWeapon::CyclingModeLogic()

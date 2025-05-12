@@ -47,13 +47,13 @@ public:
     float GetHitScanDamage() const { return HitScanDamage; }
     float GetHitScanSpread() const { return HitScanSpread; }
     float GetDamageMultiplierFromRange(const float InMeters) const;
+    float GetVariationHueValue(const EVariation InVariation);
     FVector GetFirstWeaponLocation() const { return FirstWeaponLocation; }
     FRotator GetFirstWeaponRotation() const { return FirstWeaponRotation; }
     FVector GetFirstWeaponScale() const { return FirstWeaponScale; }
     FVector GetSecondWeaponLocation() const { return SecondWeaponLocation; }
     FRotator GetSecondWeaponRotation() const { return SecondWeaponRotation; }
     FVector GetSecondWeaponScale() const { return SecondWeaponScale; }
-    TObjectPtr<UMaterialInterface> GetVariationMaterial(const EVariation InVariation);
 private:
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
     bool bHitScan = true;
@@ -75,8 +75,8 @@ private:
     FRotator SecondWeaponRotation;
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
     FVector SecondWeaponScale;
-    UPROPERTY(EditAnywhere, Category = "Variation Materials", meta = (AllowPrivateAccess = true))
-    TMap<EVariation, TObjectPtr<UMaterialInterface>> VariationMaterials;
+    UPROPERTY(EditAnywhere, Category = "Variation Hue Values", meta = (AllowPrivateAccess = true))
+    TMap<EVariation, float> VariationHueValues;
     UPROPERTY(EditAnywhere, Category = "Damage Range Entries", meta = (AllowPrivateAccess = true))
     FDamageRangeEntries DamageRangeEntries;
 };
