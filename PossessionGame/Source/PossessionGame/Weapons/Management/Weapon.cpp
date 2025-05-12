@@ -109,11 +109,7 @@ void AWeapon::P_SetWalkSpread(const bool bState)
 	P_Data->SetAllProjectilesWalkSpread(bState);
 }
 
-void AWeapon::P_SetVariationMaterial(const EVariation InVariationName)
-{
-	if (!P_Data) return;
-	GetMesh()->SetMaterial(0, P_Data->GetVariationMaterial(InVariationName));
-}
+void AWeapon::P_SetVariationMaterial(const EVariation InVariationName) { GetMesh()->SetMaterial(0, P_Data->GetVariationMaterial(InVariationName)); }
 
 void AWeapon::DestroyThis()
 {
@@ -233,6 +229,7 @@ void AWeapon::HitScanLogic()
 	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"));
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Damage multiplier: %f"), P_Data->GetDamageMultiplierFromRange(HitResult.Distance * 0.01f));
 		AssetsManager->SpawnOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());
 		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
 	}
@@ -286,8 +283,9 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	const bool bIsCritical = InHitResult.BoneName == "head";
 	(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 	AssetsManager->PlaySound2D(bIsCritical ? ESound::CriticalDamageTick : ESound::DamageTick);
-	UE_LOG(LogTemp, Warning, TEXT("AWeapon::DealPointDamage %f"), P_ReceiveHitScanDamage());
-	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? P_ReceiveHitScanDamage() * 2 : P_ReceiveHitScanDamage(),
+	const float Damage = P_ReceiveHitScanDamage() * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
+	UE_LOG(LogTemp, Warning, TEXT("AWeapon::DealPointDamage %f"), Damage);
+	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? Damage * 2 : Damage,
 	(InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 

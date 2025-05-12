@@ -404,7 +404,7 @@ void AEnemy::P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 void AEnemy::P_SetupCharacterMovement()
 {
 	CurrentDashCooldown = P_Data->GetDashCooldown();
-	GetCharacterMovement()->GravityScale = 1.5f;
+	GetCharacterMovement()->GravityScale = 3.5f;
 	GetCharacterMovement()->JumpZVelocity = 1000.f;
 	GetCharacterMovement()->AirControl = 1.f;
 	GetCharacterMovement()->MaxAcceleration = 20000.f;

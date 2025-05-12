@@ -6,6 +6,37 @@
 
 enum class EVariation : uint8;
 
+USTRUCT()
+struct FDamageDistanceEntry
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditDefaultsOnly)
+    float MaxDistanceMeters = 0.f;
+    UPROPERTY(EditDefaultsOnly)
+    float DamageMultiplier = 1.f;
+};
+
+USTRUCT()
+struct FDamageRangeEntries
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditDefaultsOnly)
+    TArray<FDamageDistanceEntry> DamageDistanceEntries;
+    UPROPERTY(EditDefaultsOnly)
+    float MaxRangeDamageMultiplier = 1.f;
+
+    float GetDamageMultiplier(const float DistanceMeters) const
+    {
+        for (const FDamageDistanceEntry Entry : DamageDistanceEntries)
+        {
+            if (DistanceMeters <= Entry.MaxDistanceMeters) return Entry.DamageMultiplier;
+        }
+        return MaxRangeDamageMultiplier;
+    }
+};
+
 UCLASS()
 class POSSESSIONGAME_API UPlayerWeaponData : public UWeaponData
 {
@@ -15,6 +46,7 @@ public:
     int32 GetTotalAmmo() const { return TotalAmmo; }
     float GetHitScanDamage() const { return HitScanDamage; }
     float GetHitScanSpread() const { return HitScanSpread; }
+    float GetDamageMultiplierFromRange(const float InMeters) const;
     FVector GetFirstWeaponLocation() const { return FirstWeaponLocation; }
     FRotator GetFirstWeaponRotation() const { return FirstWeaponRotation; }
     FVector GetFirstWeaponScale() const { return FirstWeaponScale; }
@@ -48,4 +80,6 @@ private:
     FVector AimLocation;
     UPROPERTY(EditAnywhere, Category = "Variation Materials", meta = (AllowPrivateAccess = true))
     TMap<EVariation, TObjectPtr<UMaterialInterface>> VariationMaterials;
+    UPROPERTY(EditAnywhere, Category = "Damage Range Entries", meta = (AllowPrivateAccess = true))
+    FDamageRangeEntries DamageRangeEntries;
 };
