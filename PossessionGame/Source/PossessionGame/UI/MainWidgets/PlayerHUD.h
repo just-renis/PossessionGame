@@ -142,7 +142,6 @@ private:
 	TObjectPtr<UAbilitiesPanelUI> GetAbilityPanel();
 	
 	virtual void NativeConstruct() override;
-	void ToggleCrosshair();
 	//void SpawnHitDamageIndicator(const float InAngle);
 	void ShowDamageTick(const bool bIsCritical);
 	void LevelUp(const int32 InLevel);

@@ -9,7 +9,6 @@ enum class ECharacterType : uint8;
 enum class EVariation : uint8;
 
 DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
-DECLARE_DELEGATE(FOnZoomToggle);
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
 DECLARE_DELEGATE(FOnUpgradeSelectionOpened);
 DECLARE_DELEGATE(FOnUpgradeSelected);
@@ -60,7 +59,6 @@ class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
 	GENERATED_BODY()
 public:
 	FOnHandsReloadMontageEnd OnHandsReloadMontageEnd;
-	FOnZoomToggle OnZoomToggle;
 	FOnGraphicsSettingChange OnGraphicsSettingChange;
 	FOnUpgradeSelectionOpened OnUpgradeSelectionOpened;
 	FOnUpgradeSelected OnUpgradeSelected;

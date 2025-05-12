@@ -12,17 +12,7 @@ class POSSESSIONGAME_API ARangerWeapon : public AOneHandedWeapon
 	GENERATED_BODY()
 public:
 	ARangerWeapon();
-	
-	void P_ZoomToCamera(bool bIsZooming, FVector2D& MouseSensitivity);
-	void ZoomLogic(TObjectPtr<UCameraComponent> Camera, float DeltaTime);
 private:
-	bool bIsWeaponZoomingInMotion = false;
-	bool bIsZoomingIn = false;
-	float ZoomStartTime = -1.f;
-	float ZoomingTimer = 0.f;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UStaticMeshComponent> Crosshair;
-
 	virtual void AI_Reload() override;
 	virtual void AI_Shoot() override;
 	
@@ -31,5 +21,4 @@ private:
 	virtual void P_ApplyCurrentVariation() override;
 
 	virtual void BeginPlay() override;
-	virtual void HitScanLogic() override;
 };

@@ -36,15 +36,11 @@ private:
 	void AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor);
 
 	virtual void P_Setup() override;
-	virtual void P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) override;
-	virtual void P_SetupRightClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) override;
-	void P_ChangeAiming(bool bIsZooming);
 	virtual void P_SetupColorsForUI() override;
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) override;
 	virtual void P_Destroy() override;
 	
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
 	void GrenadeLauncherMuzzleFlashLogic();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void PossessedBy(AController* NewController) override;

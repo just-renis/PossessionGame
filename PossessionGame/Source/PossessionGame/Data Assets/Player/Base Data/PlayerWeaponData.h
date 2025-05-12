@@ -53,7 +53,6 @@ public:
     FVector GetSecondWeaponLocation() const { return SecondWeaponLocation; }
     FRotator GetSecondWeaponRotation() const { return SecondWeaponRotation; }
     FVector GetSecondWeaponScale() const { return SecondWeaponScale; }
-    FVector GetAimLocation() const { return AimLocation; }
     TObjectPtr<UMaterialInterface> GetVariationMaterial(const EVariation InVariation);
 private:
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -76,8 +75,6 @@ private:
     FRotator SecondWeaponRotation;
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
     FVector SecondWeaponScale;
-    UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-    FVector AimLocation;
     UPROPERTY(EditAnywhere, Category = "Variation Materials", meta = (AllowPrivateAccess = true))
     TMap<EVariation, TObjectPtr<UMaterialInterface>> VariationMaterials;
     UPROPERTY(EditAnywhere, Category = "Damage Range Entries", meta = (AllowPrivateAccess = true))

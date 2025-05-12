@@ -1,5 +1,4 @@
 ﻿#include "Ranger.h"
-#include "InputMappingContext.h"
 #include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
@@ -20,7 +19,6 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Animation Instances/Hands/RangerHandsAnimInstance.h"
-#include "PossessionGame/Weapons/Character Weapons/RangerWeapon.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
 ARanger::ARanger()
@@ -105,18 +103,6 @@ void ARanger::P_Setup()
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ARanger::SetActionInMotion);
 }
 
-void ARanger::P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
-{
-	RightClickInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &ARanger::P_ChangeAiming, true);
-}
-
-void ARanger::P_SetupRightClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
-{
-	RightClickInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Completed, this, &ARanger::P_ChangeAiming, false);
-}
-
-void ARanger::P_ChangeAiming(bool bIsZooming) { Cast<ARangerWeapon>(Weapon)->P_ZoomToCamera(bIsZooming, MouseSensitivity); }
-
 void ARanger::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.58431f, 0.11373f, 0.f)); }
 
 void ARanger::P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName)
@@ -137,12 +123,6 @@ void ARanger::BeginPlay()
 	Super::BeginPlay();
 	SetupGrenadeLaunchTriggerSphere();
 	AssetsManager->AttachOrLoadVfx(EVfx::RangerGrenadeLauncherMuzzle, &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
-}
-
-void ARanger::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	if (bIsPossessed) Cast<ARangerWeapon>(Weapon)->ZoomLogic(Camera, DeltaTime);
 }
 
 void ARanger::GrenadeLauncherMuzzleFlashLogic()

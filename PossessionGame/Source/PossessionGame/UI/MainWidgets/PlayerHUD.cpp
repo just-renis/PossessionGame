@@ -171,11 +171,8 @@ void UPlayerHUD::NativeConstruct()
 	Super::NativeConstruct();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnPlayerDamageDealt.BindUObject(this, &UPlayerHUD::ShowDamageTick);
-	DelegateManager->OnZoomToggle.BindUObject(this, &UPlayerHUD::ToggleCrosshair);
 	DelegateManager->OnLevelUp.AddUObject(this, &UPlayerHUD::LevelUp);
 }
-
-void UPlayerHUD::ToggleCrosshair() { if (Crosshair) ToggleUI(Crosshair); }
 
 /*void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
 {
