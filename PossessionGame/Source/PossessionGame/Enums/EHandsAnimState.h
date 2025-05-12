@@ -15,5 +15,6 @@ enum class EHandsAnimState : uint8
 	RangerDeployShield,
 	SecondaryGrenadeLaunch,
 	OverCharge,
-	QuickMelee
+	QuickMelee,
+	Jump
 };

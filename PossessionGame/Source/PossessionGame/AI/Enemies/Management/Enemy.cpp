@@ -890,7 +890,7 @@ void AEnemy::P_SetupNavArea()
 	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
-void AEnemy::P_ApplyCurrentVariation() const { if (Weapon) Weapon->P_SetVariationMaterial(Variation); }
+void AEnemy::P_ApplyCurrentVariation() const { Weapon->P_SetVariationMaterial(Variation); }
 
 void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {
@@ -906,6 +906,7 @@ void AEnemy::P_Jump()
 	if (CanJump())
 	{
 		Jump();
+		Weapon->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Jump);
 		AssetsManager->PlaySound2D(GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 0 ? ESound::Jump : ESound::DoubleJump);
 	}
 }

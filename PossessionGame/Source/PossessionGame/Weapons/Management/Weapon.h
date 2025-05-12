@@ -65,7 +65,6 @@ public:
 	void P_SetWalkSpread(const bool bState);
 	virtual void P_SetVariationMaterial(const EVariation InVariationName);
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) {}
-	void P_SetHitScanDamage(const float InDamageMultiplier) { P_HitScanDamage = InDamageMultiplier; }
 	
 	virtual void SetWeaponMeshScaleToOriginal() { Mesh->SetRelativeScale3D(OriginalScale); }
 	void SetFirstShotWasShot() { bFirstShotWasShot = true; }
@@ -89,7 +88,6 @@ protected:
 	float HitScanDamage;
 	float ShootTimer = 0.f;
 	float DefaultHitScanDamage;
-	float P_HitScanDamage = 0.f; // For guardian hitscan multiplier end result variation.
 	EWeapon Name;
 	FVector OriginalScale;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -142,8 +140,11 @@ private:
 	int32 ShootCyclesUntilReload;
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MI_Variation;
 	
 	void P_SetupLevelUpAppliance(const int32 InLevel);
+	void P_ReceiveAndSetDynamicMaterial();
 	virtual void P_ApplyCurrentVariation() {}
 
 	virtual EDamageReason GetDamageReason() const override { return P_Data->GetDamageReason(); } // It does not matter from which data i will get damage reason, since it would be the same.

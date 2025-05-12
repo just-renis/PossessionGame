@@ -82,6 +82,7 @@ void AWeapon::P_InitialSetupTransfer()
 void AWeapon::P_SetupTransfer(const bool bSetToFirstHand)
 {
 	DelegateManager->OnHandsReloadMontageEnd.BindUObject(this, &AWeapon::P_UpdateAmmoTextHUD);
+	P_ReceiveAndSetDynamicMaterial();
 	P_InitialSetupTransfer();
 	if (bSetToFirstHand) P_AttachHandsToCamera(P_Data->GetFirstWeaponLocation(), P_Data->GetFirstWeaponRotation(), P_Data->GetFirstWeaponScale());
 	else P_AttachHandsToCamera(P_Data->GetSecondWeaponLocation(), P_Data->GetSecondWeaponRotation(), P_Data->GetSecondWeaponScale());
@@ -109,7 +110,12 @@ void AWeapon::P_SetWalkSpread(const bool bState)
 	P_Data->SetAllProjectilesWalkSpread(bState);
 }
 
-void AWeapon::P_SetVariationMaterial(const EVariation InVariationName) { GetMesh()->SetMaterial(0, P_Data->GetVariationMaterial(InVariationName)); }
+void AWeapon::P_SetVariationMaterial(const EVariation InVariationName)
+{
+	if (!MI_Variation) return;
+	MI_Variation->SetScalarParameterValue("Hue", P_Data->GetVariationHueValue(InVariationName));
+	MI_Variation->SetScalarParameterValue("EmissiveHue", P_Data->GetVariationHueValue(InVariationName));
+}
 
 void AWeapon::DestroyThis()
 {
@@ -293,4 +299,10 @@ void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
 {
 	HitScanDamage -= DefaultHitScanDamage * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) / 100.f);
 	HitScanDamage += DefaultHitScanDamage * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) / 100.f);
+}
+
+void AWeapon::P_ReceiveAndSetDynamicMaterial()
+{
+	MI_Variation = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
+	GetMesh()->SetMaterial(0, MI_Variation);
 }
