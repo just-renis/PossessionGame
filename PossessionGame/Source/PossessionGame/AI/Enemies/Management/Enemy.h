@@ -193,6 +193,7 @@ private:
 	bool bPlayerDied = false;
 	bool bIsElite = false;
 	bool bIsMutant = false;
+	bool bIsStomping = false;
 	float PossessionBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -276,6 +277,7 @@ private:
 	void P_OnVariationSelection(const ECharacterType InCharacterType);
 	void P_ReceiveCurrentlySelectedVariation();
 	void P_Jump();
+	void P_Stomp();
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()
@@ -305,6 +307,7 @@ private:
 	void AddHp(const int32 InHp);
 	void ProcessDamageReason(const EDamageReason InDamageReason) const;
 	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;
+	virtual void Landed(const FHitResult& Hit) override;
 	UFUNCTION()
 	void CheckIfFallOutOfWorld();
 	UFUNCTION()

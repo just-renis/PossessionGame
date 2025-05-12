@@ -235,7 +235,7 @@ void AWeapon::HitScanLogic()
 	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"));
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Damage multiplier: %f"), P_Data->GetDamageMultiplierFromRange(HitResult.Distance * 0.01f));
+		//UE_LOG(LogTemp, Warning, TEXT("Damage multiplier: %f"), P_Data->GetDamageMultiplierFromRange(HitResult.Distance * 0.01f));
 		AssetsManager->SpawnOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());
 		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
 	}

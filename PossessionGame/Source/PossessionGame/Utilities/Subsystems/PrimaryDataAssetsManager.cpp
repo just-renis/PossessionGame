@@ -161,14 +161,43 @@ void UPrimaryDataAssetsManager::AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr
 	if (InVfxName == EVfx::None) return;
 	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
 	{
-		if (InVfxComponent) *InVfxComponent = AttachVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+		if (InVfxComponent)
+		{
+			*InVfxComponent = AttachVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+			const FNiagaraVariable Var(FNiagaraTypeDefinition(UMaterialInterface::StaticClass()), FName("User.Material"));
+			if (UMaterialInterface* Material = Cast<UMaterialInterface>((*InVfxComponent)->GetOverrideParameters().GetUObject(Var)))
+			{
+			UE_LOG(LogTemp, Warning, TEXT("MATERIAL: %s"), *Material->GetName());
+				UMaterialInstanceDynamic* DynMat = UMaterialInstanceDynamic::Create(Material, this);
+				(*InVfxComponent)->SetVariableMaterial("User.Material", DynMat);
+				DynMat->SetScalarParameterValue("Hue", 0.613333f);
+			}
+		}
 		else AttachVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
 	}
-	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxComponent, InVfxName, InAttachTo, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy]
+	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxComponent, InVfxName, InAttachTo, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy]() mutable
 	{
 		if (InVfxComponent)
 		{
 			*InVfxComponent = AttachVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+			const FNiagaraVariable Var(FNiagaraTypeDefinition(UMaterialInterface::StaticClass()), FName("User.Material"));
+			if (UMaterialInterface* Material = Cast<UMaterialInterface>((*InVfxComponent)->GetOverrideParameters().GetUObject(Var)))
+			{
+			UE_LOG(LogTemp, Warning, TEXT("MATERIAL: %s"), *Material->GetName());
+				UMaterialInstanceDynamic* DynMat = UMaterialInstanceDynamic::Create(Material, this);
+				(*InVfxComponent)->SetVariableMaterial("User.Material", DynMat);
+				DynMat->SetScalarParameterValue("Hue", 0.613333f);
+			}
+		//		UE_LOG(LogTemp, Warning, TEXT("WHAT EVFX2 %s"), *UEnum::GetValueAsString(InVfxName));
+		//	if (InVfxName == EVfx::RangerMuzzle)
+		//	{
+		//		UE_LOG(LogTemp, Warning, TEXT("RANGER MUZZLE CHANGE COLOR1 %s"), *InVfxComponent->GetName());
+		//		if (const TObjectPtr<UMaterialInstanceDynamic> Material = InVfxComponent->CreateDynamicMaterialInstance(0, InVfxComponent->GetMaterial(0)))
+		//		{		
+		//		UE_LOG(LogTemp, Warning, TEXT("RANGER MUZZLE CHANGE COLOR2 %s"), *InVfxComponent->GetName());
+		//			Material->SetScalarParameterValue("Hue", 0.613333f);
+	//			}
+	//		}
 			if (bDeactivate) InVfxComponent->Get()->Deactivate();
 		}
 		else AttachVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);

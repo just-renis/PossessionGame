@@ -160,6 +160,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &AEnemy::P_StopTime);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_TryInteracting);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(19).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::P_Stomp);
 	}
 }
 
@@ -911,6 +912,16 @@ void AEnemy::P_Jump()
 	}
 }
 
+void AEnemy::P_Stomp()
+{
+	if (bIsStomping || !GetCharacterMovement()->IsFalling()) return;
+	bIsStomping = true;
+	GetCharacterMovement()->AirControl = 0.f;
+	FVector Velocity = GetCharacterMovement()->Velocity;
+	Velocity.Z = 0.f;
+	GetCharacterMovement()->Velocity = Velocity + FVector(0.f, 0.f, -3000.f);
+}
+
 void AEnemy::P_Death()
 {
 	if (!bPlayerDied) AssetsManager->PlaySound2D(ESound::PlayerDeath);
@@ -1066,6 +1077,17 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 		case EDamageReason::GuardianDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariationUnlock::KillsWithGuardian); break;
 		case EDamageReason::RangerGrenadeDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariationUnlock::KillsWithRangerGrenade); break;
 		default: ;
+	}
+}
+
+void AEnemy::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	if (bIsStomping)
+	{
+		bIsStomping = false;
+		GetCharacterMovement()->AirControl = 1.f;
+		//StompImpact(Hit);
 	}
 }
 
