@@ -180,7 +180,7 @@ void UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const FNiagaraVa
 	});
 }
 
-void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const FNiagaraVariationData InNiagaraVariationData, const TMap<FName, FNiagaraAttribute>& InAttributes)
+void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const FNiagaraVariationData& InNiagaraVariationData, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (InVfxName == EVfx::None) return;
 	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
@@ -197,14 +197,20 @@ void UPrimaryDataAssetsManager::ApplyAttributesToVfxComponent(const TMap<FName, 
 {
 	for (const TPair<FName, FNiagaraAttribute> Attribute : InAttributes)
 	{
-		float NewValue = Attribute.Value.Value;
-		if (!Attribute.Value.bIsReplacingValue)
+		if (!Attribute.Value.bIsReplacingValue) // Only float works currently, if there will be need for FVector / FLinearColor changes will occur.
 		{
-			if (FMath::IsNearlyEqual(Attribute.Value.Value, 0.f, 0.001f)) continue;
+			if (FMath::IsNearlyEqual(Attribute.Value.GetFloat(), 0.f, 0.001f)) continue;
 			const float ComponentAttributeValue = GetVfxAttributeValue(Component, Attribute.Key);
-			NewValue = ComponentAttributeValue + ComponentAttributeValue * (Attribute.Value.Value / 100.f);
+			const float AttributeValue = ComponentAttributeValue + ComponentAttributeValue * (Attribute.Value.GetFloat() * 0.01f);
+			Component->SetVariableFloat(Attribute.Key, AttributeValue);
+	//		if (Attribute.Value.IsFloat()) 
 		}
-		Component->SetVariableFloat(Attribute.Key, NewValue);
+		else
+		{
+			if (Attribute.Value.IsFloat()) Component->SetVariableFloat(Attribute.Key, Attribute.Value.GetFloat());
+			else if (Attribute.Value.IsVector()) Component->SetVectorParameter(Attribute.Key, Attribute.Value.GetVector());
+			else if (Attribute.Value.IsColor()) Component->SetColorParameter(Attribute.Key, Attribute.Value.GetColor());
+		}
 	}
 }
 
@@ -421,7 +427,7 @@ void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const TObjectPtr<UAudioC
 	InAudioComp->Play();
 }
 
-void UPrimaryDataAssetsManager::SetupVfx(const FNiagaraVariationData InNiagaraVariationData, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes, const bool bDeactivate)
+void UPrimaryDataAssetsManager::SetupVfx(const FNiagaraVariationData& InNiagaraVariationData, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes, const bool bDeactivate)
 {
 	if (bDeactivate) InVfxComponent->Deactivate();
 	if (InNiagaraVariationData.bRequiredVfxChange) ChangeVfxVariation(InVfxComponent, InNiagaraVariationData);

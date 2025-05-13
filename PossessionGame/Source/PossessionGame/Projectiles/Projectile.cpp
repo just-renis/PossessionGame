@@ -21,6 +21,7 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
+#include "PossessionGame/Weapons/Management/Weapon.h"
 
 AProjectile::AProjectile()
 {
@@ -83,9 +84,12 @@ void AProjectile::DisableProjectileComponents() const
 	MovementComponent->Deactivate();
 }
 
-void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact, const TMap<FName, FNiagaraAttribute>& InAttributes)
+void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact)
 {
-	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), FNiagaraVariationData(), InAttributes);
+	const TObjectPtr<AWeapon> Weapon = ProjectileData.GetProprietor()->GetWeapon();
+	const FNiagaraVariationData NiagaraVariationData(ProjectileData.bIsPlayerProjectile ? Weapon->GetPlayerData()->GetNiagaraVariationData(ProjectileData.GetProprietor()->GetVariation()) : Weapon->GetAIData()->GetNiagaraVariationData(EVariation::Default));
+	Attributes.Add(TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color));
+	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), NiagaraVariationData, Attributes);
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -168,8 +172,6 @@ void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor
 
 void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, true); }
 
-void AProjectile::SpawnSecondProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, false); }
-
 void AProjectile::ApplyCurrentVariation()
 {
 	if (ProjectileData.ProjectileName == EPoolObject::TricksterPoisonProjectile && EVariation::TricksterVariationPurple == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ProjectileData.GetProprietor()->GetCharacterName()))
@@ -181,6 +183,7 @@ void AProjectile::ApplyCurrentVariation()
 void AProjectile::DestroyThis()
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "DestroyThis");
+	Attributes.Empty();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	DisableProjectileComponents();
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);

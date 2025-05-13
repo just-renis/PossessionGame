@@ -7,11 +7,13 @@ struct FNiagaraVariationData
 {
 	GENERATED_BODY()
 
-	FNiagaraVariationData() : bRequiredVfxChange(false), Hue(0.f) {}
-	FNiagaraVariationData(const bool bIsPlayerVfx, const float InValue) : bRequiredVfxChange(bIsPlayerVfx), Hue(InValue) {}
+	FNiagaraVariationData() : bRequiredVfxChange(false), Hue(0.f), Color() {}
+	FNiagaraVariationData(const bool bIsPlayerVfx, const float InValue, const FLinearColor InColor = FLinearColor()) : bRequiredVfxChange(bIsPlayerVfx), Hue(InValue), Color(InColor) {}
 
 	UPROPERTY(EditDefaultsOnly)
 	bool bRequiredVfxChange;
 	UPROPERTY(EditDefaultsOnly)
 	float Hue;
+	UPROPERTY(EditDefaultsOnly)
+	FLinearColor Color;
 };

@@ -38,6 +38,8 @@ protected:
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
+	UPROPERTY()
+	TMap<FName, FNiagaraAttribute> Attributes;
 
 	virtual void BeginPlay() override;
 	void PlaySound(const ESound InSoundName);
@@ -45,7 +47,7 @@ protected:
 	virtual void OnImpact(const FHitResult& Hit);
 	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich) override;
 	void DisableProjectileComponents() const;
-	void SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
+	void SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact);
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
@@ -65,8 +67,8 @@ private:
 	void DealAreaDamage();
 	void DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
 	virtual void SpawnFirstProjectileImpactVfx(const FHitResult& Hit);
-	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit);
-	void ApplyCurrentVariation();
+	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) {}
+	virtual void ApplyCurrentVariation();
 	UFUNCTION()
 	virtual void DestroyThis();
 };

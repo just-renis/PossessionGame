@@ -20,14 +20,6 @@ APoisonGrenade::APoisonGrenade()
 	Sounds[ESound::TricksterPoisonRelease]->SetupAttachment(Mesh);
 }
 
-void APoisonGrenade::BeginPlay()
-{
-	Super::BeginPlay();
-	Attributes.Add(TEXT("User.Loop Duration"), FNiagaraAttribute(true, 0.f));
-	Attributes.Add(TEXT("User.Uniform Sprite Size Max"), FNiagaraAttribute(false, 0.f));
-	Attributes.Add(TEXT("User.Uniform Sprite Size Min"), FNiagaraAttribute(false, 0.f));
-}
-
 void APoisonGrenade::PlayImpactSound()
 {
 	PlaySound(ESound::TricksterPoisonImpact);
@@ -43,10 +35,10 @@ void APoisonGrenade::SpawnSecondProjectileImpactVfx(const FHitResult& Hit)
 	if (EffectDurationIncrease > 0.f) ModifiedOvertimeAreaLifeSpan += ProjectileData.OvertimeAreaLifeSpan * (EffectDurationIncrease / 100.f);
 	const float SizeIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::Size);
 	if (SizeIncrease > 0.f) ModifiedOvertimeAreaSize += DefaultOvertimeAreaSize * (SizeIncrease / 100.f);
-	Attributes["User.Loop Duration"].Value = ModifiedOvertimeAreaLifeSpan;
-	Attributes["User.Uniform Sprite Size Max"].Value = ModifiedOvertimeAreaSize;
-	Attributes["User.Uniform Sprite Size Min"].Value = ModifiedOvertimeAreaSize;
-	SpawnProjectileImpactVfx(Hit, false, Attributes);
+	Attributes.Add(TEXT("User.Loop Duration"), FNiagaraAttribute(true, ModifiedOvertimeAreaLifeSpan));
+	Attributes.Add(TEXT("User.Uniform Sprite Size Max"), FNiagaraAttribute(false, ModifiedOvertimeAreaSize));
+	Attributes.Add(TEXT("User.Uniform Sprite Size Min"), FNiagaraAttribute(false, ModifiedOvertimeAreaSize));
+	SpawnProjectileImpactVfx(Hit, false);
 }
 
 void APoisonGrenade::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

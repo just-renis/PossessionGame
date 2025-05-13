@@ -243,16 +243,14 @@ void AWeapon::HitScanLogic()
 	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"));
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Damage multiplier: %f"), P_Data->GetDamageMultiplierFromRange(HitResult.Distance * 0.01f));
-		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation());
+		const FNiagaraVariationData NiagaraVariationData(bIsPossessed ? P_Data->GetNiagaraVariationData(Proprietor->GetVariation()) : AI_Data->GetNiagaraVariationData(EVariation::Default));
+		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation(),
+		NiagaraVariationData, {{TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color)}});
 		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
 	}
 }
 
-void AWeapon::MakeShootingCameraShake() const
-{
-	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(ShootingCameraShake);
-}
+void AWeapon::MakeShootingCameraShake() const { UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(ShootingCameraShake); }
 
 void AWeapon::SetMeshes(const EWeapon InPrimaryDataAssetName)
 {

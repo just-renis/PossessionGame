@@ -294,8 +294,8 @@ void UWaveManager::TutorialHandleSpawning(const ECharacterType InEnemyType)
 	{
 		if (const TObjectPtr<AEnemy> SpawnedEnemy = Location->SpawnEnemy(Enemies[InEnemyType]))
 		{
-			if (CurrentGameMode == EGameMode::TutorialMode2) SpawnedEnemy->AI_Disable();
-			else CurrentGameMode = EGameMode::TutorialMode2;
+			//if (CurrentGameMode == EGameMode::TutorialMode2) SpawnedEnemy->AI_Disable();
+			CurrentGameMode = EGameMode::TutorialMode2;
 			AliveEnemiesAmount++;
 			bIsSpawnInProcess = false;
 			break;
