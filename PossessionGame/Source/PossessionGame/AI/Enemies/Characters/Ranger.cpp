@@ -14,6 +14,7 @@
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -64,9 +65,9 @@ void ARanger::SetCustomTimeDilation(float Dilation)
 {
 	if (FMath::IsNearlyEqual(Dilation, 5.f, 0.1f))
 	{
-		AssetsManager->AttachOrLoadVfx(EVfx::StopTimeAbility, nullptr, GetCamera(), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+		AssetsManager->AttachOrLoadVfx(EVfx::StopTimeAbility, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	}
-	else AssetsManager->AttachOrLoadVfx(EVfx::StopTimeAbilityReverse, nullptr, GetCamera(), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+	else AssetsManager->AttachOrLoadVfx(EVfx::StopTimeAbilityReverse, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	CustomTimeDilation = Dilation;
 	GetWeapon()->CustomTimeDilation = Dilation;
 }
@@ -122,7 +123,7 @@ void ARanger::BeginPlay()
 	CharacterName = ECharacterType::Ranger;
 	Super::BeginPlay();
 	SetupGrenadeLaunchTriggerSphere();
-	AssetsManager->AttachOrLoadVfx(EVfx::RangerGrenadeLauncherMuzzle, &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
+	AssetsManager->AttachOrLoadVfx(EVfx::RangerGrenadeLauncherMuzzle, FNiagaraVariationData(), &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
 }
 
 void ARanger::GrenadeLauncherMuzzleFlashLogic()

@@ -42,6 +42,7 @@ public:
     virtual void P_SetupTransfer(bool bSetToFirstHand) override;
     virtual void P_UpdateAmmoTextHUD() override;
     void P_SetShootMontage(const bool bFirstWeapon, const bool bState);
+    virtual void P_ChangeVfxVariation() override;
 
     virtual void SetWeaponMeshScaleToOriginal() override;
     virtual void DestroyThis() override;
@@ -63,7 +64,7 @@ private:
     UPROPERTY()
     FWeaponCyclingState CyclingState;
     
-    virtual void P_SetVariationMaterial(const EVariation InVariationName) override;
+    virtual void P_SetVariationMaterial() override;
 
     void CyclingModeLogic();
     void NonCyclingModeLogic();

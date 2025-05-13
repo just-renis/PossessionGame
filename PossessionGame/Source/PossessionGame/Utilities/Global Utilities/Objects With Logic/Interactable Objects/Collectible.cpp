@@ -5,6 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Base Data Assets/CollectibleData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -22,7 +23,7 @@ ACollectible::ACollectible()
 void ACollectible::BeginPlay()
 {
 	Super::BeginPlay();
-	if (Data->HasAura()) GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachOrLoadVfx(Data->GetAuraName(), &Aura, Collision, NAME_None);
+	if (Data->HasAura()) GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachOrLoadVfx(Data->GetAuraName(), FNiagaraVariationData(), &Aura, Collision, NAME_None);
 	PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACollectible::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ACollectible::DisableInteractionWidget);

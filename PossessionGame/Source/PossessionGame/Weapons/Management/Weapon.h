@@ -63,7 +63,8 @@ public:
 	void P_AttachHandsToCamera(const FVector InLocation, const FRotator InRotation, const FVector InScale = FVector::ZeroVector);
 	virtual void P_AttachWeaponToHands(const TObjectPtr<USkeletalMeshComponent>& InHandsMesh, const FName InSocketName = "PlayerWeaponSocket1");
 	void P_SetWalkSpread(const bool bState);
-	virtual void P_SetVariationMaterial(const EVariation InVariationName);
+	virtual void P_SetVariationMaterial();
+	virtual void P_ChangeVfxVariation();
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) {}
 	
 	virtual void SetWeaponMeshScaleToOriginal() { Mesh->SetRelativeScale3D(OriginalScale); }
@@ -140,11 +141,8 @@ private:
 	int32 ShootCyclesUntilReload;
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
-	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> MI_Variation;
 	
 	void P_SetupLevelUpAppliance(const int32 InLevel);
-	void P_ReceiveAndSetDynamicMaterial();
 	virtual void P_ApplyCurrentVariation() {}
 
 	virtual EDamageReason GetDamageReason() const override { return P_Data->GetDamageReason(); } // It does not matter from which data i will get damage reason, since it would be the same.

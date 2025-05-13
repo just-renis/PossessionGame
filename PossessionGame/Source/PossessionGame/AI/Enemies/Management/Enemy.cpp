@@ -38,6 +38,7 @@
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/AIHpBarUI.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
@@ -347,7 +348,6 @@ void AEnemy::P_Setup()
 	Camera->SetActive(true);
 	UKismetSystemLibrary::K2_SetTimer(this, "P_ControlLogic", 0.05f, true);
 	Weapon->P_SetupTransfer();
-	P_ApplyCurrentVariation();
 	GetMesh()->SetHiddenInGame(true);
 	P_InputManager = Cast<UEnhancedPlayerInput>(GetWorld()->GetFirstPlayerController()->PlayerInput);
 	P_SetupAbilities();
@@ -510,8 +510,8 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName)
 {
 	GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get());
-	if (bIsElite) AssetsManager->AttachOrLoadVfx(EVfx::EliteAura, &Aura, GetMesh(), FName("SpawnSocket"));
-	else if (bIsMutant) AssetsManager->AttachOrLoadVfx(EVfx::MutantAura, &Aura, GetMesh(), FName("MutantAuraSocket"));
+	if (bIsElite) AssetsManager->AttachOrLoadVfx(EVfx::EliteAura, FNiagaraVariationData(), &Aura, GetMesh(), FName("SpawnSocket"));
+	else if (bIsMutant) AssetsManager->AttachOrLoadVfx(EVfx::MutantAura, FNiagaraVariationData(), &Aura, GetMesh(), FName("MutantAuraSocket"));
 }
 
 void AEnemy::DestroyAI()
@@ -890,8 +890,6 @@ void AEnemy::P_SetupNavArea()
 	NavAreaModifier = GetWorld()->SpawnActor<ANavAreaModifier>(P_NavAreaDefaultClass, GetActorLocation(), GetActorRotation());
 	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
-
-void AEnemy::P_ApplyCurrentVariation() const { Weapon->P_SetVariationMaterial(Variation); }
 
 void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {

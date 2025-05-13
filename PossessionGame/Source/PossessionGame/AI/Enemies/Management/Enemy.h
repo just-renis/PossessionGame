@@ -56,6 +56,7 @@ public:
 	float GetSkeletalMeshHeight() const;
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
+	EVariation GetVariation() const { return Variation; }
 	TObjectPtr<APossessionGameGameModeBase> GetGameModeBase() const { return GameModeBase; }
 	TObjectPtr<AEnemyAIController> GetAI() const { return AI; }
 	TObjectPtr<UAICharacterData> GetAIData() const { return AI_Data; }
@@ -273,7 +274,6 @@ private:
 	void P_ProcessMeleeAttack();
 	void P_ApplySecretReward(const int32 InIndex);
 	void P_SetupNavArea();
-	void P_ApplyCurrentVariation() const;
 	void P_OnVariationSelection(const ECharacterType InCharacterType);
 	void P_ReceiveCurrentlySelectedVariation();
 	void P_Jump();

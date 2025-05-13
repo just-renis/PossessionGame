@@ -9,6 +9,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FAsyncHandle.h"
 #include "PrimaryDataAssetsManager.generated.h"
 
+struct FNiagaraVariationData;
 class UNiagaraComponent;
 enum class EVfxType : uint8;
 enum class EPoolObject : uint8;
@@ -80,9 +81,11 @@ public:
 	void ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, ESound InSoundName);
 	void PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef = false);
 	void RemoveStoredSound(const ESound InSoundName);
-	void AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate = false, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EAttachLocation::Type InAttachType = EAttachLocation::SnapToTarget, const bool bAutoDestroy = false);
+	//void GetVfx(const EVfx InVfxName, TObjectPtr<UNiagaraComponent>* InVfxComponent);
+	void AttachOrLoadVfx(const EVfx InVfxName, const FNiagaraVariationData InNiagaraVariationData, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate = false, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EAttachLocation::Type InAttachType = EAttachLocation::SnapToTarget, const bool bAutoDestroy = false);
 	void SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
 	void ApplyAttributesToVfxComponent(const TMap<FName, FNiagaraAttribute>& InAttributes, const TObjectPtr<UNiagaraComponent>& Component);
+	void ChangeVfxVariation(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const FNiagaraVariationData InNiagaraVariationData);
 private:
 	bool bCanAsyncLoadHappen = true;
 	UPROPERTY()
@@ -104,7 +107,7 @@ private:
 
 	bool IsGameRunning();
 	EPoolObject GetProjectileNameByCharacterName(ECharacterType InCharacterType);
-	TObjectPtr<UNiagaraComponent> AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy);
+	TObjectPtr<UNiagaraComponent> AttachVfx(const EVfx InVfxName, const FNiagaraVariationData InNiagaraVariationData, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy);
 	TObjectPtr<UNiagaraComponent> SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
 
 	void SetupWeaponsPrimaryAssets();

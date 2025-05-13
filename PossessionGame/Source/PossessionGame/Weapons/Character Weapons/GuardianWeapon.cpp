@@ -2,6 +2,7 @@
 #include "GuardianSingularWeapon.h"
 #include "NiagaraComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
@@ -16,8 +17,8 @@ void AGuardianWeapon::PlayOverChargeVfx()
 	}
 	else
 	{
-		AssetsManager->AttachOrLoadVfx(EVfx::GuardianOverCharge, &FirstWeaponOverChargeComponent, FirstWeapon->GetMesh(), "OverChargeSocket");
-		AssetsManager->AttachOrLoadVfx(EVfx::GuardianOverCharge, &SecondWeaponOverChargeComponent, SecondWeapon->GetMesh(), "OverChargeSocket");
+		AssetsManager->AttachOrLoadVfx(EVfx::GuardianOverCharge, FNiagaraVariationData(), &FirstWeaponOverChargeComponent, FirstWeapon->GetMesh(), "OverChargeSocket");
+		AssetsManager->AttachOrLoadVfx(EVfx::GuardianOverCharge, FNiagaraVariationData(), &SecondWeaponOverChargeComponent, SecondWeapon->GetMesh(), "OverChargeSocket");
 	}
 }
 

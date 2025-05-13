@@ -12,6 +12,7 @@
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Projectiles/Projectile.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 
 bool UPrimaryDataAssetsManager::IsAsyncLoadingFinished()
 {
@@ -156,51 +157,22 @@ void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
 	}
 }
 
-void UPrimaryDataAssetsManager::AttachOrLoadVfx(const EVfx InVfxName, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy)
+void UPrimaryDataAssetsManager::AttachOrLoadVfx(const EVfx InVfxName, const FNiagaraVariationData InNiagaraVariationData, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy)
 {
 	if (InVfxName == EVfx::None) return;
 	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
 	{
-		if (InVfxComponent)
-		{
-			*InVfxComponent = AttachVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
-			const FNiagaraVariable Var(FNiagaraTypeDefinition(UMaterialInterface::StaticClass()), FName("User.Material"));
-			if (UMaterialInterface* Material = Cast<UMaterialInterface>((*InVfxComponent)->GetOverrideParameters().GetUObject(Var)))
-			{
-			UE_LOG(LogTemp, Warning, TEXT("MATERIAL: %s"), *Material->GetName());
-				UMaterialInstanceDynamic* DynMat = UMaterialInstanceDynamic::Create(Material, this);
-				(*InVfxComponent)->SetVariableMaterial("User.Material", DynMat);
-				DynMat->SetScalarParameterValue("Hue", 0.613333f);
-			}
-		}
-		else AttachVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+		if (InVfxComponent) *InVfxComponent = AttachVfx(InVfxName, InNiagaraVariationData, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+		else AttachVfx(InVfxName, InNiagaraVariationData, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
 	}
-	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxComponent, InVfxName, InAttachTo, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy]() mutable
+	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InNiagaraVariationData, InVfxComponent, InVfxName, InAttachTo, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy]() mutable
 	{
 		if (InVfxComponent)
 		{
-			*InVfxComponent = AttachVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
-			const FNiagaraVariable Var(FNiagaraTypeDefinition(UMaterialInterface::StaticClass()), FName("User.Material"));
-			if (UMaterialInterface* Material = Cast<UMaterialInterface>((*InVfxComponent)->GetOverrideParameters().GetUObject(Var)))
-			{
-			UE_LOG(LogTemp, Warning, TEXT("MATERIAL: %s"), *Material->GetName());
-				UMaterialInstanceDynamic* DynMat = UMaterialInstanceDynamic::Create(Material, this);
-				(*InVfxComponent)->SetVariableMaterial("User.Material", DynMat);
-				DynMat->SetScalarParameterValue("Hue", 0.613333f);
-			}
-		//		UE_LOG(LogTemp, Warning, TEXT("WHAT EVFX2 %s"), *UEnum::GetValueAsString(InVfxName));
-		//	if (InVfxName == EVfx::RangerMuzzle)
-		//	{
-		//		UE_LOG(LogTemp, Warning, TEXT("RANGER MUZZLE CHANGE COLOR1 %s"), *InVfxComponent->GetName());
-		//		if (const TObjectPtr<UMaterialInstanceDynamic> Material = InVfxComponent->CreateDynamicMaterialInstance(0, InVfxComponent->GetMaterial(0)))
-		//		{		
-		//		UE_LOG(LogTemp, Warning, TEXT("RANGER MUZZLE CHANGE COLOR2 %s"), *InVfxComponent->GetName());
-		//			Material->SetScalarParameterValue("Hue", 0.613333f);
-	//			}
-	//		}
+			*InVfxComponent = AttachVfx(InVfxName, InNiagaraVariationData, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
 			if (bDeactivate) InVfxComponent->Get()->Deactivate();
 		}
-		else AttachVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+		else AttachVfx(InVfxName, InNiagaraVariationData, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
 	});
 }
 
@@ -226,6 +198,27 @@ void UPrimaryDataAssetsManager::ApplyAttributesToVfxComponent(const TMap<FName, 
 	}
 }
 
+void UPrimaryDataAssetsManager::ChangeVfxVariation(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const FNiagaraVariationData InNiagaraVariationData)
+{
+	if (!InVfxComponent) return;
+	TArray<FNiagaraVariable> UserParameters;
+	InVfxComponent->GetOverrideParameters().GetUserParameters(UserParameters);
+	for (const FNiagaraVariable& Param : UserParameters)
+	{
+		if (Param.GetType() != FNiagaraTypeDefinition(UMaterialInterface::StaticClass())) continue;
+		if (TObjectPtr<UObject> MaterialObj = InVfxComponent->GetOverrideParameters().GetUObject(Param))
+		{
+			if (TObjectPtr<UMaterialInstanceDynamic> MI_Dynamic = Cast<UMaterialInstanceDynamic>(MaterialObj)) MI_Dynamic->SetScalarParameterValue("Hue", InNiagaraVariationData.Hue);
+			else if (TObjectPtr<UMaterialInterface> MI = Cast<UMaterialInterface>(MaterialObj))
+			{
+				MI_Dynamic = UMaterialInstanceDynamic::Create(MI, this);
+				InVfxComponent->SetVariableMaterial(Param.GetName(), MI_Dynamic);
+				MI_Dynamic->SetScalarParameterValue("Hue", InNiagaraVariationData.Hue);
+			}
+		}
+	}
+}
+
 bool UPrimaryDataAssetsManager::IsGameRunning() { return IsValid(this) && GetWorld() && !GetWorld()->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }
 
 EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharacterType InCharacterType)
@@ -243,9 +236,12 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 	}
 }
 
-TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation,  const EAttachLocation::Type InAttachType,  const bool bAutoDestroy)
+TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const FNiagaraVariationData InNiagaraVariationData, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation,  const EAttachLocation::Type InAttachType,  const bool bAutoDestroy)
 {
-	return UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName)->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+	TObjectPtr<UNiagaraComponent> Component = UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName)->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+	if (!InNiagaraVariationData.bRequiredVfxChange) return Component;
+	ChangeVfxVariation(Component, InNiagaraVariationData);
+	return Component;
 }
 
 TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)

@@ -12,6 +12,7 @@
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -42,7 +43,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	{
 		if (const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail); VfxName != EVfx::None)
 		{
-			AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
+			AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), FNiagaraVariationData(), &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
 		}
 		bHasBeenPooled = true;
 	}

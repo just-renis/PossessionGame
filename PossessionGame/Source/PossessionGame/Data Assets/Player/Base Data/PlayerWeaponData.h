@@ -75,8 +75,8 @@ private:
     FRotator SecondWeaponRotation;
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
     FVector SecondWeaponScale;
-    UPROPERTY(EditAnywhere, Category = "Variation Hue Values", meta = (AllowPrivateAccess = true))
-    TMap<EVariation, float> VariationHueValues;
     UPROPERTY(EditAnywhere, Category = "Damage Range Entries", meta = (AllowPrivateAccess = true))
     FDamageRangeEntries DamageRangeEntries;
+    UPROPERTY(EditAnywhere, Category = "Variation Hue Values", meta = (AllowPrivateAccess = true))
+    TMap<EVariation, float> VariationHueValues;
 };

@@ -82,10 +82,11 @@ void AWeapon::P_InitialSetupTransfer()
 void AWeapon::P_SetupTransfer(const bool bSetToFirstHand)
 {
 	DelegateManager->OnHandsReloadMontageEnd.BindUObject(this, &AWeapon::P_UpdateAmmoTextHUD);
-	P_ReceiveAndSetDynamicMaterial();
 	P_InitialSetupTransfer();
 	if (bSetToFirstHand) P_AttachHandsToCamera(P_Data->GetFirstWeaponLocation(), P_Data->GetFirstWeaponRotation(), P_Data->GetFirstWeaponScale());
 	else P_AttachHandsToCamera(P_Data->GetSecondWeaponLocation(), P_Data->GetSecondWeaponRotation(), P_Data->GetSecondWeaponScale());
+	P_SetVariationMaterial();
+	P_ChangeVfxVariation();
 }
 
 void AWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeTwoParams.Broadcast(CurrentAmmo, TotalAmmo); }
@@ -110,11 +111,18 @@ void AWeapon::P_SetWalkSpread(const bool bState)
 	P_Data->SetAllProjectilesWalkSpread(bState);
 }
 
-void AWeapon::P_SetVariationMaterial(const EVariation InVariationName)
+void AWeapon::P_SetVariationMaterial()
 {
+	const TObjectPtr<UMaterialInstanceDynamic> MI_Variation = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
 	if (!MI_Variation) return;
-	MI_Variation->SetScalarParameterValue("Hue", P_Data->GetVariationHueValue(InVariationName));
-	MI_Variation->SetScalarParameterValue("EmissiveHue", P_Data->GetVariationHueValue(InVariationName));
+	GetMesh()->SetMaterial(0, MI_Variation);
+	MI_Variation->SetScalarParameterValue("Hue", P_Data->GetVariationHueValue(Proprietor->GetVariation()));
+	MI_Variation->SetScalarParameterValue("EmissiveHue", P_Data->GetVariationHueValue(Proprietor->GetVariation()));
+}
+
+void AWeapon::P_ChangeVfxVariation()
+{
+	AssetsManager->ChangeVfxVariation(MuzzleFlashComponent, P_Data->GetNiagaraVariationData(Proprietor->GetVariation()));
 }
 
 void AWeapon::DestroyThis()
@@ -173,7 +181,7 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bOverride
 void AWeapon::PostProprietorSetup()
 {
 	SetupHandsAnimInstance();
-	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), &MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true);
+	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), AI_Data->GetNiagaraVariationData(EVariation::Default), &MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true);
 }
 
 void AWeapon::AI_Setup()
@@ -299,10 +307,4 @@ void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
 {
 	HitScanDamage -= DefaultHitScanDamage * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) / 100.f);
 	HitScanDamage += DefaultHitScanDamage * (Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) / 100.f);
-}
-
-void AWeapon::P_ReceiveAndSetDynamicMaterial()
-{
-	MI_Variation = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
-	GetMesh()->SetMaterial(0, MI_Variation);
 }

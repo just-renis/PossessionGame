@@ -3,6 +3,7 @@
 UENUM()
 enum class EVariation : uint8
 {
+	Default,
 	GuardianVariationDefault,
 	GuardianVariationGold,
 	RangerVariationDefault,

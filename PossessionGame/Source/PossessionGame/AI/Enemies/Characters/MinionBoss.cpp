@@ -12,6 +12,7 @@
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
@@ -28,13 +29,13 @@ void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->OnMin
 void AMinionBoss::EnableLaserEyeBall()
 {
 	if (bStompIsReady) ToggleStompTrigger(false);
-	if (!LaserEyeBallVfx) AssetsManager->AttachOrLoadVfx(EVfx::MinionBossLaserBall, &LaserEyeBallVfx, GetMesh(), "LaserSocket");
+	if (!LaserEyeBallVfx) AssetsManager->AttachOrLoadVfx(EVfx::MinionBossLaserBall, FNiagaraVariationData(), &LaserEyeBallVfx, GetMesh(), "LaserSocket");
 	else LaserEyeBallVfx->Activate();
 }
 
 void AMinionBoss::EnableLaser()
 {
-	if (!LaserVfx) AssetsManager->AttachOrLoadVfx(EVfx::MinionBossLaser, &LaserVfx, GetMesh(), "LaserSocket");
+	if (!LaserVfx) AssetsManager->AttachOrLoadVfx(EVfx::MinionBossLaser, FNiagaraVariationData(), &LaserVfx, GetMesh(), "LaserSocket");
 	else LaserVfx->Activate();
 }
 
