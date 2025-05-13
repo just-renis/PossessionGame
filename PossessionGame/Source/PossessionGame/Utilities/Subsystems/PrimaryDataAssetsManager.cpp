@@ -157,30 +157,40 @@ void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
 	}
 }
 
-void UPrimaryDataAssetsManager::AttachOrLoadVfx(const EVfx InVfxName, const FNiagaraVariationData InNiagaraVariationData, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy)
+void UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const FNiagaraVariationData InNiagaraVariationData, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const TMap<FName, FNiagaraAttribute>& InAttributes, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy)
 {
 	if (InVfxName == EVfx::None) return;
 	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
 	{
-		if (InVfxComponent) *InVfxComponent = AttachVfx(InVfxName, InNiagaraVariationData, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
-		else AttachVfx(InVfxName, InNiagaraVariationData, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+		if (InVfxComponent)
+		{
+			*InVfxComponent = AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+			SetupVfx(InNiagaraVariationData, *InVfxComponent, InAttributes, bDeactivate);
+		}
+		else SetupVfx(InNiagaraVariationData, AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy), InAttributes, bDeactivate);
 	}
-	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InNiagaraVariationData, InVfxComponent, InVfxName, InAttachTo, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy]() mutable
+	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InNiagaraVariationData, InVfxComponent, InVfxName, InAttachTo, InAttributes, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy]
 	{
 		if (InVfxComponent)
 		{
-			*InVfxComponent = AttachVfx(InVfxName, InNiagaraVariationData, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
-			if (bDeactivate) InVfxComponent->Get()->Deactivate();
+			*InVfxComponent = AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+			SetupVfx(InNiagaraVariationData, *InVfxComponent, InAttributes, bDeactivate);
 		}
-		else AttachVfx(InVfxName, InNiagaraVariationData, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+		else SetupVfx(InNiagaraVariationData, AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy), InAttributes, bDeactivate);
 	});
 }
 
-void UPrimaryDataAssetsManager::SpawnOrLoadVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes)
+void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const FNiagaraVariationData InNiagaraVariationData, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (InVfxName == EVfx::None) return;
-	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid()) SpawnVfx(InVfxName, InLocation, InRotation, InAttributes);
-	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InVfxName, InLocation, InRotation, InAttributes] { SpawnVfx(InVfxName, InLocation, InRotation, InAttributes); });
+	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
+	{
+		SetupVfx(InNiagaraVariationData, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation), InAttributes);
+	}
+	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InNiagaraVariationData, InVfxName, InAttributes, InLocation, InRotation]
+	{
+		SetupVfx(InNiagaraVariationData, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation), InAttributes);
+	});
 }
 
 void UPrimaryDataAssetsManager::ApplyAttributesToVfxComponent(const TMap<FName, FNiagaraAttribute>& InAttributes, const TObjectPtr<UNiagaraComponent>& Component)
@@ -236,15 +246,12 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 	}
 }
 
-TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const FNiagaraVariationData InNiagaraVariationData, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation,  const EAttachLocation::Type InAttachType,  const bool bAutoDestroy)
+TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachAndReceiveVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation,  const EAttachLocation::Type InAttachType,  const bool bAutoDestroy)
 {
-	TObjectPtr<UNiagaraComponent> Component = UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName)->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
-	if (!InNiagaraVariationData.bRequiredVfxChange) return Component;
-	ChangeVfxVariation(Component, InNiagaraVariationData);
-	return Component;
+	return UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName)->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
 }
 
-TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
+TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::SpawnAndReceiveVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
 {
 	return UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetVfxData(InVfxName)->GetVfxEffect().Get(), InLocation, InRotation);
 }
@@ -414,15 +421,11 @@ void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const TObjectPtr<UAudioC
 	InAudioComp->Play();
 }
 
-void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation, const TMap<FName, FNiagaraAttribute>& InAttributes)
+void UPrimaryDataAssetsManager::SetupVfx(const FNiagaraVariationData InNiagaraVariationData, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes, const bool bDeactivate)
 {
-	if (InAttributes.IsEmpty())
-	{
-		SpawnVfx(InVfxName, InLocation, InRotation);
-		return;
-	}
-	const TObjectPtr<UNiagaraComponent> Component = SpawnVfx(InVfxName, InLocation, InRotation);
-	ApplyAttributesToVfxComponent(InAttributes, Component);
+	if (bDeactivate) InVfxComponent->Deactivate();
+	if (InNiagaraVariationData.bRequiredVfxChange) ChangeVfxVariation(InVfxComponent, InNiagaraVariationData);
+	if (!InAttributes.IsEmpty()) ApplyAttributesToVfxComponent(InAttributes, InVfxComponent);
 }
 
 template<typename T, typename U>

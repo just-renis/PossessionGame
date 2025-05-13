@@ -39,7 +39,7 @@ void UMinionBossAbility1::StompHitTheGround() const
 {
 	Proprietor->TriggerStompCameraShake();
 	const FVector StompLocation = Proprietor->GetSocketLocation("StompSocket");
-	Proprietor->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnOrLoadVfx(EVfx::MinionBossStompCrack, StompLocation);
+	Proprietor->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::MinionBossStompCrack, StompLocation);
 	TArray<FOverlapResult> Overlaps;
 	Proprietor->GetWorld()->OverlapMultiByProfile(Overlaps, StompLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(300.f));
 	TSet<TObjectPtr<AActor>> UniqueActors;

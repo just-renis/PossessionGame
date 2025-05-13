@@ -120,8 +120,8 @@ void ADualWieldingWeapon::PlayShootMontage() { HandsAnimInstance->PlayMontage(EH
 void ADualWieldingWeapon::PostProprietorSetup()
 {
 	SetupHandsAnimInstance();
-	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), AI_Data->GetNiagaraVariationData(EVariation::Default), &FirstWeapon->GetMuzzleFlashComponent(), FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
-	AssetsManager->AttachOrLoadVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), AI_Data->GetNiagaraVariationData(EVariation::Default), &SecondWeapon->GetMuzzleFlashComponent(), SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
+	AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), AI_Data->GetNiagaraVariationData(EVariation::Default), &FirstWeapon->GetMuzzleFlashComponent(), FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
+	AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), AI_Data->GetNiagaraVariationData(EVariation::Default), &SecondWeapon->GetMuzzleFlashComponent(), SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
 }
 
 void ADualWieldingWeapon::P_SetVariationMaterial()

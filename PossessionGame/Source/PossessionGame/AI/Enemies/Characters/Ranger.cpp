@@ -65,9 +65,9 @@ void ARanger::SetCustomTimeDilation(float Dilation)
 {
 	if (FMath::IsNearlyEqual(Dilation, 5.f, 0.1f))
 	{
-		AssetsManager->AttachOrLoadVfx(EVfx::StopTimeAbility, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+		AssetsManager->AttachVfx(EVfx::StopTimeAbility, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	}
-	else AssetsManager->AttachOrLoadVfx(EVfx::StopTimeAbilityReverse, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+	else AssetsManager->AttachVfx(EVfx::StopTimeAbilityReverse, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	CustomTimeDilation = Dilation;
 	GetWeapon()->CustomTimeDilation = Dilation;
 }
@@ -123,7 +123,7 @@ void ARanger::BeginPlay()
 	CharacterName = ECharacterType::Ranger;
 	Super::BeginPlay();
 	SetupGrenadeLaunchTriggerSphere();
-	AssetsManager->AttachOrLoadVfx(EVfx::RangerGrenadeLauncherMuzzle, FNiagaraVariationData(), &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
+	AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, FNiagaraVariationData(), &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
 }
 
 void ARanger::GrenadeLauncherMuzzleFlashLogic()

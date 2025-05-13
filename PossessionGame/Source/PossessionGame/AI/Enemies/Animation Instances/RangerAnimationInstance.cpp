@@ -50,6 +50,6 @@ void URangerAnimationInstance::TriggerGrenadeProjection() const
 	{
 		FRotator MarkerRotation = PathResult.HitResult.ImpactNormal.Rotation();
 		MarkerRotation.Pitch -= 90.f; 
-		AssetsManager->SpawnOrLoadVfx(EVfx::RangerGrenadeLauncherMarker, PathResult.HitResult.Location, MarkerRotation);
+		AssetsManager->SpawnVfx(EVfx::RangerGrenadeLauncherMarker, PathResult.HitResult.Location, MarkerRotation);
 	}
 }

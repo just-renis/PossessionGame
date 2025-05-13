@@ -29,13 +29,13 @@ void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->OnMin
 void AMinionBoss::EnableLaserEyeBall()
 {
 	if (bStompIsReady) ToggleStompTrigger(false);
-	if (!LaserEyeBallVfx) AssetsManager->AttachOrLoadVfx(EVfx::MinionBossLaserBall, FNiagaraVariationData(), &LaserEyeBallVfx, GetMesh(), "LaserSocket");
+	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, FNiagaraVariationData(), &LaserEyeBallVfx, GetMesh(), "LaserSocket");
 	else LaserEyeBallVfx->Activate();
 }
 
 void AMinionBoss::EnableLaser()
 {
-	if (!LaserVfx) AssetsManager->AttachOrLoadVfx(EVfx::MinionBossLaser, FNiagaraVariationData(), &LaserVfx, GetMesh(), "LaserSocket");
+	if (!LaserVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaser, FNiagaraVariationData(), &LaserVfx, GetMesh(), "LaserSocket");
 	else LaserVfx->Activate();
 }
 

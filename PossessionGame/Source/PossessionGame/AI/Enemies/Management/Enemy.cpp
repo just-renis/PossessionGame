@@ -510,8 +510,8 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName)
 {
 	GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get());
-	if (bIsElite) AssetsManager->AttachOrLoadVfx(EVfx::EliteAura, FNiagaraVariationData(), &Aura, GetMesh(), FName("SpawnSocket"));
-	else if (bIsMutant) AssetsManager->AttachOrLoadVfx(EVfx::MutantAura, FNiagaraVariationData(), &Aura, GetMesh(), FName("MutantAuraSocket"));
+	if (bIsElite) AssetsManager->AttachVfx(EVfx::EliteAura, FNiagaraVariationData(), &Aura, GetMesh(), FName("SpawnSocket"));
+	else if (bIsMutant) AssetsManager->AttachVfx(EVfx::MutantAura, FNiagaraVariationData(), &Aura, GetMesh(), FName("MutantAuraSocket"));
 }
 
 void AEnemy::DestroyAI()
@@ -591,7 +591,7 @@ void AEnemy::AI_SpawnUsbOnDeath() const
 
 void AEnemy::AI_TriggerMutantExplosion()
 {
-	AssetsManager->SpawnOrLoadVfx(EVfx::MutantExplosion, GetActorLocation());
+	AssetsManager->SpawnVfx(EVfx::MutantExplosion, GetActorLocation());
 	TArray<FOverlapResult> Overlaps;
 	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(200.f));
 	TSet<TObjectPtr<AActor>> UniqueActors;
@@ -1037,7 +1037,7 @@ void AEnemy::ClearTimers()
 void AEnemy::ProcessSpawnEffects()
 {
 	if (CharacterName != ECharacterType::Guardian && CharacterName != ECharacterType::Minion) return;
-	AssetsManager->SpawnOrLoadVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), GetMesh()->GetSocketLocation("SpawnSocket"));
+	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), GetMesh()->GetSocketLocation("SpawnSocket"));
 	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
 	{
 		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
