@@ -14,15 +14,16 @@ void UVariationOptionUI::UnlockVariation()
 	if (LockedImage) LockedImage->SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void UVariationOptionUI::SetSelected(const bool bState) const
+void UVariationOptionUI::SetSelected(const bool bState)
 {
 	if (!SelectedText) return;
+	bIsSelected = bState;
 	SelectedText->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
 void UVariationOptionUI::SelectVariation()
 {
-	if (bIsLocked || !SelectAnim || !SelectedText) return;
+	if (bIsLocked || !SelectAnim || !SelectedText || bIsSelected) return;
 	PlayAnimation(SelectAnim);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.Broadcast(CharacterType, Variation);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(CharacterType);
@@ -55,7 +56,7 @@ void UVariationOptionUI::NativeConstruct()
 	OptionButton->OnUnhovered.AddDynamic(this, &UVariationOptionUI::VariationOptionUnHovered);
 }
 
-void UVariationOptionUI::SelectionChange(const ECharacterType InCharacterType, const EVariation InVariationName) const
+void UVariationOptionUI::SelectionChange(const ECharacterType InCharacterType, const EVariation InVariationName)
 {
 	if (InCharacterType != CharacterType || Variation == InVariationName) return;
 	SetSelected(false);

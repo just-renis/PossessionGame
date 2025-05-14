@@ -293,10 +293,11 @@ void AWeapon::DisableHandsMesh() const
 void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 {
 	const bool bIsCritical = InHitResult.BoneName == "head";
-	(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
-	AssetsManager->PlaySound2D(bIsCritical ? ESound::CriticalDamageTick : ESound::DamageTick);
 	const float Damage = P_ReceiveHitScanDamage() * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
 	UE_LOG(LogTemp, Warning, TEXT("AWeapon::DealPointDamage %f"), Damage);
+	if (FMath::IsNearlyEqual(Damage, 0.f, 0.01f)) return;
+	(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
+	AssetsManager->PlaySound2D(bIsCritical ? ESound::CriticalDamageTick : ESound::DamageTick);
 	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? Damage * 2 : Damage,
 	(InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }

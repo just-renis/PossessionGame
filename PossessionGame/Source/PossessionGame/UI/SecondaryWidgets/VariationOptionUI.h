@@ -24,8 +24,9 @@ public:
 
 	void UpdateUnlockProgressText(const FString& InText);
 	void UnlockVariation();
-	void SetSelected(const bool bState) const;
+	void SetSelected(const bool bState);
 private:
+	bool bIsSelected = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsLocked = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -57,7 +58,7 @@ private:
 
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
-	void SelectionChange(const ECharacterType InCharacterType, const EVariation InVariationName) const;
+	void SelectionChange(const ECharacterType InCharacterType, const EVariation InVariationName);
 	UFUNCTION()
 	void SelectVariation();
 	UFUNCTION()

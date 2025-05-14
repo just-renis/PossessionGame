@@ -222,9 +222,13 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const TObjectPtr<UNiagaraComp
 		if (Param.GetType() != FNiagaraTypeDefinition(UMaterialInterface::StaticClass())) continue;
 		if (TObjectPtr<UObject> MaterialObj = InVfxComponent->GetOverrideParameters().GetUObject(Param))
 		{
-			if (TObjectPtr<UMaterialInstanceDynamic> MI_Dynamic = Cast<UMaterialInstanceDynamic>(MaterialObj)) MI_Dynamic->SetScalarParameterValue("Hue", InNiagaraVariationData.Hue);
+			if (TObjectPtr<UMaterialInstanceDynamic> MI_Dynamic = Cast<UMaterialInstanceDynamic>(MaterialObj))
+			{
+				MI_Dynamic->SetScalarParameterValue("Hue", InNiagaraVariationData.Hue);
+			}
 			else if (TObjectPtr<UMaterialInterface> MI = Cast<UMaterialInterface>(MaterialObj))
 			{
+				
 				MI_Dynamic = UMaterialInstanceDynamic::Create(MI, this);
 				InVfxComponent->SetVariableMaterial(Param.GetName(), MI_Dynamic);
 				MI_Dynamic->SetScalarParameterValue("Hue", InNiagaraVariationData.Hue);
