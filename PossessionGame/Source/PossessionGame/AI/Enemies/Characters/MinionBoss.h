@@ -31,8 +31,6 @@ private:
 	int32 CurrentWeaponIndex = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompTriggerRadiusInMeters = 3.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
-	TSubclassOf<UCameraShakeBase> StompCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Laser Collision", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCapsuleComponent> LaserCollision;
 	UPROPERTY()

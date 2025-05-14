@@ -412,7 +412,7 @@ void AEnemy::P_SetupCharacterMovement()
 {
 	CurrentDashCooldown = P_Data->GetDashCooldown();
 	GetCharacterMovement()->GravityScale = 3.5f;
-	GetCharacterMovement()->JumpZVelocity = 1000.f;
+	GetCharacterMovement()->JumpZVelocity = 1150.f;
 	GetCharacterMovement()->AirControl = 1.f;
 	GetCharacterMovement()->MaxAcceleration = 20000.f;
 	GetCharacterMovement()->BrakingFrictionFactor = 1.f;
@@ -889,7 +889,7 @@ void AEnemy::P_ProcessMeleeAttack()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	TArray<FOverlapResult> Overlaps;
-	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(QuickMeleeAttackRadius), Params);
+	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(QuickMeleeAttackRadiusInMeters), Params);
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
 		if (TObjectPtr<AActor> HitActor = Overlap.GetActor(); HitActor && HitActor != this && HitActor->ActorHasTag("AliveEnemy"))
@@ -1119,6 +1119,7 @@ void AEnemy::Landed(const FHitResult& Hit)
 		AssetsManager->SpawnVfx(EVfx::MinionBossStompCrack, GetSocketLocation("StompSocket"));
 		GetCharacterMovement()->AirControl = 1.f;
 		P_StompImpact(GetSocketLocation("StompSocket"));
+		P_MakeCameraShake(StompCameraShake);
 	}
 }
 
