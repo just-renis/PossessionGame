@@ -36,12 +36,6 @@ void AGuardian::AI_PlayDeathSound() { PlaySound(ESound::GuardianDeath); }
 
 void AGuardian::AI_PlaySpawnSound() { PlaySound(ESound::GuardianSpawn); }
 
-void AGuardian::AI_Disable()
-{
-	Super::AI_Disable();
-	MaxHp = CurrentHp = 1000000.f;
-}
-
 void AGuardian::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);

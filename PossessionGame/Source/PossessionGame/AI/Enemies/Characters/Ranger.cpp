@@ -84,12 +84,6 @@ void ARanger::AI_PlayDeathSound() { PlaySound(ESound::RangerDeath); }
 
 void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
 
-void ARanger::AI_Disable()
-{
-	Super::AI_Disable();
-	MaxHp = CurrentHp = 10000000.f;
-}
-
 void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {
 	AI_ToggleGrenadeLaunchTrigger(false);

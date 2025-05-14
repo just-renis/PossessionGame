@@ -70,13 +70,11 @@ void ATrickster::P_SetupRightClickInputCompletedState(TObjectPtr<UEnhancedInputC
 
 void ATrickster::P_SetupLeftClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
 {
-	Super::P_SetupLeftClickInputCompletedState(LeftClickInputComponent);
 	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Completed, this, &ATrickster::StoppedShootingWeapon, true);
 }
 
 void ATrickster::P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
 {
-	Super::P_SetupLeftClickInputStartedState(LeftClickInputComponent);
 	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &ATrickster::StartedShootingWeapon, true);
 }
 
@@ -88,12 +86,6 @@ void ATrickster::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ATrickster::StartedShootingWeapon(bool bFirstWeapon)
-{
-	(void)OnWeaponShootStateChange.ExecuteIfBound(bFirstWeapon, true);
-}
+void ATrickster::StartedShootingWeapon(bool bFirstWeapon) { (void)OnWeaponShootStateChange.ExecuteIfBound(bFirstWeapon, true); }
 
-void ATrickster::StoppedShootingWeapon(bool bFirstWeapon)
-{
-	(void)OnWeaponShootStateChange.ExecuteIfBound(bFirstWeapon, false);
-}
+void ATrickster::StoppedShootingWeapon(bool bFirstWeapon) { (void)OnWeaponShootStateChange.ExecuteIfBound(bFirstWeapon, false); }

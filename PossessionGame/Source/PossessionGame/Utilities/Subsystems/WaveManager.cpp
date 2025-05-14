@@ -205,11 +205,6 @@ void UWaveManager::SetupSpawnLocations()
 
 void UWaveManager::SpawnEnemy(const ECharacterType InEnemyType)
 {
-	if (FORDUMMYONLY && InEnemyType == ECharacterType::Guardian)
-	{
-		FORDUMMYONLY = false;
-		SpawnLocations[EGameMode::None].SpawnLocations[1]->SpawnEnemy(Enemies[InEnemyType])->AI_Disable();
-	}
 	if (!SpawnLocations.Find(CurrentGameMode)) return;
 	if (!bTutorialIsFinished) TutorialHandleSpawning(InEnemyType);
 	else if (SpawnLocations[CurrentGameMode].SpawnLocations.Num() > 0)
@@ -298,7 +293,7 @@ void UWaveManager::TutorialHandleSpawning(const ECharacterType InEnemyType)
 	{
 		if (const TObjectPtr<AEnemy> SpawnedEnemy = Location->SpawnEnemy(Enemies[InEnemyType]))
 		{
-			//if (CurrentGameMode == EGameMode::TutorialMode2) SpawnedEnemy->AI_Disable();
+			if (CurrentGameMode == EGameMode::TutorialMode2) SpawnedEnemy->AI_Disable();
 			CurrentGameMode = EGameMode::TutorialMode2;
 			AliveEnemiesAmount++;
 			bIsSpawnInProcess = false;

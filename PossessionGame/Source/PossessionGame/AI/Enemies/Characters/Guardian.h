@@ -20,7 +20,6 @@ private:
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
 	virtual void AI_PlaySpawnSound() override;
-	virtual void AI_Disable() override;
 
 	virtual void P_Setup() override;
 	virtual void P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override {}

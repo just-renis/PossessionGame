@@ -11,7 +11,7 @@ class POSSESSIONGAME_API ATrickster : public AEnemy
 {
 	GENERATED_BODY()
 public:
-	FOnWeaponShootStateChange GetOnWeaponShootStateChangeDelegate() const { return OnWeaponShootStateChange; }
+	FOnWeaponShootStateChange& GetOnWeaponShootStateChangeDelegate() { return OnWeaponShootStateChange; }
 	
 	void ThrowPoisonGrenade();
 	void ThrowEmpGrenade();
