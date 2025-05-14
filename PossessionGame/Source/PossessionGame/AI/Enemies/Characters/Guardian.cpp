@@ -71,6 +71,24 @@ void AGuardian::P_ResetShootHoldDuration() const { Cast<AGuardianWeapon>(Weapon)
 
 void AGuardian::P_CancelShootingHold() { Cast<AGuardianWeapon>(Weapon)->CancelShootingHold(); }
 
+void AGuardian::P_InitiateJump()
+{
+	Super::P_InitiateJump();
+	if (Variation == EVariation::GuardianVariationGold) P_ResetShootHoldDuration();
+}
+
+void AGuardian::P_InitiateStomp()
+{
+	Super::P_InitiateStomp();
+	if (Variation == EVariation::GuardianVariationGold) P_ResetShootHoldDuration();
+}
+
+void AGuardian::P_InitiateDash()
+{
+	Super::P_InitiateDash();
+	if (Variation == EVariation::GuardianVariationGold) P_ResetShootHoldDuration();
+}
+
 void AGuardian::P_Move(const FInputActionValue& Value)
 {
 	Super::P_Move(Value);
@@ -87,5 +105,5 @@ void AGuardian::BeginPlay()
 void AGuardian::SetMesh(const ECharacterType PrimaryDataAssetName)
 {
 	Super::SetMesh(PrimaryDataAssetName);
-	GetMesh()->SetMaterial(0, GuardianMaterial);
+	GetMesh()->SetMaterial(0, MI_Guardian);
 }

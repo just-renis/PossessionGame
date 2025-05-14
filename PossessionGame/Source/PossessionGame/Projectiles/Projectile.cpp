@@ -128,8 +128,8 @@ void AProjectile::AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile)
 
 void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)
 {
-	Damage -= DefaultDamage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) / 100.f);
-	Damage += DefaultDamage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) / 100.f);
+	Damage -= DefaultDamage * ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
+	Damage += DefaultDamage * ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
 }
 
 EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.DamageReason; }
@@ -144,11 +144,11 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 	if (bIsPlayerProjectile)
 	{
 		ApplyCurrentVariation();
-		Damage += DefaultDamage * (ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() / 100.f);
+		Damage += DefaultDamage * ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
-	else if (ProjectileData.GetProprietor()->GetIsElite()) Damage += DefaultDamage / 100.f * ProjectileData.GetProprietor()->GetAIData()->GetEliteDamageIncreasePercentage();
-	else if (ProjectileData.GetProprietor()->GetIsMutant()) Damage -= DefaultDamage / 100.f * ProjectileData.GetProprietor()->GetAIData()->GetMutantDamageIncreasePercentage();
+	else if (ProjectileData.GetProprietor()->GetIsElite()) Damage += DefaultDamage * 0.01f * ProjectileData.GetProprietor()->GetAIData()->GetEliteDamageIncreasePercentage();
+	else if (ProjectileData.GetProprietor()->GetIsMutant()) Damage -= DefaultDamage * 0.01f * ProjectileData.GetProprietor()->GetAIData()->GetMutantDamageIncreasePercentage();
 	AI_SetupUpgradesAppliance(bIsPlayerProjectile);
 }
 

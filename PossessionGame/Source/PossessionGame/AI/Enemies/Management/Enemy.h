@@ -168,6 +168,9 @@ protected:
 	void P_SetupCharacterMovement();
 	virtual void P_SetupColorsForUI() {}
 	virtual void P_Move(const FInputActionValue& Value);
+	virtual void P_InitiateDash();
+	virtual void P_InitiateJump();
+	virtual void P_InitiateStomp();
 
 	void SetCurrentHp(const float NewCurrentHp) { CurrentHp = NewCurrentHp; }
 	void SetMaxHp(const float NewMaxHp) { MaxHp = NewMaxHp; }
@@ -278,6 +281,8 @@ private:
 	void P_ReceiveCurrentlySelectedVariation();
 	void P_Jump();
 	void P_Stomp();
+	void P_SetupLevelUpAppliance(const int32 InLevel);
+	void P_StompImpact(const FHitResult& Hit);
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()
