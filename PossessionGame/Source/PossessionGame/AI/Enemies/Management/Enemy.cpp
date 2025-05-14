@@ -333,6 +333,8 @@ void AEnemy::P_Setup()
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
 	DelegateManager->OnSecretRewardCollected.BindUObject(this, &AEnemy::P_ApplySecretReward);
 	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
+	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_SetupLevelUpAppliance);
+	Tags.Remove("AliveEnemy");
 	Tags.Add("Player");
 	P_ReceiveCurrentlySelectedVariation();
 	DestroyAI();
@@ -422,6 +424,35 @@ void AEnemy::P_Move(const FInputActionValue& Value)
 		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
 		AddMovementInput(GetActorRightVector(), MovementVector.X);
 	}
+}
+
+void AEnemy::P_InitiateDash()
+{
+	AssetsManager->PlaySound2D(ESound::Dash);
+	CurrentDashCooldown = 0.f;
+	FVector DashDirection = GetVelocity().GetSafeNormal();
+	if (DashDirection.IsNearlyZero()) DashDirection = GetActorForwardVector();
+	DashDirection.Z = 0.f;
+	GetCharacterMovement()->StopMovementImmediately();
+	LaunchCharacter(DashDirection * P_Data->GetDashStrength(), true, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "P_StopDash", 0.2f, false);
+}
+
+void AEnemy::P_InitiateJump()
+{
+	Jump();
+	Weapon->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Jump);
+	AssetsManager->PlaySound2D(GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 0 ? ESound::Jump : ESound::DoubleJump);
+}
+
+void AEnemy::P_InitiateStomp()
+{
+	bIsStomping = true;
+	AssetsManager->PlaySound2D(ESound::PlayerStompDashDown);
+	GetCharacterMovement()->AirControl = 0.f;
+	FVector Velocity = GetCharacterMovement()->Velocity;
+	Velocity.Z = 0.f;
+	GetCharacterMovement()->Velocity = Velocity + FVector(0.f, 0.f, -3000.f);
 }
 
 void AEnemy::BeginPlay()
@@ -532,6 +563,7 @@ void AEnemy::DestroyAI()
 
 void AEnemy::DestroyThis()
 {
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	if (Weapon) Weapon->DestroyThis();
 	Destroy();
 }
@@ -539,8 +571,8 @@ void AEnemy::DestroyThis()
 void AEnemy::AI_SetupData()
 {
 	MaxHp = AI_Data->GetMaxHp();
-	if (bIsElite) MaxHp += MaxHp / 100.f * AI_Data->GetEliteHpIncreasePercentage();
-	else if (bIsMutant) MaxHp -= MaxHp / 100.f * AI_Data->GetMutantHpIncreasePercentage();
+	if (bIsElite) MaxHp += MaxHp * 0.01f * AI_Data->GetEliteHpIncreasePercentage();
+	else if (bIsMutant) MaxHp -= MaxHp * 0.01f * AI_Data->GetMutantHpIncreasePercentage();
 	AI_SetupUpgradesAppliance();
 	CurrentHp = MaxHp;
 	SetMaxWalkSpeed(AI_Data->GetMaxWalkSpeed());
@@ -618,6 +650,7 @@ void AEnemy::P_SetupData()
 {
 	P_Data->SetIsGodModeEnabled(GameInstance->GetSubsystem<UGlobalSettingsManager>()->GetIsGodModeEnabled());
 	MaxHp = P_Data->GetMaxHp();
+	MaxHp += MaxHp * GetGameInstance()->GetSaveSlot()->GetLevelHpIncrease() * 0.01f;
 	CurrentHp = MaxHp;
 	bIsPossessed = true;
 	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
@@ -698,20 +731,7 @@ void AEnemy::P_Reload()
 	if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload && !P_InputManager->IsPressed(FKey("LeftMouseButton")) && Weapon->P_CanReload()) Weapon->P_Reload();
 }
 
-void AEnemy::P_Dash()
-{
-	if (CurrentDashCooldown >= P_Data->GetDashCooldown())
-	{
-		AssetsManager->PlaySound2D(ESound::Dash);
-		CurrentDashCooldown = 0.f;
-		FVector DashDirection = GetVelocity().GetSafeNormal();
-		if (DashDirection.IsNearlyZero()) DashDirection = GetActorForwardVector();
-		DashDirection.Z = 0.f;
-		GetCharacterMovement()->StopMovementImmediately();
-		LaunchCharacter(DashDirection * P_Data->GetDashStrength(), true, true);
-		UKismetSystemLibrary::K2_SetTimer(this, "P_StopDash", 0.2f, false);
-	}
-}
+void AEnemy::P_Dash() { if (CurrentDashCooldown >= P_Data->GetDashCooldown()) P_InitiateDash(); }
 
 void AEnemy::P_OnEnemyDeathEvents(const int32 InXp)
 {
@@ -900,24 +920,28 @@ void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 
 void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName); }
 
-void AEnemy::P_Jump()
-{
-	if (CanJump())
-	{
-		Jump();
-		Weapon->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Jump);
-		AssetsManager->PlaySound2D(GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 0 ? ESound::Jump : ESound::DoubleJump);
-	}
-}
+void AEnemy::P_Jump() { if (CanJump()) P_InitiateJump(); }
 
 void AEnemy::P_Stomp()
 {
 	if (bIsStomping || !GetCharacterMovement()->IsFalling()) return;
-	bIsStomping = true;
-	GetCharacterMovement()->AirControl = 0.f;
-	FVector Velocity = GetCharacterMovement()->Velocity;
-	Velocity.Z = 0.f;
-	GetCharacterMovement()->Velocity = Velocity + FVector(0.f, 0.f, -3000.f);
+	P_InitiateStomp();
+}
+
+void AEnemy::P_SetupLevelUpAppliance(const int32 InLevel)
+{
+	MaxHp -= MaxHp * GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
+	MaxHp += MaxHp * GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
+}
+
+void AEnemy::P_StompImpact(const FHitResult& Hit)
+{
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByProfile(Overlaps, Hit.Location, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(150.f));
+	for (const FOverlapResult& Result : Overlaps)
+	{
+		if (Result.GetActor()->ActorHasTag("AliveEnemy")) UGameplayStatics::ApplyDamage(Result.GetActor(), 50.f, nullptr, this, UDamageType::StaticClass());
+	}
 }
 
 void AEnemy::P_Death()
@@ -1084,8 +1108,9 @@ void AEnemy::Landed(const FHitResult& Hit)
 	if (bIsStomping)
 	{
 		bIsStomping = false;
+		AssetsManager->PlaySound2D(ESound::PlayerStompLand);
 		GetCharacterMovement()->AirControl = 1.f;
-		//StompImpact(Hit);
+		P_StompImpact(Hit);
 	}
 }
 

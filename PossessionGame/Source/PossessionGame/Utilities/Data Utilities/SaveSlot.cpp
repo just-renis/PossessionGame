@@ -1,4 +1,5 @@
 ﻿#include "SaveSlot.h"
+#include "PossessionGame/Data Assets/Base Data Assets/PlayerLevelData.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -7,7 +8,9 @@ bool USaveSlot::GetIsVariationUnlocked(const EVariationUnlock InVariationUnlockN
 
 int32 USaveSlot::GetLevelOfAnUpgrade(const EUpgrade InUpgrade) { return UnlockedUpgrades.Find(InUpgrade) ? UnlockedUpgrades[InUpgrade] : 0; }
 
-int32 USaveSlot::GetLevelDamageIncrease(const int32 InLevel) { return PlayerLevelData.GetDamageIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
+int32 USaveSlot::GetLevelDamageIncrease(const int32 InLevel) const { return PlayerLevelData->GetDamageIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
+
+int32 USaveSlot::GetLevelHpIncrease(const int32 InLevel) const { return PlayerLevelData->GetHpIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
 
 int32 USaveSlot::GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockProgress(InVariationUnlockName); }
 
@@ -18,7 +21,11 @@ EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) con
 void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance)
 {
 	GameInstance = InGameInstance;
+	PlayerLevelData = GameInstance->GetPlayerLevelData();
 	GameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
+	#if WITH_EDITOR
+		CurrentLevel = GameInstance->GetPlayerLevel();
+	#endif
 }
 
 void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel)

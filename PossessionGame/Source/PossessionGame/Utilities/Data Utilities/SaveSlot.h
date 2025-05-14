@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "FPlayerLevelData.h"
 #include "FVariationUnlockData.h"
 #include "GameFramework/SaveGame.h"
 #include "SaveSlot.generated.h"
 
+class UPlayerLevelData;
 class UPossessionGameInstance;
 enum class EUpgrade : uint8;
 
@@ -19,7 +19,8 @@ public:
 	int32 GetXp() const { return CurrentXp; }
 	int32 GetCurrentLevelNeededXp() const { return 10 + CurrentLevel * 5; }
 	int32 GetLevelOfAnUpgrade(const EUpgrade InUpgrade);
-	int32 GetLevelDamageIncrease(const int32 InLevel = -1);
+	int32 GetLevelDamageIncrease(const int32 InLevel = -1) const;
+	int32 GetLevelHpIncrease(const int32 InLevel = -1) const;
 	int32 GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const;
 	int32 GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
@@ -30,7 +31,8 @@ public:
 	void AddXp(const int32 InXp);
 	void ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName);
 private:
-	FPlayerLevelData PlayerLevelData;
+	UPROPERTY()
+	TObjectPtr<UPlayerLevelData> PlayerLevelData;
 	UPROPERTY()
 	FVariationUnlockData VariationUnlockData;
 	UPROPERTY()

@@ -15,7 +15,7 @@ private:
 	AGuardian();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UMaterialInterface> GuardianMaterial;
+	TObjectPtr<UMaterialInterface> MI_Guardian;
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
@@ -29,6 +29,9 @@ private:
 	void P_OnShootStarted();
 	void P_ResetShootHoldDuration() const;
 	void P_CancelShootingHold();
+	virtual void P_InitiateJump() override;
+	virtual void P_InitiateStomp() override;
+	virtual void P_InitiateDash() override;
 	virtual void P_Move(const FInputActionValue& Value) override;
 
 	virtual void BeginPlay() override;
