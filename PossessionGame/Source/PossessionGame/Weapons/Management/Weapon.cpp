@@ -240,10 +240,10 @@ void AWeapon::HitScanLogic()
 	const FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
 	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
-	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"));
+	const FNiagaraVariationData NiagaraVariationData(bIsPossessed ? P_Data->GetNiagaraVariationData(Proprietor->GetVariation()) : AI_Data->GetNiagaraVariationData(EVariation::Default));
+	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"), NiagaraVariationData, {{TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color)}});
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
-		const FNiagaraVariationData NiagaraVariationData(bIsPossessed ? P_Data->GetNiagaraVariationData(Proprietor->GetVariation()) : AI_Data->GetNiagaraVariationData(EVariation::Default));
 		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation(),
 		NiagaraVariationData, {{TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color)}});
 		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);

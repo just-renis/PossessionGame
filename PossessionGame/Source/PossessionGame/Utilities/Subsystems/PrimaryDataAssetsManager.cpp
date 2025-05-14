@@ -70,7 +70,6 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Impact }), EVfx::MinionBulletImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Muzzle }), EVfx::TricksterMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::FpsTrail }), EVfx::TricksterFpsBulletTrail },
-		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Impact }), EVfx::TricksterBulletImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Trail }), EVfx::TricksterBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::Impact }), EVfx::TricksterPoisonImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::SecondaryImpact }), EVfx::TricksterPoison },
@@ -85,7 +84,6 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::TankProjectile, EVfxType::FpsTrail }), EVfx::TankFpsBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::FpsTrail }), EVfx::GuardianFpsBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::Muzzle }), EVfx::GuardianMuzzle },
-		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::Impact }), EVfx::GuardianBulletImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Trail }), EVfx::MinionBossBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Muzzle }), EVfx::MinionBossMuzzle }
 	};
@@ -157,7 +155,7 @@ void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
 	}
 }
 
-void UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const FNiagaraVariationData InNiagaraVariationData, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const TMap<FName, FNiagaraAttribute>& InAttributes, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy)
+void UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, const FNiagaraVariationData& InNiagaraVariationData, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const TMap<FName, FNiagaraAttribute>& InAttributes, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy)
 {
 	if (InVfxName == EVfx::None) return;
 	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
@@ -214,7 +212,7 @@ void UPrimaryDataAssetsManager::ApplyAttributesToVfxComponent(const TMap<FName, 
 	}
 }
 
-void UPrimaryDataAssetsManager::ChangeVfxVariation(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const FNiagaraVariationData InNiagaraVariationData)
+void UPrimaryDataAssetsManager::ChangeVfxVariation(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const FNiagaraVariationData& InNiagaraVariationData)
 {
 	if (!InVfxComponent) return;
 	TArray<FNiagaraVariable> UserParameters;
@@ -389,7 +387,6 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_MinionSpawn", EVfx::MinionSpawn);
 	VfxsMap.Add("PA_TricksterMuzzle", EVfx::TricksterMuzzle);
 	VfxsMap.Add("PA_TricksterFpsBulletTrail", EVfx::TricksterFpsBulletTrail);
-	VfxsMap.Add("PA_TricksterBulletImpact", EVfx::TricksterBulletImpact);
 	VfxsMap.Add("PA_TricksterBulletTrail", EVfx::TricksterBulletTrail);
 	VfxsMap.Add("PA_TricksterPoisonImpact", EVfx::TricksterPoisonImpact);
 	VfxsMap.Add("PA_TricksterPoison", EVfx::TricksterPoison);
@@ -406,7 +403,6 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_GuardianOverCharge", EVfx::GuardianOverCharge);
 	VfxsMap.Add("PA_GuardianMuzzle", EVfx::GuardianMuzzle);
 	VfxsMap.Add("PA_GuardianFpsBulletTrail", EVfx::GuardianFpsBulletTrail);
-	VfxsMap.Add("PA_GuardianBulletImpact", EVfx::GuardianBulletImpact);
 	VfxsMap.Add("PA_MinionBossBulletTrail", EVfx::MinionBossBulletTrail);
 	VfxsMap.Add("PA_MinionBossMuzzle", EVfx::MinionBossMuzzle);
 	VfxsMap.Add("PA_MinionBossStompCrack", EVfx::MinionBossStompCrack);

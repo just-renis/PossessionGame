@@ -44,7 +44,10 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	{
 		if (const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail); VfxName != EVfx::None)
 		{
-			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), FNiagaraVariationData(), &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
+			const TObjectPtr<AWeapon> Weapon = ProjectileData.GetProprietor()->GetWeapon();
+			const FNiagaraVariationData NiagaraVariationData(ProjectileData.bIsPlayerProjectile ? Weapon->GetPlayerData()->GetNiagaraVariationData(ProjectileData.GetProprietor()->GetVariation()) : Weapon->GetAIData()->GetNiagaraVariationData(EVariation::Default));
+			Attributes.Add(TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color));
+			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), FNiagaraVariationData(), &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), false, Attributes);
 		}
 		bHasBeenPooled = true;
 	}
