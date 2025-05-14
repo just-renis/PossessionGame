@@ -446,7 +446,9 @@ void AEnemy::P_InitiateJump()
 {
 	Jump();
 	Weapon->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Jump);
-	AssetsManager->PlaySound2D(GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 0 ? ESound::Jump : ESound::DoubleJump);
+	const bool bIsDoubleJump = GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 1;
+	AssetsManager->PlaySound2D(bIsDoubleJump ? ESound::DoubleJump : ESound::Jump);
+	if (bIsDoubleJump) bCanStomp = true;
 }
 
 void AEnemy::P_InitiateStomp()
@@ -887,14 +889,14 @@ void AEnemy::P_ProcessMeleeAttack()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	TArray<FOverlapResult> Overlaps;
-	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(125.f), Params);
+	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(QuickMeleeAttackRadius), Params);
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
 		if (TObjectPtr<AActor> HitActor = Overlap.GetActor(); HitActor && HitActor != this && HitActor->ActorHasTag("AliveEnemy"))
 		{
 			AssetsManager->PlaySound2D(ESound::DamageTick);
 			(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
-			UGameplayStatics::ApplyDamage(HitActor, 20.f, GetController(), this, UDamageType::StaticClass());
+			UGameplayStatics::ApplyDamage(HitActor, QuickMeleeAttackDamage, GetController(), this, UDamageType::StaticClass());
 		}
 	}
 }
@@ -928,7 +930,7 @@ void AEnemy::P_Jump() { if (CanJump()) P_InitiateJump(); }
 
 void AEnemy::P_Stomp()
 {
-	if (bIsStomping || !GetCharacterMovement()->IsFalling()) return;
+	if (bIsStomping || !bCanStomp || !GetCharacterMovement()->IsFalling()) return;
 	P_InitiateStomp();
 }
 
@@ -938,13 +940,13 @@ void AEnemy::P_SetupLevelUpAppliance(const int32 InLevel)
 	MaxHp += MaxHp * GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
 }
 
-void AEnemy::P_StompImpact(const FHitResult& Hit)
+void AEnemy::P_StompImpact(const FVector& InHitLocation)
 {
 	TArray<FOverlapResult> Overlaps;
-	GetWorld()->OverlapMultiByProfile(Overlaps, Hit.Location, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(150.f));
+	GetWorld()->OverlapMultiByProfile(Overlaps, InHitLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompRadiusInMeters * 100.f));
 	for (const FOverlapResult& Result : Overlaps)
 	{
-		if (Result.GetActor()->ActorHasTag("AliveEnemy")) UGameplayStatics::ApplyDamage(Result.GetActor(), 50.f, nullptr, this, UDamageType::StaticClass());
+		if (Result.GetActor()->ActorHasTag("AliveEnemy")) UGameplayStatics::ApplyDamage(Result.GetActor(), StompDamage, nullptr, this, UDamageType::StaticClass());
 	}
 }
 
@@ -1109,12 +1111,14 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 void AEnemy::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
+	bCanStomp = false;
 	if (bIsStomping)
 	{
 		bIsStomping = false;
 		AssetsManager->PlaySound2D(ESound::PlayerStompLand);
+		AssetsManager->SpawnVfx(EVfx::MinionBossStompCrack, GetSocketLocation("StompSocket"));
 		GetCharacterMovement()->AirControl = 1.f;
-		P_StompImpact(Hit);
+		P_StompImpact(GetSocketLocation("StompSocket"));
 	}
 }
 

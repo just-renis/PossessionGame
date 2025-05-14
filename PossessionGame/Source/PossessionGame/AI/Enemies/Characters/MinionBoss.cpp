@@ -131,7 +131,7 @@ void AMinionBoss::SetupStompTrigger()
 	StompTriggerSphere->GetCollisionComponent()->SetCollisionProfileName("TriggerPlayer");
 	StompTriggerSphere->GetCollisionComponent()->CanCharacterStepUpOn = ECB_No;
 	StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	Cast<USphereComponent>(StompTriggerSphere->GetCollisionComponent())->SetSphereRadius(StompTriggerRadiusInMetres * 100.f);
+	Cast<USphereComponent>(StompTriggerSphere->GetCollisionComponent())->SetSphereRadius(StompTriggerRadiusInMeters * 100.f);
 	StompTriggerSphere->OnActorBeginOverlap.AddDynamic(this, &AMinionBoss::OnPlayerEnterStompTrigger);
 }
 

@@ -111,6 +111,14 @@ protected:
 	EVariation Variation;
 	EMoveMode CurrentMoveMode = EMoveMode::Walk;
 	FVector2D MouseSensitivity = FVector2D(1.f, 1.f);
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
+	float StompRadiusInMeters = 3.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
+	float StompDamage = 50.f;
+	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UInputMappingContext> PlayerMappingContext;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY()
 	TObjectPtr<UEnemyAnimationInstance> AnimInstance;
 	UPROPERTY()
@@ -119,10 +127,6 @@ protected:
 	TObjectPtr<UPlayerHUD> P_HUD;
 	UPROPERTY()
 	TObjectPtr<AWeapon> Weapon;
-	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UInputMappingContext> PlayerMappingContext;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY()
 	TArray<TObjectPtr<UAbility>> Abilities;
 	UPROPERTY()
@@ -198,12 +202,17 @@ private:
 	bool bIsElite = false;
 	bool bIsMutant = false;
 	bool bIsStomping = false;
+	bool bCanStomp = false;
 	float PossessionBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
 	float FovChangeTick;
 	float TargetFov;
 	float CurrentDashCooldown;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
+	float QuickMeleeAttackRadius = 2.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
+	float QuickMeleeAttackDamage = 20.f;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
@@ -282,7 +291,7 @@ private:
 	void P_Jump();
 	void P_Stomp();
 	void P_SetupLevelUpAppliance(const int32 InLevel);
-	void P_StompImpact(const FHitResult& Hit);
+	void P_StompImpact(const FVector& InHitLocation);
 	UFUNCTION()
 	void P_Death();
 	UFUNCTION()

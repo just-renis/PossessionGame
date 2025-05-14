@@ -41,13 +41,13 @@ void UMinionBossAbility1::StompHitTheGround() const
 	const FVector StompLocation = Proprietor->GetSocketLocation("StompSocket");
 	Proprietor->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::MinionBossStompCrack, StompLocation);
 	TArray<FOverlapResult> Overlaps;
-	Proprietor->GetWorld()->OverlapMultiByProfile(Overlaps, StompLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(300.f));
+	Proprietor->GetWorld()->OverlapMultiByProfile(Overlaps, StompLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(Proprietor->GetStompRadius()));
 	TSet<TObjectPtr<AActor>> UniqueActors;
 	for (const FOverlapResult& Result : Overlaps)
 	{
 		TObjectPtr<AActor> HitActor = Result.GetActor();
 		if (!HitActor || UniqueActors.Contains(HitActor)) continue;
 		UniqueActors.Add(HitActor);
-		if (HitActor->ActorHasTag("Player")) UGameplayStatics::ApplyDamage(HitActor, 50.f, nullptr, Proprietor, UDamageType::StaticClass());
+		if (HitActor->ActorHasTag("Player")) UGameplayStatics::ApplyDamage(HitActor, Proprietor->GetStompDamage(), nullptr, Proprietor, UDamageType::StaticClass());
 	}
 }
