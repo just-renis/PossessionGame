@@ -39,7 +39,8 @@ void UControlsSettingsUI::SetupKeyBinds()
 		FName("ThirdAbility"),
 		FName("Escape"),
 		FName("Interact"),
-		FName("QuickMelee")
+		FName("QuickMelee"),
+		FName("Stomp")
 	};
 	TMap<FName, FPlayerKeyMapping> OrderedKeyBinds;
 	SetupOrderOfKeyBinds(DesiredOrder, OrderedKeyBinds);

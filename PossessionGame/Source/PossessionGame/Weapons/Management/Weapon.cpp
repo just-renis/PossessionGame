@@ -120,10 +120,7 @@ void AWeapon::P_SetVariationMaterial()
 	MI_Variation->SetScalarParameterValue("EmissiveHue", P_Data->GetVariationHueValue(Proprietor->GetVariation()));
 }
 
-void AWeapon::P_ChangeVfxVariation()
-{
-	AssetsManager->ChangeVfxVariation(MuzzleFlashComponent, P_Data->GetNiagaraVariationData(Proprietor->GetVariation()));
-}
+void AWeapon::P_ChangeVfxVariation() { AssetsManager->ChangeVfxVariation(MuzzleFlashComponent, P_Data->GetNiagaraVariationData(Proprietor->GetVariation())); }
 
 void AWeapon::DestroyThis()
 {

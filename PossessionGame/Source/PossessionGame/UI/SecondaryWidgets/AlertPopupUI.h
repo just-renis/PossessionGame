@@ -14,7 +14,7 @@ class POSSESSIONGAME_API UAlertPopupUI : public UUserWidget
 public:
 	TObjectPtr<UButton> GetAlertButton() { return AlertButton; }
 
-	void PlayPopupFadeInAnim(bool bState);
+	void PlayPopupFadeInAnim(const bool bState);
 private:
 	UPROPERTY(EditAnywhere, Category = "Alert Settings", meta = (AllowPrivateAccess = true))
 	FText AlertTitleText;

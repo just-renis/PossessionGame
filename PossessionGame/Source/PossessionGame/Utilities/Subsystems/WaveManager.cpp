@@ -205,7 +205,11 @@ void UWaveManager::SetupSpawnLocations()
 
 void UWaveManager::SpawnEnemy(const ECharacterType InEnemyType)
 {
-	//if (InEnemyType == ECharacterType::Guardian) SpawnLocations[EGameMode::None].SpawnLocations[1]->SpawnEnemy(Enemies[InEnemyType])->AI_Disable();
+	if (FORDUMMYONLY && InEnemyType == ECharacterType::Guardian)
+	{
+		FORDUMMYONLY = false;
+		SpawnLocations[EGameMode::None].SpawnLocations[1]->SpawnEnemy(Enemies[InEnemyType])->AI_Disable();
+	}
 	if (!SpawnLocations.Find(CurrentGameMode)) return;
 	if (!bTutorialIsFinished) TutorialHandleSpawning(InEnemyType);
 	else if (SpawnLocations[CurrentGameMode].SpawnLocations.Num() > 0)
@@ -406,7 +410,7 @@ void UWaveManager::UpdateTaskProgress()
 	}
 	else
 	{
-		TerminalHackProgress += TerminalHackRequired / 4.f;
+		TerminalHackProgress += TerminalHackRequired * 0.25f;
 		if (WaveManagerHUD) WaveManagerHUD->UpdateTaskProgress(TerminalHackProgress, TerminalHackRequired);
 		if (TerminalHackProgress >= TerminalHackRequired)
 		{

@@ -16,9 +16,9 @@ class POSSESSIONGAME_API UKeyBindingUI : public UUserWidget
 public:
 	FKey& GetKeyBindKey() { return TempSelectedKey; }
 	
-	void Setup(TObjectPtr<UEnhancedInputUserSettings> InUserSettings, FPlayerKeyMapping InMapping);
+	void Setup(const TObjectPtr<UEnhancedInputUserSettings>& InUserSettings, const FPlayerKeyMapping& InMapping);
 	void RemapKeyBind();
-	void SetSavedKeyBind();
+	void SetSavedKeyBind() const;
 	UFUNCTION()
 	void ResetKeyBind();
 private:

@@ -3,7 +3,7 @@
 #include "Components/InputKeySelector.h"
 #include "PossessionGame/UI/SecondaryWidgets/SettingsTitleUI.h"
 
-void UKeyBindingUI::Setup(TObjectPtr<UEnhancedInputUserSettings> InUserSettings, FPlayerKeyMapping InMapping)
+void UKeyBindingUI::Setup(const TObjectPtr<UEnhancedInputUserSettings>& InUserSettings, const FPlayerKeyMapping& InMapping)
 {
 	UserSettings = InUserSettings;
 	Mapping = InMapping;
@@ -37,7 +37,7 @@ void UKeyBindingUI::RemapKeyBind()
 	Mapping.SetCurrentKey(TempSelectedKey);
 }
 
-void UKeyBindingUI::SetSavedKeyBind()
+void UKeyBindingUI::SetSavedKeyBind() const
 {
 	if (InputKeySelector)
 	{

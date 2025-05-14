@@ -1,11 +1,11 @@
 ﻿#include "AlertPopupUI.h"
 #include "Components/TextBlock.h"
 
-void UAlertPopupUI::PlayPopupFadeInAnim(bool bState)
+void UAlertPopupUI::PlayPopupFadeInAnim(const bool bState)
 {
 	if (!PopupFadeIn) return;
-	bState ? PlayAnimation(PopupFadeIn, GetAnimationCurrentTime(PopupFadeIn))
-	: PlayAnimation(PopupFadeIn, GetAnimationCurrentTime(PopupFadeIn), 1, EUMGSequencePlayMode::Reverse);
+	UE_LOG(LogTemp, Warning, TEXT("PlayPopupFadeInAnim %i %s"), bState, *UEnum::GetValueAsString(GetVisibility()));
+	PlayAnimation(PopupFadeIn, GetAnimationCurrentTime(PopupFadeIn), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
 
 void UAlertPopupUI::NativePreConstruct()

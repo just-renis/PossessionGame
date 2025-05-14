@@ -32,6 +32,7 @@ public:
 	void Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager);
 	void SetupWaveManagerSettings(const TArray<ECharacterType>& InEnemiesThatAreSpawnable, const int32 InEnemiesAmountOnFirstWave);
 private:
+	bool FORDUMMYONLY = true;
 	bool bIsSpawnInProcess = false;
 	bool bWaveNotStarted = false;
 	bool bTutorialIsFinished = false;

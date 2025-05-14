@@ -57,12 +57,17 @@ void USettingsUI::SetSavedSettings()
 	if (ControlsSettings) ControlsSettings->SetSavedSettings();
 }
 
+void USettingsUI::OpenDuplicateKeyBindsPopup() const
+{
+	UE_LOG(LogTemp, Warning, TEXT("OpenDuplicateKeyBindsPopup"));
+	if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(true);
+}
+
 void USettingsUI::ApplySettings()
 {
 	if (ControlsSettings && !ControlsSettings->ApplySettings())
 	{
-		if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(true);
-		if (SettingsFadeIn) PlayAnimation(SettingsFadeIn, 0, 1, EUMGSequencePlayMode::Reverse);
+		OpenDuplicateKeyBindsPopup();
 	}
 	else
 	{
@@ -83,6 +88,6 @@ void USettingsUI::ResetKeyBindsToDefault() { if (ControlsSettings) ControlsSetti
 
 void USettingsUI::CloseDuplicateKeyBindsPopup()
 {
+	UE_LOG(LogTemp, Warning, TEXT("CloseDuplicateKeyBindsPopup"));
 	if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(false);
-	if (SettingsFadeIn) PlayAnimation(SettingsFadeIn);
 }

@@ -4,8 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "SettingsUI.generated.h"
 
-class UInvalidationBox;
 class UAlertPopupUI;
+class UInvalidationBox;
 class UControlsSettingsUI;
 class UAudioSettingsUI;
 class UGraphicsSettingsUI;
@@ -44,8 +44,6 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UButton> ResetKeyBindsButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UAlertPopupUI> DuplicateKeyBindsAlert;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UInvalidationBox> TabsInv;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UInvalidationBox> SettingsInv;
@@ -53,6 +51,8 @@ private:
 	TObjectPtr<UInvalidationBox> CloseButtonInv;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UInvalidationBox> ApplySettingsButtonInv;
+	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	TObjectPtr<UAlertPopupUI> DuplicateKeyBindsAlert;
 	UPROPERTY(Transient, meta = (BindWidgetAnim, AllowPrivateAccess = true))
 	TObjectPtr<UWidgetAnimation> SettingsFadeIn;
 	
@@ -60,6 +60,7 @@ private:
 	void SetupUIEvents();
 	void UpdateDefaultSettings();
 	void SetSavedSettings();
+	void OpenDuplicateKeyBindsPopup() const;
 	UFUNCTION()
 	void ApplySettings();
 	UFUNCTION()
