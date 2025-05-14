@@ -1,11 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/AI/Enemies/Categories/HeavyEnemy.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "Tank.generated.h"
 
 UCLASS()
-class POSSESSIONGAME_API ATank : public AHeavyEnemy
+class POSSESSIONGAME_API ATank : public AEnemy
 {
 	GENERATED_BODY()
 public:

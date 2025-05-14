@@ -1,14 +1,14 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/AI/Enemies/Categories/AssaultEnemy.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "Ranger.generated.h"
 
 class ATriggerSphere;
 class UNiagaraComponent;
 
 UCLASS()
-class POSSESSIONGAME_API ARanger : public AAssaultEnemy
+class POSSESSIONGAME_API ARanger : public AEnemy
 {
 	GENERATED_BODY()
 public:

@@ -1,6 +1,6 @@
 ﻿#include "FStateTreeData.h"
 #include "GameplayTagContainer.h"
-#include "PossessionGame/AI/StateTrees/CustomStateTreeComponent.h"
+#include "Components/StateTreeComponent.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 
 void FStateTreeData::SetEQSPointLocation(const FVector InValue)

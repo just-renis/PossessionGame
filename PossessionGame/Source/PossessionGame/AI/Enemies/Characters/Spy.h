@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/AI/Enemies/Categories/SpecialEnemy.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Interfaces/Concealable.h"
 #include "Spy.generated.h"
 
 UCLASS()
-class POSSESSIONGAME_API ASpy : public ASpecialEnemy, public IConcealable
+class POSSESSIONGAME_API ASpy : public AEnemy, public IConcealable
 {
 	GENERATED_BODY()
 public:

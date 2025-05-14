@@ -1,14 +1,14 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/AI/Enemies/Categories/SpecialEnemy.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "Samurai.generated.h"
 
 class ADestructible;
 enum class EPlayerInputState : uint8;
 
 UCLASS()
-class POSSESSIONGAME_API ASamurai : public ASpecialEnemy
+class POSSESSIONGAME_API ASamurai : public AEnemy
 {
 	GENERATED_BODY()
 

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/AI/Enemies/Categories/SpecialEnemy.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "Trickster.generated.h"
 
 DECLARE_DELEGATE_TwoParams(FOnWeaponShootStateChange, bool, bool);
 
 UCLASS()
-class POSSESSIONGAME_API ATrickster : public ASpecialEnemy
+class POSSESSIONGAME_API ATrickster : public AEnemy
 {
 	GENERATED_BODY()
 public:
