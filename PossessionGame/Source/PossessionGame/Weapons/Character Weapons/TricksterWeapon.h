@@ -8,13 +8,21 @@ UCLASS()
 class POSSESSIONGAME_API ATricksterWeapon : public ADualWieldingWeapon
 {
 	GENERATED_BODY()
-	
+public:
+	void P_StopOverChargeVfx() const;
+private:
 	ATricksterWeapon();
 
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> FirstWeaponOverChargeComponent;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> SecondWeaponOverChargeComponent;
+
 	virtual void AI_Reload() override;
-	
+
 	virtual void P_Reload(int32 OtherAmmoSource) override;
 	void P_SetupOnShootState();
+	void P_PlayOverChargeVfx();
 	
 	virtual void BeginPlay() override;
 	virtual void SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh) override;

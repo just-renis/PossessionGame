@@ -19,7 +19,7 @@ void ATricksterSingularWeapon::AI_Shoot()
 
 bool ATricksterSingularWeapon::P_CanReload(int32 OtherAmmoSource)
 {
-	return OtherAmmoSource != -1 ? OtherAmmoSource > 0 : TotalAmmo > 0 && CurrentAmmo != MagazineCap;
+	return (OtherAmmoSource != -1 ? OtherAmmoSource > 0 : TotalAmmo > 0) && CurrentAmmo != MagazineCap;
 }
 
 void ATricksterSingularWeapon::P_Shoot(bool bIsFirstWeapon)

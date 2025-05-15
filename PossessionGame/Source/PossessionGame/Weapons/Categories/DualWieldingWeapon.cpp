@@ -30,7 +30,7 @@ bool ADualWieldingWeapon::P_CanShoot(bool bIsFirstWeapon)
 	return !HandsAnimInstance->GetIsReloading() && (bIsFirstWeapon ? FirstWeapon->GetCurrentAmmoAmount() > 0 : SecondWeapon->GetCurrentAmmoAmount() > 0);
 }
 
-bool ADualWieldingWeapon::P_CanReload(int32 OtherAmmoSource) { return TotalAmmo > 0 && !HandsAnimInstance->GetIsReloading(); }
+bool ADualWieldingWeapon::P_CanReload(int32 OtherAmmoSource) { return TotalAmmo > 0 && !HandsAnimInstance->GetIsReloading() && (FirstWeapon->P_CanReload(TotalAmmo) || SecondWeapon->P_CanReload(TotalAmmo)); }
 
 void ADualWieldingWeapon::P_Shoot(bool bIsFirstWeapon)
 {
@@ -45,11 +45,11 @@ void ADualWieldingWeapon::P_Shoot(bool bIsFirstWeapon)
 
 void ADualWieldingWeapon::P_Reload(int32 OtherAmmoSource)
 {
-	int32 FirstWeaponAmmoNeeded = FirstWeapon->GetAmmoNeeded();
-	int32 SecondWeaponAmmoNeeded = SecondWeapon->GetAmmoNeeded();
-	if (FirstWeapon->P_CanReload(TotalAmmo)) FirstWeapon->P_Reload(TotalAmmo);
+	const int32 FirstWeaponAmmoNeeded = FirstWeapon->GetAmmoNeeded();
+	const int32 SecondWeaponAmmoNeeded = SecondWeapon->GetAmmoNeeded();
+	FirstWeapon->P_Reload(TotalAmmo);
 	TotalAmmo -= FirstWeaponAmmoNeeded;
-	if (SecondWeapon->P_CanReload(TotalAmmo)) SecondWeapon->P_Reload(TotalAmmo);
+	SecondWeapon->P_Reload(TotalAmmo);
 	TotalAmmo -= SecondWeaponAmmoNeeded;
 	if (TotalAmmo < 0) TotalAmmo = 0;
 }

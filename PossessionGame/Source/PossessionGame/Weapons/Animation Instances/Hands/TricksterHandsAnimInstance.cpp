@@ -1,9 +1,17 @@
 ﻿#include "TricksterHandsAnimInstance.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Weapons/Character Weapons/TricksterWeapon.h"
 
 void UTricksterHandsAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
 {
 	Super::OnMontageEnd(Montage, bIsInterrupted);
+	const TObjectPtr<UAnimMontage>* ReloadMontage = Montages.Find(EHandsAnimState::Reload);
+	if (ReloadMontage && Montage == ReloadMontage->Get())
+	{
+		Cast<ATricksterWeapon>(GetProprietor()->GetWeapon())->P_StopOverChargeVfx();
+		return;
+	}
 	const TObjectPtr<UAnimMontage>* SmokeBombThrowMontage = Montages.Find(EHandsAnimState::GrenadeLaunch);
 	if (SmokeBombThrowMontage && Montage == SmokeBombThrowMontage->Get())
 	{

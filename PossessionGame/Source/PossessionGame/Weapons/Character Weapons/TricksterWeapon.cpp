@@ -1,4 +1,6 @@
 #include "TricksterWeapon.h"
+
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/AI/Enemies/Characters/Trickster.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
@@ -19,6 +21,7 @@ void ATricksterWeapon::AI_Reload() { PlaySound(ESound::TricksterReload); }
 void ATricksterWeapon::P_Reload(int32 OtherAmmoSource)
 {
 	PlaySound(ESound::TricksterReload);
+	P_PlayOverChargeVfx();
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
 	Super::P_Reload(OtherAmmoSource);
 }
@@ -26,6 +29,23 @@ void ATricksterWeapon::P_Reload(int32 OtherAmmoSource)
 void ATricksterWeapon::P_SetupOnShootState()
 {
 	Cast<ATrickster>(Proprietor)->GetOnWeaponShootStateChangeDelegate().BindUObject(this, &ADualWieldingWeapon::P_SetShootMontage);
+}
+
+void ATricksterWeapon::P_PlayOverChargeVfx()
+{
+	if (FirstWeaponOverChargeComponent) FirstWeaponOverChargeComponent->Activate();
+	else AssetsManager->AttachVfx(EVfx::GuardianOverCharge, FNiagaraVariationData(), &FirstWeaponOverChargeComponent, FirstWeapon->GetMesh(), "OverChargeSocket");
+	if (SecondWeaponOverChargeComponent) SecondWeaponOverChargeComponent->Activate();
+	else AssetsManager->AttachVfx(EVfx::GuardianOverCharge, FNiagaraVariationData(), &SecondWeaponOverChargeComponent, SecondWeapon->GetMesh(), "OverChargeSocket");
+}
+
+void ATricksterWeapon::P_StopOverChargeVfx() const
+{
+	if (FirstWeaponOverChargeComponent && SecondWeaponOverChargeComponent)
+	{
+		FirstWeaponOverChargeComponent->Deactivate();
+		SecondWeaponOverChargeComponent->Deactivate();
+	}
 }
 
 void ATricksterWeapon::BeginPlay()

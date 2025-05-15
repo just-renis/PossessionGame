@@ -22,6 +22,7 @@ public:
 	bool GetIsReloading() const { return bIsReloading; }
 	bool IsPlaying(EHandsAnimState State);
 	float GetMontagePosition(EHandsAnimState State);
+	TObjectPtr<AEnemy> GetProprietor() const { return Proprietor; }
 
 	void SetSpeed(float Value) { Speed = Value; }
 	void KeepPlayingMontage(EHandsAnimState State) { if (!IsPlaying(State)) PlayMontage(State); }
