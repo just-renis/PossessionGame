@@ -411,13 +411,13 @@ void AEnemy::P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 void AEnemy::P_SetupCharacterMovement()
 {
 	CurrentDashCooldown = P_Data->GetDashCooldown();
-	GetCharacterMovement()->GravityScale = 3.5f;
-	GetCharacterMovement()->JumpZVelocity = 1150.f;
-	GetCharacterMovement()->AirControl = 1.f;
-	GetCharacterMovement()->MaxAcceleration = 20000.f;
-	GetCharacterMovement()->BrakingFrictionFactor = 1.f;
+	GetCharacterMovement()->GravityScale = GravityScale;
+	GetCharacterMovement()->JumpZVelocity = JumpVelocity;
+	GetCharacterMovement()->AirControl = AirControl;
+	GetCharacterMovement()->MaxAcceleration = MaxAcceleration;
+	GetCharacterMovement()->BrakingFrictionFactor = BrakingFrictionFactor;
+	GetCharacterMovement()->GetCharacterOwner()->JumpMaxCount = MaxJumpAmount;
 	GetCharacterMovement()->bUseRVOAvoidance = false;
-	GetCharacterMovement()->GetCharacterOwner()->JumpMaxCount = 2;
 }
 
 void AEnemy::P_Move(const FInputActionValue& Value)
@@ -638,7 +638,7 @@ void AEnemy::AI_TriggerMutantExplosion()
 		TObjectPtr<AActor> HitActor = Result.GetActor();
 		if (!HitActor || UniqueActors.Contains(HitActor)) continue;
 		UniqueActors.Add(HitActor);
-		if (HitActor->ActorHasTag("Player")) UGameplayStatics::ApplyDamage(HitActor, 50.f, nullptr, this, UDamageType::StaticClass());
+		if (HitActor->ActorHasTag("Player")) UGameplayStatics::ApplyDamage(HitActor, MutantExplosionDamage, nullptr, this, UDamageType::StaticClass());
 	}
 }
 
@@ -1116,7 +1116,7 @@ void AEnemy::Landed(const FHitResult& Hit)
 	{
 		bIsStomping = false;
 		AssetsManager->PlaySound2D(ESound::PlayerStompLand);
-		AssetsManager->SpawnVfx(EVfx::MinionBossStompCrack, GetSocketLocation("StompSocket"));
+		AssetsManager->SpawnVfx(EVfx::PlayerStomp, GetSocketLocation("StompSocket"));
 		GetCharacterMovement()->AirControl = 1.f;
 		P_StompImpact(GetSocketLocation("StompSocket"));
 		P_MakeCameraShake(StompCameraShake);

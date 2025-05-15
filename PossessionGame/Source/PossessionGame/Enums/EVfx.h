@@ -44,5 +44,6 @@ enum class EVfx : uint8
 	ArtifactAura,
 	EliteAura,
 	MutantAura,
-	MutantExplosion
+	MutantExplosion,
+	PlayerStomp
 };

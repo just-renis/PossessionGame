@@ -417,6 +417,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_EliteAura", EVfx::EliteAura);
 	VfxsMap.Add("PA_MutantAura", EVfx::MutantAura);
 	VfxsMap.Add("PA_MutantExplosion", EVfx::MutantExplosion);
+	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

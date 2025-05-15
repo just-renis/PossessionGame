@@ -215,6 +215,20 @@ private:
 	float QuickMeleeAttackRadiusInMeters = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
 	float QuickMeleeAttackDamage = 20.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Mutant", meta = (AllowPrivateAccess = true))
+	float MutantExplosionDamage = 50.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	float GravityScale = 3.5f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	float JumpVelocity = 1150.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	float AirControl = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	float MaxAcceleration = 20000.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	float BrakingFrictionFactor = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	int32 MaxJumpAmount = 2;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
