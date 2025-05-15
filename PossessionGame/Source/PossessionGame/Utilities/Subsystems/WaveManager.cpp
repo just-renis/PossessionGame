@@ -240,6 +240,7 @@ void UWaveManager::SpawnLogic()
 void UWaveManager::AsyncLoadAndSpawnEnemy(ECharacterType EnemyType)
 {
 	bIsSpawnInProcess = true;
+	if (SPAWNGUARDIAN) SPAWNGUARDIAN = false, bTutorialIsFinished = true;
 	if (AssetsManager->GetCanAsyncLoadHappen())
 	{
 		TArray<FSoftObjectPath> PathsToLoad;

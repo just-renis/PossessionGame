@@ -18,7 +18,7 @@ class POSSESSIONGAME_API UEnemyCommunicator : public UWorldSubsystem
 public:
 	int32 GetEnemiesAmount() { return EnemiesAmount; }
 	FVector GetPointLocation(ECharacterType InCharacterType, FVector InLocation);
-	FVector GetTargetLocation() { return Target->GetActorLocation(); }
+	FVector GetTargetLocation() const;
 	TObjectPtr<AActor>& GetTarget() { return Target; }
 	FVector GetFarthestEnemyLocation(FVector FromLocation);
 	FOnEQSFinish& GetEQSDelegate() { return OnEQSFinish; }

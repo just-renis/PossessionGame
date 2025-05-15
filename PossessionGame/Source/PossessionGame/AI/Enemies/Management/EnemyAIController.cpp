@@ -81,6 +81,7 @@ void AEnemyAIController::BeginPlay()
 	Super::BeginPlay();
 	EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
 	SetupEQSTarget();
+	UKismetSystemLibrary::K2_SetTimer(this, "SightOnTargetLogic", SightOnTargetRepeat, true);
 }
 
 void AEnemyAIController::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
@@ -124,12 +125,7 @@ void AEnemyAIController::SetTarget(TObjectPtr<AActor> InTarget, const bool bIsTa
 	if (!bIsTargetAcquiredForFirstTime) SetupStateTree();
 }
 
-void AEnemyAIController::SetIsTargetInMySight(const bool bState)
-{
-	StateTreeData.SetIsTargetInMySight(bState);
-	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "SightOnTargetLogic", SightOnTargetRepeat, true);
-	else UKismetSystemLibrary::K2_ClearTimer(this, "SightOnTargetLogic");
-}
+void AEnemyAIController::SetIsTargetInMySight(const bool bState) { StateTreeData.SetIsTargetInMySight(bState); }
 
 void AEnemyAIController::SetupEQSTarget()
 {
