@@ -28,11 +28,11 @@ public:
 	void SetShootCooldown(const float InValue);
 	void SetReloadDelay(const float InValue);
 	virtual void DestroyThis();
-	void SetProprietor(const TObjectPtr<AEnemy> InEnemy);
+	void SetProprietor(const TObjectPtr<AEnemy>& InEnemy);
 	void SetupStateTree();
 	void SetMoveMode(const EMoveMode InMoveMode) const;
 	virtual void SetupAI();
-	void SetEQSTargetLocation(const FVector InLocation) const { EQSTarget->SetActorLocation(InLocation); }
+	void SetEQSTargetLocation(const FVector& InLocation) const { EQSTarget->SetActorLocation(InLocation); }
 	void ResumeLogic() const;
 	void StopLogic(const bool bNeedCleanup);
 protected:
@@ -60,8 +60,8 @@ private:
 	TObjectPtr<AActor> EQSTarget;
 
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
-	void CustomFocusToLocation(const FVector InTargetLocation) const;
-	void SetTarget(const TObjectPtr<AActor> InTarget, const bool bIsTargetAcquiredForFirstTime);
+	void CustomFocusToLocation(const FVector& InTargetLocation) const;
+	void SetTarget(const TObjectPtr<AActor>& InTarget, const bool bIsTargetAcquiredForFirstTime);
 	void SetIsTargetInMySight(const bool bState);
 	void SetupEQSTarget();
 	void SetEQSTargetLocation();

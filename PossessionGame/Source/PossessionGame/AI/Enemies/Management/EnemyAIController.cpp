@@ -44,7 +44,7 @@ void AEnemyAIController::DestroyThis()
 	StopStateTreeLogic(true);
 }
 
-void AEnemyAIController::SetProprietor(const TObjectPtr<AEnemy> InEnemy) { Proprietor = InEnemy; }
+void AEnemyAIController::SetProprietor(const TObjectPtr<AEnemy>& InEnemy) { Proprietor = InEnemy; }
 
 void AEnemyAIController::SetupStateTree()
 {
@@ -112,14 +112,14 @@ void AEnemyAIController::AdjustCustomFocus() const
 	if (!Proprietor->GetIsActionInMotion() && EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation());
 }
 
-void AEnemyAIController::CustomFocusToLocation(const FVector InTargetLocation) const
+void AEnemyAIController::CustomFocusToLocation(const FVector& InTargetLocation) const
 {
 	FRotator NewControlRotation = GetControlRotation();
 	NewControlRotation.Yaw = (InTargetLocation - GetPawn()->GetActorLocation()).GetSafeNormal2D().Rotation().Yaw;
 	GetPawn()->SetActorRotation(NewControlRotation);
 }
 
-void AEnemyAIController::SetTarget(TObjectPtr<AActor> InTarget, const bool bIsTargetAcquiredForFirstTime)
+void AEnemyAIController::SetTarget(const TObjectPtr<AActor>& InTarget, const bool bIsTargetAcquiredForFirstTime)
 {
 	StateTreeData.SetTargetRef(InTarget);
 	if (!bIsTargetAcquiredForFirstTime) SetupStateTree();
