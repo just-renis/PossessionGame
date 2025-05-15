@@ -17,7 +17,7 @@ void AForceField::BeginPlay()
 {
 	Super::BeginPlay();
 	MI_Material = ForceField->CreateAndSetMaterialInstanceDynamic(0);
-	if (bIsTutorialForceField) GetGameInstance()->GetSubsystem<UDelegateManager>()->DestroyTutorialForceField.BindUObject(this, &AForceField::StartDissolveForceField);
+	if (TutorialForceFieldIndex != 0) GetGameInstance()->GetSubsystem<UDelegateManager>()->DestroyTutorialForceField.AddUObject(this, &AForceField::StartDissolveTutorialForceField);
 	else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnChargeTerminalModeCompletion.BindUObject(this, &AForceField::StartDissolveForceField);
 }
 
@@ -25,6 +25,13 @@ void AForceField::DestroyThis()
 {
 	UKismetSystemLibrary::K2_ClearTimer(this, "DissolveForceField");
 	Destroy();
+}
+
+void AForceField::StartDissolveTutorialForceField(const int32 InIndex)
+{
+	if (TutorialForceFieldIndex != InIndex) return;
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->DestroyTutorialForceField.RemoveAll(this);
+	StartDissolveForceField();
 }
 
 void AForceField::StartDissolveForceField()

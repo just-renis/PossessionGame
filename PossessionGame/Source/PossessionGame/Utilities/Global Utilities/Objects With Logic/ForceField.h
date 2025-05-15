@@ -12,7 +12,7 @@ class POSSESSIONGAME_API AForceField : public AActor
 
 	float MaterialOpacity = 1.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	bool bIsTutorialForceField = false;
+	int32 TutorialForceFieldIndex = 0;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> ForceField;
 	UPROPERTY()
@@ -22,6 +22,7 @@ class POSSESSIONGAME_API AForceField : public AActor
 
 	virtual void BeginPlay() override;
 	void DestroyThis();
+	void StartDissolveTutorialForceField(const int32 InIndex);
 	void StartDissolveForceField();
 	UFUNCTION()
 	void DissolveForceField();

@@ -86,11 +86,7 @@ void ATutorialDrone::SetupDelegates()
 	DelegateManager->OnCheckDistanceToTutorialDrone.BindUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
 }
 
-void ATutorialDrone::ShowRandomTip() const
-{
-	UE_LOG(LogTemp, Warning, TEXT("SHOW RANDOM TIP"));
-	(void)DelegateManager->OnShowDialogue.ExecuteIfBound(-1);
-}
+void ATutorialDrone::ShowRandomTip() const { (void)DelegateManager->OnShowDialogue.ExecuteIfBound(-1); }
 
 void ATutorialDrone::MoveToLocation()
 {
@@ -110,7 +106,7 @@ void ATutorialDrone::MoveToLocation()
 		{
 			case 0: SetDroneMoveLocation(1, false); break;
 			case 1:
-				(void)DelegateManager->DestroyTutorialForceField.ExecuteIfBound();
+				DelegateManager->DestroyTutorialForceField.Broadcast(1);
 				EnableCheckDistanceToTarget(1);
 				break;
 			case 2: EnableCheckDistanceToTarget(2); break;
@@ -152,6 +148,7 @@ void ATutorialDrone::CheckDistanceToTarget()
 				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(4);
 				(void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Minion);
 				(void)DelegateManager->OnShowHint.ExecuteIfBound(2);
+				DelegateManager->DestroyTutorialForceField.Broadcast(2);
 				break;
 			case 2: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(5); break;
 			default: ShowRandomTip();
