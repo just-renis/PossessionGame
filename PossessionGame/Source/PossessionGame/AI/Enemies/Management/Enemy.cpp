@@ -65,6 +65,8 @@ AEnemy::AEnemy()
 	Camera->SetupAttachment(RootComponent);
 	AI_HpBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("AI_HpBar"));
 	AI_HpBarComponent->SetupAttachment(RootComponent);
+	AI_HpBarComponent->SetDrawSize(FVector2D(1920.f, 1080.f));
+	AI_HpBarComponent->SetRelativeScale3D(FVector(1.f, 0.05f, 0.01f));
 }
 
 bool AEnemy::GetIsPossessable() const { return AI_Data->GetIsPossessable(); }

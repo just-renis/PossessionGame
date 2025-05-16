@@ -10,6 +10,7 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "Enemy.generated.h"
 
+class AAIHpBar;
 enum class EVariation : uint8;
 enum class EDamageReason : uint8;
 class UNiagaraComponent;
@@ -233,8 +234,6 @@ private:
 	int32 MaxJumpAmount = 2;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
-	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UWidgetComponent> AI_HpBarComponent;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ReceivingDamageCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -243,6 +242,8 @@ private:
 	TObjectPtr<UMaterialInterface> PossessionOutlineMaterial;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> UnPossessionOutlineMaterial;
+	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UWidgetComponent> AI_HpBarComponent;
 	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
