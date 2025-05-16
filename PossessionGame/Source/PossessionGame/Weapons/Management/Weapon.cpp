@@ -122,6 +122,10 @@ void AWeapon::P_SetVariationMaterial()
 
 void AWeapon::P_ChangeVfxVariation() { AssetsManager->ChangeVfxVariation(MuzzleFlashComponent, P_Data->GetNiagaraVariationData(Proprietor->GetVariation())); }
 
+void AWeapon::P_ReduceShootCooldown(const float InPercentage) { ShootCooldown -= P_Data->GetShootCooldown() * InPercentage * 0.01f; }
+
+void AWeapon::P_ResetShootCooldown() { ShootCooldown = P_Data->GetShootCooldown(); }
+
 void AWeapon::DestroyThis()
 {
 	DelegateManager->OnLevelUp.RemoveAll(this);

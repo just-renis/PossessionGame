@@ -5,5 +5,6 @@ enum class EStateTreeEvent : uint8
 {
     MinionBossStomp,
     MinionBossLaserEye,
-    RangerLaunchGrenade
+    RangerLaunchGrenade,
+    RangerDeployShield
 };

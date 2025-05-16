@@ -10,7 +10,6 @@
 void URangerAnimationInstance::InnerPlayMontage(EEnemyAnimState State)
 {
 	Super::InnerPlayMontage(State);
-//	UE_LOG(LogTemp, Warning, TEXT("ANIMATION PLAYED: %s"), *UEnum::GetValueAsString(State));
 	if (State == EEnemyAnimState::GrenadeLaunch)
 	{
 		UKismetSystemLibrary::K2_SetTimer(this, "TriggerGrenadeProjection", 0.1f, false);
@@ -28,7 +27,11 @@ void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInter
 		(void)Cast<ARangerAIController>(Proprietor->GetAI())->OnGrenadeLaunchFinished.ExecuteIfBound();
 	}
 	const TObjectPtr<UAnimMontage>* DeployShieldMontage = Montages.Find(EEnemyAnimState::DeployShield);
-	if (DeployShieldMontage && Montage == DeployShieldMontage->Get()) Proprietor->SetActionInMotion(false);
+	if (DeployShieldMontage && Montage == DeployShieldMontage->Get())
+	{
+		Proprietor->SetActionInMotion(false);
+		(void)Cast<ARangerAIController>(Proprietor->GetAI())->OnDeployShieldFinished.ExecuteIfBound();
+	}
 }
 
 void URangerAnimationInstance::LaunchGrenade() const { if (Proprietor->GetIsAlive()) Cast<ARanger>(Proprietor)->LaunchGrenade(); }

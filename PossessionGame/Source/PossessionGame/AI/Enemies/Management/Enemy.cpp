@@ -123,6 +123,10 @@ void AEnemy::P_SetFov(const float InFov)
 	UKismetSystemLibrary::K2_SetTimer(this, "P_ContinuousFovChange", 0.025f, true);
 }
 
+void AEnemy::P_IncreaseMovementSpeed(const float InPercentage) const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed() + P_Data->GetMaxWalkSpeed() * InPercentage * 0.01f); }
+
+void AEnemy::P_ResetMovementSpeed() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
+
 void AEnemy::SetActionInMotion(const bool bState)
 {
 	bIsActionInMotion = bState;

@@ -31,6 +31,7 @@ public:
 	void SetWeaponName(EWeapon Name) { WeaponName = Name; }
 	void SetIsZoomedIn(bool bState) { bIsZoomedIn = bState; }
 	void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
+	void SetPlayRate(const float InPlayRate) { PlayRate = InPlayRate; }
 protected:
 	UPROPERTY()
 	TMap<EHandsAnimState, TObjectPtr<UAnimMontage>> Montages;
@@ -47,6 +48,8 @@ private:
 	float DirectionalAngle = 0.f;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	float Speed = 0.f;
+	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
+	float PlayRate = 1.f;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	UPROPERTY()

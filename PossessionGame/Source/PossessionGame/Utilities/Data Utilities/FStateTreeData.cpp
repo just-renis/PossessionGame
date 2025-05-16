@@ -14,6 +14,7 @@ void FStateTreeData::TriggerEvent(const EStateTreeEvent InEventName) const
 	(void)OnStateTreeEvent.ExecuteIfBound(InEventName);
 	switch (InEventName)
 	{
+		case EStateTreeEvent::RangerDeployShield: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Ranger.DeployShield")); break;
 		case EStateTreeEvent::RangerLaunchGrenade: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Ranger.LaunchGrenade")); break;
 		case EStateTreeEvent::MinionBossStomp: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MinionBoss.Stomp")); break;
 		case EStateTreeEvent::MinionBossLaserEye: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MinionBoss.LaserEye"));

@@ -68,6 +68,8 @@ public:
 	virtual void P_SetVariationMaterial();
 	virtual void P_ChangeVfxVariation();
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) {}
+	void P_ReduceShootCooldown(const float InPercentage);
+	void P_ResetShootCooldown();
 	
 	virtual void SetWeaponMeshScaleToOriginal() { Mesh->SetRelativeScale3D(OriginalScale); }
 	void SetFirstShotWasShot() { bFirstShotWasShot = true; }

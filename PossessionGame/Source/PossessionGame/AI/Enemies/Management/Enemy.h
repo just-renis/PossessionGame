@@ -82,6 +82,8 @@ public:
 	void P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeaponAmmo, const int32 MaxAmmo) const;
 	void P_StopTime(); // NOT USED ANYWHERE YET.
 	void P_SetFov(const float InFov);
+	void P_IncreaseMovementSpeed(const float InPercentage) const;
+	void P_ResetMovementSpeed() const;
 
 	void SetAbilityInAction(const bool bState) { bAbilityInAction = bState; }
 	void SetActionInMotion(const bool bState);
