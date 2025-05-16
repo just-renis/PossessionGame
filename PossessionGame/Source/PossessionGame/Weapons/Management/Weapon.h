@@ -80,7 +80,7 @@ public:
 	void SubtractShootCycleUntilReload() { ShootCyclesUntilReload--; }
 	void SetCastShadow(const bool bState) const { if (Mesh) Mesh->SetCastShadow(bState); }
 	void AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh) const;
-	virtual void ShootProjectile(const EPoolObject InProjectileName, bool bOverrideRotation = false, bool bFromFirstWeapon = true);
+	virtual void ShootProjectile(const EPoolObject InProjectileName, bool bFromFirstWeapon = true);
 	virtual void PostProprietorSetup();
 protected:
 	bool bIsPossessed = false;

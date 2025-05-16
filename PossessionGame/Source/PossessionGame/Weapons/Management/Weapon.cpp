@@ -156,13 +156,13 @@ void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh
 	Mesh->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket1"));
 }
 
-void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bOverrideRotation, bool bFromFirstWeapon)
+void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bFromFirstWeapon)
 {
 	const int32 ProjectilesAmount = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPossessed, InProjectileName, EUpgradeAttribute::ProjectilesAmount);
 	GetProjectileData(InProjectileName).SetProprietor(Proprietor);
 	GetProjectileData(InProjectileName).SetAmount(ProjectilesAmount + 1);
 	const FName& ProjectileSocketName = GetProjectileData(InProjectileName).ProjectileSocketName;
-	const FRotator BaseRotation = bOverrideRotation ? Proprietor->GetActorRotation() : GetSocketRotation(ProjectileSocketName);
+	const FRotator BaseRotation = GetSocketRotation(ProjectileSocketName);
 	if (GetProjectileData(InProjectileName).Amount > 1)
 	{
 		const FAdditionalProjectiles ProjectilesData = GetProjectileData(InProjectileName).GetMultiProjectileData(GetProjectileData(InProjectileName).Amount);

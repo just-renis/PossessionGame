@@ -79,8 +79,8 @@ void ATricksterWeapon::PostProprietorSetup()
 	Super::PostProprietorSetup();
 }
 
-void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bOverrideRotation, const bool bFromFirstWeapon)
+void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bFromFirstWeapon)
 {
-	if (bFromFirstWeapon) FirstWeapon->ShootProjectile(InProjectileName, bOverrideRotation);
-	else SecondWeapon->ShootProjectile(InProjectileName, bOverrideRotation);
+	if (bFromFirstWeapon) FirstWeapon->ShootProjectile(InProjectileName);
+	else SecondWeapon->ShootProjectile(InProjectileName);
 }
