@@ -34,9 +34,9 @@ void ATricksterWeapon::P_SetupOnShootState()
 void ATricksterWeapon::P_PlayOverChargeVfx()
 {
 	if (FirstWeaponOverChargeComponent) FirstWeaponOverChargeComponent->Activate();
-	else AssetsManager->AttachVfx(EVfx::GuardianOverCharge, FNiagaraVariationData(), &FirstWeaponOverChargeComponent, FirstWeapon->GetMesh(), "OverChargeSocket");
+	else AssetsManager->AttachVfx(EVfx::TricksterReload, FNiagaraVariationData(), &FirstWeaponOverChargeComponent, FirstWeapon->GetMesh(), "OverChargeSocket");
 	if (SecondWeaponOverChargeComponent) SecondWeaponOverChargeComponent->Activate();
-	else AssetsManager->AttachVfx(EVfx::GuardianOverCharge, FNiagaraVariationData(), &SecondWeaponOverChargeComponent, SecondWeapon->GetMesh(), "OverChargeSocket");
+	else AssetsManager->AttachVfx(EVfx::TricksterReload, FNiagaraVariationData(), &SecondWeaponOverChargeComponent, SecondWeapon->GetMesh(), "OverChargeSocket");
 }
 
 void ATricksterWeapon::P_StopOverChargeVfx() const
