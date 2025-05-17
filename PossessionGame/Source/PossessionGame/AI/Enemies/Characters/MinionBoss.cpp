@@ -62,6 +62,9 @@ AMinionBoss::AMinionBoss()
 	Sounds.Add(ESound::MinionBossLaserEyeHold, CreateDefaultSubobject<UAudioComponent>(TEXT("laserEyeHoldSfx")));
 	Sounds[ESound::MinionBossLaserEyeHold]->SetAutoActivate(false);
 	Sounds[ESound::MinionBossLaserEyeHold]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::MinionBossDeathExplosion, CreateDefaultSubobject<UAudioComponent>(TEXT("deathExplosionSfx")));
+	Sounds[ESound::MinionBossDeathExplosion]->SetAutoActivate(false);
+	Sounds[ESound::MinionBossDeathExplosion]->SetupAttachment(GetMesh());
 }
 
 void AMinionBoss::AI_SetupWeapon()
@@ -103,7 +106,13 @@ void AMinionBoss::AI_InitiateShooting() { AI_PlayShootMontage(); }
 
 void AMinionBoss::AI_PlayDeathExplosion()
 {
-	AssetsManager->AttachVfx(EVfx::MinionBossDeathExplosion, FNiagaraVariationData(), nullptr, GetMesh(), "DeathExplosionSocket");
+	PlaySound(ESound::MinionBossDeathExplosion);
+	AssetsManager->AttachVfx(EVfx::MinionBossDeathExplosion, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+}
+
+void AMinionBoss::AI_PlayDeathElectrification()
+{
+	AssetsManager->AttachVfx(EVfx::MinionBossDeathElectrification, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
 }
 
 TObjectPtr<AWeapon>& AMinionBoss::GetWeapon() { return Weapons[0]; }

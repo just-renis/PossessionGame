@@ -51,6 +51,7 @@ private:
 	virtual void AI_CancelShooting() override;
 	virtual void AI_InitiateShooting() override;
 	virtual void AI_PlayDeathExplosion() override;
+	virtual void AI_PlayDeathElectrification() override;
 
 	virtual TObjectPtr<AWeapon>& GetWeapon() override; // For getting singular weapon data only.
 	

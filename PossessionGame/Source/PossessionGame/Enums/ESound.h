@@ -48,6 +48,7 @@ enum class ESound : uint16
 	MinionBossShoot,
 	MinionBossLaserEyeCharge,
 	MinionBossLaserEyeHold,
+	MinionBossDeathExplosion,
 	DroneBuzz,
 	DialogueStart,
 	RestSoundtrack,

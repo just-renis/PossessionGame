@@ -329,6 +329,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_MinionBossShoot", ESound::MinionBossShoot);
 	SoundMap.Add("PA_MinionBossLaserEyeCharge", ESound::MinionBossLaserEyeCharge);
 	SoundMap.Add("PA_MinionBossLaserEyeHold", ESound::MinionBossLaserEyeHold);
+	SoundMap.Add("PA_MinionBossDeathExplosion", ESound::MinionBossDeathExplosion);
 	SoundMap.Add("PA_DroneBuzz", ESound::DroneBuzz);
 	SoundMap.Add("PA_DialogueStart", ESound::DialogueStart);
 	SoundMap.Add("PA_RestSoundtrack", ESound::RestSoundtrack);
@@ -419,6 +420,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_MinionBossLaserBall", EVfx::MinionBossLaserBall);
 	VfxsMap.Add("PA_MinionBossLaser", EVfx::MinionBossLaser);
 	VfxsMap.Add("PA_MinionBossDeathExplosion", EVfx::MinionBossDeathExplosion);
+	VfxsMap.Add("PA_MinionBossDeathElectrification", EVfx::MinionBossDeathElectrification);
 	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
 	VfxsMap.Add("PA_UsbAura", EVfx::UsbAura);
 	VfxsMap.Add("PA_ArtifactAura", EVfx::ArtifactAura);
