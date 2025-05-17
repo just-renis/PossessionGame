@@ -155,7 +155,9 @@ protected:
 	virtual void AI_SetController();
 	virtual void AI_PlayShootMontage();
 	void AI_Reload() const;
-	virtual void AI_PlayDeathSound() {}
+	virtual void AI_PlayDeathSound();
+	virtual void AI_PlayDeathExplosion() {}
+	virtual void AI_PlayDeathElectrification() {}
 	UFUNCTION()
 	virtual void AI_TriggerDeathVoiceLine() {}
 	UFUNCTION()

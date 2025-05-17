@@ -31,6 +31,7 @@ private:
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
 	virtual void AI_PlaySpawnSound() override;
+	virtual void AI_PlayDeathElectrification() override;
 	UFUNCTION()
 	void AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor);
 

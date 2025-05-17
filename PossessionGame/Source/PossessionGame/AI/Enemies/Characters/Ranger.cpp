@@ -80,9 +80,18 @@ void ARanger::AI_SetupWeapon()
 	Super::AI_SetupWeapon();
 }
 
-void ARanger::AI_PlayDeathSound() { PlaySound(ESound::RangerDeath); }
+void ARanger::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::RangerDeath);
+}
 
 void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
+
+void ARanger::AI_PlayDeathElectrification()
+{
+	AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+}
 
 void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {

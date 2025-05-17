@@ -6,6 +6,7 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 
 AMinion::AMinion()
@@ -24,9 +25,18 @@ void AMinion::AI_SetupWeapon()
 	Super::AI_SetupWeapon();
 }
 
-void AMinion::AI_PlayDeathSound() { PlaySound(ESound::MinionDeath); }
+void AMinion::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::MinionDeath);
+}
 
 void AMinion::AI_PlaySpawnSound() { PlaySound(ESound::MinionSpawn); }
+
+void AMinion::AI_PlayDeathElectrification()
+{
+	AssetsManager->AttachVfx(EVfx::MinionDeathElectrification, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+}
 
 void AMinion::BeginPlay()
 {

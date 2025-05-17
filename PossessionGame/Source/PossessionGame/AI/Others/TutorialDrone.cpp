@@ -22,7 +22,7 @@ ATutorialDrone::ATutorialDrone()
 void ATutorialDrone::BeginPlay()
 {
 	Super::BeginPlay();
-	//PlaySound(ESound::DroneBuzz);
+	PlaySound(ESound::DroneBuzz);
 	SetupAttachments();
 	SetupDelegates();
 	RetrieveDroneWaypoints();

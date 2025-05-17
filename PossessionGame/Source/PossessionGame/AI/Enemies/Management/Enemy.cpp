@@ -67,6 +67,9 @@ AEnemy::AEnemy()
 	AI_HpBarComponent->SetupAttachment(RootComponent);
 	AI_HpBarComponent->SetDrawSize(FVector2D(1920.f, 1080.f));
 	AI_HpBarComponent->SetRelativeScale3D(FVector(1.f, 0.05f, 0.01f));
+	Sounds.Add(ESound::MechanicalDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("mechanicaldeathSound")));
+	Sounds[ESound::MechanicalDeath]->SetAutoActivate(false);
+	Sounds[ESound::MechanicalDeath]->SetupAttachment(GetMesh());
 }
 
 bool AEnemy::GetIsPossessable() const { return AI_Data->GetIsPossessable(); }
@@ -230,11 +233,13 @@ void AEnemy::InitiateDeath()
 	{
 		AI_SpawnUsbOnDeath();
 		AI_PlayDeathSound();
+		AI_PlayDeathExplosion();
 		DestroyAI();
 		if (bIsMutant) AI_TriggerMutantExplosion();
 		DelegateManager->OnEnemyDeath.Broadcast(AI_Data->GetXp());
 	}
 	else P_Destroy();
+	AI_PlayDeathElectrification();
 	HandleDeactivation();
 	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", 5.f, false);
 }
@@ -328,6 +333,8 @@ void AEnemy::AI_Reload() const
 	Weapon->AI_Reload();
 	Weapon->AI_ResetShootCycles();
 }
+
+void AEnemy::AI_PlayDeathSound() { PlaySound(ESound::MechanicalDeath); }
 
 void AEnemy::P_SetupAbilities()
 {

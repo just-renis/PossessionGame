@@ -240,7 +240,6 @@ void UWaveManager::SpawnLogic()
 void UWaveManager::AsyncLoadAndSpawnEnemy(ECharacterType EnemyType)
 {
 	bIsSpawnInProcess = true;
-//	if (SPAWNGUARDIAN) SPAWNGUARDIAN = false, bTutorialIsFinished = true;
 	if (AssetsManager->GetCanAsyncLoadHappen())
 	{
 		TArray<FSoftObjectPath> PathsToLoad;
@@ -261,6 +260,11 @@ void UWaveManager::AsyncLoadAndSpawnEnemy(ECharacterType EnemyType)
 			if (IsGameRunning()) AsyncLoadCallback(SingularWeapon, Weapon, EnemyType);
 		});
 		AssetsManager->AddAsyncHandle(Handle);
+	}
+	if (SPAWNGUARDIAN)
+	{
+		SPAWNGUARDIAN = false, bTutorialIsFinished = true, CurrentGameMode = EGameMode::BossMode;
+		AsyncLoadAndSpawnEnemy(ECharacterType::MinionBoss);
 	}
 }
 

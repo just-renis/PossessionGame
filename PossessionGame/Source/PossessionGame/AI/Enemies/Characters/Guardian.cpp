@@ -4,8 +4,10 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EVariation.h"
+#include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/GuardianWeapon.h"
@@ -32,9 +34,18 @@ void AGuardian::AI_SetupWeapon()
 	Super::AI_SetupWeapon();
 }
 
-void AGuardian::AI_PlayDeathSound() { PlaySound(ESound::GuardianDeath); }
+void AGuardian::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::GuardianDeath);
+}
 
 void AGuardian::AI_PlaySpawnSound() { PlaySound(ESound::GuardianSpawn); }
+
+void AGuardian::AI_PlayDeathElectrification()
+{
+	AssetsManager->AttachVfx(EVfx::GuardianDeathElectrification, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+}
 
 void AGuardian::P_Setup()
 {

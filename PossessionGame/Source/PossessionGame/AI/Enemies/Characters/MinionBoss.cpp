@@ -101,6 +101,11 @@ void AMinionBoss::AI_CancelShooting()
 
 void AMinionBoss::AI_InitiateShooting() { AI_PlayShootMontage(); }
 
+void AMinionBoss::AI_PlayDeathExplosion()
+{
+	AssetsManager->AttachVfx(EVfx::MinionBossDeathExplosion, FNiagaraVariationData(), nullptr, GetMesh(), "DeathExplosionSocket");
+}
+
 TObjectPtr<AWeapon>& AMinionBoss::GetWeapon() { return Weapons[0]; }
 
 void AMinionBoss::BeginPlay()

@@ -40,11 +40,20 @@ void ATrickster::AI_SetupWeapon()
 	Super::AI_SetupWeapon();
 }
 
-void ATrickster::AI_PlayDeathSound() { PlaySound(ESound::TricksterDeath); }
+void ATrickster::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::TricksterDeath);
+}
 
 void ATrickster::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::TricksterOnPossession); }
 
 void ATrickster::AI_PlaySpawnSound() { PlaySound(ESound::TricksterSpawn); }
+
+void ATrickster::AI_PlayDeathElectrification()
+{
+	AssetsManager->AttachVfx(EVfx::TricksterDeathElectrification, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+}
 
 void ATrickster::P_Setup()
 {
