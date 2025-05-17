@@ -4,6 +4,8 @@
 #include "DialogueUI.h"
 #include "TutorialDialogueUI.generated.h"
 
+enum class ECharacterType : uint8;
+
 UCLASS()
 class POSSESSIONGAME_API UTutorialDialogueUI : public UDialogueUI
 {
@@ -11,6 +13,9 @@ class POSSESSIONGAME_API UTutorialDialogueUI : public UDialogueUI
 public:
 	void ClearDialogueText() const;
 private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	ECharacterType SpawnWhat;
+	
 	virtual void FinishedTypingDialogue() override;
-	void StartGuardianSpawn();
+	void StartGuardianSpawn() const;
 };

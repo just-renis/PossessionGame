@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PlayerHUD.generated.h"
 
+class UCrosshairUI;
 class UAbility;
 class UAbilitiesPanelUI;
 enum class ECharacterType : uint8;
@@ -56,6 +57,7 @@ public:
 	void UpdateReceiveDamageInv();
 	void SetCharacterType(const ECharacterType InCharacterType);
 	void AnnouncePossession();
+	void SetCurrentCrosshair() const;
 private:
 	float StepHpPercentage;
 	ECharacterType CharacterType;
@@ -77,6 +79,12 @@ private:
 	TObjectPtr<UProgressBar> XpBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> Crosshair;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCrosshairUI> RangerCrosshair;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCrosshairUI> TricksterCrosshair;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCrosshairUI> GuardianCrosshair;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> DamageTickInv;
 	UPROPERTY(meta = (BindWidget))

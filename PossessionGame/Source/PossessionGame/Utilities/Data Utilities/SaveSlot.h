@@ -17,7 +17,7 @@ public:
 	bool GetIsTutorialFinished() const { return bTutorialFinished; }
 	bool GetIsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const;
 	int32 GetXp() const { return CurrentXp; }
-	int32 GetCurrentLevelNeededXp() const { return 10 + CurrentLevel * 5; }
+	int32 GetCurrentLevelNeededXp() const;
 	int32 GetLevelOfAnUpgrade(const EUpgrade InUpgrade);
 	int32 GetLevelDamageIncrease(const int32 InLevel = -1) const;
 	int32 GetLevelHpIncrease(const int32 InLevel = -1) const;

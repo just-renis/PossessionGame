@@ -13,3 +13,10 @@ int32 UPlayerLevelData::GetHpIncrease(const int32 InLevel)
 	if (InLevel >= HpIncreases.Num()) return HpIncreases[HpIncreases.Num() - 1];
 	return HpIncreases.Contains(InLevel) ? HpIncreases[InLevel] : 0;
 }
+
+int32 UPlayerLevelData::GetXpNeeded(const int32 InLevel)
+{
+	if (LevelXpNeeded.IsEmpty()) return 1;
+	if (InLevel >= LevelXpNeeded.Num()) return LevelXpNeeded[LevelXpNeeded.Num() - 1];
+	return LevelXpNeeded.Contains(InLevel) ? LevelXpNeeded[InLevel] : 1;
+}

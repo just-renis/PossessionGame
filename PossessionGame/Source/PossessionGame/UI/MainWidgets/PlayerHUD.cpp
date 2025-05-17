@@ -7,6 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilitiesPanelUI.h"
+#include "PossessionGame/UI/SecondaryWidgets/CrosshairUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -126,27 +127,49 @@ void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
 	CharacterType = InCharacterType;
 	switch (InCharacterType)
 	{
-	case ECharacterType::Ranger:
-		if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetAsCurrent();
-		if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-		if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-		break;
-	case ECharacterType::Trickster:
-		if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetAsCurrent();
-		if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-		if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-		break;
-	default:
-		if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetAsCurrent();
-		if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-		if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+		case ECharacterType::Ranger:
+			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetAsCurrent();
+			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			break;
+		case ECharacterType::Trickster:
+			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetAsCurrent();
+			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			break;
+		default:
+			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetAsCurrent();
+			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 	}
+	SetCurrentCrosshair();
 }
 
 void UPlayerHUD::AnnouncePossession()
 {
 	if (PossessionAnnouncementInv) PossessionAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (PossessedPopup) PlayAnimation(PossessedPopup);
+}
+
+void UPlayerHUD::SetCurrentCrosshair() const
+{
+	switch(CharacterType)
+	{
+		case ECharacterType::Ranger:
+			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (TricksterCrosshair) TricksterCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+			break;
+		case ECharacterType::Trickster:
+			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+			if (TricksterCrosshair) TricksterCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+			break;
+		default:
+			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+			if (TricksterCrosshair) TricksterCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
 }
 
 /*void UPlayerHUD::SetHitLocation(const FVector InHitLocation)

@@ -6,6 +6,8 @@
 
 bool USaveSlot::GetIsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.IsVariationUnlocked(InVariationUnlockName); }
 
+int32 USaveSlot::GetCurrentLevelNeededXp() const { return PlayerLevelData->GetXpNeeded(CurrentLevel); }
+
 int32 USaveSlot::GetLevelOfAnUpgrade(const EUpgrade InUpgrade) { return UnlockedUpgrades.Find(InUpgrade) ? UnlockedUpgrades[InUpgrade] : 0; }
 
 int32 USaveSlot::GetLevelDamageIncrease(const int32 InLevel) const { return PlayerLevelData->GetDamageIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
@@ -38,7 +40,7 @@ void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel)
 void USaveSlot::AddXp(const int32 InXp)
 {
 	CurrentXp += InXp;
-	if (CurrentXp >= GetCurrentLevelNeededXp())
+	while (CurrentXp >= GetCurrentLevelNeededXp())
 	{
 		GameInstance->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::LevelUp);
 		CurrentXp -= GetCurrentLevelNeededXp();
