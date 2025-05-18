@@ -56,6 +56,12 @@ void UWaveManager::InitMode()
 		if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(true, CurrentGameMode);
 		UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate * 3.f, true);
 	}
+	else if (CurrentGameMode == EGameMode::BossMode)
+	{
+		EnemiesOnSceneLimit = 4;
+		bUnlimitedSpawning = true;
+		UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate * 3.f, true);
+	}
 }
 
 void UWaveManager::FinalizeMode()
@@ -76,6 +82,11 @@ void UWaveManager::FinalizeMode()
 		ShowUpgradeSelection();
 		(void)DelegateManager->OnChargeTerminalModeCompletion.ExecuteIfBound();
 		ResetTaskProgress();
+		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
+	}
+	else if (CurrentGameMode == EGameMode::BossMode)
+	{
+		bUnlimitedSpawning = false;
 		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
 	}
 	DelegateManager->OnGameModeFinished.Broadcast(CurrentGameMode);
@@ -408,7 +419,7 @@ void UWaveManager::UpdateTaskProgress()
 			UKismetSystemLibrary::K2_ClearTimer(this, "UpdateTaskProgress");
 		}
 	}
-	else
+	else if (CurrentGameMode == EGameMode::ChargeTerminalMode)
 	{
 		TerminalHackProgress += TerminalHackRequired * 0.25f;
 		if (WaveManagerHUD) WaveManagerHUD->UpdateTaskProgress(TerminalHackProgress, TerminalHackRequired);

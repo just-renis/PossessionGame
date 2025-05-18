@@ -241,7 +241,7 @@ void AEnemy::InitiateDeath()
 	else P_Destroy();
 	AI_PlayDeathElectrification();
 	HandleDeactivation();
-	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", 5.f, false);
+	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", DestroyAfter, false);
 }
 
 void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
