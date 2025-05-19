@@ -19,6 +19,7 @@ DECLARE_DELEGATE(FOnUsbCollected);
 DECLARE_DELEGATE(FOnUsbInserted);
 DECLARE_DELEGATE(FOnArtifactCollected);
 DECLARE_DELEGATE(FOnSecretDoorOpened);
+DECLARE_DELEGATE(FOnBossDeath);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FSpawnTutorialEnemy, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FSendTargetToTutorialDrone, const TObjectPtr<AActor>&);
@@ -69,6 +70,7 @@ public:
 	FOnUsbInserted OnUsbInserted;
 	FOnArtifactCollected OnArtifactCollected;
 	FOnSecretDoorOpened OnSecretDoorOpened;
+	FOnBossDeath OnBossDeath;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FSendTargetToTutorialDrone SendTargetToTutorialDrone;

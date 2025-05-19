@@ -10,6 +10,10 @@
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PrimaryDataAssetsManager.generated.h"
 
+class UDelegateManager;
+enum class EGameMode : uint8;
+class ASpawnLocation;
+class AEnemy;
 struct FNiagaraVariationData;
 class UNiagaraComponent;
 enum class EVfxType : uint8;
@@ -45,6 +49,14 @@ struct FCharacterPairWrapper
 	}
 };
 
+USTRUCT()
+struct POSSESSIONGAME_API FGameModeSpawnLocations
+{
+	GENERATED_BODY()
+
+	TArray<TObjectPtr<ASpawnLocation>> SpawnLocations;
+};
+
 FORCEINLINE uint32 GetTypeHash(const FPoolObjectPairWrapper& PairWrapper)
 {
 	uint32 Hash1 = GetTypeHash(PairWrapper.Pair.Key);
@@ -70,13 +82,14 @@ public:
 	EVfx GetProjectileVfxName(const EPoolObject InProjectileName, const EVfxType InVfxType);
 	EVfx GetProjectileVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType);
 	EVfx GetCharacterVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType);
+	EGameMode GetCurrentGameMode() const { return CurrentGameMode; }
 	TObjectPtr<UPA_WeaponContainer>& GetWeaponData(EWeapon WeaponName);
 	TObjectPtr<UPA_SoundContainer>& GetSoundData(ESound SoundName);
 	TObjectPtr<UPA_CharacterContainer>& GetCharacterData(ECharacterType CharacterName);
 	TObjectPtr<UPA_VfxContainer>& GetVfxData(EVfx VfxName);
+	TObjectPtr<AEnemy> SpawnVariationReplacement(const ECharacterType InCharacter);
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	void Init();
 	void AddAsyncHandle(TSharedPtr<FStreamableHandle>& Handle) { AsyncHandles.Add(FAsyncHandle(Handle)); }
 	void DeleteLoadedHandles();
 	void ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, ESound InSoundName);
@@ -86,8 +99,17 @@ public:
 	void SpawnVfx(const EVfx InVfxName, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const FNiagaraVariationData& InNiagaraVariationData = FNiagaraVariationData(), const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
 	void ApplyAttributesToVfxComponent(const TMap<FName, FNiagaraAttribute>& InAttributes, const TObjectPtr<UNiagaraComponent>& Component);
 	void ChangeVfxVariation(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const FNiagaraVariationData& InNiagaraVariationData);
+	void RequestSpawnEnemy(ECharacterType InCharacter, const TFunction<void()>& InCallBack);
+	void Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<ECharacterType>& InEnemiesThatAreSpawnable);
+	void SetCurrentGameMode(const EGameMode InGameMode) { CurrentGameMode = InGameMode; }
 private:
+	bool SPAWNGUARDIAN = false;
 	bool bCanAsyncLoadHappen = true;
+	bool bIsSpawnInProcess = false;
+	bool bTutorialIsFinished = false;
+	EGameMode CurrentGameMode;
+	UPROPERTY()
+	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
 	TMap<EWeapon, TObjectPtr<UPA_WeaponContainer>> WeaponContainers;
 	UPROPERTY()
@@ -99,23 +121,37 @@ private:
 	UPROPERTY()
 	TArray<FAsyncHandle> AsyncHandles;
 	UPROPERTY()
+	TArray<ECharacterType> EnemyTypes;
+	UPROPERTY()
 	TMap<FPoolObjectPairWrapper, EVfx> ProjectileVfxCombinationsMap;
 	UPROPERTY()
 	TMap<FCharacterPairWrapper, EVfx> CharacterVfxCombinationsMap;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> StoredSounds;
+	UPROPERTY()
+	TMap<ECharacterType, TSubclassOf<AEnemy>> LoadedEnemies;
+	UPROPERTY()
+	TMap<EGameMode, FGameModeSpawnLocations> SpawnLocations;
 
 	bool IsGameRunning();
 	EPoolObject GetProjectileNameByCharacterName(ECharacterType InCharacterType);
 	TObjectPtr<UNiagaraComponent> AttachAndReceiveVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy);
 	TObjectPtr<UNiagaraComponent> SpawnAndReceiveVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
+	EWeapon GetWeaponByCharacter(const ECharacterType InCharacter);
+	EWeapon GetSingularWeapon(const EWeapon InWeapon);
 
+	void PrimaryInit();
 	void SetupWeaponsPrimaryAssets();
 	void SetupSoundsPrimaryAssets();
 	void SetupCharactersPrimaryAssets();
 	void SetupVfxsPrimaryAssets();
 	void SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, ESound InSoundName);
 	void SetupVfx(const FNiagaraVariationData& InNiagaraVariationData, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes, const bool bDeactivate = false);
+	void AsyncLoadEnemy(const ECharacterType InCharacter, const TFunction<void()>& InCallBack);
+	void AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const TFunction<void()>& InCallBack);
+	void SetupSpawnLocations();
+	void SpawnEnemy(const ECharacterType InCharacter, const TFunction<void()>& InCallBack);
+	void SpawnTutorialEnemy(const ECharacterType InCharacter);
 	template<typename T, typename U>
 	void FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type);
 };

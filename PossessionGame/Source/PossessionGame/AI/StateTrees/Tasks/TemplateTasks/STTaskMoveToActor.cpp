@@ -29,7 +29,7 @@ EStateTreeRunStatus USTTaskMoveToActor::PathFollowingRequestResultHandling(EPath
 	if (MoveResult == EPathFollowingRequestResult::AlreadyAtGoal) return EStateTreeRunStatus::Succeeded;
 	if (MoveResult == EPathFollowingRequestResult::Failed)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to start movement"));
+	//	UE_LOG(LogTemp, Error, TEXT("Failed to start movement"));
 		return EStateTreeRunStatus::Failed;
 	}
 	return EStateTreeRunStatus::Running;

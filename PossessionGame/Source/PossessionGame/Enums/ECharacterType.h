@@ -3,7 +3,7 @@
 UENUM()
 enum class ECharacterType : uint8
 {
-	None,
+	Random,
 	Minion,
 	Spy,
 	Trickster,

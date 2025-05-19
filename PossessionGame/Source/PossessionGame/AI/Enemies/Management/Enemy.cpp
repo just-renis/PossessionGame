@@ -51,7 +51,6 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
-#include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -933,7 +932,7 @@ void AEnemy::P_SetupNavArea()
 void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {
 	if (CharacterName != InCharacterType) return;
-	P_PossessionLogic(GetWorld()->GetSubsystem<UWaveManager>()->SpawnVariationReplacement(InCharacterType));
+	P_PossessionLogic(AssetsManager->SpawnVariationReplacement(InCharacterType));
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
 }
 

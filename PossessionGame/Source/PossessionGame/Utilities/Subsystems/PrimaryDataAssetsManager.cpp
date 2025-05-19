@@ -1,7 +1,9 @@
 ﻿#include "PrimaryDataAssetsManager.h"
+#include "DelegateManager.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
+#include "WeaponManager.h"
 #include "Components/AudioComponent.h"
 #include "Engine/AssetManager.h"
 #include "Kismet/GameplayStatics.h"
@@ -9,10 +11,12 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_SoundContainer.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Projectiles/Projectile.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/SpawnLocation.h"
 
 bool UPrimaryDataAssetsManager::IsAsyncLoadingFinished()
 {
@@ -55,6 +59,11 @@ TObjectPtr<UPA_CharacterContainer>& UPrimaryDataAssetsManager::GetCharacterData(
 
 TObjectPtr<UPA_VfxContainer>& UPrimaryDataAssetsManager::GetVfxData(EVfx VfxName) { return VfxContainers[VfxName]; }
 
+TObjectPtr<AEnemy> UPrimaryDataAssetsManager::SpawnVariationReplacement(const ECharacterType InCharacter)
+{
+	return SpawnLocations[EGameMode::None].SpawnLocations[0]->SpawnEnemy(LoadedEnemies[InCharacter]);
+}
+
 void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
@@ -92,15 +101,7 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FCharacterPairWrapper({ ECharacterType::Guardian, EVfxType::Spawn }), EVfx::GuardianSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Minion, EVfxType::Spawn }), EVfx::MinionSpawn }
 	};
-	Init();
-}
-
-void UPrimaryDataAssetsManager::Init()
-{
-	SetupWeaponsPrimaryAssets();
-	SetupCharactersPrimaryAssets();
-	SetupSoundsPrimaryAssets();
-	SetupVfxsPrimaryAssets();
+	PrimaryInit();
 }
 
 void UPrimaryDataAssetsManager::DeleteLoadedHandles()
@@ -237,6 +238,25 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const TObjectPtr<UNiagaraComp
 	}
 }
 
+void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const TFunction<void()>& InCallBack)
+{
+	if (!bIsSpawnInProcess)
+	{
+		if (InCharacter == ECharacterType::Random) InCharacter = EnemyTypes[FMath::RandRange(0, EnemyTypes.Num() - 1)];
+		!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InCallBack) : SpawnEnemy(InCharacter, InCallBack);
+	}
+}
+
+void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<ECharacterType>& InEnemiesThatAreSpawnable)
+{
+	SetupSpawnLocations();
+	bTutorialIsFinished = bIsTutorialFinished;
+	EnemyTypes = InEnemiesThatAreSpawnable;
+	if (InEnemiesThatAreSpawnable.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
+	DelegateManager = InDelegateManager;
+	if (!bTutorialIsFinished) DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
+}
+
 bool UPrimaryDataAssetsManager::IsGameRunning() { return IsValid(this) && GetWorld() && !GetWorld()->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }
 
 EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharacterType InCharacterType)
@@ -262,6 +282,41 @@ TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachAndReceiveVfx(con
 TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::SpawnAndReceiveVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
 {
 	return UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetVfxData(InVfxName)->GetVfxEffect().Get(), InLocation, InRotation);
+}
+
+EWeapon UPrimaryDataAssetsManager::GetWeaponByCharacter(const ECharacterType InCharacter)
+{
+	switch (InCharacter)
+	{
+		case ECharacterType::Tank: return EWeapon::TankWeapon;
+		case ECharacterType::Minion: return EWeapon::MinionWeapon;
+		case ECharacterType::Ranger: return EWeapon::RangerWeapon;
+		case ECharacterType::Spy: return EWeapon::SpyWeapon;
+		case ECharacterType::Trickster: return EWeapon::TricksterWeapon;
+		case ECharacterType::Samurai: return EWeapon::SamuraiWeapon;
+		case ECharacterType::Guardian: return EWeapon::GuardianWeapon;
+		case ECharacterType::MinionBoss: return EWeapon::MinionBossHandWeapon;
+		default: return EWeapon::None;
+	}
+}
+
+EWeapon UPrimaryDataAssetsManager::GetSingularWeapon(const EWeapon InWeapon)
+{
+	switch (InWeapon)
+	{
+		case EWeapon::MinionWeapon: return EWeapon::MinionSingularWeapon;
+		case EWeapon::TricksterWeapon: return EWeapon::TricksterSingularWeapon;
+		case EWeapon::GuardianWeapon: return EWeapon::GuardianSingularWeapon;
+		default: return EWeapon::None;
+	}
+}
+
+void UPrimaryDataAssetsManager::PrimaryInit()
+{
+	SetupWeaponsPrimaryAssets();
+	SetupCharactersPrimaryAssets();
+	SetupSoundsPrimaryAssets();
+	SetupVfxsPrimaryAssets();
 }
 
 void UPrimaryDataAssetsManager::SetupWeaponsPrimaryAssets()
@@ -444,6 +499,85 @@ void UPrimaryDataAssetsManager::SetupVfx(const FNiagaraVariationData& InNiagaraV
 	if (InNiagaraVariationData.bRequiredVfxChange) ChangeVfxVariation(InVfxComponent, InNiagaraVariationData);
 	if (!InAttributes.IsEmpty()) ApplyAttributesToVfxComponent(InAttributes, InVfxComponent);
 }
+
+void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const TFunction<void()>& InCallBack)
+{
+	bIsSpawnInProcess = true;
+	if (GetCanAsyncLoadHappen())
+	{
+		TArray<FSoftObjectPath> PathsToLoad;
+		PathsToLoad.Add(GetCharacterData(InCharacter)->CharacterClass.ToSoftObjectPath());
+		PathsToLoad.Add(GetCharacterData(InCharacter)->CharacterMesh.ToSoftObjectPath());
+		EWeapon Weapon = GetWeaponByCharacter(InCharacter);
+		PathsToLoad.Add(GetWeaponData(Weapon)->WeaponClass.ToSoftObjectPath());
+		PathsToLoad.Add(GetWeaponData(Weapon)->HandsMesh.ToSoftObjectPath());
+		EWeapon SingularWeapon = GetSingularWeapon(Weapon);
+		if (SingularWeapon != EWeapon::None)
+		{
+			PathsToLoad.Add(GetWeaponData(SingularWeapon)->WeaponClass.ToSoftObjectPath());
+			PathsToLoad.Add(GetWeaponData(SingularWeapon)->WeaponMesh.ToSoftObjectPath());
+		}
+		else PathsToLoad.Add(GetWeaponData(Weapon)->WeaponMesh.ToSoftObjectPath());
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, SingularWeapon, Weapon, InCharacter, InCallBack]
+		{
+			if (IsGameRunning()) AsyncLoadCallback(SingularWeapon, Weapon, InCharacter, InCallBack);
+		});
+		AddAsyncHandle(Handle);
+	}
+	if (SPAWNGUARDIAN)
+	{
+		SPAWNGUARDIAN = false, bTutorialIsFinished = true, CurrentGameMode = EGameMode::BossMode;
+		RequestSpawnEnemy(ECharacterType::MinionBoss, nullptr);
+	}
+}
+
+void UPrimaryDataAssetsManager::AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const TFunction<void()>& InCallBack)
+{
+	LoadedEnemies.Add(InCharacter, Cast<UClass>(GetCharacterData(InCharacter)->CharacterClass.ToSoftObjectPath().TryLoad()));
+	if (InSingularWeapon != EWeapon::None)
+	{
+		GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InSingularWeapon, Cast<UClass>(GetWeaponData(InSingularWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
+	}
+	GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
+	SpawnEnemy(InCharacter, InCallBack);
+}
+
+void UPrimaryDataAssetsManager::SetupSpawnLocations()
+{
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnLocation::StaticClass(), Actors);
+	for (TObjectPtr<AActor> Actor : Actors)
+	{
+		TObjectPtr<ASpawnLocation> SpawnLocation = Cast<ASpawnLocation>(Actor);
+		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
+		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
+	}
+}
+
+void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, const TFunction<void()>& InCallBack)
+{
+	if (!SpawnLocations.Find(CurrentGameMode)) return;
+	if (SpawnLocations[CurrentGameMode].SpawnLocations.Num() > 0)
+	{
+		const int32 LastIndex = SpawnLocations[CurrentGameMode].SpawnLocations.Num() - 1;
+		for (int32 i = 0; i <= LastIndex; i++)
+		{
+			const int32 Index = FMath::RandRange(i, LastIndex);
+			if (i != Index) SpawnLocations[CurrentGameMode].SpawnLocations.Swap(i, Index);
+		}
+		for (const TObjectPtr<ASpawnLocation>& Location : SpawnLocations[CurrentGameMode].SpawnLocations)
+		{
+			if (Location->SpawnEnemy(LoadedEnemies[InCharacter]))
+			{
+				if (InCallBack) InCallBack();
+				bIsSpawnInProcess = false;
+				break;
+			}
+		}
+	}
+}
+
+void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter) { RequestSpawnEnemy(InCharacter, nullptr); }
 
 template<typename T, typename U>
 void UPrimaryDataAssetsManager::FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type)

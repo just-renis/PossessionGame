@@ -162,6 +162,7 @@ void AMinionBoss::InitiateDeath()
 {
 	DestroyStompTriggerSphere();
 	Super::InitiateDeath();
+	(void)DelegateManager->OnBossDeath.ExecuteIfBound();
 }
 
 void AMinionBoss::ToggleStompTrigger(const bool bState) const
