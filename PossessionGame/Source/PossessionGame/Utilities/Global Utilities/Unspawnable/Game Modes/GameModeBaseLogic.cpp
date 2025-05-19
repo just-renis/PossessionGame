@@ -10,12 +10,12 @@
 
 int32 UGameModeBaseLogic::ConvertGameModeToDroneLocation() const
 {
-	switch (WaveManager->GetAssetsManager()->GetCurrentGameMode())
+	switch (WaveManager->GetCurrentGameMode())
 	{
-	case EGameMode::WaveMode: return 3;
-	case EGameMode::HackTerminalsMode: return 4;
-	case EGameMode::ChargeTerminalMode: return 5;
-	default: ;
+		case EGameMode::WaveMode: return 3;
+		case EGameMode::HackTerminalsMode: return 4;
+		case EGameMode::ChargeTerminalMode: return 5;
+		default: ;
 	}
 	return 0;
 }
@@ -24,7 +24,7 @@ void UGameModeBaseLogic::SetupWaveManagerUI() { WaveManagerHUD = GetWorld()->Get
 
 void UGameModeBaseLogic::Finalize()
 {
-	WaveManager->GetDelegateManager()->OnGameModeFinished.Broadcast(WaveManager->GetAssetsManager()->GetCurrentGameMode());
+	WaveManager->GetDelegateManager()->OnGameModeFinished.Broadcast(WaveManager->GetCurrentGameMode());
 	(void)WaveManager->GetDelegateManager()->StartTutorialDroneMoveToLocation.ExecuteIfBound(ConvertGameModeToDroneLocation(), true);
 }
 
@@ -33,7 +33,7 @@ void UGameModeBaseLogic::PlaySound(const ESound InSoundName) const { WaveManager
 void UGameModeBaseLogic::ResetTaskProgress() const
 {
 	if (!WaveManagerHUD) return;
-	WaveManagerHUD->ToggleTaskProgress(false, WaveManager->GetAssetsManager()->GetCurrentGameMode());
+	WaveManagerHUD->ToggleTaskProgress(false, WaveManager->GetCurrentGameMode());
 	WaveManagerHUD->UpdateTaskProgress(0.f, 1.f);
 }
 

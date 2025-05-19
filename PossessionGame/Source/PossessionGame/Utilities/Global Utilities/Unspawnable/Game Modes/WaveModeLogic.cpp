@@ -12,7 +12,7 @@ void UWaveModeLogic::Init(const TObjectPtr<UWaveManager> InWaveManager)
 	CurrentWave = 1;
 	WaveManager->GetDelegateManager()->OnPlayerDeath.AddUObject(this, &UWaveModeLogic::FadeOutWavePanel);
 	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.BindUObject(this, &UWaveModeLogic::InitiateNextWave);
-	WaveManager->GetDelegateManager()->OnEnemyDeath.AddUObject(this, &UWaveModeLogic::UpdateEnemiesAmount);
+	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UWaveModeLogic::UpdateEnemiesAmount);
 	SetupWaveManagerUI();
 	SetupTimers();
 }
@@ -21,7 +21,7 @@ void UWaveModeLogic::Finalize()
 {
 	WaveManager->GetDelegateManager()->OnPlayerDeath.RemoveAll(this);
 	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.Unbind();
-	WaveManager->GetDelegateManager()->OnEnemyDeath.RemoveAll(this);
+	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	FadeOutWavePanel();
 	Super::Finalize();
 }
@@ -43,13 +43,13 @@ void UWaveModeLogic::SetupTimers()
 
 void UWaveModeLogic::HandleSpawning()
 {
-	if (EnemiesLeftToKill > 0 && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, [this] { WaveModeCallback(); });
+	if (EnemiesLeftToKill > 0 && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { WaveModeCallback(); });
 	else if (!bWaveNotStarted && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) WaveCompleted();
 }
 
-void UWaveModeLogic::UpdateEnemiesAmount(const int32 InXp)
+void UWaveModeLogic::UpdateEnemiesAmount()
 {
-	Super::UpdateEnemiesAmount(InXp);
+	Super::UpdateEnemiesAmount();
 	if (WaveManagerHUD) WaveManagerHUD->UpdateEnemiesAmount(EnemiesLeftToKill + AliveEnemiesAmount);
 }
 

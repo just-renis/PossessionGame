@@ -1,5 +1,6 @@
 ﻿#include "TutorialDialogueUI.h"
 #include "Components/TextBlock.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 void UTutorialDialogueUI::ClearDialogueText() const { if (DialogueText) DialogueText->SetText(FText::FromString("")); }
@@ -21,4 +22,4 @@ void UTutorialDialogueUI::FinishedTypingDialogue()
 	}
 }
 
-void UTutorialDialogueUI::StartGuardianSpawn() const { (void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(SpawnWhat); }
+void UTutorialDialogueUI::StartGuardianSpawn() const { (void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(SpawnWhat, EGameMode::TutorialMode1); }

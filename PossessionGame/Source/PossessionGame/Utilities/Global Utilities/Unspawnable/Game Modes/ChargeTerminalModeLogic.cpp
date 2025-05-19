@@ -9,10 +9,10 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager> InWaveManager
 {
 	Super::Init(InWaveManager);
 	SetupWaveManagerUI();
-	WaveManager->GetDelegateManager()->OnEnemyDeath.AddUObject(this, &UChargeTerminalModeLogic::UpdateEnemiesAmount);
+	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UChargeTerminalModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->OnUsbInserted.BindUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
 	PlaySound(ESound::TaskAnnouncement);
-	if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(true, WaveManager->GetAssetsManager()->GetCurrentGameMode());
+	if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(true, WaveManager->GetCurrentGameMode());
 	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate * 3.f, true);
 }
 
@@ -22,19 +22,19 @@ void UChargeTerminalModeLogic::Finalize()
 	ShowUpgradeSelection();
 	(void)WaveManager->GetDelegateManager()->OnChargeTerminalModeCompletion.ExecuteIfBound();
 	ResetTaskProgress();
-	WaveManager->GetDelegateManager()->OnEnemyDeath.RemoveAll(this);
+	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	WaveManager->GetDelegateManager()->OnUsbInserted.Unbind();
 	UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
 }
 
 void UChargeTerminalModeLogic::HandleSpawning()
 {
-	if (!bIsTerminalCharged && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, [this] { IncreaseAliveEnemiesAmount(); });
+	if (!bIsTerminalCharged && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
 }
 
-void UChargeTerminalModeLogic::UpdateEnemiesAmount(const int32 InXp)
+void UChargeTerminalModeLogic::UpdateEnemiesAmount()
 {
-	Super::UpdateEnemiesAmount(InXp);
+	Super::UpdateEnemiesAmount();
 	if (bIsTerminalCharged && AliveEnemiesAmount <= 0) Finalize();
 }
 

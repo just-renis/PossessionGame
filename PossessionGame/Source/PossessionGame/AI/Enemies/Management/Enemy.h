@@ -289,7 +289,7 @@ private:
 	void P_Rotate(const FInputActionValue& Value);
 	void P_Reload();
 	void P_Dash();
-	void P_OnEnemyDeathEvents(const int32 InXp);
+	void P_OnEnemyDeathEvents(const int32 InXp, const float InPossessionTimeValue);
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
 	void P_StopAllAbilities();

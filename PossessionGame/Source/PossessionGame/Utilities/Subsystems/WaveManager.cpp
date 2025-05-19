@@ -12,14 +12,14 @@ void UWaveManager::Init(const TObjectPtr<UDelegateManager>& InDelegateManager)
 	DelegateManager = InDelegateManager;
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &UWaveManager::SetAndStartGameMode);
-	AssetsManager->SetCurrentGameMode(EGameMode::TutorialMode1);
+	CurrentGameMode = EGameMode::TutorialMode1;
 	//AssetsManager->RequestSpawnEnemy(ECharacterType::Ranger, nullptr);
 	//DelegateManager->OnTutorialEnd.AddUObject(this, &UWaveManager::FinishTutorial);
 }
 
 void UWaveManager::SetAndStartGameMode(const EGameMode InGameMode)
 {
-	AssetsManager->SetCurrentGameMode(InGameMode);
+	CurrentGameMode = InGameMode;
 	if (CurrentModeLogic) CurrentModeLogic = nullptr;
 	switch (InGameMode)
 	{

@@ -238,12 +238,12 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const TObjectPtr<UNiagaraComp
 	}
 }
 
-void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const TFunction<void()>& InCallBack)
+void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, const TFunction<void()>& InCallBack)
 {
 	if (!bIsSpawnInProcess)
 	{
 		if (InCharacter == ECharacterType::Random) InCharacter = EnemyTypes[FMath::RandRange(0, EnemyTypes.Num() - 1)];
-		!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InCallBack) : SpawnEnemy(InCharacter, InCallBack);
+		!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, InCallBack) : SpawnEnemy(InCharacter, InGameMode, InCallBack);
 	}
 }
 
@@ -500,7 +500,7 @@ void UPrimaryDataAssetsManager::SetupVfx(const FNiagaraVariationData& InNiagaraV
 	if (!InAttributes.IsEmpty()) ApplyAttributesToVfxComponent(InAttributes, InVfxComponent);
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const TFunction<void()>& InCallBack)
+void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const TFunction<void()>& InCallBack)
 {
 	bIsSpawnInProcess = true;
 	if (GetCanAsyncLoadHappen())
@@ -518,20 +518,15 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 			PathsToLoad.Add(GetWeaponData(SingularWeapon)->WeaponMesh.ToSoftObjectPath());
 		}
 		else PathsToLoad.Add(GetWeaponData(Weapon)->WeaponMesh.ToSoftObjectPath());
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, SingularWeapon, Weapon, InCharacter, InCallBack]
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, SingularWeapon, Weapon, InCharacter, InGameMode, InCallBack]
 		{
-			if (IsGameRunning()) AsyncLoadCallback(SingularWeapon, Weapon, InCharacter, InCallBack);
+			if (IsGameRunning()) AsyncLoadCallback(SingularWeapon, Weapon, InCharacter, InGameMode, InCallBack);
 		});
 		AddAsyncHandle(Handle);
 	}
-	if (SPAWNGUARDIAN)
-	{
-		SPAWNGUARDIAN = false, bTutorialIsFinished = true, CurrentGameMode = EGameMode::BossMode;
-		RequestSpawnEnemy(ECharacterType::MinionBoss, nullptr);
-	}
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const TFunction<void()>& InCallBack)
+void UPrimaryDataAssetsManager::AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const TFunction<void()>& InCallBack)
 {
 	LoadedEnemies.Add(InCharacter, Cast<UClass>(GetCharacterData(InCharacter)->CharacterClass.ToSoftObjectPath().TryLoad()));
 	if (InSingularWeapon != EWeapon::None)
@@ -539,7 +534,7 @@ void UPrimaryDataAssetsManager::AsyncLoadCallback(const EWeapon InSingularWeapon
 		GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InSingularWeapon, Cast<UClass>(GetWeaponData(InSingularWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
 	}
 	GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
-	SpawnEnemy(InCharacter, InCallBack);
+	SpawnEnemy(InCharacter, InGameMode, InCallBack);
 }
 
 void UPrimaryDataAssetsManager::SetupSpawnLocations()
@@ -554,18 +549,18 @@ void UPrimaryDataAssetsManager::SetupSpawnLocations()
 	}
 }
 
-void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, const TFunction<void()>& InCallBack)
+void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, const TFunction<void()>& InCallBack)
 {
-	if (!SpawnLocations.Find(CurrentGameMode)) return;
-	if (SpawnLocations[CurrentGameMode].SpawnLocations.Num() > 0)
+	if (!SpawnLocations.Find(InCurrentGameMode)) return;
+	if (SpawnLocations[InCurrentGameMode].SpawnLocations.Num() > 0)
 	{
-		const int32 LastIndex = SpawnLocations[CurrentGameMode].SpawnLocations.Num() - 1;
+		const int32 LastIndex = SpawnLocations[InCurrentGameMode].SpawnLocations.Num() - 1;
 		for (int32 i = 0; i <= LastIndex; i++)
 		{
 			const int32 Index = FMath::RandRange(i, LastIndex);
-			if (i != Index) SpawnLocations[CurrentGameMode].SpawnLocations.Swap(i, Index);
+			if (i != Index) SpawnLocations[InCurrentGameMode].SpawnLocations.Swap(i, Index);
 		}
-		for (const TObjectPtr<ASpawnLocation>& Location : SpawnLocations[CurrentGameMode].SpawnLocations)
+		for (const TObjectPtr<ASpawnLocation>& Location : SpawnLocations[InCurrentGameMode].SpawnLocations)
 		{
 			if (Location->SpawnEnemy(LoadedEnemies[InCharacter]))
 			{
@@ -577,7 +572,7 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 	}
 }
 
-void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter) { RequestSpawnEnemy(InCharacter, nullptr); }
+void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode) { RequestSpawnEnemy(InCharacter, InGameMode, nullptr); }
 
 template<typename T, typename U>
 void UPrimaryDataAssetsManager::FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type)

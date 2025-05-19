@@ -18,7 +18,7 @@ public:
 private:
 	bool bIsGodModeEnabled = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	float PossessionBarCooldown;
+	float PossessionBarCooldown = 45.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float DashCooldown;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

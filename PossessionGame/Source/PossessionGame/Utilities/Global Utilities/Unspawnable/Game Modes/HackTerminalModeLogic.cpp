@@ -12,21 +12,21 @@ void UHackTerminalModeLogic::Init(const TObjectPtr<UWaveManager> InWaveManager)
 	PlaySound(ESound::GeneratorDisableAnnouncement);
 	WaveManager->GetDelegateManager()->OnHackModeStart.Broadcast();
 	WaveManager->GetDelegateManager()->OnTerminalInteraction.AddUObject(this, &UHackTerminalModeLogic::StartTerminalHack);
-	WaveManager->GetDelegateManager()->OnEnemyDeath.AddUObject(this, &UHackTerminalModeLogic::UpdateEnemiesAmount);
+	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UHackTerminalModeLogic::UpdateEnemiesAmount);
 }
 
 void UHackTerminalModeLogic::Finalize()
 {
 	ResetTaskProgress();
 	WaveManager->GetDelegateManager()->OnTerminalInteraction.RemoveAll(this);
-	WaveManager->GetDelegateManager()->OnEnemyDeath.RemoveAll(this);
+	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
 	Super::Finalize();
 }
 
 void UHackTerminalModeLogic::HandleSpawning()
 {
-	if (!bIsHackFinished && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, [this] { IncreaseAliveEnemiesAmount(); });
+	if (!bIsHackFinished && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
 }
 
 void UHackTerminalModeLogic::UpdateTaskProgress()
@@ -41,9 +41,9 @@ void UHackTerminalModeLogic::UpdateTaskProgress()
 	}
 }
 
-void UHackTerminalModeLogic::UpdateEnemiesAmount(const int32 InXp)
+void UHackTerminalModeLogic::UpdateEnemiesAmount()
 {
-	Super::UpdateEnemiesAmount(InXp);
+	Super::UpdateEnemiesAmount();
 	if (bIsHackFinished && AliveEnemiesAmount <= 0) FinishTerminalHack();
 }
 
@@ -54,7 +54,7 @@ void UHackTerminalModeLogic::StartTerminalHack()
 	PlaySound(ESound::TaskAnnouncement);
 	if (WaveManagerHUD)
 	{
-		WaveManagerHUD->ToggleTaskProgress(true, WaveManager->GetAssetsManager()->GetCurrentGameMode());
+		WaveManagerHUD->ToggleTaskProgress(true, WaveManager->GetCurrentGameMode());
 		WaveManagerHUD->PlayAnnouncementAnim("Hack Initiated");
 	}
 	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate, true);
@@ -74,6 +74,6 @@ void UHackTerminalModeLogic::FinishTerminalHack()
 	else
 	{
 		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
-		WaveManager->GetDelegateManager()->OnTerminalHackFinish.Broadcast(WaveManager->GetAssetsManager()->GetCurrentGameMode());
+		WaveManager->GetDelegateManager()->OnTerminalHackFinish.Broadcast(WaveManager->GetCurrentGameMode());
 	}
 }

@@ -11,6 +11,7 @@ class POSSESSIONGAME_API UAICharacterData : public UCharacterData
 public:
 	bool GetIsPossessable() const { return bIsPossessable; }
 	float GetShootPause() const { return ShootPause; }
+	float GetPossessionTimeValue() const { return PossessionTimeValue; }
 	float GetMaxRunSpeed() const { return MaxRunSpeed; }
 	float GetEliteHpIncreasePercentage() const { return EliteHpIncreasePercentage; }
 	float GetEliteDamageIncreasePercentage() const { return EliteDamageIncreasePercentage; }
@@ -22,6 +23,8 @@ private:
 	bool bIsPossessable = true;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float ShootPause = 0.2f;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	float PossessionTimeValue = 11.25f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float MaxRunSpeed;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

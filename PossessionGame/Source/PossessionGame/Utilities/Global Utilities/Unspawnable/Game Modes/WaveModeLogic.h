@@ -21,7 +21,7 @@ class POSSESSIONGAME_API UWaveModeLogic : public UGameModeBaseLogic
 	virtual void SetupWaveManagerUI() override;
 	virtual void SetupTimers() override;
 	virtual void HandleSpawning() override;
-	virtual void UpdateEnemiesAmount(const int32 InXp) override;
+	virtual void UpdateEnemiesAmount() override;
 	void InitiateNextWave();
 	void StartCountdown() const;
 	void StartWave() const;

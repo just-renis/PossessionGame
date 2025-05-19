@@ -16,6 +16,6 @@ class POSSESSIONGAME_API UChargeTerminalModeLogic : public UGameModeBaseLogic
 	virtual void Init(const TObjectPtr<UWaveManager> InWaveManager) override;
 	virtual void Finalize() override;
 	virtual void HandleSpawning() override;
-	virtual void UpdateEnemiesAmount(const int32 InXp) override;
+	virtual void UpdateEnemiesAmount() override;
 	virtual void UpdateTaskProgress() override;
 };

@@ -18,7 +18,7 @@ class POSSESSIONGAME_API UHackTerminalModeLogic : public UGameModeBaseLogic
 	virtual void Finalize() override;
 	virtual void HandleSpawning() override;
 	virtual void UpdateTaskProgress() override;
-	virtual void UpdateEnemiesAmount(const int32 InXp) override;
+	virtual void UpdateEnemiesAmount() override;
 	void StartTerminalHack();
 	void FinishTerminalHack();
 };

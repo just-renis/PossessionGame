@@ -34,7 +34,7 @@ protected:
 	UFUNCTION()
 	virtual void HandleSpawning() {}
 	UFUNCTION()
-	virtual void UpdateEnemiesAmount(const int32 InXp) { AliveEnemiesAmount--; }
+	virtual void UpdateEnemiesAmount() { AliveEnemiesAmount--; }
 	UFUNCTION()
 	void ShowUpgradeSelection() const;
 	UFUNCTION()

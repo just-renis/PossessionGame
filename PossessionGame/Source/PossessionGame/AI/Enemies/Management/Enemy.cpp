@@ -235,7 +235,8 @@ void AEnemy::InitiateDeath()
 		AI_PlayDeathExplosion();
 		DestroyAI();
 		if (bIsMutant) AI_TriggerMutantExplosion();
-		DelegateManager->OnEnemyDeath.Broadcast(AI_Data->GetXp());
+		if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
+		(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
 	}
 	else P_Destroy();
 	AI_PlayDeathElectrification();
@@ -370,8 +371,9 @@ void AEnemy::P_Setup()
 	P_InputManager = Cast<UEnhancedPlayerInput>(GetWorld()->GetFirstPlayerController()->PlayerInput);
 	P_SetupAbilities();
 	P_SetupUI();
-	DelegateManager->OnEnemyDeath.Broadcast(AI_Data->GetXp());
-	DelegateManager->OnEnemyDeath.AddUObject(this, &AEnemy::P_OnEnemyDeathEvents);
+	if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
+	(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
+	DelegateManager->OnEnemyDeath.BindUObject(this, &AEnemy::P_OnEnemyDeathEvents);
 }
 
 void AEnemy::P_Shoot(const bool bFirstWeapon)
@@ -712,7 +714,7 @@ void AEnemy::P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy)
 	if (InEnemy && InEnemy->GetIsPossessable() && !InEnemy->GetIsMutant() && !InEnemy->bIsPossessed && InEnemy->bIsAlive)
 	{
 		P_StopAllAbilities();
-		DelegateManager->OnEnemyDeath.RemoveAll(this);
+		DelegateManager->OnEnemyDeath.Unbind();
 		Controller->Possess(InEnemy);
 		InitiateDeath();
 	}
@@ -751,9 +753,9 @@ void AEnemy::P_Reload()
 
 void AEnemy::P_Dash() { if (CurrentDashCooldown >= P_Data->GetDashCooldown()) P_InitiateDash(); }
 
-void AEnemy::P_OnEnemyDeathEvents(const int32 InXp)
+void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InPossessionTimeValue)
 {
-	PossessionBarTimer += 1.f;
+	PossessionBarTimer += InPossessionTimeValue;
 	AddXp(InXp);
 	for (int32 i = 0; i < Abilities.Num(); i++)
 	{
@@ -918,7 +920,7 @@ void AEnemy::P_ApplySecretReward(const int32 InIndex)
 	switch (InIndex)
 	{
 		case 0: AddHp(30); break; // Hp.
-		case 1: PossessionBarTimer += 5.f; break; // Possession.
+		case 1: PossessionBarTimer += 30.f; break; // Possession.
 		default: AddXp(10); // Xp.
 	}
 }

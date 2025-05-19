@@ -3,6 +3,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Navigation/DroneWaypoint.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/TutorialDialogue.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -146,7 +147,7 @@ void ATutorialDrone::CheckDistanceToTarget()
 				break;
 			case 1:
 				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(4);
-				(void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Minion);
+				(void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Minion, EGameMode::TutorialMode2);
 				(void)DelegateManager->OnShowHint.ExecuteIfBound(2);
 				DelegateManager->DestroyTutorialForceField.Broadcast(2);
 				break;

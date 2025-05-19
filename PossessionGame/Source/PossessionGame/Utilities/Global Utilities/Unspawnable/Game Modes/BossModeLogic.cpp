@@ -9,8 +9,8 @@ void UBossModeLogic::Init(const TObjectPtr<UWaveManager> InWaveManager)
 {
 	Super::Init(InWaveManager);
 	EnemiesOnSceneLimit = 4;
-	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, [this] { IncreaseAliveEnemiesAmount(); });
-	WaveManager->GetDelegateManager()->OnEnemyDeath.AddUObject(this, &UBossModeLogic::UpdateEnemiesAmount);
+	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
+	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UBossModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->OnBossDeath.BindUObject(this, &UBossModeLogic::BossDeath);
 	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate * 3.f, true);
 }
@@ -19,7 +19,7 @@ void UBossModeLogic::Finalize()
 {
 	Super::Finalize();
 	ShowUpgradeSelection();
-	WaveManager->GetDelegateManager()->OnEnemyDeath.RemoveAll(this);
+	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	WaveManager->GetDelegateManager()->OnBossDeath.Unbind();
 }
 
@@ -27,13 +27,13 @@ void UBossModeLogic::HandleSpawning()
 {
 	if (bIsBossAlive && AliveEnemiesAmount < EnemiesOnSceneLimit)
 	{
-		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, [this] { IncreaseAliveEnemiesAmount(); });
+		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
 	}
 }
 
-void UBossModeLogic::UpdateEnemiesAmount(const int32 InXp)
+void UBossModeLogic::UpdateEnemiesAmount()
 {
-	Super::UpdateEnemiesAmount(InXp);
+	Super::UpdateEnemiesAmount();
 	if (!bIsBossAlive && AliveEnemiesAmount <= 0) Finalize();
 }
 
