@@ -32,7 +32,7 @@ void APossessionGameGameModeBase::BeginPlay()
 //	FString LevelName = GetWorld()->GetMapName();
 //	LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
 //	if (!LevelName.Equals("TutorialLevel")) SaveSlot->SetTutorialFinished();
-	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager);
+	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
 	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->Init(PostProcessMaterials);

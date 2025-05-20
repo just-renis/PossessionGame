@@ -5,10 +5,9 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 
-void UBossModeLogic::Init(const TObjectPtr<UWaveManager> InWaveManager)
+void UBossModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData)
 {
-	Super::Init(InWaveManager);
-	EnemiesOnSceneLimit = 1;
+	Super::Init(InWaveManager, InGameModeData);
 	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UBossModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->OnBossDeath.BindUObject(this, &UBossModeLogic::BossDeath);

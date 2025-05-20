@@ -5,6 +5,8 @@
 #include "PossessionGame/Utilities/Data Utilities/FPrefabCategoryData.h"
 #include "PossessionGameGameModeBase.generated.h"
 
+class UGameModeData;
+enum class EGameMode : uint8;
 enum class EUpgrade : uint8;
 class UUpgradeData;
 enum class EPostProcessMaterial : uint8;
@@ -33,8 +35,10 @@ private:
 	TSubclassOf<USettingsSave> SettingsSaveClass;
 	UPROPERTY(EditAnywhere, Category = "EQS", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UEnvQuery> TargetEQS;
-	UPROPERTY(EditAnywhere, Category = "Wave Manager", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
 	TArray<ECharacterType> EnemiesThatAreSpawnable;
+	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
+	TMap<EGameMode, TObjectPtr<UGameModeData>> GameModesData;
 	UPROPERTY(EditAnywhere, Category = "Level Prefabs", meta = (AllowPrivateAccess = true))
 	TMap<EPrefabCategory, FPrefabCategoryData> Prefabs;
 	UPROPERTY(EditAnywhere, Category = "Post Process Manager", meta = (AllowPrivateAccess = true))

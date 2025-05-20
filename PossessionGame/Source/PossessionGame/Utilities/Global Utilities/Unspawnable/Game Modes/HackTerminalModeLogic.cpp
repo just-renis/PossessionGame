@@ -1,13 +1,16 @@
 ﻿#include "HackTerminalModeLogic.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "PossessionGame/Data Assets/Game Modes/HackTerminalModeData.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 
-void UHackTerminalModeLogic::Init(const TObjectPtr<UWaveManager> InWaveManager)
+void UHackTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData)
 {
-	Super::Init(InWaveManager);
+	Super::Init(InWaveManager, InGameModeData);
+	Data = Cast<UHackTerminalModeData>(InGameModeData);
+	SetData();
 	SetupWaveManagerUI();
 	PlaySound(ESound::GeneratorDisableAnnouncement);
 	WaveManager->GetDelegateManager()->OnHackModeStart.Broadcast();
@@ -76,4 +79,10 @@ void UHackTerminalModeLogic::FinishTerminalHack()
 		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
 		WaveManager->GetDelegateManager()->OnTerminalHackFinish.Broadcast(WaveManager->GetCurrentGameMode());
 	}
+}
+
+void UHackTerminalModeLogic::SetData()
+{
+	TerminalsLeftToHack = Data->GetTerminalsAmountToHack();
+	TerminalHackRequired = Data->GetTerminalHackRequired();
 }

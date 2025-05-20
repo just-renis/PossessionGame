@@ -1,4 +1,6 @@
 ﻿#include "GameModeBaseLogic.h"
+
+#include "PossessionGame/Data Assets/Base Data Assets/GameModeData.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
@@ -7,6 +9,14 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
+
+void UGameModeBaseLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData)
+{
+	WaveManager = InWaveManager;
+	AliveEnemiesAmount = InGameModeData->GetAliveEnemiesAmount();
+	EnemiesOnSceneLimit = InGameModeData->GetEnemiesOnSceneLimit();
+	SpawnRate = InGameModeData->GetSpawnRate();
+}
 
 int32 UGameModeBaseLogic::ConvertGameModeToDroneLocation() const
 {

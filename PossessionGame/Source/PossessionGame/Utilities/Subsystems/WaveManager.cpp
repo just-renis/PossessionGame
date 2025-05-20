@@ -7,14 +7,21 @@
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/Game Modes/HackTerminalModeLogic.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/Game Modes/WaveModeLogic.h"
 
-void UWaveManager::Init(const TObjectPtr<UDelegateManager>& InDelegateManager)
+void UWaveManager::Init(const TObjectPtr<UDelegateManager>& InDelegateManager, const TMap<EGameMode, TObjectPtr<UGameModeData>>& InGameModesData)
 {
 	DelegateManager = InDelegateManager;
+	GameModesData = InGameModesData;
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &UWaveManager::SetAndStartGameMode);
 	CurrentGameMode = EGameMode::TutorialMode1;
 	//AssetsManager->RequestSpawnEnemy(ECharacterType::Ranger, nullptr);
 	//DelegateManager->OnTutorialEnd.AddUObject(this, &UWaveManager::FinishTutorial);
+}
+
+TObjectPtr<UGameModeData> UWaveManager::GetGameModeData(const EGameMode InGameMode)
+{
+	if (GameModesData.Contains(InGameMode)) return GameModesData[InGameMode];
+	return nullptr;
 }
 
 void UWaveManager::SetAndStartGameMode(const EGameMode InGameMode)
@@ -30,7 +37,7 @@ void UWaveManager::SetAndStartGameMode(const EGameMode InGameMode)
 		default: return;
 	}
 	if (!CurrentModeLogic) return;
-	CurrentModeLogic->Init(this);
+	CurrentModeLogic->Init(this, GetGameModeData(InGameMode));
 }
 
 //void UWaveManager::FinishTutorial() { bTutorialIsFinished = true; }

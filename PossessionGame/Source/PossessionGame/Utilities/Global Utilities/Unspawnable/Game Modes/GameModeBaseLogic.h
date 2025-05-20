@@ -4,6 +4,7 @@
 #include "UObject/Object.h"
 #include "GameModeBaseLogic.generated.h"
 
+class UGameModeData;
 enum class ESound : uint16;
 class UWaveManagerHUD;
 class UWaveManager;
@@ -13,7 +14,7 @@ class POSSESSIONGAME_API UGameModeBaseLogic : public UObject
 {
 	GENERATED_BODY()
 public:
-	virtual void Init(const TObjectPtr<UWaveManager> InWaveManager) { WaveManager = InWaveManager; }
+	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData);
 protected:
 	int32 AliveEnemiesAmount = 0;
 	int32 EnemiesOnSceneLimit = 7;

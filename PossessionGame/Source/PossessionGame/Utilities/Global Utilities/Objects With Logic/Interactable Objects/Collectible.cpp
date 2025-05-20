@@ -37,8 +37,8 @@ void ACollectible::Init(bool bInIsPlayerObject)
 	{
 		InitialSpawnZ = GetActorLocation().Z;
 		UKismetSystemLibrary::K2_SetTimer(this, "Float", 0.025f, true);
-		SetActorRotation(Data->GetRotation());
 	}
+	SetActorRotation(Data->GetRotation());
 	EnableCollectible();
 	if (InteractableWidget) InteractableWidget->SetVisibility(false);
 }

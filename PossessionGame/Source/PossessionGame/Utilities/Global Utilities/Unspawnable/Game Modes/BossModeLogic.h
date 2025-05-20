@@ -11,7 +11,7 @@ class POSSESSIONGAME_API UBossModeLogic : public UGameModeBaseLogic
 
 	bool bIsBossAlive = true;
 
-	virtual void Init(const TObjectPtr<UWaveManager> InWaveManager) override;
+	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData) override;
 	virtual void Finalize() override;
 	virtual void HandleSpawning() override;
 	virtual void UpdateEnemiesAmount() override;

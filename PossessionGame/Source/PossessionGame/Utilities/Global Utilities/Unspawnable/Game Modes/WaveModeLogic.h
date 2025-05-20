@@ -4,19 +4,23 @@
 #include "GameModeBaseLogic.h"
 #include "WaveModeLogic.generated.h"
 
+class UWaveModeData;
+
 UCLASS()
 class POSSESSIONGAME_API UWaveModeLogic : public UGameModeBaseLogic
 {
 	GENERATED_BODY()
 	
 	bool bWaveNotStarted = false;
-	int32 CurrentWave;
-	int32 EnemiesPerWave = 2;
-	int32 AmountOfWaves = 2;
-	int32 EnemiesLeftToKill = 2;
-	int32 CountdownSeconds = 4;
+	int32 CurrentWave = 1;
+	int32 EnemiesPerWave;
+	int32 AmountOfWaves;
+	int32 EnemiesLeftToKill;
+	int32 CountdownSeconds;
+	UPROPERTY()
+	TObjectPtr<UWaveModeData> Data;
 	
-	virtual void Init(const TObjectPtr<UWaveManager> InWaveManager) override;
+	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData) override;
 	virtual void Finalize() override;
 	virtual void SetupWaveManagerUI() override;
 	virtual void SetupTimers() override;
@@ -29,7 +33,8 @@ class POSSESSIONGAME_API UWaveModeLogic : public UGameModeBaseLogic
 	void SetupNextWaveUI() const;
 	void FadeOutWavePanel() const;
 	void WaveCompleted();
-	void WaveModeCallback();
+	void AfterSpawnEnemyCallback();
+	void SetData();
 	UFUNCTION()
 	void UpdateCountdown();
 };

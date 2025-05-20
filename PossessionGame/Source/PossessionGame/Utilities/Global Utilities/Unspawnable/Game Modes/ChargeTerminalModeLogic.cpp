@@ -1,13 +1,16 @@
 ﻿#include "ChargeTerminalModeLogic.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "PossessionGame/Data Assets/Game Modes/ChargeTerminalModeData.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 
-void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager> InWaveManager)
+void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData)
 {
-	Super::Init(InWaveManager);
+	Super::Init(InWaveManager, InGameModeData);
+	Data = Cast<UChargeTerminalModeData>(InGameModeData);
+	SetData();
 	SetupWaveManagerUI();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UChargeTerminalModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->OnUsbInserted.BindUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
@@ -47,4 +50,9 @@ void UChargeTerminalModeLogic::UpdateTaskProgress()
 		bIsTerminalCharged = true;
 		if (AliveEnemiesAmount <= 0) Finalize();
 	}
+}
+
+void UChargeTerminalModeLogic::SetData()
+{
+	TerminalHackRequired = Data->GetTerminalHackRequired();
 }
