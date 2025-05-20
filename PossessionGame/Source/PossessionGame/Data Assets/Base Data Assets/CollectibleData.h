@@ -15,6 +15,7 @@ public:
 	bool GetIsFloating() const { return bIsFloating; }
 	bool GetIsMarkerEnabled() const { return bIsMarkerEnabled; }
 	bool HasAura() const { return bHasAura; }
+	FRotator GetRotation() const { return Rotation; }
 	EVfx GetAuraName() const { return AuraName; }
 	EPoolObject GetCollectibleName() const { return CollectibleName; }
 private:
@@ -24,6 +25,8 @@ private:
 	bool bIsMarkerEnabled = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bHasAura = false;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FRotator Rotation = FRotator::ZeroRotator;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "bHasAura", EditConditionHides))
 	EVfx AuraName;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
