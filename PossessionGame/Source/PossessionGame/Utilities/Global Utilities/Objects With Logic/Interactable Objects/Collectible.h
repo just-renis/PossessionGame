@@ -51,6 +51,8 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	UFUNCTION()
 	void Float();
 	UFUNCTION()
+	void Spin();
+	UFUNCTION()
 	void EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void DisableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);

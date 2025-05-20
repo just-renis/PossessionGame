@@ -38,6 +38,7 @@ void ACollectible::Init(bool bInIsPlayerObject)
 		InitialSpawnZ = GetActorLocation().Z;
 		UKismetSystemLibrary::K2_SetTimer(this, "Float", 0.025f, true);
 	}
+	if (Data->GetIsSpinning()) UKismetSystemLibrary::K2_SetTimer(this, "Spin", 0.025f, true);
 	SetActorRotation(Data->GetRotation());
 	EnableCollectible();
 	if (InteractableWidget) InteractableWidget->SetVisibility(false);
@@ -49,6 +50,7 @@ void ACollectible::Interact()
 	if (Aura) Aura->Deactivate();
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbCollect);
 	UKismetSystemLibrary::K2_ClearTimer(this, "Float");
+	UKismetSystemLibrary::K2_ClearTimer(this, "Spin");
 	PoolingManager->ReturnObjectToPool(Data->GetCollectibleName(), this);
 	DisableCollectible();
 	if (Data->GetCollectibleName() == EPoolObject::Usb) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.ExecuteIfBound();
@@ -97,11 +99,15 @@ void ACollectible::ChangeOutlineState(const bool bState)
 void ACollectible::Float()
 {
 	FVector NewLocation = GetActorLocation();
+	NewLocation.Z = InitialSpawnZ + FMath::Sin(GetWorld()->GetTimeSeconds() * 2.f) * 20.f;
+	SetActorLocation(NewLocation);
+}
+
+void ACollectible::Spin()
+{
 	FRotator NewRotation = GetActorRotation();
-	const float FloatValue = FMath::Sin(GetWorld()->GetTimeSeconds() * 2.f) * 20.f;
-	NewLocation.Z = InitialSpawnZ + FloatValue;
 	NewRotation.Yaw += 1.5f;
-	SetActorLocationAndRotation(NewLocation, NewRotation);
+	SetActorRotation(NewRotation);
 }
 
 void ACollectible::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

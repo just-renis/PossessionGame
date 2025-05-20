@@ -209,6 +209,7 @@ void UPrimaryDataAssetsManager::ApplyAttributesToVfxComponent(const TMap<FName, 
 			if (Attribute.Value.IsFloat()) Component->SetVariableFloat(Attribute.Key, Attribute.Value.GetFloat());
 			else if (Attribute.Value.IsVector()) Component->SetVectorParameter(Attribute.Key, Attribute.Value.GetVector());
 			else if (Attribute.Value.IsColor()) Component->SetColorParameter(Attribute.Key, Attribute.Value.GetColor());
+			else if (Attribute.Value.IsMaterial()) Component->SetVariableMaterial(Attribute.Key, Attribute.Value.GetMaterial());
 		}
 	}
 }
@@ -229,7 +230,6 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const TObjectPtr<UNiagaraComp
 			}
 			else if (TObjectPtr<UMaterialInterface> MI = Cast<UMaterialInterface>(MaterialObj))
 			{
-				
 				MI_Dynamic = UMaterialInstanceDynamic::Create(MI, this);
 				InVfxComponent->SetVariableMaterial(Param.GetName(), MI_Dynamic);
 				MI_Dynamic->SetScalarParameterValue("Hue", InNiagaraVariationData.Hue);
@@ -250,8 +250,9 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<ECharacterType>& InEnemiesThatAreSpawnable)
 {
 	SetupSpawnLocations();
-	bTutorialIsFinished = bIsTutorialFinished;
+	bTutorialIsFinished = true;
 	EnemyTypes = InEnemiesThatAreSpawnable;
+	RequestSpawnEnemy(ECharacterType::Ranger, EGameMode::TutorialMode1, nullptr);
 	if (InEnemiesThatAreSpawnable.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	DelegateManager = InDelegateManager;
 	if (!bTutorialIsFinished) DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
@@ -484,6 +485,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_MutantAura", EVfx::MutantAura);
 	VfxsMap.Add("PA_MutantExplosion", EVfx::MutantExplosion);
 	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
+	VfxsMap.Add("PA_SecretRewardPopUp", EVfx::SecretRewardPopUp);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

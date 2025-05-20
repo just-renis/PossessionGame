@@ -17,8 +17,8 @@ public:
 	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData);
 protected:
 	int32 AliveEnemiesAmount = 0;
-	int32 EnemiesOnSceneLimit = 7;
-	float SpawnRate = 1.f;
+	int32 EnemiesOnSceneLimit;
+	float SpawnRate;
 	UPROPERTY()
 	TObjectPtr<UWaveManager> WaveManager;
 	UPROPERTY()

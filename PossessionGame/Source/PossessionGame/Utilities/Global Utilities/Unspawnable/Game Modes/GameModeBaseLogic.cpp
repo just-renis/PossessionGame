@@ -13,7 +13,6 @@
 void UGameModeBaseLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData)
 {
 	WaveManager = InWaveManager;
-	AliveEnemiesAmount = InGameModeData->GetAliveEnemiesAmount();
 	EnemiesOnSceneLimit = InGameModeData->GetEnemiesOnSceneLimit();
 	SpawnRate = InGameModeData->GetSpawnRate();
 }

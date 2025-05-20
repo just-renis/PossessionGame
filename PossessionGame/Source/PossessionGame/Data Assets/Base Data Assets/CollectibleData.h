@@ -13,6 +13,7 @@ class POSSESSIONGAME_API UCollectibleData : public UDataAsset
 	GENERATED_BODY()
 public:
 	bool GetIsFloating() const { return bIsFloating; }
+	bool GetIsSpinning() const { return bIsSpinning; }
 	bool GetIsMarkerEnabled() const { return bIsMarkerEnabled; }
 	bool HasAura() const { return bHasAura; }
 	FRotator GetRotation() const { return Rotation; }
@@ -21,6 +22,8 @@ public:
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsFloating = false;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bIsSpinning = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsMarkerEnabled = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

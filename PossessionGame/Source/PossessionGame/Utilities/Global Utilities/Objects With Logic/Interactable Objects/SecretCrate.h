@@ -14,8 +14,6 @@ class POSSESSIONGAME_API ASecretCrate : public AInteractableObject
 	ASecretCrate();
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UStaticMeshComponent> RewardMesh;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> CrateMesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAnimSequence> OpenAnim;
@@ -31,9 +29,4 @@ class POSSESSIONGAME_API ASecretCrate : public AInteractableObject
 	void GiveReward();
 	void PlaySound(const ESound InSoundName);
 	void StopSound(const ESound InSoundName);
-	
-	UFUNCTION()
-	void RewardMeshMoveUpwards() const;
-	UFUNCTION()
-	void StopRewardMesh();
 };

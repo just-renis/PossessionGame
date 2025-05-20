@@ -9,12 +9,9 @@ class POSSESSIONGAME_API UGameModeData : public UDataAsset
 {
 	GENERATED_BODY()
 public:
-	int32 GetAliveEnemiesAmount() const { return AliveEnemiesAmount; }
 	int32 GetEnemiesOnSceneLimit() const { return EnemiesOnSceneLimit; }
 	float GetSpawnRate() const { return SpawnRate; }
 private:
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	int32 AliveEnemiesAmount = 0;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	int32 EnemiesOnSceneLimit = 7;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
