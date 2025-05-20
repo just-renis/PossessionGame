@@ -23,8 +23,8 @@ public:
 	void SetSpeed(const float InValue) { Speed = InValue; }
 	void SetLookAtLocation(const FVector& InLookAtLocation) { LookAtLocation = InLookAtLocation; }
 	void SetDirectionalAngle();
-	void PlayMontage(EEnemyAnimState State);
-	void PlayMontageWithHold(const EEnemyAnimState State, const float InHoldTime, const bool bDisableActionInMotion);
+	void PlayMontage(const EEnemyAnimState InState, const bool bPlayInReverse = false);
+	void PlayMontageWithHold(const EEnemyAnimState InState, const bool bPlayInReverse, const float InHoldTime, const bool bDisableActionInMotion);
 	void StopMontage(EEnemyAnimState State, float BlendOut = 0.f);
 	void ClearTimers();
 protected:
@@ -39,7 +39,7 @@ protected:
 	virtual void BeginDestroy() override;
 	virtual void AssignOnMontageEnd();
 	void SetProprietor();
-	virtual void InnerPlayMontage(EEnemyAnimState State);
+	virtual void InnerPlayMontage(const EEnemyAnimState InState, const bool bPlayInReverse);
 	UFUNCTION()
 	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted);
 private:

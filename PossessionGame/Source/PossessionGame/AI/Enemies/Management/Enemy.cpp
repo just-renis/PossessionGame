@@ -69,6 +69,9 @@ AEnemy::AEnemy()
 	Sounds.Add(ESound::MechanicalDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("mechanicaldeathSound")));
 	Sounds[ESound::MechanicalDeath]->SetAutoActivate(false);
 	Sounds[ESound::MechanicalDeath]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::EmpEffectApplied, CreateDefaultSubobject<UAudioComponent>(TEXT("empEffectAppliedSound")));
+	Sounds[ESound::EmpEffectApplied]->SetAutoActivate(false);
+	Sounds[ESound::EmpEffectApplied]->SetupAttachment(GetMesh());
 }
 
 bool AEnemy::GetIsPossessable() const { return AI_Data->GetIsPossessable(); }
@@ -284,7 +287,8 @@ void AEnemy::SetEmpEffect(const float InEffectDuration)
 {
 	SetActionInMotion(true);
 	if (AI) AI->StopLogic(false);
-	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
+	PlaySound(ESound::EmpEffectApplied);
+	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, false, InEffectDuration, true);
 }
 
 void AEnemy::SetPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr); }

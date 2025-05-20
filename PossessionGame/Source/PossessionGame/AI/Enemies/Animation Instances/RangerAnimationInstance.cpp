@@ -7,10 +7,10 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
-void URangerAnimationInstance::InnerPlayMontage(EEnemyAnimState State)
+void URangerAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState, const bool bPlayInReverse)
 {
-	Super::InnerPlayMontage(State);
-	if (State == EEnemyAnimState::GrenadeLaunch)
+	Super::InnerPlayMontage(InState, bPlayInReverse);
+	if (InState == EEnemyAnimState::GrenadeLaunch)
 	{
 		UKismetSystemLibrary::K2_SetTimer(this, "TriggerGrenadeProjection", 0.1f, false);
 		UKismetSystemLibrary::K2_SetTimer(this, "LaunchGrenade", 1.1f, false);

@@ -32,29 +32,29 @@ void UEnemyAnimationInstance::SetDirectionalAngle()
     DirectionalAngle = UKismetAnimationLibrary::CalculateDirection(Proprietor->GetVelocity(), Proprietor->GetActorRotation());
 }
 
-void UEnemyAnimationInstance::PlayMontage(EEnemyAnimState State)
+void UEnemyAnimationInstance::PlayMontage(const EEnemyAnimState InState, const bool bPlayInReverse)
 {
-    if (IsMontageExisting(State))
+    if (IsMontageExisting(InState))
     {
-        LoadMontageIfNotLoaded(State);
-        InnerPlayMontage(State);
+        LoadMontageIfNotLoaded(InState);
+        InnerPlayMontage(InState, bPlayInReverse);
     }
-    else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontage"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(State));
+    else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontage"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
 }
 
-void UEnemyAnimationInstance::PlayMontageWithHold(const EEnemyAnimState State, const float InHoldTime, const bool bDisableActionInMotion)
+void UEnemyAnimationInstance::PlayMontageWithHold(const EEnemyAnimState InState, const bool bPlayInReverse, const float InHoldTime, const bool bDisableActionInMotion)
 {
-    if (IsMontageExisting(State))
+    if (IsMontageExisting(InState))
     {
-        LoadMontageIfNotLoaded(State);
-        InnerPlayMontage(State);
+        LoadMontageIfNotLoaded(InState);
+        InnerPlayMontage(InState, bPlayInReverse);
         GetWorld()->GetTimerManager().SetTimer(MontageHoldEndHandle, [this, bDisableActionInMotion]
-        { MontageHoldEnd(bDisableActionInMotion); }, GetMontageLength(State) + InHoldTime, false);
-        TObjectPtr<UAnimMontage> Montage = *Montages.Find(State);
+        { MontageHoldEnd(bDisableActionInMotion); }, GetMontageLength(InState) + InHoldTime, false);
+        TObjectPtr<UAnimMontage> Montage = Montages.Find(InState)->Get();
         GetWorld()->GetTimerManager().SetTimer(PauseHandle, [this, Montage]
-        { Montage_Pause(Montage); }, GetMontageLength(State) - Montages.Find(State)->Get()->GetDefaultBlendOutTime() - 0.02f, false);
+        { Montage_Pause(Montage); }, GetMontageLength(InState) - Montages.Find(InState)->Get()->GetDefaultBlendOutTime() - 0.02f, false);
     }
-    else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontageWithHold"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(State));
+    else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontageWithHold"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
 }
 
 void UEnemyAnimationInstance::StopMontage(EEnemyAnimState State, float BlendOut)
@@ -96,10 +96,19 @@ void UEnemyAnimationInstance::AssignOnMontageEnd() { OnMontageBlendingOut.AddDyn
 
 void UEnemyAnimationInstance::SetProprietor() { Proprietor = Cast<AEnemy>(GetOwningActor()); }
 
-void UEnemyAnimationInstance::InnerPlayMontage(EEnemyAnimState State) { Montage_Play(Montages.Find(State)->Get()); }
+void UEnemyAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState, const bool bPlayInReverse) // For now disabled reverse, refactor for later(state trees does same thing what pausewithhold method.
+{
+    const TObjectPtr<UAnimMontage> Montage = Montages.Find(InState)->Get();
+   // Montage_Play(Montage, bPlayInReverse ? -1.f : 1.f, EMontagePlayReturnType::MontageLength, bPlayInReverse ? Montage->GetPlayLength() : 0.f);
+    Montage_Play(Montage);
+}
 
 void UEnemyAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
 {
+    if (Montages.Contains(EEnemyAnimState::EmpEffect) && Montage == Montages.Find(EEnemyAnimState::EmpEffect)->Get())
+    {
+      //  PlayMontage(EEnemyAnimState::EmpEffect, true);
+    }
     if (Montages.Contains(EEnemyAnimState::Shoot) && Montage == Montages.Find(EEnemyAnimState::Shoot)->Get()) Proprietor->AI_SetCanShoot(false);
 }
 

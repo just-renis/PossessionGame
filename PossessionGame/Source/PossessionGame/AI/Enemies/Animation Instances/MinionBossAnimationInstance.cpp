@@ -18,7 +18,7 @@ void UMinionBossAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsI
 	const TObjectPtr<UAnimMontage>* PrepareLaserMontage = Montages.Find(EEnemyAnimState::PrepareLaser);
 	if (PrepareLaserMontage && Montage == PrepareLaserMontage->Get())
 	{
-		Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::HoldLaser, 3.f, false);
+		Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::HoldLaser, false, 3.f, false);
 		return;
 	}
 	const TObjectPtr<UAnimMontage>* StopLaserMontage = Montages.Find(EEnemyAnimState::StopLaser);

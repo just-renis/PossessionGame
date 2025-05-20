@@ -75,5 +75,6 @@ enum class ESound : uint16
 	PlayerStompDashDown,
 	Jump,
 	DoubleJump,
-	MechanicalDeath
+	MechanicalDeath,
+	EmpEffectApplied
 };
