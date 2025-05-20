@@ -923,7 +923,8 @@ void AEnemy::P_ProcessMeleeAttack()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	TArray<FOverlapResult> Overlaps;
-	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(QuickMeleeAttackRadiusInMeters), Params);
+	DrawDebugSphere(GetWorld(), GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), QuickMeleeAttackRadiusInMeters * 100.f, 16, FColor::Green, false, 1.f);
+	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(QuickMeleeAttackRadiusInMeters * 100.f), Params);
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
 		if (TObjectPtr<AActor> HitActor = Overlap.GetActor(); HitActor && HitActor != this && HitActor->ActorHasTag("AliveEnemy"))
