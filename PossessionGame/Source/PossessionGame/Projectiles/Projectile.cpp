@@ -47,7 +47,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 			const TObjectPtr<AWeapon> Weapon = ProjectileData.GetProprietor()->GetWeapon();
 			const FNiagaraVariationData NiagaraVariationData(ProjectileData.bIsPlayerProjectile ? Weapon->GetPlayerData()->GetNiagaraVariationData(ProjectileData.GetProprietor()->GetVariation()) : Weapon->GetAIData()->GetNiagaraVariationData(EVariation::Default));
 			Attributes.Add(TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color));
-			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), FNiagaraVariationData(), &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), false, Attributes);
+			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), nullptr, FNiagaraVariationData(), &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), false, Attributes);
 		}
 		bHasBeenPooled = true;
 	}
@@ -92,7 +92,7 @@ void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool b
 	const TObjectPtr<AWeapon> Weapon = ProjectileData.GetProprietor()->GetWeapon();
 	const FNiagaraVariationData NiagaraVariationData(ProjectileData.bIsPlayerProjectile ? Weapon->GetPlayerData()->GetNiagaraVariationData(ProjectileData.GetProprietor()->GetVariation()) : Weapon->GetAIData()->GetNiagaraVariationData(EVariation::Default));
 	Attributes.Add(TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color));
-	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), NiagaraVariationData, Attributes);
+	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), nullptr, InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), NiagaraVariationData, Attributes);
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

@@ -137,7 +137,7 @@ protected:
 	void SetupHandsAnimInstance();
 	virtual void DetachWeapon();
 	void PlaySound(const ESound InSoundName);
-	void MuzzleFlashLogic() const;
+	void MuzzleFlashLogic();
 	void DisableHandsMesh() const;
 	void DealPointDamage(const FHitResult& InHitResult);
 private:

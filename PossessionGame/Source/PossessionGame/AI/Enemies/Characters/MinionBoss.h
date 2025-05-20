@@ -7,6 +7,8 @@
 class UNiagaraComponent;
 class ATriggerSphere;
 
+DECLARE_DELEGATE(FStopLaser);
+
 UCLASS()
 class POSSESSIONGAME_API AMinionBoss : public AEnemy
 {
@@ -14,6 +16,7 @@ class POSSESSIONGAME_API AMinionBoss : public AEnemy
 public:
 	float GetStompRadius() const { return StompRadiusInMeters * 100.f; }
 	float GetStompDamage() const { return StompDamage; }
+	FStopLaser& GetStopLaserDelegate() { return StopLaser; }
 	TObjectPtr<UCapsuleComponent> GetLaserCollision() const { return LaserCollision; }
 	TObjectPtr<UNiagaraComponent> GetLaser() const { return LaserVfx; }
 	TObjectPtr<UNiagaraComponent> GetLaserEyeBall() const { return LaserEyeBallVfx; }
@@ -27,6 +30,8 @@ public:
 private:
 	AMinionBoss();
 
+	FStopLaser StopLaser;
+	
 	bool bStompIsReady = false;
 	int32 CurrentWeaponIndex = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))

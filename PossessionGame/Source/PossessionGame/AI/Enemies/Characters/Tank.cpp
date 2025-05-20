@@ -11,7 +11,8 @@
 
 void ATank::P_Shoot(bool bFirstWeapon)
 {
-	if (Weapon->P_CanShoot()) Weapon->P_Shoot();
+	if (bIsInputLocked || !Weapon->P_CanShoot()) return;
+	Weapon->P_Shoot();
 }
 
 void ATank::AI_ReloadLogic() { if (!bIsActionInMotion && Weapon->GetIsReloadEnabled()) AI_Reload(); }

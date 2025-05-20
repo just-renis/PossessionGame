@@ -29,6 +29,7 @@ float UHandsAnimInstance::GetMontagePosition(EHandsAnimState State)
 
 void UHandsAnimInstance::PlayMontage(EHandsAnimState State, float StartPosition)
 {
+    if (State == EHandsAnimState::Jump && IsAnyMontagePlaying()) return;
     if (IsMontageExisting(State))
     {
         LoadMontageIfNotLoaded(State);

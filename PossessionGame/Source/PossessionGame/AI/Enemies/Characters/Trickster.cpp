@@ -52,7 +52,7 @@ void ATrickster::AI_PlaySpawnSound() { PlaySound(ESound::TricksterSpawn); }
 
 void ATrickster::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::TricksterDeathElectrification, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+	AssetsManager->AttachVfx(EVfx::TricksterDeathElectrification, nullptr, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
 }
 
 void ATrickster::P_Setup()

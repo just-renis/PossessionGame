@@ -120,7 +120,7 @@ void AWeapon::P_SetVariationMaterial()
 	MI_Variation->SetScalarParameterValue("EmissiveHue", P_Data->GetVariationHueValue(Proprietor->GetVariation()));
 }
 
-void AWeapon::P_ChangeVfxVariation() { AssetsManager->ChangeVfxVariation(MuzzleFlashComponent, P_Data->GetNiagaraVariationData(Proprietor->GetVariation())); }
+void AWeapon::P_ChangeVfxVariation() { if (MuzzleFlashComponent) AssetsManager->ChangeVfxVariation(MuzzleFlashComponent, P_Data->GetNiagaraVariationData(Proprietor->GetVariation())); }
 
 void AWeapon::P_ReduceShootCooldown(const float InPercentage) { ShootCooldown -= P_Data->GetShootCooldown() * InPercentage * 0.01f; }
 
@@ -179,11 +179,7 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bFromFirs
 	}
 }
 
-void AWeapon::PostProprietorSetup()
-{
-	SetupHandsAnimInstance();
-	AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), AI_Data->GetNiagaraVariationData(EVariation::Default), &MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true);
-}
+void AWeapon::PostProprietorSetup() { SetupHandsAnimInstance(); }
 
 void AWeapon::AI_Setup()
 {
@@ -242,10 +238,10 @@ void AWeapon::HitScanLogic()
 	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
 	const FNiagaraVariationData NiagaraVariationData(bIsPossessed ? P_Data->GetNiagaraVariationData(Proprietor->GetVariation()) : AI_Data->GetNiagaraVariationData(EVariation::Default));
-	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"), NiagaraVariationData, {{TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color)}});
+	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), nullptr, GetSocketLocation("ProjectileSocket"), GetSocketRotation("ProjectileSocket"), NiagaraVariationData, {{TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color)}});
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
-		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), HitResult.Location, HitResult.ImpactNormal.Rotation(),
+		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), nullptr, HitResult.Location, HitResult.ImpactNormal.Rotation(),
 		NiagaraVariationData, {{TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color)}});
 		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
 	}
@@ -276,9 +272,15 @@ void AWeapon::DetachWeapon()
 
 void AWeapon::PlaySound(const ESound InSoundName) { Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName); }
 
-void AWeapon::MuzzleFlashLogic() const
+void AWeapon::MuzzleFlashLogic()
 {
-	if (MuzzleFlashComponent)
+	if (!MuzzleFlashComponent)
+	{
+		const FNiagaraVariationData NiagaraVariationData = bIsPossessed ? P_Data->GetNiagaraVariationData(Proprietor->GetVariation()) : AI_Data->GetNiagaraVariationData(EVariation::Default);
+		AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), [this]() -> bool { return Proprietor->GetIsAlive(); },
+		NiagaraVariationData, &MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true);
+	}
+	else
 	{
 		if (MuzzleFlashComponent->IsActive()) MuzzleFlashComponent->Deactivate();
 		MuzzleFlashComponent->Activate();

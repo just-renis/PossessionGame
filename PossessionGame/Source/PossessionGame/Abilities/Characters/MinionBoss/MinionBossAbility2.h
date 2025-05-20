@@ -11,6 +11,7 @@ class POSSESSIONGAME_API UMinionBossAbility2 : public UAbility
 {
 	GENERATED_BODY()
 
+	bool bIsLaserDisabled = false;
 	bool bLaserUpdateFirstFrame = true;
 	float LaserTime = 0.f;
 	FVector PlayerLocationAtInitiation;
@@ -24,6 +25,7 @@ class POSSESSIONGAME_API UMinionBossAbility2 : public UAbility
 	virtual void SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) override;
 	virtual void CooldownLogic(const float InDeltaTime) override;
 	void StopLaser();
+	void DisableLaser();
 	UFUNCTION()
 	void ShootLaser();
 	UFUNCTION()

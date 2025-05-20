@@ -79,10 +79,15 @@ void AEnemy::AI_InitiateShooting() { if (CurrentMoveMode != EMoveMode::Run && !A
 
 void AEnemy::AI_ShootLogic()
 {
-	if (!bIsActionInMotion && bCanShoot && !AnimInstance->IsPlaying(EEnemyAnimState::Reload) && CurrentMoveMode != EMoveMode::Run) AI_Shoot();
+	if (bIsInputLocked || bIsActionInMotion || !bCanShoot || AnimInstance->IsPlaying(EEnemyAnimState::Reload) || CurrentMoveMode == EMoveMode::Run) return;
+	AI_Shoot();
 }
 
-void AEnemy::AI_ReloadLogic() { if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload) AI_Reload(); }
+void AEnemy::AI_ReloadLogic()
+{
+	if (bIsInputLocked || bIsActionInMotion || !Weapon->GetIsReloadEnabled() || !bCanReload) return;
+	AI_Reload();
+}
 
 void AEnemy::AI_UseAbility(const int32 AbilityIndex) { if (AbilityIndex < Abilities.Num()) Abilities[AbilityIndex]->AI_Execute(); }
 
@@ -100,6 +105,7 @@ void AEnemy::AI_SetShootPause()
 
 void AEnemy::P_UseAbility(const int32 AbilityIndex)
 {
+	if (bIsInputLocked) return;
 	if (!bIsActionInMotion && AbilityIndex < Abilities.Num() && Abilities[AbilityIndex]->CanExecute())
 	{
 		Abilities[AbilityIndex]->P_Execute();
@@ -195,12 +201,14 @@ void AEnemy::PossessedBy(AController* NewController)
 			UKismetSystemLibrary::K2_SetTimer(this, "AI_TriggerDeathVoiceLine", 1.f, false);
 			P_Setup();
 			if (P_HUD) P_HUD->AnnouncePossession();
+			bIsInputLocked = false;
 		}
 	}
 }
 
 void AEnemy::ToggleCrouch()
 {
+	if (bIsInputLocked) return;
 	if (GetCharacterMovement()->CanEverCrouch())
 	{
 		AnimInstance->SetIsCrouching(!AnimInstance->GetIsCrouching());
@@ -378,11 +386,9 @@ void AEnemy::P_Setup()
 
 void AEnemy::P_Shoot(const bool bFirstWeapon)
 {
-	if (!bIsActionInMotion && bCanShoot)
-	{
-		if (Weapon->P_CanShoot(bFirstWeapon)) Weapon->P_Shoot(bFirstWeapon);
-		else if (Weapon->P_CanReload() && Weapon->GetCurrentAmmoAmount() <= 0) Weapon->P_Reload();
-	}
+	if (bIsInputLocked || bIsActionInMotion || !bCanShoot) return;
+	if (Weapon->P_CanShoot(bFirstWeapon)) Weapon->P_Shoot(bFirstWeapon);
+	else if (Weapon->P_CanReload() && Weapon->GetCurrentAmmoAmount() <= 0) Weapon->P_Reload();
 }
 
 void AEnemy::P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
@@ -436,6 +442,7 @@ void AEnemy::P_SetupCharacterMovement()
 
 void AEnemy::P_Move(const FInputActionValue& Value)
 {
+	if (bIsInputLocked) return;
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 	if (Controller)
 	{
@@ -498,6 +505,7 @@ void AEnemy::BeginPlay()
 	DelegateManager->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
 	AI_Setup();
 	if (GetIsPossessable()) SetupUserSettings();
+	bIsInputLocked = false;
 }
 
 void AEnemy::SetAnimInstance() { AnimInstance = Cast<UEnemyAnimationInstance>(GetMesh()->GetAnimInstance()); }
@@ -561,8 +569,8 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName)
 {
 	GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get());
-	if (bIsElite) AssetsManager->AttachVfx(EVfx::EliteAura, FNiagaraVariationData(), &Aura, GetMesh(), FName("SpawnSocket"));
-	else if (bIsMutant) AssetsManager->AttachVfx(EVfx::MutantAura, FNiagaraVariationData(), &Aura, GetMesh(), FName("MutantAuraSocket"));
+	if (bIsElite) AssetsManager->AttachVfx(EVfx::EliteAura, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("SpawnSocket"));
+	else if (bIsMutant) AssetsManager->AttachVfx(EVfx::MutantAura, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("MutantAuraSocket"));
 }
 
 void AEnemy::DestroyAI()
@@ -643,7 +651,7 @@ void AEnemy::AI_SpawnUsbOnDeath() const
 
 void AEnemy::AI_TriggerMutantExplosion()
 {
-	AssetsManager->SpawnVfx(EVfx::MutantExplosion, GetActorLocation());
+	AssetsManager->SpawnVfx(EVfx::MutantExplosion, nullptr, GetActorLocation());
 	TArray<FOverlapResult> Overlaps;
 	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(200.f));
 	TSet<TObjectPtr<AActor>> UniqueActors;
@@ -695,7 +703,8 @@ void AEnemy::P_SetupUI()
 }
 
 void AEnemy::P_PossessEnemy()
-{
+	{
+		if (bIsInputLocked) return;
 	if (bCanPossessOtherEnemy)
 	{
 		FHitResult HitResult;
@@ -748,10 +757,15 @@ void AEnemy::P_Rotate(const FInputActionValue& Value)
 
 void AEnemy::P_Reload() 
 {
+	if (bIsInputLocked) return;
 	if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload && !P_InputManager->IsPressed(FKey("LeftMouseButton")) && Weapon->P_CanReload()) Weapon->P_Reload();
 }
 
-void AEnemy::P_Dash() { if (CurrentDashCooldown >= P_Data->GetDashCooldown()) P_InitiateDash(); }
+void AEnemy::P_Dash()
+{
+	if (bIsInputLocked) return;
+	if (CurrentDashCooldown >= P_Data->GetDashCooldown()) P_InitiateDash();
+}
 
 void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InPossessionTimeValue)
 {
@@ -782,6 +796,7 @@ void AEnemy::P_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) 
 
 void AEnemy::P_HandleEscapeClick()
 {
+	if (bIsInputLocked) return;
 	switch (GetWorld()->GetSubsystem<UWidgetManager>()->GetCurrentStateOfUI())
 	{
 		case EWidget::PauseMenuUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->CloseUI(); break;
@@ -865,6 +880,7 @@ void AEnemy::P_InUpgradeSelection()
 
 void AEnemy::P_TryInteracting()
 {
+	if (bIsInputLocked) return;
 	if (bPressKeyEnabled)
 	{
 		P_TutorialPressKeyToContinueLogic();
@@ -890,7 +906,7 @@ void AEnemy::P_TutorialPressKeyToContinueLogic()
 
 void AEnemy::P_QuickMeleeAttack()
 {
-	if (bIsActionInMotion) return;
+	if (bIsActionInMotion || bIsInputLocked) return;
 	AssetsManager->PlaySound2D(ESound::QuickMelee);
 	P_MakeCameraShake(QuickMeleeCameraShake);
 	bIsActionInMotion = true;
@@ -940,11 +956,15 @@ void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 
 void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName); }
 
-void AEnemy::P_Jump() { if (CanJump()) P_InitiateJump(); }
+void AEnemy::P_Jump()
+{
+	if (bIsInputLocked) return;
+	if (CanJump()) P_InitiateJump();
+}
 
 void AEnemy::P_Stomp()
 {
-	if (bIsStomping || !bCanStomp || !GetCharacterMovement()->IsFalling()) return;
+	if (bIsInputLocked || bIsStomping || !bCanStomp || !GetCharacterMovement()->IsFalling()) return;
 	P_InitiateStomp();
 }
 
@@ -1081,7 +1101,7 @@ void AEnemy::ClearTimers()
 void AEnemy::ProcessSpawnEffects()
 {
 //	if (CharacterName != ECharacterType::Guardian && CharacterName != ECharacterType::Minion) return;
-	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), GetMesh()->GetSocketLocation("SpawnSocket"));
+	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), [this]() -> bool { return GetIsAlive(); }, GetMesh()->GetSocketLocation("SpawnSocket"));
 	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
 	{
 		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
@@ -1130,7 +1150,7 @@ void AEnemy::Landed(const FHitResult& Hit)
 	{
 		bIsStomping = false;
 		AssetsManager->PlaySound2D(ESound::PlayerStompLand);
-		AssetsManager->SpawnVfx(EVfx::PlayerStomp, GetSocketLocation("StompSocket"));
+		AssetsManager->SpawnVfx(EVfx::PlayerStomp, [this]() -> bool { return GetIsAlive(); }, GetSocketLocation("StompSocket"));
 		GetCharacterMovement()->AirControl = 1.f;
 		P_StompImpact(GetSocketLocation("StompSocket"));
 		P_MakeCameraShake(StompCameraShake);

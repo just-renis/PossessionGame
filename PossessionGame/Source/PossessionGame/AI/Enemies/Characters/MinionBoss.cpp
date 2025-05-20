@@ -29,13 +29,13 @@ void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->OnMin
 void AMinionBoss::EnableLaserEyeBall()
 {
 	if (bStompIsReady) ToggleStompTrigger(false);
-	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, FNiagaraVariationData(), &LaserEyeBallVfx, GetMesh(), "LaserSocket");
+	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &LaserEyeBallVfx, GetMesh(), "LaserSocket");
 	else LaserEyeBallVfx->Activate();
 }
 
 void AMinionBoss::EnableLaser()
 {
-	if (!LaserVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaser, FNiagaraVariationData(), &LaserVfx, GetMesh(), "LaserSocket");
+	if (!LaserVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaser, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &LaserVfx, GetMesh(), "LaserSocket");
 	else LaserVfx->Activate();
 }
 
@@ -111,12 +111,12 @@ void AMinionBoss::AI_PlayDeathExplosion()
 {
 	PlaySound(ESound::MinionBossDeathExplosion);
 	PlaySound(ESound::MinionBossElectrificationDeathPassive);
-	AssetsManager->AttachVfx(EVfx::MinionBossDeathExplosion, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+	AssetsManager->AttachVfx(EVfx::MinionBossDeathExplosion, nullptr, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
 }
 
 void AMinionBoss::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::MinionBossDeathElectrification, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+	AssetsManager->AttachVfx(EVfx::MinionBossDeathElectrification, nullptr, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
 }
 
 TObjectPtr<AWeapon>& AMinionBoss::GetWeapon() { return Weapons[0]; }
@@ -125,7 +125,6 @@ void AMinionBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::MinionBoss;
 	Super::BeginPlay();
-	if (MI_Defeated) MI_MeshBaseMaterial = UMaterialInstanceDynamic::Create(MI_Defeated, this);
 	LaserCollision->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionBeginOverlap);
 	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
 	SetupStompTrigger();
@@ -165,6 +164,8 @@ void AMinionBoss::DestroyStompTriggerSphere() const
 
 void AMinionBoss::InitiateDeath()
 {
+	if (MI_Defeated) MI_MeshBaseMaterial = UMaterialInstanceDynamic::Create(MI_Defeated, this);
+	(void)StopLaser.ExecuteIfBound();
 	DestroyStompTriggerSphere();
 	GetMesh()->SetMaterial(0, MI_MeshBaseMaterial);
 	Super::InitiateDeath();

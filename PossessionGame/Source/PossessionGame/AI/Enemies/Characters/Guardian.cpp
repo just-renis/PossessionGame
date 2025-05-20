@@ -44,7 +44,7 @@ void AGuardian::AI_PlaySpawnSound() { PlaySound(ESound::GuardianSpawn); }
 
 void AGuardian::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::GuardianDeathElectrification, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+	AssetsManager->AttachVfx(EVfx::GuardianDeathElectrification, nullptr, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
 }
 
 void AGuardian::P_Setup()

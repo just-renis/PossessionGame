@@ -11,9 +11,9 @@
 void AGuardianWeapon::PlayOverChargeVfx()
 {
 	if (FirstWeaponOverChargeComponent) FirstWeaponOverChargeComponent->Activate();
-	else AssetsManager->AttachVfx(EVfx::GuardianOverCharge, FNiagaraVariationData(), &FirstWeaponOverChargeComponent, FirstWeapon->GetMesh(), "OverChargeSocket");
+	else AssetsManager->AttachVfx(EVfx::GuardianOverCharge, [this]() -> bool { return Proprietor->GetIsAlive(); }, FNiagaraVariationData(), &FirstWeaponOverChargeComponent, FirstWeapon->GetMesh(), "OverChargeSocket");
 	if (SecondWeaponOverChargeComponent) SecondWeaponOverChargeComponent->Activate();
-	else AssetsManager->AttachVfx(EVfx::GuardianOverCharge, FNiagaraVariationData(), &SecondWeaponOverChargeComponent, SecondWeapon->GetMesh(), "OverChargeSocket");
+	else AssetsManager->AttachVfx(EVfx::GuardianOverCharge, [this]() -> bool { return Proprietor->GetIsAlive(); }, FNiagaraVariationData(), &SecondWeaponOverChargeComponent, SecondWeapon->GetMesh(), "OverChargeSocket");
 }
 
 void AGuardianWeapon::StopOverChargeVfx() const

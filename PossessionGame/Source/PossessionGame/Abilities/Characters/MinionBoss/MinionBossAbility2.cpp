@@ -23,7 +23,11 @@ void UMinionBossAbility2::AI_Execute()
 
 bool UMinionBossAbility2::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
 
-void UMinionBossAbility2::SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<AMinionBoss>(AbilityProprietor); }
+void UMinionBossAbility2::SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor)
+{
+	Proprietor = Cast<AMinionBoss>(AbilityProprietor);
+	Proprietor->GetStopLaserDelegate().BindUObject(this, &UMinionBossAbility2::DisableLaser);
+}
 
 void UMinionBossAbility2::CooldownLogic(const float InDeltaTime)
 {
@@ -33,18 +37,26 @@ void UMinionBossAbility2::CooldownLogic(const float InDeltaTime)
 
 void UMinionBossAbility2::StopLaser()
 {
+	DisableLaser();
 	UKismetSystemLibrary::K2_ClearTimer(this, "UpdateLaserEndLocation");
 	bLaserUpdateFirstFrame = true;
 	LaserTime = 0.f;
-	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	Proprietor->GetLaser()->Deactivate();
-	Proprietor->GetLaserEyeBall()->Deactivate();
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::StopLaser);
 	UseCharge();
 }
 
+void UMinionBossAbility2::DisableLaser()
+{
+	bIsLaserDisabled = true;
+	Proprietor->StopSound(ESound::MinionBossLaserEyeHold);
+	if (Proprietor->GetLaser()) Proprietor->GetLaser()->Deactivate();
+	if (Proprietor->GetLaserEyeBall()) Proprietor->GetLaserEyeBall()->Deactivate();
+	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 void UMinionBossAbility2::ShootLaser()
 {
+	if (bIsLaserDisabled) return;
 	Proprietor->EnableLaser();
 	Proprietor->PlaySound(ESound::MinionBossLaserEyeHold);
 	Proprietor->GetLaserCollision()->SetCapsuleSize(0.f, 0.f);

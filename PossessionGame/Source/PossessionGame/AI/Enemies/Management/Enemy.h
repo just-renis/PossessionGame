@@ -102,6 +102,7 @@ public:
 	void SetPossessionOutlineTimer();
 	void SetUnPossessionOutlineTimer();
 protected:
+	bool bIsInputLocked = true;
 	bool bCanReload = true;
 	bool bIsPossessed = false;
 	bool bCanShoot = false;
