@@ -65,6 +65,9 @@ AMinionBoss::AMinionBoss()
 	Sounds.Add(ESound::MinionBossDeathExplosion, CreateDefaultSubobject<UAudioComponent>(TEXT("deathExplosionSfx")));
 	Sounds[ESound::MinionBossDeathExplosion]->SetAutoActivate(false);
 	Sounds[ESound::MinionBossDeathExplosion]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::MinionBossElectrificationDeathPassive, CreateDefaultSubobject<UAudioComponent>(TEXT("electrificationDeathPassiveSfx")));
+	Sounds[ESound::MinionBossElectrificationDeathPassive]->SetAutoActivate(false);
+	Sounds[ESound::MinionBossElectrificationDeathPassive]->SetupAttachment(GetMesh());
 }
 
 void AMinionBoss::AI_SetupWeapon()
@@ -107,6 +110,7 @@ void AMinionBoss::AI_InitiateShooting() { AI_PlayShootMontage(); }
 void AMinionBoss::AI_PlayDeathExplosion()
 {
 	PlaySound(ESound::MinionBossDeathExplosion);
+	PlaySound(ESound::MinionBossElectrificationDeathPassive);
 	AssetsManager->AttachVfx(EVfx::MinionBossDeathExplosion, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
 }
 
@@ -121,6 +125,7 @@ void AMinionBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::MinionBoss;
 	Super::BeginPlay();
+	if (MI_Defeated) MI_MeshBaseMaterial = UMaterialInstanceDynamic::Create(MI_Defeated, this);
 	LaserCollision->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionBeginOverlap);
 	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
 	SetupStompTrigger();
@@ -161,6 +166,7 @@ void AMinionBoss::DestroyStompTriggerSphere() const
 void AMinionBoss::InitiateDeath()
 {
 	DestroyStompTriggerSphere();
+	GetMesh()->SetMaterial(0, MI_MeshBaseMaterial);
 	Super::InitiateDeath();
 	(void)DelegateManager->OnBossDeath.ExecuteIfBound();
 }

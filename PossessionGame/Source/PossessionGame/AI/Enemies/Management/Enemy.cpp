@@ -585,7 +585,7 @@ void AEnemy::DestroyThis()
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	if (Weapon) Weapon->DestroyThis();
-	Destroy();
+	UKismetSystemLibrary::K2_SetTimer(this, "DestroyCondenseMaterialsProcess", 0.05f, true);
 }
 
 void AEnemy::AI_SetupData()
@@ -1080,7 +1080,7 @@ void AEnemy::ClearTimers()
 
 void AEnemy::ProcessSpawnEffects()
 {
-	if (CharacterName != ECharacterType::Guardian && CharacterName != ECharacterType::Minion) return;
+//	if (CharacterName != ECharacterType::Guardian && CharacterName != ECharacterType::Minion) return;
 	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), GetMesh()->GetSocketLocation("SpawnSocket"));
 	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
 	{
@@ -1141,11 +1141,24 @@ void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsP
 
 void AEnemy::SpawnCondenseMaterialsProcess()
 {
-	MeshBaseMaterialCondenseValue -= 0.0075f;
+	MeshBaseMaterialCondenseValue -= 0.015f;
 	MeshEmissiveMaterialOpacityValue += 0.025f;
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
 	MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
-	if (MeshEmissiveMaterialOpacityValue >= 1.f) UKismetSystemLibrary::K2_ClearTimer(this, "SpawnCondenseMaterialsProcess");
+	if (MeshEmissiveMaterialOpacityValue >= 0.5f) UKismetSystemLibrary::K2_ClearTimer(this, "SpawnCondenseMaterialsProcess");
+}
+
+void AEnemy::DestroyCondenseMaterialsProcess()
+{
+	MeshBaseMaterialCondenseValue += 0.015f;
+	MeshEmissiveMaterialOpacityValue -= 0.025f;
+	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
+	MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
+	if (MeshEmissiveMaterialOpacityValue <= 0.f)
+	{
+		UKismetSystemLibrary::K2_ClearTimer(this, "DestroyCondenseMaterialsProcess");
+		Destroy();
+	}
 }
 
 void AEnemy::DisablePossessionOutline() const { SetPossessionOutline(false); }

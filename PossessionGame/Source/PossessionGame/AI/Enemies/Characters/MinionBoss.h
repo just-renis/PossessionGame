@@ -34,7 +34,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Laser Collision", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCapsuleComponent> LaserCollision;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UMaterialInterface> MI_Damaged;
+	TObjectPtr<UMaterialInterface> MI_Defeated;
 	UPROPERTY()
 	TArray<TObjectPtr<AWeapon>> Weapons;
 	UPROPERTY()

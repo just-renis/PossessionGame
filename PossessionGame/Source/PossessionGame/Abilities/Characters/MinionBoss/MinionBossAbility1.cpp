@@ -32,7 +32,7 @@ void UMinionBossAbility1::SetProprietor(const TObjectPtr<AEnemy> AbilityPropriet
 void UMinionBossAbility1::CooldownLogic(const float InDeltaTime)
 {
 	Super::CooldownLogic(InDeltaTime);
-	if (CurrentCooldownSecs >= GetReqCooldownSecs()) Proprietor->ActivateStompTrigger();
+	if (CurrentChargesAmount > 0) Proprietor->ActivateStompTrigger();
 }
 
 void UMinionBossAbility1::StompHitTheGround() const

@@ -125,6 +125,8 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MI_MeshBaseMaterial;
+	UPROPERTY()
 	TObjectPtr<UEnemyAnimationInstance> AnimInstance;
 	UPROPERTY()
 	TObjectPtr<AEnemyAIController> AI;
@@ -257,8 +259,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<APossessionGameGameModeBase> GameModeBase;
 	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> MI_MeshBaseMaterial;
-	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MI_MeshEmissiveMaterial;
 	UPROPERTY()
 	TObjectPtr<UPossessionGameInstance> GameInstance;
@@ -349,6 +349,8 @@ private:
 	void CheckIfFallOutOfWorld();
 	UFUNCTION()
 	void SpawnCondenseMaterialsProcess();
+	UFUNCTION()
+	void DestroyCondenseMaterialsProcess();
 	UFUNCTION()
 	void DisablePossessionOutline() const;
 	UFUNCTION()

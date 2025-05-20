@@ -8,7 +8,7 @@
 void UBossModeLogic::Init(const TObjectPtr<UWaveManager> InWaveManager)
 {
 	Super::Init(InWaveManager);
-	EnemiesOnSceneLimit = 4;
+	EnemiesOnSceneLimit = 1;
 	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UBossModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->OnBossDeath.BindUObject(this, &UBossModeLogic::BossDeath);
