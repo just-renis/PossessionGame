@@ -11,7 +11,7 @@ AMinionBossHandWeapon::AMinionBossHandWeapon()
 
 void AMinionBossHandWeapon::AI_Shoot()
 {
-	PlaySound(ESound::MinionBossShoot);
+	PlaySound(ESound::MinionBossShoot, true);
 	Super::AI_Shoot();
 	ShootProjectile(EPoolObject::MinionBossProjectile);
 }

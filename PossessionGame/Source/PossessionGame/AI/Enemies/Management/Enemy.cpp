@@ -195,7 +195,6 @@ void AEnemy::PossessedBy(AController* NewController)
 		{
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			bIsActionInMotion = false;
-			AnimInstance->ClearTimers();
 			P_TriggerGlitchingEffect();
 			P_ToggleCriticallyDamagedEffects(0.f);
 			AssetsManager->PlaySound2D(ESound::OnPossession);
@@ -232,9 +231,10 @@ void AEnemy::AI_SetCanShoot(const bool bState)
 
 void AEnemy::AI_Disable() { if (AI) AI->StopLogic(true); }
 
+void AEnemy::AI_StopAbility(const int32 InIndex) { if (Abilities.IsValidIndex(InIndex)) Abilities[InIndex]->AI_StopAbility(); }
+
 void AEnemy::InitiateDeath()
 {
-	AnimInstance->ClearTimers();
 	ClearTimers();
 	AI_DestroyHpBar();
 	bIsAlive = false;
@@ -272,9 +272,10 @@ void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageRea
 	}
 }
 
-void AEnemy::PlaySound(const ESound InSoundName)
+void AEnemy::PlaySound(const ESound InSoundName, const bool bIsCallbackRequired)
 {
-	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName);
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() :
+	AssetsManager->ConfigureSound(Sounds[InSoundName], bIsCallbackRequired ? [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); } : TFunction<bool()>(), InSoundName);
 }
 
 void AEnemy::StopSound(const ESound InSoundName)
@@ -285,10 +286,9 @@ void AEnemy::StopSound(const ESound InSoundName)
 
 void AEnemy::SetEmpEffect(const float InEffectDuration)
 {
-	SetActionInMotion(true);
-	if (AI) AI->StopLogic(false);
-	PlaySound(ESound::EmpEffectApplied);
-	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, false, InEffectDuration, true);
+	bAffectedByEmp = true;
+	PlaySound(ESound::EmpEffectApplied, true);
+	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
 }
 
 void AEnemy::SetPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr); }
@@ -298,6 +298,13 @@ void AEnemy::SetUnPossessionOutline(const bool bState) const { GetMesh()->SetOve
 void AEnemy::SetPossessionOutlineTimer() { UKismetSystemLibrary::K2_SetTimer(this, "DisablePossessionOutline", 0.245f, false); }
 
 void AEnemy::SetUnPossessionOutlineTimer() { UKismetSystemLibrary::K2_SetTimer(this, "DisableUnPossessionOutline", 0.245f, false); }
+
+void AEnemy::EmpEffectEnded()
+{
+	bAffectedByEmp = false;
+	SetActionInMotion(false);
+	if (AI) AI->ResumeLogic();
+}
 
 void AEnemy::AI_SetupAbilities() { SetupAbilities(AssetsManager->GetCharacterData(CharacterName)->AI_Abilities_Data); }
 
@@ -573,8 +580,8 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName)
 {
 	GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get());
-	if (bIsElite) AssetsManager->AttachVfx(EVfx::EliteAura, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("SpawnSocket"));
-	else if (bIsMutant) AssetsManager->AttachVfx(EVfx::MutantAura, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("MutantAuraSocket"));
+	if (bIsElite) AssetsManager->AttachVfx(EVfx::EliteAura, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("SpawnSocket"));
+	else if (bIsMutant) AssetsManager->AttachVfx(EVfx::MutantAura, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("MutantAuraSocket"));
 }
 
 void AEnemy::DestroyAI()
@@ -923,7 +930,6 @@ void AEnemy::P_ProcessMeleeAttack()
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	TArray<FOverlapResult> Overlaps;
-	DrawDebugSphere(GetWorld(), GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), QuickMeleeAttackRadiusInMeters * 100.f, 16, FColor::Green, false, 1.f);
 	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(QuickMeleeAttackRadiusInMeters * 100.f), Params);
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
@@ -1106,12 +1112,13 @@ void AEnemy::ClearTimers()
 void AEnemy::ProcessSpawnEffects()
 {
 //	if (CharacterName != ECharacterType::Guardian && CharacterName != ECharacterType::Minion) return;
-	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), [this]() -> bool { return GetIsAlive(); }, GetMesh()->GetSocketLocation("SpawnSocket"));
+	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetMesh()->GetSocketLocation("SpawnSocket"));
 	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
 	{
 		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
 		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
 	}
+	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", 0.7f);
 	UKismetSystemLibrary::K2_SetTimer(this, "SpawnCondenseMaterialsProcess", 0.05f, true);
 }
 
@@ -1155,7 +1162,7 @@ void AEnemy::Landed(const FHitResult& Hit)
 	{
 		bIsStomping = false;
 		AssetsManager->PlaySound2D(ESound::PlayerStompLand);
-		AssetsManager->SpawnVfx(EVfx::PlayerStomp, [this]() -> bool { return GetIsAlive(); }, GetSocketLocation("StompSocket"));
+		AssetsManager->SpawnVfx(EVfx::PlayerStomp, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetSocketLocation("StompSocket"));
 		GetCharacterMovement()->AirControl = 1.f;
 		P_StompImpact(GetSocketLocation("StompSocket"));
 		P_MakeCameraShake(StompCameraShake);

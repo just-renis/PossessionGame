@@ -52,7 +52,7 @@ void ASecretCrate::GiveReward()
 
 void ASecretCrate::PlaySound(const ESound InSoundName)
 {
-	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], InSoundName);
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], nullptr, InSoundName);
 }
 
 void ASecretCrate::StopSound(const ESound InSoundName)

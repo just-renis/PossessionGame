@@ -15,4 +15,5 @@ private:
 	bool bIsActionMontagePlaying = false;
 	
 	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted) override;
+	virtual void MontageWithHoldEnd() override;
 };

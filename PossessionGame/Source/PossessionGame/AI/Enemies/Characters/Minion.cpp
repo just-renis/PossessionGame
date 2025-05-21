@@ -31,7 +31,7 @@ void AMinion::AI_PlayDeathSound()
 	PlaySound(ESound::MinionDeath);
 }
 
-void AMinion::AI_PlaySpawnSound() { PlaySound(ESound::MinionSpawn); }
+void AMinion::AI_PlaySpawnSound() { PlaySound(ESound::MinionSpawn, true); }
 
 void AMinion::AI_PlayDeathElectrification()
 {

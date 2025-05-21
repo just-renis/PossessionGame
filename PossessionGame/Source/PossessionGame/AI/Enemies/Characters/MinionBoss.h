@@ -69,6 +69,8 @@ private:
 	void DestroyStompTriggerSphere() const;
 	virtual void InitiateDeath() override;
 	void ToggleStompTrigger(const bool bState) const;
+	virtual void SetEmpEffect(const float InEffectDuration) override;
+	virtual void EmpEffectEnded() override;
 	UFUNCTION()
 	void OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor);
 	UFUNCTION()

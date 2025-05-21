@@ -4,10 +4,15 @@
 
 EStateTreeRunStatus USTTaskMinionBossLaserEye::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
 {
-	const TObjectPtr<AMinionBossAIController> CachedController = Cast<AMinionBossAIController>(Context.GetOwner());
+	CachedController = Cast<AMinionBossAIController>(Context.GetOwner());
+	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::MinionBossLaserEye);
 	CachedController->GetProprietor()->AI_UseAbility(1);
-	CachedController->OnLaserEyeFinished.BindUObject(this, &USTTaskMinionBossLaserEye::LaserEyeFinished);
+	CachedController->OnLaserEyeFinished.BindUObject(this, &USTTaskMinionBossLaserEye::LaserEyeFinished);;
 	return EStateTreeRunStatus::Running;
 }
 
-void USTTaskMinionBossLaserEye::LaserEyeFinished() { FinishTask(); }
+void USTTaskMinionBossLaserEye::LaserEyeFinished()
+{
+	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::None);
+	FinishTask();
+}

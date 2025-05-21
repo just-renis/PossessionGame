@@ -136,7 +136,7 @@ protected:
 	virtual void SetMeshes(const EWeapon InPrimaryDataAssetName);
 	void SetupHandsAnimInstance();
 	virtual void DetachWeapon();
-	void PlaySound(const ESound InSoundName);
+	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired);
 	void MuzzleFlashLogic();
 	void DisableHandsMesh() const;
 	void DealPointDamage(const FHitResult& InHitResult);

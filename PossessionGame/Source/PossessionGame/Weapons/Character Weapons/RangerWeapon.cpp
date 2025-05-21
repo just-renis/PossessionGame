@@ -17,25 +17,25 @@ ARangerWeapon::ARangerWeapon()
 	Sounds[ESound::RangerReload]->SetupAttachment(Mesh);
 }
 
-void ARangerWeapon::AI_Reload() { PlaySound(ESound::RangerReload); }
+void ARangerWeapon::AI_Reload() { PlaySound(ESound::RangerReload, true); }
 
 void ARangerWeapon::AI_Shoot()
 {
-	PlaySound(ESound::RangerShoot);
+	PlaySound(ESound::RangerShoot, true);
 	Super::AI_Shoot();
 	ShootProjectile(EPoolObject::RangerProjectile);
 }
 
 void ARangerWeapon::P_Shoot(bool bIsFirstWeapon)
 {
-	PlaySound(ESound::RangerShoot);
+	PlaySound(ESound::RangerShoot, true);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
 	Super::P_Shoot(bIsFirstWeapon);
 }
 
 void ARangerWeapon::P_Reload(int32 OtherAmmoSource)
 {
-	PlaySound(ESound::RangerReload);
+	PlaySound(ESound::RangerReload, true);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
 	if (AnimInstance) AnimInstance->PlayMontage(EWeaponAnimState::Reload);
 	Super::P_Reload(OtherAmmoSource);

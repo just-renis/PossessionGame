@@ -14,20 +14,20 @@ class POSSESSIONGAME_API UEnemyAnimationInstance : public UAnimInstance
 	GENERATED_BODY()
 public:
 	bool GetIsCrouching() const { return bIsCrouching; }
-	bool IsPlaying(EEnemyAnimState State);
-	bool IsMontageExisting(EEnemyAnimState State);
-	float GetMontageLength(EEnemyAnimState State);
+	bool IsPlaying(const EEnemyAnimState InState);
+	bool IsMontageExisting(const EEnemyAnimState InState) const;
+	float GetMontageLength(const EEnemyAnimState InState);
 
 	void SetIsCrouching(const bool bState) { bIsCrouching = bState; }
 	void SetIsTargetInSight(const bool bState) { bIsTargetInSight = bState; }
 	void SetSpeed(const float InValue) { Speed = InValue; }
 	void SetLookAtLocation(const FVector& InLookAtLocation) { LookAtLocation = InLookAtLocation; }
 	void SetDirectionalAngle();
-	void PlayMontage(const EEnemyAnimState InState, const bool bPlayInReverse = false);
-	void PlayMontageWithHold(const EEnemyAnimState InState, const bool bPlayInReverse, const float InHoldTime, const bool bDisableActionInMotion);
-	void StopMontage(EEnemyAnimState State, float BlendOut = 0.f);
-	void ClearTimers();
+	void PlayMontage(const EEnemyAnimState InState);
+	void PlayMontageWithHold(const EEnemyAnimState InState, const float InHoldTime, const bool bNeedsToStopAILogic);
+	void StopMontage(const EEnemyAnimState InState, const float InBlendOut = 0.f);
 protected:
+	EEnemyAnimState MontageStateInHold;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
@@ -39,9 +39,11 @@ protected:
 	virtual void BeginDestroy() override;
 	virtual void AssignOnMontageEnd();
 	void SetProprietor();
-	virtual void InnerPlayMontage(const EEnemyAnimState InState, const bool bPlayInReverse);
+	virtual void InnerPlayMontage(const EEnemyAnimState InState);
 	UFUNCTION()
-	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted);
+	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted);
+	UFUNCTION()
+	virtual void MontageWithHoldEnd();
 private:
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	bool bIsCrouching = false;
@@ -53,12 +55,7 @@ private:
 	float DirectionalAngle = 0.f;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	FVector LookAtLocation = FVector::ZeroVector;
-	UPROPERTY()
-	FTimerHandle MontageHoldEndHandle;
-	UPROPERTY()
-    FTimerHandle PauseHandle;
 	
-	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-	void LoadMontageIfNotLoaded(EEnemyAnimState State);
-	void MontageHoldEnd(const bool bDisableActionInMotion) const;
+	virtual void NativeUpdateAnimation(const float InDeltaSeconds) override;
+	void LoadMontageIfNotLoaded(const EEnemyAnimState InState);
 };

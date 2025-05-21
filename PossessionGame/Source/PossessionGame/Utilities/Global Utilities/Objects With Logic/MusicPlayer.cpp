@@ -21,6 +21,6 @@ void AMusicPlayer::ChangeSoundTrack(const EGameMode InGameMode)
 
 void AMusicPlayer::OnFadeOutFinished() const
 {
-	AssetsManager->ConfigureSound(GetAudioComponent(), CurrentSoundtrack);
+	AssetsManager->ConfigureSound(GetAudioComponent(), nullptr, CurrentSoundtrack);
 	GetAudioComponent()->FadeIn(0.5f, 1.f, 0.f);
 }

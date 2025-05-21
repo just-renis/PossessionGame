@@ -46,7 +46,7 @@ void AGate::OpenGate(const EGameMode InGameMode)
 {
 	if (GameModeToFinish == InGameMode)
 	{
-		OpenGatesSfx->Sound ? OpenGatesSfx->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(OpenGatesSfx, ESound::GatesOpen);
+		OpenGatesSfx->Sound ? OpenGatesSfx->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(OpenGatesSfx, nullptr, ESound::GatesOpen);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AGate::CloseGate);
 		UKismetSystemLibrary::K2_SetTimer(this, "OpenGateSides", 0.025f, true);
 	}

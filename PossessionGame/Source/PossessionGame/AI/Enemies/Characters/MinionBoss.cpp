@@ -29,13 +29,13 @@ void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->OnMin
 void AMinionBoss::EnableLaserEyeBall()
 {
 	if (bStompIsReady) ToggleStompTrigger(false);
-	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &LaserEyeBallVfx, GetMesh(), "LaserSocket");
+	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &LaserEyeBallVfx, GetMesh(), "LaserSocket");
 	else LaserEyeBallVfx->Activate();
 }
 
 void AMinionBoss::EnableLaser()
 {
-	if (!LaserVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaser, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &LaserVfx, GetMesh(), "LaserSocket");
+	if (!LaserVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaser, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &LaserVfx, GetMesh(), "LaserSocket");
 	else LaserVfx->Activate();
 }
 
@@ -181,9 +181,28 @@ void AMinionBoss::ToggleStompTrigger(const bool bState) const
 	}
 }
 
+void AMinionBoss::SetEmpEffect(const float InEffectDuration)
+{
+	switch (GetAI()->GetCurrentStateTreeEvent())
+	{
+		case EStateTreeEvent::MinionBossStomp: AI_StopAbility(0); break;
+		case EStateTreeEvent::MinionBossLaserEye: AI_StopAbility(1); break;
+		default: ;
+	}
+	Super::SetEmpEffect(InEffectDuration);
+}
+
+void AMinionBoss::EmpEffectEnded()
+{
+	Super::EmpEffectEnded();
+	if (!StompTriggerSphere) return;
+	StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
 void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {
-	if (!AI) return;
+	if (!AI || bAffectedByEmp) return;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
 	ToggleStompTrigger(false);
 	bStompIsReady = false;
@@ -191,7 +210,7 @@ void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* Oth
 
 void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 {
-	if (!AI || bAbilityInAction) return;
+	if (!AI || bAbilityInAction || bAffectedByEmp) return;
 	const TObjectPtr<AActor> Target = AI->GetStateTreeData().GetTarget();
 	if (!Target) return;
 	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) >= FMath::Square(1000.f))

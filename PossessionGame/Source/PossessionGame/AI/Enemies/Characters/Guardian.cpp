@@ -40,7 +40,7 @@ void AGuardian::AI_PlayDeathSound()
 	PlaySound(ESound::GuardianDeath);
 }
 
-void AGuardian::AI_PlaySpawnSound() { PlaySound(ESound::GuardianSpawn); }
+void AGuardian::AI_PlaySpawnSound() { PlaySound(ESound::GuardianSpawn, true); }
 
 void AGuardian::AI_PlayDeathElectrification()
 {

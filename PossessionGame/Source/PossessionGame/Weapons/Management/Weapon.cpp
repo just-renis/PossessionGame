@@ -270,14 +270,18 @@ void AWeapon::DetachWeapon()
 	Mesh->SetSimulatePhysics(true);
 }
 
-void AWeapon::PlaySound(const ESound InSoundName) { Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], InSoundName); }
+void AWeapon::PlaySound(const ESound InSoundName, const bool bIsCallbackRequired)
+{
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() :
+	AssetsManager->ConfigureSound(Sounds[InSoundName], bIsCallbackRequired ? [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); } : TFunction<bool()>(), InSoundName);
+}
 
 void AWeapon::MuzzleFlashLogic()
 {
 	if (!MuzzleFlashComponent)
 	{
 		const FNiagaraVariationData NiagaraVariationData = bIsPossessed ? P_Data->GetNiagaraVariationData(Proprietor->GetVariation()) : AI_Data->GetNiagaraVariationData(EVariation::Default);
-		AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), [this]() -> bool { return Proprietor->GetIsAlive(); },
+		AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); },
 		NiagaraVariationData, &MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true);
 	}
 	else

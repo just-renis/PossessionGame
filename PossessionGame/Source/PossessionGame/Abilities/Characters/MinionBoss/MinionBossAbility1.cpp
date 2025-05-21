@@ -12,7 +12,7 @@ void UMinionBossAbility1::AI_Execute()
 	Proprietor->SetActionInMotion(true);
 	Proprietor->SetAbilityInAction(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Stomp);
-	Proprietor->PlaySound(ESound::MinionBossStomp);
+	Proprietor->PlaySound(ESound::MinionBossStomp, true);
 	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetIsActionMontagePlaying(true);
 	UKismetSystemLibrary::K2_SetTimer(this, "StompHitTheGround", 1.22f, false);
 	Super::AI_Execute();
@@ -39,7 +39,7 @@ void UMinionBossAbility1::StompHitTheGround() const
 {
 	Proprietor->TriggerStompCameraShake();
 	const FVector StompLocation = Proprietor->GetSocketLocation("StompSocket");
-	Proprietor->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::MinionBossStompCrack, [this]() -> bool { return Proprietor->GetIsAlive(); }, StompLocation);
+	Proprietor->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::MinionBossStompCrack, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, StompLocation);
 	TArray<FOverlapResult> Overlaps;
 	Proprietor->GetWorld()->OverlapMultiByProfile(Overlaps, StompLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(Proprietor->GetStompRadius()));
 	TSet<TObjectPtr<AActor>> UniqueActors;

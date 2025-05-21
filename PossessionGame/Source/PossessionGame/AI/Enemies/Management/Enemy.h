@@ -47,6 +47,7 @@ public:
 	AEnemy();
 
 	bool GetIsAlive() const { return bIsAlive; }
+	bool IsAsyncAssetStillAllowedToBeUsed() const { return bIsAlive && !bAffectedByEmp; }
 	bool GetIsPossessed() const { return bIsPossessed; }
 	bool GetCanReload() const { return bCanReload; }
 	bool GetIsPossessable() const;
@@ -74,6 +75,7 @@ public:
 	void AI_SetShootPause();
 	virtual void AI_SetCanShoot(const bool bState);
 	virtual void AI_Disable();
+	void AI_StopAbility(const int32 InIndex);
 	virtual void AI_CancelShooting() {}
 
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) { bInUpgradeSelection = false; }
@@ -94,13 +96,14 @@ public:
 	void ToggleCrouch();
 	virtual void InitiateDeath();
 	void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason);
-	void PlaySound(const ESound InSoundName);
+	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired = false);
 	void StopSound(const ESound InSoundName);
-	void SetEmpEffect(const float InEffectDuration);
+	virtual void SetEmpEffect(const float InEffectDuration);
 	void SetPossessionOutline(const bool bState) const;
 	void SetUnPossessionOutline(const bool bState) const;
 	void SetPossessionOutlineTimer();
 	void SetUnPossessionOutlineTimer();
+	virtual void EmpEffectEnded();
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -109,6 +112,7 @@ protected:
 	bool bIsActionInMotion = false;
 	bool bShootPauseActive = false;
 	bool bAbilityInAction = false;
+	bool bAffectedByEmp = false;
 	float MaxHp;
 	float CurrentHp;
 	ECharacterType CharacterName;

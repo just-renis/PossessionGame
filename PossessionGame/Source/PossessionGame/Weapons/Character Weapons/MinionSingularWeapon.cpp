@@ -12,7 +12,7 @@ AMinionSingularWeapon::AMinionSingularWeapon()
 
 void AMinionSingularWeapon::AI_Shoot()
 {
-	PlaySound(ESound::MinionShoot);
+	PlaySound(ESound::MinionShoot, true);
 	Super::AI_Shoot();
 	ShootProjectile(EPoolObject::MinionProjectile);
 }

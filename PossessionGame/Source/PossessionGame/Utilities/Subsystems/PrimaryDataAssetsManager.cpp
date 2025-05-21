@@ -117,14 +117,14 @@ void UPrimaryDataAssetsManager::DeleteLoadedHandles()
 	if (AsyncHandles.IsEmpty()) bCanAsyncLoadHappen = false;
 }
 
-void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, ESound InSoundName)
+void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, ESound InSoundName)
 {
 	if (GetCanAsyncLoadHappen())
 	{
 		const FSoftObjectPath PathToLoad = GetSoundData(InSoundName)->Sound.ToSoftObjectPath();
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, InAudioComp, InSoundName]
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, InAudioComp, InCallback, InSoundName]
 		{
-			if (IsGameRunning()) SetAndPlaySoundCallback(InAudioComp, InSoundName);
+			if (IsGameRunning()) SetAndPlaySoundCallback(InAudioComp, InCallback, InSoundName);
 		});
 		AddAsyncHandle(Handle);
 	}
@@ -170,6 +170,7 @@ void UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, TFunction<bool()
 	}
 	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InCallback, InNiagaraVariationData, InVfxComponent, InVfxName, InAttachTo, InAttributes, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy]
 	{
+		if (!IsGameRunning()) return;
 		if (InVfxComponent)
 		{
 			*InVfxComponent = AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
@@ -188,6 +189,7 @@ void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, TFunction<bool()>
 	}
 	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InCallback, InNiagaraVariationData, InVfxName, InAttributes, InLocation, InRotation]
 	{
+		if (!IsGameRunning()) return;
 		SetupVfx(InCallback, InNiagaraVariationData, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation), InAttributes);
 	});
 }
@@ -491,9 +493,10 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Empty();
 }
 
-void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, const ESound InSoundName)
+void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName)
 {
 	InAudioComp->SetSound(GetSoundData(InSoundName)->Sound.Get());
+	if (InCallback && !InCallback()) return;
 	InAudioComp->Play();
 }
 

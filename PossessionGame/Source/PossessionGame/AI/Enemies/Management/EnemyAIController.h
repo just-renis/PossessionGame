@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Enemy.h"
+#include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Utilities/Data Utilities/FStateTreeData.h"
 #include "EnemyAIController.generated.h"
 
@@ -22,6 +23,7 @@ public:
 	AEnemyAIController();
 
 	bool CanExecuteAbility(const int32 InAbilityIndex) const { return Proprietor->CanAbilityBeExecuted(InAbilityIndex); }
+	EStateTreeEvent GetCurrentStateTreeEvent() const { return CurrentStateTreeEvent; }
 	TObjectPtr<AEnemy> GetProprietor() { return Proprietor; }
 	FStateTreeData& GetStateTreeData() { return StateTreeData; }
 
@@ -35,6 +37,7 @@ public:
 	void SetEQSTargetLocation(const FVector& InLocation) const { EQSTarget->SetActorLocation(InLocation); }
 	void ResumeLogic() const;
 	void StopLogic(const bool bNeedCleanup);
+	void SetStateTreeCurrentEvent(const EStateTreeEvent InCurrentStateTreeEvent) { CurrentStateTreeEvent = InCurrentStateTreeEvent; }
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStateTreeComponent> StateTree;
@@ -49,6 +52,7 @@ protected:
 	UFUNCTION()
 	virtual void AdjustCustomFocus() const;
 private:
+	EStateTreeEvent CurrentStateTreeEvent;
 	float SightOnTargetRepeat = 0.01f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	FStateTreeData StateTreeData;

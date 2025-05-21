@@ -7,9 +7,9 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
-void URangerAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState, const bool bPlayInReverse)
+void URangerAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState)
 {
-	Super::InnerPlayMontage(InState, bPlayInReverse);
+	Super::InnerPlayMontage(InState);
 	if (InState == EEnemyAnimState::GrenadeLaunch)
 	{
 		UKismetSystemLibrary::K2_SetTimer(this, "TriggerGrenadeProjection", 0.1f, false);
@@ -34,7 +34,7 @@ void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInter
 	}
 }
 
-void URangerAnimationInstance::LaunchGrenade() const { if (Proprietor->GetIsAlive()) Cast<ARanger>(Proprietor)->LaunchGrenade(); }
+void URangerAnimationInstance::LaunchGrenade() const { if (Proprietor->IsAsyncAssetStillAllowedToBeUsed()) Cast<ARanger>(Proprietor)->LaunchGrenade(); }
 
 void URangerAnimationInstance::TriggerGrenadeProjection() const
 {
@@ -53,6 +53,6 @@ void URangerAnimationInstance::TriggerGrenadeProjection() const
 	{
 		FRotator MarkerRotation = PathResult.HitResult.ImpactNormal.Rotation();
 		MarkerRotation.Pitch -= 90.f; 
-		AssetsManager->SpawnVfx(EVfx::RangerGrenadeLauncherMarker, [this]() -> bool { return Proprietor->GetIsAlive(); }, PathResult.HitResult.Location, MarkerRotation);
+		AssetsManager->SpawnVfx(EVfx::RangerGrenadeLauncherMarker, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, PathResult.HitResult.Location, MarkerRotation);
 	}
 }

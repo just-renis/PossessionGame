@@ -36,7 +36,7 @@ void AForceField::StartDissolveTutorialForceField(const int32 InIndex)
 
 void AForceField::StartDissolveForceField()
 {
-	DissolveSfx->Sound ? DissolveSfx->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(DissolveSfx, ESound::ForceFieldDissolve);
+	DissolveSfx->Sound ? DissolveSfx->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(DissolveSfx, nullptr, ESound::ForceFieldDissolve);
 	UKismetSystemLibrary::K2_SetTimer(this, "DissolveForceField", 0.025f, true);
 }
 

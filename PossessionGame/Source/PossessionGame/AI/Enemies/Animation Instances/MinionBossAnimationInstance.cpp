@@ -15,17 +15,20 @@ void UMinionBossAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsI
 		SetIsActionMontagePlaying(false);
 		return;
 	}
-	const TObjectPtr<UAnimMontage>* PrepareLaserMontage = Montages.Find(EEnemyAnimState::PrepareLaser);
-	if (PrepareLaserMontage && Montage == PrepareLaserMontage->Get())
-	{
-		Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::HoldLaser, false, 3.f, false);
-		return;
-	}
 	const TObjectPtr<UAnimMontage>* StopLaserMontage = Montages.Find(EEnemyAnimState::StopLaser);
 	if (StopLaserMontage && Montage == StopLaserMontage->Get())
 	{
 		(void)Cast<AMinionBossAIController>(Proprietor->GetAI())->OnLaserEyeFinished.ExecuteIfBound();
 		Cast<AMinionBoss>(Proprietor)->OnLaserFinish();
 		SetIsActionMontagePlaying(false);
+	}
+}
+
+void UMinionBossAnimationInstance::MontageWithHoldEnd()
+{
+	switch (MontageStateInHold)
+	{
+		case EEnemyAnimState::ShootLaser: Proprietor->AI_StopAbility(1); break;
+		default: Super::MontageWithHoldEnd();
 	}
 }

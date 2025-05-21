@@ -21,7 +21,7 @@ AGuardianSingularWeapon::AGuardianSingularWeapon()
 
 void AGuardianSingularWeapon::AI_Shoot()
 {
-	PlaySound(ESound::GuardianShoot);
+	PlaySound(ESound::GuardianShoot, true);
 	Super::AI_Shoot();
 	ShootProjectile(EPoolObject::GuardianProjectile);
 }
@@ -36,7 +36,7 @@ void AGuardianSingularWeapon::P_Shoot(const bool bIsFirstWeapon)
 {
 	if (ShootTimer >= ShootCooldown)
 	{
-		PlaySound(ESound::GuardianShoot);
+		PlaySound(ESound::GuardianShoot, true);
 		MuzzleFlashLogic();
 		MakeShootingCameraShake();
 		ShootTimer = 0.f;

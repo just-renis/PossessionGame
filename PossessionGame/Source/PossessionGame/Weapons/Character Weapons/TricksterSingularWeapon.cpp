@@ -12,7 +12,7 @@ ATricksterSingularWeapon::ATricksterSingularWeapon()
 
 void ATricksterSingularWeapon::AI_Shoot()
 {
-	PlaySound(ESound::TricksterShoot);
+	PlaySound(ESound::TricksterShoot, true);
 	Super::AI_Shoot();
 	ShootProjectile(EPoolObject::TricksterProjectile, false);
 }
@@ -26,7 +26,7 @@ void ATricksterSingularWeapon::P_Shoot(bool bIsFirstWeapon)
 {
 	if (ShootTimer >= ShootCooldown)
 	{
-		PlaySound(ESound::TricksterShoot);
+		PlaySound(ESound::TricksterShoot, true);
 		MuzzleFlashLogic();
 		MakeShootingCameraShake();
 		CurrentAmmo--;

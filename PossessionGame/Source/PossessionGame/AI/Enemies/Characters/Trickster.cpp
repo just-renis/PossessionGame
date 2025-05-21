@@ -24,13 +24,13 @@ ATrickster::ATrickster()
 
 void ATrickster::ThrowPoisonGrenade()
 {
-	PlaySound(ESound::TricksterGrenadeThrow);
+	PlaySound(ESound::TricksterGrenadeThrow, true);
 	Weapon->ShootProjectile(EPoolObject::TricksterPoisonProjectile);
 }
 
 void ATrickster::ThrowEmpGrenade()
 {
-	PlaySound(ESound::TricksterGrenadeThrow);
+	PlaySound(ESound::TricksterGrenadeThrow, true);
 	Weapon->ShootProjectile(EPoolObject::TricksterEmpProjectile, false);
 }
 
@@ -48,7 +48,7 @@ void ATrickster::AI_PlayDeathSound()
 
 void ATrickster::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::TricksterOnPossession); }
 
-void ATrickster::AI_PlaySpawnSound() { PlaySound(ESound::TricksterSpawn); }
+void ATrickster::AI_PlaySpawnSound() { PlaySound(ESound::TricksterSpawn, true); }
 
 void ATrickster::AI_PlayDeathElectrification()
 {

@@ -49,7 +49,7 @@ void ARanger::AI_ToggleGrenadeLaunchTrigger(const bool bState) const
 
 void ARanger::LaunchGrenade()
 {
-	PlaySound(ESound::RangerGrenadeLaunch);
+	PlaySound(ESound::RangerGrenadeLaunch, true);
 	Weapon->ShootProjectile(EPoolObject::RangerGrenadeLauncherProjectile, false);
 	GrenadeLauncherMuzzleFlashLogic();
 }
@@ -65,9 +65,9 @@ void ARanger::SetCustomTimeDilation(float Dilation)
 {
 	if (FMath::IsNearlyEqual(Dilation, 5.f, 0.1f))
 	{
-		AssetsManager->AttachVfx(EVfx::StopTimeAbility, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+		AssetsManager->AttachVfx(EVfx::StopTimeAbility, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	}
-	else AssetsManager->AttachVfx(EVfx::StopTimeAbilityReverse, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+	else AssetsManager->AttachVfx(EVfx::StopTimeAbilityReverse, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	CustomTimeDilation = Dilation;
 	GetWeapon()->CustomTimeDilation = Dilation;
 }
@@ -86,7 +86,7 @@ void ARanger::AI_PlayDeathSound()
 	PlaySound(ESound::RangerDeath);
 }
 
-void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn); }
+void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn, true); }
 
 void ARanger::AI_PlayDeathElectrification()
 {
@@ -130,7 +130,7 @@ void ARanger::BeginPlay()
 
 void ARanger::GrenadeLauncherMuzzleFlashLogic()
 {
-	if (!GrenadeLauncherMuzzleFlashComponent) AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
+	if (!GrenadeLauncherMuzzleFlashComponent) AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
 	else
 	{
 		if (GrenadeLauncherMuzzleFlashComponent->IsActive()) GrenadeLauncherMuzzleFlashComponent->Deactivate();

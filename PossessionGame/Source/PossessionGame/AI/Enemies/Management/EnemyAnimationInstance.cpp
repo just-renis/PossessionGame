@@ -2,28 +2,29 @@
 #include "Enemy.h"
 #include "EnemyAIController.h"
 #include "KismetAnimationLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
-bool UEnemyAnimationInstance::IsPlaying(EEnemyAnimState State)
+bool UEnemyAnimationInstance::IsPlaying(const EEnemyAnimState InState)
 {
-    if (IsMontageExisting(State))
+    if (IsMontageExisting(InState))
     {
-        LoadMontageIfNotLoaded(State);
-        return Montage_IsPlaying(Montages.Find(State)->Get());
+        LoadMontageIfNotLoaded(InState);
+        return Montage_IsPlaying(Montages.Find(InState)->Get());
     }
-    UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in IsPlaying"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(State));
+    UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in IsPlaying"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
     return false;
 }
 
-float UEnemyAnimationInstance::GetMontageLength(EEnemyAnimState State) 
+float UEnemyAnimationInstance::GetMontageLength(const EEnemyAnimState InState) 
 {
-    if (IsMontageExisting(State))
+    if (IsMontageExisting(InState))
     {
-        LoadMontageIfNotLoaded(State);
-        return Montages.Find(State)->Get()->GetPlayLength();
+        LoadMontageIfNotLoaded(InState);
+        return Montages.Find(InState)->Get()->GetPlayLength();
     }
-    UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in GetMontageLength"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(State));
+    UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in GetMontageLength"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
     return 0.f;
 }
 
@@ -32,50 +33,43 @@ void UEnemyAnimationInstance::SetDirectionalAngle()
     DirectionalAngle = UKismetAnimationLibrary::CalculateDirection(Proprietor->GetVelocity(), Proprietor->GetActorRotation());
 }
 
-void UEnemyAnimationInstance::PlayMontage(const EEnemyAnimState InState, const bool bPlayInReverse)
+void UEnemyAnimationInstance::PlayMontage(const EEnemyAnimState InState)
 {
     if (IsMontageExisting(InState))
     {
         LoadMontageIfNotLoaded(InState);
-        InnerPlayMontage(InState, bPlayInReverse);
+        InnerPlayMontage(InState);
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontage"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
 }
 
-void UEnemyAnimationInstance::PlayMontageWithHold(const EEnemyAnimState InState, const bool bPlayInReverse, const float InHoldTime, const bool bDisableActionInMotion)
+void UEnemyAnimationInstance::PlayMontageWithHold(const EEnemyAnimState InState, const float InHoldTime, const bool bNeedsToStopAILogic)
 {
     if (IsMontageExisting(InState))
     {
         LoadMontageIfNotLoaded(InState);
-        InnerPlayMontage(InState, bPlayInReverse);
-        GetWorld()->GetTimerManager().SetTimer(MontageHoldEndHandle, [this, bDisableActionInMotion]
-        { MontageHoldEnd(bDisableActionInMotion); }, GetMontageLength(InState) + InHoldTime, false);
-        TObjectPtr<UAnimMontage> Montage = Montages.Find(InState)->Get();
-        GetWorld()->GetTimerManager().SetTimer(PauseHandle, [this, Montage]
-        { Montage_Pause(Montage); }, GetMontageLength(InState) - Montages.Find(InState)->Get()->GetDefaultBlendOutTime() - 0.02f, false);
+        InnerPlayMontage(InState);
+        Proprietor->SetActionInMotion(true);
+        MontageStateInHold = InState;
+        if (bNeedsToStopAILogic) Proprietor->GetAI()->StopLogic(false);
+        UKismetSystemLibrary::K2_SetTimer(this, "MontageWithHoldEnd", InHoldTime, false);
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontageWithHold"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
 }
 
-void UEnemyAnimationInstance::StopMontage(EEnemyAnimState State, float BlendOut)
+void UEnemyAnimationInstance::StopMontage(const EEnemyAnimState InState, const float InBlendOut)
 {
-    if (IsMontageExisting(State))
+    if (IsMontageExisting(InState))
     {
-        LoadMontageIfNotLoaded(State);
-        Montage_Stop(BlendOut, Montages.Find(State)->Get());
+        LoadMontageIfNotLoaded(InState);
+        Montage_Stop(InBlendOut, Montages.Find(InState)->Get());
     }
-    else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in StopMontage"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(State));
+    else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in StopMontage"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
 }
 
-void UEnemyAnimationInstance::ClearTimers()
+bool UEnemyAnimationInstance::IsMontageExisting(const EEnemyAnimState InState) const
 {
-    GetWorld()->GetTimerManager().ClearTimer(MontageHoldEndHandle);
-    GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
-}
-
-bool UEnemyAnimationInstance::IsMontageExisting(EEnemyAnimState State)
-{
-    return AssetsManager->GetCharacterData(Proprietor->GetCharacterName())->Montages.Contains(State);
+    return AssetsManager->GetCharacterData(Proprietor->GetCharacterName())->Montages.Contains(InState);
 }
 
 void UEnemyAnimationInstance::NativeBeginPlay()
@@ -96,36 +90,26 @@ void UEnemyAnimationInstance::AssignOnMontageEnd() { OnMontageBlendingOut.AddDyn
 
 void UEnemyAnimationInstance::SetProprietor() { Proprietor = Cast<AEnemy>(GetOwningActor()); }
 
-void UEnemyAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState, const bool bPlayInReverse) // For now disabled reverse, refactor for later(state trees does same thing what pausewithhold method.
+void UEnemyAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState) { Montage_Play(Montages.Find(InState)->Get()); }
+
+void UEnemyAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted)
 {
-    const TObjectPtr<UAnimMontage> Montage = Montages.Find(InState)->Get();
-   // Montage_Play(Montage, bPlayInReverse ? -1.f : 1.f, EMontagePlayReturnType::MontageLength, bPlayInReverse ? Montage->GetPlayLength() : 0.f);
-    Montage_Play(Montage);
+    if (Montages.Contains(EEnemyAnimState::EmpRecover) && InMontage == Montages.Find(EEnemyAnimState::EmpRecover)->Get()) Proprietor->EmpEffectEnded();
+    if (Montages.Contains(EEnemyAnimState::Shoot) && InMontage == Montages.Find(EEnemyAnimState::Shoot)->Get()) Proprietor->AI_SetCanShoot(false);
 }
 
-void UEnemyAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
+void UEnemyAnimationInstance::MontageWithHoldEnd() // If more such montages will be added then use switch to filter their end.
 {
-    if (Montages.Contains(EEnemyAnimState::EmpEffect) && Montage == Montages.Find(EEnemyAnimState::EmpEffect)->Get())
-    {
-      //  PlayMontage(EEnemyAnimState::EmpEffect, true);
-    }
-    if (Montages.Contains(EEnemyAnimState::Shoot) && Montage == Montages.Find(EEnemyAnimState::Shoot)->Get()) Proprietor->AI_SetCanShoot(false);
+    PlayMontage(EEnemyAnimState::EmpRecover);
 }
 
-void UEnemyAnimationInstance::NativeUpdateAnimation(float DeltaSeconds)
+void UEnemyAnimationInstance::NativeUpdateAnimation(const float InDeltaSeconds)
 {
-    Super::NativeUpdateAnimation(DeltaSeconds);
+    Super::NativeUpdateAnimation(InDeltaSeconds);
     if (Proprietor) SetDirectionalAngle();
 }
 
-void UEnemyAnimationInstance::LoadMontageIfNotLoaded(EEnemyAnimState State)
+void UEnemyAnimationInstance::LoadMontageIfNotLoaded(const EEnemyAnimState InState)
 {
-    if (!Montages.Contains(State)) Montages.Add(State, AssetsManager->GetCharacterData(Proprietor->GetCharacterName())->Montages[State].LoadSynchronous());
-}
-
-void UEnemyAnimationInstance::MontageHoldEnd(const bool bDisableActionInMotion) const
-{
-    if (!bDisableActionInMotion) return;
-    Proprietor->SetActionInMotion(false);
-    if (Proprietor->GetAI()) Proprietor->GetAI()->ResumeLogic();
+    if (!Montages.Contains(InState)) Montages.Add(InState, AssetsManager->GetCharacterData(Proprietor->GetCharacterName())->Montages[InState].LoadSynchronous());
 }

@@ -12,13 +12,18 @@
 void UMinionBossAbility2::AI_Execute()
 {
 	Proprietor->SetActionInMotion(true);
-	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::PrepareLaser);
-	Proprietor->PlaySound(ESound::MinionBossLaserEyeCharge);
-	Proprietor->SetAbilityInAction(true);
+	Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::ShootLaser, 6.f, false);
+	Proprietor->PlaySound(ESound::MinionBossLaserEyeCharge, true);
 	Proprietor->EnableLaserEyeBall();
 	PlayerLocationAtInitiation = Proprietor->GetAI()->GetStateTreeData().GetTarget()->GetActorLocation();
 	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetIsActionMontagePlaying(true);
 	UKismetSystemLibrary::K2_SetTimer(this, "ShootLaser", 1.65f, false);
+}
+
+void UMinionBossAbility2::AI_StopAbility()
+{
+	Super::AI_StopAbility();
+	StopLaser();
 }
 
 bool UMinionBossAbility2::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
@@ -37,28 +42,33 @@ void UMinionBossAbility2::CooldownLogic(const float InDeltaTime)
 
 void UMinionBossAbility2::StopLaser()
 {
-	DisableLaser();
+	TurnOffLaser();
 	UKismetSystemLibrary::K2_ClearTimer(this, "UpdateLaserEndLocation");
 	bLaserUpdateFirstFrame = true;
-	LaserTime = 0.f;
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::StopLaser);
 	UseCharge();
 }
 
-void UMinionBossAbility2::DisableLaser()
+void UMinionBossAbility2::TurnOffLaser()
 {
-	bIsLaserDisabled = true;
+	UKismetSystemLibrary::K2_ClearTimer(this, "ShootLaser");
 	Proprietor->StopSound(ESound::MinionBossLaserEyeHold);
 	if (Proprietor->GetLaser()) Proprietor->GetLaser()->Deactivate();
 	if (Proprietor->GetLaserEyeBall()) Proprietor->GetLaserEyeBall()->Deactivate();
 	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void UMinionBossAbility2::DisableLaser()
+{
+	bIsLaserDisabled = true;
+	TurnOffLaser();
+}
+
 void UMinionBossAbility2::ShootLaser()
 {
 	if (bIsLaserDisabled) return;
 	Proprietor->EnableLaser();
-	Proprietor->PlaySound(ESound::MinionBossLaserEyeHold);
+	Proprietor->PlaySound(ESound::MinionBossLaserEyeHold, true);
 	Proprietor->GetLaserCollision()->SetCapsuleSize(0.f, 0.f);
 	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	UKismetSystemLibrary::K2_SetTimer(this, "UpdateLaserEndLocation", 0.025f, true);
@@ -103,7 +113,4 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	Proprietor->GetLaserCollision()->SetCapsuleSize(35.f, Distance * 0.5f);
 	// Laser length vfx change.
 	Proprietor->GetLaser()->SetFloatParameter(TEXT("_Length"), Distance * 0.0007f);
-	LaserTime += 0.025f;
-	if (LaserTime < 3.f) return;
-	StopLaser();
 }
