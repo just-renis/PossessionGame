@@ -12,9 +12,9 @@ class POSSESSIONGAME_API UHackTerminalModeLogic : public UGameModeBaseLogic
 	GENERATED_BODY()
 
 	bool bIsHackFinished = false;
-	int32 TerminalsLeftToHack;
+	int32 TerminalsHackedAmount = 0;
 	float TerminalHackProgress = 0.f;
-	float TerminalHackRequired ;
+	float TerminalHackRequired;
 	UPROPERTY()
 	TObjectPtr<UHackTerminalModeData> Data;
 
@@ -23,6 +23,8 @@ class POSSESSIONGAME_API UHackTerminalModeLogic : public UGameModeBaseLogic
 	virtual void HandleSpawning() override;
 	virtual void UpdateTaskProgress() override;
 	virtual void UpdateEnemiesAmount() override;
+	virtual void SetupWaveManagerUI() override;
+	virtual void FadeInObjectivePanel() const override;
 	void StartTerminalHack();
 	void FinishTerminalHack();
 	void SetData();

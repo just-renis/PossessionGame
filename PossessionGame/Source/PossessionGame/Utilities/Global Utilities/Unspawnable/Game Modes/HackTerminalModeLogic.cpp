@@ -1,6 +1,7 @@
 ﻿#include "HackTerminalModeLogic.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Game Modes/HackTerminalModeData.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -50,6 +51,23 @@ void UHackTerminalModeLogic::UpdateEnemiesAmount()
 	if (bIsHackFinished && AliveEnemiesAmount <= 0) FinishTerminalHack();
 }
 
+void UHackTerminalModeLogic::SetupWaveManagerUI()
+{
+	Super::SetupWaveManagerUI();
+	if (!WaveManagerHUD) return;
+	FadeOutObjectivePanel();
+	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeOutEndTime(), false);
+	else FadeInObjectivePanel();
+}
+
+void UHackTerminalModeLogic::FadeInObjectivePanel() const
+{
+	if (!WaveManagerHUD) return;
+	WaveManagerHUD->UpdateObjective(EGameMode::HackTerminalsMode, Data->GetTerminalHackRequired());
+	WaveManagerHUD->UpdateObjectiveProgress(0, Data->GetTerminalHackRequired());
+	Super::FadeInObjectivePanel();
+}
+
 void UHackTerminalModeLogic::StartTerminalHack()
 {
 	bIsHackFinished = false;
@@ -66,23 +84,18 @@ void UHackTerminalModeLogic::StartTerminalHack()
 
 void UHackTerminalModeLogic::FinishTerminalHack()
 {
-	if (WaveManagerHUD)
-	{
-		WaveManagerHUD->PlayAnnouncementAnim("Hack Completed");
-		UKismetSystemLibrary::K2_SetTimer(this, "ShowUpgradeSelection", WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
-	}
 	PlaySound(ESound::GeneratorCompleted);
 	TerminalHackProgress = 0.f;
-	if (--TerminalsLeftToHack <= 0) Finalize();
+	if (TerminalsHackedAmount++ >= Data->GetTerminalsAmountToHack()) Finalize();
 	else
 	{
 		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
 		WaveManager->GetDelegateManager()->OnTerminalHackFinish.Broadcast(WaveManager->GetCurrentGameMode());
 	}
+	if (!WaveManagerHUD) return;
+	WaveManagerHUD->PlayAnnouncementAnim("Hack Completed");
+	WaveManagerHUD->UpdateObjectiveProgress(TerminalsHackedAmount, Data->GetTerminalsAmountToHack());
+	UKismetSystemLibrary::K2_SetTimer(this, "ShowUpgradeSelection", WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 
-void UHackTerminalModeLogic::SetData()
-{
-	TerminalsLeftToHack = Data->GetTerminalsAmountToHack();
-	TerminalHackRequired = Data->GetTerminalHackRequired();
-}
+void UHackTerminalModeLogic::SetData() { TerminalHackRequired = Data->GetTerminalHackRequired(); }

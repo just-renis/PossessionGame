@@ -38,7 +38,6 @@ DECLARE_MULTICAST_DELEGATE(FOnTerminalInteraction);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_MULTICAST_DELEGATE(FOnTutorialEnd);
 DECLARE_MULTICAST_DELEGATE(FOnHackModeStart);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemiesAmountDecrease, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>);
@@ -90,7 +89,6 @@ public:
 	FOnPlayerDeath OnPlayerDeath;
 	FOnTutorialEnd OnTutorialEnd;
 	FOnHackModeStart OnHackModeStart;
-	FOnEnemiesAmountDecrease OnEnemiesAmountDecrease;
 	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnConcealAbilityChange OnConcealAbilityChange;

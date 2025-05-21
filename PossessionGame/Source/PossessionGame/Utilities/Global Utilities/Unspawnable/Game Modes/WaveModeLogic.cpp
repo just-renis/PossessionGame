@@ -1,6 +1,7 @@
 ﻿#include "WaveModeLogic.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Game Modes/WaveModeData.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -12,7 +13,6 @@ void UWaveModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const T
 	Super::Init(InWaveManager, InGameModeData);
 	Data = Cast<UWaveModeData>(InGameModeData);
 	SetData();
-	WaveManager->GetDelegateManager()->OnPlayerDeath.AddUObject(this, &UWaveModeLogic::FadeOutWavePanel);
 	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.BindUObject(this, &UWaveModeLogic::InitiateNextWave);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UWaveModeLogic::UpdateEnemiesAmount);
 	SetupWaveManagerUI();
@@ -21,10 +21,8 @@ void UWaveModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const T
 
 void UWaveModeLogic::Finalize()
 {
-	WaveManager->GetDelegateManager()->OnPlayerDeath.RemoveAll(this);
 	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.Unbind();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
-	FadeOutWavePanel();
 	Super::Finalize();
 }
 
@@ -33,8 +31,9 @@ void UWaveModeLogic::SetupWaveManagerUI()
 	Super::SetupWaveManagerUI();
 	if (!WaveManagerHUD) return;
 	WaveManagerHUD->UpdateCountdown(CountdownSeconds);
-	WaveManagerHUD->UpdateEnemiesAmount(EnemiesLeftToKill + AliveEnemiesAmount);
-	WaveManagerHUD->UpdateCurrentWaveText(CurrentWave);
+	FadeOutObjectivePanel();
+	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeOutEndTime(), false);
+	else FadeInObjectivePanel();
 }
 
 void UWaveModeLogic::SetupTimers()
@@ -49,10 +48,12 @@ void UWaveModeLogic::HandleSpawning()
 	else if (!bWaveNotStarted && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) WaveCompleted();
 }
 
-void UWaveModeLogic::UpdateEnemiesAmount()
+void UWaveModeLogic::FadeInObjectivePanel() const
 {
-	Super::UpdateEnemiesAmount();
-	if (WaveManagerHUD) WaveManagerHUD->UpdateEnemiesAmount(EnemiesLeftToKill + AliveEnemiesAmount);
+	if (!WaveManagerHUD) return;
+	WaveManagerHUD->UpdateObjective(EGameMode::WaveMode, AmountOfWaves);
+	WaveManagerHUD->UpdateObjectiveProgress(1, AmountOfWaves);
+	Super::FadeInObjectivePanel();
 }
 
 void UWaveModeLogic::InitiateNextWave()
@@ -78,8 +79,6 @@ void UWaveModeLogic::StartWave() const
 	PlaySound(ESound::TaskAnnouncement);
 	if (!WaveManagerHUD) return;
 	WaveManagerHUD->ToggleCountdownText();
-	WaveManagerHUD->ToggleEnemiesLeftText();
-	WaveManagerHUD->ToggleCurrentWaveText();
 }
 
 void UWaveModeLogic::SetupNextWave()
@@ -95,13 +94,8 @@ void UWaveModeLogic::SetupNextWave()
 void UWaveModeLogic::SetupNextWaveUI() const
 {
 	if (!WaveManagerHUD) return;
-	WaveManagerHUD->ToggleCurrentWaveText();
-	WaveManagerHUD->ToggleEnemiesLeftText();
-	WaveManagerHUD->UpdateCurrentWaveText(CurrentWave);
-	WaveManagerHUD->UpdateEnemiesAmount(EnemiesLeftToKill + AliveEnemiesAmount);
+	WaveManagerHUD->UpdateObjectiveProgress(CurrentWave, AmountOfWaves);
 }
-
-void UWaveModeLogic::FadeOutWavePanel() const { if (WaveManagerHUD) WaveManagerHUD->PlayWavePanelFadeOutAnim(); }
 
 void UWaveModeLogic::WaveCompleted()
 {

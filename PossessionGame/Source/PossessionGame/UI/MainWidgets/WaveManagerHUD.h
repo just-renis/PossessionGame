@@ -14,26 +14,28 @@ class POSSESSIONGAME_API UWaveManagerHUD : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	bool GetIsObjectivePanelFadeInAtLeastOnce() const { return bIsObjectivePanelFadeInAtLeastOnce; }
 	float GetWaveAnnouncementEndTime() const;
+	float GetObjectivePanelFadeOutEndTime() const;
 	
 	void UpdateCountdown(const int32 InCountdown);
-	void UpdateEnemiesAmount(const int32 InEnemiesLeft);
-	void UpdateCurrentWaveText(const int32 InCurrentWave);
 	void ToggleCountdownText();
-	void ToggleEnemiesLeftText();
-	void ToggleCurrentWaveText();
-	void PlayWavePanelFadeOutAnim();
+	void PlayObjectivePanelFadeOutAnim();
+	void PlayObjectivePanelFadeInAnim();
 	void PlayAnnouncementAnim(const FString& InAnnouncementText);
 	void PlayCountdownAnim();
 	void UpdateTaskProgress(const float InProgress, const float InMaxProgress) const;
 	void ToggleTaskProgress(const bool bState, const EGameMode InGameMode) const;
+	void UpdateObjective(const EGameMode InGameMode, const int32 InData) const;
+	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective) const;
 private:
+	bool bIsObjectivePanelFadeInAtLeastOnce = false;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CountdownText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> EnemiesLeftText;
+	TObjectPtr<UTextBlock> ObjectiveProgressText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> CurrentWaveText;
+	TObjectPtr<UTextBlock> ObjectiveText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TaskText;
 	UPROPERTY(meta = (BindWidget))
@@ -47,7 +49,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> AnnouncementInv;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> WavePanelFadeOutAnim;
+	TObjectPtr<UWidgetAnimation> ObjectivePanelFadeOutAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> AnnouncementAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))

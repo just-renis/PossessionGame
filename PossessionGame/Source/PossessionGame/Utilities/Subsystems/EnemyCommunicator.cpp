@@ -37,7 +37,7 @@ FVector UEnemyCommunicator::GetFarthestEnemyLocation(FVector FromLocation)
 	int32 Index = 0;
 	for (int32 i = 0; i < Enemies.Num(); i++)
 	{
-		float CalcDistance = FVector::Distance(FromLocation, Enemies[i]->GetActorLocation());
+		const float CalcDistance = FVector::Distance(FromLocation, Enemies[i]->GetActorLocation());
 		if (CalcDistance > Distance)
 		{
 			Distance = CalcDistance;
@@ -73,7 +73,6 @@ void UEnemyCommunicator::RemovePoint(int32 Key) { PointsAroundTarget.Remove(Key)
 void UEnemyCommunicator::InitDelegates(TObjectPtr<UDelegateManager> InDelegateManager)
 {
 	DelegateManager = InDelegateManager;
-	DelegateManager->OnEnemiesAmountDecrease.AddUObject(this, &UEnemyCommunicator::SetEnemiesAmount);
 	DelegateManager->OnConcealAbilityChange.AddUObject(this, &UEnemyCommunicator::SetTarget);
 }
 
@@ -82,7 +81,7 @@ void UEnemyCommunicator::TargetQueryResult(TSharedPtr<FEnvQueryResult> Result)
 	if (Result->IsSuccessful())
 	{
 		OnEQSFinish.Broadcast();
-		if (GameModeBase && GameModeBase->GetIsDebugModeEnabled())
+		if (WITH_EDITOR && GameModeBase && GameModeBase->GetIsDebugModeEnabled())
 		{
 			for (TPair<int32, FEQSPointData> PointData : PointsAroundTarget)
 			{
@@ -97,6 +96,7 @@ void UEnemyCommunicator::TargetQueryResult(TSharedPtr<FEnvQueryResult> Result)
 						break;
 					case ECharacterType::Trickster:
 						DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Green, false, 1.0f);
+					default: ;
 				}
 			}
 		}
@@ -106,8 +106,6 @@ void UEnemyCommunicator::TargetQueryResult(TSharedPtr<FEnvQueryResult> Result)
 		UE_LOG(LogTemp, Warning, TEXT("EQS Query Result: Failure - Reason: %s"), *UEnum::GetValueAsString(Result->GetRawStatus()));
 	}
 }
-
-void UEnemyCommunicator::SetEnemiesAmount(int32 Amount) { EnemiesAmount = Amount; }
 
 void UEnemyCommunicator::GeneratePointsAroundTarget()
 {

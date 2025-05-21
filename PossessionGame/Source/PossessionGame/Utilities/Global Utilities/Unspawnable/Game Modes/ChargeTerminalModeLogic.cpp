@@ -1,6 +1,7 @@
 ﻿#include "ChargeTerminalModeLogic.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Game Modes/ChargeTerminalModeData.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -22,6 +23,7 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 void UChargeTerminalModeLogic::Finalize()
 {
 	Super::Finalize();
+	if (WaveManagerHUD) WaveManagerHUD->UpdateObjectiveProgress(bIsTerminalCharged, Data->GetTerminalHackRequired());
 	ShowUpgradeSelection();
 	(void)WaveManager->GetDelegateManager()->OnChargeTerminalModeCompletion.ExecuteIfBound();
 	ResetTaskProgress();
@@ -50,6 +52,23 @@ void UChargeTerminalModeLogic::UpdateTaskProgress()
 		bIsTerminalCharged = true;
 		if (AliveEnemiesAmount <= 0) Finalize();
 	}
+}
+
+void UChargeTerminalModeLogic::SetupWaveManagerUI()
+{
+	Super::SetupWaveManagerUI();
+	if (!WaveManagerHUD) return;
+	FadeOutObjectivePanel();
+	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeOutEndTime(), false);
+	else FadeInObjectivePanel();
+}
+
+void UChargeTerminalModeLogic::FadeInObjectivePanel() const
+{
+	if (!WaveManagerHUD) return;
+	WaveManagerHUD->UpdateObjective(EGameMode::ChargeTerminalMode, Data->GetTerminalHackRequired());
+	WaveManagerHUD->UpdateObjectiveProgress(0, Data->GetTerminalHackRequired());
+	Super::FadeInObjectivePanel();
 }
 
 void UChargeTerminalModeLogic::SetData()

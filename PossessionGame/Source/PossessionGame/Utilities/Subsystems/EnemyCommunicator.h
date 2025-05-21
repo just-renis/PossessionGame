@@ -16,7 +16,6 @@ class POSSESSIONGAME_API UEnemyCommunicator : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-	int32 GetEnemiesAmount() { return EnemiesAmount; }
 	FVector GetPointLocation(ECharacterType InCharacterType, FVector InLocation);
 	FVector GetTargetLocation() const;
 	TObjectPtr<AActor>& GetTarget() { return Target; }
@@ -49,8 +48,6 @@ private:
 
 	void InitDelegates(TObjectPtr<UDelegateManager> InDelegateManager);
 	void TargetQueryResult(TSharedPtr<FEnvQueryResult> Result);
-	UFUNCTION()
-	void SetEnemiesAmount(int32 Amount);
 	UFUNCTION()
 	void GeneratePointsAroundTarget();
 };

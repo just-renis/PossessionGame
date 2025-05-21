@@ -254,7 +254,7 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TObje
 	SetupSpawnLocations();
 	bTutorialIsFinished = true;
 	EnemyTypes = InEnemiesThatAreSpawnable;
-	RequestSpawnEnemy(ECharacterType::Trickster, EGameMode::TutorialMode1, nullptr);
+	RequestSpawnEnemy(ECharacterType::Ranger, EGameMode::TutorialMode1, nullptr);
 	if (InEnemiesThatAreSpawnable.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	DelegateManager = InDelegateManager;
 	if (!bTutorialIsFinished) DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);

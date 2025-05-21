@@ -1,5 +1,4 @@
 ﻿#include "GameModeBaseLogic.h"
-
 #include "PossessionGame/Data Assets/Base Data Assets/GameModeData.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/EWidget.h"
@@ -15,6 +14,7 @@ void UGameModeBaseLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, con
 	WaveManager = InWaveManager;
 	EnemiesOnSceneLimit = InGameModeData->GetEnemiesOnSceneLimit();
 	SpawnRate = InGameModeData->GetSpawnRate();
+	WaveManager->GetDelegateManager()->OnPlayerDeath.AddUObject(this, &UGameModeBaseLogic::FadeOutObjectivePanel);
 }
 
 int32 UGameModeBaseLogic::ConvertGameModeToDroneLocation() const
@@ -45,5 +45,13 @@ void UGameModeBaseLogic::ResetTaskProgress() const
 	WaveManagerHUD->ToggleTaskProgress(false, WaveManager->GetCurrentGameMode());
 	WaveManagerHUD->UpdateTaskProgress(0.f, 1.f);
 }
+
+void UGameModeBaseLogic::FadeOutObjectivePanel() const
+{
+	if (!WaveManagerHUD) return;
+	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) WaveManagerHUD->PlayObjectivePanelFadeOutAnim();
+}
+
+void UGameModeBaseLogic::FadeInObjectivePanel() const { if (WaveManagerHUD) WaveManagerHUD->PlayObjectivePanelFadeInAnim(); }
 
 void UGameModeBaseLogic::ShowUpgradeSelection() const { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI(); }

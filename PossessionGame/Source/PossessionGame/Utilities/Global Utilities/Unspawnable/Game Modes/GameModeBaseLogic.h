@@ -32,6 +32,9 @@ protected:
 	void PlaySound(const ESound InSoundName) const;
 	virtual void ResetTaskProgress() const;
 	void IncreaseAliveEnemiesAmount() { AliveEnemiesAmount++; }
+	void FadeOutObjectivePanel() const;
+	UFUNCTION()
+	virtual void FadeInObjectivePanel() const;
 	UFUNCTION()
 	virtual void HandleSpawning() {}
 	UFUNCTION()

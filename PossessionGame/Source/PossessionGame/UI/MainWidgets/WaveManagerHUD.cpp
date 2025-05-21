@@ -5,26 +5,16 @@
 #include "Components/TextBlock.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/EGameMode.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return AnnouncementAnim ? AnnouncementAnim->GetEndTime() : 0.1f; }
+
+float UWaveManagerHUD::GetObjectivePanelFadeOutEndTime() const { return ObjectivePanelFadeOutAnim ? ObjectivePanelFadeOutAnim->GetEndTime() : 0.1f; }
 
 void UWaveManagerHUD::UpdateCountdown(const int32 InCountdown)
 {
 	if (!CountdownText) return;
 	if (InCountdown <= 0) CountdownText->SetText(FText::FromString(TEXT("FIGHT!")));
 	else CountdownText->SetText(FText::FromString(FString::Format(TEXT("{0}"), { InCountdown })));
-}
-
-void UWaveManagerHUD::UpdateEnemiesAmount(const int32 InEnemiesLeft)
-{
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemiesAmountDecrease.Broadcast(InEnemiesLeft);
-	if (EnemiesLeftText) EnemiesLeftText->SetText(FText::FromString(FString::Format(TEXT("Enemies left: {0}"), { InEnemiesLeft })));
-}
-
-void UWaveManagerHUD::UpdateCurrentWaveText(const int32 InCurrentWave)
-{
-	if (CurrentWaveText) CurrentWaveText->SetText(FText::FromString(FString::Format(TEXT("Wave {0}"), { InCurrentWave })));
 }
 
 void UWaveManagerHUD::ToggleCountdownText()
@@ -36,25 +26,18 @@ void UWaveManagerHUD::ToggleCountdownText()
 	}
 }
 
-void UWaveManagerHUD::ToggleEnemiesLeftText()
+void UWaveManagerHUD::PlayObjectivePanelFadeOutAnim()
 {
-	if (EnemiesLeftText)
-	{
-		if (EnemiesLeftText->GetVisibility() == ESlateVisibility::SelfHitTestInvisible) EnemiesLeftText->SetVisibility(ESlateVisibility::Collapsed);
-		else EnemiesLeftText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	}
+	if (!ObjectivePanelFadeOutAnim) return;
+	PlayAnimation(ObjectivePanelFadeOutAnim);
 }
 
-void UWaveManagerHUD::ToggleCurrentWaveText()
+void UWaveManagerHUD::PlayObjectivePanelFadeInAnim()
 {
-	if (CurrentWaveText)
-	{
-		if (CurrentWaveText->GetVisibility() == ESlateVisibility::SelfHitTestInvisible) CurrentWaveText->SetVisibility(ESlateVisibility::Collapsed);
-		else CurrentWaveText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	}
+	if (!ObjectivePanelFadeOutAnim) return;
+	bIsObjectivePanelFadeInAtLeastOnce = true;
+	PlayAnimation(ObjectivePanelFadeOutAnim, 0.f, 1, EUMGSequencePlayMode::Reverse);
 }
-
-void UWaveManagerHUD::PlayWavePanelFadeOutAnim() { if (WavePanelFadeOutAnim) PlayAnimation(WavePanelFadeOutAnim); }
 
 void UWaveManagerHUD::PlayAnnouncementAnim(const FString& InAnnouncementText)
 {
@@ -81,6 +64,25 @@ void UWaveManagerHUD::ToggleTaskProgress(const bool bState, const EGameMode InGa
 	if (!TaskProgressInv || !TaskText) return;
 	TaskProgressInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	TaskText->SetText(FText::FromString(InGameMode == EGameMode::HackTerminalsMode ? "Terminal Hack Progress" : "Charge Terminal Progress"));
+}
+
+void UWaveManagerHUD::UpdateObjective(const EGameMode InGameMode, const int32 InData) const
+{
+	if (!ObjectiveText) return;
+	switch (InGameMode)
+	{
+		case EGameMode::WaveMode: ObjectiveText->SetText(FText::FromString("Defeat " + FString::FromInt(InData) + " waves")); break;
+		case EGameMode::HackTerminalsMode: ObjectiveText->SetText(FText::FromString("Hack " + FString::FromInt(InData) + " terminals")); break;
+		case EGameMode::ChargeTerminalMode: ObjectiveText->SetText(FText::FromString("Charge the terminal")); break;
+		case EGameMode::BossMode: ObjectiveText->SetText(FText::FromString("Kill the boss")); break;
+		default: ;
+	}
+}
+
+void UWaveManagerHUD::UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective) const
+{
+	if (!ObjectiveProgressText) return;
+	ObjectiveProgressText->SetText(FText::FromString(FString::FromInt(InObjectiveProgress) + " / " + FString::FromInt(InObjective)));
 }
 
 void UWaveManagerHUD::HideWaveCompletedAnnouncement() const { if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::Collapsed); }

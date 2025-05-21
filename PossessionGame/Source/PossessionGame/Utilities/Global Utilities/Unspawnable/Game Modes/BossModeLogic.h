@@ -15,5 +15,7 @@ class POSSESSIONGAME_API UBossModeLogic : public UGameModeBaseLogic
 	virtual void Finalize() override;
 	virtual void HandleSpawning() override;
 	virtual void UpdateEnemiesAmount() override;
+	virtual void SetupWaveManagerUI() override;
+	virtual void FadeInObjectivePanel() const override;
 	void BossDeath();
 };
