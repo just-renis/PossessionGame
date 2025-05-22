@@ -4,8 +4,11 @@
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/EGameMode.h"
+#include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AGate::AGate()
@@ -37,7 +40,7 @@ void AGate::BeginPlay()
 		Collision->SetBoxExtent(FVector(250.f, 450.f, 175.f));
 		SetIsInteractable(true);
 	}
-	if (!bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGate);
+	if (!bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGateAndShowMarker);
 	else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialEnd.AddUObject(this, &AGate::OpenAsTutorialEndGate);
 	if (bNeedsArtifact) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.BindUObject(this, &AGate::SetArtifactCollected);
 }
@@ -50,6 +53,12 @@ void AGate::OpenGate(const EGameMode InGameMode)
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AGate::CloseGate);
 		UKismetSystemLibrary::K2_SetTimer(this, "OpenGateSides", 0.025f, true);
 	}
+}
+
+void AGate::OpenGateAndShowMarker(const EGameMode InGameMode)
+{
+	OpenGate(InGameMode);
+	ShowMarker(InGameMode);
 }
 
 void AGate::OpenAsTutorialEndGate() { OpenGate(EGameMode::TutorialMode2); }
@@ -84,6 +93,13 @@ void AGate::ChangeOutlineState(const bool bState)
 	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
 }
 
+void AGate::ShowMarker(const EGameMode InGameMode)
+{
+	if (GameModeToFinish != InGameMode) return;
+	Marker = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::ObjectiveMarker, GetActorLocation() + FVector(0.f, 0.f, 100.f));
+	Marker->Init();
+}
+
 void AGate::OpenGateSides()
 {
 	FirstGateSide->SetRelativeLocation(FirstGateSide->GetRelativeLocation() + FVector(0.f, 9.f, 0.f));
@@ -100,6 +116,7 @@ void AGate::OpenGateSides()
 
 void AGate::CloseGateSides()
 {
+	if (Marker) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
 	FirstGateSide->SetRelativeLocation(FirstGateSide->GetRelativeLocation() - FVector(0.f, 9.f, 0.f));
 	SecondGateSide->SetRelativeLocation(SecondGateSide->GetRelativeLocation() + FVector(0.f, 9.f, 0.f));
 	TimePassed += 0.025f;

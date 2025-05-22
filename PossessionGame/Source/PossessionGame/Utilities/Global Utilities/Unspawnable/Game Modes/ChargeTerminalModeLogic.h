@@ -12,8 +12,8 @@ class POSSESSIONGAME_API UChargeTerminalModeLogic : public UGameModeBaseLogic
 	GENERATED_BODY()
 
 	bool bIsTerminalCharged = false;
-	float TerminalHackProgress = 0.f;
-	float TerminalHackRequired;
+	int32 UsbAmountProgress = 0;
+	int32 UsbAmountRequired;
 	UPROPERTY()
 	TObjectPtr<UChargeTerminalModeData> Data;
 

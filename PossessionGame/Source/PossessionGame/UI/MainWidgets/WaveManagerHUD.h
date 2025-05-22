@@ -16,7 +16,7 @@ class POSSESSIONGAME_API UWaveManagerHUD : public UUserWidget
 public:
 	bool GetIsObjectivePanelFadeInAtLeastOnce() const { return bIsObjectivePanelFadeInAtLeastOnce; }
 	float GetWaveAnnouncementEndTime() const;
-	float GetObjectivePanelFadeOutEndTime() const;
+	float GetObjectivePanelFadeInEndTime() const;
 	
 	void UpdateCountdown(const int32 InCountdown);
 	void ToggleCountdownText();
@@ -27,7 +27,7 @@ public:
 	void UpdateTaskProgress(const float InProgress, const float InMaxProgress) const;
 	void ToggleTaskProgress(const bool bState, const EGameMode InGameMode) const;
 	void UpdateObjective(const EGameMode InGameMode, const int32 InData) const;
-	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective) const;
+	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective);
 private:
 	bool bIsObjectivePanelFadeInAtLeastOnce = false;
 	UPROPERTY(meta = (BindWidget))
@@ -36,6 +36,8 @@ private:
 	TObjectPtr<UTextBlock> ObjectiveProgressText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ObjectiveText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ObjectiveTitleText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TaskText;
 	UPROPERTY(meta = (BindWidget))
@@ -49,12 +51,16 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> AnnouncementInv;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> ObjectivePanelFadeOutAnim;
+	TObjectPtr<UWidgetAnimation> ObjectivePanelFadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> AnnouncementAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> CountdownAnnouncementAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ObjectiveCompletedFadeInAnim;
 
 	UFUNCTION()
 	void HideWaveCompletedAnnouncement() const;
+	UFUNCTION()
+	void PlayObjectiveCompletedAnimFadeOut();
 };

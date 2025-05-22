@@ -56,15 +56,15 @@ void UHackTerminalModeLogic::SetupWaveManagerUI()
 	Super::SetupWaveManagerUI();
 	if (!WaveManagerHUD) return;
 	FadeOutObjectivePanel();
-	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeOutEndTime(), false);
+	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeInEndTime(), false);
 	else FadeInObjectivePanel();
 }
 
 void UHackTerminalModeLogic::FadeInObjectivePanel() const
 {
 	if (!WaveManagerHUD) return;
-	WaveManagerHUD->UpdateObjective(EGameMode::HackTerminalsMode, Data->GetTerminalHackRequired());
-	WaveManagerHUD->UpdateObjectiveProgress(0, Data->GetTerminalHackRequired());
+	WaveManagerHUD->UpdateObjective(EGameMode::HackTerminalsMode, Data->GetTerminalsAmountToHack());
+	WaveManagerHUD->UpdateObjectiveProgress(0, Data->GetTerminalsAmountToHack());
 	Super::FadeInObjectivePanel();
 }
 
@@ -86,7 +86,7 @@ void UHackTerminalModeLogic::FinishTerminalHack()
 {
 	PlaySound(ESound::GeneratorCompleted);
 	TerminalHackProgress = 0.f;
-	if (TerminalsHackedAmount++ >= Data->GetTerminalsAmountToHack()) Finalize();
+	if (++TerminalsHackedAmount >= Data->GetTerminalsAmountToHack()) Finalize();
 	else
 	{
 		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");

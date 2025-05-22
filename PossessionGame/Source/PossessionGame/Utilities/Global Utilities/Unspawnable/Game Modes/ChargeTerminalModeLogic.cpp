@@ -23,7 +23,7 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 void UChargeTerminalModeLogic::Finalize()
 {
 	Super::Finalize();
-	if (WaveManagerHUD) WaveManagerHUD->UpdateObjectiveProgress(bIsTerminalCharged, Data->GetTerminalHackRequired());
+	if (WaveManagerHUD) WaveManagerHUD->UpdateObjectiveProgress(UsbAmountProgress, Data->GetUsbAmountRequired());
 	ShowUpgradeSelection();
 	(void)WaveManager->GetDelegateManager()->OnChargeTerminalModeCompletion.ExecuteIfBound();
 	ResetTaskProgress();
@@ -45,13 +45,14 @@ void UChargeTerminalModeLogic::UpdateEnemiesAmount()
 
 void UChargeTerminalModeLogic::UpdateTaskProgress()
 {
-	TerminalHackProgress += TerminalHackRequired * 0.25f;
-	if (WaveManagerHUD) WaveManagerHUD->UpdateTaskProgress(TerminalHackProgress, TerminalHackRequired);
-	if (TerminalHackProgress >= TerminalHackRequired)
+	if (++UsbAmountProgress >= UsbAmountRequired)
 	{
 		bIsTerminalCharged = true;
 		if (AliveEnemiesAmount <= 0) Finalize();
 	}
+	if (!WaveManagerHUD) return;
+	WaveManagerHUD->UpdateObjectiveProgress(UsbAmountProgress, Data->GetUsbAmountRequired());
+	WaveManagerHUD->UpdateTaskProgress(UsbAmountProgress, UsbAmountRequired);
 }
 
 void UChargeTerminalModeLogic::SetupWaveManagerUI()
@@ -59,19 +60,19 @@ void UChargeTerminalModeLogic::SetupWaveManagerUI()
 	Super::SetupWaveManagerUI();
 	if (!WaveManagerHUD) return;
 	FadeOutObjectivePanel();
-	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeOutEndTime(), false);
+	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeInEndTime(), false);
 	else FadeInObjectivePanel();
 }
 
 void UChargeTerminalModeLogic::FadeInObjectivePanel() const
 {
 	if (!WaveManagerHUD) return;
-	WaveManagerHUD->UpdateObjective(EGameMode::ChargeTerminalMode, Data->GetTerminalHackRequired());
-	WaveManagerHUD->UpdateObjectiveProgress(0, Data->GetTerminalHackRequired());
+	WaveManagerHUD->UpdateObjective(EGameMode::ChargeTerminalMode, Data->GetUsbAmountRequired());
+	WaveManagerHUD->UpdateObjectiveProgress(0, Data->GetUsbAmountRequired());
 	Super::FadeInObjectivePanel();
 }
 
 void UChargeTerminalModeLogic::SetData()
 {
-	TerminalHackRequired = Data->GetTerminalHackRequired();
+	UsbAmountRequired = Data->GetUsbAmountRequired();
 }

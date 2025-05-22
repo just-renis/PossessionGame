@@ -32,7 +32,7 @@ void UWaveModeLogic::SetupWaveManagerUI()
 	if (!WaveManagerHUD) return;
 	WaveManagerHUD->UpdateCountdown(CountdownSeconds);
 	FadeOutObjectivePanel();
-	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeOutEndTime(), false);
+	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeInEndTime(), false);
 	else FadeInObjectivePanel();
 }
 
@@ -52,7 +52,7 @@ void UWaveModeLogic::FadeInObjectivePanel() const
 {
 	if (!WaveManagerHUD) return;
 	WaveManagerHUD->UpdateObjective(EGameMode::WaveMode, AmountOfWaves);
-	WaveManagerHUD->UpdateObjectiveProgress(1, AmountOfWaves);
+	WaveManagerHUD->UpdateObjectiveProgress(0, AmountOfWaves);
 	Super::FadeInObjectivePanel();
 }
 
@@ -62,11 +62,7 @@ void UWaveModeLogic::InitiateNextWave()
 	{
 		bWaveNotStarted = false;
 		SetupNextWave();
-		if (WaveManagerHUD)
-		{
-			SetupNextWaveUI();
-			StartCountdown();
-		}
+		if (WaveManagerHUD) StartCountdown();
 	}
 	else Finalize();
 }
@@ -91,18 +87,13 @@ void UWaveModeLogic::SetupNextWave()
 	UKismetSystemLibrary::K2_SetTimer(this, "UpdateCountdown", 1.f, true);
 }
 
-void UWaveModeLogic::SetupNextWaveUI() const
-{
-	if (!WaveManagerHUD) return;
-	WaveManagerHUD->UpdateObjectiveProgress(CurrentWave, AmountOfWaves);
-}
-
 void UWaveModeLogic::WaveCompleted()
 {
 	if (!WaveManagerHUD) return;
+	WaveManagerHUD->UpdateObjectiveProgress(CurrentWave, AmountOfWaves);
+	WaveManagerHUD->PlayAnnouncementAnim("Wave Completed");
 	PlaySound(ESound::WaveCompleted);
 	bWaveNotStarted = true;
-	WaveManagerHUD->PlayAnnouncementAnim("Wave Completed");
 	UKismetSystemLibrary::K2_SetTimer(this, "ShowUpgradeSelection", WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 

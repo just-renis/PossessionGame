@@ -11,15 +11,16 @@ void UBossModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const T
 {
 	Super::Init(InWaveManager, InGameModeData);
 	SetupWaveManagerUI();
-	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UBossModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->OnBossDeath.BindUObject(this, &UBossModeLogic::BossDeath);
+	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
 	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate * 3.f, true);
 }
 
 void UBossModeLogic::Finalize()
 {
 	Super::Finalize();
+	UE_LOG(LogTemp, Error, TEXT("IS BOSS DEAD? %i"), !bIsBossAlive);
 	WaveManagerHUD->UpdateObjectiveProgress(!bIsBossAlive, 1);
 	ShowUpgradeSelection();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
@@ -45,7 +46,7 @@ void UBossModeLogic::SetupWaveManagerUI()
 	Super::SetupWaveManagerUI();
 	if (!WaveManagerHUD) return;
 	FadeOutObjectivePanel();
-	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeOutEndTime(), false);
+	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeInEndTime(), false);
 	else FadeInObjectivePanel();
 }
 

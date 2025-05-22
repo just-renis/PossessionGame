@@ -9,8 +9,8 @@ class POSSESSIONGAME_API UChargeTerminalModeData : public UGameModeData
 {
 	GENERATED_BODY()
 public:
-	float GetTerminalHackRequired() const { return TerminalHackRequired; }
+	int32 GetUsbAmountRequired() const { return UsbAmountRequired; }
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	float TerminalHackRequired = 5.f;
+	int32 UsbAmountRequired = 4;
 };

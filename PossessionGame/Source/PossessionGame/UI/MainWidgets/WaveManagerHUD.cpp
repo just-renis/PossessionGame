@@ -8,7 +8,7 @@
 
 float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return AnnouncementAnim ? AnnouncementAnim->GetEndTime() : 0.1f; }
 
-float UWaveManagerHUD::GetObjectivePanelFadeOutEndTime() const { return ObjectivePanelFadeOutAnim ? ObjectivePanelFadeOutAnim->GetEndTime() : 0.1f; }
+float UWaveManagerHUD::GetObjectivePanelFadeInEndTime() const { return ObjectivePanelFadeInAnim ? ObjectivePanelFadeInAnim->GetEndTime() : 0.1f; }
 
 void UWaveManagerHUD::UpdateCountdown(const int32 InCountdown)
 {
@@ -28,15 +28,15 @@ void UWaveManagerHUD::ToggleCountdownText()
 
 void UWaveManagerHUD::PlayObjectivePanelFadeOutAnim()
 {
-	if (!ObjectivePanelFadeOutAnim) return;
-	PlayAnimation(ObjectivePanelFadeOutAnim);
+	if (!ObjectivePanelFadeInAnim) return;
+	PlayAnimation(ObjectivePanelFadeInAnim, 0.f, 1, EUMGSequencePlayMode::Reverse);
 }
 
 void UWaveManagerHUD::PlayObjectivePanelFadeInAnim()
 {
-	if (!ObjectivePanelFadeOutAnim) return;
+	if (!ObjectivePanelFadeInAnim) return;
 	bIsObjectivePanelFadeInAtLeastOnce = true;
-	PlayAnimation(ObjectivePanelFadeOutAnim, 0.f, 1, EUMGSequencePlayMode::Reverse);
+	PlayAnimation(ObjectivePanelFadeInAnim);
 }
 
 void UWaveManagerHUD::PlayAnnouncementAnim(const FString& InAnnouncementText)
@@ -68,21 +68,41 @@ void UWaveManagerHUD::ToggleTaskProgress(const bool bState, const EGameMode InGa
 
 void UWaveManagerHUD::UpdateObjective(const EGameMode InGameMode, const int32 InData) const
 {
-	if (!ObjectiveText) return;
+	if (!ObjectiveText || !ObjectiveTitleText) return;
 	switch (InGameMode)
 	{
-		case EGameMode::WaveMode: ObjectiveText->SetText(FText::FromString("Defeat " + FString::FromInt(InData) + " waves")); break;
-		case EGameMode::HackTerminalsMode: ObjectiveText->SetText(FText::FromString("Hack " + FString::FromInt(InData) + " terminals")); break;
-		case EGameMode::ChargeTerminalMode: ObjectiveText->SetText(FText::FromString("Charge the terminal")); break;
-		case EGameMode::BossMode: ObjectiveText->SetText(FText::FromString("Kill the boss")); break;
+		case EGameMode::WaveMode:
+			ObjectiveTitleText->SetText(FText::FromString("Objectives 1"));
+			ObjectiveText->SetText(FText::FromString("Defeat " + FString::FromInt(InData) + " waves"));
+			break;
+		case EGameMode::HackTerminalsMode:
+			ObjectiveTitleText->SetText(FText::FromString("Objectives 2"));
+			ObjectiveText->SetText(FText::FromString("Hack " + FString::FromInt(InData) + " terminals"));
+			break;
+		case EGameMode::ChargeTerminalMode:
+			ObjectiveTitleText->SetText(FText::FromString("Objectives 3"));
+			ObjectiveText->SetText(FText::FromString("Charge the terminal"));
+			break;
+		case EGameMode::BossMode: 
+			ObjectiveTitleText->SetText(FText::FromString("Objectives 4"));
+			ObjectiveText->SetText(FText::FromString("Kill the boss"));
+			break;
 		default: ;
 	}
 }
 
-void UWaveManagerHUD::UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective) const
+void UWaveManagerHUD::UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective)
 {
 	if (!ObjectiveProgressText) return;
 	ObjectiveProgressText->SetText(FText::FromString(FString::FromInt(InObjectiveProgress) + " / " + FString::FromInt(InObjective)));
+	if (InObjectiveProgress != InObjective || !ObjectiveCompletedFadeInAnim) return;
+	PlayAnimation(ObjectiveCompletedFadeInAnim);
+//	UKismetSystemLibrary::K2_SetTimer(this, "PlayObjectiveCompletedAnimFadeOut", ObjectiveCompletedFadeInAnim->GetEndTime(), false);
 }
 
 void UWaveManagerHUD::HideWaveCompletedAnnouncement() const { if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::Collapsed); }
+
+void UWaveManagerHUD::PlayObjectiveCompletedAnimFadeOut()
+{
+//	PlayAnimation(ObjectiveCompletedFadeInAnim, 0, 1, EUMGSequencePlayMode::Reverse);
+}

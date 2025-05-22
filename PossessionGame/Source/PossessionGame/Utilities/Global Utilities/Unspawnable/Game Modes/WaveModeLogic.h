@@ -30,7 +30,6 @@ class POSSESSIONGAME_API UWaveModeLogic : public UGameModeBaseLogic
 	void StartCountdown() const;
 	void StartWave() const;
 	void SetupNextWave();
-	void SetupNextWaveUI() const;
 	void WaveCompleted();
 	void AfterSpawnEnemyCallback();
 	void SetData();

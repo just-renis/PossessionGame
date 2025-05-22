@@ -5,6 +5,7 @@
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "Gate.generated.h"
 
+class APoolObject;
 class UWidgetComponent;
 enum class EGameMode : uint8;
 class UBoxComponent;
@@ -43,16 +44,20 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> OpenGatesSfx;
+	UPROPERTY()
+	TObjectPtr<APoolObject> Marker;
 
 	virtual bool GetIsInteractable() const override;
 
 	virtual void BeginPlay() override;
 	void OpenGate(const EGameMode InGameMode);
+	void OpenGateAndShowMarker(const EGameMode InGameMode);
 	void OpenAsTutorialEndGate();
 	void CloseGate(const EGameMode InGameMode = EGameMode::None);
 	virtual void Interact() override;
 	virtual void ChangeOutlineState(const bool bState) override;
 	void SetArtifactCollected() { bNeedsArtifact = false; }
+	void ShowMarker(const EGameMode InGameMode);
 	UFUNCTION()
 	void OpenGateSides();
 	UFUNCTION()
