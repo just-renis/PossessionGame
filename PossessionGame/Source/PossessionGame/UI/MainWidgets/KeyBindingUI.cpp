@@ -2,6 +2,7 @@
 #include "Components/Button.h"
 #include "Components/InputKeySelector.h"
 #include "PossessionGame/UI/SecondaryWidgets/SettingsTitleUI.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 void UKeyBindingUI::Setup(const TObjectPtr<UEnhancedInputUserSettings>& InUserSettings, const FPlayerKeyMapping& InMapping)
 {
@@ -32,6 +33,12 @@ void UKeyBindingUI::RemapKeyBind()
 	Args.MappingName = Mapping.GetMappingName();
 	Args.Slot = EPlayerMappableKeySlot::First;
 	Args.NewKey = TempSelectedKey;
+	int32 Index = -1;
+	const FName MappingName = Mapping.GetMappingName();
+	if (MappingName == "FirstAbility") Index = 0;
+	else if (MappingName == "SecondAbility") Index = 1;
+	else if (MappingName == "ThirdAbility") Index = 2;
+	if (Index != -1) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.ExecuteIfBound(Index, Args.NewKey.GetDisplayName());
 	FGameplayTagContainer FailureReason;
 	UserSettings->MapPlayerKey(Args, FailureReason);
 	Mapping.SetCurrentKey(TempSelectedKey);

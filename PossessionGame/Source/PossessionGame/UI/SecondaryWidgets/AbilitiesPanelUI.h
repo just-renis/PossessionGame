@@ -53,6 +53,12 @@ private:
 	TObjectPtr<UTextBlock> SecondChargesText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ThirdChargesText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> FirstKeyBindText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> SecondKeyBindText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ThirdKeyBindText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> Ability1UseAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -71,9 +77,11 @@ private:
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
-	void SetAbilitySlot(const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay);
+	void SetAbilitySlot(const int32 InAbilityIndex, const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay) const;
 	void PlayAbilityUseAnim(const int32 InAbilityIndex, const bool bIsCharged, const bool bPlayReverseAfterwards);
 	void PlayAbilityAnim(const int32 InAbilityIndex, const bool bState);
+	void AssignAbilityKeyBindText(const int32 InAbilityIndex) const;
+	void UpdateAbilityKeyBindText(const int32 InAbilityIndex, const FText& InKeyName) const;
 	UFUNCTION()
 	void PlayAbilityEndAnim(const int32 InAbilityIndex, const bool bIsCharged);
 };
