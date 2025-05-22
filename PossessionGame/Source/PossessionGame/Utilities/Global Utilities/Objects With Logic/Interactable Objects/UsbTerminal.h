@@ -4,8 +4,8 @@
 #include "InteractableObject.h"
 #include "UsbTerminal.generated.h"
 
+class AMarker;
 class ACollectible;
-class APoolObject;
 
 UCLASS()
 class POSSESSIONGAME_API AUsbTerminal : public AInteractableObject
@@ -20,7 +20,7 @@ class POSSESSIONGAME_API AUsbTerminal : public AInteractableObject
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY()
-	TObjectPtr<APoolObject> Marker;
+	TObjectPtr<AMarker> Marker;
 	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> UsbMeshes[4];
 

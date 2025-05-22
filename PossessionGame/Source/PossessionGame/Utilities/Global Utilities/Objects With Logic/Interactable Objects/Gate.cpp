@@ -4,11 +4,9 @@
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/EGameMode.h"
-#include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/ESound.h"
-#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
+#include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
-#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AGate::AGate()
@@ -96,8 +94,8 @@ void AGate::ChangeOutlineState(const bool bState)
 void AGate::ShowMarker(const EGameMode InGameMode)
 {
 	if (GameModeToFinish != InGameMode) return;
-	Marker = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::ObjectiveMarker, GetActorLocation() + FVector(0.f, 0.f, 100.f));
-	Marker->Init();
+	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 100.f), FRotator::ZeroRotator);
+	Marker->Toggle(true);
 }
 
 void AGate::OpenGateSides()
@@ -116,7 +114,7 @@ void AGate::OpenGateSides()
 
 void AGate::CloseGateSides()
 {
-	if (Marker) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
+	if (Marker) Marker->DestroyThis();
 	FirstGateSide->SetRelativeLocation(FirstGateSide->GetRelativeLocation() - FVector(0.f, 9.f, 0.f));
 	SecondGateSide->SetRelativeLocation(SecondGateSide->GetRelativeLocation() + FVector(0.f, 9.f, 0.f));
 	TimePassed += 0.025f;

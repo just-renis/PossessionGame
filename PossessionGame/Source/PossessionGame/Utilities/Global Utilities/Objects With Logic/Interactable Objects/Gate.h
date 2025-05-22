@@ -5,9 +5,8 @@
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "Gate.generated.h"
 
-class APoolObject;
+class AMarker;
 class UWidgetComponent;
-enum class EGameMode : uint8;
 class UBoxComponent;
 
 UCLASS()
@@ -45,7 +44,7 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> OpenGatesSfx;
 	UPROPERTY()
-	TObjectPtr<APoolObject> Marker;
+	TObjectPtr<AMarker> Marker;
 
 	virtual bool GetIsInteractable() const override;
 

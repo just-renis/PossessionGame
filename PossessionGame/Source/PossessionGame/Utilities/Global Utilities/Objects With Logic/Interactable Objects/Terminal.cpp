@@ -2,10 +2,9 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "PossessionGame/Enums/EGameMode.h"
-#include "PossessionGame/Enums/EPoolObject.h"
-#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
+#include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
-#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 ATerminal::ATerminal()
 {
@@ -25,7 +24,7 @@ void ATerminal::BeginPlay()
 void ATerminal::Interact()
 {
 	if (!GetIsInteractable()) return;
-	if (Marker) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
+	if (Marker) Marker->DestroyThis();
 	DelegateManager->OnTerminalInteraction.RemoveAll(this);
 	DelegateManager->OnTerminalHackFinish.RemoveAll(this);
 	DisableTerminal();
@@ -34,8 +33,8 @@ void ATerminal::Interact()
 
 void ATerminal::ShowMarker()
 {
-	if (!Marker) Marker = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::ObjectiveMarker, GetActorLocation() + FVector(0.f, 0.f, 140.f));
-	Marker->Init();
+	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 140.f), FRotator::ZeroRotator);
+	Marker->Toggle(true);
 }
 
 void ATerminal::EnableTerminal(const EGameMode InGameMode)
@@ -63,7 +62,7 @@ void ATerminal::ToggleInteractableWidget(const bool bState)
 	else
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (Marker) Marker->Disable();
+		if (Marker) Marker->Toggle(false);
 		if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	}
 }

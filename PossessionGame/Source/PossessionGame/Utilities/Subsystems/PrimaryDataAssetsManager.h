@@ -10,6 +10,8 @@
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PrimaryDataAssetsManager.generated.h"
 
+class AMarker;
+struct FSpawnableEnemyByTotalAmount;
 class UDelegateManager;
 enum class EGameMode : uint8;
 class ASpawnLocation;
@@ -86,6 +88,7 @@ public:
 	TObjectPtr<UPA_SoundContainer>& GetSoundData(ESound SoundName);
 	TObjectPtr<UPA_CharacterContainer>& GetCharacterData(ECharacterType CharacterName);
 	TObjectPtr<UPA_VfxContainer>& GetVfxData(EVfx VfxName);
+	TSubclassOf<AMarker>& GetMarkerClass() { return MarkerClass; }
 	TObjectPtr<AEnemy> SpawnVariationReplacement(const ECharacterType InCharacter);
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -99,11 +102,15 @@ public:
 	void ApplyAttributesToVfxComponent(const TMap<FName, FNiagaraAttribute>& InAttributes, const TObjectPtr<UNiagaraComponent>& Component);
 	void ChangeVfxVariation(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const FNiagaraVariationData& InNiagaraVariationData);
 	void RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack);
-	void Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<ECharacterType>& InEnemiesThatAreSpawnable);
+	void Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount);
 private:
 	bool bCanAsyncLoadHappen = true;
 	bool bIsSpawnInProcess = false;
 	bool bTutorialIsFinished = false;
+	int32 TotalSpawnedEnemies = 0;
+	int32 NextSpawnableEnemyIndex = 0;
+	UPROPERTY()
+	TSubclassOf<AMarker> MarkerClass; // To not put tons of references everywhere where i need it and also it doesn't work with pooling FUCK 3D UI WIDGETS.
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
@@ -117,7 +124,9 @@ private:
 	UPROPERTY()
 	TArray<FAsyncHandle> AsyncHandles;
 	UPROPERTY()
-	TArray<ECharacterType> EnemyTypes;
+	TSet<ECharacterType> EnemyTypes;
+	UPROPERTY()
+	TArray<FSpawnableEnemyByTotalAmount> SpawnableEnemiesByTotalAmount;
 	UPROPERTY()
 	TMap<FPoolObjectPairWrapper, EVfx> ProjectileVfxCombinationsMap;
 	UPROPERTY()
@@ -135,6 +144,7 @@ private:
 	TObjectPtr<UNiagaraComponent> SpawnAndReceiveVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
 	EWeapon GetWeaponByCharacter(const ECharacterType InCharacter);
 	EWeapon GetSingularWeapon(const EWeapon InWeapon);
+	ECharacterType GetRandomCharacterToSpawn();
 
 	void PrimaryInit();
 	void SetupWeaponsPrimaryAssets();
@@ -148,6 +158,7 @@ private:
 	void SetupSpawnLocations();
 	void SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode,TFunction<void()> InCallBack);
 	void SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode);
+	void AddSpawnableEnemiesToThePool();
 	template<typename T, typename U>
 	void FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type);
 };

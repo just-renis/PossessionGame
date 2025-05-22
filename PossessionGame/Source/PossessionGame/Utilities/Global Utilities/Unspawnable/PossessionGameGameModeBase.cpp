@@ -26,7 +26,7 @@ void APossessionGameGameModeBase::BeginPlay()
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->Init(SaveSlot->GetIsTutorialFinished(), DelegateManager, EnemiesThatAreSpawnable);
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->Init(SaveSlot->GetIsTutorialFinished(), MarkerClass, DelegateManager, SpawnableEnemiesByTotalAmount);
 	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
 //	FString LevelName = GetWorld()->GetMapName();

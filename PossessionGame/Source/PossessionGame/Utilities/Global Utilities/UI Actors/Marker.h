@@ -1,19 +1,23 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "Marker.generated.h"
 
 class UWidgetComponent;
 class UObjectiveMarker;
 
 UCLASS()
-class POSSESSIONGAME_API AMarker : public APoolObject
+class POSSESSIONGAME_API AMarker : public AActor
 {
 	GENERATED_BODY()
-
+public:
+	void Toggle(const bool bState);
+	void DestroyThis();
+private:
 	AMarker();
-	
+
+	UPROPERTY()
+	FTimerHandle MarkerUpdateHandle;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> MarkerWidgetComponent;
 	UPROPERTY()
@@ -22,8 +26,6 @@ class POSSESSIONGAME_API AMarker : public APoolObject
 	TObjectPtr<APlayerController> PlayerController;
 
 	virtual void BeginPlay() override;
-	virtual void Init(bool bInIsPlayerObject) override;
-	virtual void Disable(const bool bHide) override;
 	UFUNCTION()
 	void UpdateMarkerText() const;
 };

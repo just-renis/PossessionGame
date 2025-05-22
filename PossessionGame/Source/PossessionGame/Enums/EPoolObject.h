@@ -18,7 +18,6 @@ enum class EPoolObject : uint8
 	RangerShield,
 	DamageNumber,
 	PoisonArea,
-	ObjectiveMarker,
 	Usb,
 	Artifact
 };

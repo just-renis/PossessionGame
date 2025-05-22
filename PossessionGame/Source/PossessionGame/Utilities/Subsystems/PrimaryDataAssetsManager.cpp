@@ -17,6 +17,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/SpawnLocation.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 
 bool UPrimaryDataAssetsManager::IsAsyncLoadingFinished()
 {
@@ -244,18 +245,22 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 {
 	if (!bIsSpawnInProcess)
 	{
-		if (InCharacter == ECharacterType::Random) InCharacter = EnemyTypes[FMath::RandRange(0, EnemyTypes.Num() - 1)];
+		if (InCharacter == ECharacterType::Random) InCharacter = GetRandomCharacterToSpawn();
 		!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, InCallBack) : SpawnEnemy(InCharacter, InGameMode, InCallBack);
+		TotalSpawnedEnemies++;
+		AddSpawnableEnemiesToThePool();
 	}
 }
 
-void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<ECharacterType>& InEnemiesThatAreSpawnable)
+void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount)
 {
 	SetupSpawnLocations();
+	MarkerClass = InMarkerClass;
 	bTutorialIsFinished = true;
-	EnemyTypes = InEnemiesThatAreSpawnable;
+	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
 	RequestSpawnEnemy(ECharacterType::Ranger, EGameMode::TutorialMode1, nullptr);
-	if (InEnemiesThatAreSpawnable.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
+	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
+	else AddSpawnableEnemiesToThePool();
 	DelegateManager = InDelegateManager;
 	if (!bTutorialIsFinished) DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
 }
@@ -312,6 +317,14 @@ EWeapon UPrimaryDataAssetsManager::GetSingularWeapon(const EWeapon InWeapon)
 		case EWeapon::GuardianWeapon: return EWeapon::GuardianSingularWeapon;
 		default: return EWeapon::None;
 	}
+}
+
+ECharacterType UPrimaryDataAssetsManager::GetRandomCharacterToSpawn()
+{
+	const int32 TargetIndex = FMath::RandRange(0, EnemyTypes.Num() - 1);
+	int32 CurrentIndex = 0;
+	for (const ECharacterType EnemyType : EnemyTypes) if (CurrentIndex++ == TargetIndex) return EnemyType;
+	return ECharacterType::Minion;
 }
 
 void UPrimaryDataAssetsManager::PrimaryInit()
@@ -580,6 +593,15 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 }
 
 void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode) { RequestSpawnEnemy(InCharacter, InGameMode, nullptr); }
+
+void UPrimaryDataAssetsManager::AddSpawnableEnemiesToThePool()
+{
+	while (NextSpawnableEnemyIndex < SpawnableEnemiesByTotalAmount.Num() && SpawnableEnemiesByTotalAmount[NextSpawnableEnemyIndex].SpawnThreshold <= TotalSpawnedEnemies)
+	{
+		EnemyTypes.Add(SpawnableEnemiesByTotalAmount[NextSpawnableEnemyIndex].Character);
+		NextSpawnableEnemyIndex++;
+	}
+}
 
 template<typename T, typename U>
 void UPrimaryDataAssetsManager::FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type)

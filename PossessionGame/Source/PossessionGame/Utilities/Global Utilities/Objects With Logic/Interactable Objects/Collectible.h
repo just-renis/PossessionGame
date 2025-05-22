@@ -5,7 +5,7 @@
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "Collectible.generated.h"
 
-enum class EPoolObject : uint8;
+class AMarker;
 class UCollectibleData;
 class UNiagaraComponent;
 class UDelegateManager;
@@ -34,7 +34,7 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> Aura;
 	UPROPERTY()
-	TObjectPtr<APoolObject> Marker;
+	TObjectPtr<AMarker> Marker;
 	UPROPERTY()
 	TObjectPtr<UPoolingManager> PoolingManager;
 

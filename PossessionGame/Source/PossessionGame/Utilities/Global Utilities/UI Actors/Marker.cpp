@@ -1,7 +1,19 @@
 ﻿#include "Marker.h"
 #include "Components/WidgetComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/UI/SecondaryWidgets/ObjectiveMarker.h"
+
+void AMarker::Toggle(const bool bState)
+{
+	if (bState) GetWorld()->GetTimerManager().SetTimer(MarkerUpdateHandle, this, &AMarker::UpdateMarkerText, 0.05f, true);
+	else GetWorld()->GetTimerManager().ClearTimer(MarkerUpdateHandle);
+	SetActorHiddenInGame(!bState);
+}
+
+void AMarker::DestroyThis()
+{
+	Toggle(false);
+	Destroy();
+}
 
 AMarker::AMarker()
 {
@@ -13,23 +25,12 @@ void AMarker::BeginPlay()
 {
 	Super::BeginPlay();
 	Marker = Cast<UObjectiveMarker>(MarkerWidgetComponent->GetWidget());
-}
-
-void AMarker::Init(bool bInIsPlayerObject)
-{
-	Super::Init(bInIsPlayerObject);
 	PlayerController = GetWorld()->GetFirstPlayerController();
-	UKismetSystemLibrary::K2_SetTimer(this, "UpdateMarkerText", 0.05f, true);
-}
-
-void AMarker::Disable(const bool bHide)
-{
-	Super::Disable(bHide);
-	UKismetSystemLibrary::K2_ClearTimer(this, "UpdateMarkerText");
+	GetWorld()->GetTimerManager().SetTimer(MarkerUpdateHandle, this, &AMarker::UpdateMarkerText, 0.05f, true);
 }
 
 void AMarker::UpdateMarkerText() const
 {
 	if (!PlayerController) return;
-	Marker->UpdateMarkerText(FMath::Sqrt(FVector::DistSquared(GetActorLocation(), PlayerController->GetPawn()->GetActorLocation())) / 100.f);
+	Marker->UpdateMarkerText(FMath::Sqrt(FVector::DistSquared(GetActorLocation(), PlayerController->GetPawn()->GetActorLocation())) * 0.01f);
 }

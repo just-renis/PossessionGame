@@ -6,6 +6,7 @@
 #include "PossessionGame/Data Assets/Base Data Assets/CollectibleData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
+#include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -59,8 +60,9 @@ void ACollectible::Interact()
 
 void ACollectible::ShowMarker()
 {
-	Marker = PoolingManager->SpawnObjectFromPool(EPoolObject::ObjectiveMarker, GetActorLocation() + FVector(0.f, 0.f, 50.f));
-	Marker->Init();
+	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 50.f), FRotator::ZeroRotator);
+	Marker->Toggle(true);
+	Marker->SetActorLocation(GetActorLocation() + FVector(0.f, 0.f, 50.f));
 }
 
 void ACollectible::EnableCollectible()
@@ -85,7 +87,7 @@ void ACollectible::ToggleInteractableWidget(const bool bState, const bool bMarke
 	else
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (bMarkerIncluded && Marker && Data->GetIsMarkerEnabled()) PoolingManager->ReturnObjectToPool(EPoolObject::ObjectiveMarker, Marker);
+		if (bMarkerIncluded && Marker && Data->GetIsMarkerEnabled()) Marker->Toggle(false);
 		if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	}
 }
