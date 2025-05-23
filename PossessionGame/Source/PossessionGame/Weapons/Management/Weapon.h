@@ -62,8 +62,8 @@ public:
 	void P_InitialSetupTransfer();
 	virtual void P_SetupTransfer(const bool bSetToFirstHand = true);
 	virtual void P_UpdateAmmoTextHUD();
-	void P_AttachHandsToCamera(const FVector InLocation, const FRotator InRotation, const FVector InScale = FVector::ZeroVector);
-	virtual void P_AttachWeaponToHands(const TObjectPtr<USkeletalMeshComponent>& InHandsMesh, const FName InSocketName = "PlayerWeaponSocket1");
+	void P_AttachHandsToCamera(const FVector& InLocation, const FRotator& InRotation, const FVector& InScale = FVector::ZeroVector);
+	virtual void P_AttachWeaponToHands(const TObjectPtr<USkeletalMeshComponent>& InHandsMesh, const FName& InSocketName = "PlayerWeaponSocket1");
 	void P_SetWalkSpread(const bool bState);
 	virtual void P_SetVariationMaterial();
 	virtual void P_ChangeVfxVariation();

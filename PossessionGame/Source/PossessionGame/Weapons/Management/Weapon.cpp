@@ -91,16 +91,21 @@ void AWeapon::P_SetupTransfer(const bool bSetToFirstHand)
 
 void AWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeTwoParams.Broadcast(CurrentAmmo, TotalAmmo); }
 
-void AWeapon::P_AttachHandsToCamera(const FVector InLocation, const FRotator InRotation, const FVector InScale)
+void AWeapon::P_AttachHandsToCamera(const FVector& InLocation, const FRotator& InRotation, const FVector& InScale)
 {
 	HandsMesh->SetHiddenInGame(false);
 	HandsMesh->AttachToComponent(GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetTransformComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	HandsMesh->SetRelativeLocationAndRotation(InLocation, InRotation);
 	if (InScale != FVector::Zero()) HandsMesh->SetRelativeScale3D(InScale);
-	if (Mesh) P_AttachWeaponToHands(HandsMesh);
+	if (Mesh)
+	{
+		Mesh->SetRelativeLocationAndRotation(InLocation, InRotation);
+		Mesh->SetRelativeScale3D(InScale);
+		P_AttachWeaponToHands(HandsMesh);
+	}
 }
 
-void AWeapon::P_AttachWeaponToHands(const TObjectPtr<USkeletalMeshComponent>& InHandsMesh, FName InSocketName)
+void AWeapon::P_AttachWeaponToHands(const TObjectPtr<USkeletalMeshComponent>& InHandsMesh, const FName& InSocketName)
 {
 	Mesh->AttachToComponent(InHandsMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, InSocketName);
 }

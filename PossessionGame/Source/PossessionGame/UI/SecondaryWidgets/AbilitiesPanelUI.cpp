@@ -1,7 +1,6 @@
 ﻿#include "AbilitiesPanelUI.h"
 #include "EnhancedInputSubsystems.h"
 #include "Animation/WidgetAnimation.h"
-#include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/Overlay.h"
 #include "Components/TextBlock.h"
@@ -26,27 +25,66 @@ void UAbilitiesPanelUI::CollapseAbilityIcon(const int32 Index) const
 	}
 }
 
-void UAbilitiesPanelUI::UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility) const
+void UAbilitiesPanelUI::UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility)
 {
 	switch (InAbility->GetAbilityIndex())
 	{
 		case 0: 
 			if (!FirstAbilityImage || !FirstChargesText || !MI_FirstAbilityRadial) return;
-			MI_FirstAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetIsMaxCharged() ? 0.f : InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
-			FirstChargesText->SetText(FText::FromString(FString::FromInt(InAbility->GetCurrentCharges())));
-			if (InAbility->GetIsAbilityCharged() && FirstAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) FirstAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (InAbility->GetIsMaxCharged())
+			{
+				if (!bFirstAbilityFullyCharged)
+				{
+					bFirstAbilityFullyCharged = true;
+					MI_FirstAbilityRadial->SetScalarParameterValue("Opacity", 0.f);
+					if (FirstAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) FirstAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+					FirstChargesText->SetText(FText::AsNumber(InAbility->GetCurrentCharges()));
+				}
+				return;
+			}
+			if (InAbility->GetCurrentCharges() > 0 && FirstAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) FirstAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			bFirstAbilityFullyCharged = false;
+			MI_FirstAbilityRadial->SetScalarParameterValue("Opacity", 1.f);
+			MI_FirstAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
+			FirstChargesText->SetText(FText::AsNumber(InAbility->GetCurrentCharges()));
 			break;
 		case 1:
 			if (!SecondAbilityImage || !SecondChargesText || !MI_SecondAbilityRadial) return;
-			MI_SecondAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetIsMaxCharged() ? 0.f : InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
-			SecondChargesText->SetText(FText::FromString(FString::FromInt(InAbility->GetCurrentCharges())));
-			if (InAbility->GetIsAbilityCharged() && SecondAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) SecondAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (InAbility->GetIsMaxCharged())
+			{
+				if (!bSecondAbilityFullyCharged)
+				{
+					bSecondAbilityFullyCharged = true;
+					MI_SecondAbilityRadial->SetScalarParameterValue("Opacity", 0.f);
+					if (SecondAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) SecondAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+					SecondChargesText->SetText(FText::AsNumber(InAbility->GetCurrentCharges()));
+				}
+				return;
+			}
+			if (InAbility->GetCurrentCharges() > 0 && SecondAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) SecondAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			bSecondAbilityFullyCharged = false;
+			MI_SecondAbilityRadial->SetScalarParameterValue("Opacity", 1.f);
+			MI_SecondAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
+			SecondChargesText->SetText(FText::AsNumber(InAbility->GetCurrentCharges()));
 			break;
 		default:
 			if (!ThirdAbilityImage || !ThirdChargesText || !MI_ThirdAbilityRadial) return;
-			MI_ThirdAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetIsMaxCharged() ? 0.f : InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
-			ThirdChargesText->SetText(FText::FromString(FString::FromInt(InAbility->GetCurrentCharges())));
-			if (InAbility->GetIsAbilityCharged() && ThirdAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (InAbility->GetIsMaxCharged())
+			{
+				if (!bThirdAbilityFullyCharged)
+				{
+					bThirdAbilityFullyCharged = true;
+					MI_ThirdAbilityRadial->SetScalarParameterValue("Opacity", 0.f);
+					if (ThirdAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+					ThirdChargesText->SetText(FText::AsNumber(InAbility->GetCurrentCharges()));
+				}
+				return;
+			}
+			if (InAbility->GetCurrentCharges() > 0 && ThirdAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			bThirdAbilityFullyCharged = false;
+			MI_ThirdAbilityRadial->SetScalarParameterValue("Opacity", 1.f);
+			MI_ThirdAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
+			ThirdChargesText->SetText(FText::AsNumber(InAbility->GetCurrentCharges()));
 	}
 }
 

@@ -6,7 +6,6 @@
 
 class UTextBlock;
 class UImage;
-class UBorder;
 class UAbility;
 enum class EUIBar : uint8;
 class UOverlay;
@@ -18,9 +17,12 @@ class POSSESSIONGAME_API UAbilitiesPanelUI : public UUserWidget
 public:
 	void SetOverlaysVisibility(const bool bState) const;
 	void CollapseAbilityIcon(const int32 Index) const;
-	void UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility) const;
+	void UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility);
 	void SetAsCurrent();
 private:
+	bool bFirstAbilityFullyCharged = false;
+	bool bSecondAbilityFullyCharged = false;
+	bool bThirdAbilityFullyCharged = false;
 	UPROPERTY(EditAnywhere, Category = "Ability Icons", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> AbilityIcon1;
 	UPROPERTY(EditAnywhere, Category = "Ability Icons", meta = (AllowPrivateAccess = true))
@@ -30,15 +32,15 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Material", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_RadialProgress;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UBorder> FirstAbilityProgressBar;
+	TObjectPtr<UImage> FirstAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> FirstAbilityImage;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UBorder> SecondAbilityProgressBar;
+	TObjectPtr<UImage> SecondAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> SecondAbilityImage;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UBorder> ThirdAbilityProgressBar;
+	TObjectPtr<UImage> ThirdAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ThirdAbilityImage;
 	UPROPERTY(meta = (BindWidget))
