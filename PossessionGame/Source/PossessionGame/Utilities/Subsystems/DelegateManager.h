@@ -50,6 +50,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnTerminalHackFinish, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeFinished, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FDestroyTutorialForceField, const int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnCutsceneStateChange, const bool);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType, const EVariation);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&, bool);
@@ -102,6 +103,7 @@ public:
 	FOnGameModeFinished OnGameModeFinished;
 	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
 	FDestroyTutorialForceField DestroyTutorialForceField;
+	FOnCutsceneStateChange OnCutsceneStateChange;
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
 	FOnVariationSelection OnVariationSelection;
 	FOnTargetChange OnTargetChange;

@@ -134,6 +134,7 @@ void AWeapon::P_ResetShootCooldown() { ShootCooldown = P_Data->GetShootCooldown(
 void AWeapon::DestroyThis()
 {
 	DelegateManager->OnLevelUp.RemoveAll(this);
+	DelegateManager->OnCutsceneStateChange.RemoveAll(this);
 	Destroy();
 }
 
@@ -214,6 +215,7 @@ void AWeapon::P_Setup()
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
 	DelegateManager->OnLevelUp.AddUObject(this, &AWeapon::P_SetupLevelUpAppliance);
+	DelegateManager->OnCutsceneStateChange.AddUObject(this, &AWeapon::P_OnCutsceneStateChange);
 }
 
 void AWeapon::P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName)
@@ -318,4 +320,10 @@ void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
 {
 	HitScanDamage -= DefaultHitScanDamage * Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
 	HitScanDamage += DefaultHitScanDamage * Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
+}
+
+void AWeapon::P_OnCutsceneStateChange(const bool bState) const
+{
+	if (Mesh) Mesh->SetVisibility(!bState);
+	if (HandsMesh) HandsMesh->SetVisibility(!bState);
 }

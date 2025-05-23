@@ -104,6 +104,7 @@ public:
 	void SetPossessionOutlineTimer();
 	void SetUnPossessionOutlineTimer();
 	virtual void EmpEffectEnded();
+	void SetInputState(const bool bState) { bIsInputLocked = bState; }
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;

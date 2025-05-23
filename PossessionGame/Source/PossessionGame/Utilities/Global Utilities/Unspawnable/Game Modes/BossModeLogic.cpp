@@ -14,7 +14,7 @@ void UBossModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const T
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UBossModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->OnBossDeath.BindUObject(this, &UBossModeLogic::BossDeath);
 	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
-	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate * 3.f, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate, true);
 }
 
 void UBossModeLogic::Finalize()

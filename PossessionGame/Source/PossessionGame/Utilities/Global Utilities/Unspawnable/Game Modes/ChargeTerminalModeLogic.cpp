@@ -17,7 +17,7 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 	WaveManager->GetDelegateManager()->OnUsbInserted.BindUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
 	PlaySound(ESound::TaskAnnouncement);
 	if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(true, WaveManager->GetCurrentGameMode());
-	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate * 3.f, true);
+	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate, true);
 }
 
 void UChargeTerminalModeLogic::Finalize()

@@ -6,9 +6,9 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/EmptyActor.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
+#include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -31,6 +31,7 @@ void AEnemyAIController::SetReloadDelay(const float InValue) { StateTreeData.Set
 
 void AEnemyAIController::DestroyThis()
 {
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnCutsceneStateChange.RemoveAll(this);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTargetChange.RemoveAll(this);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDeath.RemoveAll(this);
 	if (Perception)
@@ -53,7 +54,7 @@ void AEnemyAIController::SetupStateTree()
 		StateTreeData.SetWeaponRef(Proprietor->GetWeapon());
 		StateTreeData.SetEQSTargetRef(EQSTarget);
 		StateTreeData.SetStateTreeRef(StateTree);
-		StateTree->StartLogic();
+		if (!GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetIsCutscenePlaying()) StateTree->StartLogic();
 	}
 }
 
@@ -81,6 +82,7 @@ void AEnemyAIController::BeginPlay()
 	Super::BeginPlay();
 	EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
 	SetupEQSTarget();
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnCutsceneStateChange.AddUObject(this, &AEnemyAIController::OnCutsceneEnd);
 	UKismetSystemLibrary::K2_SetTimer(this, "SightOnTargetLogic", SightOnTargetRepeat, true);
 }
 
@@ -101,7 +103,6 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 		{
 			Proprietor->GetAnimInstance()->SetIsTargetInSight(true);
 			SetIsTargetInMySight(true);
-			if (Proprietor->GetGameModeBase()->GetIsDebugModeEnabled()) DrawDebugLine(GetWorld(), GetPawn()->GetPawnViewLocation(), Actor->GetActorLocation(), FColor::Red, false, 2.f);
 		}
 	}
 	else UKismetSystemLibrary::K2_SetTimer(this, "OnLostSightOfPawn", 0.3f, false);
@@ -157,6 +158,8 @@ void AEnemyAIController::StopStateTreeLogic(const bool bNeedCleanup) const
 		if (bNeedCleanup) StateTree->Cleanup();
 	}
 }
+
+void AEnemyAIController::OnCutsceneEnd(const bool bState) const { ResumeLogic(); }
 
 void AEnemyAIController::OnLostSightOfPawn() { SetIsTargetInMySight(false); }
 

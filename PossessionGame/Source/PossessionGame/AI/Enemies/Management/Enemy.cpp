@@ -203,7 +203,7 @@ void AEnemy::PossessedBy(AController* NewController)
 			UKismetSystemLibrary::K2_SetTimer(this, "AI_TriggerDeathVoiceLine", 1.f, false);
 			P_Setup();
 			if (P_HUD) P_HUD->AnnouncePossession();
-			bIsInputLocked = false;
+			SetInputState(false);
 		}
 	}
 }
@@ -514,9 +514,10 @@ void AEnemy::BeginPlay()
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_SetCharacterMovementSpeed", 0.05f, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_PlaySpawnSound", 3.f + UKismetMathLibrary::RandomInteger(4), false);
 	DelegateManager->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
+	DelegateManager->OnCutsceneStateChange.AddUObject(this, &AEnemy::SetInputState);
 	AI_Setup();
 	if (GetIsPossessable()) SetupUserSettings();
-	bIsInputLocked = false;
+	SetInputState(false);
 }
 
 void AEnemy::SetAnimInstance() { AnimInstance = Cast<UEnemyAnimationInstance>(GetMesh()->GetAnimInstance()); }
@@ -714,8 +715,8 @@ void AEnemy::P_SetupUI()
 }
 
 void AEnemy::P_PossessEnemy()
-	{
-		if (bIsInputLocked) return;
+{
+	if (bIsInputLocked) return;
 	if (bCanPossessOtherEnemy)
 	{
 		FHitResult HitResult;
