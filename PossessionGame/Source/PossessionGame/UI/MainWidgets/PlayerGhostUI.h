@@ -53,5 +53,5 @@ private:
 	void SetHintText(const int32 InIndex) const;
 	void StopShowingHint() const;
 	void ShowPressKey(const bool bState);
-	void UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText);
+	void UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText) const;
 };

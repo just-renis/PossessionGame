@@ -84,14 +84,15 @@ void UPlayerGhostUI::ShowPressKey(const bool bState)
 		case 3: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(6); break;
 		case 4:
 			DelegateManager->OnTutorialEnd.Broadcast();
-			GetWorld()->GetSubsystem<UWidgetManager>()->DestroyWidget(EWidget::TutorialUI);
+			DelegateManager->OnKeyBindChange.RemoveAll(this);
 			DelegateManager->OnShowPressKeyToContinue.RemoveAll(this);
+			GetWorld()->GetSubsystem<UWidgetManager>()->DestroyWidget(EWidget::TutorialUI);
 			break;
 		default: ;
 	}
 }
 
-void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText)
+void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText) const
 {
 	if (PressKeyToContinueText && InKeyBindName.IsEqual("Interact")) PressKeyToContinueText->SetText(FText::Format(FText::FromString("Press [{0}] Key To Continue"), InKeyBindText));
 	if (!HintText) return;
