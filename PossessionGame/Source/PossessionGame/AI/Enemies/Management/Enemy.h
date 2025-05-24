@@ -95,7 +95,7 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	void ToggleCrouch();
 	virtual void InitiateDeath();
-	void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason);
+	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason);
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired = false);
 	void StopSound(const ESound InSoundName);
 	virtual void SetEmpEffect(const float InEffectDuration);

@@ -34,7 +34,8 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 				XpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
 				XpBar->SetPercent(InCurrent / InMax);;
 			}
-			break;
+		break;
+		case EUIBar::Boss: if (BossHpBar) BossHpBar->SetPercent(InCurrent / InMax);
 		default: ;
 	}
 }
@@ -195,6 +196,9 @@ void UPlayerHUD::NativeConstruct()
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnPlayerDamageDealt.BindUObject(this, &UPlayerHUD::ShowDamageTick);
 	DelegateManager->OnLevelUp.AddUObject(this, &UPlayerHUD::LevelUp);
+	DelegateManager->OnBossDamaged.BindUObject(this, &UPlayerHUD::UpdateBossHpBar);
+	DelegateManager->OnBossSpawn.BindUObject(this, &UPlayerHUD::EnableBossHpBar);
+	DelegateManager->OnBossDeath.AddUObject(this, &UPlayerHUD::DisableBossHpBar);
 }
 
 /*void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
@@ -248,6 +252,16 @@ void UPlayerHUD::PlayLevelUpAnim()
 }
 
 void UPlayerHUD::SetLevelText(const int32 InLevel) const { if (LevelNumberText) LevelNumberText->SetText(FText::FromString(FString::FromInt(InLevel))); }
+
+void UPlayerHUD::UpdateBossHpBar(const float InCurrent, const float InMax)
+{
+	if (!BossHpBarInv) return;
+	UpdateProgressBar(EUIBar::Boss, InCurrent, InMax);
+}
+
+void UPlayerHUD::EnableBossHpBar() const { if (BossHpBarInv) BossHpBarInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible); }
+
+void UPlayerHUD::DisableBossHpBar() const { if (BossHpBarInv) BossHpBarInv->SetVisibility(ESlateVisibility::Collapsed); }
 
 /*float UPlayerHUD::GetHitDamageIndicatorSection(const float InAngle)
 {

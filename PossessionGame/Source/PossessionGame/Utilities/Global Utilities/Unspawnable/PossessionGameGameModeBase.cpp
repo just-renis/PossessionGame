@@ -1,17 +1,11 @@
 #include "PossessionGameGameModeBase.h"
-#include "LevelSequenceActor.h"
-#include "LevelSequencePlayer.h"
 #include "PossessionGameInstance.h"
 #include "SettingsSave.h"
 #include "Kismet/GameplayStatics.h"
-#include "PossessionGame/Enums/EGameMode.h"
-#include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
-#include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/ArtifactSpawnLocation.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
-#include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -31,9 +25,9 @@ void APossessionGameGameModeBase::BeginPlay()
 	Super::BeginPlay();
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	DelegateManager->OnGameModeInitiator.AddUObject(this, &APossessionGameGameModeBase::PlayCutscene);
+	//DelegateManager->OnGameModeInitiator.AddUObject(this, &APossessionGameGameModeBase::PlayCutscene);
+	//GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->Init(DelegateManager);
 	LoadSettingsData();
-	GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->Init(DelegateManager);
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->Init(SaveSlot->GetIsTutorialFinished(), MarkerClass, DelegateManager, SpawnableEnemiesByTotalAmount);
 	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
@@ -75,7 +69,7 @@ void APossessionGameGameModeBase::SpawnArtifact() const
 	Cast<AArtifactSpawnLocation>(SpawnLocations[FMath::RandRange(0, SpawnLocations.Num() - 1)])->SpawnArtifact();
 }
 
-void APossessionGameGameModeBase::PlayCutscene(const EGameMode InGameMode)
+/*void APossessionGameGameModeBase::PlayCutscene(const EGameMode InGameMode)
 {
 	if (InGameMode == EGameMode::BossMode)
 	{
@@ -94,4 +88,4 @@ void APossessionGameGameModeBase::CutsceneEnded() const
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->SetVisibility(ESlateVisibility::HitTestInvisible);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->SetVisibility(ESlateVisibility::HitTestInvisible);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnCutsceneStateChange.Broadcast(false);
-}
+}*/

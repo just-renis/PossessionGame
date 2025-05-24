@@ -127,6 +127,7 @@ void AMinionBoss::BeginPlay()
 	Super::BeginPlay();
 	LaserCollision->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionBeginOverlap);
 	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
+	(void)DelegateManager->OnBossSpawn.ExecuteIfBound();
 	SetupStompTrigger();
 }
 
@@ -169,7 +170,7 @@ void AMinionBoss::InitiateDeath()
 	DestroyStompTriggerSphere();
 	GetMesh()->SetMaterial(0, MI_MeshBaseMaterial);
 	Super::InitiateDeath();
-	(void)DelegateManager->OnBossDeath.ExecuteIfBound();
+	DelegateManager->OnBossDeath.Broadcast();
 }
 
 void AMinionBoss::ToggleStompTrigger(const bool bState) const
@@ -198,6 +199,12 @@ void AMinionBoss::EmpEffectEnded()
 	if (!StompTriggerSphere) return;
 	StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
+{
+	Super::ReceiveDamage(InDamage, InDamageReason);
+	(void)DelegateManager->OnBossDamaged.ExecuteIfBound(CurrentHp, MaxHp);
 }
 
 void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor)

@@ -8,7 +8,6 @@
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/EmptyActor.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
-#include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -31,7 +30,6 @@ void AEnemyAIController::SetReloadDelay(const float InValue) { StateTreeData.Set
 
 void AEnemyAIController::DestroyThis()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnCutsceneStateChange.RemoveAll(this);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTargetChange.RemoveAll(this);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDeath.RemoveAll(this);
 	if (Perception)
@@ -54,7 +52,7 @@ void AEnemyAIController::SetupStateTree()
 		StateTreeData.SetWeaponRef(Proprietor->GetWeapon());
 		StateTreeData.SetEQSTargetRef(EQSTarget);
 		StateTreeData.SetStateTreeRef(StateTree);
-		if (!GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetIsCutscenePlaying()) StateTree->StartLogic();
+		StateTree->StartLogic();
 	}
 }
 
@@ -82,7 +80,6 @@ void AEnemyAIController::BeginPlay()
 	Super::BeginPlay();
 	EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
 	SetupEQSTarget();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnCutsceneStateChange.AddUObject(this, &AEnemyAIController::OnCutsceneEnd);
 	UKismetSystemLibrary::K2_SetTimer(this, "SightOnTargetLogic", SightOnTargetRepeat, true);
 }
 
@@ -159,7 +156,6 @@ void AEnemyAIController::StopStateTreeLogic(const bool bNeedCleanup) const
 	}
 }
 
-void AEnemyAIController::OnCutsceneEnd(const bool bState) const { ResumeLogic(); }
 
 void AEnemyAIController::OnLostSightOfPawn() { SetIsTargetInMySight(false); }
 

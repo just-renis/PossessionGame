@@ -514,7 +514,6 @@ void AEnemy::BeginPlay()
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_SetCharacterMovementSpeed", 0.05f, true);
 	UKismetSystemLibrary::K2_SetTimer(this, "AI_PlaySpawnSound", 3.f + UKismetMathLibrary::RandomInteger(4), false);
 	DelegateManager->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
-	DelegateManager->OnCutsceneStateChange.AddUObject(this, &AEnemy::SetInputState);
 	AI_Setup();
 	if (GetIsPossessable()) SetupUserSettings();
 	SetInputState(false);

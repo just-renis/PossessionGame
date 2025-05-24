@@ -102,6 +102,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HpWhiteBar;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> BossHpBar;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ScreenGlow;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FpsText;
@@ -113,6 +115,8 @@ private:
 	TObjectPtr<UImage> RunningIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInvalidationBox> BossHpBarInv;
 	//UPROPERTY(meta = (BindWidget))
 //	TObjectPtr<UOverlay> HitDamageIndicator;
 	UPROPERTY(meta = (BindWidget))
@@ -155,6 +159,9 @@ private:
 	void LevelUp(const int32 InLevel);
 	void PlayLevelUpAnim();
 	void SetLevelText(const int32 InLevel) const;
+	void UpdateBossHpBar(const float InCurrent, const float InMax);
+	void EnableBossHpBar() const;
+	void DisableBossHpBar() const;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 	UFUNCTION()
