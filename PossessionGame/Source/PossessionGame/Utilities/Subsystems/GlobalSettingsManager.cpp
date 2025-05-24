@@ -1,1 +1,19 @@
 #include "GlobalSettingsManager.h"
+#include "EnhancedInputSubsystems.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
+
+FText UGlobalSettingsManager::GetKeyBindText(const FName& InKeyName) const
+{
+	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController<APlayerController>();
+	if (!PlayerController) return FText::GetEmpty();
+	const TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	if (!Subsystem) return FText::GetEmpty();
+	const TObjectPtr<UEnhancedInputUserSettings> UserSettings = Subsystem->GetUserSettings();
+	if (!UserSettings) return FText::GetEmpty();
+	const TObjectPtr<UEnhancedPlayerMappableKeyProfile> CurrentProfile = UserSettings->GetCurrentKeyProfile();
+	if (!CurrentProfile) return FText::GetEmpty();
+	const FKeyMappingRow* MappingRow = CurrentProfile->GetPlayerMappingRows().Find(InKeyName);
+	if (!MappingRow || MappingRow->Mappings.Num() == 0) return FText::GetEmpty();
+	for (const FPlayerKeyMapping KeyBind : MappingRow->Mappings) return KeyBind.GetCurrentKey().GetDisplayName();
+	return FText::GetEmpty();
+}

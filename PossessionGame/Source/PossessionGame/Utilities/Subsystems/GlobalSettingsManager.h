@@ -12,6 +12,7 @@ class POSSESSIONGAME_API UGlobalSettingsManager : public UGameInstanceSubsystem
 public:
 	bool GetIsGodModeEnabled() const { return bIsGodModeEnabled; }
 	bool GetIsDemo() const { return bIsDemo; }
+	FText GetKeyBindText(const FName& InKeyName) const;
 
 	void ToggleGodModeEnabled() { bIsGodModeEnabled = !bIsGodModeEnabled; }
 private:

@@ -9,17 +9,10 @@ class POSSESSIONGAME_API AGuardianWeapon : public ADualWieldingWeapon
 {
 	GENERATED_BODY()
 public:
-	void PlayOverChargeVfx();
-	void StopOverChargeVfx() const;
 	void CancelShootingHold() const;
 	void ShootingHoldStarted() const;
 	void ResetShootingHoldDuration() const;
 private:
-	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> FirstWeaponOverChargeComponent;
-	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> SecondWeaponOverChargeComponent;
-	
 	virtual bool P_CanShoot(const bool InbIsFirstWeapon) override;
 	
 	virtual void P_UpdateAmmoTextHUD() override;

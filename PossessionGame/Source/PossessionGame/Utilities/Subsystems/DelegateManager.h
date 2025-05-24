@@ -33,7 +33,6 @@ DECLARE_DELEGATE_TwoParams(FStartTutorialDroneMoveToLocation, const int32, const
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
-DECLARE_DELEGATE_TwoParams(FOnKeyBindChange, const int32, const FText&);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
 DECLARE_DELEGATE_ThreeParams(FOnAbilityUse, const int32, const bool, const bool);
 DECLARE_MULTICAST_DELEGATE(FOnTerminalInteraction);
@@ -55,6 +54,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FDestroyTutorialForceField, const int32);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType, const EVariation);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&, bool);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText&);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnWeaponAmmoChangeThreeParams, int32, int32, int32);
 
 UCLASS()
@@ -78,7 +78,6 @@ public:
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FOnEnemyDeath OnEnemyDeath;
-	FOnKeyBindChange OnKeyBindChange;
 	FOnBossDamaged OnBossDamaged;
 	FSendTargetToTutorialDrone SendTargetToTutorialDrone;
 	FOnCheckDistanceToTutorialDrone OnCheckDistanceToTutorialDrone;
@@ -109,6 +108,7 @@ public:
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
 	FOnVariationSelection OnVariationSelection;
 	FOnTargetChange OnTargetChange;
+	FOnKeyBindChange OnKeyBindChange;
 	FOnWeaponAmmoChangeThreeParams OnWeaponAmmoChangeThreeParams;
 
 	bool GetIsUsbDroppable() const { return bIsUsbDroppable; }

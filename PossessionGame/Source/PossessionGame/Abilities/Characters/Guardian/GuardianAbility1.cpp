@@ -13,7 +13,6 @@ void UGuardianAbility1::P_Execute()
 	Proprietor->SetActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::OverCharge);
 	Proprietor->P_SetFov(95.f);
-	Proprietor->PlayOverChargeVfx();
 	Proprietor->GetWeapon()->P_ReduceShootCooldown(20.f);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->SetPlayRate(1.2f);
 	Proprietor->P_IncreaseMovementSpeed(20.f);
@@ -26,7 +25,6 @@ void UGuardianAbility1::P_Execute()
 void UGuardianAbility1::P_StopAbility()
 {
 	Proprietor->P_SetFov(90.f);
-	Proprietor->StopOverChargeVfx();
 	Proprietor->GetWeapon()->P_ResetShootCooldown();
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->SetPlayRate(1.f);
 	Proprietor->P_ResetMovementSpeed();

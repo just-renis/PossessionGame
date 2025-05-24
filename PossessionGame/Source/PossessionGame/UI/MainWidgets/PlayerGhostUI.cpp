@@ -5,6 +5,7 @@
 #include "Components/InvalidationBox.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 bool UPlayerGhostUI::IsPressKeyShown() const { return PressKeyToContinueInv->GetVisibility() == ESlateVisibility::SelfHitTestInvisible; }
@@ -13,6 +14,12 @@ float UPlayerGhostUI::GetStartupAnimationLength() const { return StartupAnim ? S
 
 void UPlayerGhostUI::PlayStartupAnimation() { if (StartupAnim) PlayAnimation(StartupAnim); }
 
+FText UPlayerGhostUI::GetKeyBindText(const int32 InIndex) const
+{
+	const FName KeyBindName = InIndex == 1 ? "Possess" : InIndex == 2 ? "LeftClick" : "Shift";
+	return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText(KeyBindName);
+}
+
 void UPlayerGhostUI::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -20,6 +27,7 @@ void UPlayerGhostUI::NativeConstruct()
 	DelegateManager->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
 	DelegateManager->StopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
 	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &UPlayerGhostUI::ShowPressKey);
+	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerGhostUI::UpdateKeyBindText);
 }
 
 void UPlayerGhostUI::ShowHint(const int32 InIndex)
@@ -27,7 +35,8 @@ void UPlayerGhostUI::ShowHint(const int32 InIndex)
 	if (HintTexts.IsValidIndex(InIndex))
 	{
 		if (HintAppearAnim) PlayAnimation(HintAppearAnim);
-		SetHintText(HintTexts[InIndex]);
+		CurrentHintIndex = InIndex;
+		SetHintText(InIndex);
 	}
 	if (InIndex == 0 && PopupInv && HintImage)
 	{
@@ -36,10 +45,19 @@ void UPlayerGhostUI::ShowHint(const int32 InIndex)
 	}
 }
 
-void UPlayerGhostUI::SetHintText(const FString& InText) const
+void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 {
-	if (HintInv) HintInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (HintText) HintText->SetText(FText::FromString(InText));
+	if (!HintInv || !HintText) return;
+	HintInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	const FText KeyBindText = GetKeyBindText(InIndex);
+	switch (InIndex)
+	{
+		case 0: HintText->SetText(FText::FromString("Move")); break;
+		case 1: HintText->SetText(FText::Format(FText::FromString("[{0}] to Possess Robots"), KeyBindText)); break;
+		case 2: HintText->SetText(FText::Format(FText::FromString("[{0}] to Shoot"), KeyBindText)); break;
+		case 3: HintText->SetText(FText::Format(FText::FromString("[{0}] to Sprint"), KeyBindText));
+		default: ;
+	}
 }
 
 void UPlayerGhostUI::StopShowingHint() const
@@ -52,6 +70,7 @@ void UPlayerGhostUI::StopShowingHint() const
 void UPlayerGhostUI::ShowPressKey(const bool bState)
 {
 	if (PressKeyToContinueInv) PressKeyToContinueInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (PressKeyToContinueText) PressKeyToContinueText->SetText(FText::Format(FText::FromString("Press [{0}] Key To Continue"), GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Interact")));
 	if (bState)
 	{
 		if (PressKeyAppearAnim) PlayAnimation(PressKeyAppearAnim);
@@ -70,4 +89,13 @@ void UPlayerGhostUI::ShowPressKey(const bool bState)
 			break;
 		default: ;
 	}
+}
+
+void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText)
+{
+	if (PressKeyToContinueText && InKeyBindName.IsEqual("Interact")) PressKeyToContinueText->SetText(FText::Format(FText::FromString("Press [{0}] Key To Continue"), InKeyBindText));
+	if (!HintText) return;
+	if (CurrentHintIndex == 1 && InKeyBindName.IsEqual("Possess")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Possess Robots"), InKeyBindText));
+	else if (CurrentHintIndex == 2 && InKeyBindName.IsEqual("LeftClick")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Shoot"), InKeyBindText));
+	else if (CurrentHintIndex == 3 && InKeyBindName.IsEqual("Shift")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Sprint"), InKeyBindText));
 }

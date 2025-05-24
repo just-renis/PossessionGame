@@ -14,10 +14,6 @@
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
-void AGuardian::PlayOverChargeVfx() const { Cast<AGuardianWeapon>(Weapon)->PlayOverChargeVfx(); }
-
-void AGuardian::StopOverChargeVfx() const { Cast<AGuardianWeapon>(Weapon)->StopOverChargeVfx(); }
-
 AGuardian::AGuardian()
 {
 	Sounds.Add(ESound::GuardianSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));

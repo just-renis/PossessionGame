@@ -20,6 +20,7 @@ public:
 	void PlayStartupAnimation();
 private:
 	int32 CurrentTutorialStep = 0;
+	int32 CurrentHintIndex = 0;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> PopupInv;
 	UPROPERTY(meta = (BindWidget))
@@ -28,6 +29,8 @@ private:
 	TObjectPtr<UInvalidationBox> PressKeyToContinueInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> HintText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> PressKeyToContinueText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> HintImage;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -43,9 +46,12 @@ private:
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 
+	FText GetKeyBindText(const int32 InIndex) const;
+
 	virtual void NativeConstruct() override;
 	void ShowHint(const int32 InIndex);
-	void SetHintText(const FString& InText) const;
+	void SetHintText(const int32 InIndex) const;
 	void StopShowingHint() const;
 	void ShowPressKey(const bool bState);
+	void UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText);
 };

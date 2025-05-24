@@ -1,12 +1,11 @@
 ﻿#include "AbilitiesPanelUI.h"
-#include "EnhancedInputSubsystems.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/Image.h"
 #include "Components/Overlay.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
-#include "UserSettings/EnhancedInputUserSettings.h"
+#include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 
 void UAbilitiesPanelUI::SetOverlaysVisibility(const bool bState) const
 {
@@ -93,7 +92,7 @@ void UAbilitiesPanelUI::SetAsCurrent()
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAbilityUse.BindUObject(this, &UAbilitiesPanelUI::PlayAbilityUseAnim);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAbilityEnd.BindUObject(this, &UAbilitiesPanelUI::PlayAbilityEndAnim);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.BindUObject(this, &UAbilitiesPanelUI::UpdateAbilityKeyBindText);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.AddUObject(this, &UAbilitiesPanelUI::UpdateAbilityKeyBindText);
 }
 
 void UAbilitiesPanelUI::NativePreConstruct()
@@ -132,7 +131,8 @@ void UAbilitiesPanelUI::SetAbilitySlot(const int32 InAbilityIndex, const TObject
 {
 	if (InIcon && InImage) InImage->SetBrushFromAtlasInterface(InIcon);
 	else InOverlay->SetRenderOpacity(0.8f);
-	AssignAbilityKeyBindText(InAbilityIndex);
+	const FName KeyBindName = InAbilityIndex == 0 ? "FirstAbility" : InAbilityIndex == 1 ? "SecondAbility" : "ThirdAbility";
+	UpdateAbilityKeyBindText(KeyBindName, GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText(KeyBindName));
 }
 
 void UAbilitiesPanelUI::PlayAbilityUseAnim(const int32 InAbilityIndex, const bool bIsCharged, const bool bPlayReverseAfterwards)
@@ -157,39 +157,11 @@ void UAbilitiesPanelUI::PlayAbilityAnim(const int32 InAbilityIndex, const bool b
 	}
 }
 
-void UAbilitiesPanelUI::AssignAbilityKeyBindText(const int32 InAbilityIndex) const
+void UAbilitiesPanelUI::UpdateAbilityKeyBindText(const FName& InKeyBindName, const FText& InKeyName) const
 {
-	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController<APlayerController>();
-	if (!PlayerController) return;
-	const TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-	if (!Subsystem) return;
-	const TObjectPtr<UEnhancedInputUserSettings> UserSettings = Subsystem->GetUserSettings();
-	if (!UserSettings) return;
-	const TObjectPtr<UEnhancedPlayerMappableKeyProfile> CurrentProfile = UserSettings->GetCurrentKeyProfile();
-	if (!CurrentProfile) return;
-	const FKeyMappingRow* MappingRow = CurrentProfile->GetPlayerMappingRows().Find(InAbilityIndex == 0 ? "FirstAbility" : InAbilityIndex == 1 ? "SecondAbility" : "ThirdAbility");
-	if (!MappingRow) return;
-	for (const FPlayerKeyMapping KeyBind : MappingRow->Mappings)
-	{
-		UpdateAbilityKeyBindText(InAbilityIndex, KeyBind.GetCurrentKey().GetDisplayName());
-		break;
-	}
-}
-
-void UAbilitiesPanelUI::UpdateAbilityKeyBindText(const int32 InAbilityIndex, const FText& InKeyName) const
-{
-	switch (InAbilityIndex)
-	{
-		case 0:
-			if (FirstKeyBindText) FirstKeyBindText->SetText(InKeyName);
-			return;
-		case 1:
-			if (SecondKeyBindText) SecondKeyBindText->SetText(InKeyName);
-			return;
-		case 2:
-			if (ThirdKeyBindText) ThirdKeyBindText->SetText(InKeyName);
-		default: ;
-	}
+	if (FirstKeyBindText && InKeyBindName.IsEqual("FirstAbility")) FirstKeyBindText->SetText(InKeyName);
+	else if (SecondKeyBindText && InKeyBindName.IsEqual("SecondAbility")) SecondKeyBindText->SetText(InKeyName);
+	else if (ThirdKeyBindText && InKeyBindName.IsEqual("ThirdAbility")) ThirdKeyBindText->SetText(InKeyName);
 }
 
 void UAbilitiesPanelUI::PlayAbilityEndAnim(const int32 InAbilityIndex, const bool bIsCharged)

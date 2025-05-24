@@ -1,29 +1,10 @@
 ﻿#include "GuardianWeapon.h"
 #include "GuardianSingularWeapon.h"
-#include "NiagaraComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
-#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
-
-void AGuardianWeapon::PlayOverChargeVfx()
-{
-	if (FirstWeaponOverChargeComponent) FirstWeaponOverChargeComponent->Activate();
-	else AssetsManager->AttachVfx(EVfx::GuardianOverCharge, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &FirstWeaponOverChargeComponent, FirstWeapon->GetMesh(), "OverChargeSocket");
-	if (SecondWeaponOverChargeComponent) SecondWeaponOverChargeComponent->Activate();
-	else AssetsManager->AttachVfx(EVfx::GuardianOverCharge, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &SecondWeaponOverChargeComponent, SecondWeapon->GetMesh(), "OverChargeSocket");
-}
-
-void AGuardianWeapon::StopOverChargeVfx() const
-{
-	if (FirstWeaponOverChargeComponent && SecondWeaponOverChargeComponent)
-	{
-		FirstWeaponOverChargeComponent->Deactivate();
-		SecondWeaponOverChargeComponent->Deactivate();
-	}
-}
 
 void AGuardianWeapon::CancelShootingHold() const
 {

@@ -82,8 +82,7 @@ private:
 	void SetAbilitySlot(const int32 InAbilityIndex, const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay) const;
 	void PlayAbilityUseAnim(const int32 InAbilityIndex, const bool bIsCharged, const bool bPlayReverseAfterwards);
 	void PlayAbilityAnim(const int32 InAbilityIndex, const bool bState);
-	void AssignAbilityKeyBindText(const int32 InAbilityIndex) const;
-	void UpdateAbilityKeyBindText(const int32 InAbilityIndex, const FText& InKeyName) const;
+	void UpdateAbilityKeyBindText(const FName& InKeyBindName, const FText& InKeyName) const;
 	UFUNCTION()
 	void PlayAbilityEndAnim(const int32 InAbilityIndex, const bool bIsCharged);
 };

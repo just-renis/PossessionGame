@@ -33,12 +33,7 @@ void UKeyBindingUI::RemapKeyBind()
 	Args.MappingName = Mapping.GetMappingName();
 	Args.Slot = EPlayerMappableKeySlot::First;
 	Args.NewKey = TempSelectedKey;
-	int32 Index = -1;
-	const FName MappingName = Mapping.GetMappingName();
-	if (MappingName == "FirstAbility") Index = 0;
-	else if (MappingName == "SecondAbility") Index = 1;
-	else if (MappingName == "ThirdAbility") Index = 2;
-	if (Index != -1) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.ExecuteIfBound(Index, Args.NewKey.GetDisplayName());
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.Broadcast(Mapping.GetMappingName(), Args.NewKey.GetDisplayName());
 	FGameplayTagContainer FailureReason;
 	UserSettings->MapPlayerKey(Args, FailureReason);
 	Mapping.SetCurrentKey(TempSelectedKey);

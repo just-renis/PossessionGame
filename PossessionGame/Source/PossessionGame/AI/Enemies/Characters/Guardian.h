@@ -8,10 +8,7 @@ UCLASS()
 class POSSESSIONGAME_API AGuardian : public AEnemy
 {
 	GENERATED_BODY()
-public:
-	void PlayOverChargeVfx() const;
-	void StopOverChargeVfx() const;
-private:
+	
 	AGuardian();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))

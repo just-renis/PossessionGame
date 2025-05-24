@@ -483,7 +483,6 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TankBulletImpact", EVfx::TankBulletImpact);
 	VfxsMap.Add("PA_TankFpsBulletTrail", EVfx::TankFpsBulletTrail);
 	VfxsMap.Add("PA_GuardianSpawn", EVfx::GuardianSpawn);
-	VfxsMap.Add("PA_GuardianOverCharge", EVfx::GuardianOverCharge);
 	VfxsMap.Add("PA_GuardianMuzzle", EVfx::GuardianMuzzle);
 	VfxsMap.Add("PA_GuardianFpsBulletTrail", EVfx::GuardianFpsBulletTrail);
 	VfxsMap.Add("PA_GuardianDeathElectrification", EVfx::GuardianDeathElectrification);
