@@ -71,6 +71,7 @@ private:
 	void ToggleStompTrigger(const bool bState) const;
 	virtual void SetEmpEffect(const float InEffectDuration) override;
 	virtual void EmpEffectEnded() override;
+	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason) override;
 	UFUNCTION()
 	void OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor);
 	UFUNCTION()

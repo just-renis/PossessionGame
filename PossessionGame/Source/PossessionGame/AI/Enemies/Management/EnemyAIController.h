@@ -71,7 +71,6 @@ private:
 	void SetEQSTargetLocation();
 	void StopStateTreeLogic() const;
 	void StopStateTreeLogic(const bool bNeedCleanup) const;
-	void OnCutsceneEnd(const bool bState) const;
 
 	UFUNCTION()
 	void OnLostSightOfPawn();

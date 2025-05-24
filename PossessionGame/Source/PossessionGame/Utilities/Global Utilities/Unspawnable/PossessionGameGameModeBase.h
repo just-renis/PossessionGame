@@ -5,9 +5,6 @@
 #include "PossessionGame/Utilities/Data Utilities/FPrefabCategoryData.h"
 #include "PossessionGameGameModeBase.generated.h"
 
-class ULevelSequencePlayer;
-class ACineCameraActor;
-class ULevelSequence;
 class AMarker;
 class UGameModeData;
 enum class EGameMode : uint8;
@@ -44,14 +41,10 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	bool bToggleDebugMode = false;
-	UPROPERTY(EditAnywhere, Category = "Wave Manager", meta = (AllowPrivateAccess = true))
-	int32 EnemiesAmountToSpawnOnFirstWave = 1;
 	UPROPERTY(EditAnywhere, Category = "Save Data", meta = (AllowPrivateAccess = true))
 	TSubclassOf<USettingsSave> SettingsSaveClass;
 	UPROPERTY(EditAnywhere, Category = "Marker", meta = (AllowPrivateAccess = true))
 	TSubclassOf<AMarker> MarkerClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Cutscenes", meta = (AllowPrivateAccess = true))
-	TSoftObjectPtr<ULevelSequence> MinionBossSequenceAsset;
 	UPROPERTY(EditAnywhere, Category = "EQS", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UEnvQuery> TargetEQS;
 	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
@@ -68,12 +61,12 @@ private:
 	TMap<EWidget, TSubclassOf<UUserWidget>> WidgetClasses;
 	UPROPERTY(EditAnywhere, Category = "Upgrades", meta = (AllowPrivateAccess = true))
 	TMap<EUpgrade, TObjectPtr<UUpgradeData>> Upgrades;
-	UPROPERTY()
-	FTimerHandle FCutsceneTimerHandle;
+//	UPROPERTY()
+//	FTimerHandle FCutsceneTimerHandle;
 
 	virtual void BeginPlay() override;
 	void LoadSettingsData();
 	void SpawnArtifact() const;
-	void PlayCutscene(const EGameMode InGameMode);
-	void CutsceneEnded() const;
+//	void PlayCutscene(const EGameMode InGameMode);
+//	void CutsceneEnded() const;
 };
