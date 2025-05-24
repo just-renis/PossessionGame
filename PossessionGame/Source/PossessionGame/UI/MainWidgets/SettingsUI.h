@@ -28,17 +28,15 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UButton> GraphicsTabButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> AudioTabButton;
+	TObjectPtr<UButton> MainTabButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UButton> ControlsTabButton;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> LanguageTabButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UWidgetSwitcher> TabsSwitcher;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UGraphicsSettingsUI> GraphicsSettings;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UAudioSettingsUI> AudioSettings;
+	TObjectPtr<UAudioSettingsUI> MainSettings;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UControlsSettingsUI> ControlsSettings;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
@@ -64,13 +62,11 @@ private:
 	UFUNCTION()
 	void ApplySettings();
 	UFUNCTION()
+	void OpenMainTab();
+	UFUNCTION()
 	void OpenGraphicsTab();
 	UFUNCTION()
-	void OpenAudioTab();
-	UFUNCTION()
 	void OpenControlsTab();
-	UFUNCTION()
-	void OpenLanguageTab();
 	UFUNCTION()
 	void ResetKeyBindsToDefault();
 	UFUNCTION()

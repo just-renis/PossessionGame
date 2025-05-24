@@ -29,7 +29,7 @@ void UGraphicsSettingsUI::UpdateDefaultGraphicsSettings()
 	if (ScreenMode) ScreenMode = GameUserSettings->GetFullscreenMode();
 	if (ScreenModeMode) ScreenModeMode->SetText(FText::FromString(GetFixedScreenMode()));
 	Resolution = GameUserSettings->GetScreenResolution();
-	if (ResolutionMode) ResolutionMode->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}}"), {Resolution.X, Resolution.Y})));
+	if (ResolutionMode) ResolutionMode->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
 	Vsync = GameUserSettings->IsVSyncEnabled();
 	if (VsyncMode) VsyncMode->SetText(FText::FromString(Vsync ? "Enabled" : "Disabled"));
 	if (BrightnessSlider)

@@ -13,12 +13,10 @@ class POSSESSIONGAME_API UEnemyAnimationInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
-	bool GetIsCrouching() const { return bIsCrouching; }
 	bool IsPlaying(const EEnemyAnimState InState);
 	bool IsMontageExisting(const EEnemyAnimState InState) const;
 	float GetMontageLength(const EEnemyAnimState InState);
 
-	void SetIsCrouching(const bool bState) { bIsCrouching = bState; }
 	void SetIsTargetInSight(const bool bState) { bIsTargetInSight = bState; }
 	void SetSpeed(const float InValue) { Speed = InValue; }
 	void SetLookAtLocation(const FVector& InLookAtLocation) { LookAtLocation = InLookAtLocation; }
@@ -45,8 +43,6 @@ protected:
 	UFUNCTION()
 	virtual void MontageWithHoldEnd();
 private:
-	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
-	bool bIsCrouching = false;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	bool bIsTargetInSight = false;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))

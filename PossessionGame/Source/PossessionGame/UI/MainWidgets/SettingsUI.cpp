@@ -37,23 +37,22 @@ void USettingsUI::SetupUIEvents()
 	if (ResetKeyBindsButton) ResetKeyBindsButton->OnClicked.AddDynamic(this, &USettingsUI::ResetKeyBindsToDefault);
 	if (ApplySettingsButton) ApplySettingsButton->OnClicked.AddDynamic(this, &USettingsUI::ApplySettings);
 	if (CloseButton) CloseButton->OnClicked.AddDynamic(this, &USettingsUI::CloseUI);
+	if (MainTabButton) MainTabButton->OnClicked.AddDynamic(this, &USettingsUI::OpenMainTab);
 	if (GraphicsTabButton) GraphicsTabButton->OnClicked.AddDynamic(this, &USettingsUI::OpenGraphicsTab);
-	if (AudioTabButton) AudioTabButton->OnClicked.AddDynamic(this, &USettingsUI::OpenAudioTab);
 	if (ControlsTabButton) ControlsTabButton->OnClicked.AddDynamic(this, &USettingsUI::OpenControlsTab);
-	if (LanguageTabButton) LanguageTabButton->OnClicked.AddDynamic(this, &USettingsUI::OpenLanguageTab);
 	if (DuplicateKeyBindsAlert->GetAlertButton()) DuplicateKeyBindsAlert->GetAlertButton()->OnClicked.AddDynamic(this, &USettingsUI::CloseDuplicateKeyBindsPopup);
 }
 
 void USettingsUI::UpdateDefaultSettings()
 {
 	if (GraphicsSettings) GraphicsSettings->UpdateDefaultGraphicsSettings();
-	if (AudioSettings) AudioSettings->UpdateDefaultAudioSettings();
+	if (MainSettings) MainSettings->UpdateDefaultAudioSettings();
 }
 
 void USettingsUI::SetSavedSettings()
 {
 	if (GraphicsSettings) GraphicsSettings->SetSavedSettings();
-	if (AudioSettings) AudioSettings->SetSavedSettings();
+	if (MainSettings) MainSettings->SetSavedSettings();
 	if (ControlsSettings) ControlsSettings->SetSavedSettings();
 }
 
@@ -65,24 +64,19 @@ void USettingsUI::OpenDuplicateKeyBindsPopup() const
 
 void USettingsUI::ApplySettings()
 {
-	if (ControlsSettings && !ControlsSettings->ApplySettings())
-	{
-		OpenDuplicateKeyBindsPopup();
-	}
+	if (ControlsSettings && !ControlsSettings->ApplySettings()) OpenDuplicateKeyBindsPopup();
 	else
 	{
 		if (GraphicsSettings) GraphicsSettings->ApplySettings();
-		if (AudioSettings) AudioSettings->ApplySettings();
+		if (MainSettings) MainSettings->ApplySettings();
 	}
 }
 
-void USettingsUI::OpenGraphicsTab() { if (TabsSwitcher) TabsSwitcher->SetActiveWidgetIndex(0); }
+void USettingsUI::OpenMainTab() { if (TabsSwitcher) TabsSwitcher->SetActiveWidgetIndex(0); }
 
-void USettingsUI::OpenAudioTab() { if (TabsSwitcher) TabsSwitcher->SetActiveWidgetIndex(1); }
+void USettingsUI::OpenGraphicsTab() { if (TabsSwitcher) TabsSwitcher->SetActiveWidgetIndex(1); }
 
 void USettingsUI::OpenControlsTab() { if (TabsSwitcher) TabsSwitcher->SetActiveWidgetIndex(2); }
-
-void USettingsUI::OpenLanguageTab() { if (TabsSwitcher) TabsSwitcher->SetActiveWidgetIndex(3); }
 
 void USettingsUI::ResetKeyBindsToDefault() { if (ControlsSettings) ControlsSettings->ResetKeyBindsToDefault(); }
 

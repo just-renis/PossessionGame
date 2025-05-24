@@ -25,7 +25,7 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool IsGlobalGraphicsSetting = false;
 	UPROPERTY(EditAnywhere, Category = "Quality Text Font Size", meta = (AllowPrivateAccess = true))
-	int32 FontSize = 24;
+	int32 FontSize = 20;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UTextBlock> SettingQualityText;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))

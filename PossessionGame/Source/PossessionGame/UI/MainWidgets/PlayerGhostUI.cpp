@@ -16,7 +16,7 @@ void UPlayerGhostUI::PlayStartupAnimation() { if (StartupAnim) PlayAnimation(Sta
 
 FText UPlayerGhostUI::GetKeyBindText(const int32 InIndex) const
 {
-	const FName KeyBindName = InIndex == 1 ? "Possess" : InIndex == 2 ? "LeftClick" : "Shift";
+	const FName KeyBindName = InIndex == 1 ? "Hijack" : InIndex == 2 ? "M1" : "Shift";
 	return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText(KeyBindName);
 }
 
@@ -96,7 +96,7 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 {
 	if (PressKeyToContinueText && InKeyBindName.IsEqual("Interact")) PressKeyToContinueText->SetText(FText::Format(FText::FromString("Press [{0}] Key To Continue"), InKeyBindText));
 	if (!HintText) return;
-	if (CurrentHintIndex == 1 && InKeyBindName.IsEqual("Possess")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Possess Robots"), InKeyBindText));
-	else if (CurrentHintIndex == 2 && InKeyBindName.IsEqual("LeftClick")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Shoot"), InKeyBindText));
+	if (CurrentHintIndex == 1 && InKeyBindName.IsEqual("Hijack")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Possess Robots"), InKeyBindText));
+	else if (CurrentHintIndex == 2 && InKeyBindName.IsEqual("M1")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Shoot"), InKeyBindText));
 	else if (CurrentHintIndex == 3 && InKeyBindName.IsEqual("Shift")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Sprint"), InKeyBindText));
 }

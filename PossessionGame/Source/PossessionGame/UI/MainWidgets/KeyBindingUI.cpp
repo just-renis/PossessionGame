@@ -3,6 +3,7 @@
 #include "Components/InputKeySelector.h"
 #include "PossessionGame/UI/SecondaryWidgets/SettingsTitleUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 
 void UKeyBindingUI::Setup(const TObjectPtr<UEnhancedInputUserSettings>& InUserSettings, const FPlayerKeyMapping& InMapping)
 {
@@ -37,6 +38,9 @@ void UKeyBindingUI::RemapKeyBind()
 	FGameplayTagContainer FailureReason;
 	UserSettings->MapPlayerKey(Args, FailureReason);
 	Mapping.SetCurrentKey(TempSelectedKey);
+	//const FText* CustomName = GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyDisplayName(Mapping.GetCurrentKey());
+	///const FText DisplayName = CustomName ? *CustomName : Mapping.GetCurrentKey().GetDisplayName();
+//	InputKeySelector->SetKeySelectionText(DisplayName);
 }
 
 void UKeyBindingUI::SetSavedKeyBind() const

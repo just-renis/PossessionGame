@@ -17,3 +17,5 @@ FText UGlobalSettingsManager::GetKeyBindText(const FName& InKeyName) const
 	for (const FPlayerKeyMapping KeyBind : MappingRow->Mappings) return KeyBind.GetCurrentKey().GetDisplayName();
 	return FText::GetEmpty();
 }
+
+FText* UGlobalSettingsManager::GetKeyDisplayName(const FKey& InKeyName) { return CustomKeyDisplayNames.Find(InKeyName); }

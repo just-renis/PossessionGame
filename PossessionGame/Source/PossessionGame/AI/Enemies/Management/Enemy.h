@@ -93,7 +93,6 @@ public:
 	virtual void Tick(const float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
-	void ToggleCrouch();
 	virtual void InitiateDeath();
 	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason);
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired = false);

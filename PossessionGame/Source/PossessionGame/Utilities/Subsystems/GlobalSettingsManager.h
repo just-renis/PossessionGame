@@ -13,9 +13,15 @@ public:
 	bool GetIsGodModeEnabled() const { return bIsGodModeEnabled; }
 	bool GetIsDemo() const { return bIsDemo; }
 	FText GetKeyBindText(const FName& InKeyName) const;
+	FText* GetKeyDisplayName(const FKey& InKeyName);
 
 	void ToggleGodModeEnabled() { bIsGodModeEnabled = !bIsGodModeEnabled; }
 private:
 	bool bIsGodModeEnabled = false;
 	bool bIsDemo = true;
+	UPROPERTY()
+	TMap<FKey, FText> CustomKeyDisplayNames = {
+		{ EKeys::LeftMouseButton, FText::FromString("M1") },
+		{ EKeys::RightMouseButton, FText::FromString("M2") }
+	};
 };
