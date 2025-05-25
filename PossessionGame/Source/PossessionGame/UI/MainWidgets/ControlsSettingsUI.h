@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ControlsSettingsUI.generated.h"
 
+class USettingsUI;
 struct FPlayerKeyMapping;
 class UEnhancedInputUserSettings;
 class UVerticalBox;
@@ -19,7 +20,10 @@ public:
 	
 	void SetSavedSettings();
 	void ResetKeyBindsToDefault();
+	void Setup(const TObjectPtr<USettingsUI>& InParent);
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Key Binds", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> LineSeparatorTexture;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> SettingsTitleClass;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -30,6 +34,8 @@ private:
 	TObjectPtr<UInputMappingContext> MappingContext;
 	UPROPERTY()
 	TObjectPtr<UEnhancedInputUserSettings> UserSettings;
+	UPROPERTY()
+	TObjectPtr<USettingsUI> ParentWidget;
 	UPROPERTY()
 	TArray<TObjectPtr<UKeyBindingUI>> KeyBindings;
 

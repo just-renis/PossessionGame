@@ -2,13 +2,24 @@
 #include "AudioSettingsUI.h"
 #include "ControlsSettingsUI.h"
 #include "GraphicsSettingsUI.h"
+#include "KeyBindingUI.h"
 #include "MainMenuUI.h"
 #include "PauseMenuUI.h"
 #include "Components/Button.h"
+#include "Components/InvalidationBox.h"
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/AlertPopupUI.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
+
+void USettingsUI::BeginRebind(const TObjectPtr<UKeyBindingUI>& InTargetKeyWidget)
+{
+	if (RebindPanelInv) RebindPanelInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (CurrentKeyWidget) CurrentKeyWidget->CancelRebind();
+	CurrentKeyWidget = InTargetKeyWidget;
+	SetVisibility(ESlateVisibility::Visible);
+	SetKeyboardFocus();
+}
 
 void USettingsUI::OpenUI()
 {
@@ -24,9 +35,12 @@ void USettingsUI::CloseUI()
 	else GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 }
 
+USettingsUI::USettingsUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { SetIsFocusable(true); }
+
 void USettingsUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+	if (ControlsSettings) ControlsSettings->Setup(this);
 	UpdateDefaultSettings();
 	SetupUIEvents();
 }
@@ -40,7 +54,7 @@ void USettingsUI::SetupUIEvents()
 	if (MainTabButton) MainTabButton->OnClicked.AddDynamic(this, &USettingsUI::OpenMainTab);
 	if (GraphicsTabButton) GraphicsTabButton->OnClicked.AddDynamic(this, &USettingsUI::OpenGraphicsTab);
 	if (ControlsTabButton) ControlsTabButton->OnClicked.AddDynamic(this, &USettingsUI::OpenControlsTab);
-	if (DuplicateKeyBindsAlert->GetAlertButton()) DuplicateKeyBindsAlert->GetAlertButton()->OnClicked.AddDynamic(this, &USettingsUI::CloseDuplicateKeyBindsPopup);
+//	if (DuplicateKeyBindsAlert->GetAlertButton()) DuplicateKeyBindsAlert->GetAlertButton()->OnClicked.AddDynamic(this, &USettingsUI::CloseDuplicateKeyBindsPopup);
 }
 
 void USettingsUI::UpdateDefaultSettings()
@@ -59,7 +73,31 @@ void USettingsUI::SetSavedSettings()
 void USettingsUI::OpenDuplicateKeyBindsPopup() const
 {
 	UE_LOG(LogTemp, Warning, TEXT("OpenDuplicateKeyBindsPopup"));
-	if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(true);
+	///if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(true);
+}
+
+FReply USettingsUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (!CurrentKeyWidget) return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+	UE_LOG(LogTemp, Error, TEXT("NATIVE ON KEY DOWN"));
+	const FInputChord Chord(InKeyEvent.GetKey());
+	CurrentKeyWidget->OnKeySelected(Chord);
+	CurrentKeyWidget = nullptr;
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (RebindPanelInv) RebindPanelInv->SetVisibility(ESlateVisibility::Collapsed);
+	return FReply::Handled();
+}
+
+FReply USettingsUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if (!CurrentKeyWidget) return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+	UE_LOG(LogTemp, Error, TEXT("NativeOnMouseButtonDown"));
+	const FInputChord Chord(InMouseEvent.GetEffectingButton());
+	CurrentKeyWidget->OnKeySelected(Chord);
+	CurrentKeyWidget = nullptr;
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (RebindPanelInv) RebindPanelInv->SetVisibility(ESlateVisibility::Collapsed);
+	return FReply::Handled();
 }
 
 void USettingsUI::ApplySettings()
@@ -82,6 +120,6 @@ void USettingsUI::ResetKeyBindsToDefault() { if (ControlsSettings) ControlsSetti
 
 void USettingsUI::CloseDuplicateKeyBindsPopup()
 {
-	UE_LOG(LogTemp, Warning, TEXT("CloseDuplicateKeyBindsPopup"));
-	if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(false);
+	//UE_LOG(LogTemp, Warning, TEXT("CloseDuplicateKeyBindsPopup"));
+	//if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(false);
 }

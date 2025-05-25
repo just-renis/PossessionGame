@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "SettingsUI.generated.h"
 
+class UKeyBindingUI;
 class UAlertPopupUI;
 class UInvalidationBox;
 class UControlsSettingsUI;
@@ -17,10 +18,13 @@ class POSSESSIONGAME_API USettingsUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	void BeginRebind(const TObjectPtr<UKeyBindingUI>& InTargetKeyWidget);
 	void OpenUI();
 	UFUNCTION()
 	void CloseUI();
 private:
+	USettingsUI(const FObjectInitializer& ObjectInitializer);
+	
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UButton> ApplySettingsButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
@@ -49,16 +53,22 @@ private:
 	TObjectPtr<UInvalidationBox> CloseButtonInv;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UInvalidationBox> ApplySettingsButtonInv;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UAlertPopupUI> DuplicateKeyBindsAlert;
+//	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	//TObjectPtr<UAlertPopupUI> DuplicateKeyBindsAlert;
 	UPROPERTY(Transient, meta = (BindWidgetAnim, AllowPrivateAccess = true))
 	TObjectPtr<UWidgetAnimation> SettingsFadeIn;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInvalidationBox> RebindPanelInv;
+	UPROPERTY()
+	TObjectPtr<UKeyBindingUI> CurrentKeyWidget;
 	
 	virtual void NativeConstruct() override;
 	void SetupUIEvents();
 	void UpdateDefaultSettings();
 	void SetSavedSettings();
 	void OpenDuplicateKeyBindsPopup() const;
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	UFUNCTION()
 	void ApplySettings();
 	UFUNCTION()
