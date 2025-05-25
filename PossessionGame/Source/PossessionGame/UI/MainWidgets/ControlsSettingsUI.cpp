@@ -1,7 +1,10 @@
 ﻿#include "ControlsSettingsUI.h"
 #include "EnhancedInputSubsystems.h"
 #include "KeyBindingUI.h"
+#include "Blueprint/WidgetTree.h"
+#include "Components/Image.h"
 #include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 
 bool UControlsSettingsUI::IsKeyBindsHasDuplicates()
@@ -17,7 +20,6 @@ void UControlsSettingsUI::NativeConstruct()
 	UserSettings = GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings();
 	if (!UserSettings) return;
 	if (!UserSettings->IsMappingContextRegistered(MappingContext)) UserSettings->RegisterInputMappingContext(MappingContext);
-	SetupKeyBinds();
 }
 
 void UControlsSettingsUI::SetupKeyBinds()
@@ -29,8 +31,8 @@ void UControlsSettingsUI::SetupKeyBinds()
 		FName("MoveRight"),
 		FName("Jump"),
 		FName("Dash"),
-		FName("M1"),
-		FName("M2"),
+		FName("Shoot"),
+		FName("SecondaryShoot"),
 		FName("Stomp"),
 		FName("Melee"),
 		FName("FirstAbility"),
@@ -60,18 +62,42 @@ void UControlsSettingsUI::SetupOrderOfKeyBinds(TArray<FName>& DesiredOrder, TMap
 
 void UControlsSettingsUI::AddKeyBinds(TArray<FName>& DesiredOrder, TMap<FName, FPlayerKeyMapping>& OrderedKeyBinds)
 {
-	for (FName ActionName : DesiredOrder)
+	if (!KeyBindingsPanel) return;
+	for (int32 i = 0; i < DesiredOrder.Num(); i++)
 	{
 		TObjectPtr<UKeyBindingUI> KeyBindingWidget = CreateWidget<UKeyBindingUI>(this, KeyBindingClass);
-		KeyBindingWidget->Setup(UserSettings, *OrderedKeyBinds.Find(ActionName));
+		KeyBindingWidget->Setup(UserSettings, *OrderedKeyBinds.Find(DesiredOrder[i]), ParentWidget);
 		KeyBindings.Add(KeyBindingWidget);
-		if (KeyBindingsPanel) KeyBindingsPanel->AddChild(KeyBindingWidget);
+		if (const TObjectPtr<UVerticalBoxSlot> ElementSlot = Cast<UVerticalBoxSlot>(KeyBindingsPanel->AddChild(KeyBindingWidget)))
+		{
+			FSlateChildSize ChildSize(ESlateSizeRule::Fill);
+			ChildSize.Value = 1.f;
+			ElementSlot->SetSize(ChildSize);
+			if (i != DesiredOrder.Num() - 1 && i != 5 && i != 12) ElementSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 50.f));
+		}
+		if (i != 5 && i != 12) continue;
+		const TObjectPtr<UImage> LineSeparator = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
+		if (!LineSeparator) continue;
+		LineSeparator->SetBrushFromAtlasInterface(LineSeparatorTexture);
+		if (const TObjectPtr<UVerticalBoxSlot> ElementSlot = Cast<UVerticalBoxSlot>(KeyBindingsPanel->AddChild(LineSeparator)))
+		{
+			FSlateChildSize ChildSize(ESlateSizeRule::Fill);
+			ChildSize.Value = 0.1f;
+			ElementSlot->SetSize(ChildSize);
+			ElementSlot->SetPadding(FMargin(0.f, 50.f));
+		}
 	}
 }
 
 void UControlsSettingsUI::ResetKeyBindsToDefault()
 {
 	for (int32 i = 0; i < KeyBindings.Num(); i++) if (KeyBindings[i]) KeyBindings[i]->ResetKeyBind();
+}
+
+void UControlsSettingsUI::Setup(const TObjectPtr<USettingsUI>& InParent)
+{
+	ParentWidget = InParent;
+	SetupKeyBinds();
 }
 
 bool UControlsSettingsUI::ApplySettings()
