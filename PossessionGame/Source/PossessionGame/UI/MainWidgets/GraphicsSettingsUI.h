@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "GraphicsSettingsUI.generated.h"
 
+class USettingsOptionUI;
 class USettingsQualityUI;
 class UButton;
 class UTextBlock;
@@ -39,28 +40,16 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<USettingsQualityUI> Shading;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> ScreenModeButtonDownscale;
+	TObjectPtr<USettingsOptionUI> ScreenModeOption;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> ScreenModeButtonUpscale;
+	TObjectPtr<USettingsOptionUI> ResolutionOption;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UTextBlock> ScreenModeMode;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> ResolutionButtonDownscale;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> ResolutionButtonUpscale;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UTextBlock> ResolutionMode;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> VsyncButtonDisable;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> VsyncButtonEnable;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UTextBlock> VsyncMode;
+	TObjectPtr<USettingsOptionUI> VsyncOption;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<USliderUI> BrightnessSlider;
 
 	uint8 GetGlobalGraphicsQuality();
-	FString GetFixedScreenMode();
+	FString GetFixedScreenMode() const;
 
 	virtual void NativeConstruct() override;
 	void InitResolutions();
@@ -77,5 +66,5 @@ private:
 	UFUNCTION()
 	void EnableVsync();
 	UFUNCTION()
-	void ApplyBrightnessValue(float Value);
+	void ApplyBrightnessValue(const float InValue);
 };

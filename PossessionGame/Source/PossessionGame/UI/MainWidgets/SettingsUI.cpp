@@ -10,6 +10,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/AlertPopupUI.h"
+#include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void USettingsUI::BeginRebind(const TObjectPtr<UKeyBindingUI>& InTargetKeyWidget)
@@ -37,6 +38,28 @@ void USettingsUI::CloseUI()
 
 USettingsUI::USettingsUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { SetIsFocusable(true); }
 
+FReply USettingsUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (!CurrentKeyWidget) return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+	const FInputChord Chord(InKeyEvent.GetKey());
+	CurrentKeyWidget->OnKeySelected(Chord);
+	CurrentKeyWidget = nullptr;
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (RebindPanelInv) RebindPanelInv->SetVisibility(ESlateVisibility::Collapsed);
+	return FReply::Handled();
+}
+
+FReply USettingsUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if (!CurrentKeyWidget) return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+	const FInputChord Chord(InMouseEvent.GetEffectingButton());
+	CurrentKeyWidget->OnKeySelected(Chord);
+	CurrentKeyWidget = nullptr;
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (RebindPanelInv) RebindPanelInv->SetVisibility(ESlateVisibility::Collapsed);
+	return FReply::Handled();
+}
+
 void USettingsUI::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -51,9 +74,9 @@ void USettingsUI::SetupUIEvents()
 	if (ResetKeyBindsButton) ResetKeyBindsButton->OnClicked.AddDynamic(this, &USettingsUI::ResetKeyBindsToDefault);
 	if (ApplySettingsButton) ApplySettingsButton->OnClicked.AddDynamic(this, &USettingsUI::ApplySettings);
 	if (CloseButton) CloseButton->OnClicked.AddDynamic(this, &USettingsUI::CloseUI);
-	if (MainTabButton) MainTabButton->OnClicked.AddDynamic(this, &USettingsUI::OpenMainTab);
-	if (GraphicsTabButton) GraphicsTabButton->OnClicked.AddDynamic(this, &USettingsUI::OpenGraphicsTab);
-	if (ControlsTabButton) ControlsTabButton->OnClicked.AddDynamic(this, &USettingsUI::OpenControlsTab);
+	if (MainTabButton) MainTabButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::OpenMainTab);
+	if (GraphicsTabButton) GraphicsTabButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::OpenGraphicsTab);
+	if (ControlsTabButton) ControlsTabButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::OpenControlsTab);
 //	if (DuplicateKeyBindsAlert->GetAlertButton()) DuplicateKeyBindsAlert->GetAlertButton()->OnClicked.AddDynamic(this, &USettingsUI::CloseDuplicateKeyBindsPopup);
 }
 
@@ -74,30 +97,6 @@ void USettingsUI::OpenDuplicateKeyBindsPopup() const
 {
 	UE_LOG(LogTemp, Warning, TEXT("OpenDuplicateKeyBindsPopup"));
 	///if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(true);
-}
-
-FReply USettingsUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
-{
-	if (!CurrentKeyWidget) return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
-	UE_LOG(LogTemp, Error, TEXT("NATIVE ON KEY DOWN"));
-	const FInputChord Chord(InKeyEvent.GetKey());
-	CurrentKeyWidget->OnKeySelected(Chord);
-	CurrentKeyWidget = nullptr;
-	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (RebindPanelInv) RebindPanelInv->SetVisibility(ESlateVisibility::Collapsed);
-	return FReply::Handled();
-}
-
-FReply USettingsUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	if (!CurrentKeyWidget) return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
-	UE_LOG(LogTemp, Error, TEXT("NativeOnMouseButtonDown"));
-	const FInputChord Chord(InMouseEvent.GetEffectingButton());
-	CurrentKeyWidget->OnKeySelected(Chord);
-	CurrentKeyWidget = nullptr;
-	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (RebindPanelInv) RebindPanelInv->SetVisibility(ESlateVisibility::Collapsed);
-	return FReply::Handled();
 }
 
 void USettingsUI::ApplySettings()

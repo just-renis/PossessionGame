@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "SettingsUI.generated.h"
 
+class UMainMenuButtonUI;
 class UKeyBindingUI;
 class UAlertPopupUI;
 class UInvalidationBox;
@@ -30,11 +31,11 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UButton> CloseButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> GraphicsTabButton;
+	TObjectPtr<UMainMenuButtonUI> GraphicsTabButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> MainTabButton;
+	TObjectPtr<UMainMenuButtonUI> MainTabButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> ControlsTabButton;
+	TObjectPtr<UMainMenuButtonUI> ControlsTabButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UWidgetSwitcher> TabsSwitcher;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
@@ -62,13 +63,14 @@ private:
 	UPROPERTY()
 	TObjectPtr<UKeyBindingUI> CurrentKeyWidget;
 	
+	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	
 	virtual void NativeConstruct() override;
 	void SetupUIEvents();
 	void UpdateDefaultSettings();
 	void SetSavedSettings();
 	void OpenDuplicateKeyBindsPopup() const;
-	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	UFUNCTION()
 	void ApplySettings();
 	UFUNCTION()

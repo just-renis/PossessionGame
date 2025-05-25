@@ -1,18 +1,27 @@
 ﻿#include "GraphicsSettingsUI.h"
 #include "Components/Button.h"
-#include "Components/TextBlock.h"
+#include "PossessionGame/UI/SecondaryWidgets/SettingsOptionUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/SettingsQualityUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/SliderUI.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameUserSettings.h"
 
 void UGraphicsSettingsUI::SetupUIEvents()
 {
-	if (ScreenModeButtonDownscale) ScreenModeButtonDownscale->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::LowerWindowMode);
-	if (ScreenModeButtonUpscale) ScreenModeButtonUpscale->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::IncreaseWindowMode);
-	if (ResolutionButtonDownscale) ResolutionButtonDownscale->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::LowerResolution);
-	if (ResolutionButtonUpscale) ResolutionButtonUpscale->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::IncreaseResolution);
-	if (VsyncButtonDisable) VsyncButtonDisable->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::DisableVsync);
-	if (VsyncButtonEnable) VsyncButtonEnable->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::EnableVsync);
+	if (ScreenModeOption)
+	{
+		ScreenModeOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::LowerWindowMode);
+		ScreenModeOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::IncreaseWindowMode);
+	}
+	if (ResolutionOption)
+	{
+		ResolutionOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::LowerResolution);
+		ResolutionOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::IncreaseResolution);
+	}
+	if (VsyncOption)
+	{
+		VsyncOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::DisableVsync);
+		VsyncOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::EnableVsync);
+	}
 	if (BrightnessSlider) BrightnessSlider->GetSlider()->OnValueChanged.AddDynamic(this, &UGraphicsSettingsUI::ApplyBrightnessValue);
 }
 
@@ -27,11 +36,11 @@ void UGraphicsSettingsUI::UpdateDefaultGraphicsSettings()
 	if (Effects) Effects->UpdateDefaultQuality(GameUserSettings->GetVisualEffectQuality());
 	if (Shading) Shading->UpdateDefaultQuality(GameUserSettings->GetShadingQuality());
 	if (ScreenMode) ScreenMode = GameUserSettings->GetFullscreenMode();
-	if (ScreenModeMode) ScreenModeMode->SetText(FText::FromString(GetFixedScreenMode()));
+	if (ScreenModeOption)ScreenModeOption->SetText(FText::FromString(GetFixedScreenMode()));
 	Resolution = GameUserSettings->GetScreenResolution();
-	if (ResolutionMode) ResolutionMode->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
+	if (ResolutionOption) ResolutionOption->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
 	Vsync = GameUserSettings->IsVSyncEnabled();
-	if (VsyncMode) VsyncMode->SetText(FText::FromString(Vsync ? "Enabled" : "Disabled"));
+	if (VsyncOption) VsyncOption->SetText(FText::FromString(Vsync ? "Enabled" : "Disabled"));
 	if (BrightnessSlider)
 	{
 		BrightnessSlider->SetValue((GameUserSettings->GetGamma() - 1.f) / 4.f);
@@ -98,7 +107,7 @@ uint8 UGraphicsSettingsUI::GetGlobalGraphicsQuality()
 	return Value;
 }
 
-FString UGraphicsSettingsUI::GetFixedScreenMode()
+FString UGraphicsSettingsUI::GetFixedScreenMode() const
 {
 	FString WindowMode = UEnum::GetValueAsString(ScreenMode).Replace(TEXT("EWindowMode::"), TEXT(""));
 	if (WindowMode.Equals("WindowedFullscreen")) WindowMode = "WindowFull";
@@ -125,9 +134,9 @@ void UGraphicsSettingsUI::InitResolutions()
 	if (ResolutionIndex == INDEX_NONE) ResolutionIndex = 4;
 }
 
-void UGraphicsSettingsUI::ApplyBrightnessValue(float Value)
+void UGraphicsSettingsUI::ApplyBrightnessValue(const float InValue)
 {
-	Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings())->SetGamma(Value * 4 + 1.f);
+	Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings())->SetGamma(InValue * 4 + 1.f);
 }
 
 void UGraphicsSettingsUI::LowerWindowMode()
@@ -135,7 +144,7 @@ void UGraphicsSettingsUI::LowerWindowMode()
 	if (ScreenMode != EWindowMode::Windowed)
 	{
 		ScreenMode = static_cast<EWindowMode::Type>(static_cast<uint8>(ScreenMode) + 1);
-		ScreenModeMode->SetText(FText::FromString(GetFixedScreenMode()));
+		if (ScreenModeOption) ScreenModeOption->SetText(FText::FromString(GetFixedScreenMode()));
 	}
 }
 
@@ -144,7 +153,7 @@ void UGraphicsSettingsUI::IncreaseWindowMode()
 	if (ScreenMode != EWindowMode::Fullscreen)
 	{
 		ScreenMode = static_cast<EWindowMode::Type>(static_cast<uint8>(ScreenMode) - 1);
-		ScreenModeMode->SetText(FText::FromString(GetFixedScreenMode()));
+		if (ScreenModeOption) ScreenModeOption->SetText(FText::FromString(GetFixedScreenMode()));
 	}
 }
 
@@ -153,7 +162,7 @@ void UGraphicsSettingsUI::LowerResolution()
 	if (ResolutionIndex > 0)
 	{
 		Resolution = SupportedResolutions[--ResolutionIndex];
-		ResolutionMode->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
+		if (ResolutionOption) ResolutionOption->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
 	}
 }
 
@@ -162,18 +171,18 @@ void UGraphicsSettingsUI::IncreaseResolution()
 	if (ResolutionIndex < SupportedResolutions.Num() - 1)
 	{
 		Resolution = SupportedResolutions[++ResolutionIndex];
-		ResolutionMode->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
+		if (ResolutionOption) ResolutionOption->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
 	}
 }
 
 void UGraphicsSettingsUI::DisableVsync()
 {
 	Vsync = false;
-	VsyncMode->SetText(FText::FromString("Disabled"));
+	if (VsyncOption) VsyncOption->SetText(FText::FromString("Disabled"));
 }
 
 void UGraphicsSettingsUI::EnableVsync()
 {
 	Vsync = true;
-	VsyncMode->SetText(FText::FromString("Enabled"));
+	if (VsyncOption) VsyncOption->SetText(FText::FromString("Enabled"));
 }

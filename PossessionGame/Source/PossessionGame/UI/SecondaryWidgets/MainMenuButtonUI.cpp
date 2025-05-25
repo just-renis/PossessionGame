@@ -12,7 +12,11 @@ void UMainMenuButtonUI::SetupEvents()
 void UMainMenuButtonUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-	if (ButtonText) ButtonText->SetText(Text);
+	if (!ButtonText) return;
+	ButtonText->SetText(Text);
+	FSlateFontInfo FontInfo = ButtonText->GetFont();
+	FontInfo.Size = FontSize;
+	ButtonText->SetFont(FontInfo);
 }
 
 void UMainMenuButtonUI::TriggerHoverAnim() { if (ButtonHoverAnim) PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim)); }

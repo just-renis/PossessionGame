@@ -17,6 +17,8 @@ public:
 	void SetupEvents();
 private:
 	UPROPERTY(EditAnywhere, Category = "Button Text", meta = (AllowPrivateAccess = true))
+	int32 FontSize;
+	UPROPERTY(EditAnywhere, Category = "Button Text", meta = (AllowPrivateAccess = true))
 	FText Text;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UButton> Button;
