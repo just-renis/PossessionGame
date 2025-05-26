@@ -48,11 +48,11 @@ void UAudioSettingsUI::ApplyMasterVolumeValue(float Value)
 void UAudioSettingsUI::ApplySfxVolumeValue(float Value)
 {
 	Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot("SettingsSlot", 0))->SetSfxVolume(GetWorld(), Value);
-	if (SfxVolumeSlider) SfxVolumeSlider->SetSliderValue(Value);
+	if (SfxVolumeSlider) SfxVolumeSlider->SetValue(Value);
 }
 
 void UAudioSettingsUI::ApplyMusicVolumeValue(float Value)
 {
 	Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot("SettingsSlot", 0))->SetMusicVolume(GetWorld(), Value);
-	if (MusicVolumeSlider) MusicVolumeSlider->SetSliderValue(Value);
+	if (MusicVolumeSlider) MusicVolumeSlider->SetValue(Value);
 }

@@ -14,7 +14,7 @@ class POSSESSIONGAME_API USliderUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	TObjectPtr<USlider> GetSlider() { return Slider; }
-	float GetSavedValue() { return SavedValue; }
+	float GetSavedValue() const { return SavedValue; }
 
 	void SaveValue();
 	void SetValue(float InValue);

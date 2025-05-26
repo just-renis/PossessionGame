@@ -31,21 +31,9 @@ void UMainMenuUI::Toggle(bool bState)
 
 void UMainMenuUI::SetupButtons()
 {
-	if (PlayButton)
-	{
-		PlayButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::Play);
-		PlayButton->SetupEvents();
-	}
-	if (SettingsButton)
-	{
-		SettingsButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::OpenSettings);
-		SettingsButton->SetupEvents();
-	}
-	if (QuitButton)
-	{
-		QuitButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopup);
-		QuitButton->SetupEvents();
-	}
+	if (PlayButton) PlayButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::Play);
+	if (SettingsButton) SettingsButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::OpenSettings);
+	if (QuitButton) QuitButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopup);
 	if (QuitConfirmationPopup->GetAcceptButton()) QuitConfirmationPopup->GetAcceptButton()->OnClicked.AddDynamic(this, &UMainMenuUI::QuitGame);
 	if (QuitConfirmationPopup->GetDeclineButton()) QuitConfirmationPopup->GetDeclineButton()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopup);
 }

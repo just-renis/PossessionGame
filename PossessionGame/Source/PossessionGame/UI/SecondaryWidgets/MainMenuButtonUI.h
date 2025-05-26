@@ -14,20 +14,26 @@ class POSSESSIONGAME_API UMainMenuButtonUI : public UUserWidget
 public:
 	TObjectPtr<UButton> Get() { return Button; }
 	
-	void SetupEvents();
+	void SetText(const FText& InText) const;
 private:
 	UPROPERTY(EditAnywhere, Category = "Button Text", meta = (AllowPrivateAccess = true))
 	int32 FontSize;
 	UPROPERTY(EditAnywhere, Category = "Button Text", meta = (AllowPrivateAccess = true))
 	FText Text;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> Button;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ButtonText;
-	UPROPERTY(Transient, meta = (BindWidgetAnim, AllowPrivateAccess = true))
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> ButtonHoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ButtonClickAnim;
 
 	virtual void NativePreConstruct() override;
+	virtual void NativeConstruct() override;
+	void SetupButtonEvents();
+	UFUNCTION()
+	void TriggerClickAnim();
 	UFUNCTION()
 	void TriggerHoverAnim();
 	UFUNCTION()

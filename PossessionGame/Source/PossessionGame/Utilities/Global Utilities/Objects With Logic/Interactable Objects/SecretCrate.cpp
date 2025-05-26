@@ -1,15 +1,13 @@
 ﻿#include "SecretCrate.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
-#include "Components/WidgetComponent.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 ASecretCrate::ASecretCrate()
 {
 	CrateMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("crateMesh"));
-	RootComponent = CrateMesh;
-	Collision->SetupAttachment(RootComponent);
+	CrateMesh->SetupAttachment(RootComponent);
 	Sounds.Add(ESound::SecretCratePassive, CreateDefaultSubobject<UAudioComponent>(TEXT("passiveSound")));
 	Sounds[ESound::SecretCratePassive]->SetAutoActivate(false);
 	Sounds[ESound::SecretCratePassive]->SetupAttachment(CrateMesh);
@@ -36,7 +34,7 @@ void ASecretCrate::Interact()
 	CrateMesh->PlayAnimation(OpenAnim, false);
 	Collision->OnComponentBeginOverlap.RemoveAll(this);
 	Collision->OnComponentEndOverlap.RemoveAll(this);
-	if (InteractableWidget) InteractableWidget->SetVisibility(false);
+	FadeOutInteractableUI();
 	SetIsInteractable(false);
 	GiveReward();
 }

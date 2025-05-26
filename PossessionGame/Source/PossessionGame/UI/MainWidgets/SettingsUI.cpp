@@ -5,6 +5,7 @@
 #include "KeyBindingUI.h"
 #include "MainMenuUI.h"
 #include "PauseMenuUI.h"
+#include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
 #include "Components/InvalidationBox.h"
 #include "Components/WidgetSwitcher.h"
@@ -15,7 +16,7 @@
 
 void USettingsUI::BeginRebind(const TObjectPtr<UKeyBindingUI>& InTargetKeyWidget)
 {
-	if (RebindPanelInv) RebindPanelInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	ToggleRebindPanel(true);
 	if (CurrentKeyWidget) CurrentKeyWidget->CancelRebind();
 	CurrentKeyWidget = InTargetKeyWidget;
 	SetVisibility(ESlateVisibility::Visible);
@@ -24,16 +25,15 @@ void USettingsUI::BeginRebind(const TObjectPtr<UKeyBindingUI>& InTargetKeyWidget
 
 void USettingsUI::OpenUI()
 {
-	SetVisibility(ESlateVisibility::Visible);
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (SettingsFadeIn) PlayAnimation(SettingsFadeIn);
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(EWidget::SettingsUI);
 }
 
 void USettingsUI::CloseUI()
 {
+	SettingsFadeOutFinished();
 	SetSavedSettings();
-	SetVisibility(ESlateVisibility::Collapsed);
-	if (UGameplayStatics::GetCurrentLevelName(this, true).Equals("MainMenuLevel")) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();
-	else GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 }
 
 USettingsUI::USettingsUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { SetIsFocusable(true); }
@@ -45,7 +45,7 @@ FReply USettingsUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent
 	CurrentKeyWidget->OnKeySelected(Chord);
 	CurrentKeyWidget = nullptr;
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (RebindPanelInv) RebindPanelInv->SetVisibility(ESlateVisibility::Collapsed);
+	ToggleRebindPanel(false);
 	return FReply::Handled();
 }
 
@@ -56,7 +56,7 @@ FReply USettingsUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const F
 	CurrentKeyWidget->OnKeySelected(Chord);
 	CurrentKeyWidget = nullptr;
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (RebindPanelInv) RebindPanelInv->SetVisibility(ESlateVisibility::Collapsed);
+	ToggleRebindPanel(false);
 	return FReply::Handled();
 }
 
@@ -99,6 +99,24 @@ void USettingsUI::OpenDuplicateKeyBindsPopup() const
 	///if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(true);
 }
 
+void USettingsUI::ToggleRebindPanel(const bool bState)
+{
+	if (!RebindPanelInv || !RebindPanelFadeInAnim) return;
+	if (bState) RebindPanelInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	else GetWorld()->GetTimerManager().SetTimer(RebindPanelFadeOutHandle, this, &USettingsUI::RebindPanelFadeOutFinished, RebindPanelFadeInAnim->GetEndTime(), false);
+	PlayAnimation(RebindPanelFadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
+}
+
+void USettingsUI::RebindPanelFadeOutFinished() const { if (RebindPanelInv) RebindPanelInv->SetVisibility(ESlateVisibility::Collapsed); }
+
+void USettingsUI::SettingsFadeOutFinished()
+{
+	UE_LOG(LogTemp,Error, TEXT("COLLAPSE THE FUCKING SETTINGS"));
+	SetVisibility(ESlateVisibility::Collapsed);
+	if (UGameplayStatics::GetCurrentLevelName(this, true).Equals("MainMenuLevel")) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();
+	else GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
+}
+
 void USettingsUI::ApplySettings()
 {
 	if (ControlsSettings && !ControlsSettings->ApplySettings()) OpenDuplicateKeyBindsPopup();
@@ -109,11 +127,32 @@ void USettingsUI::ApplySettings()
 	}
 }
 
-void USettingsUI::OpenMainTab() { if (TabsSwitcher) TabsSwitcher->SetActiveWidgetIndex(0); }
+void USettingsUI::OpenMainTab()
+{
+	if (!TabsSwitcher) return;
+	TabsSwitcher->SetActiveWidgetIndex(0);
+	MainTabButton->Get()->SetIsEnabled(false);
+	GraphicsTabButton->Get()->SetIsEnabled(true);
+	ControlsTabButton->Get()->SetIsEnabled(true);
+}
 
-void USettingsUI::OpenGraphicsTab() { if (TabsSwitcher) TabsSwitcher->SetActiveWidgetIndex(1); }
+void USettingsUI::OpenGraphicsTab()
+{
+	if (!TabsSwitcher) return;
+	TabsSwitcher->SetActiveWidgetIndex(1);
+	MainTabButton->Get()->SetIsEnabled(true);
+	GraphicsTabButton->Get()->SetIsEnabled(false);
+	ControlsTabButton->Get()->SetIsEnabled(true);
+}
 
-void USettingsUI::OpenControlsTab() { if (TabsSwitcher) TabsSwitcher->SetActiveWidgetIndex(2); }
+void USettingsUI::OpenControlsTab()
+{
+	if (!TabsSwitcher) return;
+	TabsSwitcher->SetActiveWidgetIndex(2);
+	MainTabButton->Get()->SetIsEnabled(true);
+	GraphicsTabButton->Get()->SetIsEnabled(true);
+	ControlsTabButton->Get()->SetIsEnabled(false);
+}
 
 void USettingsUI::ResetKeyBindsToDefault() { if (ControlsSettings) ControlsSettings->ResetKeyBindsToDefault(); }
 

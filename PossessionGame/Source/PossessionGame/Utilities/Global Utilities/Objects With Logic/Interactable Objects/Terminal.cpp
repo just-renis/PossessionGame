@@ -1,6 +1,5 @@
 ﻿#include "Terminal.h"
 #include "Components/SphereComponent.h"
-#include "Components/WidgetComponent.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -9,7 +8,7 @@
 ATerminal::ATerminal()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("mesh"));
-	RootComponent = Mesh;
+	Mesh->SetupAttachment(RootComponent);
 }
 
 void ATerminal::BeginPlay()
@@ -39,11 +38,7 @@ void ATerminal::ShowMarker()
 
 void ATerminal::EnableTerminal(const EGameMode InGameMode)
 {
-	if (InGameMode == EGameMode::HackTerminalsMode)
-	{
-		ToggleInteractableWidget(true);
-		SetIsInteractable(true);
-	}
+	if (InGameMode == EGameMode::HackTerminalsMode) ToggleInteractableWidget(true);
 }
 
 void ATerminal::DisableTerminal()
@@ -63,6 +58,6 @@ void ATerminal::ToggleInteractableWidget(const bool bState)
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		if (Marker) Marker->Toggle(false);
-		if (InteractableWidget) InteractableWidget->SetVisibility(false);
+		FadeOutInteractableUI();
 	}
 }

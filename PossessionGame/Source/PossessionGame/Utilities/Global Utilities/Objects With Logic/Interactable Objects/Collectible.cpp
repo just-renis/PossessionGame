@@ -5,6 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Base Data Assets/CollectibleData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/UI/SecondaryWidgets/InteractableUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -19,6 +20,7 @@ ACollectible::ACollectible()
 	RootComponent = Mesh;
 	Collision->SetupAttachment(RootComponent);
 	InteractableWidget->SetupAttachment(RootComponent);
+	InteractableWidget->SetVisibility(false);
 }
 
 void ACollectible::BeginPlay()
@@ -26,6 +28,7 @@ void ACollectible::BeginPlay()
 	Super::BeginPlay();
 	if (Data->HasAura()) GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(Data->GetAuraName(), nullptr, FNiagaraVariationData(), &Aura, Collision, NAME_None);
 	PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
+	InteractableUI = Cast<UInteractableUI>(InteractableWidget->GetWidget());
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACollectible::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ACollectible::DisableInteractionWidget);
 }
@@ -42,7 +45,6 @@ void ACollectible::Init(bool bInIsPlayerObject)
 	if (Data->GetIsSpinning()) UKismetSystemLibrary::K2_SetTimer(this, "Spin", 0.025f, true);
 	SetActorRotation(Data->GetRotation());
 	EnableCollectible();
-	if (InteractableWidget) InteractableWidget->SetVisibility(false);
 }
 
 void ACollectible::Interact()
@@ -88,7 +90,8 @@ void ACollectible::ToggleInteractableWidget(const bool bState, const bool bMarke
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		if (bMarkerIncluded && Marker && Data->GetIsMarkerEnabled()) Marker->Toggle(false);
-		if (InteractableWidget) InteractableWidget->SetVisibility(false);
+		if (InteractableUI) InteractableUI->PlayFadeInAnim(false);
+		GetWorldTimerManager().SetTimer(FadeOutAnimHandle, this, &ACollectible::FadeOutAnimFinished, InteractableUI->GetFadeInAnimLength(), false);
 	}
 }
 
@@ -97,6 +100,8 @@ void ACollectible::ChangeOutlineState(const bool bState)
 	Mesh->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
 	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
 }
+
+void ACollectible::FadeOutAnimFinished() const { if (InteractableWidget) InteractableWidget->SetVisibility(false); }
 
 void ACollectible::Float()
 {
@@ -114,10 +119,14 @@ void ACollectible::Spin()
 
 void ACollectible::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(true);
+	if (!OtherActor->ActorHasTag("Player")) return;
+	if (InteractableWidget) InteractableWidget->SetVisibility(true);
+	if (InteractableUI) InteractableUI->PlayFadeInAnim(true);
 }
 
 void ACollectible::DisableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(false);
+	if (!OtherActor->ActorHasTag("Player") || !InteractableUI) return;
+	InteractableUI->PlayFadeInAnim(false);
+	GetWorldTimerManager().SetTimer(FadeOutAnimHandle, this, &ACollectible::FadeOutAnimFinished, InteractableUI->GetFadeInAnimLength(), false);
 }

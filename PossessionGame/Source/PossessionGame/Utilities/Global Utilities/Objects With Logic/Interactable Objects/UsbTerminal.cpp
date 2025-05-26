@@ -1,7 +1,6 @@
 ﻿#include "UsbTerminal.h"
 #include "Collectible.h"
 #include "Components/SphereComponent.h"
-#include "Components/WidgetComponent.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -9,7 +8,7 @@
 AUsbTerminal::AUsbTerminal()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("mesh"));
-	RootComponent = Mesh;
+	Mesh->SetupAttachment(RootComponent);
 	for (int i = 0; i < 4; i++) UsbMeshes[i] = CreateDefaultSubobject<UStaticMeshComponent>(FName("UsbMesh" + FString::FromInt(i)));
 }
 
@@ -75,6 +74,6 @@ void AUsbTerminal::ToggleInteractableWidget(const bool bState)
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		if (Marker) Marker->Toggle(false);
-		if (InteractableWidget) InteractableWidget->SetVisibility(false);
+		FadeOutInteractableUI();
 	}
 }

@@ -5,6 +5,7 @@
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "InteractableObject.generated.h"
 
+class UInteractableUI;
 class UDelegateManager;
 class UWidgetComponent;
 class USphereComponent;
@@ -13,6 +14,8 @@ UCLASS()
 class POSSESSIONGAME_API AInteractableObject : public AActor, public IInteractable
 {
 	GENERATED_BODY()
+public:
+	void FadeOutInteractableUI();
 protected:
 	AInteractableObject();
 
@@ -20,6 +23,8 @@ protected:
 	TObjectPtr<USphereComponent> Collision;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> InteractableWidget;
+	UPROPERTY()
+	TObjectPtr<UInteractableUI> InteractableUI;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 
@@ -33,8 +38,11 @@ private:
 	bool bIsSkeletalMesh = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
+	UPROPERTY()
+	FTimerHandle FadeOutAnimHandle;
 
 	virtual void ChangeOutlineState(const bool bState) override;
+	void FadeOutAnimFinished() const;
 	UFUNCTION()
 	void DisableOutline() { ChangeOutlineState(false); }
 	UFUNCTION()

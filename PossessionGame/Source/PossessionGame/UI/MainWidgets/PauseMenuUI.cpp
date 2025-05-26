@@ -4,6 +4,7 @@
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EWidget.h"
+#include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UPauseMenuUI::OpenUI() { Toggle(true); }
@@ -12,22 +13,22 @@ void UPauseMenuUI::ChangeUIToDeathMenu()
 {
 	if (ContinueButton)
 	{
-		ContinueButton->OnClicked.RemoveAll(this);
-		ContinueButton->OnClicked.AddDynamic(this, &UPauseMenuUI::RestartLevel);
+		ContinueButton->Get()->OnClicked.RemoveAll(this);
+		ContinueButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::RestartLevel);
+		ContinueButton->SetText(FText::FromString("Restart Level"));
 	}
-	if (ContinueText) ContinueText->SetText(FText::FromString("Restart Level"));
 	if (SettingsButton)
 	{
-		SettingsButton->OnClicked.RemoveAll(this);
-		SettingsButton->OnClicked.AddDynamic(this, &UPauseMenuUI::ReturnToMainMenu);
+		SettingsButton->Get()->OnClicked.RemoveAll(this);
+		SettingsButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::ReturnToMainMenu);
+		SettingsButton->SetText(FText::FromString("Return To Menu"));
 	}
-	if (SettingsText) SettingsText->SetText(FText::FromString("Return To Menu"));
-	if (ReturnToMainMenuButton)
+	if (ReturnToMenuButton)
 	{
-		ReturnToMainMenuButton->OnClicked.RemoveAll(this);
-		ReturnToMainMenuButton->OnClicked.AddDynamic(this, &UPauseMenuUI::QuitGame);
+		ReturnToMenuButton->Get()->OnClicked.RemoveAll(this);
+		ReturnToMenuButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::QuitGame);
+		ReturnToMenuButton->SetText(FText::FromString("Quit Game"));
 	}
-	if (ReturnToMainMenuText) ReturnToMainMenuText->SetText(FText::FromString("Quit Game"));
 }
 
 void UPauseMenuUI::CloseUI() { Toggle(false); }
@@ -51,9 +52,9 @@ void UPauseMenuUI::Toggle(bool bState)
 
 void UPauseMenuUI::SetupButtons()
 {
-	if (ContinueButton) ContinueButton->OnClicked.AddDynamic(this, &UPauseMenuUI::CloseUI);
-	if (ReturnToMainMenuButton) ReturnToMainMenuButton->OnClicked.AddDynamic(this, &UPauseMenuUI::ReturnToMainMenu);
-	if (SettingsButton) SettingsButton->OnClicked.AddDynamic(this, &UPauseMenuUI::OpenSettings);
+	if (ContinueButton) ContinueButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::CloseUI);
+	if (ReturnToMenuButton) ReturnToMenuButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::ReturnToMainMenu);
+	if (SettingsButton) SettingsButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::OpenSettings);
 }
 
 void UPauseMenuUI::ReturnToMainMenu() { UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenuLevel")); }

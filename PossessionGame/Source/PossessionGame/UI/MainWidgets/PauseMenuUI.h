@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PauseMenuUI.generated.h"
 
+class UMainMenuButtonUI;
 class UTextBlock;
 class UButton;
 
@@ -18,17 +19,11 @@ public:
 	void CloseUI();
 private:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ContinueText;
+	TObjectPtr<UMainMenuButtonUI> ContinueButton;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> SettingsText;
+	TObjectPtr<UMainMenuButtonUI> SettingsButton;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ReturnToMainMenuText;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> ContinueButton;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> SettingsButton;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> ReturnToMainMenuButton;
+	TObjectPtr<UMainMenuButtonUI> ReturnToMenuButton;
 
 	virtual void NativeConstruct() override;
 	void Toggle(bool bState);

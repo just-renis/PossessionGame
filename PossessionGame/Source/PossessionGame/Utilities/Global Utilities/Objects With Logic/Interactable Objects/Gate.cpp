@@ -5,6 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/UI/SecondaryWidgets/InteractableUI.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -22,6 +23,7 @@ AGate::AGate()
 	OpenGatesSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("openGatesSfx"));
 	OpenGatesSfx->SetAutoActivate(false);
 	OpenGatesSfx->SetupAttachment(RootComponent);
+	InteractableWidget->SetVisibility(false);
 }
 
 bool AGate::GetIsInteractable() const { return IInteractable::GetIsInteractable() && !bNeedsArtifact; }
@@ -29,8 +31,8 @@ bool AGate::GetIsInteractable() const { return IInteractable::GetIsInteractable(
 void AGate::BeginPlay()
 {
 	Super::BeginPlay();
+	InteractableUI = Cast<UInteractableUI>(InteractableWidget->GetWidget());
 	bNeededArtifact = bNeedsArtifact;
-	if (InteractableWidget) InteractableWidget->SetVisibility(false);
 	if (bIsUnlockableByInteraction)
 	{
 		Collision->OnComponentBeginOverlap.AddDynamic(this, &AGate::EnableInteractionWidget);
@@ -80,7 +82,8 @@ void AGate::Interact()
 	SetIsInteractable(false);
 	Collision->OnComponentBeginOverlap.RemoveAll(this);
 	Collision->OnComponentEndOverlap.RemoveAll(this);
-	if (InteractableWidget) InteractableWidget->SetVisibility(false);
+	if (InteractableUI) InteractableUI->PlayFadeInAnim(false);
+	GetWorldTimerManager().SetTimer(FadeOutAnimHandle, this, &AGate::FadeOutAnimFinished, InteractableUI->GetFadeInAnimLength(), false);
 	OpenGate(EGameMode::None);
 }
 
@@ -97,6 +100,8 @@ void AGate::ShowMarker(const EGameMode InGameMode)
 	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 100.f), FRotator::ZeroRotator);
 	Marker->Toggle(true);
 }
+
+void AGate::FadeOutAnimFinished() const { if (InteractableWidget) InteractableWidget->SetVisibility(false); }
 
 void AGate::OpenGateSides()
 {
@@ -123,12 +128,14 @@ void AGate::CloseGateSides()
 
 void AGate::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (bNeedsArtifact) return;
-	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(true);
+	if (bNeedsArtifact || !OtherActor->ActorHasTag("Player")) return;
+	if (InteractableWidget) InteractableWidget->SetVisibility(true);
+	if (InteractableUI) InteractableUI->PlayFadeInAnim(true);
 }
 
 void AGate::DisableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (bNeedsArtifact) return;
-	if (OtherActor->ActorHasTag("Player")) InteractableWidget->SetVisibility(false);
+	if (bNeedsArtifact || !OtherActor->ActorHasTag("Player")) return;
+	if (InteractableUI) InteractableUI->PlayFadeInAnim(false);
+	GetWorldTimerManager().SetTimer(FadeOutAnimHandle, this, &AGate::FadeOutAnimFinished, InteractableUI->GetFadeInAnimLength(), false);
 }

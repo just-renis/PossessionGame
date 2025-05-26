@@ -10,7 +10,11 @@ UCLASS()
 class POSSESSIONGAME_API UInteractableUI : public UUserWidget
 {
 	GENERATED_BODY()
-
+public:
+	float GetFadeInAnimLength() const;
+	
+	void PlayFadeInAnim(const bool bState);
+private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> InteractableText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))

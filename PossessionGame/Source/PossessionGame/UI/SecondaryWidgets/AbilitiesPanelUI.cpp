@@ -132,7 +132,7 @@ void UAbilitiesPanelUI::SetAbilitySlot(const int32 InAbilityIndex, const TObject
 	if (InIcon && InImage) InImage->SetBrushFromAtlasInterface(InIcon);
 	else InOverlay->SetRenderOpacity(0.8f);
 	const FName KeyBindName = InAbilityIndex == 0 ? "FirstAbility" : InAbilityIndex == 1 ? "SecondAbility" : "ThirdAbility";
-	UpdateAbilityKeyBindText(KeyBindName, GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText(KeyBindName));
+	if (GetGameInstance()) UpdateAbilityKeyBindText(KeyBindName, GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText(KeyBindName));
 }
 
 void UAbilitiesPanelUI::PlayAbilityUseAnim(const int32 InAbilityIndex, const bool bIsCharged, const bool bPlayReverseAfterwards)

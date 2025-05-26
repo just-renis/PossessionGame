@@ -5,6 +5,7 @@
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "Collectible.generated.h"
 
+class UInteractableUI;
 class AMarker;
 class UCollectibleData;
 class UNiagaraComponent;
@@ -32,11 +33,15 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCollectibleData> Data;
 	UPROPERTY()
+	TObjectPtr<UInteractableUI> InteractableUI;
+	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> Aura;
 	UPROPERTY()
 	TObjectPtr<AMarker> Marker;
 	UPROPERTY()
 	TObjectPtr<UPoolingManager> PoolingManager;
+	UPROPERTY()
+	FTimerHandle FadeOutAnimHandle;
 
 	virtual void BeginPlay() override;
 	virtual void Init(bool bInIsPlayerObject) override;
@@ -46,6 +51,7 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	void DisableCollectible();
 	void ToggleInteractableWidget(const bool bState, const bool bMarkerIncluded = false);
 	virtual void ChangeOutlineState(const bool bState) override;
+	void FadeOutAnimFinished() const;
 	UFUNCTION()
 	void DisableOutline() { ChangeOutlineState(false); }
 	UFUNCTION()
