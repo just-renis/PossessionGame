@@ -11,6 +11,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Enums/EVariationUnlock.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UVariationsUI::OpenUI()
 {
@@ -49,6 +50,7 @@ void UVariationsUI::NativeConstruct()
 void UVariationsUI::Toggle(const bool bState)
 {
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::VariationsUI : EWidget::None);
@@ -98,6 +100,7 @@ void UVariationsUI::SetSelectedVariation(const EVariation InVariation)
 		case EVariation::RangerVariationBlue: RangerVariationBlue->SetSelected(true); break;
 		case EVariation::TricksterVariationDefault: TricksterVariationDefault->SetSelected(true); break;
 		case EVariation::TricksterVariationPurple: TricksterVariationPurple->SetSelected(true);
+		default: ;
 	}
 }
 

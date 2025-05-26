@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UMainMenuUI::OpenUI() { Toggle(true); }
@@ -18,7 +19,7 @@ void UMainMenuUI::NativeConstruct()
 	SetupButtons();
 }
 
-void UMainMenuUI::Toggle(bool bState)
+void UMainMenuUI::Toggle(const bool bState)
 {
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
@@ -42,6 +43,7 @@ void UMainMenuUI::TriggerMainMenuFadeOutAnim()
 {
 	if (!MainMenuFadeOut) return;
 	MainMenuFadeOutState ? PlayAnimation(MainMenuFadeOut, GetAnimationCurrentTime(MainMenuFadeOut), 1, EUMGSequencePlayMode::Reverse) : PlayAnimation(MainMenuFadeOut, GetAnimationCurrentTime(MainMenuFadeOut));
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(MainMenuFadeOutState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	MainMenuFadeOutState = !MainMenuFadeOutState;
 }
 
@@ -49,6 +51,7 @@ void UMainMenuUI::TriggerQuitFadeInAnim()
 {
 	if (!QuitConfirmationPopup) return;
 	QuitConfirmationPopup->PlayPopupFadeInAnim(QuitFadeInState);
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(QuitFadeInState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	QuitFadeInState = !QuitFadeInState;
 }
 

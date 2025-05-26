@@ -1,6 +1,7 @@
 ﻿#include "SettingsOptionUI.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void USettingsOptionUI::SetText(const FText& InText) const { if (Text) Text->SetText(InText); }
 
@@ -10,9 +11,19 @@ void USettingsOptionUI::NativeConstruct()
 	SetupButtonEvents();
 }
 
-void USettingsOptionUI::OnLeftArrowClicked() { if (LeftArrowClickAnim) PlayAnimation(LeftArrowClickAnim); }
+void USettingsOptionUI::OnLeftArrowClicked()
+{
+	if (!LeftArrowClickAnim) return;
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
+	PlayAnimation(LeftArrowClickAnim);
+}
 
-void USettingsOptionUI::OnRightArrowClicked() { if (RightArrowClickAnim) PlayAnimation(RightArrowClickAnim); }
+void USettingsOptionUI::OnRightArrowClicked()
+{
+	if (!RightArrowClickAnim) return;
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
+	PlayAnimation(RightArrowClickAnim);
+}
 
 void USettingsOptionUI::NativePreConstruct()
 {

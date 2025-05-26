@@ -1,10 +1,10 @@
 ﻿#include "ControlsSettingsUI.h"
 #include "EnhancedInputSubsystems.h"
-#include "KeyBindingUI.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Image.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+#include "PossessionGame/UI/SecondaryWidgets/KeyBindingUI.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 
 bool UControlsSettingsUI::IsKeyBindsHasDuplicates()

@@ -33,7 +33,7 @@ private:
 	TObjectPtr<UInvalidationBox> MainMenuInv;
 
 	virtual void NativeConstruct() override;
-	void Toggle(bool bState);
+	void Toggle(const bool bState);
 	void SetupButtons();
 	void TriggerMainMenuFadeOutAnim();
 	void TriggerQuitFadeInAnim();

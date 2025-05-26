@@ -406,7 +406,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_DialogueStart", ESound::DialogueStart);
 	SoundMap.Add("PA_RestSoundtrack", ESound::RestSoundtrack);
 	SoundMap.Add("PA_BattleModeSoundtrack", ESound::BattleModeSoundtrack);
-	SoundMap.Add("PA_UpgradeCardHover", ESound::UpgradeCardHover);
+	SoundMap.Add("PA_ButtonHover", ESound::ButtonHover);
+	SoundMap.Add("PA_ButtonSelect", ESound::ButtonSelect);
 	SoundMap.Add("PA_UpgradeCardSelect", ESound::UpgradeCardSelect);
 	SoundMap.Add("PA_UpgradePanelAppear", ESound::UpgradePanelAppear);
 	SoundMap.Add("PA_TaskAnnouncement", ESound::TaskAnnouncement);
@@ -429,6 +430,9 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_DoubleJump", ESound::DoubleJump);
 	SoundMap.Add("PA_MechanicalDeath", ESound::MechanicalDeath);
 	SoundMap.Add("PA_EmpEffectApplied", ESound::EmpEffectApplied);
+	SoundMap.Add("PA_ClickArrow", ESound::ClickArrow);
+	SoundMap.Add("PA_PanelFadeIn", ESound::PanelFadeIn);
+	SoundMap.Add("PA_PanelFadeOut", ESound::PanelFadeOut);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

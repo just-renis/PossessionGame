@@ -79,6 +79,8 @@ private:
 	void RebindPanelFadeOutFinished() const;
 	void SettingsFadeOutFinished();
 	UFUNCTION()
+	void CloseWithButton();
+	UFUNCTION()
 	void ApplySettings();
 	UFUNCTION()
 	void OpenMainTab();

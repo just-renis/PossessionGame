@@ -1,6 +1,7 @@
 ﻿#include "MainMenuButtonUI.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UMainMenuButtonUI::SetText(const FText& InText) const { if (ButtonText) ButtonText->SetText(InText); }
 
@@ -28,12 +29,18 @@ void UMainMenuButtonUI::SetupButtonEvents()
 	Button->OnUnhovered.AddDynamic(this, &UMainMenuButtonUI::TriggerUnHoverAnim);
 }
 
-void UMainMenuButtonUI::TriggerClickAnim() { if (ButtonClickAnim) PlayAnimation(ButtonClickAnim); }
+void UMainMenuButtonUI::TriggerClickAnim()
+{
+	if (!ButtonClickAnim) return;
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
+	PlayAnimation(ButtonClickAnim);
+}
 
 void UMainMenuButtonUI::TriggerHoverAnim()
 {
 	if (!ButtonHoverAnim) return;
-	PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim), 1, EUMGSequencePlayMode::Forward);
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim));
 }
 
 void UMainMenuButtonUI::TriggerUnHoverAnim()

@@ -2,7 +2,6 @@
 #include "AudioSettingsUI.h"
 #include "ControlsSettingsUI.h"
 #include "GraphicsSettingsUI.h"
-#include "KeyBindingUI.h"
 #include "MainMenuUI.h"
 #include "PauseMenuUI.h"
 #include "Animation/WidgetAnimation.h"
@@ -11,7 +10,9 @@
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/AlertPopupUI.h"
+#include "PossessionGame/UI/SecondaryWidgets/KeyBindingUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void USettingsUI::BeginRebind(const TObjectPtr<UKeyBindingUI>& InTargetKeyWidget)
@@ -25,6 +26,7 @@ void USettingsUI::BeginRebind(const TObjectPtr<UKeyBindingUI>& InTargetKeyWidget
 
 void USettingsUI::OpenUI()
 {
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (SettingsFadeIn) PlayAnimation(SettingsFadeIn);
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(EWidget::SettingsUI);
@@ -32,6 +34,7 @@ void USettingsUI::OpenUI()
 
 void USettingsUI::CloseUI()
 {
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
 	SettingsFadeOutFinished();
 	SetSavedSettings();
 }
@@ -73,7 +76,7 @@ void USettingsUI::SetupUIEvents()
 	if (GraphicsSettings) GraphicsSettings->SetupUIEvents();
 	if (ResetKeyBindsButton) ResetKeyBindsButton->OnClicked.AddDynamic(this, &USettingsUI::ResetKeyBindsToDefault);
 	if (ApplySettingsButton) ApplySettingsButton->OnClicked.AddDynamic(this, &USettingsUI::ApplySettings);
-	if (CloseButton) CloseButton->OnClicked.AddDynamic(this, &USettingsUI::CloseUI);
+	if (CloseButton) CloseButton->OnClicked.AddDynamic(this, &USettingsUI::CloseWithButton);
 	if (MainTabButton) MainTabButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::OpenMainTab);
 	if (GraphicsTabButton) GraphicsTabButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::OpenGraphicsTab);
 	if (ControlsTabButton) ControlsTabButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::OpenControlsTab);
@@ -102,8 +105,16 @@ void USettingsUI::OpenDuplicateKeyBindsPopup() const
 void USettingsUI::ToggleRebindPanel(const bool bState)
 {
 	if (!RebindPanelInv || !RebindPanelFadeInAnim) return;
-	if (bState) RebindPanelInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	else GetWorld()->GetTimerManager().SetTimer(RebindPanelFadeOutHandle, this, &USettingsUI::RebindPanelFadeOutFinished, RebindPanelFadeInAnim->GetEndTime(), false);
+	if (bState)
+	{
+		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
+		RebindPanelInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+	else
+	{
+		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
+		GetWorld()->GetTimerManager().SetTimer(RebindPanelFadeOutHandle, this, &USettingsUI::RebindPanelFadeOutFinished, RebindPanelFadeInAnim->GetEndTime(), false);
+	}
 	PlayAnimation(RebindPanelFadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
 
@@ -111,14 +122,20 @@ void USettingsUI::RebindPanelFadeOutFinished() const { if (RebindPanelInv) Rebin
 
 void USettingsUI::SettingsFadeOutFinished()
 {
-	UE_LOG(LogTemp,Error, TEXT("COLLAPSE THE FUCKING SETTINGS"));
 	SetVisibility(ESlateVisibility::Collapsed);
 	if (UGameplayStatics::GetCurrentLevelName(this, true).Equals("MainMenuLevel")) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();
 	else GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 }
 
+void USettingsUI::CloseWithButton()
+{
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
+	CloseUI();
+}
+
 void USettingsUI::ApplySettings()
 {
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 	if (ControlsSettings && !ControlsSettings->ApplySettings()) OpenDuplicateKeyBindsPopup();
 	else
 	{
@@ -154,7 +171,12 @@ void USettingsUI::OpenControlsTab()
 	ControlsTabButton->Get()->SetIsEnabled(false);
 }
 
-void USettingsUI::ResetKeyBindsToDefault() { if (ControlsSettings) ControlsSettings->ResetKeyBindsToDefault(); }
+void USettingsUI::ResetKeyBindsToDefault()
+{
+	if (!ControlsSettings) return;
+	ControlsSettings->ResetKeyBindsToDefault();
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
+}
 
 void USettingsUI::CloseDuplicateKeyBindsPopup()
 {

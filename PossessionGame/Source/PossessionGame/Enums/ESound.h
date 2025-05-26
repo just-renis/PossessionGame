@@ -55,7 +55,8 @@ enum class ESound : uint16
 	RestSoundtrack,
 	BattleModeSoundtrack,
 	UpgradePanelAppear,
-	UpgradeCardHover,
+	ButtonHover,
+	ButtonSelect,
 	UpgradeCardSelect,
 	LevelUp,
 	GeneratorInitiate,
@@ -76,5 +77,8 @@ enum class ESound : uint16
 	Jump,
 	DoubleJump,
 	MechanicalDeath,
-	EmpEffectApplied
+	EmpEffectApplied,
+	ClickArrow,
+	PanelFadeIn,
+	PanelFadeOut
 };

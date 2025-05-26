@@ -6,10 +6,8 @@
 #include "KeyBindingUI.generated.h"
 
 class USettingsUI;
-class UControlsSettingsUI;
 class UTextBlock;
 class USettingsTitleUI;
-class UInputKeySelector;
 class UButton;
 
 UCLASS()
@@ -23,21 +21,26 @@ public:
 	void RemapKeyBind();
 	void SetSavedKeyBind() const;
 	void CancelRebind() const;
+	void ResetKeyBind() const;
 	UFUNCTION()
 	void OnKeySelected(FInputChord InMapping);
-	UFUNCTION()
-	void ResetKeyBind();
 private:
 	UPROPERTY(EditAnywhere, Category = "Key Binding", meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<USettingsTitleUI> Title;
-	//UPROPERTY(EditAnywhere, Category = "Key Binding", meta = (BindWidget, AllowPrivateAccess = true))
-	//TObjectPtr<UInputKeySelector> InputKeySelector;
 	UPROPERTY(EditAnywhere, Category = "Key Binding", meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> InputKeySelector;
+	TObjectPtr<UButton> InputKeySelectorButton;
 	UPROPERTY(EditAnywhere, Category = "Key Binding", meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UButton> ResetKeyBindingButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> KeyBindText;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ResetHoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ResetSelectAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> KeyBindHoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> KeyBindSelectAnim;
 	UPROPERTY()
 	TObjectPtr<UEnhancedInputUserSettings> UserSettings;
 	UPROPERTY()
@@ -53,4 +56,18 @@ private:
 	void SetupEvents();
 	UFUNCTION()
 	void OnSelectingKeyChanged();
+	UFUNCTION()
+	void ResetSingularKeyBind();
+	UFUNCTION()
+	void PlayResetButtonSelectAnim();
+	UFUNCTION()
+	void PlayResetHoverAnim();
+	UFUNCTION()
+	void PlayResetUnHoverAnim();
+	UFUNCTION()
+	void PlayKeyBindButtonSelectAnim();
+	UFUNCTION()
+	void PlayKeyBindHoverAnim();
+	UFUNCTION()
+	void PlayKeyBindUnHoverAnim();
 };

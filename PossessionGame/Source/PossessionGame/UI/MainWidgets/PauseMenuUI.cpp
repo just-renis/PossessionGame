@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UPauseMenuUI::OpenUI() { Toggle(true); }
@@ -42,6 +43,7 @@ void UPauseMenuUI::NativeConstruct()
 void UPauseMenuUI::Toggle(bool bState)
 {
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;

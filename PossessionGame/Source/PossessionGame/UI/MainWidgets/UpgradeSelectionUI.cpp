@@ -99,6 +99,7 @@ FString UUpgradeSelectionUI::GetUpgradeTextFromSingularAttributeValue(const TPai
 void UUpgradeSelectionUI::Toggle(const bool bState)
 {
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
 	if (bState)
@@ -184,7 +185,7 @@ void UUpgradeSelectionUI::TriggerHoverAnimForFirstOption()
 {
 	if (PlayerCardOption1Popup && EnemyCardOption1Popup)
 	{
-		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardHover);
+		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 		StopAnimation(PlayerCardOption1UnHover);
 		StopAnimation(EnemyCardOption1UnHover);
 		PlayAnimation(PlayerCardOption1Popup);
@@ -214,7 +215,7 @@ void UUpgradeSelectionUI::TriggerHoverAnimForSecondOption()
 {
 	if (PlayerCardOption2Popup && EnemyCardOption2Popup)
 	{
-		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardHover);
+		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 		StopAnimation(PlayerCardOption2UnHover);
 		StopAnimation(EnemyCardOption2UnHover);
 		PlayAnimation(PlayerCardOption2Popup);
