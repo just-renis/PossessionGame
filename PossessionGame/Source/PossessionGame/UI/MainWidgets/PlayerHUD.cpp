@@ -94,7 +94,7 @@ void UPlayerHUD::UpdatePossessionIndicator(const bool bState, const FString& InK
 	}
 }
 
-void UPlayerHUD::UpdateRunningIndicator(const bool bState) const { if (RunningIndicator) RunningIndicator->SetOpacity(bState ? 1.f : 0.3f); }
+void UPlayerHUD::UpdateDashIndicator(const bool bState) const { if (DashIndicator) DashIndicator->SetOpacity(bState ? 1.f : 0.3f); }
 
 void UPlayerHUD::ToggleCriticalDamageIndicator() const
 {
@@ -104,7 +104,6 @@ void UPlayerHUD::ToggleCriticalDamageIndicator() const
 
 void UPlayerHUD::ConfigureUIs()
 {
-	if (RunningIndicator) RunningIndicator->SetOpacity(0.3f);
 	if (PressKeyBindInv) PressKeyBindInv->SetVisibility(ESlateVisibility::Collapsed);
 	if (PossessionAnnouncementInv) PossessionAnnouncementInv->SetVisibility(ESlateVisibility::Collapsed);
 	if (PossessionIndicator) PossessionIndicator->SetVisibility(ESlateVisibility::Collapsed);
