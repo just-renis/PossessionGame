@@ -734,7 +734,7 @@ void AEnemy::P_PossessionBarLogic()
 	if (PossessionBarTimer >= P_Data->GetPossessionBarCooldown())
 	{
 		bCanPossessOtherEnemy = true;
-		for (const FPlayerKeyMapping KeyBind : GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings()->GetCurrentKeyProfile()->GetPlayerMappingRows().Find("Possess")->Mappings)
+		for (const FPlayerKeyMapping KeyBind : GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings()->GetCurrentKeyProfile()->GetPlayerMappingRows().Find("Hijack")->Mappings)
 		{
 			if (P_HUD && !P_HUD->GetPossessionIndicatorIsShowing()) P_HUD->UpdatePossessionIndicator(true, KeyBind.GetCurrentKey().ToString());
 		}
