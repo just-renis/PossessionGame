@@ -106,6 +106,7 @@ public:
 	void SetUnPossessionOutlineTimer();
 	virtual void EmpEffectEnded();
 	void SetInputState(const bool bState) { bIsInputLocked = bState; }
+	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -226,6 +227,7 @@ private:
 	float FovChangeTick;
 	float TargetFov;
 	float CurrentDashCooldown;
+	float DamageReduction = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Destroy After Seconds", meta = (AllowPrivateAccess = true))
 	float DestroyAfter = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))

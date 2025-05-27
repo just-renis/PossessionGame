@@ -25,6 +25,12 @@ void UPostProcessManager::ToggleMaterial(const EPostProcessMaterial InMaterialNa
 	if (Materials.Contains(InMaterialName)) PostProcessVolume->AddOrUpdateBlendable(Materials[InMaterialName], InValue);
 }
 
+void UPostProcessManager::AddOrUpdateDynamicMaterial(const EPostProcessMaterial InMaterialName, const TObjectPtr<UMaterialInstanceDynamic>& InMaterial, const float InWeight)
+{
+	if (!Materials.Contains(InMaterialName)) Materials.Add(InMaterialName, InMaterial);
+	PostProcessVolume->AddOrUpdateBlendable(Materials[InMaterialName], InWeight);
+}
+
 void UPostProcessManager::FadeOutDeathMaterials()
 {
 	FadingOutDeathMaterialsCounter = 1.f;

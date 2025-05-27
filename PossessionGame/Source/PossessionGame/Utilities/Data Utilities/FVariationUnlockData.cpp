@@ -8,9 +8,9 @@ FVariationUnlockData::FVariationUnlockData()
 	SelectedVariations.Add(ECharacterType::Guardian, EVariation::GuardianVariationDefault);
 	SelectedVariations.Add(ECharacterType::Ranger, EVariation::RangerVariationDefault);
 	SelectedVariations.Add(ECharacterType::Trickster, EVariation::TricksterVariationDefault);
-	VariationUnlocks.Add(EVariationUnlock::KillsWithGuardian, FVariationUnlockGoal(5));
-	VariationUnlocks.Add(EVariationUnlock::KillsWithRangerGrenade, FVariationUnlockGoal(20));
-	VariationUnlocks.Add(EVariationUnlock::DamageDealtWithTricksterPoisonGrenade, FVariationUnlockGoal(500));
+	VariationUnlocks.Add(EVariationUnlock::KillsWithGuardian, FVariationUnlockGoal(10));
+	VariationUnlocks.Add(EVariationUnlock::KillsWithRangerGrenade, FVariationUnlockGoal(15));
+	VariationUnlocks.Add(EVariationUnlock::DamageDealtWithTricksterPoisonGrenade, FVariationUnlockGoal(800));
 }
 
 bool FVariationUnlockData::IsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const { return VariationUnlocks[InVariationUnlockName].Current >= VariationUnlocks[InVariationUnlockName].Requirement; }

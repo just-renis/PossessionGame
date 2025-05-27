@@ -62,3 +62,10 @@ void AGuardianWeapon::SetMeshes(const EWeapon InPrimaryDataAssetName)
 		if (const TObjectPtr<UMaterialInstanceDynamic> MI_Hands = HandsMesh->CreateAndSetMaterialInstanceDynamic(0)) MI_Hands->SetScalarParameterValue("Progress", 0.4f);
 	}
 }
+
+void AGuardianWeapon::SetCustomDilation(const float InDilation)
+{
+	Super::SetCustomDilation(InDilation);
+	FirstWeapon->SetCustomDilation(InDilation);
+	SecondWeapon->SetCustomDilation(InDilation);
+}

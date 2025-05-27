@@ -21,4 +21,5 @@ private:
 	virtual void BeginPlay() override;
 	virtual void SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh) override;
 	virtual void SetMeshes(const EWeapon InPrimaryDataAssetName) override;
+	virtual void SetCustomDilation(const float InDilation) override;
 };

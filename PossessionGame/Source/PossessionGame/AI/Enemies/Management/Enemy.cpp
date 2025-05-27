@@ -267,7 +267,8 @@ void AEnemy::InitiateDeath()
 
 void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
 {
-	CurrentHp -= InDamage;
+	UE_LOG(LogTemp, Error, TEXT("RECEIVED DAMAGE: %f"), InDamage * DamageReduction);
+	CurrentHp -= InDamage * DamageReduction;
 	if (P_HUD) P_HandlingDamageTaken();
 	else if (bIsAlive)
 	{

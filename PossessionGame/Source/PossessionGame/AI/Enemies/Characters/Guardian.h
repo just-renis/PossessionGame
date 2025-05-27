@@ -10,11 +10,21 @@ class POSSESSIONGAME_API AGuardian : public AEnemy
 	GENERATED_BODY()
 public:
 	void SetCustomTimeDilation(const float InDilation);
+	void TriggerShield(const bool bState);
 private:
 	AGuardian();
 
+	float ShieldColorDensity = 5.f;
+	float ShieldRadialRadius = 1.f;
+	float Radius = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Guardian;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_Shield;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Shield;
+	UPROPERTY()
+	FTimerHandle ShieldUpdateHandle;
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
@@ -32,7 +42,8 @@ private:
 	virtual void P_InitiateStomp() override;
 	virtual void P_InitiateDash() override;
 	virtual void P_Move(const FInputActionValue& Value) override;
-
+	void P_UpdateShieldMaterial(const bool bState);
+	
 	virtual void BeginPlay() override;
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) override;
 };

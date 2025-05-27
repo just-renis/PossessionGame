@@ -14,6 +14,8 @@
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "Camera/CameraComponent.h"
+#include "PossessionGame/Enums/EPostProcessMaterial.h"
+#include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 
 void AGuardian::SetCustomTimeDilation(const float InDilation)
 {
@@ -23,7 +25,15 @@ void AGuardian::SetCustomTimeDilation(const float InDilation)
 	}
 	else AssetsManager->AttachVfx(EVfx::StopTimeAbilityReverse, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), nullptr, Cast<USceneComponent>(GetCamera()), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	CustomTimeDilation = InDilation;
-	GetWeapon()->CustomTimeDilation = InDilation;
+	GetWeapon()->SetCustomDilation(InDilation);
+}
+
+void AGuardian::TriggerShield(const bool bState)
+{
+	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::GuardianShield, MID_Shield, 1.f);
+	FTimerDelegate TimerDel;
+	TimerDel.BindLambda([this, bState] { P_UpdateShieldMaterial(bState); });
+	GetWorld()->GetTimerManager().SetTimer(ShieldUpdateHandle, TimerDel, 0.025f, true);
 }
 
 AGuardian::AGuardian()
@@ -59,6 +69,7 @@ void AGuardian::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
+	MID_Shield = UMaterialInstanceDynamic::Create(MI_Shield, this);
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &AGuardian::SetActionInMotion);
 }
 
@@ -106,6 +117,17 @@ void AGuardian::P_Move(const FInputActionValue& Value)
 {
 	Super::P_Move(Value);
 	if (Variation == EVariation::GuardianVariationGold) P_ResetShootHoldDuration();
+}
+
+void AGuardian::P_UpdateShieldMaterial(const bool bState)
+{
+	ShieldColorDensity += bState ? -0.25f : 0.25f;
+	ShieldRadialRadius += bState ? -0.045f : 0.045f;
+	Radius += bState ? -0.2f : 0.2f;
+	MID_Shield->SetScalarParameterValue("ColorDensity", ShieldColorDensity);
+	MID_Shield->SetScalarParameterValue("RadialRadius", ShieldRadialRadius);
+	MID_Shield->SetScalarParameterValue("Radius", Radius);
+	if ((bState && ShieldColorDensity <= 2.5f) || (!bState && ShieldColorDensity >= 5.f)) GetWorldTimerManager().ClearTimer(ShieldUpdateHandle);
 }
 
 void AGuardian::BeginPlay()

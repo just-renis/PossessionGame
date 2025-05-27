@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "PostProcessManager.generated.h"
 
@@ -14,6 +15,7 @@ public:
 	void Init(const TMap<EPostProcessMaterial, TObjectPtr<UMaterialInterface>>& InPostProcessMaterials);
 	void TriggerGlitchingMaterial(const float InDuration);
 	void ToggleMaterial(const EPostProcessMaterial InMaterialName, const float InValue);
+	void AddOrUpdateDynamicMaterial(const EPostProcessMaterial InMaterialName, const TObjectPtr<UMaterialInstanceDynamic>& InMaterial, const float InWeight);
 	void FadeOutDeathMaterials();
 private:
 	float FadingOutDeathMaterialsCounter;

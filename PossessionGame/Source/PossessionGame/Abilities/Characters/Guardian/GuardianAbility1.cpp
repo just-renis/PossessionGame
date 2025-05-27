@@ -13,11 +13,10 @@ void UGuardianAbility1::P_Execute()
 	Proprietor->SetActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::OverCharge);
 	Proprietor->P_SetFov(95.f);
-	Proprietor->GetWeapon()->P_ReduceShootCooldown(20.f);
-	Proprietor->GetWeapon()->GetHandsAnimInstance()->SetPlayRate(1.2f);
-	Proprietor->P_IncreaseMovementSpeed(20.f);
+	Proprietor->SetDamageReduction(0.8f);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::GuardianOverCharge, 1.f);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianOverChargeStart);
+	Proprietor->TriggerShield(true);
 	bIsAbilityInDuration = true;
 	Super::P_Execute();
 }
@@ -25,9 +24,8 @@ void UGuardianAbility1::P_Execute()
 void UGuardianAbility1::P_StopAbility()
 {
 	Proprietor->P_SetFov(90.f);
-	Proprietor->GetWeapon()->P_ResetShootCooldown();
-	Proprietor->GetWeapon()->GetHandsAnimInstance()->SetPlayRate(1.f);
-	Proprietor->P_ResetMovementSpeed();
+	Proprietor->SetDamageReduction(1.f);
+	Proprietor->TriggerShield(false);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianOverChargeEnd);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::GuardianOverCharge, 0.f);
 	Super::P_StopAbility();

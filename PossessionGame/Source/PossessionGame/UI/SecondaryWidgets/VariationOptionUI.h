@@ -33,9 +33,9 @@ private:
 	EVariation Variation;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	ECharacterType CharacterType;
-	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true, MultiLine = true))
 	FString DetailsPanelText;
-	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true, MultiLine = true))
 	FString DefaultUnlockText;
 	UPROPERTY(EditAnywhere, Category = "Icon", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> VariationOptionIcon;

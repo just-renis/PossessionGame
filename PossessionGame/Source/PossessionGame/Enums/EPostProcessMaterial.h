@@ -11,5 +11,6 @@ enum class EPostProcessMaterial : uint8
     DeathScreenCrack,
     DeathBloodPumping,
     SpeedLines,
-    GuardianOverCharge
+    GuardianOverCharge,
+    GuardianShield
 };
