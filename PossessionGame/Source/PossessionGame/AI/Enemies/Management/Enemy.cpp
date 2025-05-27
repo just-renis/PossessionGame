@@ -451,7 +451,6 @@ void AEnemy::P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 
 void AEnemy::P_SetupCharacterMovement()
 {
-	CurrentDashCooldown = P_Data->GetDashCooldown();
 	GetCharacterMovement()->GravityScale = GravityScale;
 	GetCharacterMovement()->JumpZVelocity = JumpVelocity;
 	GetCharacterMovement()->AirControl = AirControl;
@@ -474,6 +473,8 @@ void AEnemy::P_Move(const FInputActionValue& Value)
 
 void AEnemy::P_InitiateDash()
 {
+	bCanDash = false;
+	if (P_HUD) P_HUD->UpdateDashIndicator(false);
 	AssetsManager->PlaySound2D(ESound::Dash);
 	CurrentDashCooldown = 0.f;
 	FVector DashDirection = GetVelocity().GetSafeNormal();
@@ -773,7 +774,7 @@ void AEnemy::P_Reload()
 void AEnemy::P_Dash()
 {
 	if (bIsInputLocked) return;
-	if (CurrentDashCooldown >= P_Data->GetDashCooldown()) P_InitiateDash();
+	if (bCanDash) P_InitiateDash();
 }
 
 void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InPossessionTimeValue)
@@ -1007,10 +1008,16 @@ void AEnemy::P_Death()
 
 void AEnemy::P_ControlLogic()
 {
-	CurrentDashCooldown += 0.05f;
 	Weapon->P_SetWalkSpread(GetCharacterMovement()->Velocity.Size() >= P_Data->GetMaxWalkSpeed() - 0.1f);
 	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size()); // Reduce by an ability % for guardian.
 	if (!bCanPossessOtherEnemy && !bInUpgradeSelection) P_PossessionBarLogic();
+	if (bCanDash) return;
+	CurrentDashCooldown += 0.05f;
+	if (CurrentDashCooldown >= P_Data->GetDashCooldown())
+	{
+		bCanDash = true;
+		if (P_HUD) P_HUD->UpdateDashIndicator(true);
+	}
 }
 
 void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()

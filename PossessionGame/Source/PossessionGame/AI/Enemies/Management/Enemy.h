@@ -219,6 +219,7 @@ private:
 	bool bIsMutant = false;
 	bool bIsStomping = false;
 	bool bCanStomp = false;
+	bool bCanDash = true;
 	float PossessionBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;

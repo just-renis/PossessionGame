@@ -48,7 +48,7 @@ public:
 	void Reset();
 	void SetColors(const FLinearColor InColor) const;
 	void UpdatePossessionIndicator(const bool bState, const FString& InKeyName = "");
-	void UpdateRunningIndicator(const bool bState) const;
+	void UpdateDashIndicator(const bool bState) const;
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs();
 	void PlayDeathFadeOutAnim();
@@ -112,7 +112,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> PossessionIndicatorOverlay;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> RunningIndicator;
+	TObjectPtr<UImage> DashIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
 	UPROPERTY(meta = (BindWidget))
