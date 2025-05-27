@@ -76,6 +76,8 @@ public:
 	virtual void AI_SetCanShoot(const bool bState);
 	virtual void AI_Disable();
 	void AI_StopAbility(const int32 InIndex);
+	void AI_TryEvolving();
+	void AI_SetupUpgradesAppliance();
 	virtual void AI_CancelShooting() {}
 
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) { bInUpgradeSelection = false; }
@@ -276,7 +278,6 @@ private:
 	void AI_ReceivedDamage(const EDamageReason InDamageReason);
 	void AI_DestroyHpBar();
 	void AI_ShowDamageNumber(const float InDamageAmount) const;
-	void AI_SetupUpgradesAppliance();
 	void AI_SpawnUsbOnDeath() const;
 	void AI_TriggerMutantExplosion();
 	UFUNCTION()

@@ -221,6 +221,28 @@ void AEnemy::AI_Disable() { if (AI) AI->StopLogic(true); }
 
 void AEnemy::AI_StopAbility(const int32 InIndex) { if (Abilities.IsValidIndex(InIndex)) Abilities[InIndex]->AI_StopAbility(); }
 
+void AEnemy::AI_TryEvolving()
+{
+	if (FMath::FRand() <= AI_Data->GetMutationChance())
+	{
+		bIsMutant = true;
+		MaxHp -= MaxHp * 0.01f * AI_Data->GetMutantHpIncreasePercentage();
+		AssetsManager->AttachVfx(EVfx::MutantAura, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("MutantAuraSocket"));
+	}
+	else if (FMath::FRand() <= AI_Data->GetEliteChance())
+	{
+		bIsElite = true;
+		MaxHp += MaxHp * 0.01f * AI_Data->GetEliteHpIncreasePercentage();
+		AssetsManager->AttachVfx(EVfx::EliteAura, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("SpawnSocket"));
+	}
+	AI_SetupUpgradesAppliance();
+}
+
+void AEnemy::AI_SetupUpgradesAppliance()
+{
+	for (int32 i = 0; i < Abilities.Num(); i++) MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, Abilities[i]->GetAbilityName(), EUpgradeAttribute::FlatHealth);
+}
+
 void AEnemy::InitiateDeath()
 {
 	ClearTimers();
@@ -484,8 +506,6 @@ void AEnemy::P_InitiateStomp()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	//bIsElite = true;
-	//if (FMath::RandBool()) bIsMutant = true;
 	GameInstance = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance());
 	DelegateManager = GameInstance->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
@@ -565,12 +585,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	return Damage;
 }
 
-void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName)
-{
-	GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get());
-	if (bIsElite) AssetsManager->AttachVfx(EVfx::EliteAura, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("SpawnSocket"));
-	else if (bIsMutant) AssetsManager->AttachVfx(EVfx::MutantAura, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("MutantAuraSocket"));
-}
+void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get()); }
 
 void AEnemy::DestroyAI()
 {
@@ -598,9 +613,6 @@ void AEnemy::DestroyThis()
 void AEnemy::AI_SetupData()
 {
 	MaxHp = AI_Data->GetMaxHp();
-	if (bIsElite) MaxHp += MaxHp * 0.01f * AI_Data->GetEliteHpIncreasePercentage();
-	else if (bIsMutant) MaxHp -= MaxHp * 0.01f * AI_Data->GetMutantHpIncreasePercentage();
-	AI_SetupUpgradesAppliance();
 	CurrentHp = MaxHp;
 	SetMaxWalkSpeed(AI_Data->GetMaxWalkSpeed());
 }
@@ -636,16 +648,14 @@ void AEnemy::AI_ShowDamageNumber(const float InDamageAmount) const
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::DamageNumber, GetActorLocation() + FVector(0.f, 0.f, 60.f) + GetActorForwardVector() * 50.f, FRotator::ZeroRotator)->Init(InDamageAmount);
 }
 
-void AEnemy::AI_SetupUpgradesAppliance()
-{
-	for (int32 i = 0; i < Abilities.Num(); i++) MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, Abilities[i]->GetAbilityName(), EUpgradeAttribute::FlatHealth);
-}
-
 void AEnemy::AI_SpawnUsbOnDeath() const
 {
 	if (!DelegateManager->GetIsUsbDroppable()) return;
-	DelegateManager->SetIsUsbDroppable(false);
-	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Usb, GetActorLocation())->Init();
+	if (FMath::FRand() <= AI_Data->GetUsbDropChance())
+	{
+		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Usb, GetActorLocation())->Init();
+		DelegateManager->SetIsUsbDroppable(false);
+	}
 }
 
 void AEnemy::AI_TriggerMutantExplosion()

@@ -101,7 +101,7 @@ public:
 	void SpawnVfx(const EVfx InVfxName, TFunction<bool()> InCallback, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const FNiagaraVariationData& InNiagaraVariationData = FNiagaraVariationData(), const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
 	void ApplyAttributesToVfxComponent(const TMap<FName, FNiagaraAttribute>& InAttributes, const TObjectPtr<UNiagaraComponent>& Component);
 	void ChangeVfxVariation(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const FNiagaraVariationData& InNiagaraVariationData);
-	void RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack);
+	void RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount);
 private:
 	bool bCanAsyncLoadHappen = true;
@@ -153,10 +153,10 @@ private:
 	void SetupVfxsPrimaryAssets();
 	void SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, ESound InSoundName);
 	void SetupVfx(TFunction<bool()> InCallback, const FNiagaraVariationData& InNiagaraVariationData, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes, const bool bDeactivate = false);
-	void AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack);
-	void AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack);
+	void AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
+	void AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void SetupSpawnLocations();
-	void SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode,TFunction<void()> InCallBack);
+	void SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode);
 	void AddSpawnableEnemiesToThePool();
 	template<typename T, typename U>

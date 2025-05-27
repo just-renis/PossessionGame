@@ -241,12 +241,12 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const TObjectPtr<UNiagaraComp
 	}
 }
 
-void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack)
+void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
 	if (!bIsSpawnInProcess)
 	{
 		if (InCharacter == ECharacterType::Random) InCharacter = GetRandomCharacterToSpawn();
-		!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, InCallBack) : SpawnEnemy(InCharacter, InGameMode, InCallBack);
+		!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack) : SpawnEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack);
 		TotalSpawnedEnemies++;
 		AddSpawnableEnemiesToThePool();
 	}
@@ -258,7 +258,7 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubc
 	MarkerClass = InMarkerClass;
 	bTutorialIsFinished = true;
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
-	RequestSpawnEnemy(ECharacterType::Guardian, EGameMode::TutorialMode1, nullptr);
+	RequestSpawnEnemy(ECharacterType::Guardian, EGameMode::TutorialMode1, false, nullptr);
 	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	else AddSpawnableEnemiesToThePool();
 	DelegateManager = InDelegateManager;
@@ -523,7 +523,7 @@ void UPrimaryDataAssetsManager::SetupVfx(TFunction<bool()> InCallback, const FNi
 	if (!InAttributes.IsEmpty()) ApplyAttributesToVfxComponent(InAttributes, InVfxComponent);
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack)
+void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
 	bIsSpawnInProcess = true;
 	if (GetCanAsyncLoadHappen())
@@ -541,15 +541,15 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 			PathsToLoad.Add(GetWeaponData(SingularWeapon)->WeaponMesh.ToSoftObjectPath());
 		}
 		else PathsToLoad.Add(GetWeaponData(Weapon)->WeaponMesh.ToSoftObjectPath());
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, SingularWeapon, Weapon, InCharacter, InGameMode, InCallBack]
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack]
 		{
-			if (IsGameRunning()) AsyncLoadCallback(SingularWeapon, Weapon, InCharacter, InGameMode, InCallBack);
+			if (IsGameRunning()) AsyncLoadCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
 		});
 		AddAsyncHandle(Handle);
 	}
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack)
+void UPrimaryDataAssetsManager::AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
 	LoadedEnemies.Add(InCharacter, Cast<UClass>(GetCharacterData(InCharacter)->CharacterClass.ToSoftObjectPath().TryLoad()));
 	if (InSingularWeapon != EWeapon::None)
@@ -557,7 +557,7 @@ void UPrimaryDataAssetsManager::AsyncLoadCallback(const EWeapon InSingularWeapon
 		GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InSingularWeapon, Cast<UClass>(GetWeaponData(InSingularWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
 	}
 	GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
-	SpawnEnemy(InCharacter, InGameMode, InCallBack);
+	SpawnEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack);
 }
 
 void UPrimaryDataAssetsManager::SetupSpawnLocations()
@@ -572,7 +572,7 @@ void UPrimaryDataAssetsManager::SetupSpawnLocations()
 	}
 }
 
-void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, TFunction<void()> InCallBack)
+void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
 	if (!SpawnLocations.Find(InCurrentGameMode)) return;
 	if (SpawnLocations[InCurrentGameMode].SpawnLocations.Num() > 0)
@@ -585,8 +585,10 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 		}
 		for (const TObjectPtr<ASpawnLocation>& Location : SpawnLocations[InCurrentGameMode].SpawnLocations)
 		{
-			if (Location->SpawnEnemy(LoadedEnemies[InCharacter]))
+			if (const TObjectPtr<AEnemy> Enemy = Location->SpawnEnemy(LoadedEnemies[InCharacter]))
 			{
+				if (bCanEvolve) Enemy->AI_TryEvolving();
+				else Enemy->AI_SetupUpgradesAppliance();
 				if (InCallBack) InCallBack();
 				bIsSpawnInProcess = false;
 				break;
@@ -595,7 +597,7 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 	}
 }
 
-void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode) { RequestSpawnEnemy(InCharacter, InGameMode, nullptr); }
+void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode) { RequestSpawnEnemy(InCharacter, InGameMode, false, nullptr); }
 
 void UPrimaryDataAssetsManager::AddSpawnableEnemiesToThePool()
 {

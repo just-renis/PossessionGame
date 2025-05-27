@@ -30,7 +30,7 @@ void UHackTerminalModeLogic::Finalize()
 
 void UHackTerminalModeLogic::HandleSpawning()
 {
-	if (!bIsHackFinished && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
+	if (!bIsHackFinished && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), true, [this] { IncreaseAliveEnemiesAmount(); });
 }
 
 void UHackTerminalModeLogic::UpdateTaskProgress()
