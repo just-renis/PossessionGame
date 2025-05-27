@@ -13,6 +13,18 @@
 #include "PossessionGame/Weapons/Character Weapons/GuardianWeapon.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
+#include "Camera/CameraComponent.h"
+
+void AGuardian::SetCustomTimeDilation(const float InDilation)
+{
+	if (FMath::IsNearlyEqual(InDilation, 5.f, 0.1f))
+	{
+		AssetsManager->AttachVfx(EVfx::StopTimeAbility, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), nullptr, Cast<USceneComponent>(GetCamera()), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+	}
+	else AssetsManager->AttachVfx(EVfx::StopTimeAbilityReverse, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), nullptr, Cast<USceneComponent>(GetCamera()), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+	CustomTimeDilation = InDilation;
+	GetWeapon()->CustomTimeDilation = InDilation;
+}
 
 AGuardian::AGuardian()
 {

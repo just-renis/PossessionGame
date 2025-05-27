@@ -2,12 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
-#include "RangerAbility3.generated.h"
+#include "GuardianAbility2.generated.h"
 
-class ARanger;
+class AGuardian;
 
 UCLASS()
-class POSSESSIONGAME_API URangerAbility3 : public UAbility
+class POSSESSIONGAME_API UGuardianAbility2 : public UAbility
 {
 	GENERATED_BODY()
 public:
@@ -15,7 +15,7 @@ public:
 	virtual void P_StopAbility() override;
 private:
 	UPROPERTY()
-	TObjectPtr<ARanger> Proprietor;
+	TObjectPtr<AGuardian> Proprietor;
 
 	virtual bool IsProprietorPossessed() override;
 	

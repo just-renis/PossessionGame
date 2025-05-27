@@ -72,7 +72,6 @@ void UUpgradeManager::Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpg
 	AbilityToUpgradeMap = {
 		{EAbility::RangerAbility1, EUpgrade::RangerAbility1},
 		{EAbility::RangerAbility2, EUpgrade::RangerAbility2},
-		{EAbility::RangerAbility3, EUpgrade::RangerAbility3},
 		{EAbility::TricksterAbility1, EUpgrade::TricksterAbility1},
 		{EAbility::TricksterAbility2, EUpgrade::TricksterAbility2}
 	};

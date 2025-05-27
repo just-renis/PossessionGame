@@ -1,6 +1,5 @@
 ﻿#include "Ranger.h"
 #include "NiagaraComponent.h"
-#include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
@@ -59,17 +58,6 @@ void ARanger::SpawnShield()
 	const TObjectPtr<APoolObject> Shield = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::RangerShield, GetActorLocation() + GetActorForwardVector() * 100.f, GetActorRotation() + FRotator(0.f, -90.f, 0.f));
 	Shield->Init(bIsPossessed);
 	Cast<ARangerShield>(Shield)->SetProprietor(this);
-}
-
-void ARanger::SetCustomTimeDilation(float Dilation)
-{
-	if (FMath::IsNearlyEqual(Dilation, 5.f, 0.1f))
-	{
-		AssetsManager->AttachVfx(EVfx::StopTimeAbility, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
-	}
-	else AssetsManager->AttachVfx(EVfx::StopTimeAbilityReverse, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), nullptr, GetCamera(), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
-	CustomTimeDilation = Dilation;
-	GetWeapon()->CustomTimeDilation = Dilation;
 }
 
 void ARanger::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::RangerOnPossession); }

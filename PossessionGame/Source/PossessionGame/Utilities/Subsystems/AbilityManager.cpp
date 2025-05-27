@@ -1,10 +1,10 @@
 #include "AbilityManager.h"
 #include "PossessionGame/Abilities/Characters/Guardian/GuardianAbility1.h"
+#include "PossessionGame/Abilities/Characters/Guardian/GuardianAbility2.h"
 #include "PossessionGame/Abilities/Characters/MinionBoss/MinionBossAbility1.h"
 #include "PossessionGame/Abilities/Characters/MinionBoss/MinionBossAbility2.h"
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility1.h"
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility2.h"
-#include "PossessionGame/Abilities/Characters/Ranger/RangerAbility3.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility1.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility2.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility3.h"
@@ -34,9 +34,9 @@ void UAbilityManager::InitAbilities()
 {
     AbilitiesForCharacters = {
         { ECharacterType::Spy, FCharacterAbilities({ EAbility::SpyAbility1, EAbility::SpyAbility2, EAbility::SpyAbility3 }) },
-        { ECharacterType::Ranger, FCharacterAbilities( { EAbility::RangerAbility1, EAbility::RangerAbility2, EAbility::RangerAbility3 }) },
+        { ECharacterType::Ranger, FCharacterAbilities( { EAbility::RangerAbility1, EAbility::RangerAbility2 }) },
         { ECharacterType::Trickster,  FCharacterAbilities({ EAbility::TricksterAbility1, EAbility::TricksterAbility2 }) },
-        { ECharacterType::Guardian,  FCharacterAbilities({ EAbility::GuardianAbility1 }) },
+        { ECharacterType::Guardian,  FCharacterAbilities({ EAbility::GuardianAbility1, EAbility::GuardianAbility2 }) },
         { ECharacterType::MinionBoss, FCharacterAbilities({ EAbility::MinionBossAbility1, EAbility::MinionBossAbility2 }) }
     };
     AddAbility(EAbility::SpyAbility1, USpyAbility1::StaticClass());
@@ -44,10 +44,10 @@ void UAbilityManager::InitAbilities()
     AddAbility(EAbility::SpyAbility3, USpyAbility3::StaticClass());
     AddAbility(EAbility::RangerAbility1, URangerAbility1::StaticClass());
     AddAbility(EAbility::RangerAbility2, URangerAbility2::StaticClass());
-    AddAbility(EAbility::RangerAbility3, URangerAbility3::StaticClass());
     AddAbility(EAbility::TricksterAbility1, UTricksterAbility1::StaticClass());
     AddAbility(EAbility::TricksterAbility2, UTricksterAbility2::StaticClass());
     AddAbility(EAbility::GuardianAbility1, UGuardianAbility1::StaticClass());
+    AddAbility(EAbility::GuardianAbility2, UGuardianAbility2::StaticClass());
     AddAbility(EAbility::MinionBossAbility1, UMinionBossAbility1::StaticClass());
     AddAbility(EAbility::MinionBossAbility2, UMinionBossAbility2::StaticClass());
    // AddAbility(EAbility::TricksterAbility3, URangerAbility3::StaticClass());

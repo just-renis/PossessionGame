@@ -18,7 +18,6 @@ public:
 	
 	void LaunchGrenade();
 	void SpawnShield();
-	void SetCustomTimeDilation(float Dilation);
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade Launcher", meta = (AllowPrivateAccess = true))
 	float GrenadeLaunchTriggerRadiusInMetres = 10.f;

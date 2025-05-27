@@ -8,7 +8,9 @@ UCLASS()
 class POSSESSIONGAME_API AGuardian : public AEnemy
 {
 	GENERATED_BODY()
-	
+public:
+	void SetCustomTimeDilation(const float InDilation);
+private:
 	AGuardian();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
