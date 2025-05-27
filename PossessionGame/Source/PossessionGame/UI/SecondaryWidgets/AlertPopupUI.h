@@ -27,7 +27,12 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UButton> AlertButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PopupFadeIn;
+	TObjectPtr<UWidgetAnimation> PopupFadeInAnim;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent AlertPopupFadeOutDelegate;
 
 	virtual void NativePreConstruct() override;
+	virtual void NativeConstruct() override;
+	UFUNCTION()
+	void AlertPopupFadeOutFinished();
 };

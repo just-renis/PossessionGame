@@ -54,10 +54,10 @@ private:
 	TObjectPtr<UInvalidationBox> CloseButtonInv;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UInvalidationBox> ApplySettingsButtonInv;
-//	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	//TObjectPtr<UAlertPopupUI> DuplicateKeyBindsAlert;
+	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	TObjectPtr<UAlertPopupUI> DuplicateKeyBindsAlert;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> SettingsFadeIn;
+	TObjectPtr<UWidgetAnimation> SettingsFadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> RebindPanelFadeInAnim;
 	UPROPERTY(meta = (BindWidget))
@@ -65,7 +65,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<UKeyBindingUI> CurrentKeyWidget;
 	UPROPERTY()
-	FTimerHandle RebindPanelFadeOutHandle;
+	FWidgetAnimationDynamicEvent RebindPanelFadeOutDelegate;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent SettingsPanelFadeOutDelegate;
 	
 	virtual FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
@@ -76,7 +78,9 @@ private:
 	void SetSavedSettings();
 	void OpenDuplicateKeyBindsPopup() const;
 	void ToggleRebindPanel(const bool bState);
-	void RebindPanelFadeOutFinished() const;
+	UFUNCTION()
+	void RebindPanelFadeOutFinished();
+	UFUNCTION()
 	void SettingsFadeOutFinished();
 	UFUNCTION()
 	void CloseWithButton();
