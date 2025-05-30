@@ -5,8 +5,6 @@
 #include "Components/TextBlock.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/ECharacterType.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -65,8 +63,5 @@ void UUpgradeCardUI::SelectUpgrade()
 {
 	if (!UpgradeButton && !UpgradeButton->GetIsEnabled()) return;
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
-	UpgradeButton->SetIsEnabled(false);
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
-	SaveSlot->AddUpgrade(Data->GetUpgradeName(), SaveSlot->GetLevelOfAnUpgrade(Data->GetUpgradeName()) + 1);
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUpgradeSelected.ExecuteIfBound();
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUpgradeCardSelected.ExecuteIfBound(Data);
 }

@@ -4,9 +4,10 @@
 #include "Blueprint/UserWidget.h"
 #include "UpgradeSelectionUI.generated.h"
 
+class UVerticalBox;
+struct FUpgradeAttributes;
 enum class EUpgrade : uint8;
 enum class EUpgradeAttribute : uint8;
-struct FLevelUpgradeData;
 class UUpgradeData;
 class UUpgradeDetailsPanelUI;
 class UDelegateManager;
@@ -20,6 +21,7 @@ class POSSESSIONGAME_API UUpgradeSelectionUI : public UUserWidget
 public:
 	void OpenUI();
 	void CloseUI();
+	void SetTriggerUpgradeMenuCloseAnimation();
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> PlayerCardBackgroundTexture;
@@ -42,7 +44,13 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UUpgradeCardUI> EnemyCardOption2;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UUpgradeDetailsPanelUI> UpgradeDetailsPanel;
+	TObjectPtr<UUpgradeDetailsPanelUI> UpgradeChoice1;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUpgradeDetailsPanelUI> UpgradeChoice2;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUpgradeDetailsPanelUI> UpgradeChoice3;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVerticalBox> UpgradeChoicesPanel;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> PlayerCardOption1Popup;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -76,15 +84,11 @@ private:
 	UPROPERTY()
 	TArray<TObjectPtr<UUpgradeData>> UpgradesData;
 
-	FString ConvertUpgradeAttributeValueToString(const float InValue);
 	FString GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade);
-	FString GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute);
-	FString ReceiveUpgradeText(const bool bPlayerCard, const TObjectPtr<UUpgradeData>& InUpgradeData, const bool bIsForDetailsPanel = false);
 	
 	void Toggle(const bool bState);
 	virtual void NativeConstruct() override;
-	void SetTriggerUpgradeMenuCloseAnimation();
-	void ProcessCurrentUpgradeData(const bool bPlayerCard, const int32 PreviousLevel, const TObjectPtr<UUpgradeData>& InUpgradeData, FLevelUpgradeData& CurrentUpgradeData);
+	void OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData) const;
 	UFUNCTION()
 	void FinishedUpgradeSelectionCloseAnimation() const;
 	UFUNCTION()

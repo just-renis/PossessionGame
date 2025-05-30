@@ -103,12 +103,6 @@ void ARanger::P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName)
 	if (InUpgradeName == EUpgrade::RangerAbility1) Abilities[0]->ApplyUpgradeOnSelection(bIsPossessed);
 }
 
-void ARanger::P_Destroy()
-{
-	DelegateManager->ApplyUpgradeOnSelection.RemoveAll(this);
-	Super::P_Destroy();
-}
-
 void ARanger::BeginPlay()
 {
 	CharacterName = ECharacterType::Ranger;

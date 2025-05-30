@@ -7,11 +7,11 @@ enum class EGameMode : uint8;
 enum class EUpgrade : uint8;
 enum class ECharacterType : uint8;
 enum class EVariation : uint8;
+class UUpgradeData;
 
 DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
 DECLARE_DELEGATE(FOnUpgradeSelectionOpened);
-DECLARE_DELEGATE(FOnUpgradeSelected);
 DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
 DECLARE_DELEGATE(FStopShowingHint);
 DECLARE_DELEGATE(FOnChargeTerminalModeCompletion);
@@ -29,6 +29,7 @@ DECLARE_DELEGATE_OneParam(FOnShowDialogue, const int32);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
 DECLARE_DELEGATE_OneParam(FOnSecretRewardCollected, const int32);
 DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
+DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const TObjectPtr<UUpgradeData>&);
 DECLARE_DELEGATE_TwoParams(FStartTutorialDroneMoveToLocation, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
@@ -65,7 +66,6 @@ public:
 	FOnHandsReloadMontageEnd OnHandsReloadMontageEnd;
 	FOnGraphicsSettingChange OnGraphicsSettingChange;
 	FOnUpgradeSelectionOpened OnUpgradeSelectionOpened;
-	FOnUpgradeSelected OnUpgradeSelected;
 	FOnUpgradeSelectionFinished OnUpgradeSelectionFinished;
 	FStopShowingHint StopShowingHint;
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
@@ -86,6 +86,7 @@ public:
 	FOnMinionBossStomp OnMinionBossStomp;
 	FOnSecretRewardCollected OnSecretRewardCollected;
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
+	FOnUpgradeCardSelected OnUpgradeCardSelected;
 	FStartTutorialDroneMoveToLocation StartTutorialDroneMoveToLocation;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnAbilityUse OnAbilityUse;

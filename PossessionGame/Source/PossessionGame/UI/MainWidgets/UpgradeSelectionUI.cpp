@@ -1,15 +1,13 @@
 ﻿#include "UpgradeSelectionUI.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
+#include "Components/VerticalBox.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/ECharacterType.h"
-#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeCardUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeDetailsPanelUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
@@ -27,26 +25,18 @@ void UUpgradeSelectionUI::OpenUI()
 		if (PlayerCardOption1)
 		{
 			PlayerCardOption1->SetupCard(true, PlayerCardBackgroundTexture, UpgradesData[0], UpgradesData[0]->GetCharacter() == ECharacterType::Ranger ? RangerIconTexture : TricksterIconTexture, PlayerIconTexture);
-			PlayerCardOption1->SetUpgradeText(ReceiveUpgradeText(true, UpgradesData[0]));
+			PlayerCardOption1->SetUpgradeText(GetUpgradeTextFromUpgrade(UpgradesData[0]->GetUpgradeName()));
 		}
-		if (EnemyCardOption1)
-		{
-			EnemyCardOption1->SetupCard(false, EnemyCardBackgroundTexture, UpgradesData[0], EnemyIconTexture);
-			EnemyCardOption1->SetUpgradeText(ReceiveUpgradeText(false, UpgradesData[0]));
-		}
+		if (EnemyCardOption1) EnemyCardOption1->SetupCard(false, EnemyCardBackgroundTexture, UpgradesData[0], EnemyIconTexture);
 	}
 	if (UpgradesData.Num() > 1)
 	{
 		if (PlayerCardOption2)
 		{
 			PlayerCardOption2->SetupCard(true, PlayerCardBackgroundTexture, UpgradesData[1], UpgradesData[1]->GetCharacter() == ECharacterType::Ranger ? RangerIconTexture : TricksterIconTexture, PlayerIconTexture);
-			PlayerCardOption2->SetUpgradeText(ReceiveUpgradeText(true, UpgradesData[1]));
+			PlayerCardOption2->SetUpgradeText(GetUpgradeTextFromUpgrade(UpgradesData[1]->GetUpgradeName()));
 		}
-		if (EnemyCardOption2)
-		{
-			EnemyCardOption2->SetupCard(false, EnemyCardBackgroundTexture, UpgradesData[1], EnemyIconTexture);
-			EnemyCardOption2->SetUpgradeText(ReceiveUpgradeText(false, UpgradesData[1]));
-		}
+		if (EnemyCardOption2) EnemyCardOption2->SetupCard(false, EnemyCardBackgroundTexture, UpgradesData[1], EnemyIconTexture);
 	}
 }
 
@@ -56,14 +46,13 @@ void UUpgradeSelectionUI::CloseUI()
 	if (EnemyCardOption1) EnemyCardOption1->ToggleCardVisibility(false);
 	if (PlayerCardOption2) PlayerCardOption2->ToggleCardVisibility(false);
 	if (EnemyCardOption2) EnemyCardOption2->ToggleCardVisibility(false);
+	if (UpgradeChoicesPanel) UpgradeChoicesPanel->SetVisibility(ESlateVisibility::Collapsed);
 	Toggle(false);
 }
 
-FString UUpgradeSelectionUI::ConvertUpgradeAttributeValueToString(const float InValue)
+void UUpgradeSelectionUI::SetTriggerUpgradeMenuCloseAnimation()
 {
-	FString FloatValueString = FString::SanitizeFloat(InValue);
-	if (FloatValueString.EndsWith(TEXT(".0"))) FloatValueString.RemoveFromEnd(TEXT(".0"));
-	return FloatValueString;
+	UKismetSystemLibrary::K2_SetTimer(this, "TriggerUpgradeMenuCloseAnimation", 0.5f, false);
 }
 
 FString UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
@@ -72,26 +61,8 @@ FString UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 	{
 		case EUpgrade::RangerAbility1: return " GRENADE LAUNCHER UPGRADE";
 		case EUpgrade::RangerAbility2: return " SHIELD UPGRADE";
-		case EUpgrade::RangerAbility3: return " SLOWMOTION UPGRADE";
 		case EUpgrade::TricksterAbility1: return " POISON UPGRADE";
 		case EUpgrade::TricksterAbility2: return " EMP UPGRADE";
-		case EUpgrade::RangerBaseStat: return " RANGER BASE STATS UPGRADE";
-	}
-	return "";
-}
-
-FString UUpgradeSelectionUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute)
-{
-	switch (InAttribute.Key)
-	{
-		case EUpgradeAttribute::FlatDamage: return "+" + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " DAMAGE\n";
-		case EUpgradeAttribute::FlatHealth: return "+" + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " HEALTH\n";
-		case EUpgradeAttribute::DamagePercentage: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% DAMAGE\n";
-		case EUpgradeAttribute::ProjectilesAmount: return "+" + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " PROJECTILES\n";
-		case EUpgradeAttribute::AbilityCooldownReduction: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% COOLDOWN\n";
-		case EUpgradeAttribute::Size: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% AREA\n";
-		case EUpgradeAttribute::AbilityDuration: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% ABILITY DURATION\n";
-		case EUpgradeAttribute::EffectDuration: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% EFFECT DURATION\n";
 	}
 	return "";
 }
@@ -115,7 +86,7 @@ void UUpgradeSelectionUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	DelegateManager->OnUpgradeSelected.BindUObject(this, &UUpgradeSelectionUI::SetTriggerUpgradeMenuCloseAnimation);
+	DelegateManager->OnUpgradeCardSelected.BindUObject(this, &UUpgradeSelectionUI::OpenUpgradeChoicesPanel);
 	if (PlayerCardOption1)
 	{
 		PlayerCardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
@@ -142,37 +113,17 @@ void UUpgradeSelectionUI::NativeConstruct()
 	}
 }
 
-void UUpgradeSelectionUI::SetTriggerUpgradeMenuCloseAnimation()
+void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData) const
 {
-	UKismetSystemLibrary::K2_SetTimer(this, "TriggerUpgradeMenuCloseAnimation", 0.5f, false);
-}
-
-FString UUpgradeSelectionUI::ReceiveUpgradeText(const bool bPlayerCard, const TObjectPtr<UUpgradeData>& InUpgradeData, const bool bIsForDetailsPanel)
-{
-	if (bPlayerCard && !bIsForDetailsPanel) return GetUpgradeTextFromUpgrade(InUpgradeData->GetUpgradeName());
-	FString UpgradeTextString = "";
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
-	const int32 NextLevel = SaveSlot->GetLevelOfAnUpgrade(InUpgradeData->GetUpgradeName()) + 1;
-	FLevelUpgradeData CurrentUpgradeData = InUpgradeData->GetAttributesForLevel(bPlayerCard, NextLevel);
-	if (NextLevel > 1) ProcessCurrentUpgradeData(bPlayerCard, NextLevel - 1, InUpgradeData, CurrentUpgradeData);
-	for (const TPair<EUpgradeAttribute, float> Attribute : CurrentUpgradeData.Upgrades) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute);
-	UpgradeTextString.RemoveFromEnd(TEXT("\n"));
-	return UpgradeTextString;
-}
-
-void UUpgradeSelectionUI::ProcessCurrentUpgradeData(const bool bPlayerCard, const int32 PreviousLevel, const TObjectPtr<UUpgradeData>& InUpgradeData, FLevelUpgradeData& CurrentUpgradeData)
-{
-	TArray<EUpgradeAttribute> KeysToRemove;
-	FLevelUpgradeData PreviousUpgradeData = InUpgradeData->GetAttributesForLevel(bPlayerCard, PreviousLevel);
-	for (TPair<EUpgradeAttribute, float>& CurrPair : CurrentUpgradeData.Upgrades)
-	{
-		if (float* PrevValue = PreviousUpgradeData.Upgrades.Find(CurrPair.Key))
-		{
-			CurrPair.Value -= *PrevValue;
-			if (FMath::IsNearlyEqual(CurrPair.Value, 0.f, 0.001f)) KeysToRemove.Add(CurrPair.Key);
-		}
-	}
-	for (const EUpgradeAttribute Key : KeysToRemove) CurrentUpgradeData.Upgrades.Remove(Key);
+	if (!UpgradeChoicesPanel) return;
+	PlayerCardOption1->SetVisibility(ESlateVisibility::Collapsed);
+	PlayerCardOption2->SetVisibility(ESlateVisibility::Collapsed);
+	EnemyCardOption1->SetVisibility(ESlateVisibility::Collapsed);
+	EnemyCardOption2->SetVisibility(ESlateVisibility::Collapsed);
+	UpgradeChoice1->Setup(InUpgradeData);
+	UpgradeChoice2->Setup(InUpgradeData);
+	UpgradeChoice3->Setup(InUpgradeData);
+	UpgradeChoicesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UUpgradeSelectionUI::FinishedUpgradeSelectionCloseAnimation() const
@@ -190,12 +141,6 @@ void UUpgradeSelectionUI::TriggerHoverAnimForFirstOption()
 		StopAnimation(EnemyCardOption1UnHover);
 		PlayAnimation(PlayerCardOption1Popup);
 		PlayAnimation(EnemyCardOption1Popup);
-		if (!UpgradeDetailsPanel) return;
-		if (UpgradesData.Num() > 0)
-		{
-			UpgradeDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			UpgradeDetailsPanel->SetUpgradeText(ReceiveUpgradeText(true, UpgradesData[0], true));
-		}
 	}
 }
 
@@ -207,7 +152,6 @@ void UUpgradeSelectionUI::TriggerUnHoverAnimForFirstOption()
 		StopAnimation(EnemyCardOption1Popup);
 		PlayAnimation(PlayerCardOption1UnHover);
 		PlayAnimation(EnemyCardOption1UnHover);
-		if (UpgradeDetailsPanel) UpgradeDetailsPanel->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -220,12 +164,6 @@ void UUpgradeSelectionUI::TriggerHoverAnimForSecondOption()
 		StopAnimation(EnemyCardOption2UnHover);
 		PlayAnimation(PlayerCardOption2Popup);
 		PlayAnimation(EnemyCardOption2Popup);
-		if (!UpgradeDetailsPanel) return;
-		if (UpgradesData.Num() > 1)
-		{
-			UpgradeDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			UpgradeDetailsPanel->SetUpgradeText(ReceiveUpgradeText(true, UpgradesData[1], true));
-		}
 	}
 }
 
@@ -237,7 +175,6 @@ void UUpgradeSelectionUI::TriggerUnHoverAnimForSecondOption()
 		StopAnimation(EnemyCardOption2Popup);
 		PlayAnimation(PlayerCardOption2UnHover);
 		PlayAnimation(EnemyCardOption2UnHover);
-		if (UpgradeDetailsPanel) UpgradeDetailsPanel->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 

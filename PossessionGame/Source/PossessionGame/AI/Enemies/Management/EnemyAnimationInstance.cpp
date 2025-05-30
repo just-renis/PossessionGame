@@ -49,9 +49,9 @@ void UEnemyAnimationInstance::PlayMontageWithHold(const EEnemyAnimState InState,
     {
         LoadMontageIfNotLoaded(InState);
         InnerPlayMontage(InState);
-        Proprietor->SetActionInMotion(true);
+        if (Proprietor) Proprietor->SetActionInMotion(true);
         MontageStateInHold = InState;
-        if (bNeedsToStopAILogic) Proprietor->GetAI()->StopLogic(false);
+        if (bNeedsToStopAILogic && Proprietor && Proprietor->GetAI()) Proprietor->GetAI()->StopLogic(false);
         UKismetSystemLibrary::K2_SetTimer(this, "MontageWithHoldEnd", InHoldTime, false);
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontageWithHold"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));

@@ -8,8 +8,6 @@ bool USaveSlot::GetIsVariationUnlocked(const EVariationUnlock InVariationUnlockN
 
 int32 USaveSlot::GetCurrentLevelNeededXp() const { return PlayerLevelData->GetXpNeeded(CurrentLevel); }
 
-int32 USaveSlot::GetLevelOfAnUpgrade(const EUpgrade InUpgrade) { return UnlockedUpgrades.Find(InUpgrade) ? UnlockedUpgrades[InUpgrade] : 0; }
-
 int32 USaveSlot::GetLevelDamageIncrease(const int32 InLevel) const { return PlayerLevelData->GetDamageIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
 
 int32 USaveSlot::GetLevelHpIncrease(const int32 InLevel) const { return PlayerLevelData->GetHpIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
@@ -18,7 +16,25 @@ int32 USaveSlot::GetVariationUnlockProgress(const EVariationUnlock InVariationUn
 
 int32 USaveSlot::GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockRequirement(InVariationUnlockName); }
 
+int32 USaveSlot::GetLevelOfChoice(const EUpgrade InUpgrade, const int32 InChoice)
+{
+	if (const FUpgradeChoicesAmountByLevel* ChoicesAmountByLevel = UnlockedUpgrades.Find(InUpgrade)) return ChoicesAmountByLevel->GetLevelOfChoice(InChoice);
+	return 0;
+}
+
+int32 USaveSlot::GetLevelOfAnUpgrade(const EUpgrade InUpgrade)
+{
+	if (const FUpgradeChoicesAmountByLevel* Choices = UnlockedUpgrades.Find(InUpgrade)) return Choices->GetCurrentLevelOfAnUpgrade();
+	return 0;
+}
+
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
+
+const TMap<int32, int32>* USaveSlot::GetUpgradeChoicesData(const EUpgrade InUpgrade)
+{
+	if (const FUpgradeChoicesAmountByLevel* Choices = UnlockedUpgrades.Find(InUpgrade)) return &Choices->Data;
+	return nullptr;
+}
 
 void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance)
 {
@@ -30,10 +46,10 @@ void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInsta
 	#endif
 }
 
-void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InLevel)
+void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InChoice)
 {
-	if (UnlockedUpgrades.Find(InUpgrade)) UnlockedUpgrades[InUpgrade] = InLevel;
-	else UnlockedUpgrades.Add(InUpgrade, InLevel);
+	if (UnlockedUpgrades.Find(InUpgrade)) UnlockedUpgrades[InUpgrade].AddOrUpdate(InChoice);
+	else UnlockedUpgrades.Add(InUpgrade, FUpgradeChoicesAmountByLevel(InChoice));
 	GameInstance->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.Broadcast(InUpgrade);
 }
 

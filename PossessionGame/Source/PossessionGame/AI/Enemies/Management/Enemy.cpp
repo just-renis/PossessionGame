@@ -267,7 +267,6 @@ void AEnemy::InitiateDeath()
 
 void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
 {
-	UE_LOG(LogTemp, Error, TEXT("RECEIVED DAMAGE: %f"), InDamage * DamageReduction);
 	CurrentHp -= InDamage * DamageReduction;
 	if (P_HUD) P_HandlingDamageTaken();
 	else if (bIsAlive)
@@ -299,7 +298,7 @@ void AEnemy::SetEmpEffect(const float InEffectDuration)
 {
 	bAffectedByEmp = true;
 	PlaySound(ESound::EmpEffectApplied, true);
-	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
+	if (AnimInstance) AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
 }
 
 void AEnemy::SetPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr); }
@@ -434,6 +433,7 @@ void AEnemy::P_SetupRightClickInput(TObjectPtr<UEnhancedInputComponent> RightCli
 
 void AEnemy::P_Destroy()
 {
+	DelegateManager->ApplyUpgradeOnSelection.RemoveAll(this);
 	DelegateManager->OnMinionBossStomp.Unbind();
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();

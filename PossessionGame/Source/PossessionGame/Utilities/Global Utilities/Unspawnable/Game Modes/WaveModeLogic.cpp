@@ -79,7 +79,7 @@ void UWaveModeLogic::StartWave() const
 
 void UWaveModeLogic::SetupNextWave()
 {
-	EnemiesPerWave += 2;
+	EnemiesPerWave += Data->GetEnemiesAmountIncreasePerWave();
 	EnemiesLeftToKill = EnemiesPerWave;
 	CountdownSeconds = 4.f;
 	UpdateCountdown();
@@ -106,8 +106,8 @@ void UWaveModeLogic::AfterSpawnEnemyCallback()
 void UWaveModeLogic::SetData()
 {
 	EnemiesPerWave = Data->GetEnemiesPerWave();
+	EnemiesLeftToKill = EnemiesPerWave;
 	AmountOfWaves = Data->GetAmountOfWaves();
-	EnemiesLeftToKill = Data->GetEnemiesLeftToKill();
 	CountdownSeconds = Data->GetCountdownSeconds();
 }
 

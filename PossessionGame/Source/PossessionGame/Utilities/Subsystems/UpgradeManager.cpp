@@ -11,8 +11,16 @@ float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EPoo
 	if (const TObjectPtr<UUpgradeData> UpgradeData = GetProjectileUpgradeData(InProjectileName))
 	{
 		const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSaveSlot();
-		const TMap<EUpgradeAttribute, float> UpgradeAttributes = UpgradeData->GetAttributesForLevel(bIsPlayer, SaveSlot->GetLevelOfAnUpgrade(UpgradeData->GetUpgradeName())).Upgrades;
-		if (UpgradeAttributes.Find(InUpgradeAttribute)) return UpgradeAttributes[InUpgradeAttribute];
+		float AttributeValue = 0.f;
+		if (const TMap<int32, int32>* UpgradeChoicesData = SaveSlot->GetUpgradeChoicesData(UpgradeData->GetUpgradeName()))
+		{
+			for (const TPair<int32, int32>& ChoicePair : *UpgradeChoicesData)
+			{
+				const TMap<EUpgradeAttribute, float>& UpgradeAttributes = UpgradeData->GetAttributesForLevel(bIsPlayer, ChoicePair.Value, ChoicePair.Key).Upgrades;
+				if (const float* Value = UpgradeAttributes.Find(InUpgradeAttribute)) AttributeValue += *Value;
+			}
+		}
+		return AttributeValue;
 	}
 	return 0.f;
 }
@@ -22,8 +30,16 @@ float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EAbi
 	if (const TObjectPtr<UUpgradeData> UpgradeData = GetAbilityUpgradeData(InAbilityName))
 	{
 		const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSaveSlot();
-		const TMap<EUpgradeAttribute, float> UpgradeAttributes = UpgradeData->GetAttributesForLevel(bIsPlayer, SaveSlot->GetLevelOfAnUpgrade(UpgradeData->GetUpgradeName())).Upgrades;
-		if (UpgradeAttributes.Find(InUpgradeAttribute)) return UpgradeAttributes[InUpgradeAttribute];
+		float AttributeValue = 0.f;
+		if (const TMap<int32, int32>* UpgradeChoicesData = SaveSlot->GetUpgradeChoicesData(UpgradeData->GetUpgradeName()))
+		{
+			for (const TPair<int32, int32>& ChoicePair : *UpgradeChoicesData)
+			{
+				const TMap<EUpgradeAttribute, float>& UpgradeAttributes = UpgradeData->GetAttributesForLevel(bIsPlayer, ChoicePair.Value, ChoicePair.Key).Upgrades;
+				if (const float* Value = UpgradeAttributes.Find(InUpgradeAttribute)) AttributeValue += *Value;
+			}
+		}
+		return AttributeValue;
 	}
 	return 0.f;
 }
@@ -32,7 +48,6 @@ TObjectPtr<UUpgradeData> UUpgradeManager::GetProjectileUpgradeData(const EPoolOb
 {
 	switch (InProjectileName)
 	{
-		case EPoolObject::RangerProjectile: return Upgrades.Contains(EUpgrade::RangerBaseStat) ? Upgrades[EUpgrade::RangerBaseStat] : nullptr;
 		case EPoolObject::RangerGrenadeLauncherProjectile: return Upgrades.Contains(EUpgrade::RangerAbility1) ? Upgrades[EUpgrade::RangerAbility1] : nullptr;
 		case EPoolObject::TricksterPoisonProjectile: return Upgrades.Contains(EUpgrade::TricksterAbility1) ? Upgrades[EUpgrade::TricksterAbility1] : nullptr;
 		case EPoolObject::TricksterEmpProjectile: return Upgrades.Contains(EUpgrade::TricksterAbility2) ? Upgrades[EUpgrade::TricksterAbility2] : nullptr;
