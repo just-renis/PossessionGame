@@ -164,7 +164,6 @@ void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh
 void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bFromFirstWeapon)
 {
 	const int32 ProjectilesAmount = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPossessed, InProjectileName, EUpgradeAttribute::ProjectilesAmount);
-	UE_LOG(LogTemp, Error, TEXT("PROJECTILE AMOUNT: %s %i"), *GetName(), ProjectilesAmount);
 	GetProjectileData(InProjectileName).SetProprietor(Proprietor);
 	GetProjectileData(InProjectileName).SetAmount(ProjectilesAmount + 1);
 	const FName& ProjectileSocketName = GetProjectileData(InProjectileName).ProjectileSocketName;

@@ -22,7 +22,6 @@ class POSSESSIONGAME_API UChargeTerminalModeLogic : public UGameModeBaseLogic
 	virtual void HandleSpawning() override;
 	virtual void UpdateEnemiesAmount() override;
 	virtual void UpdateTaskProgress() override;
-	virtual void SetupWaveManagerUI() override;
 	virtual void FadeInObjectivePanel() const override;
 	void SetData();
 };

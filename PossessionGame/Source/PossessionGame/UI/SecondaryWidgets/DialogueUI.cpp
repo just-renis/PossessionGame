@@ -1,6 +1,5 @@
 ﻿#include "DialogueUI.h"
 #include "Components/TextBlock.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -14,7 +13,7 @@ void UDialogueUI::StartDialogue(const int32 InIndex, const float InSpeed)
 	CurrentText = "";
 	CurrentIndex = 0;
 	TypeSpeed = InSpeed;
-	UKismetSystemLibrary::K2_SetTimer(this, "TypeNextLetter", TypeSpeed, true);
+	GetWorld()->GetTimerManager().SetTimer(TypeHandle, this, &UDialogueUI::TypeNextLetter, TypeSpeed, true);
 }
 
 void UDialogueUI::NativeConstruct()
@@ -25,7 +24,7 @@ void UDialogueUI::NativeConstruct()
     if (DialogueText) DialogueText->SetText(FText::FromString(""));
 }
 
-void UDialogueUI::FinishedTypingDialogue() { UKismetSystemLibrary::K2_ClearTimer(this, "TypeNextLetter"); }
+void UDialogueUI::FinishedTypingDialogue() { GetWorld()->GetTimerManager().ClearTimer(TypeHandle); }
 
 void UDialogueUI::TypeNextLetter()
 {

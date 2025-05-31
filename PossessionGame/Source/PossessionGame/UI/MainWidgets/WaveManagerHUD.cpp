@@ -3,12 +3,11 @@
 #include "Components/InvalidationBox.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/EGameMode.h"
 
-float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return AnnouncementAnim ? AnnouncementAnim->GetEndTime() : 0.1f; }
+float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return AnnouncementAnim->GetEndTime(); }
 
-float UWaveManagerHUD::GetObjectivePanelFadeInEndTime() const { return ObjectivePanelFadeInAnim ? ObjectivePanelFadeInAnim->GetEndTime() : 0.1f; }
+float UWaveManagerHUD::GetObjectivePanelFadeInEndTime() const { return ObjectivePanelFadeInAnim->GetEndTime(); }
 
 void UWaveManagerHUD::UpdateCountdown(const int32 InCountdown)
 {
@@ -26,31 +25,20 @@ void UWaveManagerHUD::ToggleCountdownText()
 	}
 }
 
-void UWaveManagerHUD::PlayObjectivePanelFadeOutAnim()
+void UWaveManagerHUD::PlayObjectivePanelFadeInAnim(const bool bState)
 {
-	if (!ObjectivePanelFadeInAnim) return;
-	PlayAnimation(ObjectivePanelFadeInAnim, 0.f, 1, EUMGSequencePlayMode::Reverse);
-}
-
-void UWaveManagerHUD::PlayObjectivePanelFadeInAnim()
-{
-	if (!ObjectivePanelFadeInAnim) return;
-	bIsObjectivePanelFadeInAtLeastOnce = true;
-	PlayAnimation(ObjectivePanelFadeInAnim);
+	PlayAnimation(ObjectivePanelFadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
 
 void UWaveManagerHUD::PlayAnnouncementAnim(const FString& InAnnouncementText)
 {
 	if (AnnouncementText) AnnouncementText->SetText(FText::FromString(InAnnouncementText));
 	if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (AnnouncementAnim)
-	{
-		PlayAnimation(AnnouncementAnim);
-		UKismetSystemLibrary::K2_SetTimer(this, "HideWaveCompletedAnnouncement", AnnouncementAnim->GetEndTime(), false);
-	}
+	PlayAnimation(AnnouncementAnim);
+	GetWorld()->GetTimerManager().SetTimer(AnnouncementHandle, this, &UWaveManagerHUD::HideWaveCompletedAnnouncement, AnnouncementAnim->GetEndTime(), false);
 }
 
-void UWaveManagerHUD::PlayCountdownAnim() { if (CountdownAnnouncementAnim) PlayAnimation(CountdownAnnouncementAnim); }
+void UWaveManagerHUD::PlayCountdownAnim() { PlayAnimation(CountdownAnnouncementAnim); }
 
 void UWaveManagerHUD::UpdateTaskProgress(const float InProgress, const float InMaxProgress) const
 {
@@ -95,14 +83,8 @@ void UWaveManagerHUD::UpdateObjectiveProgress(const int32 InObjectiveProgress, c
 {
 	if (!ObjectiveProgressText) return;
 	ObjectiveProgressText->SetText(FText::FromString(FString::FromInt(InObjectiveProgress) + " / " + FString::FromInt(InObjective)));
-	if (InObjectiveProgress != InObjective || !ObjectiveCompletedFadeInAnim) return;
+	if (InObjectiveProgress != InObjective) return;
 	PlayAnimation(ObjectiveCompletedFadeInAnim);
-//	UKismetSystemLibrary::K2_SetTimer(this, "PlayObjectiveCompletedAnimFadeOut", ObjectiveCompletedFadeInAnim->GetEndTime(), false);
 }
 
 void UWaveManagerHUD::HideWaveCompletedAnnouncement() const { if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::Collapsed); }
-
-void UWaveManagerHUD::PlayObjectiveCompletedAnimFadeOut()
-{
-//	PlayAnimation(ObjectiveCompletedFadeInAnim, 0, 1, EUMGSequencePlayMode::Reverse);
-}

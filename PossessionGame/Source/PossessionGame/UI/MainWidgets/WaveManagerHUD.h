@@ -14,14 +14,12 @@ class POSSESSIONGAME_API UWaveManagerHUD : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	bool GetIsObjectivePanelFadeInAtLeastOnce() const { return bIsObjectivePanelFadeInAtLeastOnce; }
 	float GetWaveAnnouncementEndTime() const;
 	float GetObjectivePanelFadeInEndTime() const;
 	
 	void UpdateCountdown(const int32 InCountdown);
 	void ToggleCountdownText();
-	void PlayObjectivePanelFadeOutAnim();
-	void PlayObjectivePanelFadeInAnim();
+	void PlayObjectivePanelFadeInAnim(const bool bState);
 	void PlayAnnouncementAnim(const FString& InAnnouncementText);
 	void PlayCountdownAnim();
 	void UpdateTaskProgress(const float InProgress, const float InMaxProgress) const;
@@ -29,7 +27,6 @@ public:
 	void UpdateObjective(const EGameMode InGameMode, const int32 InData) const;
 	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective);
 private:
-	bool bIsObjectivePanelFadeInAtLeastOnce = false;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CountdownText;
 	UPROPERTY(meta = (BindWidget))
@@ -58,9 +55,8 @@ private:
 	TObjectPtr<UWidgetAnimation> CountdownAnnouncementAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> ObjectiveCompletedFadeInAnim;
+	UPROPERTY()
+	FTimerHandle AnnouncementHandle;
 
-	UFUNCTION()
 	void HideWaveCompletedAnnouncement() const;
-	UFUNCTION()
-	void PlayObjectiveCompletedAnimFadeOut();
 };

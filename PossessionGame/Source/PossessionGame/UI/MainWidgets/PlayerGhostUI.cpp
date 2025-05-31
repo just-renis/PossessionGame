@@ -10,13 +10,13 @@
 
 bool UPlayerGhostUI::IsPressKeyShown() const { return PressKeyToContinueInv->GetVisibility() == ESlateVisibility::SelfHitTestInvisible; }
 
-float UPlayerGhostUI::GetStartupAnimationLength() const { return StartupAnim ? StartupAnim->GetEndTime() : 0.f; }
+float UPlayerGhostUI::GetStartupAnimationLength() const { return StartupAnim->GetEndTime(); }
 
-void UPlayerGhostUI::PlayStartupAnimation() { if (StartupAnim) PlayAnimation(StartupAnim); }
+void UPlayerGhostUI::PlayStartupAnimation() { PlayAnimation(StartupAnim); }
 
 FText UPlayerGhostUI::GetKeyBindText(const int32 InIndex) const
 {
-	const FName KeyBindName = InIndex == 1 ? "Hijack" : InIndex == 2 ? "M1" : "Shift";
+	const FName KeyBindName = InIndex == 1 ? "Hijack" : InIndex == 2 ? "Shoot" : "Dash";
 	return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText(KeyBindName);
 }
 
@@ -34,14 +34,14 @@ void UPlayerGhostUI::ShowHint(const int32 InIndex)
 {
 	if (HintTexts.IsValidIndex(InIndex))
 	{
-		if (HintAppearAnim) PlayAnimation(HintAppearAnim);
+		PlayAnimation(HintAppearAnim);
 		CurrentHintIndex = InIndex;
 		SetHintText(InIndex);
 	}
 	if (InIndex == 0 && PopupInv && HintImage)
 	{
 		PopupInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		if (PopupAppearAnim) PlayAnimation(PopupAppearAnim);
+		PlayAnimation(PopupAppearAnim);
 	}
 }
 
@@ -55,7 +55,7 @@ void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 		case 0: HintText->SetText(FText::FromString("Move")); break;
 		case 1: HintText->SetText(FText::Format(FText::FromString("[{0}] to Possess Robots"), KeyBindText)); break;
 		case 2: HintText->SetText(FText::Format(FText::FromString("[{0}] to Shoot"), KeyBindText)); break;
-		case 3: HintText->SetText(FText::Format(FText::FromString("[{0}] to Sprint"), KeyBindText));
+		case 3: HintText->SetText(FText::Format(FText::FromString("[{0}] to Dash"), KeyBindText));
 		default: ;
 	}
 }
@@ -73,7 +73,7 @@ void UPlayerGhostUI::ShowPressKey(const bool bState)
 	if (PressKeyToContinueText) PressKeyToContinueText->SetText(FText::Format(FText::FromString("Press [{0}] Key To Continue"), GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Interact")));
 	if (bState)
 	{
-		if (PressKeyAppearAnim) PlayAnimation(PressKeyAppearAnim);
+		PlayAnimation(PressKeyAppearAnim);
 		return;
 	}
 	switch (CurrentTutorialStep++)

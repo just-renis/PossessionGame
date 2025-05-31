@@ -20,6 +20,8 @@ protected:
 	TObjectPtr<UTextBlock> DialogueText;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
+	UPROPERTY()
+	FTimerHandle TypeHandle;
 	
 	virtual void FinishedTypingDialogue();
 private:
@@ -35,6 +37,5 @@ private:
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 
 	virtual void NativeConstruct() override;
-	UFUNCTION()
 	void TypeNextLetter();
 };

@@ -15,7 +15,7 @@ public:
 	TObjectPtr<UButton> GetAcceptButton() { return AcceptButton; }
 	TObjectPtr<UButton> GetDeclineButton() { return DeclineButton; }
 
-	void PlayPopupFadeInAnim(bool bState);
+	void PlayPopupFadeInAnim(const bool bState);
 private:
 	UPROPERTY(EditAnywhere, Category = "Confirmation Settings", meta = (AllowPrivateAccess = true))
 	FText ConfirmationTitleText;
@@ -35,6 +35,11 @@ private:
 	TObjectPtr<UButton> DeclineButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> PopupFadeIn;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent FadeOutDelegate;
 
 	virtual void NativePreConstruct() override;
+	virtual void NativeConstruct() override;
+	UFUNCTION()
+	void FadeOutAnimFinished();
 };

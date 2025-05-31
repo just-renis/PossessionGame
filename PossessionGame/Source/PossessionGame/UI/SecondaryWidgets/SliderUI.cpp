@@ -30,7 +30,7 @@ void USliderUI::NativePreConstruct()
 		Style.NormalThumbImage.ImageSize = Style.HoveredThumbImage.ImageSize = Style.DisabledThumbImage.ImageSize = SliderHandleSize;
 		Style.BarThickness = BarThickness;
 		Slider->SetWidgetStyle(Style);
-		if (ProgressBar) ProgressBar->SetRenderScale(FVector2D(1.f, BarThickness / 4.f));
+		if (ProgressBar) ProgressBar->SetRenderScale(FVector2D(1.f, BarThickness * 0.25f));
 	}
 }
 

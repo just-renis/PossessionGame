@@ -26,16 +26,18 @@ void USettingsUI::BeginRebind(const TObjectPtr<UKeyBindingUI>& InTargetKeyWidget
 
 void USettingsUI::OpenUI()
 {
+	SetIsEnabled(true);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (SettingsFadeInAnim) PlayAnimation(SettingsFadeInAnim);
+	PlayAnimation(SettingsFadeInAnim);
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(EWidget::SettingsUI);
 }
 
 void USettingsUI::CloseUI()
 {
+	SetIsEnabled(false);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
-	if (SettingsFadeInAnim) PlayAnimation(SettingsFadeInAnim, 0, 1, EUMGSequencePlayMode::Reverse);
+	PlayAnimation(SettingsFadeInAnim, 0, 1, EUMGSequencePlayMode::Reverse);
 	BindToAnimationFinished(SettingsFadeInAnim, SettingsPanelFadeOutDelegate);
 	SetSavedSettings();
 }
@@ -107,7 +109,7 @@ void USettingsUI::OpenDuplicateKeyBindsPopup() const { if (DuplicateKeyBindsAler
 
 void USettingsUI::ToggleRebindPanel(const bool bState)
 {
-	if (!RebindPanelInv || !RebindPanelFadeInAnim) return;
+	if (!RebindPanelInv) return;
 	if (bState)
 	{
 		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);

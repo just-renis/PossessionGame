@@ -17,13 +17,16 @@ class POSSESSIONGAME_API UHackTerminalModeLogic : public UGameModeBaseLogic
 	float TerminalHackRequired;
 	UPROPERTY()
 	TObjectPtr<UHackTerminalModeData> Data;
+	UPROPERTY()
+	FTimerHandle OpenUpgradeSelectionHandle;
+	UPROPERTY()
+	FTimerHandle TaskProgressHandle;
 
 	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData) override;
 	virtual void Finalize() override;
 	virtual void HandleSpawning() override;
 	virtual void UpdateTaskProgress() override;
 	virtual void UpdateEnemiesAmount() override;
-	virtual void SetupWaveManagerUI() override;
 	virtual void FadeInObjectivePanel() const override;
 	void StartTerminalHack();
 	void FinishTerminalHack();

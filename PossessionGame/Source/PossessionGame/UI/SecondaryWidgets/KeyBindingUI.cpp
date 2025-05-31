@@ -99,32 +99,28 @@ void UKeyBindingUI::ResetSingularKeyBind()
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
 }
 
-void UKeyBindingUI::PlayResetButtonSelectAnim() { if (ResetSelectAnim) PlayAnimation(ResetSelectAnim); }
+void UKeyBindingUI::PlayResetButtonSelectAnim() { PlayAnimation(ResetSelectAnim); }
 
 void UKeyBindingUI::PlayResetHoverAnim()
 {
-	if (!ResetHoverAnim) return;
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayAnimation(ResetHoverAnim, GetAnimationCurrentTime(ResetHoverAnim));
 }
 
 void UKeyBindingUI::PlayResetUnHoverAnim()
 {
-	if (!ResetHoverAnim) return;
 	PlayAnimation(ResetHoverAnim, GetAnimationCurrentTime(ResetHoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }
 
-void UKeyBindingUI::PlayKeyBindButtonSelectAnim() { if (KeyBindSelectAnim) PlayAnimation(KeyBindSelectAnim); }
+void UKeyBindingUI::PlayKeyBindButtonSelectAnim() { PlayAnimation(KeyBindSelectAnim); }
 
 void UKeyBindingUI::PlayKeyBindHoverAnim()
 {
-	if (!KeyBindHoverAnim) return;
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayAnimation(KeyBindHoverAnim, GetAnimationCurrentTime(KeyBindHoverAnim));
 }
 
 void UKeyBindingUI::PlayKeyBindUnHoverAnim()
 {
-	if (!KeyBindHoverAnim) return;
 	PlayAnimation(KeyBindHoverAnim, GetAnimationCurrentTime(KeyBindHoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }

@@ -31,20 +31,17 @@ void UMainMenuButtonUI::SetupButtonEvents()
 
 void UMainMenuButtonUI::TriggerClickAnim()
 {
-	if (!ButtonClickAnim) return;
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 	PlayAnimation(ButtonClickAnim);
 }
 
 void UMainMenuButtonUI::TriggerHoverAnim()
 {
-	if (!ButtonHoverAnim) return;
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim));
 }
 
 void UMainMenuButtonUI::TriggerUnHoverAnim()
 {
-	if (!ButtonHoverAnim) return;
 	PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }

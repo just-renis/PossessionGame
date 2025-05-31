@@ -1,5 +1,4 @@
 ﻿#include "BossModeLogic.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
@@ -14,7 +13,7 @@ void UBossModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const T
 	WaveManager->GetDelegateManager()->OnBossDeath.AddUObject(this, &UBossModeLogic::BossDeath);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UBossModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, WaveManager->GetCurrentGameMode(), false, [this] { IncreaseAliveEnemiesAmount(); });
-	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate, true);
+	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UBossModeLogic::HandleSpawning, SpawnRate, true);
 }
 
 void UBossModeLogic::Finalize()
@@ -40,15 +39,6 @@ void UBossModeLogic::UpdateEnemiesAmount()
 	if (!bIsBossAlive && AliveEnemiesAmount <= 0) Finalize();
 }
 
-void UBossModeLogic::SetupWaveManagerUI()
-{
-	Super::SetupWaveManagerUI();
-	if (!WaveManagerHUD) return;
-	FadeOutObjectivePanel();
-	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeInEndTime(), false);
-	else FadeInObjectivePanel();
-}
-
 void UBossModeLogic::FadeInObjectivePanel() const
 {
 	if (!WaveManagerHUD) return;
@@ -60,6 +50,6 @@ void UBossModeLogic::FadeInObjectivePanel() const
 void UBossModeLogic::BossDeath()
 {
 	bIsBossAlive = false;
-	UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
+	GetWorld()->GetTimerManager().ClearTimer(SpawnHandle);
 	if (AliveEnemiesAmount <= 0) Finalize();
 }

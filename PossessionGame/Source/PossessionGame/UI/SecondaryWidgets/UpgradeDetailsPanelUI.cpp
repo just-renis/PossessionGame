@@ -80,5 +80,5 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 	UpgradeChoiceButton->SetIsEnabled(false);
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	SaveSlot->AddUpgrade(UpgradeData->GetUpgradeName(), ChoiceIndex);
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->SetTriggerUpgradeMenuCloseAnimation();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->TriggerUpgradeMenuCloseAnimation();
 }

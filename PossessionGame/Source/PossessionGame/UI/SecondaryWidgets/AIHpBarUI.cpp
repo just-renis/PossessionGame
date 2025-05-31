@@ -1,6 +1,5 @@
 ﻿#include "AIHpBarUI.h"
 #include "Components/ProgressBar.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 void UAIHpBarUI::UpdateHpBar(const float InCurrentHp, const float InMaxHp)
 {
@@ -8,7 +7,7 @@ void UAIHpBarUI::UpdateHpBar(const float InCurrentHp, const float InMaxHp)
 	StepHpPercentage = (HpBar->GetPercent() - InCurrentHp / InMaxHp) / 10.f;
 	HpWhiteBar->SetPercent(HpBar->GetPercent());
 	HpBar->SetPercent(InCurrentHp / InMaxHp);
-	UKismetSystemLibrary::K2_SetTimer(this, "UpdateWhiteHpBar", 0.02f, true);
+	GetWorld()->GetTimerManager().SetTimer(UpdateWhiteHpBarHandle, this, &UAIHpBarUI::UpdateWhiteHpBar, 0.02f, true);
 }
 
 void UAIHpBarUI::UpdateWhiteHpBar()
@@ -18,7 +17,7 @@ void UAIHpBarUI::UpdateWhiteHpBar()
 	if (NewPercentage <= HpBar->GetPercent())
 	{
 		NewPercentage = HpBar->GetPercent();
-		UKismetSystemLibrary::K2_ClearTimer(this, "UpdateWhiteHpBar");
+		GetWorld()->GetTimerManager().ClearTimer(UpdateWhiteHpBarHandle);
 	}
 	HpWhiteBar->SetPercent(NewPercentage);
 }

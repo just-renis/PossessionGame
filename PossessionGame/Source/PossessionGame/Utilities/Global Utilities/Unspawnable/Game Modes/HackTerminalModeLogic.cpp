@@ -1,5 +1,4 @@
 ﻿#include "HackTerminalModeLogic.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Game Modes/HackTerminalModeData.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
@@ -24,7 +23,7 @@ void UHackTerminalModeLogic::Finalize()
 	ResetTaskProgress();
 	WaveManager->GetDelegateManager()->OnTerminalInteraction.RemoveAll(this);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
-	UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
+	GetWorld()->GetTimerManager().ClearTimer(SpawnHandle);
 	Super::Finalize();
 }
 
@@ -41,7 +40,7 @@ void UHackTerminalModeLogic::UpdateTaskProgress()
 	{
 		bIsHackFinished = true;
 		if (AliveEnemiesAmount <= 0) FinishTerminalHack();
-		UKismetSystemLibrary::K2_ClearTimer(this, "UpdateTaskProgress");
+		GetWorld()->GetTimerManager().ClearTimer(TaskProgressHandle);
 	}
 }
 
@@ -49,15 +48,6 @@ void UHackTerminalModeLogic::UpdateEnemiesAmount()
 {
 	Super::UpdateEnemiesAmount();
 	if (bIsHackFinished && AliveEnemiesAmount <= 0) FinishTerminalHack();
-}
-
-void UHackTerminalModeLogic::SetupWaveManagerUI()
-{
-	Super::SetupWaveManagerUI();
-	if (!WaveManagerHUD) return;
-	FadeOutObjectivePanel();
-	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeInEndTime(), false);
-	else FadeInObjectivePanel();
 }
 
 void UHackTerminalModeLogic::FadeInObjectivePanel() const
@@ -78,8 +68,8 @@ void UHackTerminalModeLogic::StartTerminalHack()
 		WaveManagerHUD->ToggleTaskProgress(true, WaveManager->GetCurrentGameMode());
 		WaveManagerHUD->PlayAnnouncementAnim("Hack Initiated");
 	}
-	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate, true);
-	UKismetSystemLibrary::K2_SetTimer(this, "UpdateTaskProgress", 0.5f, true);
+	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UHackTerminalModeLogic::HandleSpawning, SpawnRate, true);
+	GetWorld()->GetTimerManager().SetTimer(TaskProgressHandle, this, &UHackTerminalModeLogic::UpdateTaskProgress, 0.5f, true);
 }
 
 void UHackTerminalModeLogic::FinishTerminalHack()
@@ -89,13 +79,13 @@ void UHackTerminalModeLogic::FinishTerminalHack()
 	if (++TerminalsHackedAmount >= Data->GetTerminalsAmountToHack()) Finalize();
 	else
 	{
-		UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
+		GetWorld()->GetTimerManager().ClearTimer(SpawnHandle);
 		WaveManager->GetDelegateManager()->OnTerminalHackFinish.Broadcast(WaveManager->GetCurrentGameMode());
 	}
 	if (!WaveManagerHUD) return;
 	WaveManagerHUD->PlayAnnouncementAnim("Hack Completed");
 	WaveManagerHUD->UpdateObjectiveProgress(TerminalsHackedAmount, Data->GetTerminalsAmountToHack());
-	UKismetSystemLibrary::K2_SetTimer(this, "ShowUpgradeSelection", WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
+	GetWorld()->GetTimerManager().SetTimer(OpenUpgradeSelectionHandle, this, &UHackTerminalModeLogic::ShowUpgradeSelection, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 
 void UHackTerminalModeLogic::SetData() { TerminalHackRequired = Data->GetTerminalHackRequired(); }

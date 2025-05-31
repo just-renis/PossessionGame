@@ -23,7 +23,7 @@ void UVariationOptionUI::SetSelected(const bool bState)
 
 void UVariationOptionUI::SelectVariation()
 {
-	if (bIsLocked || !SelectAnim || !SelectedText || bIsSelected) return;
+	if (bIsLocked || !SelectedText || bIsSelected) return;
 	PlayAnimation(SelectAnim);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.Broadcast(CharacterType, Variation);
@@ -68,7 +68,6 @@ void UVariationOptionUI::VariationOptionHovered()
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	if (!VariationOptionBorder) return;
 	(void)ShowDetailsPanel.ExecuteIfBound(true, bIsLocked ? UnlockProgressText : DetailsPanelText);
-	if (!HoverAnim) return;
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward);
 }
 
@@ -76,6 +75,5 @@ void UVariationOptionUI::VariationOptionUnHovered()
 {
 	if (!VariationOptionBorder) return;
 	(void)ShowDetailsPanel.ExecuteIfBound(false, "");
-	if (!HoverAnim) return;
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }

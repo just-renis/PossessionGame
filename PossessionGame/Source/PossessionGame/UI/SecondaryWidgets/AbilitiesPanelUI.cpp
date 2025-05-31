@@ -115,18 +115,6 @@ void UAbilitiesPanelUI::NativeConstruct()
 	ThirdAbilityProgressBar->SetBrushFromMaterial(MI_ThirdAbilityRadial);
 }
 
-void UAbilitiesPanelUI::NativeDestruct()
-{
-	if (!GetWorld()) return;
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-	for (FTimerHandle& Handle : TimerHandles)
-	{
-		if (TimerManager.IsTimerActive(Handle)) TimerManager.ClearTimer(Handle);
-	}
-	TimerHandles.Empty();
-	Super::NativeDestruct();
-}
-
 void UAbilitiesPanelUI::SetAbilitySlot(const int32 InAbilityIndex, const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay) const
 {
 	if (InIcon && InImage) InImage->SetBrushFromAtlasInterface(InIcon);
@@ -140,19 +128,23 @@ void UAbilitiesPanelUI::PlayAbilityUseAnim(const int32 InAbilityIndex, const boo
 	PlayAbilityAnim(InAbilityIndex, true);
 	if (!bPlayReverseAfterwards) return;
 	FTimerDelegate TimerDel;
-	TimerDel.BindUFunction(this, "PlayAbilityEndAnim", InAbilityIndex, bIsCharged);
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, Ability1UseAnim->GetEndTime(), false);
-	TimerHandles.Add(TimerHandle);
+	TimerDel.BindLambda([this, InAbilityIndex, bIsCharged] { PlayAbilityEndAnim(InAbilityIndex, bIsCharged); });
+	switch (InAbilityIndex)
+	{
+		case 0: GetWorld()->GetTimerManager().SetTimer(FirstAbilityHandle, TimerDel, Ability1UseAnim->GetEndTime(), false); break;
+		case 1: GetWorld()->GetTimerManager().SetTimer(SecondAbilityHandle, TimerDel, Ability2UseAnim->GetEndTime(), false); break;
+		case 2: GetWorld()->GetTimerManager().SetTimer(ThirdAbilityHandle, TimerDel, Ability3UseAnim->GetEndTime(), false);
+		default: ;
+	}
 }
 
 void UAbilitiesPanelUI::PlayAbilityAnim(const int32 InAbilityIndex, const bool bState)
 {
 	switch (InAbilityIndex)
 	{
-		case 0: if (Ability1UseAnim) PlayAnimation(Ability1UseAnim, 0.f, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse); break;
-		case 1: if (Ability2UseAnim) PlayAnimation(Ability2UseAnim, 0.f, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse); break;
-		case 2: if (Ability3UseAnim) PlayAnimation(Ability3UseAnim, 0.f, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse); break;
+		case 0: PlayAnimation(Ability1UseAnim, 0.f, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse); break;
+		case 1: PlayAnimation(Ability2UseAnim, 0.f, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse); break;
+		case 2: PlayAnimation(Ability3UseAnim, 0.f, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 		default: ;
 	}
 }
@@ -168,4 +160,11 @@ void UAbilitiesPanelUI::PlayAbilityEndAnim(const int32 InAbilityIndex, const boo
 {
 	if (!bIsCharged) CollapseAbilityIcon(InAbilityIndex);
 	PlayAbilityAnim(InAbilityIndex, false);
+	switch (InAbilityIndex)
+	{
+		case 0: GetWorld()->GetTimerManager().ClearTimer(FirstAbilityHandle); break;
+		case 1: GetWorld()->GetTimerManager().ClearTimer(SecondAbilityHandle); break;
+		case 2: GetWorld()->GetTimerManager().ClearTimer(ThirdAbilityHandle);
+		default: ;
+	}
 }

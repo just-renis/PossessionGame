@@ -40,8 +40,9 @@ void UPauseMenuUI::NativeConstruct()
 	SetupButtons();
 }
 
-void UPauseMenuUI::Toggle(bool bState)
+void UPauseMenuUI::Toggle(const bool bState)
 {
+	SetIsEnabled(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);

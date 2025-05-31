@@ -2,7 +2,6 @@
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWidget.h"
@@ -18,7 +17,7 @@ void UUpgradeSelectionUI::OpenUI()
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradePanelAppear);
 	(void)DelegateManager->OnUpgradeSelectionOpened.ExecuteIfBound();
 	Toggle(true);
-	if (UpgradeMenuOpen) PlayAnimation(UpgradeMenuOpen);
+	PlayAnimation(UpgradeMenuOpen);
 	UpgradesData = GetWorld()->GetSubsystem<UUpgradeManager>()->GetRandomUpgrades();
 	if (UpgradesData.Num() > 0)
 	{
@@ -50,11 +49,6 @@ void UUpgradeSelectionUI::CloseUI()
 	Toggle(false);
 }
 
-void UUpgradeSelectionUI::SetTriggerUpgradeMenuCloseAnimation()
-{
-	UKismetSystemLibrary::K2_SetTimer(this, "TriggerUpgradeMenuCloseAnimation", 0.5f, false);
-}
-
 FString UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 {
 	switch (InUpgrade)
@@ -69,12 +63,14 @@ FString UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 
 void UUpgradeSelectionUI::Toggle(const bool bState)
 {
+	SetIsEnabled(bState);
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
 	if (bState)
 	{
+		if (UpgradeChoicesPanel) UpgradeChoicesPanel->SetIsEnabled(true);
 		PlayerController->SetInputMode(FInputModeUIOnly());
 		PlayerController->FlushPressedKeys();
 	}
@@ -87,6 +83,7 @@ void UUpgradeSelectionUI::NativeConstruct()
 	Super::NativeConstruct();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnUpgradeCardSelected.BindUObject(this, &UUpgradeSelectionUI::OpenUpgradeChoicesPanel);
+	UpgradeSelectionFadeOutDelegate.BindDynamic(this, &UUpgradeSelectionUI::UpgradeSelectionPanelFadeOutFinished);
 	if (PlayerCardOption1)
 	{
 		PlayerCardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
@@ -126,85 +123,66 @@ void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>
 	UpgradeChoicesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
-void UUpgradeSelectionUI::FinishedUpgradeSelectionCloseAnimation() const
-{
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->CloseUI();
-	(void)DelegateManager->OnUpgradeSelectionFinished.ExecuteIfBound();
-}
-
 void UUpgradeSelectionUI::TriggerHoverAnimForFirstOption()
 {
-	if (PlayerCardOption1Popup && EnemyCardOption1Popup)
-	{
-		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
-		StopAnimation(PlayerCardOption1UnHover);
-		StopAnimation(EnemyCardOption1UnHover);
-		PlayAnimation(PlayerCardOption1Popup);
-		PlayAnimation(EnemyCardOption1Popup);
-	}
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	PlayerCardOption1->StopUnHoverAnim();
+	EnemyCardOption1->StopUnHoverAnim();
+	PlayerCardOption1->PlayHoverAnim();
+	EnemyCardOption1->PlayHoverAnim();
 }
 
 void UUpgradeSelectionUI::TriggerUnHoverAnimForFirstOption()
 {
-	if (PlayerCardOption1UnHover && EnemyCardOption1UnHover)
-	{
-		StopAnimation(PlayerCardOption1Popup);
-		StopAnimation(EnemyCardOption1Popup);
-		PlayAnimation(PlayerCardOption1UnHover);
-		PlayAnimation(EnemyCardOption1UnHover);
-	}
+	PlayerCardOption1->StopHoverAnim();
+	EnemyCardOption1->StopHoverAnim();
+	PlayerCardOption1->PlayUnHoverAnim();
+	EnemyCardOption1->PlayUnHoverAnim();
 }
 
 void UUpgradeSelectionUI::TriggerHoverAnimForSecondOption()
 {
-	if (PlayerCardOption2Popup && EnemyCardOption2Popup)
-	{
-		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
-		StopAnimation(PlayerCardOption2UnHover);
-		StopAnimation(EnemyCardOption2UnHover);
-		PlayAnimation(PlayerCardOption2Popup);
-		PlayAnimation(EnemyCardOption2Popup);
-	}
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	PlayerCardOption2->StopUnHoverAnim();
+	EnemyCardOption2->StopUnHoverAnim();
+	PlayerCardOption2->PlayHoverAnim();
+	EnemyCardOption2->PlayHoverAnim();
 }
 
 void UUpgradeSelectionUI::TriggerUnHoverAnimForSecondOption()
 {
-	if (PlayerCardOption2UnHover && EnemyCardOption2UnHover)
-	{
-		StopAnimation(PlayerCardOption2Popup);
-		StopAnimation(EnemyCardOption2Popup);
-		PlayAnimation(PlayerCardOption2UnHover);
-		PlayAnimation(EnemyCardOption2UnHover);
-	}
+	PlayerCardOption2->StopHoverAnim();
+	EnemyCardOption2->StopHoverAnim();
+	PlayerCardOption2->PlayUnHoverAnim();
+	EnemyCardOption2->PlayUnHoverAnim();
 }
 
 void UUpgradeSelectionUI::TriggerSelectAnimForFirstOption()
 {
-	if (PlayerCardOption1Select && EnemyCardOption1Select)
-	{
-		PlayAnimation(PlayerCardOption1Select);
-		PlayAnimation(EnemyCardOption1Select);
-		PlayerCardOption1->PlayBlinkAnim();
-		EnemyCardOption1->PlayBlinkAnim();
-	}
+	PlayerCardOption1->PlaySelectAnim();
+	EnemyCardOption1->PlaySelectAnim();
+	PlayerCardOption1->PlayBlinkAnim();
+	EnemyCardOption1->PlayBlinkAnim();
 }
 
 void UUpgradeSelectionUI::TriggerSelectAnimForSecondOption()
 {
-	if (PlayerCardOption2Select && EnemyCardOption2Select)
-	{
-		PlayAnimation(PlayerCardOption2Select);
-		PlayAnimation(EnemyCardOption2Select);
-		PlayerCardOption2->PlayBlinkAnim();
-		EnemyCardOption2->PlayBlinkAnim();
-	}
+	PlayerCardOption2->PlaySelectAnim();
+	EnemyCardOption2->PlaySelectAnim();
+	PlayerCardOption2->PlayBlinkAnim();
+	EnemyCardOption2->PlayBlinkAnim();
+}
+
+void UUpgradeSelectionUI::UpgradeSelectionPanelFadeOutFinished()
+{
+	UnbindAllFromAnimationFinished(UpgradeMenuClose);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->CloseUI();
+	(void)DelegateManager->OnUpgradeSelectionFinished.ExecuteIfBound();
 }
 
 void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()
 {
-	if (UpgradeMenuClose)
-	{
-		PlayAnimation(UpgradeMenuClose);
-		UKismetSystemLibrary::K2_SetTimer(this, "FinishedUpgradeSelectionCloseAnimation", UpgradeMenuClose->GetEndTime(), false);
-	}
+	if (UpgradeChoicesPanel) UpgradeChoicesPanel->SetIsEnabled(false);
+	PlayAnimation(UpgradeMenuClose);
+	BindToAnimationFinished(UpgradeMenuClose, UpgradeSelectionFadeOutDelegate);
 }

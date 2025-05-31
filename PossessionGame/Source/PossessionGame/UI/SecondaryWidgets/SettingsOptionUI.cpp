@@ -13,14 +13,12 @@ void USettingsOptionUI::NativeConstruct()
 
 void USettingsOptionUI::OnLeftArrowClicked()
 {
-	if (!LeftArrowClickAnim) return;
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
 	PlayAnimation(LeftArrowClickAnim);
 }
 
 void USettingsOptionUI::OnRightArrowClicked()
 {
-	if (!RightArrowClickAnim) return;
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
 	PlayAnimation(RightArrowClickAnim);
 }
@@ -54,24 +52,20 @@ void USettingsOptionUI::SetupButtonEvents()
 
 void USettingsOptionUI::OnLeftArrowHovered()
 {
-	if (!LeftArrowHoverAnim) return;
 	PlayAnimation(LeftArrowHoverAnim, GetAnimationCurrentTime(LeftArrowHoverAnim), 1, EUMGSequencePlayMode::Forward);
 }
 
 void USettingsOptionUI::OnLeftArrowUnHovered()
 {
-	if (!LeftArrowHoverAnim) return;
 	PlayAnimation(LeftArrowHoverAnim, GetAnimationCurrentTime(LeftArrowHoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }
 
 void USettingsOptionUI::OnRightArrowHovered()
 {
-	if (!RightArrowHoverAnim) return;
 	PlayAnimation(RightArrowHoverAnim, GetAnimationCurrentTime(RightArrowHoverAnim), 1, EUMGSequencePlayMode::Forward);
 }
 
 void USettingsOptionUI::OnRightArrowUnHovered()
 {
-	if (!RightArrowHoverAnim) return;
 	PlayAnimation(RightArrowHoverAnim, GetAnimationCurrentTime(RightArrowHoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }

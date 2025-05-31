@@ -3,7 +3,7 @@
 
 void UAlertPopupUI::PlayPopupFadeInAnim(const bool bState)
 {
-	if (!PopupFadeInAnim) return;
+	SetIsEnabled(bState);
 	if (bState) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	else BindToAnimationFinished(PopupFadeInAnim, AlertPopupFadeOutDelegate);
 	PlayAnimation(PopupFadeInAnim, GetAnimationCurrentTime(PopupFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);

@@ -49,6 +49,10 @@ private:
 	TObjectPtr<UWidgetAnimation> VariationMenuFadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DetailPanelFadeInAnim;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent FadeOutDelegate;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent DetailsPanelFadeOutDelegate;
 
 	FString GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot, const EVariationUnlock InVariationUnlockName);
 
@@ -61,7 +65,7 @@ private:
 	UFUNCTION()
 	void ToggleDetailsPanel(const bool bState, const FString& InDetailsText);
 	UFUNCTION()
-	void HideDetailsPanel() const;
+	void HideDetailsPanel();
 	UFUNCTION()
 	void HideVariationsPanel();
 };

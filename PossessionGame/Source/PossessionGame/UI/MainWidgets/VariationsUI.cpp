@@ -32,7 +32,7 @@ void UVariationsUI::CloseUI() { Toggle(false); }
 
 FString UVariationsUI::GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot, const EVariationUnlock InVariationUnlockName)
 {
-	return FString::Printf(TEXT(" [%d / %d]"), InSaveSlot->GetVariationUnlockProgress(InVariationUnlockName), InSaveSlot->GetVariationUnlockRequirement(InVariationUnlockName));
+	return TEXT(" [") + FString::FromInt(InSaveSlot->GetVariationUnlockProgress(InVariationUnlockName)) + TEXT(" / ") + FString::FromInt(InSaveSlot->GetVariationUnlockRequirement(InVariationUnlockName)) + TEXT("]");
 }
 
 void UVariationsUI::NativeConstruct()
@@ -47,10 +47,13 @@ void UVariationsUI::NativeConstruct()
 	if (RangerVariationBlue) RangerVariationBlue->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	if (TricksterVariationDefault) TricksterVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	if (TricksterVariationPurple) TricksterVariationPurple->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	FadeOutDelegate.BindDynamic(this, &UVariationsUI::HideVariationsPanel);
+	DetailsPanelFadeOutDelegate.BindDynamic(this, &UVariationsUI::HideDetailsPanel);
 }
 
 void UVariationsUI::Toggle(const bool bState)
 {
+	SetIsEnabled(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
@@ -65,10 +68,8 @@ void UVariationsUI::Toggle(const bool bState)
 	else
 	{
 		PlayerController->SetInputMode(FInputModeGameOnly());
-		UKismetSystemLibrary::K2_ClearTimer(this, "HideDetailsPanel");
-		if (VariationMenuFadeInAnim) UKismetSystemLibrary::K2_SetTimer(this, "HideVariationsPanel", VariationMenuFadeInAnim->GetEndTime(), false);
+		BindToAnimationFinished(VariationMenuFadeInAnim, FadeOutDelegate);
 	}
-	if (!VariationMenuFadeInAnim) return;
 	PlayAnimation(VariationMenuFadeInAnim, GetAnimationCurrentTime(VariationMenuFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
 
@@ -111,9 +112,9 @@ void UVariationsUI::SwitchVariation(const int32 InIndex)
 	VariationsSwitcher->SetActiveWidgetIndex(InIndex);
 	switch (CurrentCharacterSelected)
 	{
-		case 0: GuardianCharacterIcon->SetEventsEnabled(true); break;
-		case 1: RangerCharacterIcon->SetEventsEnabled(true); break;
-		case 2: TricksterCharacterIcon->SetEventsEnabled(true);
+		case 0: if (GuardianCharacterIcon) GuardianCharacterIcon->SetEventsEnabled(true); break;
+		case 1: if (RangerCharacterIcon) RangerCharacterIcon->SetEventsEnabled(true); break;
+		case 2: if (TricksterCharacterIcon) TricksterCharacterIcon->SetEventsEnabled(true);
 		default: ;
 	}
 	CurrentCharacterSelected = InIndex;
@@ -124,14 +125,18 @@ void UVariationsUI::ToggleDetailsPanel(const bool bState, const FString& InDetai
 	if (!UnlockDetailsPanel) return;
 	if (bState)
 	{
+		UnbindAllFromAnimationFinished(DetailPanelFadeInAnim);
 		UnlockDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		UnlockDetailsPanel->SetDetailsText(FText::FromString(InDetailsText));
 	}
-	if (!DetailPanelFadeInAnim) return;
-	UKismetSystemLibrary::K2_SetTimer(this, "HideDetailsPanel", DetailPanelFadeInAnim->GetEndTime(), false);
+	else BindToAnimationFinished(DetailPanelFadeInAnim, DetailsPanelFadeOutDelegate);
 	PlayAnimation(DetailPanelFadeInAnim, GetAnimationCurrentTime(DetailPanelFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
 
-void UVariationsUI::HideDetailsPanel() const { if (UnlockDetailsPanel) UnlockDetailsPanel->SetVisibility(ESlateVisibility::Hidden); }
+void UVariationsUI::HideDetailsPanel()
+{
+	UnbindAllFromAnimationFinished(DetailPanelFadeInAnim);
+	if (UnlockDetailsPanel) UnlockDetailsPanel->SetVisibility(ESlateVisibility::Hidden);
+}
 
-void UVariationsUI::HideVariationsPanel() { if (this) SetVisibility(ESlateVisibility::Collapsed); }
+void UVariationsUI::HideVariationsPanel() { UnbindAllFromAnimationFinished(VariationMenuFadeInAnim); }

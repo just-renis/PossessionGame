@@ -23,6 +23,8 @@ protected:
 	TObjectPtr<UWaveManager> WaveManager;
 	UPROPERTY()
 	TObjectPtr<UWaveManagerHUD> WaveManagerHUD;
+	UPROPERTY()
+	FTimerHandle SpawnHandle;
 
 	int32 ConvertGameModeToDroneLocation() const;
 	
@@ -33,14 +35,9 @@ protected:
 	virtual void ResetTaskProgress() const;
 	void IncreaseAliveEnemiesAmount() { AliveEnemiesAmount++; }
 	void FadeOutObjectivePanel() const;
-	UFUNCTION()
-	virtual void FadeInObjectivePanel() const;
-	UFUNCTION()
 	virtual void HandleSpawning() {}
-	UFUNCTION()
+	virtual void FadeInObjectivePanel() const;
 	virtual void UpdateEnemiesAmount() { AliveEnemiesAmount--; }
-	UFUNCTION()
 	void ShowUpgradeSelection() const;
-	UFUNCTION()
 	virtual void UpdateTaskProgress() {}
 };

@@ -23,7 +23,12 @@ public:
 	void SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon, const TObjectPtr<UTexture2D>& InPlayerIcon = nullptr);
 	void ToggleCardVisibility(const bool bState);
 	void SetUpgradeText(const FString& InText) const;
-	void PlayBlinkAnim() { if (BlinkAnim) PlayAnimation(BlinkAnim); }
+	void PlayBlinkAnim() { PlayAnimation(BlinkAnim); }
+	void PlayHoverAnim() { PlayAnimation(HoverAnim); }
+	void PlayUnHoverAnim() { PlayAnimation(UnHoverAnim); }
+	void PlaySelectAnim()  { PlayAnimation(SelectAnim); }
+	void StopHoverAnim() { StopAnimation(HoverAnim); }
+	void StopUnHoverAnim() { StopAnimation(UnHoverAnim); }
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UBorder> CardBackgroundBorder;
@@ -41,6 +46,12 @@ private:
 	TObjectPtr<UTextBlock> UpgradeText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> BlinkAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> HoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> UnHoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> SelectAnim;
 	UPROPERTY()
 	TObjectPtr<UUpgradeData> Data;
 

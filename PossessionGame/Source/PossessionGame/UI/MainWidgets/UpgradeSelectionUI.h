@@ -21,7 +21,7 @@ class POSSESSIONGAME_API UUpgradeSelectionUI : public UUserWidget
 public:
 	void OpenUI();
 	void CloseUI();
-	void SetTriggerUpgradeMenuCloseAnimation();
+	void TriggerUpgradeMenuCloseAnimation();
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> PlayerCardBackgroundTexture;
@@ -52,35 +52,13 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVerticalBox> UpgradeChoicesPanel;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PlayerCardOption1Popup;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PlayerCardOption2Popup;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> EnemyCardOption1Popup;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> EnemyCardOption2Popup;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PlayerCardOption1Select;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PlayerCardOption2Select;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> EnemyCardOption1Select;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> EnemyCardOption2Select;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PlayerCardOption1UnHover;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PlayerCardOption2UnHover;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> EnemyCardOption1UnHover;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> EnemyCardOption2UnHover;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> UpgradeMenuOpen;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> UpgradeMenuClose;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent UpgradeSelectionFadeOutDelegate;
 	UPROPERTY()
 	TArray<TObjectPtr<UUpgradeData>> UpgradesData;
 
@@ -89,8 +67,6 @@ private:
 	void Toggle(const bool bState);
 	virtual void NativeConstruct() override;
 	void OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData) const;
-	UFUNCTION()
-	void FinishedUpgradeSelectionCloseAnimation() const;
 	UFUNCTION()
 	void TriggerHoverAnimForFirstOption();
 	UFUNCTION()
@@ -104,5 +80,5 @@ private:
 	UFUNCTION()
 	void TriggerSelectAnimForSecondOption();
 	UFUNCTION()
-	void TriggerUpgradeMenuCloseAnimation();
+	void UpgradeSelectionPanelFadeOutFinished();
 };

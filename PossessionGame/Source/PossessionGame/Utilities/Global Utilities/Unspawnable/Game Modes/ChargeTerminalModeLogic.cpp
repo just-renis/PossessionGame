@@ -1,5 +1,4 @@
 ﻿#include "ChargeTerminalModeLogic.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Game Modes/ChargeTerminalModeData.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
@@ -17,7 +16,7 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 	WaveManager->GetDelegateManager()->OnUsbInserted.BindUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
 	PlaySound(ESound::TaskAnnouncement);
 	if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(true, WaveManager->GetCurrentGameMode());
-	UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate, true);
+	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
 }
 
 void UChargeTerminalModeLogic::Finalize()
@@ -29,7 +28,7 @@ void UChargeTerminalModeLogic::Finalize()
 	ResetTaskProgress();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	WaveManager->GetDelegateManager()->OnUsbInserted.Unbind();
-	UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
+	GetWorld()->GetTimerManager().ClearTimer(SpawnHandle);
 }
 
 void UChargeTerminalModeLogic::HandleSpawning()
@@ -53,15 +52,6 @@ void UChargeTerminalModeLogic::UpdateTaskProgress()
 	if (!WaveManagerHUD) return;
 	WaveManagerHUD->UpdateObjectiveProgress(UsbAmountProgress, Data->GetUsbAmountRequired());
 	WaveManagerHUD->UpdateTaskProgress(UsbAmountProgress, UsbAmountRequired);
-}
-
-void UChargeTerminalModeLogic::SetupWaveManagerUI()
-{
-	Super::SetupWaveManagerUI();
-	if (!WaveManagerHUD) return;
-	FadeOutObjectivePanel();
-	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeInEndTime(), false);
-	else FadeInObjectivePanel();
 }
 
 void UChargeTerminalModeLogic::FadeInObjectivePanel() const

@@ -266,7 +266,12 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubc
 	if (!bTutorialIsFinished) DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
 }
 
-bool UPrimaryDataAssetsManager::IsGameRunning() { return IsValid(this) && GetWorld() && !GetWorld()->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }
+bool UPrimaryDataAssetsManager::IsGameRunning()
+{
+	if (!IsValid(this)) return false;
+	const TObjectPtr<UWorld> World = GetWorld();
+	return IsValid(World) && !World->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed);
+}
 
 EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharacterType InCharacterType)
 {

@@ -6,7 +6,6 @@ void UCustomTextUI::SetText(const FText& InText) const { if (CustomText) CustomT
 
 void UCustomTextUI::PlayFadeInAnim(const bool bState)
 {
-	if (!FadeInAnim) return;
 	if (bState) GetWorld()->GetTimerManager().SetTimer(FadeInHandle, this, &UCustomTextUI::FadeInAnimFinished, FadeInAnim->GetEndTime(), false);
 	PlayAnimation(FadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }

@@ -4,7 +4,6 @@
 #include "Components/Image.h"
 #include "Components/InvalidationBox.h"
 #include "Components/TextBlock.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilitiesPanelUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CrosshairUI.h"
@@ -24,7 +23,7 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 				HpWhiteBar->SetPercent(HpBar->GetPercent());
 				HpBar->SetPercent(InCurrent / InMax);
 				HpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
-				UKismetSystemLibrary::K2_SetTimer(this, "UpdateWhiteHpBar", 0.02f, true);
+				GetWorld()->GetTimerManager().SetTimer(UpdateWhiteHpBarHandle, this, &UPlayerHUD::UpdateWhiteHpBar, 0.02f, true);
 			}
 			break;
 		case EUIBar::Possession: if (PossessionBar) PossessionBar->SetPercent(InCurrent / InMax); break;
@@ -89,8 +88,8 @@ void UPlayerHUD::UpdatePossessionIndicator(const bool bState, const FString& InK
 	if (bState)
 	{
 		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ReadyToPossess);
-		if (PossessionIndicatorPopup) PlayAnimation(PossessionIndicatorPopup);
-		if (PressToPossessPopup) PlayAnimation(PressToPossessPopup);
+		PlayAnimation(PossessionIndicatorPopup);
+		PlayAnimation(PressToPossessPopup);
 	}
 }
 
@@ -114,12 +113,12 @@ void UPlayerHUD::ConfigureUIs()
 	GetAbilityPanel()->CollapseAbilityIcon(2);
 }
 
-void UPlayerHUD::PlayDeathFadeOutAnim() { if (DeathFadeOut) PlayAnimation(DeathFadeOut); }
+void UPlayerHUD::PlayDeathFadeOutAnim() { PlayAnimation(DeathFadeOut); }
 
 void UPlayerHUD::UpdateReceiveDamageInv()
 {
 	if (ReceiveDamageInv) ReceiveDamageInv->SetRenderOpacity(1.f);
-	if (ReceiveDamageFadeOut) PlayAnimation(ReceiveDamageFadeOut);
+	PlayAnimation(ReceiveDamageFadeOut);
 }
 
 void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
@@ -148,7 +147,7 @@ void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
 void UPlayerHUD::AnnouncePossession()
 {
 	if (PossessionAnnouncementInv) PossessionAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (PossessedPopup) PlayAnimation(PossessedPopup);
+	PlayAnimation(PossessedPopup);
 }
 
 void UPlayerHUD::SetCurrentCrosshair() const
@@ -234,7 +233,7 @@ void UPlayerHUD::ShowDamageTick(const bool bIsCritical)
 {
 	if (DamageTickInv) DamageTickInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (DamageTickImage && CriticalDamageTickTexture && DamageTickTexture) DamageTickImage->SetBrushFromTexture(bIsCritical ? CriticalDamageTickTexture : DamageTickTexture);
-	if (DamageTickFadeOut) PlayAnimation(DamageTickFadeOut);
+	PlayAnimation(DamageTickFadeOut);
 }
 
 void UPlayerHUD::LevelUp(const int32 InLevel)
@@ -245,7 +244,7 @@ void UPlayerHUD::LevelUp(const int32 InLevel)
 
 void UPlayerHUD::PlayLevelUpAnim()
 {
-	if (!LevelUpAnim || !LevelUpAnnouncementInv) return;
+	if (!LevelUpAnnouncementInv) return;
 	LevelUpAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	PlayAnimation(LevelUpAnim);
 }
@@ -261,6 +260,18 @@ void UPlayerHUD::UpdateBossHpBar(const float InCurrent, const float InMax)
 void UPlayerHUD::EnableBossHpBar() const { if (BossHpBarInv) BossHpBarInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible); }
 
 void UPlayerHUD::DisableBossHpBar() const { if (BossHpBarInv) BossHpBarInv->SetVisibility(ESlateVisibility::Collapsed); }
+
+void UPlayerHUD::UpdateWhiteHpBar()
+{
+	if (!HpWhiteBar || !HpBar) return;
+	float NewPercentage = HpWhiteBar->GetPercent() - StepHpPercentage;
+	if (NewPercentage <= HpBar->GetPercent())
+	{
+		NewPercentage = HpBar->GetPercent();
+		GetWorld()->GetTimerManager().ClearTimer(UpdateWhiteHpBarHandle);
+	}
+	HpWhiteBar->SetPercent(NewPercentage);
+}
 
 /*float UPlayerHUD::GetHitDamageIndicatorSection(const float InAngle)
 {
@@ -293,16 +304,4 @@ void UPlayerHUD::ToggleUI(const TObjectPtr<T>& InUI)
 {
 	if (!InUI) return;
 	InUI->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? InUI->SetVisibility(ESlateVisibility::Collapsed) : InUI->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-}
-
-void UPlayerHUD::UpdateWhiteHpBar()
-{
-	if (!HpWhiteBar || !HpBar) return;
-	float NewPercentage = HpWhiteBar->GetPercent() - StepHpPercentage;
-	if (NewPercentage <= HpBar->GetPercent())
-	{
-		NewPercentage = HpBar->GetPercent();
-		UKismetSystemLibrary::K2_ClearTimer(this, "UpdateWhiteHpBar");
-	}
-	HpWhiteBar->SetPercent(NewPercentage);
 }

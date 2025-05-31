@@ -1,5 +1,4 @@
 ﻿#include "WaveModeLogic.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Game Modes/WaveModeData.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
@@ -31,15 +30,12 @@ void UWaveModeLogic::SetupWaveManagerUI()
 	Super::SetupWaveManagerUI();
 	if (!WaveManagerHUD) return;
 	WaveManagerHUD->UpdateCountdown(CountdownSeconds);
-	FadeOutObjectivePanel();
-	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) UKismetSystemLibrary::K2_SetTimer(this, "FadeInObjectivePanel", WaveManagerHUD->GetObjectivePanelFadeInEndTime(), false);
-	else FadeInObjectivePanel();
 }
 
 void UWaveModeLogic::SetupTimers()
 {
 	UpdateCountdown();
-	UKismetSystemLibrary::K2_SetTimer(this, "UpdateCountdown", 1.f, true);
+	GetWorld()->GetTimerManager().SetTimer(CountdownHandle, this, &UWaveModeLogic::UpdateCountdown, 1.f, true);
 }
 
 void UWaveModeLogic::HandleSpawning()
@@ -83,8 +79,8 @@ void UWaveModeLogic::SetupNextWave()
 	EnemiesLeftToKill = EnemiesPerWave;
 	CountdownSeconds = 4.f;
 	UpdateCountdown();
-	UKismetSystemLibrary::K2_ClearTimer(this, "HandleSpawning");
-	UKismetSystemLibrary::K2_SetTimer(this, "UpdateCountdown", 1.f, true);
+	GetWorld()->GetTimerManager().ClearTimer(SpawnHandle);
+	GetWorld()->GetTimerManager().SetTimer(CountdownHandle, this, &UWaveModeLogic::UpdateCountdown, 1.f, true);
 }
 
 void UWaveModeLogic::WaveCompleted()
@@ -94,7 +90,7 @@ void UWaveModeLogic::WaveCompleted()
 	WaveManagerHUD->PlayAnnouncementAnim("Wave Completed");
 	PlaySound(ESound::WaveCompleted);
 	bWaveNotStarted = true;
-	UKismetSystemLibrary::K2_SetTimer(this, "ShowUpgradeSelection", WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
+	GetWorld()->GetTimerManager().SetTimer(OpenUpgradeSelectionHandle, this, &UWaveModeLogic::ShowUpgradeSelection, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 
 void UWaveModeLogic::AfterSpawnEnemyCallback()
@@ -122,7 +118,7 @@ void UWaveModeLogic::UpdateCountdown()
 	else
 	{
 		StartWave();
-		UKismetSystemLibrary::K2_ClearTimer(this, "UpdateCountdown");
-		UKismetSystemLibrary::K2_SetTimer(this, "HandleSpawning", SpawnRate, true);
+		GetWorld()->GetTimerManager().ClearTimer(CountdownHandle);
+		GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UWaveModeLogic::HandleSpawning, SpawnRate, true);
 	}
 }

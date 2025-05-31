@@ -4,11 +4,10 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 
-float UInteractableUI::GetFadeInAnimLength() const { return FadeInAnim ? FadeInAnim->GetEndTime() : 0.1f; }
+float UInteractableUI::GetFadeInAnimLength() const { return FadeInAnim->GetEndTime(); }
 
 void UInteractableUI::PlayFadeInAnim(const bool bState)
 {
-	if (!FadeInAnim) return;
 	PlayAnimation(FadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
 

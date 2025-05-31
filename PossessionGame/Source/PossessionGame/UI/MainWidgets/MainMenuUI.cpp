@@ -1,7 +1,6 @@
 ﻿#include "MainMenuUI.h"
 #include "SettingsUI.h"
 #include "Components/Button.h"
-#include "Components/InvalidationBox.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
@@ -21,8 +20,9 @@ void UMainMenuUI::NativeConstruct()
 
 void UMainMenuUI::Toggle(const bool bState)
 {
+	SetIsEnabled(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
-	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
 	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
@@ -34,36 +34,39 @@ void UMainMenuUI::SetupButtons()
 {
 	if (PlayButton) PlayButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::Play);
 	if (SettingsButton) SettingsButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::OpenSettings);
-	if (QuitButton) QuitButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopup);
+	if (QuitButton) QuitButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopupFadeIn);
 	if (QuitConfirmationPopup->GetAcceptButton()) QuitConfirmationPopup->GetAcceptButton()->OnClicked.AddDynamic(this, &UMainMenuUI::QuitGame);
-	if (QuitConfirmationPopup->GetDeclineButton()) QuitConfirmationPopup->GetDeclineButton()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopup);
+	if (QuitConfirmationPopup->GetDeclineButton()) QuitConfirmationPopup->GetDeclineButton()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopupFadeOut);
+}
+
+void UMainMenuUI::TriggerMainMenuFadeInAnim()
+{
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
+	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim));
 }
 
 void UMainMenuUI::TriggerMainMenuFadeOutAnim()
 {
-	if (!MainMenuFadeOut) return;
-	MainMenuFadeOutState ? PlayAnimation(MainMenuFadeOut, GetAnimationCurrentTime(MainMenuFadeOut), 1, EUMGSequencePlayMode::Reverse) : PlayAnimation(MainMenuFadeOut, GetAnimationCurrentTime(MainMenuFadeOut));
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(MainMenuFadeOutState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
-	MainMenuFadeOutState = !MainMenuFadeOutState;
-}
-
-void UMainMenuUI::TriggerQuitFadeInAnim()
-{
-	if (!QuitConfirmationPopup) return;
-	QuitConfirmationPopup->PlayPopupFadeInAnim(QuitFadeInState);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(QuitFadeInState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
-	QuitFadeInState = !QuitFadeInState;
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
+	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim), 1, EUMGSequencePlayMode::Reverse);
 }
 
 void UMainMenuUI::Play() { UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Levels/Chapter1/Levels/Level_1")); }
 
 void UMainMenuUI::QuitGame() { UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false); }
 
-void UMainMenuUI::TriggerQuitPopup()
+void UMainMenuUI::TriggerQuitPopupFadeIn()
 {
-	if (MainMenuInv) MainMenuInv->SetVisibility(MainMenuInv->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::HitTestInvisible : ESlateVisibility::SelfHitTestInvisible);
+	if (!QuitConfirmationPopup) return;
 	TriggerMainMenuFadeOutAnim();
-	TriggerQuitFadeInAnim();
+	QuitConfirmationPopup->PlayPopupFadeInAnim(true);
+}
+
+void UMainMenuUI::TriggerQuitPopupFadeOut()
+{
+	if (!QuitConfirmationPopup) return;
+	TriggerMainMenuFadeInAnim();
+	QuitConfirmationPopup->PlayPopupFadeInAnim(false);
 }
 
 void UMainMenuUI::OpenSettings()

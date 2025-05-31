@@ -17,8 +17,6 @@ public:
 	UFUNCTION()
 	void CloseUI();
 private:
-	bool MainMenuFadeOutState = false;
-	bool QuitFadeInState = false;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UMainMenuButtonUI> PlayButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
@@ -28,15 +26,15 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UConfirmationPopupUI> QuitConfirmationPopup;
 	UPROPERTY(Transient, meta = (BindWidgetAnim, AllowPrivateAccess = true))
-	TObjectPtr<UWidgetAnimation> MainMenuFadeOut;
+	TObjectPtr<UWidgetAnimation> MainMenuFadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UInvalidationBox> MainMenuInv;
 
 	virtual void NativeConstruct() override;
 	void Toggle(const bool bState);
 	void SetupButtons();
+	void TriggerMainMenuFadeInAnim();
 	void TriggerMainMenuFadeOutAnim();
-	void TriggerQuitFadeInAnim();
 	UFUNCTION()
 	void Play();
 	UFUNCTION()
@@ -44,5 +42,7 @@ private:
 	UFUNCTION()
 	void QuitGame();
 	UFUNCTION()
-	void TriggerQuitPopup();
+	void TriggerQuitPopupFadeIn();
+	UFUNCTION()
+	void TriggerQuitPopupFadeOut();
 };

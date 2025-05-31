@@ -29,12 +29,17 @@ int32 UGameModeBaseLogic::ConvertGameModeToDroneLocation() const
 	return 0;
 }
 
-void UGameModeBaseLogic::SetupWaveManagerUI() { WaveManagerHUD = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD); }
+void UGameModeBaseLogic::SetupWaveManagerUI()
+{
+	WaveManagerHUD = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD);
+	FadeInObjectivePanel();
+}
 
 void UGameModeBaseLogic::Finalize()
 {
 	WaveManager->GetDelegateManager()->OnGameModeFinished.Broadcast(WaveManager->GetCurrentGameMode());
 	(void)WaveManager->GetDelegateManager()->StartTutorialDroneMoveToLocation.ExecuteIfBound(ConvertGameModeToDroneLocation(), true);
+	FadeOutObjectivePanel();
 }
 
 void UGameModeBaseLogic::PlaySound(const ESound InSoundName) const { WaveManager->GetAssetsManager()->PlaySound2D(InSoundName); }
@@ -49,9 +54,9 @@ void UGameModeBaseLogic::ResetTaskProgress() const
 void UGameModeBaseLogic::FadeOutObjectivePanel() const
 {
 	if (!WaveManagerHUD) return;
-	if (WaveManagerHUD->GetIsObjectivePanelFadeInAtLeastOnce()) WaveManagerHUD->PlayObjectivePanelFadeOutAnim();
+	WaveManagerHUD->PlayObjectivePanelFadeInAnim(false);
 }
 
-void UGameModeBaseLogic::FadeInObjectivePanel() const { if (WaveManagerHUD) WaveManagerHUD->PlayObjectivePanelFadeInAnim(); }
+void UGameModeBaseLogic::FadeInObjectivePanel() const { if (WaveManagerHUD) WaveManagerHUD->PlayObjectivePanelFadeInAnim(true); }
 
 void UGameModeBaseLogic::ShowUpgradeSelection() const { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI(); }

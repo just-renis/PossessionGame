@@ -145,6 +145,8 @@ private:
 	TObjectPtr<UWidgetAnimation> LevelUpAnim;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
+	UPROPERTY()
+	FTimerHandle UpdateWhiteHpBarHandle;
 	//UPROPERTY()
 	//TArray<TObjectPtr<UImage>> HitDamageIndicatorsPool;
 	//UPROPERTY()
@@ -162,8 +164,7 @@ private:
 	void UpdateBossHpBar(const float InCurrent, const float InMax);
 	void EnableBossHpBar() const;
 	void DisableBossHpBar() const;
+	void UpdateWhiteHpBar();
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
-	UFUNCTION()
-	void UpdateWhiteHpBar();
 };

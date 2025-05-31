@@ -18,6 +18,8 @@ private:
 	TObjectPtr<UProgressBar> HpBar;
 	UPROPERTY(meta = (BindWIdget))
 	TObjectPtr<UProgressBar> HpWhiteBar;
+	UPROPERTY()
+	FTimerHandle UpdateWhiteHpBarHandle;
 
 	UFUNCTION()
 	void UpdateWhiteHpBar();
