@@ -168,9 +168,7 @@ protected:
 	virtual void AI_PlayDeathSound();
 	virtual void AI_PlayDeathExplosion() {}
 	virtual void AI_PlayDeathElectrification() {}
-	UFUNCTION()
 	virtual void AI_TriggerDeathVoiceLine() {}
-	UFUNCTION()
 	virtual void AI_PlaySpawnSound() {}
 
 	virtual void P_SetupAbilities();
@@ -196,6 +194,7 @@ protected:
 	void SetCurrentHp(const float NewCurrentHp) { CurrentHp = NewCurrentHp; }
 	void SetMaxHp(const float NewMaxHp) { MaxHp = NewMaxHp; }
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void SetAnimInstance();
 	void SetMaxWalkSpeed(const float Speed) const;
 	void SetInitialWalkSpeed(const bool bState) const;
@@ -205,7 +204,6 @@ protected:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
 	virtual void DestroyAI();
-	UFUNCTION()
 	virtual void DestroyThis();
 private:
 	bool bPressKeyEnabled = false;
@@ -274,6 +272,42 @@ private:
 	TObjectPtr<UPossessionGameInstance> GameInstance;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> Aura;
+	UPROPERTY()
+	FTimerHandle AI_ClearShootPauseHandle;
+	UPROPERTY()
+	FTimerHandle P_ContinuousFovChangeHandle;
+	UPROPERTY()
+	FTimerHandle AI_TriggerDeathVoiceLineHandle;
+	UPROPERTY()
+	FTimerHandle DestroyHandle;
+	UPROPERTY()
+	FTimerHandle DisablePossessionOutlineHandle;
+	UPROPERTY()
+	FTimerHandle DisableUnPossessionOutlineHandle;
+	UPROPERTY()
+	FTimerHandle P_ControlLogicHandle;
+	UPROPERTY()
+	FTimerHandle P_StopDashHandle;
+	UPROPERTY()
+	FTimerHandle CheckIfFallOutOfWorldHandle;
+	UPROPERTY()
+	FTimerHandle AI_SetCharacterMovementSpeedHandle;
+	UPROPERTY()
+	FTimerHandle AI_PlaySpawnSoundHandle;
+	UPROPERTY()
+	FTimerHandle DestroyCondenseMaterialsProcessHandle;
+	UPROPERTY()
+	FTimerHandle AI_HideHpBarHandle;
+	UPROPERTY()
+	FTimerHandle P_DetectIfPlayerPointingAtOutlineObjectsHandle;
+	UPROPERTY()
+	FTimerHandle P_TriggerCriticalDamageIndicatorHandle;
+	UPROPERTY()
+	FTimerHandle P_OpenDeathMenuHandle;
+	UPROPERTY()
+	FTimerHandle P_DeathHandle;
+	UPROPERTY()
+	FTimerHandle SpawnCondenseMaterialsProcessHandle;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
@@ -283,11 +317,8 @@ private:
 	void AI_ShowDamageNumber(const float InDamageAmount) const;
 	void AI_SpawnUsbOnDeath() const;
 	void AI_TriggerMutantExplosion();
-	UFUNCTION()
 	void AI_HideHpBar() const;
-	UFUNCTION()
 	void AI_ClearShootPause();
-	UFUNCTION()
 	void AI_SetCharacterMovementSpeed();
 
 	void P_SetupData();
@@ -324,25 +355,17 @@ private:
 	void P_Stomp();
 	void P_SetupLevelUpAppliance(const int32 InLevel);
 	void P_StompImpact(const FVector& InHitLocation);
-	UFUNCTION()
 	void P_Death();
-	UFUNCTION()
 	void P_ControlLogic();
-	UFUNCTION()
 	void P_DetectIfPlayerPointingAtOutlineObjects();
-	UFUNCTION()
 	void P_TriggerCriticalDamageIndicator() const;
-	UFUNCTION()
 	void P_OpenDeathMenu() const;
-	UFUNCTION()
 	void P_ContinuousFovChange();
-	UFUNCTION()
 	void P_StopDash() const;
 	//UFUNCTION()
 	//void P_UpdateHitDamageIndicators() const;
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void TickAbilities(const float InDeltaTime);
 	void SetupStimuliSource();
 	void ChangeXRayState(const bool bState) const;
@@ -354,14 +377,9 @@ private:
 	void ProcessDamageReason(const EDamageReason InDamageReason) const;
 	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;
 	virtual void Landed(const FHitResult& Hit) override;
-	UFUNCTION()
 	void CheckIfFallOutOfWorld();
-	UFUNCTION()
 	void SpawnCondenseMaterialsProcess();
-	UFUNCTION()
 	void DestroyCondenseMaterialsProcess();
-	UFUNCTION()
 	void DisablePossessionOutline() const;
-	UFUNCTION()
 	void DisableUnPossessionOutline() const;
 };

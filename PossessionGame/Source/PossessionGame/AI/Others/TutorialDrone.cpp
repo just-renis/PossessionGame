@@ -29,7 +29,16 @@ void ATutorialDrone::BeginPlay()
 	RetrieveDroneWaypoints();
 	PlayDroneAnimation();
 	DelegateManager->OnGameModeFinished.AddUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
-	UKismetSystemLibrary::K2_SetTimer(this, "SpinPropellers", 0.05f, true);
+	GetWorldTimerManager().SetTimer(SpinPropellersHandle, this, &ATutorialDrone::SpinPropellers, 0.05f, true);
+}
+
+void ATutorialDrone::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(SpinPropellersHandle);
+	GetWorldTimerManager().ClearTimer(MoveToLocationHandle);
+	GetWorldTimerManager().ClearTimer(CheckDistanceToTargetHandle);
+	GetWorldTimerManager().ClearTimer(LookAtTargetHandle);
+	Super::EndPlay(EndPlayReason);
 }
 
 void ATutorialDrone::PlayDroneAnimation() const
@@ -51,19 +60,19 @@ void ATutorialDrone::SetDroneMoveLocation(const int32 InIndex, const bool bInsta
 	WaypointIndex = InIndex;
 	for (int32 i = 0; i < Waypoints.Num(); i++) if (Waypoints[i]->GetOrder() == InIndex) WaypointLocation = Waypoints[i]->GetActorLocation();
 	bIsMoving = true;
-	UKismetSystemLibrary::K2_SetTimer(this, "MoveToLocation", 0.015f, true);
+	GetWorldTimerManager().SetTimer(MoveToLocationHandle, this, &ATutorialDrone::MoveToLocation, 0.015f, true);
 }
 
 void ATutorialDrone::EnableCheckDistanceToTarget(const int32 InIndex)
 {
 	DistanceToTargetIndex = InIndex;
-	UKismetSystemLibrary::K2_SetTimer(this, "CheckDistanceToTarget", 0.05f, true);
+	GetWorldTimerManager().SetTimer(CheckDistanceToTargetHandle, this, &ATutorialDrone::CheckDistanceToTarget, 0.05f, true);
 }
 
 void ATutorialDrone::EnableCheckDistanceToTarget(const EGameMode InGameMode)
 {
 	DistanceToTargetIndex = -1;
-	UKismetSystemLibrary::K2_SetTimer(this, "CheckDistanceToTarget", 0.05f, true);
+	GetWorldTimerManager().SetTimer(CheckDistanceToTargetHandle, this, &ATutorialDrone::CheckDistanceToTarget, 0.05f, true);
 }
 
 void ATutorialDrone::PlaySound(const ESound InSoundName)
@@ -102,7 +111,7 @@ void ATutorialDrone::MoveToLocation()
 	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(10.f))
 	{
 		bIsMoving = false;
-		UKismetSystemLibrary::K2_ClearTimer(this, "MoveToLocation");
+		GetWorldTimerManager().ClearTimer(MoveToLocationHandle);
 		switch (WaypointIndex)
 		{
 			case 0: SetDroneMoveLocation(1, false); break;
@@ -143,7 +152,7 @@ void ATutorialDrone::CheckDistanceToTarget()
 			case 0:
 				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(0);
 				(void)DelegateManager->StopShowingHint.ExecuteIfBound();
-				UKismetSystemLibrary::K2_SetTimer(this, "LookAtTarget", 0.02f, true);
+				GetWorldTimerManager().SetTimer(LookAtTargetHandle, this, &ATutorialDrone::LookAtTarget, 0.02f, true);
 				break;
 			case 1:
 				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(4);
@@ -154,7 +163,7 @@ void ATutorialDrone::CheckDistanceToTarget()
 			case 2: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(5); break;
 			default: ShowRandomTip();
 		}
-		UKismetSystemLibrary::K2_ClearTimer(this, "CheckDistanceToTarget");
+		GetWorldTimerManager().ClearTimer(CheckDistanceToTargetHandle);
 	}
 }
 

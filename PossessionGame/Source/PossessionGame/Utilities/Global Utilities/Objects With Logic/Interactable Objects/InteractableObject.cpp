@@ -1,7 +1,6 @@
 ﻿#include "InteractableObject.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/UI/SecondaryWidgets/InteractableUI.h"
 
 void AInteractableObject::FadeOutInteractableUI()
@@ -29,11 +28,18 @@ void AInteractableObject::BeginPlay()
 	InteractableUI = Cast<UInteractableUI>(InteractableWidget->GetWidget());
 }
 
+void AInteractableObject::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(DisableOutlineHandle);
+	GetWorldTimerManager().ClearTimer(FadeOutAnimHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
 void AInteractableObject::ChangeOutlineState(const bool bState)
 {
 	if (bIsSkeletalMesh) GetSkeletalMesh()->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
 	else GetMesh()->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
-	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
+	if (bState) GetWorldTimerManager().SetTimer(DisableOutlineHandle, this, &AInteractableObject::DisableOutline, 0.0245f, false);
 }
 
 void AInteractableObject::FadeOutAnimFinished() const { if (InteractableWidget)  InteractableWidget->SetVisibility(false); }

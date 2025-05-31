@@ -13,6 +13,8 @@ class POSSESSIONGAME_API UMinionBossAbility1 : public UAbility
 
 	UPROPERTY()
 	TObjectPtr<AMinionBoss> Proprietor;
+	UPROPERTY()
+	FTimerHandle StompHandle;
 	
 	virtual void AI_Execute() override;
 	virtual void AI_StopAbility() override;
@@ -21,6 +23,5 @@ class POSSESSIONGAME_API UMinionBossAbility1 : public UAbility
 	
 	virtual void SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) override;
 	virtual void CooldownLogic(const float InDeltaTime) override;
-	UFUNCTION()
 	void StompHitTheGround() const;
 };

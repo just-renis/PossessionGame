@@ -1,7 +1,6 @@
 ﻿#include "RangerAnimationInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/GameplayStaticsTypes.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Characters/Ranger.h"
 #include "PossessionGame/AI/Enemies/Controllers/RangerAIController.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -12,8 +11,8 @@ void URangerAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState)
 	Super::InnerPlayMontage(InState);
 	if (InState == EEnemyAnimState::GrenadeLaunch)
 	{
-		UKismetSystemLibrary::K2_SetTimer(this, "TriggerGrenadeProjection", 0.1f, false);
-		UKismetSystemLibrary::K2_SetTimer(this, "LaunchGrenade", 1.1f, false);
+		GetWorld()->GetTimerManager().SetTimer(TriggerGrenadeProjectionHandle, this, &URangerAnimationInstance::TriggerGrenadeProjection, 0.1f, false);
+		GetWorld()->GetTimerManager().SetTimer(LaunchGrenadeHandle, this, &URangerAnimationInstance::LaunchGrenade, 1.1f, false);
 	}
 }
 
@@ -55,4 +54,11 @@ void URangerAnimationInstance::TriggerGrenadeProjection() const
 		MarkerRotation.Pitch -= 90.f; 
 		AssetsManager->SpawnVfx(EVfx::RangerGrenadeLauncherMarker, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, PathResult.HitResult.Location, MarkerRotation);
 	}
+}
+
+void URangerAnimationInstance::ClearTimers()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TriggerGrenadeProjectionHandle);
+	GetWorld()->GetTimerManager().ClearTimer(LaunchGrenadeHandle);
+	Super::ClearTimers();
 }

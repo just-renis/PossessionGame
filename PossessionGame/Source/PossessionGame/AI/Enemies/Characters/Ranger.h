@@ -25,6 +25,8 @@ private:
 	TObjectPtr<UNiagaraComponent> GrenadeLauncherMuzzleFlashComponent;
 	UPROPERTY()
 	TObjectPtr<ATriggerSphere> AIGrenadeLaunchTriggerSphere;
+	UPROPERTY()
+	FTimerHandle TryTriggeringGrenadeLaunchHandle;
 
 	virtual void AI_TriggerDeathVoiceLine() override;
 	virtual void AI_SetupWeapon() override;
@@ -39,12 +41,12 @@ private:
 	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) override;
 	
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void GrenadeLauncherMuzzleFlashLogic();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitiateDeath() override;
 	void SetupGrenadeLaunchTriggerSphere();
 	void DestroyGrenadeLaunchTriggerSphere() const;
-	UFUNCTION()
 	void TryTriggeringGrenadeLaunch();
 };

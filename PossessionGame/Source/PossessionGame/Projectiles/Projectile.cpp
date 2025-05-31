@@ -4,7 +4,6 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/AI/Base Data/AICharacterData.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
@@ -119,6 +118,8 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2 && Cast<AEnemy>(OtherActor)->GetIsPossessed()) DealDamageToSentientActor(OtherActor, Hit); // If player got hit.
 }
 
+EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.DamageReason; }
+
 void AProjectile::AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile)
 {
 	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage);
@@ -132,11 +133,15 @@ void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)
 	Damage += DefaultDamage * ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
 }
 
-EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.DamageReason; }
+void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	Super::EndPlay(EndPlayReason);
+}
 
 void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 {
-	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", ProjectileData.LifeSpan, false);
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AProjectile::DestroyThis, ProjectileData.LifeSpan, false);
 	MovementComponent->InitialSpeed = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].InitialSpeed;
 	MovementComponent->MaxSpeed = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].MaxSpeed;
 	MovementComponent->ProjectileGravityScale = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].GravityScale;
@@ -185,7 +190,7 @@ void AProjectile::ApplyCurrentVariation()
 
 void AProjectile::DestroyThis()
 {
-	UKismetSystemLibrary::K2_ClearTimer(this, "DestroyThis");
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	Attributes.Empty();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	DisableProjectileComponents();

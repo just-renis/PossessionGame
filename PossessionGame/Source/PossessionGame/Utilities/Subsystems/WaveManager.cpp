@@ -14,7 +14,6 @@ void UWaveManager::Init(const TObjectPtr<UDelegateManager>& InDelegateManager, c
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &UWaveManager::SetAndStartGameMode);
 	CurrentGameMode = EGameMode::TutorialMode1;
-	//AssetsManager->RequestSpawnEnemy(ECharacterType::Ranger, nullptr);
 	//DelegateManager->OnTutorialEnd.AddUObject(this, &UWaveManager::FinishTutorial);
 }
 

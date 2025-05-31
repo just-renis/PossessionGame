@@ -14,9 +14,10 @@ class POSSESSIONGAME_API USTTaskDelay : public UStateTreeTaskBlueprintBase
 	bool bUseUnlimitedDelay = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float Delay = 1.f;
+	UPROPERTY()
+	FTimerHandle DelayHandle;
 	
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
 	virtual void ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
-	UFUNCTION()
 	virtual void OnDelayCompleted();
 };

@@ -1,6 +1,5 @@
 #include "EnemyAIController.h"
 #include "Enemy.h"
-#include "Kismet/GameplayStatics.h"
 #include "EnemyAnimationInstance.h"
 #include "Components/StateTreeComponent.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -38,8 +37,8 @@ void AEnemyAIController::DestroyThis()
 		Perception->OnPerceptionUpdated.Clear();
 	}
 	EnemyCommunicator->GetEQSDelegate().RemoveAll(this);
-	UKismetSystemLibrary::K2_ClearTimer(this, "SightOnTargetLogic");
-	UKismetSystemLibrary::K2_ClearTimer(this, "OnLostSightOfPawn");
+	GetWorld()->GetTimerManager().ClearTimer(SightOnTargetLogicHandle);
+	GetWorld()->GetTimerManager().ClearTimer(OnLostSightOfPawnHandle);
 	StopStateTreeLogic(true);
 }
 
@@ -60,7 +59,7 @@ void AEnemyAIController::SetMoveMode(const EMoveMode InMoveMode) const { Proprie
 
 void AEnemyAIController::SetupAI()
 {
-	UKismetSystemLibrary::K2_SetTimer(this, "AdjustCustomFocus", 0.01f, true);
+	GetWorld()->GetTimerManager().SetTimer(AdjustCustomFocusHandle, this, &AEnemyAIController::AdjustCustomFocus, 0.01f, true);
 	EnemyCommunicator->GetEQSDelegate().AddUObject(this, &AEnemyAIController::SetEQSTargetLocation);
 	if (EnemyCommunicator->GetTarget()) SetTarget(EnemyCommunicator->GetTarget(), false);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTargetChange.AddUObject(this, &AEnemyAIController::SetTarget);
@@ -80,7 +79,34 @@ void AEnemyAIController::BeginPlay()
 	Super::BeginPlay();
 	EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
 	SetupEQSTarget();
-	UKismetSystemLibrary::K2_SetTimer(this, "SightOnTargetLogic", SightOnTargetRepeat, true);
+	GetWorld()->GetTimerManager().SetTimer(SightOnTargetLogicHandle, this, &AEnemyAIController::SightOnTargetLogic, SightOnTargetRepeat, true);
+}
+
+void AEnemyAIController::AdjustCustomFocus() const
+{
+	if (!Proprietor->GetIsActionInMotion() && EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation());
+}
+
+void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+{
+	if (Stimulus.WasSuccessfullySensed())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(OnLostSightOfPawnHandle);
+		if (!StateTreeData.GetIsTargetInMySight())
+		{
+			Proprietor->GetAnimInstance()->SetIsTargetInSight(true);
+			SetIsTargetInMySight(true);
+		}
+	}
+	else GetWorld()->GetTimerManager().SetTimer(OnLostSightOfPawnHandle, this, &AEnemyAIController::OnLostSightOfPawn, 0.3f, false);
+}
+
+void AEnemyAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearTimer(AdjustCustomFocusHandle);
+	GetWorld()->GetTimerManager().ClearTimer(SightOnTargetLogicHandle);
+	GetWorld()->GetTimerManager().ClearTimer(OnLostSightOfPawnHandle);
+	Super::EndPlay(EndPlayReason);
 }
 
 void AEnemyAIController::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
@@ -89,25 +115,6 @@ void AEnemyAIController::GetActorEyesViewPoint(FVector& OutLocation, FRotator& O
 	const FTransform Transform = Proprietor->GetMesh()->GetSocketTransform("SensorSocket", RTS_World);
 	OutLocation = Transform.GetLocation();
 	OutRotation = Transform.GetRotation().Rotator();
-}
-
-void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
-{
-	if (Stimulus.WasSuccessfullySensed())
-	{
-		UKismetSystemLibrary::K2_ClearTimer(this, "OnLostSightOfPawn");
-		if (!StateTreeData.GetIsTargetInMySight())
-		{
-			Proprietor->GetAnimInstance()->SetIsTargetInSight(true);
-			SetIsTargetInMySight(true);
-		}
-	}
-	else UKismetSystemLibrary::K2_SetTimer(this, "OnLostSightOfPawn", 0.3f, false);
-}
-
-void AEnemyAIController::AdjustCustomFocus() const
-{
-	if (!Proprietor->GetIsActionInMotion() && EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation());
 }
 
 void AEnemyAIController::CustomFocusToLocation(const FVector& InTargetLocation) const

@@ -1,6 +1,5 @@
 ﻿#include "STTaskMoveToEQSLocation.h"
 #include "StateTreeExecutionContext.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/EWeaponAnimState.h"
@@ -11,7 +10,7 @@ EStateTreeRunStatus USTTaskMoveToEQSLocation::EnterState(FStateTreeExecutionCont
 {
 	CachedController = Cast<AEnemyAIController>(Context.GetOwner());
 	CachedController->GetStateTreeData().OnStateTreeEvent.BindUObject(this, &USTTaskMoveToEQSLocation::FinishTaskByEvent);
-	UKismetSystemLibrary::K2_SetTimer(this, "ShootLogic", CachedController->GetProprietor()->GetWeapon()->GetShootCooldown(), true);
+	GetWorld()->GetTimerManager().SetTimer(ShootLogicHandle, this, &USTTaskMoveToEQSLocation::ShootLogic, CachedController->GetProprietor()->GetWeapon()->GetShootCooldown(), true);
 	if (!CachedController->GetProprietor()->GetWeapon()->GetIsFirstShotWasShot())
 	{
 		CachedController->GetProprietor()->GetWeapon()->SetFirstShotWasShot();
@@ -22,7 +21,7 @@ EStateTreeRunStatus USTTaskMoveToEQSLocation::EnterState(FStateTreeExecutionCont
 
 void USTTaskMoveToEQSLocation::ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
 {
-	UKismetSystemLibrary::K2_ClearTimer(this, "ShootLogic");
+	GetWorld()->GetTimerManager().ClearTimer(ShootLogicHandle);
 	CachedController->GetProprietor()->AI_CancelShooting();
 	CachedController->GetStateTreeData().OnStateTreeEvent.Unbind();
 	CachedController->GetStateTreeData().SetEQSPointAvailability(false);
@@ -31,7 +30,7 @@ void USTTaskMoveToEQSLocation::ExitState(FStateTreeExecutionContext& Context, co
 
 void USTTaskMoveToEQSLocation::FinishTaskByEvent(const EStateTreeEvent InEvent)
 {
-	UKismetSystemLibrary::K2_ClearTimer(this, "ShootLogic");
+	GetWorld()->GetTimerManager().ClearTimer(ShootLogicHandle);
 	CachedController->GetProprietor()->AI_CancelShooting();
 	CachedController->GetStateTreeData().OnStateTreeEvent.Unbind();
 	CachedController->GetStateTreeData().SetEQSPointAvailability(false);

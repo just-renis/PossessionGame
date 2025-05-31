@@ -28,6 +28,10 @@ private:
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
+	UPROPERTY()
+	FTimerHandle CheckHandle;
+	UPROPERTY()
+	FTimerHandle EnableInputHandle;
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	virtual void BeginPlay() override;
@@ -42,8 +46,6 @@ private:
 	void HandleEscapeClick();
 	void SetupTutorial();
 	void PressKeyToContinue();
-	UFUNCTION()
-	void CheckIfPlayerFallOutOfWorld() const;
-	UFUNCTION()
+	void CheckIfPlayerFallOutOfWorld();
 	void EnablePlayerInput() const;
 };

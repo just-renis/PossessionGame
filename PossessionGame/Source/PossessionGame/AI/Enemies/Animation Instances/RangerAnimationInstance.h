@@ -11,10 +11,14 @@ class POSSESSIONGAME_API URangerAnimationInstance : public UEnemyAnimationInstan
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
+	FTimerHandle TriggerGrenadeProjectionHandle;
+	UPROPERTY()
+	FTimerHandle LaunchGrenadeHandle;
+
 	virtual void InnerPlayMontage(const EEnemyAnimState InState) override;
 	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted) override;
-	UFUNCTION()
 	void LaunchGrenade() const;
-	UFUNCTION()
 	void TriggerGrenadeProjection() const;
+	virtual void ClearTimers() override;
 };

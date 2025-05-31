@@ -2,7 +2,6 @@
 #include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Base Data Assets/CollectibleData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/UI/SecondaryWidgets/InteractableUI.h"
@@ -33,6 +32,15 @@ void ACollectible::BeginPlay()
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ACollectible::DisableInteractionWidget);
 }
 
+void ACollectible::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(FloatHandle);
+	GetWorldTimerManager().ClearTimer(SpinHandle);
+	GetWorldTimerManager().ClearTimer(DisableOutlineHandle);
+	GetWorldTimerManager().ClearTimer(FadeOutAnimHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
 void ACollectible::Init(bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
@@ -40,9 +48,9 @@ void ACollectible::Init(bool bInIsPlayerObject)
 	if (Data->GetIsFloating())
 	{
 		InitialSpawnZ = GetActorLocation().Z;
-		UKismetSystemLibrary::K2_SetTimer(this, "Float", 0.025f, true);
+		GetWorldTimerManager().SetTimer(FloatHandle, this, &ACollectible::Float, 0.025f, true);
 	}
-	if (Data->GetIsSpinning()) UKismetSystemLibrary::K2_SetTimer(this, "Spin", 0.025f, true);
+	if (Data->GetIsSpinning()) GetWorldTimerManager().SetTimer(SpinHandle, this, &ACollectible::Spin, 0.025f, true);
 	SetActorRotation(Data->GetRotation());
 	EnableCollectible();
 }
@@ -52,8 +60,8 @@ void ACollectible::Interact()
 	if (!GetIsInteractable()) return;
 	if (Aura) Aura->Deactivate();
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbCollect);
-	UKismetSystemLibrary::K2_ClearTimer(this, "Float");
-	UKismetSystemLibrary::K2_ClearTimer(this, "Spin");
+	GetWorldTimerManager().ClearTimer(FloatHandle);
+	GetWorldTimerManager().ClearTimer(SpinHandle);
 	PoolingManager->ReturnObjectToPool(Data->GetCollectibleName(), this);
 	DisableCollectible();
 	if (Data->GetCollectibleName() == EPoolObject::Usb) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.ExecuteIfBound();
@@ -98,7 +106,7 @@ void ACollectible::ToggleInteractableWidget(const bool bState, const bool bMarke
 void ACollectible::ChangeOutlineState(const bool bState)
 {
 	Mesh->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
-	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
+	if (bState) GetWorldTimerManager().SetTimer(DisableOutlineHandle, this, &ACollectible::DisableOutline, 0.245f, false);
 }
 
 void ACollectible::FadeOutAnimFinished() const { if (InteractableWidget) InteractableWidget->SetVisibility(false); }

@@ -23,7 +23,7 @@ protected:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	
 	virtual void BeginPlay() override;
-	UFUNCTION()
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void DestroyThis();
 private:
 	bool bIsDeactivated = false;
@@ -33,6 +33,8 @@ private:
 	float Hp;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UDestructibleData> Data;
+	UPROPERTY()
+	FTimerHandle DestroyHandle;
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };

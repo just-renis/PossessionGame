@@ -44,9 +44,18 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 	UPROPERTY()
 	TObjectPtr<AActor> Target;
 	UPROPERTY()
+	FTimerHandle SpinPropellersHandle;
+	UPROPERTY()
+	FTimerHandle MoveToLocationHandle;
+	UPROPERTY()
+	FTimerHandle CheckDistanceToTargetHandle;
+	UPROPERTY()
+	FTimerHandle LookAtTargetHandle;
+	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void PlayDroneAnimation() const;
 	void RetrieveDroneWaypoints();
 	void SetDroneMoveLocation(const int32 InIndex, const bool bInstantMove);
@@ -57,12 +66,8 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 	void SetupAttachments();
 	void SetupDelegates();
 	void ShowRandomTip() const;
-	UFUNCTION()
 	void MoveToLocation();
-	UFUNCTION()
 	void LookAtTarget();
-	UFUNCTION()
 	void CheckDistanceToTarget();
-	UFUNCTION()
 	void SpinPropellers() const;
 };

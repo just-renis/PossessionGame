@@ -40,10 +40,12 @@ private:
 	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
 	UPROPERTY()
 	FTimerHandle FadeOutAnimHandle;
+	UPROPERTY()
+	FTimerHandle DisableOutlineHandle;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void ChangeOutlineState(const bool bState) override;
 	void FadeOutAnimFinished() const;
-	UFUNCTION()
 	void DisableOutline() { ChangeOutlineState(false); }
 	UFUNCTION()
 	virtual void EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

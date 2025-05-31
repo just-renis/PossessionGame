@@ -17,6 +17,10 @@ public:
 private:
 	int32 ShieldMaterialValueChanger;
 	UPROPERTY()
+	FTimerHandle DissolveHandle;
+	UPROPERTY()
+	FTimerHandle MoveShieldHandle;
+	UPROPERTY()
 	TObjectPtr<AActor> Proprietor;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> M_ForceField;
@@ -26,6 +30,7 @@ private:
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Init(bool bInIsPlayerObject) override;
 	virtual void DestroyThis() override;
 	void UpdateShieldMaterialValues(const float InOpacity, const float InProgress) const;

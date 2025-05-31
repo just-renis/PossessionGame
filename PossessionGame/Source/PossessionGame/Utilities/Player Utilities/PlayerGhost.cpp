@@ -29,7 +29,7 @@ void APlayerGhost::BeginPlay()
 	Super::BeginPlay();
 	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorial();
 	Tags.Add("PlayerGhost");
-	UKismetSystemLibrary::K2_SetTimer(this, "CheckIfPlayerFallOutOfWorld", 2.f, true);
+	GetWorld()->GetTimerManager().SetTimer(CheckHandle, this, &APlayerGhost::CheckIfPlayerFallOutOfWorld, 2.f, true);
 	if (const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (bTutorialModeEnabled)
@@ -39,7 +39,7 @@ void APlayerGhost::BeginPlay()
 			PlayerController->SetInputMode(FInputModeUIOnly());
 			const TObjectPtr<UPlayerGhostUI> TutorialUI = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI);
 			TutorialUI->PlayStartupAnimation();
-			UKismetSystemLibrary::K2_SetTimer(this, "EnablePlayerInput", TutorialUI->GetStartupAnimationLength(), false);
+			GetWorld()->GetTimerManager().SetTimer(EnableInputHandle, this, &APlayerGhost::EnablePlayerInput, TutorialUI->GetStartupAnimationLength(), false);
 		}
 		if (const TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
@@ -66,8 +66,9 @@ void APlayerGhost::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void APlayerGhost::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	GetWorld()->GetTimerManager().ClearTimer(CheckHandle);
+	GetWorld()->GetTimerManager().ClearTimer(EnableInputHandle);
 	Super::EndPlay(EndPlayReason);
-	UKismetSystemLibrary::K2_ClearTimer(this, "CheckIfPlayerFallOutOfWorld");
 }
 
 void APlayerGhost::Move(const FInputActionValue& InValue)
@@ -143,11 +144,15 @@ void APlayerGhost::PressKeyToContinue()
 	DelegateManager->OnShowPressKeyToContinue.Broadcast(false);
 }
 
-void APlayerGhost::CheckIfPlayerFallOutOfWorld() const
+void APlayerGhost::CheckIfPlayerFallOutOfWorld()
 {
 	if (GetActorLocation().Z <= -1000.f)
 	{
-		if (GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->IsAsyncLoadingFinished()) RestartLevel();
+		if (GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->IsAsyncLoadingFinished())
+		{
+			GetWorld()->GetTimerManager().ClearTimer(CheckHandle);
+			RestartLevel();
+		}
 	}
 }
 

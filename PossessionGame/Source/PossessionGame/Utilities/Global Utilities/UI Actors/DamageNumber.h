@@ -15,13 +15,15 @@ class POSSESSIONGAME_API ADamageNumber : public APoolObject
 	ADamageNumber();
 	
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Init(const float InData, const bool bHide) override;
 	virtual void Disable(const bool bHide) override;
-	UFUNCTION()
 	void ReturnToPool();
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> DamageNumberWidgetComponent;
 	UPROPERTY()
 	TObjectPtr<UDamageNumberUI> DamageNumber;
+	UPROPERTY()
+	FTimerHandle ReturnToPoolHandle;
 };

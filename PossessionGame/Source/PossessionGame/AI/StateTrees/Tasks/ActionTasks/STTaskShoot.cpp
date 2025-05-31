@@ -1,6 +1,5 @@
 ﻿#include "STTaskShoot.h"
 #include "StateTreeExecutionContext.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
@@ -11,7 +10,7 @@ EStateTreeRunStatus USTTaskShoot::EnterState(FStateTreeExecutionContext& Context
 {
 	CachedController = Cast<AEnemyAIController>(Context.GetOwner());
 	CachedController->GetStateTreeData().OnStateTreeEvent.BindUObject(this, &USTTaskShoot::FinishTaskByEvent);
-	UKismetSystemLibrary::K2_SetTimer(this, "ShootLogic", CachedController->GetProprietor()->GetWeapon()->GetShootCooldown(), true);
+	GetWorld()->GetTimerManager().SetTimer(ShootLogicHandle, this, &USTTaskShoot::ShootLogic, CachedController->GetProprietor()->GetWeapon()->GetShootCooldown(), true);
 	if (!CachedController->GetProprietor()->GetWeapon()->GetIsFirstShotWasShot())
 	{
 		CachedController->GetProprietor()->GetWeapon()->SetFirstShotWasShot();
@@ -22,7 +21,7 @@ EStateTreeRunStatus USTTaskShoot::EnterState(FStateTreeExecutionContext& Context
 
 void USTTaskShoot::ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
 {
-	UKismetSystemLibrary::K2_ClearTimer(this, "ShootLogic");
+	GetWorld()->GetTimerManager().ClearTimer(ShootLogicHandle);
 	CachedController->GetProprietor()->AI_CancelShooting();
 	CachedController->GetStateTreeData().OnStateTreeEvent.Unbind();
 	Super::ExitState(Context, Transition);
@@ -30,7 +29,7 @@ void USTTaskShoot::ExitState(FStateTreeExecutionContext& Context, const FStateTr
 
 void USTTaskShoot::FinishTaskByEvent(const EStateTreeEvent InEvent)
 {
-	UKismetSystemLibrary::K2_ClearTimer(this, "ShootLogic");
+	GetWorld()->GetTimerManager().ClearTimer(ShootLogicHandle);
 	CachedController->GetProprietor()->AI_CancelShooting();
 	CachedController->GetStateTreeData().OnStateTreeEvent.Unbind();
 	FinishTask();

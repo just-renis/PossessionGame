@@ -16,9 +16,11 @@ class POSSESSIONGAME_API AMusicPlayer : public AAmbientSound
 	ESound CurrentSoundtrack = ESound::RestSoundtrack;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
+	UPROPERTY()
+	FTimerHandle FadeInHandle;
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void ChangeSoundTrack(const EGameMode InGameMode);
-	UFUNCTION()
 	void OnFadeOutFinished() const;
 };

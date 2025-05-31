@@ -20,12 +20,15 @@ public:
 private:
 	float FadingOutDeathMaterialsCounter;
 	UPROPERTY()
+	FTimerHandle DisableGlitchingMaterialHandle;
+	UPROPERTY()
+	FTimerHandle FadingOfDeathMaterialsHandle;
+	UPROPERTY()
 	TObjectPtr<APostProcessVolume> PostProcessVolume;
 	UPROPERTY()
 	TMap<EPostProcessMaterial, TObjectPtr<UMaterialInterface>> Materials;
 
-	UFUNCTION()
 	void DisableGlitchingMaterial();
-	UFUNCTION()
 	void ProcessFadingOfDeathMaterials();
+	virtual void Deinitialize() override;
 };

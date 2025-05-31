@@ -5,7 +5,6 @@
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/TriggerSphere.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
@@ -39,7 +38,7 @@ void AMinionBoss::EnableLaser()
 	else LaserVfx->Activate();
 }
 
-void AMinionBoss::EnableDistanceCheckForLaserEye() { UKismetSystemLibrary::K2_SetTimer(this, "CheckDistanceOfLaserEyeTrigger", 0.2f, true); }
+void AMinionBoss::EnableDistanceCheckForLaserEye() { GetWorld()->GetTimerManager().SetTimer(CheckLaserEyeDistanceHandle, this, &AMinionBoss::CheckDistanceOfLaserEyeTrigger, 0.2f, true); }
 
 void AMinionBoss::OnLaserFinish()
 {
@@ -69,6 +68,8 @@ AMinionBoss::AMinionBoss()
 	Sounds[ESound::MinionBossElectrificationDeathPassive]->SetAutoActivate(false);
 	Sounds[ESound::MinionBossElectrificationDeathPassive]->SetupAttachment(GetMesh());
 }
+
+TObjectPtr<AWeapon>& AMinionBoss::GetWeapon() { return Weapons[0]; }
 
 void AMinionBoss::AI_SetupWeapon()
 {
@@ -119,8 +120,6 @@ void AMinionBoss::AI_PlayDeathElectrification()
 	AssetsManager->AttachVfx(EVfx::MinionBossDeathElectrification, nullptr, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
 }
 
-TObjectPtr<AWeapon>& AMinionBoss::GetWeapon() { return Weapons[0]; }
-
 void AMinionBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::MinionBoss;
@@ -129,6 +128,13 @@ void AMinionBoss::BeginPlay()
 	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
 	(void)DelegateManager->OnBossSpawn.ExecuteIfBound();
 	SetupStompTrigger();
+}
+
+void AMinionBoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearTimer(CheckLaserEyeDistanceHandle);
+	GetWorld()->GetTimerManager().ClearTimer(DealLaserDamageToPlayerHandle);
+	Super::EndPlay(EndPlayReason);
 }
 
 void AMinionBoss::HandleDeactivation()
@@ -207,14 +213,6 @@ void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDama
 	(void)DelegateManager->OnBossDamaged.ExecuteIfBound(CurrentHp, MaxHp);
 }
 
-void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor)
-{
-	if (!AI || bAffectedByEmp) return;
-	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
-	ToggleStompTrigger(false);
-	bStompIsReady = false;
-}
-
 void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 {
 	if (!AI || bAbilityInAction || bAffectedByEmp) return;
@@ -223,8 +221,18 @@ void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) >= FMath::Square(1000.f))
 	{
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossLaserEye);
-		UKismetSystemLibrary::K2_ClearTimer(this, "CheckDistanceOfLaserEyeTrigger");
+		GetWorld()->GetTimerManager().ClearTimer(CheckLaserEyeDistanceHandle);
 	}
+}
+
+void AMinionBoss::DealLaserDamageToPlayer() const { if (Player) Player->ReceiveDamage(2.f, EDamageReason::MinionBossDamage); }
+
+void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor)
+{
+	if (!AI || bAffectedByEmp) return;
+	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
+	ToggleStompTrigger(false);
+	bStompIsReady = false;
 }
 
 void AMinionBoss::OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -232,7 +240,7 @@ void AMinionBoss::OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedCo
 	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor); Enemy->GetIsPossessed())
 	{
 		Player = Enemy;
-		UKismetSystemLibrary::K2_SetTimer(this, "DealLaserDamageToPlayer", 0.05f, true);
+		GetWorld()->GetTimerManager().SetTimer(DealLaserDamageToPlayerHandle, this, &AMinionBoss::DealLaserDamageToPlayer, 0.05f, true);
 	}
 }
 
@@ -241,8 +249,6 @@ void AMinionBoss::OnLaserCollisionEndOverlap(UPrimitiveComponent* OverlappedComp
 	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor); Enemy->GetIsPossessed())
 	{
 		Player = nullptr;
-		UKismetSystemLibrary::K2_ClearTimer(this, "DealLaserDamageToPlayer");
+		GetWorld()->GetTimerManager().ClearTimer(DealLaserDamageToPlayerHandle);
 	}
 }
-
-void AMinionBoss::DealLaserDamageToPlayer() { if (Player) Player->ReceiveDamage(2.f, EDamageReason::MinionBossDamage); }

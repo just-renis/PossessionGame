@@ -56,19 +56,21 @@ private:
 	TObjectPtr<UProjectileMovementComponent> MovementComponent;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
+	UPROPERTY()
+	FTimerHandle DestroyHandle;
+
+	virtual EDamageReason GetDamageReason() const override;
 	
 	void AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile);
 
 	void P_SetupLevelUpAppliance(const int32 InLevel);
 
-	virtual EDamageReason GetDamageReason() const override;
-	
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
 	void DealAreaDamage();
 	void DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
 	virtual void SpawnFirstProjectileImpactVfx(const FHitResult& Hit);
 	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) {}
 	virtual void ApplyCurrentVariation();
-	UFUNCTION()
 	virtual void DestroyThis();
 };

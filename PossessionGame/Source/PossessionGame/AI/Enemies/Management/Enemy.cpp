@@ -103,7 +103,7 @@ void AEnemy::AI_SetMoveMode(const EMoveMode InMoveMode)
 void AEnemy::AI_SetShootPause()
 {
 	bShootPauseActive = true;
-	UKismetSystemLibrary::K2_SetTimer(this, "AI_ClearShootPause", AI_Data->GetShootPause(), false);
+	GetWorldTimerManager().SetTimer(AI_ClearShootPauseHandle, this, &AEnemy::AI_ClearShootPause, AI_Data->GetShootPause(), false);
 }
 
 void AEnemy::P_UseAbility(const int32 AbilityIndex)
@@ -133,7 +133,7 @@ void AEnemy::P_SetFov(const float InFov)
 {
 	TargetFov = InFov;
 	FovChangeTick = (TargetFov - Camera->FieldOfView) * 0.1f;
-	UKismetSystemLibrary::K2_SetTimer(this, "P_ContinuousFovChange", 0.025f, true);
+	GetWorldTimerManager().SetTimer(P_ContinuousFovChangeHandle, this, &AEnemy::P_ContinuousFovChange, 0.025f, true);
 }
 
 void AEnemy::P_IncreaseMovementSpeed(const float InPercentage) const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed() + P_Data->GetMaxWalkSpeed() * InPercentage * 0.01f); }
@@ -199,7 +199,7 @@ void AEnemy::PossessedBy(AController* NewController)
 			AssetsManager->PlaySound2D(ESound::OnPossession);
 			AssetsManager->RemoveStoredSound(ESound::GuardianSlowMotion);
 			AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
-			UKismetSystemLibrary::K2_SetTimer(this, "AI_TriggerDeathVoiceLine", 1.f, false);
+			GetWorldTimerManager().SetTimer(AI_TriggerDeathVoiceLineHandle, this, &AEnemy::AI_TriggerDeathVoiceLine, 1.f, false);
 			P_Setup();
 			if (P_HUD) P_HUD->AnnouncePossession();
 			SetInputState(false);
@@ -262,7 +262,7 @@ void AEnemy::InitiateDeath()
 	else P_Destroy();
 	AI_PlayDeathElectrification();
 	HandleDeactivation();
-	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", DestroyAfter, false);
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AEnemy::DestroyThis, DestroyAfter, false);
 }
 
 void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
@@ -305,9 +305,9 @@ void AEnemy::SetPossessionOutline(const bool bState) const { GetMesh()->SetOverl
 
 void AEnemy::SetUnPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? UnPossessionOutlineMaterial : nullptr); }
 
-void AEnemy::SetPossessionOutlineTimer() { UKismetSystemLibrary::K2_SetTimer(this, "DisablePossessionOutline", 0.245f, false); }
+void AEnemy::SetPossessionOutlineTimer() { GetWorldTimerManager().SetTimer(DisablePossessionOutlineHandle, this, &AEnemy::DisablePossessionOutline, 0.245f, false); }
 
-void AEnemy::SetUnPossessionOutlineTimer() { UKismetSystemLibrary::K2_SetTimer(this, "DisableUnPossessionOutline", 0.245f, false); }
+void AEnemy::SetUnPossessionOutlineTimer() { GetWorldTimerManager().SetTimer(DisableUnPossessionOutlineHandle, this, &AEnemy::DisableUnPossessionOutline, 0.245f, false); }
 
 void AEnemy::EmpEffectEnded()
 {
@@ -394,7 +394,7 @@ void AEnemy::P_Setup()
 	P_SetupData();
 	P_SetupCharacterMovement();
 	Camera->SetActive(true);
-	UKismetSystemLibrary::K2_SetTimer(this, "P_ControlLogic", 0.05f, true);
+	GetWorldTimerManager().SetTimer(P_ControlLogicHandle, this, &AEnemy::P_ControlLogic, 0.05f, true);
 	Weapon->P_SetupTransfer();
 	GetMesh()->SetHiddenInGame(true);
 	P_InputManager = Cast<UEnhancedPlayerInput>(GetWorld()->GetFirstPlayerController()->PlayerInput);
@@ -483,7 +483,7 @@ void AEnemy::P_InitiateDash()
 	DashDirection.Z = 0.f;
 	GetCharacterMovement()->StopMovementImmediately();
 	LaunchCharacter(DashDirection * P_Data->GetDashStrength(), true, true);
-	UKismetSystemLibrary::K2_SetTimer(this, "P_StopDash", 0.2f, false);
+	GetWorldTimerManager().SetTimer(P_StopDashHandle, this, &AEnemy::P_StopDash, 0.2f, false);
 }
 
 void AEnemy::P_InitiateJump()
@@ -520,13 +520,37 @@ void AEnemy::BeginPlay()
 	Tags.Add("Enemy");
 	Tags.Add("AliveEnemy");
 	Camera->SetActive(false);
-	UKismetSystemLibrary::K2_SetTimer(this, "CheckIfFallOutOfWorld", 2.f, true);
-	UKismetSystemLibrary::K2_SetTimer(this, "AI_SetCharacterMovementSpeed", 0.05f, true);
-	UKismetSystemLibrary::K2_SetTimer(this, "AI_PlaySpawnSound", 3.f + UKismetMathLibrary::RandomInteger(4), false);
+	GetWorldTimerManager().SetTimer(CheckIfFallOutOfWorldHandle, this, &AEnemy::CheckIfFallOutOfWorld, 2.f, true);
+	GetWorldTimerManager().SetTimer(AI_SetCharacterMovementSpeedHandle, this, &AEnemy::AI_SetCharacterMovementSpeed, 0.05f, true);
+	GetWorldTimerManager().SetTimer(AI_PlaySpawnSoundHandle, this, &AEnemy::AI_PlaySpawnSound, 3.f + UKismetMathLibrary::RandomInteger(4), false);
 	DelegateManager->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
 	AI_Setup();
 	if (GetIsPossessable()) SetupUserSettings();
 	SetInputState(false);
+}
+
+void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (AnimInstance) AnimInstance->ClearTimers();
+	GetWorldTimerManager().ClearTimer(AI_ClearShootPauseHandle);
+	GetWorldTimerManager().ClearTimer(P_ContinuousFovChangeHandle);
+	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	GetWorldTimerManager().ClearTimer(DisablePossessionOutlineHandle);
+	GetWorldTimerManager().ClearTimer(DisableUnPossessionOutlineHandle);
+	GetWorldTimerManager().ClearTimer(P_ControlLogicHandle);
+	GetWorldTimerManager().ClearTimer(P_StopDashHandle);
+	GetWorldTimerManager().ClearTimer(CheckIfFallOutOfWorldHandle);
+	GetWorldTimerManager().ClearTimer(AI_SetCharacterMovementSpeedHandle);
+	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
+	GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);
+	GetWorldTimerManager().ClearTimer(AI_HideHpBarHandle);
+	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
+	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
+	GetWorldTimerManager().ClearTimer(P_OpenDeathMenuHandle);
+	GetWorldTimerManager().ClearTimer(P_DeathHandle);
+	GetWorldTimerManager().ClearTimer(SpawnCondenseMaterialsProcessHandle);
+	Super::EndPlay(EndPlayReason);
 }
 
 void AEnemy::SetAnimInstance() { AnimInstance = Cast<UEnemyAnimationInstance>(GetMesh()->GetAnimInstance()); }
@@ -566,6 +590,7 @@ void AEnemy::HandleDeactivation()
 {
 	if (Weapon) Weapon->DeactivateWeapon();
 	GetCapsuleComponent()->DestroyComponent();
+	if (AnimInstance) AnimInstance->ClearTimers();
 	GetMesh()->SetAnimInstanceClass(nullptr);
 	GetMesh()->SetSimulatePhysics(true);
 }
@@ -609,7 +634,7 @@ void AEnemy::DestroyThis()
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	if (Weapon) Weapon->DestroyThis();
-	UKismetSystemLibrary::K2_SetTimer(this, "DestroyCondenseMaterialsProcess", 0.05f, true);
+	GetWorldTimerManager().SetTimer(DestroyCondenseMaterialsProcessHandle, this, &AEnemy::DestroyCondenseMaterialsProcess, 0.05f, true);
 }
 
 void AEnemy::AI_SetupData()
@@ -633,12 +658,12 @@ void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason)
 	ProcessDamageReason(InDamageReason);
 	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
 	AI_HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	UKismetSystemLibrary::K2_SetTimer(this, "AI_HideHpBar", 2.f, false);
+	GetWorldTimerManager().SetTimer(AI_HideHpBarHandle, this, &AEnemy::AI_HideHpBar, 2.f, false);
 }
 
 void AEnemy::AI_DestroyHpBar()
 {
-	UKismetSystemLibrary::K2_ClearTimer(this, "AI_HideHpBar");
+	GetWorldTimerManager().ClearTimer(AI_HideHpBarHandle);
 	if (!AI_HpBar || !AI_HpBarComponent) return;
 	AI_HpBarComponent->DestroyComponent();
 	AI_HpBar = nullptr;
@@ -680,7 +705,7 @@ void AEnemy::AI_HideHpBar() const { if (AI_HpBar) AI_HpBar->SetVisibility(ESlate
 void AEnemy::AI_ClearShootPause()
 {
 	bShootPauseActive = false;
-	UKismetSystemLibrary::K2_ClearTimer(this, "AI_ClearShootPause");
+	GetWorldTimerManager().ClearTimer(AI_ClearShootPauseHandle);
 }
 
 void AEnemy::AI_SetCharacterMovementSpeed() { AnimInstance->SetSpeed(GetCharacterMovement()->Velocity.Size()); }
@@ -692,7 +717,7 @@ void AEnemy::P_SetupData()
 	MaxHp += MaxHp * GetGameInstance()->GetSaveSlot()->GetLevelHpIncrease() * 0.01f;
 	CurrentHp = MaxHp;
 	bIsPossessed = true;
-	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
+	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 	bCanShoot = true;
 	SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed());
 }
@@ -709,7 +734,7 @@ void AEnemy::P_SetupUI()
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
 	P_SetupColorsForUI();
-	UKismetSystemLibrary::K2_SetTimer(this, "P_DetectIfPlayerPointingAtOutlineObjects", 0.25f, true);
+	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.25f, true);
 	//UKismetSystemLibrary::K2_SetTimer(this, "P_UpdateHitDamageIndicators", 0.25f, true);
 }
 
@@ -845,7 +870,7 @@ void AEnemy::P_TriggerTakeDamageEffects() const
 
 void AEnemy::P_EnableCriticalDamage()
 {
-	UKismetSystemLibrary::K2_SetTimer(this, "P_TriggerCriticalDamageIndicator", 0.5f, true);
+	GetWorldTimerManager().SetTimer(P_TriggerCriticalDamageIndicatorHandle, this, &AEnemy::P_TriggerCriticalDamageIndicator, 0.5f, true);
 	bIsCriticallyDamaged = true;
 	P_ToggleCriticallyDamagedEffects(1.f);
 	P_HUD->ToggleCriticalDamageIndicator();
@@ -862,13 +887,13 @@ void AEnemy::P_ToggleCriticallyDamagedEffects(const float InValue) const
 void AEnemy::P_InitiateDeathEvents()
 {
 	if (P_HUD) P_HUD->PlayDeathFadeOutAnim();
-	UKismetSystemLibrary::K2_ClearTimer(this, "P_Death");
+	GetWorldTimerManager().ClearTimer(P_DeathHandle);
 	P_ConfigurePostProcessEffectsAfterDeath();
 	AssetsManager->RemoveStoredSound(ESound::GuardianSlowMotion);
 	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
 	DelegateManager->OnPlayerDeath.Broadcast();
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor::Black, false, true);
-	UKismetSystemLibrary::K2_SetTimer(this, "P_OpenDeathMenu", 3.f, false);
+	GetWorldTimerManager().SetTimer(P_OpenDeathMenuHandle, this, &AEnemy::P_OpenDeathMenu, 3.f, false);
 }
 
 void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
@@ -1003,7 +1028,7 @@ void AEnemy::P_Death()
 	else if (!bEnableUnloadLevel)
 	{
 		bEnableUnloadLevel = true;
-		UKismetSystemLibrary::K2_SetTimer(this, "P_Death", 0.01f, true);
+		GetWorldTimerManager().SetTimer(P_DeathHandle, this, &AEnemy::P_Death, 0.01f, true);
 	}
 }
 
@@ -1064,21 +1089,13 @@ void AEnemy::P_ContinuousFovChange()
 	if ((FovChangeTick < 0.f && Camera->FieldOfView <= TargetFov) || (FovChangeTick > 0.f && Camera->FieldOfView >= TargetFov))
 	{
 		Camera->SetFieldOfView(TargetFov);
-		UKismetSystemLibrary::K2_ClearTimer(this, "P_ContinuousFovChange");
+		GetWorldTimerManager().ClearTimer(P_ContinuousFovChangeHandle);
 	}
 }
 
 void AEnemy::P_StopDash() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
 
 //void AEnemy::P_UpdateHitDamageIndicators() const { if (P_HUD) P_HUD->UpdateHitDamageIndicators(); }
-
-void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	UKismetSystemLibrary::K2_ClearTimer(this, "AI_SetCharacterMovementSpeed");
-	UKismetSystemLibrary::K2_ClearTimer(this, "DestroyThis");
-	UKismetSystemLibrary::K2_ClearTimer(this, "CheckIfFallOutOfWorld");
-	Super::EndPlay(EndPlayReason);
-}
 
 void AEnemy::TickAbilities(const float InDeltaTime)
 {
@@ -1108,11 +1125,11 @@ void AEnemy::SetupUserSettings() const
 
 void AEnemy::ClearTimers()
 {
-	UKismetSystemLibrary::K2_ClearTimer(this, "P_ControlLogic");
-	UKismetSystemLibrary::K2_ClearTimer(this, "P_DetectIfPlayerPointingAtOutlineObjects");
-	UKismetSystemLibrary::K2_ClearTimer(this, "P_TriggerCriticalDamageIndicator");
-	UKismetSystemLibrary::K2_ClearTimer(this, "AI_TriggerDeathVoiceLine");
-	UKismetSystemLibrary::K2_ClearTimer(this, "AI_PlaySpawnSound");
+	GetWorldTimerManager().ClearTimer(P_ControlLogicHandle);
+	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
+	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
+	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
+	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 }
 
 void AEnemy::ProcessSpawnEffects()
@@ -1125,7 +1142,7 @@ void AEnemy::ProcessSpawnEffects()
 		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
 	}
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", 0.7f);
-	UKismetSystemLibrary::K2_SetTimer(this, "SpawnCondenseMaterialsProcess", 0.05f, true);
+	GetWorldTimerManager().SetTimer(SpawnCondenseMaterialsProcessHandle, this, &AEnemy::SpawnCondenseMaterialsProcess, 0.05f, true);
 }
 
 void AEnemy::AddXp(const int32 InXp) const
@@ -1183,7 +1200,7 @@ void AEnemy::SpawnCondenseMaterialsProcess()
 	MeshEmissiveMaterialOpacityValue += 0.025f;
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
 	MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
-	if (MeshEmissiveMaterialOpacityValue >= 0.5f) UKismetSystemLibrary::K2_ClearTimer(this, "SpawnCondenseMaterialsProcess");
+	if (MeshEmissiveMaterialOpacityValue >= 0.5f) GetWorldTimerManager().ClearTimer(SpawnCondenseMaterialsProcessHandle);
 }
 
 void AEnemy::DestroyCondenseMaterialsProcess()
@@ -1194,7 +1211,7 @@ void AEnemy::DestroyCondenseMaterialsProcess()
 	MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
 	if (MeshEmissiveMaterialOpacityValue <= 0.f)
 	{
-		UKismetSystemLibrary::K2_ClearTimer(this, "DestroyCondenseMaterialsProcess");
+		GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);
 		Destroy();
 	}
 }

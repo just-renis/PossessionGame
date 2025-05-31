@@ -19,7 +19,7 @@ void ADestructible::HandleDeactivation()
 		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		Mesh->SetSimulatePhysics(true);
 	}
-	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", LifeSpan, false);
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &ADestructible::DestroyThis, LifeSpan, false);
 }
 
 void ADestructible::Init(bool bInIsPlayerObject)
@@ -30,13 +30,19 @@ void ADestructible::Init(bool bInIsPlayerObject)
 	bIsAffectedByPhysics = Data->GetIsAffectedByPhysics();
 	bIsPlayerObject = bInIsPlayerObject;
 	Mesh->SetCollisionProfileName(bIsPlayerObject ? "PlayerDestructible" : "EnemyDestructible");
-	if (Data->GetIsLifeSpanImmediatelyAdded()) UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", LifeSpan, false);
+	if (Data->GetIsLifeSpanImmediatelyAdded()) GetWorldTimerManager().SetTimer(DestroyHandle, this, &ADestructible::DestroyThis, LifeSpan, false);
 }
 
 void ADestructible::BeginPlay()
 {
 	Super::BeginPlay();
 	Tags.Add("Destructible");
+}
+
+void ADestructible::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	Super::EndPlay(EndPlayReason);
 }
 
 void ADestructible::DestroyThis()

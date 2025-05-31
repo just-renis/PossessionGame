@@ -1,6 +1,5 @@
 ﻿#include "RangerShield.h"
 #include "Components/AudioComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/EAbility.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
@@ -26,6 +25,13 @@ void ARangerShield::BeginPlay()
 	Mesh->SetMaterial(1, M_Shield);
 }
 
+void ARangerShield::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(MoveShieldHandle);
+	GetWorldTimerManager().ClearTimer(DissolveHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
 void ARangerShield::Init(bool bInIsPlayerObject)
 {
 	ShieldMaterialValueChanger = 0;
@@ -34,7 +40,7 @@ void ARangerShield::Init(bool bInIsPlayerObject)
 	PlaySound(ESound::RangerDeployShield);
 	UpdateShieldMaterialValues(0.f, 0.7f);
 	Super::Init(bInIsPlayerObject);
-	UKismetSystemLibrary::K2_SetTimer(this, "MoveShield", 0.05f, true);
+	GetWorldTimerManager().SetTimer(MoveShieldHandle, this, &ARangerShield::MoveShield, 0.05f, true);
 }
 
 void ARangerShield::DestroyThis()
@@ -43,7 +49,7 @@ void ARangerShield::DestroyThis()
 	SetActorEnableCollision(false);
 	ShieldMaterialValueChanger = 0;
 	PlaySound(ESound::RangerDissolveShield);
-	UKismetSystemLibrary::K2_SetTimer(this, "DissolveShield", 0.05f, true);
+	GetWorldTimerManager().SetTimer(DissolveHandle, this, &ARangerShield::DissolveShield, 0.05f, true);
 }
 
 void ARangerShield::UpdateShieldMaterialValues(const float InOpacity, const float InProgress) const
@@ -59,7 +65,7 @@ void ARangerShield::PlaySound(const ESound InSoundName)
 
 void ARangerShield::MoveShield()
 {
-	if (++ShieldMaterialValueChanger >= 10) UKismetSystemLibrary::K2_ClearTimer(this, "MoveShield");
+	if (++ShieldMaterialValueChanger >= 10) GetWorldTimerManager().ClearTimer(MoveShieldHandle);
 	SetActorLocation(GetActorLocation() + Proprietor->GetActorForwardVector() * 10.f);
 	UpdateShieldMaterialValues(0.f + ShieldMaterialValueChanger * 0.05f, 0.7f - ShieldMaterialValueChanger * 0.03f);
 }
@@ -68,7 +74,7 @@ void ARangerShield::DissolveShield()
 {
 	if (++ShieldMaterialValueChanger >= 10)
 	{
-		UKismetSystemLibrary::K2_ClearTimer(this, "DissolveShield");
+		GetWorldTimerManager().ClearTimer(DissolveHandle);
 		Super::DestroyThis();
 	}
 	UpdateShieldMaterialValues(0.5f - ShieldMaterialValueChanger * 0.05f, 0.4f + ShieldMaterialValueChanger * 0.03f);

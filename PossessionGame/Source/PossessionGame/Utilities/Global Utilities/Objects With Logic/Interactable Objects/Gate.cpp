@@ -2,7 +2,6 @@
 #include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/UI/SecondaryWidgets/InteractableUI.h"
@@ -45,13 +44,22 @@ void AGate::BeginPlay()
 	if (bNeedsArtifact) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.BindUObject(this, &AGate::SetArtifactCollected);
 }
 
+void AGate::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(OpenGatesHandle);
+	GetWorldTimerManager().ClearTimer(CloseGatesHandle);
+	GetWorldTimerManager().ClearTimer(DisableOutlineHandle);
+	GetWorldTimerManager().ClearTimer(FadeOutAnimHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
 void AGate::OpenGate(const EGameMode InGameMode)
 {
 	if (GameModeToFinish == InGameMode)
 	{
 		OpenGatesSfx->Sound ? OpenGatesSfx->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(OpenGatesSfx, nullptr, ESound::GatesOpen);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AGate::CloseGate);
-		UKismetSystemLibrary::K2_SetTimer(this, "OpenGateSides", 0.025f, true);
+		GetWorldTimerManager().SetTimer(OpenGatesHandle, this, &AGate::OpenGateSides, 0.025f, true);
 	}
 }
 
@@ -71,7 +79,7 @@ void AGate::CloseGate(const EGameMode InGameMode)
 		if (bIsUnlockableByInteraction) Collision->SetBoxExtent(FVector(1.f, 450.f, 175.f));
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.RemoveAll(this);
 		Collision->SetCollisionResponseToAllChannels(ECR_Block);
-		UKismetSystemLibrary::K2_SetTimer(this, "CloseGateSides", 0.025f, true);
+		GetWorldTimerManager().SetTimer(CloseGatesHandle, this, &AGate::CloseGateSides, 0.025f, true);
 	}
 }
 
@@ -91,7 +99,7 @@ void AGate::ChangeOutlineState(const bool bState)
 {
 	FirstGateSide->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
 	SecondGateSide->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
-	if (bState) UKismetSystemLibrary::K2_SetTimer(this, "DisableOutline", 0.245f, false);
+	if (bState) GetWorldTimerManager().SetTimer(DisableOutlineHandle, this, &AGate::DisableOutline, 0.0245f, false);
 }
 
 void AGate::ShowMarker(const EGameMode InGameMode)
@@ -112,7 +120,7 @@ void AGate::OpenGateSides()
 	{
 		bIsGateOpened = true;
 		TimePassed = 0.f;
-		UKismetSystemLibrary::K2_ClearTimer(this, "OpenGateSides");
+		GetWorldTimerManager().ClearTimer(OpenGatesHandle);
 		if (bEventToCloseGateHappened) CloseGate();
 	}
 }
@@ -123,7 +131,7 @@ void AGate::CloseGateSides()
 	FirstGateSide->SetRelativeLocation(FirstGateSide->GetRelativeLocation() - FVector(0.f, 9.f, 0.f));
 	SecondGateSide->SetRelativeLocation(SecondGateSide->GetRelativeLocation() + FVector(0.f, 9.f, 0.f));
 	TimePassed += 0.025f;
-	if (TimePassed >= 1.f) UKismetSystemLibrary::K2_ClearTimer(this, "CloseGateSides");
+	if (TimePassed >= 1.f) GetWorldTimerManager().ClearTimer(CloseGatesHandle);
 }
 
 void AGate::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

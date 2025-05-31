@@ -1,7 +1,6 @@
 #include "EnemyCommunicator.h"
 #include "DelegateManager.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 
@@ -59,7 +58,7 @@ void UEnemyCommunicator::SetTarget(TObjectPtr<AActor> InTarget)
 	Target = InTarget;
 	DelegateManager->OnTargetChange.Broadcast(InTarget, bWasTargetSet);
 	if (!bWasTargetSet) bWasTargetSet = true;
-	UKismetSystemLibrary::K2_SetTimer(this, "GeneratePointsAroundTarget", 1.f, true);
+	GetWorld()->GetTimerManager().SetTimer(EQSPointsGenerationHandle, this, &UEnemyCommunicator::GeneratePointsAroundTarget, 1.f, true);
 }
 
 void UEnemyCommunicator::AddEnemy(TObjectPtr<AActor> InEnemy) { Enemies.Add(InEnemy); }
@@ -112,4 +111,10 @@ void UEnemyCommunicator::GeneratePointsAroundTarget()
 	PointsAroundTarget.Empty();
 	FEnvQueryRequest QueryRequest(TargetEQS, Target);
 	QueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &UEnemyCommunicator::TargetQueryResult);
+}
+
+void UEnemyCommunicator::Deinitialize()
+{
+	if (GetWorld()) GetWorld()->GetTimerManager().ClearTimer(EQSPointsGenerationHandle);
+	Super::Deinitialize();
 }

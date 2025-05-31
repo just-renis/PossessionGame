@@ -50,6 +50,12 @@ private:
 	TObjectPtr<UNiagaraComponent> LaserVfx;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
+	UPROPERTY()
+	FTimerHandle CheckLaserEyeDistanceHandle;
+	UPROPERTY()
+	FTimerHandle DealLaserDamageToPlayerHandle;
+
+	virtual TObjectPtr<AWeapon>& GetWeapon() override; // For getting singular weapon data only.
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_ShootLogic() override;
@@ -59,10 +65,9 @@ private:
 	virtual void AI_InitiateShooting() override;
 	virtual void AI_PlayDeathExplosion() override;
 	virtual void AI_PlayDeathElectrification() override;
-
-	virtual TObjectPtr<AWeapon>& GetWeapon() override; // For getting singular weapon data only.
 	
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void HandleDeactivation() override;
 	virtual void DestroyThis() override;
 	void SetupStompTrigger();
@@ -72,14 +77,12 @@ private:
 	virtual void SetEmpEffect(const float InEffectDuration) override;
 	virtual void EmpEffectEnded() override;
 	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason) override;
+	void CheckDistanceOfLaserEyeTrigger();
+	void DealLaserDamageToPlayer() const;
 	UFUNCTION()
 	void OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor);
-	UFUNCTION()
-	void CheckDistanceOfLaserEyeTrigger();
 	UFUNCTION()
 	void OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void OnLaserCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	UFUNCTION()
-	void DealLaserDamageToPlayer();
 };

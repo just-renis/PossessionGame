@@ -2,7 +2,6 @@
 #include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Animation Instances/MinionBossAnimationInstance.h"
 #include "PossessionGame/AI/Enemies/Characters/MinionBoss.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
@@ -17,11 +16,12 @@ void UMinionBossAbility2::AI_Execute()
 	Proprietor->EnableLaserEyeBall();
 	PlayerLocationAtInitiation = Proprietor->GetAI()->GetStateTreeData().GetTarget()->GetActorLocation();
 	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetIsActionMontagePlaying(true);
-	UKismetSystemLibrary::K2_SetTimer(this, "ShootLaser", 1.65f, false);
+	GetWorld()->GetTimerManager().SetTimer(ShootLaserHandle, this, &UMinionBossAbility2::ShootLaser, 1.65f, false);
 }
 
 void UMinionBossAbility2::AI_StopAbility()
 {
+	GetWorld()->GetTimerManager().ClearTimer(ShootLaserHandle);
 	Super::AI_StopAbility();
 	StopLaser();
 }
@@ -43,7 +43,7 @@ void UMinionBossAbility2::CooldownLogic(const float InDeltaTime)
 void UMinionBossAbility2::StopLaser()
 {
 	TurnOffLaser();
-	UKismetSystemLibrary::K2_ClearTimer(this, "UpdateLaserEndLocation");
+	GetWorld()->GetTimerManager().ClearTimer(UpdateLaserLocationHandle);
 	bLaserUpdateFirstFrame = true;
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::StopLaser);
 	UseCharge();
@@ -51,7 +51,7 @@ void UMinionBossAbility2::StopLaser()
 
 void UMinionBossAbility2::TurnOffLaser()
 {
-	UKismetSystemLibrary::K2_ClearTimer(this, "ShootLaser");
+	GetWorld()->GetTimerManager().ClearTimer(ShootLaserHandle);
 	Proprietor->StopSound(ESound::MinionBossLaserEyeHold);
 	if (Proprietor->GetLaser()) Proprietor->GetLaser()->Deactivate();
 	if (Proprietor->GetLaserEyeBall()) Proprietor->GetLaserEyeBall()->Deactivate();
@@ -71,7 +71,7 @@ void UMinionBossAbility2::ShootLaser()
 	Proprietor->PlaySound(ESound::MinionBossLaserEyeHold, true);
 	Proprietor->GetLaserCollision()->SetCapsuleSize(0.f, 0.f);
 	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	UKismetSystemLibrary::K2_SetTimer(this, "UpdateLaserEndLocation", 0.025f, true);
+	GetWorld()->GetTimerManager().SetTimer(UpdateLaserLocationHandle, this, &UMinionBossAbility2::UpdateLaserEndLocation, 0.025f, true);
 }
 
 void UMinionBossAbility2::UpdateLaserEndLocation()

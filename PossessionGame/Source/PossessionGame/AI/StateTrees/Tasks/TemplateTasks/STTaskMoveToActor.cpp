@@ -1,6 +1,5 @@
 ﻿#include "STTaskMoveToActor.h"
 #include "StateTreeExecutionContext.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "NavFilters/NavigationQueryFilter.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
@@ -21,6 +20,7 @@ void USTTaskMoveToActor::ExitState(FStateTreeExecutionContext& Context, const FS
 	CachedController->StopMovement();
 	CachedController->SetMoveMode(EMoveMode::Walk);
 	CachedController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
+	GetWorld()->GetTimerManager().ClearTimer(CheckForNewMoveReqHandle);
 	Super::ExitState(Context, Transition);
 }
 
@@ -62,7 +62,7 @@ void USTTaskMoveToActor::OnMoveCompleted(FAIRequestID RequestID, const FPathFoll
 		FinishTask();
 		return;
 	}
-	UKismetSystemLibrary::K2_SetTimer(this, "CheckForNewMoveReq", 0.01f, true);
+	GetWorld()->GetTimerManager().SetTimer(CheckForNewMoveReqHandle, this, &USTTaskMoveToActor::CheckForNewMoveReq, 0.01f, true);
 }
 
 void USTTaskMoveToActor::CheckForNewMoveReq()
@@ -70,5 +70,5 @@ void USTTaskMoveToActor::CheckForNewMoveReq()
 	if (!CachedController->GetStateTreeData().GetIsEQSPointAvailable()) return;
 	PathFollowingRequestResultHandling(CachedController->MoveTo(SetupAndGetMoveReq()));
 	CachedController->SetMoveMode(MoveMode);
-	UKismetSystemLibrary::K2_ClearTimer(this, "CheckForNewMoveReq");
+	GetWorld()->GetTimerManager().ClearTimer(CheckForNewMoveReqHandle);
 }

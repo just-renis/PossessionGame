@@ -24,6 +24,7 @@ public:
 	void PlayMontage(const EEnemyAnimState InState);
 	void PlayMontageWithHold(const EEnemyAnimState InState, const float InHoldTime, const bool bNeedsToStopAILogic);
 	void StopMontage(const EEnemyAnimState InState, const float InBlendOut = 0.f);
+	virtual void ClearTimers();
 protected:
 	EEnemyAnimState MontageStateInHold;
 	UPROPERTY()
@@ -34,14 +35,13 @@ protected:
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	
 	virtual void NativeBeginPlay() override;
-	virtual void BeginDestroy() override;
+	virtual void NativeUninitializeAnimation() override;
 	virtual void AssignOnMontageEnd();
 	void SetProprietor();
 	virtual void InnerPlayMontage(const EEnemyAnimState InState);
+	virtual void MontageWithHoldEnd();
 	UFUNCTION()
 	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted);
-	UFUNCTION()
-	virtual void MontageWithHoldEnd();
 private:
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	bool bIsTargetInSight = false;
@@ -51,7 +51,9 @@ private:
 	float DirectionalAngle = 0.f;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	FVector LookAtLocation = FVector::ZeroVector;
-	
+	UPROPERTY()
+	FTimerHandle MontageWithHoldHandle;
+
 	virtual void NativeUpdateAnimation(const float InDeltaSeconds) override;
 	void LoadMontageIfNotLoaded(const EEnemyAnimState InState);
 };

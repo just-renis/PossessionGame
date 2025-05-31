@@ -19,11 +19,13 @@ class POSSESSIONGAME_API AForceField : public AActor
 	TObjectPtr<UMaterialInstanceDynamic> MI_Material;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DissolveSfx;
+	UPROPERTY()
+	FTimerHandle DissolveHandle;
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyThis();
 	void StartDissolveTutorialForceField(const int32 InIndex);
 	void StartDissolveForceField();
-	UFUNCTION()
 	void DissolveForceField();
 };

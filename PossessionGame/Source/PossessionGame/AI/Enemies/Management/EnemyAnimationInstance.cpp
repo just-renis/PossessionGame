@@ -2,7 +2,6 @@
 #include "Enemy.h"
 #include "EnemyAIController.h"
 #include "KismetAnimationLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -52,7 +51,7 @@ void UEnemyAnimationInstance::PlayMontageWithHold(const EEnemyAnimState InState,
         if (Proprietor) Proprietor->SetActionInMotion(true);
         MontageStateInHold = InState;
         if (bNeedsToStopAILogic && Proprietor && Proprietor->GetAI()) Proprietor->GetAI()->StopLogic(false);
-        UKismetSystemLibrary::K2_SetTimer(this, "MontageWithHoldEnd", InHoldTime, false);
+        GetWorld()->GetTimerManager().SetTimer(MontageWithHoldHandle, this, &UEnemyAnimationInstance::MontageWithHoldEnd, InHoldTime, false);
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontageWithHold"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
 }
@@ -65,6 +64,11 @@ void UEnemyAnimationInstance::StopMontage(const EEnemyAnimState InState, const f
         Montage_Stop(InBlendOut, Montages.Find(InState)->Get());
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in StopMontage"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
+}
+
+void UEnemyAnimationInstance::ClearTimers()
+{
+    GetWorld()->GetTimerManager().ClearTimer(MontageWithHoldHandle);
 }
 
 bool UEnemyAnimationInstance::IsMontageExisting(const EEnemyAnimState InState) const
@@ -80,10 +84,10 @@ void UEnemyAnimationInstance::NativeBeginPlay()
     AssignOnMontageEnd();
 }
 
-void UEnemyAnimationInstance::BeginDestroy()
+void UEnemyAnimationInstance::NativeUninitializeAnimation()
 {
-    Super::BeginDestroy();
     OnMontageBlendingOut.RemoveAll(this);
+    Super::NativeUninitializeAnimation();
 }
 
 void UEnemyAnimationInstance::AssignOnMontageEnd() { OnMontageBlendingOut.AddDynamic(this, &UEnemyAnimationInstance::OnMontageEnd); }
@@ -92,15 +96,15 @@ void UEnemyAnimationInstance::SetProprietor() { Proprietor = Cast<AEnemy>(GetOwn
 
 void UEnemyAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState) { Montage_Play(Montages.Find(InState)->Get()); }
 
+void UEnemyAnimationInstance::MontageWithHoldEnd() // If more such montages will be added then use switch to filter their end.
+{
+    PlayMontage(EEnemyAnimState::EmpRecover);
+}
+
 void UEnemyAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted)
 {
     if (Montages.Contains(EEnemyAnimState::EmpRecover) && InMontage == Montages.Find(EEnemyAnimState::EmpRecover)->Get()) Proprietor->EmpEffectEnded();
     if (Montages.Contains(EEnemyAnimState::Shoot) && InMontage == Montages.Find(EEnemyAnimState::Shoot)->Get()) Proprietor->AI_SetCanShoot(false);
-}
-
-void UEnemyAnimationInstance::MontageWithHoldEnd() // If more such montages will be added then use switch to filter their end.
-{
-    PlayMontage(EEnemyAnimState::EmpRecover);
 }
 
 void UEnemyAnimationInstance::NativeUpdateAnimation(const float InDeltaSeconds)

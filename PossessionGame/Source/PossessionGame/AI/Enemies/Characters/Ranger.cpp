@@ -4,7 +4,6 @@
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/TriggerSphere.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Destructibles/RangerShield.h"
@@ -84,12 +83,12 @@ void ARanger::AI_PlayDeathElectrification()
 void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {
 	AI_ToggleGrenadeLaunchTrigger(false);
-	UKismetSystemLibrary::K2_SetTimer(this, "TryTriggeringGrenadeLaunch", 0.1f, true);
+	GetWorld()->GetTimerManager().SetTimer(TryTriggeringGrenadeLaunchHandle, this, &ARanger::TryTriggeringGrenadeLaunch, 0.1f, true);
 }
 
 void ARanger::P_Setup()
 {
-	UKismetSystemLibrary::K2_ClearTimer(this, "TryTriggeringGrenadeLaunch");
+	GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeLaunchHandle);
 	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ARanger::SetActionInMotion);
@@ -108,6 +107,12 @@ void ARanger::BeginPlay()
 	CharacterName = ECharacterType::Ranger;
 	Super::BeginPlay();
 	SetupGrenadeLaunchTriggerSphere();
+}
+
+void ARanger::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeLaunchHandle);
+	Super::EndPlay(EndPlayReason);
 }
 
 void ARanger::GrenadeLauncherMuzzleFlashLogic()
@@ -165,6 +170,6 @@ void ARanger::TryTriggeringGrenadeLaunch()
 	if (AI->GetStateTreeData().GetIsTargetInMySight())
 	{
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerLaunchGrenade);
-		UKismetSystemLibrary::K2_ClearTimer(this, "TryTriggeringGrenadeLaunch");
+		GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeLaunchHandle);
 	}
 }

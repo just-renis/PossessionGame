@@ -1,6 +1,5 @@
 ﻿#include "OvertimeDamager.h"
 #include "Components/SphereComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EPoolObject.h"
@@ -11,8 +10,8 @@ void AOvertimeDamager::Setup(const float InDamage, const float InDamageTick, con
 	Damage = InDamage;
 	DamageReason = InDamageReason;
 	Radius->SetSphereRadius(InRadiusSize);
-	UKismetSystemLibrary::K2_SetTimer(this, "DealOvertimeDamage", InDamageTick, true);
-	UKismetSystemLibrary::K2_SetTimer(this, "DestroyThis", InLifeSpan, false);
+	GetWorldTimerManager().SetTimer(DamageOvertimeHandle, this, &AOvertimeDamager::DealOvertimeDamage, InDamageTick, true);
+	GetWorldTimerManager().SetTimer(DestroyThisHandle, this, &AOvertimeDamager::DestroyThis, InLifeSpan, false);
 }
 
 AOvertimeDamager::AOvertimeDamager()
@@ -24,15 +23,22 @@ AOvertimeDamager::AOvertimeDamager()
 	Radius->OnComponentEndOverlap.AddDynamic(this, &AOvertimeDamager::RemoveOverlappedTarget);
 }
 
-void AOvertimeDamager::Init(bool bInIsPlayerObject)
+void AOvertimeDamager::Init(const bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
 	bIsPlayer = bInIsPlayerObject;
 }
 
+void AOvertimeDamager::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(DamageOvertimeHandle);
+	GetWorldTimerManager().ClearTimer(DestroyThisHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
 void AOvertimeDamager::DestroyThis()
 {
-	UKismetSystemLibrary::K2_ClearTimer(this, "DealOvertimeDamage");
+	GetWorldTimerManager().ClearTimer(DamageOvertimeHandle);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::PoisonArea, this);
 }
 

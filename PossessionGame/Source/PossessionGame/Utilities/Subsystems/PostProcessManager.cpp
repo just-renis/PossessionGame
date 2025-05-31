@@ -16,7 +16,7 @@ void UPostProcessManager::TriggerGlitchingMaterial(const float InDuration)
 	if (Materials.Contains(EPostProcessMaterial::Glitching))
 	{
 		PostProcessVolume->AddOrUpdateBlendable(Materials[EPostProcessMaterial::Glitching], 1.f);
-		UKismetSystemLibrary::K2_SetTimer(this, "DisableGlitchingMaterial", InDuration, false);
+		GetWorld()->GetTimerManager().SetTimer(DisableGlitchingMaterialHandle, this, &UPostProcessManager::DisableGlitchingMaterial, InDuration, false);
 	}
 }
 
@@ -34,7 +34,7 @@ void UPostProcessManager::AddOrUpdateDynamicMaterial(const EPostProcessMaterial 
 void UPostProcessManager::FadeOutDeathMaterials()
 {
 	FadingOutDeathMaterialsCounter = 1.f;
-	UKismetSystemLibrary::K2_SetTimer(this, "ProcessFadingOfDeathMaterials", 0.075f, true);
+	GetWorld()->GetTimerManager().SetTimer(FadingOfDeathMaterialsHandle, this, &UPostProcessManager::ProcessFadingOfDeathMaterials, 0.075f, true);
 }
 
 void UPostProcessManager::DisableGlitchingMaterial()
@@ -48,5 +48,15 @@ void UPostProcessManager::ProcessFadingOfDeathMaterials()
 	if (Materials.Contains(EPostProcessMaterial::DeathGlitching)) PostProcessVolume->AddOrUpdateBlendable(Materials[EPostProcessMaterial::DeathGlitching], FadingOutDeathMaterialsCounter);
 	if (Materials.Contains(EPostProcessMaterial::DeathBloodPumping)) PostProcessVolume->AddOrUpdateBlendable(Materials[EPostProcessMaterial::DeathBloodPumping], FadingOutDeathMaterialsCounter);
 	if (Materials.Contains(EPostProcessMaterial::DeathScreenCrack)) PostProcessVolume->AddOrUpdateBlendable(Materials[EPostProcessMaterial::DeathScreenCrack], FadingOutDeathMaterialsCounter);
-	if (FadingOutDeathMaterialsCounter <= 0.001f) UKismetSystemLibrary::K2_ClearTimer(this, "ProcessFadingOfDeathMaterials");
+	if (FadingOutDeathMaterialsCounter <= 0.001f) GetWorld()->GetTimerManager().ClearTimer(FadingOfDeathMaterialsHandle);
+}
+
+void UPostProcessManager::Deinitialize()
+{
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DisableGlitchingMaterialHandle);
+		GetWorld()->GetTimerManager().ClearTimer(FadingOfDeathMaterialsHandle);
+	}
+	Super::Deinitialize();
 }

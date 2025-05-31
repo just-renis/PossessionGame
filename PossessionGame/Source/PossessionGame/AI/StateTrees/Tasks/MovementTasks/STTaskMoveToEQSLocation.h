@@ -13,10 +13,11 @@ class POSSESSIONGAME_API USTTaskMoveToEQSLocation : public USTTaskMoveToActor
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsWeaponMontageOnly = false;
+	UPROPERTY()
+	FTimerHandle ShootLogicHandle;
 
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
 	virtual void ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
 	void FinishTaskByEvent(const EStateTreeEvent InEvent);
-	UFUNCTION()
 	void ShootLogic();
 };

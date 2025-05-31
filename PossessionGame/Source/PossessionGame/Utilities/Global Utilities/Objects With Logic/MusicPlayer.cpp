@@ -1,6 +1,5 @@
 ﻿#include "MusicPlayer.h"
 #include "Components/AudioComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -11,12 +10,18 @@ void AMusicPlayer::BeginPlay()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AMusicPlayer::ChangeSoundTrack);
 }
 
+void AMusicPlayer::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(FadeInHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
 void AMusicPlayer::ChangeSoundTrack(const EGameMode InGameMode)
 {
 	if (CurrentSoundtrack == ESound::BattleModeSoundtrack) return;
 	CurrentSoundtrack = ESound::BattleModeSoundtrack;
 	GetAudioComponent()->FadeOut(0.5f, 0.f);
-	UKismetSystemLibrary::K2_SetTimer(this, "OnFadeOutFinished", 0.5f, false);
+	GetWorldTimerManager().SetTimer(FadeInHandle, this, &AMusicPlayer::OnFadeOutFinished, 0.5f, false);
 }
 
 void AMusicPlayer::OnFadeOutFinished() const

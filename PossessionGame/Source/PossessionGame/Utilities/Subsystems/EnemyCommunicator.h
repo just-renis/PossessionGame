@@ -34,6 +34,8 @@ private:
 	int32 EnemiesAmount = 0;
 	FOnEQSFinish OnEQSFinish;
 	UPROPERTY()
+	FTimerHandle EQSPointsGenerationHandle;
+	UPROPERTY()
 	TObjectPtr<APossessionGameGameModeBase> GameModeBase;
 	UPROPERTY()
 	TObjectPtr<UEnvQuery> TargetEQS;
@@ -48,6 +50,6 @@ private:
 
 	void InitDelegates(TObjectPtr<UDelegateManager> InDelegateManager);
 	void TargetQueryResult(TSharedPtr<FEnvQueryResult> Result);
-	UFUNCTION()
 	void GeneratePointsAroundTarget();
+	virtual void Deinitialize() override;
 };

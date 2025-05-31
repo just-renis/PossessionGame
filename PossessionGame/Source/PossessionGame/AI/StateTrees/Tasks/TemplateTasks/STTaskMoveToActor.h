@@ -44,11 +44,12 @@ private:
 	TObjectPtr<AActor> Target = nullptr;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UNavigationQueryFilter> FilterClass;
+	UPROPERTY()
+	FTimerHandle CheckForNewMoveReqHandle;
 
 	static EStateTreeRunStatus PathFollowingRequestResultHandling(EPathFollowingRequestResult::Type MoveResult);
 	FAIMoveRequest SetupAndGetMoveReq();
 	
 	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result);
-	UFUNCTION()
 	void CheckForNewMoveReq();
 };

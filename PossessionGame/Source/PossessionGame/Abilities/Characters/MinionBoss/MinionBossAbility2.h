@@ -16,6 +16,10 @@ class POSSESSIONGAME_API UMinionBossAbility2 : public UAbility
 	FVector PlayerLocationAtInitiation;
 	UPROPERTY()
 	TObjectPtr<AMinionBoss> Proprietor;
+	UPROPERTY()
+	FTimerHandle ShootLaserHandle;
+	UPROPERTY()
+	FTimerHandle UpdateLaserLocationHandle;
 
 	virtual void AI_Execute() override;
 	virtual void AI_StopAbility() override;
@@ -27,8 +31,6 @@ class POSSESSIONGAME_API UMinionBossAbility2 : public UAbility
 	void StopLaser();
 	void TurnOffLaser();
 	void DisableLaser();
-	UFUNCTION()
 	void ShootLaser();
-	UFUNCTION()
 	void UpdateLaserEndLocation();
 };

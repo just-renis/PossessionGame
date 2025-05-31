@@ -47,10 +47,9 @@ protected:
 	TObjectPtr<UEnemyCommunicator> EnemyCommunicator;
 	
 	virtual void BeginPlay() override;
+	virtual void AdjustCustomFocus() const;
 	UFUNCTION()
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
-	UFUNCTION()
-	virtual void AdjustCustomFocus() const;
 private:
 	EStateTreeEvent CurrentStateTreeEvent;
 	float SightOnTargetRepeat = 0.01f;
@@ -62,7 +61,14 @@ private:
 	TObjectPtr<UAISenseConfig_Sight> SightConfig;
 	UPROPERTY()
 	TObjectPtr<AActor> EQSTarget;
+	UPROPERTY()
+	FTimerHandle AdjustCustomFocusHandle;
+	UPROPERTY()
+	FTimerHandle SightOnTargetLogicHandle;
+	UPROPERTY()
+	FTimerHandle OnLostSightOfPawnHandle;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
 	void CustomFocusToLocation(const FVector& InTargetLocation) const;
 	void SetTarget(const TObjectPtr<AActor>& InTarget, const bool bIsTargetAcquiredForFirstTime);
@@ -71,9 +77,6 @@ private:
 	void SetEQSTargetLocation();
 	void StopStateTreeLogic() const;
 	void StopStateTreeLogic(const bool bNeedCleanup) const;
-
-	UFUNCTION()
 	void OnLostSightOfPawn();
-	UFUNCTION()
 	void SightOnTargetLogic() const;
 };

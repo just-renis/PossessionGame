@@ -42,8 +42,15 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	TObjectPtr<UPoolingManager> PoolingManager;
 	UPROPERTY()
 	FTimerHandle FadeOutAnimHandle;
+	UPROPERTY()
+	FTimerHandle FloatHandle;
+	UPROPERTY()
+	FTimerHandle SpinHandle;
+	UPROPERTY()
+	FTimerHandle DisableOutlineHandle;
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Init(bool bInIsPlayerObject) override;
 	virtual void Interact() override;
 	void ShowMarker();
@@ -52,11 +59,8 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	void ToggleInteractableWidget(const bool bState, const bool bMarkerIncluded = false);
 	virtual void ChangeOutlineState(const bool bState) override;
 	void FadeOutAnimFinished() const;
-	UFUNCTION()
 	void DisableOutline() { ChangeOutlineState(false); }
-	UFUNCTION()
 	void Float();
-	UFUNCTION()
 	void Spin();
 	UFUNCTION()
 	void EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
