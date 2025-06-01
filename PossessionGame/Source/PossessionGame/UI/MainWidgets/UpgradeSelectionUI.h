@@ -23,6 +23,7 @@ public:
 	void CloseUI();
 	void TriggerUpgradeMenuCloseAnimation();
 private:
+	bool bFirstOptionSelected = false;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> PlayerCardBackgroundTexture;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
@@ -52,9 +53,13 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVerticalBox> UpgradeChoicesPanel;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> UpgradeMenuOpen;
+	TObjectPtr<UWidgetAnimation> UpgradeMenuOpenAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> UpgradeMenuClose;
+	TObjectPtr<UWidgetAnimation> UpgradeMenuCloseAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> UpgradeSelectFirstAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> UpgradeSelectSecondAnim;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()

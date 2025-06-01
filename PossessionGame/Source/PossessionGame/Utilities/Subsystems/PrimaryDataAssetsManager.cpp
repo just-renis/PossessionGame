@@ -257,9 +257,9 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubc
 {
 	SetupSpawnLocations();
 	MarkerClass = InMarkerClass;
-	bTutorialIsFinished = true;
+	bTutorialIsFinished = bIsTutorialFinished;
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
-	RequestSpawnEnemy(ECharacterType::Ranger, EGameMode::TutorialMode1, false, nullptr);
+	//RequestSpawnEnemy(ECharacterType::Ranger, EGameMode::TutorialMode1, false, nullptr);
 	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	else AddSpawnableEnemiesToThePool();
 	DelegateManager = InDelegateManager;
