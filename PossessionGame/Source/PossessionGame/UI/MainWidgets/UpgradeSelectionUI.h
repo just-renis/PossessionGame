@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UpgradeSelectionUI.generated.h"
 
+class UButton;
 class UVerticalBox;
 struct FUpgradeAttributes;
 enum class EUpgrade : uint8;
@@ -23,6 +24,7 @@ public:
 	void CloseUI();
 	void TriggerUpgradeMenuCloseAnimation();
 private:
+	bool bChoicesOpen = false;
 	bool bFirstOptionSelected = false;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> PlayerCardBackgroundTexture;
@@ -52,6 +54,8 @@ private:
 	TObjectPtr<UUpgradeDetailsPanelUI> UpgradeChoice3;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVerticalBox> UpgradeChoicesPanel;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> BackButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> UpgradeMenuOpenAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -71,7 +75,7 @@ private:
 	
 	void Toggle(const bool bState);
 	virtual void NativeConstruct() override;
-	void OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData) const;
+	void OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData);
 	UFUNCTION()
 	void TriggerHoverAnimForFirstOption();
 	UFUNCTION()
@@ -86,4 +90,6 @@ private:
 	void TriggerSelectAnimForSecondOption();
 	UFUNCTION()
 	void UpgradeSelectionPanelFadeOutFinished();
+	UFUNCTION()
+	void GoBack();
 };

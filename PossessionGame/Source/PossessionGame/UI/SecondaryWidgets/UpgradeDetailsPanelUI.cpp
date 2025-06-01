@@ -1,5 +1,6 @@
 ﻿#include "UpgradeDetailsPanelUI.h"
 #include "Components/Button.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
@@ -11,6 +12,8 @@
 void UUpgradeDetailsPanelUI::Setup(const TObjectPtr<UUpgradeData>& InUpgradeData)
 {
 	UpgradeData = InUpgradeData;
+	if (UpgradeChoiceLogo) UpgradeChoiceLogo->SetBrushFromAtlasInterface(UpgradeData->GetPlayerCardIcon());
+	if (UpgradeChoiceIndexText) UpgradeChoiceIndexText->SetText(FText::AsNumber(ChoiceIndex + 1));
 	SetUpgradeText();
 	if (UpgradeChoiceButton) UpgradeChoiceButton->SetIsEnabled(true);
 }

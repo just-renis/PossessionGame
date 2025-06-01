@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UpgradeDetailsPanelUI.generated.h"
 
+class UImage;
 enum class EUpgradeAttribute : uint8;
 struct FUpgradeAttributes;
 class UUpgradeData;
@@ -19,10 +20,14 @@ public:
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ChoiceIndex;
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget, MultiLine))
 	TObjectPtr<UTextBlock> UpgradeText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> UpgradeChoiceButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> UpgradeChoiceLogo;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> UpgradeChoiceIndexText;
 	UPROPERTY()
 	TObjectPtr<UUpgradeData> UpgradeData;
 
