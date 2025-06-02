@@ -20,7 +20,7 @@ public:
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ChoiceIndex;
-	UPROPERTY(meta = (BindWidget, MultiLine))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> UpgradeText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> UpgradeChoiceButton;
@@ -28,6 +28,10 @@ private:
 	TObjectPtr<UImage> UpgradeChoiceLogo;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> UpgradeChoiceIndexText;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> HoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> PressAnim;
 	UPROPERTY()
 	TObjectPtr<UUpgradeData> UpgradeData;
 
@@ -39,4 +43,8 @@ private:
 	void SetUpgradeText();
 	UFUNCTION()
 	void SelectUpgrade();
+	UFUNCTION()
+	void PlayHoverAnim();
+	UFUNCTION()
+	void PlayUnHoverAnim();
 };

@@ -1,9 +1,10 @@
 ﻿#include "AlertPopupUI.h"
 #include "Components/TextBlock.h"
+#include "Components/Button.h"
 
 void UAlertPopupUI::PlayPopupFadeInAnim(const bool bState)
 {
-	SetIsEnabled(bState);
+	if (AlertButton) AlertButton->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	if (bState) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	else BindToAnimationFinished(PopupFadeInAnim, AlertPopupFadeOutDelegate);
 	PlayAnimation(PopupFadeInAnim, GetAnimationCurrentTime(PopupFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);

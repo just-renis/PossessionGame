@@ -4,7 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UpgradeSelectionUI.generated.h"
 
-class UButton;
+class UMainMenuButtonUI;
 class UVerticalBox;
 struct FUpgradeAttributes;
 enum class EUpgrade : uint8;
@@ -23,6 +23,8 @@ public:
 	void OpenUI();
 	void CloseUI();
 	void TriggerUpgradeMenuCloseAnimation();
+	UFUNCTION()
+	void GoBack();
 private:
 	bool bChoicesOpen = false;
 	bool bFirstOptionSelected = false;
@@ -55,7 +57,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVerticalBox> UpgradeChoicesPanel;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> BackButton;
+	TObjectPtr<UMainMenuButtonUI> BackButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> UpgradeMenuOpenAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -90,6 +92,4 @@ private:
 	void TriggerSelectAnimForSecondOption();
 	UFUNCTION()
 	void UpgradeSelectionPanelFadeOutFinished();
-	UFUNCTION()
-	void GoBack();
 };

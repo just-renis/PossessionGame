@@ -2,9 +2,11 @@
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWidget.h"
+#include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeCardUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeDetailsPanelUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -57,6 +59,19 @@ void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()
 	BindToAnimationFinished(UpgradeMenuCloseAnim, UpgradeSelectionFadeOutDelegate);
 }
 
+void UUpgradeSelectionUI::GoBack()
+{
+	if (bChoicesOpen)
+	{
+		PlayAnimation(bFirstOptionSelected ? UpgradeSelectFirstAnim : UpgradeSelectSecondAnim, 0, 1, EUMGSequencePlayMode::Reverse);
+		bChoicesOpen = false;
+		PlayerCardOption1->GetUpgradeButton()->SetIsEnabled(true);
+		EnemyCardOption1->GetUpgradeButton()->SetIsEnabled(true);
+		PlayerCardOption2->GetUpgradeButton()->SetIsEnabled(true);
+		EnemyCardOption2->GetUpgradeButton()->SetIsEnabled(true);
+	}
+}
+
 FString UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 {
 	switch (InUpgrade)
@@ -71,18 +86,15 @@ FString UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 
 void UUpgradeSelectionUI::Toggle(const bool bState)
 {
+	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	SetIsEnabled(bState);
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
-	if (bState)
-	{
-		if (UpgradeChoicesPanel) UpgradeChoicesPanel->SetIsEnabled(true);
-		PlayerController->SetInputMode(FInputModeUIOnly());
-		PlayerController->FlushPressedKeys();
-	}
+	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
 	else PlayerController->SetInputMode(FInputModeGameOnly());
+	if (bState && UpgradeChoicesPanel) UpgradeChoicesPanel->SetIsEnabled(true);
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::UpgradeSelectionUI : EWidget::None);
 }
 
@@ -116,7 +128,7 @@ void UUpgradeSelectionUI::NativeConstruct()
 		EnemyCardOption2->GetUpgradeButton()->OnUnhovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerUnHoverAnimForSecondOption);
 		EnemyCardOption2->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForSecondOption);
 	}
-	if (BackButton) BackButton->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::GoBack);
+	if (BackButton) BackButton->Get()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::GoBack);
 }
 
 void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData)
@@ -192,9 +204,4 @@ void UUpgradeSelectionUI::UpgradeSelectionPanelFadeOutFinished()
 	UnbindAllFromAnimationFinished(UpgradeMenuCloseAnim);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->CloseUI();
 	(void)DelegateManager->OnUpgradeSelectionFinished.ExecuteIfBound();
-}
-
-void UUpgradeSelectionUI::GoBack()
-{
-	
 }

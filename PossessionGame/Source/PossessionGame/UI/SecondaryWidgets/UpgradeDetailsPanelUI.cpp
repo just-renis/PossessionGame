@@ -44,7 +44,10 @@ FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const T
 void UUpgradeDetailsPanelUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (UpgradeChoiceButton) UpgradeChoiceButton->OnClicked.AddDynamic(this, &UUpgradeDetailsPanelUI::SelectUpgrade);
+	if (!UpgradeChoiceButton) return;
+	UpgradeChoiceButton->OnClicked.AddDynamic(this, &UUpgradeDetailsPanelUI::SelectUpgrade);
+	UpgradeChoiceButton->OnHovered.AddDynamic(this, &UUpgradeDetailsPanelUI::PlayHoverAnim);
+	UpgradeChoiceButton->OnUnhovered.AddDynamic(this, &UUpgradeDetailsPanelUI::PlayUnHoverAnim);
 }
 
 void UUpgradeDetailsPanelUI::ProcessCurrentUpgradeData(FUpgradeAttributes& PreviousUpgradeData, FUpgradeAttributes& CurrentUpgradeData)
@@ -80,8 +83,13 @@ void UUpgradeDetailsPanelUI::SetUpgradeText()
 
 void UUpgradeDetailsPanelUI::SelectUpgrade()
 {
+	PlayAnimation(PressAnim);
 	UpgradeChoiceButton->SetIsEnabled(false);
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	SaveSlot->AddUpgrade(UpgradeData->GetUpgradeName(), ChoiceIndex);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->TriggerUpgradeMenuCloseAnimation();
 }
+
+void UUpgradeDetailsPanelUI::PlayHoverAnim() { PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim)); }
+
+void UUpgradeDetailsPanelUI::PlayUnHoverAnim() { PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Reverse); }

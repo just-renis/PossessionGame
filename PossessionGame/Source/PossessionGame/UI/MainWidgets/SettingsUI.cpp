@@ -36,6 +36,7 @@ void USettingsUI::OpenUI()
 void USettingsUI::CloseUI()
 {
 	SetIsEnabled(false);
+	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(EWidget::None);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
 	PlayAnimation(SettingsFadeInAnim, 0, 1, EUMGSequencePlayMode::Reverse);
 	BindToAnimationFinished(SettingsFadeInAnim, SettingsPanelFadeOutDelegate);
@@ -188,4 +189,7 @@ void USettingsUI::ResetKeyBindsToDefault()
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 }
 
-void USettingsUI::CloseDuplicateKeyBindsPopup() { if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(false); }
+void USettingsUI::CloseDuplicateKeyBindsPopup()
+{
+	if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(false);
+}

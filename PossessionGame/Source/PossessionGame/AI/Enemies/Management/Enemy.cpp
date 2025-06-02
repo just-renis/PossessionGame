@@ -36,6 +36,7 @@
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
+#include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/AIHpBarUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
@@ -838,6 +839,7 @@ void AEnemy::P_HandleEscapeClick()
 		case EWidget::PauseMenuUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->CloseUI(); break;
 		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->CloseUI(); break;
 		case EWidget::VariationsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI(); break;
+		case EWidget::UpgradeSelectionUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->GoBack(); break;
 		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 	}
 }
