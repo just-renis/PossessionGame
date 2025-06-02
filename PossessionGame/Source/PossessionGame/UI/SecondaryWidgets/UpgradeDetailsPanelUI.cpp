@@ -101,5 +101,5 @@ void UUpgradeDetailsPanelUI::PlayHoverAnim()
 void UUpgradeDetailsPanelUI::PlayUnHoverAnim()
 {
 	StopAnimation(HoverAnim);
-	PlayAnimation(UnHoverAnim, 0, 1, EUMGSequencePlayMode::Reverse);
+	PlayAnimation(UnHoverAnim);
 }
