@@ -12,6 +12,7 @@
 void UUpgradeDetailsPanelUI::Setup(const TObjectPtr<UUpgradeData>& InUpgradeData)
 {
 	UpgradeData = InUpgradeData;
+	bHasBeenSelected = false;
 	if (UpgradeChoiceLogo) UpgradeChoiceLogo->SetBrushFromAtlasInterface(UpgradeData->GetPlayerCardIcon());
 	if (UpgradeChoiceIndexText) UpgradeChoiceIndexText->SetText(FText::AsNumber(ChoiceIndex + 1));
 	SetUpgradeText();
@@ -83,6 +84,7 @@ void UUpgradeDetailsPanelUI::SetUpgradeText()
 
 void UUpgradeDetailsPanelUI::SelectUpgrade()
 {
+	bHasBeenSelected = true;
 	PlayAnimation(PressAnim);
 	UpgradeChoiceButton->SetIsEnabled(false);
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
@@ -90,6 +92,14 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->TriggerUpgradeMenuCloseAnimation();
 }
 
-void UUpgradeDetailsPanelUI::PlayHoverAnim() { PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim)); }
+void UUpgradeDetailsPanelUI::PlayHoverAnim()
+{
+	StopAnimation(UnHoverAnim);
+	PlayAnimation(HoverAnim);
+}
 
-void UUpgradeDetailsPanelUI::PlayUnHoverAnim() { PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Reverse); }
+void UUpgradeDetailsPanelUI::PlayUnHoverAnim()
+{
+	StopAnimation(HoverAnim);
+	PlayAnimation(UnHoverAnim, 0, 1, EUMGSequencePlayMode::Reverse);
+}

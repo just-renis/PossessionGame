@@ -17,7 +17,10 @@ class POSSESSIONGAME_API UUpgradeDetailsPanelUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void Setup(const TObjectPtr<UUpgradeData>& InUpgradeData);
+	UFUNCTION()
+	void PlayDisappearAnim() { if (!bHasBeenSelected) PlayAnimation(DisappearAnim); }
 private:
+	bool bHasBeenSelected = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ChoiceIndex;
 	UPROPERTY(meta = (BindWidget))
@@ -32,6 +35,10 @@ private:
 	TObjectPtr<UWidgetAnimation> HoverAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> PressAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> UnHoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> DisappearAnim;
 	UPROPERTY()
 	TObjectPtr<UUpgradeData> UpgradeData;
 
