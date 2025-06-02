@@ -37,8 +37,6 @@ void AEnemyAIController::DestroyThis()
 		Perception->OnPerceptionUpdated.Clear();
 	}
 	EnemyCommunicator->GetEQSDelegate().RemoveAll(this);
-	GetWorld()->GetTimerManager().ClearTimer(SightOnTargetLogicHandle);
-	GetWorld()->GetTimerManager().ClearTimer(OnLostSightOfPawnHandle);
 	StopStateTreeLogic(true);
 }
 
@@ -79,12 +77,24 @@ void AEnemyAIController::BeginPlay()
 	Super::BeginPlay();
 	EnemyCommunicator = GetWorld()->GetSubsystem<UEnemyCommunicator>();
 	SetupEQSTarget();
-	GetWorld()->GetTimerManager().SetTimer(SightOnTargetLogicHandle, this, &AEnemyAIController::SightOnTargetLogic, SightOnTargetRepeat, true);
 }
 
 void AEnemyAIController::AdjustCustomFocus() const
 {
-	if (!Proprietor->GetIsActionInMotion() && EnemyCommunicator->GetTarget()) CustomFocusToLocation(EnemyCommunicator->GetTargetLocation());
+	if (!Proprietor->GetIsActionInMotion())
+	{
+		if (const FVector TargetLocation = EnemyCommunicator->GetTargetLocation(); !TargetLocation.ContainsNaN())
+		{
+			CustomFocusToLocation(TargetLocation);
+			Proprietor->GetAnimInstance()->SetLookAtLocation(TargetLocation);
+		}
+		else
+		{
+			const FVector ForwardLookAtLocation = Proprietor->GetActorLocation() + Proprietor->GetActorForwardVector() * 300.f;
+			CustomFocusToLocation(ForwardLookAtLocation);
+			Proprietor->GetAnimInstance()->SetLookAtLocation(ForwardLookAtLocation);
+		}
+	}
 }
 
 void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
@@ -104,7 +114,6 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 void AEnemyAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorld()->GetTimerManager().ClearTimer(AdjustCustomFocusHandle);
-	GetWorld()->GetTimerManager().ClearTimer(SightOnTargetLogicHandle);
 	GetWorld()->GetTimerManager().ClearTimer(OnLostSightOfPawnHandle);
 	Super::EndPlay(EndPlayReason);
 }
@@ -165,8 +174,3 @@ void AEnemyAIController::StopStateTreeLogic(const bool bNeedCleanup) const
 
 
 void AEnemyAIController::OnLostSightOfPawn() { SetIsTargetInMySight(false); }
-
-void AEnemyAIController::SightOnTargetLogic() const
-{
-	if (!Proprietor->GetIsActionInMotion()) Proprietor->GetAnimInstance()->SetLookAtLocation(EnemyCommunicator->GetTargetLocation());
-}

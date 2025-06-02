@@ -52,7 +52,6 @@ protected:
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 private:
 	EStateTreeEvent CurrentStateTreeEvent;
-	float SightOnTargetRepeat = 0.01f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	FStateTreeData StateTreeData;
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
@@ -63,8 +62,6 @@ private:
 	TObjectPtr<AActor> EQSTarget;
 	UPROPERTY()
 	FTimerHandle AdjustCustomFocusHandle;
-	UPROPERTY()
-	FTimerHandle SightOnTargetLogicHandle;
 	UPROPERTY()
 	FTimerHandle OnLostSightOfPawnHandle;
 
@@ -78,5 +75,4 @@ private:
 	void StopStateTreeLogic() const;
 	void StopStateTreeLogic(const bool bNeedCleanup) const;
 	void OnLostSightOfPawn();
-	void SightOnTargetLogic() const;
 };

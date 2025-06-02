@@ -28,7 +28,7 @@ FVector UEnemyCommunicator::GetPointLocation(ECharacterType InCharacterType, FVe
 	return PointsAroundTarget[KeyIndex].Location;
 }
 
-FVector UEnemyCommunicator::GetTargetLocation() const { return Target ? Target->GetActorLocation() : FVector::ZeroVector; }
+FVector UEnemyCommunicator::GetTargetLocation() const { return Target ? Target->GetActorLocation() : FVector(NAN, NAN, NAN); }
 
 FVector UEnemyCommunicator::GetFarthestEnemyLocation(FVector FromLocation)
 {

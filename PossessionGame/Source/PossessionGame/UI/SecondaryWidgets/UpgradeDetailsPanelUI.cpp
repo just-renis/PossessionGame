@@ -11,6 +11,13 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
+void UUpgradeDetailsPanelUI::SetButtonVisibility(const bool bState) const
+{
+	if (!UpgradeChoiceButton) return;
+	UpgradeChoiceButton->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	UpgradeChoiceButton->SetIsEnabled(bState);
+}
+
 void UUpgradeDetailsPanelUI::Setup(const TObjectPtr<UUpgradeData>& InUpgradeData)
 {
 	UpgradeData = InUpgradeData;
@@ -19,7 +26,7 @@ void UUpgradeDetailsPanelUI::Setup(const TObjectPtr<UUpgradeData>& InUpgradeData
 	if (UpgradeChoiceLogo) UpgradeChoiceLogo->SetBrushFromAtlasInterface(UpgradeData->GetPlayerCardIcon());
 	if (UpgradeChoiceIndexText) UpgradeChoiceIndexText->SetText(FText::AsNumber(ChoiceIndex + 1));
 	SetUpgradeText();
-	if (UpgradeChoiceButton) UpgradeChoiceButton->SetIsEnabled(true);
+	SetButtonVisibility(true);
 }
 
 FString UUpgradeDetailsPanelUI::ConvertUpgradeAttributeValueToString(const float InValue)
@@ -105,7 +112,6 @@ void UUpgradeDetailsPanelUI::PlayHoverAnim()
 
 void UUpgradeDetailsPanelUI::PlayUnHoverAnim()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	StopAnimation(HoverAnim);
 	PlayAnimation(UnHoverAnim);
 }

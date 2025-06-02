@@ -55,10 +55,9 @@ void UUpgradeSelectionUI::CloseUI()
 
 void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()
 {
-	if (UpgradeChoicesPanel) UpgradeChoicesPanel->SetIsEnabled(false);
-	UpgradeChoice1->PlayDisappearAnim();
-	UpgradeChoice2->PlayDisappearAnim();
-	UpgradeChoice3->PlayDisappearAnim();
+	if (UpgradeChoice1) UpgradeChoice1->PlayDisappearAnim();
+	if (UpgradeChoice2) UpgradeChoice2->PlayDisappearAnim();
+	if (UpgradeChoice3) UpgradeChoice3->PlayDisappearAnim();
 	PlayAnimation(UpgradeMenuCloseAnim);
 	PlayAnimation(bFirstOptionSelected ? UpgradeSelectFirstAnim : UpgradeSelectSecondAnim, 0, 1, EUMGSequencePlayMode::Reverse);
 	BindToAnimationFinished(UpgradeMenuCloseAnim, UpgradeSelectionFadeOutDelegate);
@@ -68,12 +67,12 @@ void UUpgradeSelectionUI::GoBack()
 {
 	if (bChoicesOpen)
 	{
+		BindToAnimationFinished(bFirstOptionSelected ? UpgradeSelectFirstAnim : UpgradeSelectSecondAnim, GoBackAnimFinishedDelegate);
 		PlayAnimation(bFirstOptionSelected ? UpgradeSelectFirstAnim : UpgradeSelectSecondAnim, 0, 1, EUMGSequencePlayMode::Reverse);
 		bChoicesOpen = false;
-		PlayerCardOption1->GetUpgradeButton()->SetIsEnabled(true);
-		EnemyCardOption1->GetUpgradeButton()->SetIsEnabled(true);
-		PlayerCardOption2->GetUpgradeButton()->SetIsEnabled(true);
-		EnemyCardOption2->GetUpgradeButton()->SetIsEnabled(true);
+		if (UpgradeChoice1) UpgradeChoice1->SetButtonVisibility(false);
+		if (UpgradeChoice2) UpgradeChoice2->SetButtonVisibility(false);
+		if (UpgradeChoice3) UpgradeChoice3->SetButtonVisibility(false);
 		if (BackButton) BackButton->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
@@ -86,6 +85,8 @@ FString UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 		case EUpgrade::RangerAbility2: return " SHIELD UPGRADE";
 		case EUpgrade::TricksterAbility1: return " POISON UPGRADE";
 		case EUpgrade::TricksterAbility2: return " EMP UPGRADE";
+		case EUpgrade::GuardianAbility1: return " SHIELD UPGRADE";
+		case EUpgrade::GuardianAbility2: return " TIME STOP UPGRADE";
 	}
 	return "";
 }
@@ -101,7 +102,6 @@ void UUpgradeSelectionUI::Toggle(const bool bState)
 	PlayerController->bShowMouseCursor = bState;
 	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
 	else PlayerController->SetInputMode(FInputModeGameOnly());
-	if (bState && UpgradeChoicesPanel) UpgradeChoicesPanel->SetIsEnabled(true);
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::UpgradeSelectionUI : EWidget::None);
 }
 
@@ -111,6 +111,7 @@ void UUpgradeSelectionUI::NativeConstruct()
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnUpgradeCardSelected.BindUObject(this, &UUpgradeSelectionUI::OpenUpgradeChoicesPanel);
 	UpgradeSelectionFadeOutDelegate.BindDynamic(this, &UUpgradeSelectionUI::UpgradeSelectionPanelFadeOutFinished);
+	GoBackAnimFinishedDelegate.BindDynamic(this, &UUpgradeSelectionUI::GoBackAnimFinished);
 	if (PlayerCardOption1)
 	{
 		PlayerCardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
@@ -216,4 +217,13 @@ void UUpgradeSelectionUI::UpgradeSelectionPanelFadeOutFinished()
 	UnbindAllFromAnimationFinished(UpgradeMenuCloseAnim);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->CloseUI();
 	(void)DelegateManager->OnUpgradeSelectionFinished.ExecuteIfBound();
+}
+
+void UUpgradeSelectionUI::GoBackAnimFinished()
+{
+	UnbindFromAnimationFinished(bFirstOptionSelected ? UpgradeSelectFirstAnim : UpgradeSelectSecondAnim, GoBackAnimFinishedDelegate);
+	PlayerCardOption1->GetUpgradeButton()->SetIsEnabled(true);
+	EnemyCardOption1->GetUpgradeButton()->SetIsEnabled(true);
+	PlayerCardOption2->GetUpgradeButton()->SetIsEnabled(true);
+	EnemyCardOption2->GetUpgradeButton()->SetIsEnabled(true);
 }

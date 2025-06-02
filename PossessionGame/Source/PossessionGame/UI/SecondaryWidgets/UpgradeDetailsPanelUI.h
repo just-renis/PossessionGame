@@ -17,6 +17,7 @@ class POSSESSIONGAME_API UUpgradeDetailsPanelUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	void SetButtonVisibility(const bool bState) const;
 	void Setup(const TObjectPtr<UUpgradeData>& InUpgradeData);
 	UFUNCTION()
 	void PlayDisappearAnim() { if (!bHasBeenSelected) PlayAnimation(DisappearAnim); }

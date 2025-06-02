@@ -71,6 +71,8 @@ private:
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent UpgradeSelectionFadeOutDelegate;
 	UPROPERTY()
+	FWidgetAnimationDynamicEvent GoBackAnimFinishedDelegate;
+	UPROPERTY()
 	TArray<TObjectPtr<UUpgradeData>> UpgradesData;
 
 	FString GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade);
@@ -92,4 +94,6 @@ private:
 	void TriggerSelectAnimForSecondOption();
 	UFUNCTION()
 	void UpgradeSelectionPanelFadeOutFinished();
+	UFUNCTION()
+	void GoBackAnimFinished();
 };
