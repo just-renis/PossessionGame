@@ -888,7 +888,7 @@ void AEnemy::P_ToggleCriticallyDamagedEffects(const float InValue) const
 
 void AEnemy::P_InitiateDeathEvents()
 {
-	if (P_HUD) P_HUD->PlayDeathFadeOutAnim();
+	if (P_HUD) P_HUD->PlayFadeOutAnim(true);
 	GetWorldTimerManager().ClearTimer(P_DeathHandle);
 	P_ConfigurePostProcessEffectsAfterDeath();
 	AssetsManager->RemoveStoredSound(ESound::GuardianSlowMotion);

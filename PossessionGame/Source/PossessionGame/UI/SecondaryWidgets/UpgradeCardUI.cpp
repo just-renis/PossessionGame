@@ -62,6 +62,6 @@ void UUpgradeCardUI::SetCharacterText(const FText& InText, const FColor InColor)
 void UUpgradeCardUI::SelectUpgrade()
 {
 	if (!UpgradeButton) return;
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUpgradeCardSelected.ExecuteIfBound(Data);
 }

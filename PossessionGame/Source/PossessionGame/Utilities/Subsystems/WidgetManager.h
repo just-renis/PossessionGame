@@ -11,6 +11,7 @@ class POSSESSIONGAME_API UWidgetManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
+	bool ContainsWidget(const EWidget InWidgetName) const { return Widgets.Contains(InWidgetName); }
 	EWidget GetCurrentStateOfUI() const { return CurrentState; }
 	template<typename T>
 	TObjectPtr<T> GetWidget(EWidget WidgetName);

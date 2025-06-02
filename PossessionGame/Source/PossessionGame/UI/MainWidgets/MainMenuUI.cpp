@@ -8,7 +8,11 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
-void UMainMenuUI::OpenUI() { Toggle(true); }
+void UMainMenuUI::OpenUI()
+{
+	TriggerMainMenuFadeInAnim();
+	Toggle(true);
+}
 
 void UMainMenuUI::CloseUI() { Toggle(false); }
 
@@ -41,14 +45,23 @@ void UMainMenuUI::SetupButtons()
 
 void UMainMenuUI::TriggerMainMenuFadeInAnim()
 {
+	ToggleMenuButtons(true);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
 	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim));
 }
 
 void UMainMenuUI::TriggerMainMenuFadeOutAnim()
 {
+	ToggleMenuButtons(false);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
 	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim), 1, EUMGSequencePlayMode::Reverse);
+}
+
+void UMainMenuUI::ToggleMenuButtons(const bool bState) const
+{
+	if (PlayButton) PlayButton->SetIsEnabled(bState);
+	if (SettingsButton) SettingsButton->SetIsEnabled(bState);
+	if (QuitButton) QuitButton->SetIsEnabled(bState);
 }
 
 void UMainMenuUI::Play() { UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Levels/Chapter1/Levels/Level_1")); }
@@ -71,6 +84,6 @@ void UMainMenuUI::TriggerQuitPopupFadeOut()
 
 void UMainMenuUI::OpenSettings()
 {
-	SetVisibility(ESlateVisibility::Collapsed);
+	TriggerMainMenuFadeOutAnim();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->OpenUI();
 }

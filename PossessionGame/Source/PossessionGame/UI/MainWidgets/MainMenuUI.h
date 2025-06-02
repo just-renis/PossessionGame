@@ -35,6 +35,7 @@ private:
 	void SetupButtons();
 	void TriggerMainMenuFadeInAnim();
 	void TriggerMainMenuFadeOutAnim();
+	void ToggleMenuButtons(const bool bState) const;
 	UFUNCTION()
 	void Play();
 	UFUNCTION()

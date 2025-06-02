@@ -113,7 +113,12 @@ void UPlayerHUD::ConfigureUIs()
 	GetAbilityPanel()->CollapseAbilityIcon(2);
 }
 
-void UPlayerHUD::PlayDeathFadeOutAnim() { PlayAnimation(DeathFadeOut); }
+void UPlayerHUD::PlayFadeOutAnim(const bool bState)
+{
+	if (bState == bIsHidden) return;
+	bIsHidden = bState;
+	PlayAnimation(FadeOutAnim, GetAnimationCurrentTime(FadeOutAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
+}
 
 void UPlayerHUD::UpdateReceiveDamageInv()
 {

@@ -1,4 +1,6 @@
 ﻿#include "UpgradeSelectionUI.h"
+
+#include "PlayerHUD.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
 #include "Components/VerticalBox.h"
@@ -90,6 +92,7 @@ FString UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 
 void UUpgradeSelectionUI::Toggle(const bool bState)
 {
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	SetIsEnabled(bState);
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);

@@ -1,4 +1,6 @@
 ﻿#include "PauseMenuUI.h"
+
+#include "PlayerHUD.h"
 #include "SettingsUI.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
@@ -42,6 +44,8 @@ void UPauseMenuUI::NativeConstruct()
 
 void UPauseMenuUI::Toggle(const bool bState)
 {
+	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>(); 
+	if (WidgetManager->ContainsWidget(EWidget::PlayerHUD)) WidgetManager->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
 	SetIsEnabled(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
@@ -50,7 +54,7 @@ void UPauseMenuUI::Toggle(const bool bState)
 	PlayerController->bShowMouseCursor = bState;
 	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
 	else PlayerController->SetInputMode(FInputModeGameOnly());
-	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::PauseMenuUI : EWidget::None);
+	WidgetManager->SetCurrentStateOfUI(bState ? EWidget::PauseMenuUI : EWidget::None);
 }
 
 void UPauseMenuUI::SetupButtons()

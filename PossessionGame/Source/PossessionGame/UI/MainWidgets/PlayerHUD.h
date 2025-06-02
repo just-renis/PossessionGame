@@ -51,7 +51,7 @@ public:
 	void UpdateDashIndicator(const bool bState) const;
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs();
-	void PlayDeathFadeOutAnim();
+	void PlayFadeOutAnim(const bool bState);
 //	void SetHitLocation(const FVector InHitLocation);
 	//void UpdateHitDamageIndicators();
 	void UpdateReceiveDamageInv();
@@ -59,6 +59,7 @@ public:
 	void AnnouncePossession();
 	void SetCurrentCrosshair() const;
 private:
+	bool bIsHidden = false;
 	float StepHpPercentage;
 	ECharacterType CharacterType;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -130,7 +131,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> LevelNumberText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> DeathFadeOut;
+	TObjectPtr<UWidgetAnimation> FadeOutAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> ReceiveDamageFadeOut;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))

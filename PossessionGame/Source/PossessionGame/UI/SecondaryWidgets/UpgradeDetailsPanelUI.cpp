@@ -1,18 +1,21 @@
 ﻿#include "UpgradeDetailsPanelUI.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
+#include "Components/Overlay.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UUpgradeDetailsPanelUI::Setup(const TObjectPtr<UUpgradeData>& InUpgradeData)
 {
 	UpgradeData = InUpgradeData;
 	bHasBeenSelected = false;
+	if (UpgradeDetailsPanelOverlay) UpgradeDetailsPanelOverlay->SetRenderScale(FVector2D(1.f, 1.f));
 	if (UpgradeChoiceLogo) UpgradeChoiceLogo->SetBrushFromAtlasInterface(UpgradeData->GetPlayerCardIcon());
 	if (UpgradeChoiceIndexText) UpgradeChoiceIndexText->SetText(FText::AsNumber(ChoiceIndex + 1));
 	SetUpgradeText();
@@ -84,6 +87,7 @@ void UUpgradeDetailsPanelUI::SetUpgradeText()
 
 void UUpgradeDetailsPanelUI::SelectUpgrade()
 {
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
 	bHasBeenSelected = true;
 	PlayAnimation(PressAnim);
 	UpgradeChoiceButton->SetIsEnabled(false);
@@ -94,12 +98,14 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 
 void UUpgradeDetailsPanelUI::PlayHoverAnim()
 {
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	StopAnimation(UnHoverAnim);
 	PlayAnimation(HoverAnim);
 }
 
 void UUpgradeDetailsPanelUI::PlayUnHoverAnim()
 {
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	StopAnimation(HoverAnim);
 	PlayAnimation(UnHoverAnim);
 }

@@ -1,4 +1,6 @@
 ﻿#include "VariationsUI.h"
+
+#include "PlayerHUD.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/WidgetSwitcher.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationCharacterIconUI.h"
@@ -54,6 +56,7 @@ void UVariationsUI::NativeConstruct()
 void UVariationsUI::Toggle(const bool bState)
 {
 	SetIsEnabled(bState);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
