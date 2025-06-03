@@ -41,6 +41,7 @@ void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInsta
 	GameInstance = InGameInstance;
 	PlayerLevelData = GameInstance->GetPlayerLevelData();
 	GameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
+	GameInstance->GetSubsystem<UDelegateManager>()->OnFullTutorialEnd.BindUObject(this, &USaveSlot::SetTutorialFinished);
 	#if WITH_EDITOR
 		CurrentLevel = GameInstance->GetPlayerLevel();
 	#endif

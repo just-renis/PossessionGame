@@ -20,7 +20,7 @@ void ATutorialDialogue::BeginPlay()
 	Super::BeginPlay();
 	Dialogue = Cast<UTutorialDialogueUI>(DialogueWidgetComponent->GetWidget());
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowDialogue.BindUObject(this, &ATutorialDialogue::StartDialogue);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialEnd.AddUObject(this, &ATutorialDialogue::StopShowingDialogue);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMainTutorialEnd.AddUObject(this, &ATutorialDialogue::StopShowingDialogue);
 }
 
 void ATutorialDialogue::StartDialogue(const int32 InIndex) const

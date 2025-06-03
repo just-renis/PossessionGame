@@ -21,7 +21,7 @@ public:
 	void RemapKeyBind();
 	void SetSavedKeyBind() const;
 	void CancelRebind() const;
-	void ResetKeyBind() const;
+	void ResetKeyBind();
 	UFUNCTION()
 	void OnKeySelected(FInputChord InMapping);
 private:

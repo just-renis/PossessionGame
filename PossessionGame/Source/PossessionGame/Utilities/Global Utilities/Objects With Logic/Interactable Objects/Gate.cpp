@@ -40,7 +40,7 @@ void AGate::BeginPlay()
 		SetIsInteractable(true);
 	}
 	if (!bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGateAndShowMarker);
-	else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialEnd.AddUObject(this, &AGate::OpenAsTutorialEndGate);
+	else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMainTutorialEnd.AddUObject(this, &AGate::OpenAsTutorialEndGate);
 	if (bNeedsArtifact) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.BindUObject(this, &AGate::SetArtifactCollected);
 }
 

@@ -20,7 +20,7 @@ public:
 	void SetButtonVisibility(const bool bState) const;
 	void Setup(const TObjectPtr<UUpgradeData>& InUpgradeData);
 	UFUNCTION()
-	void PlayDisappearAnim() { if (!bHasBeenSelected) PlayAnimation(DisappearAnim); }
+	void PlayDisappearAnim();
 private:
 	bool bHasBeenSelected = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

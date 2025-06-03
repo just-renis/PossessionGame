@@ -79,10 +79,11 @@ void UKeyBindingUI::SetSavedKeyBind() const
 
 void UKeyBindingUI::CancelRebind() const { if (InputKeySelectorButton) InputKeySelectorButton->SetIsEnabled(true); }
 
-void UKeyBindingUI::ResetKeyBind() const
+void UKeyBindingUI::ResetKeyBind()
 {
 	if (!InputKeySelectorButton || !KeyBindText) return;
-	KeyBindText->SetText(GetDisplayName(Mapping.GetDefaultKey()));
+	TempSelectedKey = Mapping.GetDefaultKey();
+	KeyBindText->SetText(GetDisplayName(TempSelectedKey));
 }
 
 void UKeyBindingUI::OnKeySelected(FInputChord InMapping)

@@ -16,6 +16,7 @@ class POSSESSIONGAME_API UPlayerGhostUI : public UUserWidget
 public:
 	bool IsPressKeyShown() const;
 	float GetStartupAnimationLength() const;
+	int32 GetCurrentHintIndex() const { return CurrentHintIndex; }
 	
 	void PlayStartupAnimation();
 private:
@@ -45,13 +46,17 @@ private:
 	TObjectPtr<UWidgetAnimation> PressKeyAppearAnim;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
+	UPROPERTY()
+	FTimerHandle HintLifeSpanHandle;
 
 	FText GetKeyBindText(const int32 InIndex) const;
 
 	virtual void NativeConstruct() override;
 	void ShowHint(const int32 InIndex);
 	void SetHintText(const int32 InIndex) const;
-	void StopShowingHint() const;
+	void StopShowingHint();
 	void ShowPressKey(const bool bState);
 	void UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText) const;
+	void HintLifeSpanEnd();
+	void DestroyThis();
 };

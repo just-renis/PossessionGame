@@ -16,6 +16,7 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 
 APlayerGhost::APlayerGhost()
 {
@@ -41,17 +42,21 @@ void APlayerGhost::BeginPlay()
 			TutorialUI->PlayStartupAnimation();
 			GetWorld()->GetTimerManager().SetTimer(EnableInputHandle, this, &APlayerGhost::EnablePlayerInput, TutorialUI->GetStartupAnimationLength(), false);
 		}
-		if (const TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(PlayerMappingContext, 0);
-		}
 	}
 }
 
 void APlayerGhost::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	if (TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	SetupUserSettings();
+	if (const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (const TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(PlayerMappingContext, 0);
+		}
+	}
+	if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &APlayerGhost::Move);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Triggered, this, &APlayerGhost::Jump);
@@ -165,4 +170,11 @@ void APlayerGhost::EnablePlayerInput() const
 		(void)DelegateManager->OnShowHint.ExecuteIfBound(0);
 		(void)DelegateManager->OnCheckDistanceToTutorialDrone.ExecuteIfBound(0);
 	}
+}
+
+void APlayerGhost::SetupUserSettings() const
+{
+	const TObjectPtr<UEnhancedInputUserSettings> UserSettings = GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings();
+	if (!UserSettings) return;
+	if (!UserSettings->IsMappingContextRegistered(PlayerMappingContext)) UserSettings->RegisterInputMappingContext(PlayerMappingContext);
 }

@@ -29,6 +29,12 @@ void UUpgradeDetailsPanelUI::Setup(const TObjectPtr<UUpgradeData>& InUpgradeData
 	SetButtonVisibility(true);
 }
 
+void UUpgradeDetailsPanelUI::PlayDisappearAnim()
+{
+	UpgradeChoiceButton->SetIsEnabled(false);
+	if (!bHasBeenSelected) PlayAnimation(DisappearAnim);
+}
+
 FString UUpgradeDetailsPanelUI::ConvertUpgradeAttributeValueToString(const float InValue)
 {
 	FString FloatValueString = FString::SanitizeFloat(InValue);
@@ -97,7 +103,6 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
 	bHasBeenSelected = true;
 	PlayAnimation(PressAnim);
-	UpgradeChoiceButton->SetIsEnabled(false);
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	SaveSlot->AddUpgrade(UpgradeData->GetUpgradeName(), ChoiceIndex);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->TriggerUpgradeMenuCloseAnimation();

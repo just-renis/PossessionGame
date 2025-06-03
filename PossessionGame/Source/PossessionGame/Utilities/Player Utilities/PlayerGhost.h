@@ -48,4 +48,5 @@ private:
 	void PressKeyToContinue();
 	void CheckIfPlayerFallOutOfWorld();
 	void EnablePlayerInput() const;
+	void SetupUserSettings() const;
 };

@@ -34,6 +34,7 @@
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
+#include "PossessionGame/UI/MainWidgets/PlayerGhostUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
@@ -485,6 +486,8 @@ void AEnemy::P_InitiateDash()
 	GetCharacterMovement()->StopMovementImmediately();
 	LaunchCharacter(DashDirection * P_Data->GetDashStrength(), true, true);
 	GetWorldTimerManager().SetTimer(P_StopDashHandle, this, &AEnemy::P_StopDash, 0.2f, false);
+	if (GameInstance->GetSaveSlot()->GetIsTutorialFinished()) return;
+	if (GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI)->GetCurrentHintIndex() == 3) (void)DelegateManager->OnShowHint.ExecuteIfBound(4);
 }
 
 void AEnemy::P_InitiateJump()
@@ -493,7 +496,10 @@ void AEnemy::P_InitiateJump()
 	Weapon->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Jump);
 	const bool bIsDoubleJump = GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 1;
 	AssetsManager->PlaySound2D(bIsDoubleJump ? ESound::DoubleJump : ESound::Jump);
-	if (bIsDoubleJump) bCanStomp = true;
+	if (!bIsDoubleJump) return;
+	bCanStomp = true;
+	if (GameInstance->GetSaveSlot()->GetIsTutorialFinished()) return;
+	if (GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI)->GetCurrentHintIndex() == 4) (void)DelegateManager->OnShowHint.ExecuteIfBound(5);
 }
 
 void AEnemy::P_InitiateStomp()
@@ -504,6 +510,8 @@ void AEnemy::P_InitiateStomp()
 	FVector Velocity = GetCharacterMovement()->Velocity;
 	Velocity.Z = 0.f;
 	GetCharacterMovement()->Velocity = Velocity + FVector(0.f, 0.f, -3000.f);
+	if (GameInstance->GetSaveSlot()->GetIsTutorialFinished()) return;
+	(void)DelegateManager->StopShowingHint.ExecuteIfBound();
 }
 
 void AEnemy::BeginPlay()
