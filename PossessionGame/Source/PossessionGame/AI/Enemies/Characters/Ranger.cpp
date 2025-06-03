@@ -96,12 +96,6 @@ void ARanger::P_Setup()
 
 void ARanger::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.58431f, 0.11373f, 0.f)); }
 
-void ARanger::P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName)
-{
-	Super::P_ApplyUpgradeOnSelection(InUpgradeName);
-	if (InUpgradeName == EUpgrade::RangerAbility1) Abilities[0]->ApplyUpgradeOnSelection(bIsPossessed);
-}
-
 void ARanger::BeginPlay()
 {
 	CharacterName = ECharacterType::Ranger;

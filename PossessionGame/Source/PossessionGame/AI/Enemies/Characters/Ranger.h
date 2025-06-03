@@ -38,7 +38,6 @@ private:
 
 	virtual void P_Setup() override;
 	virtual void P_SetupColorsForUI() override;
-	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) override;
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

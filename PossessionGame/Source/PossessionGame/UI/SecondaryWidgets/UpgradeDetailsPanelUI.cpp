@@ -44,16 +44,19 @@ FString UUpgradeDetailsPanelUI::ConvertUpgradeAttributeValueToString(const float
 
 FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute)
 {
+	const FString AttributeValue = ConvertUpgradeAttributeValueToString(InAttribute.Value);
 	switch (InAttribute.Key)
 	{
-		case EUpgradeAttribute::FlatDamage: return "+" + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " DAMAGE\n";
-		case EUpgradeAttribute::FlatHealth: return "+" + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " HEALTH\n";
-		case EUpgradeAttribute::DamagePercentage: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% DAMAGE\n";
-		case EUpgradeAttribute::ProjectilesAmount: return "+" + ConvertUpgradeAttributeValueToString(InAttribute.Value) + " PROJECTILES\n";
-		case EUpgradeAttribute::AbilityCooldownReduction: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% COOLDOWN\n";
-		case EUpgradeAttribute::Size: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% AREA\n";
-		case EUpgradeAttribute::AbilityDuration: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% ABILITY DURATION\n";
-		case EUpgradeAttribute::EffectDuration: return "INCREASED " + ConvertUpgradeAttributeValueToString(InAttribute.Value) + "% EFFECT DURATION\n";
+		case EUpgradeAttribute::FlatDamage: return "+" + AttributeValue + " DAMAGE\n";
+		case EUpgradeAttribute::FlatHealth: return "+" + AttributeValue + " HEALTH\n";
+		case EUpgradeAttribute::DamagePercentage: return "INCREASED " + AttributeValue + "% DAMAGE\n";
+		case EUpgradeAttribute::ProjectilesAmount: return "+" + AttributeValue + " PROJECTILES\n";
+		case EUpgradeAttribute::AbilityCooldownReduction: return "INCREASED " + AttributeValue + "% COOLDOWN\n";
+		case EUpgradeAttribute::AbilityChargesAmount: return "+" + AttributeValue + " CHARGES\n";
+		case EUpgradeAttribute::Size: return "INCREASED " + AttributeValue + "% AREA\n";
+		case EUpgradeAttribute::AbilityDuration: return "INCREASED " + AttributeValue + "% ABILITY DURATION\n";
+		case EUpgradeAttribute::EffectDuration: return "INCREASED " + AttributeValue + "% EFFECT DURATION\n";
+		case EUpgradeAttribute::ReduceDamageTaken: return "REDUCED " + AttributeValue + "% DAMAGE TAKEN\n";
 	}
 	return "";
 }

@@ -10,5 +10,7 @@ enum class EUpgradeAttribute : uint8
     AbilityCooldownReduction,
     Size,
     AbilityDuration,
-    EffectDuration
+    EffectDuration,
+    AbilityChargesAmount,
+    ReduceDamageTaken
 };

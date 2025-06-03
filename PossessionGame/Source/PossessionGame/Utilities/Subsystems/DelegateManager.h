@@ -31,6 +31,7 @@ DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase
 DECLARE_DELEGATE_OneParam(FOnSecretRewardCollected, const int32);
 DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const TObjectPtr<UUpgradeData>&);
+DECLARE_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
 DECLARE_DELEGATE_TwoParams(FStartTutorialDroneMoveToLocation, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
@@ -42,7 +43,6 @@ DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_MULTICAST_DELEGATE(FOnHackModeStart);
 DECLARE_MULTICAST_DELEGATE(FOnBossDeath);
 DECLARE_MULTICAST_DELEGATE(FOnMainTutorialEnd);
-DECLARE_MULTICAST_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelUp, const int32);
@@ -89,6 +89,7 @@ public:
 	FOnSecretRewardCollected OnSecretRewardCollected;
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
 	FOnUpgradeCardSelected OnUpgradeCardSelected;
+	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
 	FStartTutorialDroneMoveToLocation StartTutorialDroneMoveToLocation;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnAbilityUse OnAbilityUse;
@@ -97,7 +98,6 @@ public:
 	FOnHackModeStart OnHackModeStart;
 	FOnBossDeath OnBossDeath;
 	FOnMainTutorialEnd OnMainTutorialEnd;
-	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnConcealAbilityChange OnConcealAbilityChange;
 	FOnLevelUp OnLevelUp;

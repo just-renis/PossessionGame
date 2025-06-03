@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UpgradeSelectionUI.generated.h"
 
+enum class ECharacterType : uint8;
 class UMainMenuButtonUI;
 class UVerticalBox;
 struct FUpgradeAttributes;
@@ -38,6 +39,8 @@ private:
 	TObjectPtr<UTexture2D> RangerIconTexture;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> TricksterIconTexture;
+	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> GuardianIconTexture;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> EnemyCardBackgroundTexture;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
@@ -76,6 +79,7 @@ private:
 	TArray<TObjectPtr<UUpgradeData>> UpgradesData;
 
 	FString GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade);
+	TObjectPtr<UTexture2D>& GetCharacterUpgradeIcon(const ECharacterType InCharacter);
 	
 	void Toggle(const bool bState);
 	virtual void NativeConstruct() override;

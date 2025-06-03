@@ -7,6 +7,7 @@
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "Projectile.generated.h"
 
+class UUpgradeManager;
 enum class ESound : uint16;
 enum class EVfxType : uint8;
 enum class EVfx : uint8;
@@ -27,7 +28,7 @@ public:
 	bool GetIsPlayerProjectile() const { return ProjectileData.bIsPlayerProjectile; }
 
 	void SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale, const int32 InWhich);
-	void SetDirection(const FVector Direction) const;
+	void SetDirection(const FVector& InDirection) const;
 protected:
 	float Damage;
 	float DefaultDamage;
@@ -56,6 +57,8 @@ private:
 	TObjectPtr<UProjectileMovementComponent> MovementComponent;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
+	UPROPERTY()
+	TObjectPtr<UUpgradeManager> UpgradeManager;
 	UPROPERTY()
 	FTimerHandle DestroyHandle;
 

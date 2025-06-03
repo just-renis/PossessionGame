@@ -26,12 +26,11 @@ void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbility
 {
 	Data = InAbilityData;
 	DelegateManager = InDelegateManager;
-	ReqCooldownSecs = InAbilityData->GetCooldownSecs();
 	ReqCooldownKill = InAbilityData->GetCurrentCooldownKill();
-	MaxChargesAmount = InAbilityData->GetChargesAmount();
 	if (CurrentCooldownKill > 0) bIsCooldownKill = true;
 	SetProprietor(InAbilityProprietor);
 	if (InAbilityProprietor->GetIsPossessed()) P_ApplyVariation();
+	SetupUpgradeAppliance(IsProprietorPossessed());
 }
 
 void UAbility::UseCharge()
@@ -52,32 +51,21 @@ void UAbility::CooldownLogic(const float InDeltaTime)
 void UAbility::SetupUpgradeAppliance(const bool bIsPlayer)
 {
 	const float CooldownReduction = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityCooldownReduction);
-	ReqCooldownSecs -= Data->GetCooldownSecs() * (CooldownReduction / 100.f);
+	ReqCooldownSecs = Data->GetCooldownSecs() - Data->GetCooldownSecs() * CooldownReduction * 0.01f;
+	MaxChargesAmount = Data->GetChargesAmount() + GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityChargesAmount);
+	if (Data->GetIsAbilityWithDuration())
+	{
+		DurationTime = Data->GetAbilityDuration() + Data->GetAbilityDuration() * GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityDuration) * 0.01f;
+		CurrentDuration = DurationTime;
+	}
 }
 
-void UAbility::SetupAdditionalProperties(const bool bIsPlayer, TObjectPtr<UAbility> InAbilityToRefresh)
+void UAbility::SetupAdditionalProperties(TObjectPtr<UAbility> InAbilityToRefresh)
 {
 	if (Data->GetRefreshAmount() > 0.f) SetupRefreshOtherAbility(Data->GetRefreshAmount(), InAbilityToRefresh);
-	if (Data->GetIsAbilityWithDuration()) SetupDuration(Data->GetAbilityDuration(), bIsPlayer);
-	SetupUpgradeAppliance(bIsPlayer);
-}
-
-void UAbility::ApplyUpgradeOnSelection(const bool bIsPlayer)
-{
-	SetupUpgradeAppliance(bIsPlayer);
-	const float Duration = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityDuration);
-	DurationTime += Duration;
-	CurrentDuration += Duration;
 }
 
 void UAbility::RefreshOtherAbility() const { if (!RefreshableAbility->GetIsAbilityInDuration()) RefreshableAbility->ReduceCooldownTimer(RefreshOtherAbilityAmount); }
-
-void UAbility::SetupDuration(const float InAbilityDuration, const bool bIsPlayer)
-{
-	DurationTime = InAbilityDuration;
-	DurationTime += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityDuration);
-	CurrentDuration = DurationTime;
-}
 
 void UAbility::SetupRefreshOtherAbility(const float InRefreshAmount, TObjectPtr<UAbility> InAbilityToRefresh)
 {

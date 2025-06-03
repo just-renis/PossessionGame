@@ -108,6 +108,12 @@ void AEnemy::AI_SetShootPause()
 	GetWorldTimerManager().SetTimer(AI_ClearShootPauseHandle, this, &AEnemy::AI_ClearShootPause, AI_Data->GetShootPause(), false);
 }
 
+void AEnemy::P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) // For future upgrades to increase dash charges, stomping damage and so on.
+{
+	bInUpgradeSelection = false;
+	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->SetupUpgradeAppliance();
+}
+
 void AEnemy::P_UseAbility(const int32 AbilityIndex)
 {
 	if (bIsInputLocked) return;
@@ -375,7 +381,7 @@ void AEnemy::P_SetupAbilities()
 
 void AEnemy::P_Setup()
 {
-	DelegateManager->ApplyUpgradeOnSelection.AddUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
+	DelegateManager->ApplyUpgradeOnSelection.BindUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
@@ -435,7 +441,6 @@ void AEnemy::P_SetupRightClickInput(TObjectPtr<UEnhancedInputComponent> RightCli
 
 void AEnemy::P_Destroy()
 {
-	DelegateManager->ApplyUpgradeOnSelection.RemoveAll(this);
 	DelegateManager->OnMinionBossStomp.Unbind();
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();
@@ -583,7 +588,7 @@ void AEnemy::SetupAbilities(const TMap<EAbility, TSoftObjectPtr<UAbilityData>>& 
 			{
 				Ability->Setup(this, AbilityData[AbilityManager->GetAbilityFromCharacterName(CharacterName, i)].LoadSynchronous(), DelegateManager);
 				const int32 RefreshableAbilityIndex = AbilityData[AbilityManager->GetAbilityFromCharacterName(CharacterName, i)]->GetRefreshableAbilityIndex();
-				Ability->SetupAdditionalProperties(bIsPossessed, RefreshableAbilityIndex != -1 ? Abilities[RefreshableAbilityIndex] : nullptr);
+				Ability->SetupAdditionalProperties(RefreshableAbilityIndex != -1 ? Abilities[RefreshableAbilityIndex] : nullptr);
 				Abilities.Add(Ability);
 			}
 		}
@@ -1045,7 +1050,7 @@ void AEnemy::P_Death()
 void AEnemy::P_ControlLogic()
 {
 	Weapon->P_SetWalkSpread(GetCharacterMovement()->Velocity.Size() >= P_Data->GetMaxWalkSpeed() - 0.1f);
-	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size()); // Reduce by an ability % for guardian.
+	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size());
 	if (!bCanPossessOtherEnemy && !bInUpgradeSelection) P_PossessionBarLogic();
 	if (bCanDash) return;
 	CurrentDashCooldown += 0.05f;

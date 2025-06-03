@@ -25,7 +25,6 @@ public:
 	int32 GetCurrentCharges() const { return CurrentChargesAmount; }
 	float GetReqCooldownSecs() const { return ReqCooldownSecs; }
 	float GetCurrentCooldownSecs() const { return CurrentCooldownSecs; }
-	float GetCurrentDuration() const { return CurrentDuration; }
 
 	virtual void AI_Execute() { UseCharge(); }
 	virtual void AI_StopAbility() { ResetDuration(); }
@@ -36,8 +35,8 @@ public:
 	virtual void Tick(const float InDeltaTime);
 	void ReduceKillCooldown() { CurrentCooldownKill++; }
 	void Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager);
-	void SetupAdditionalProperties(const bool bIsPlayer, TObjectPtr<UAbility> InAbilityToRefresh);
-	void ApplyUpgradeOnSelection(const bool bIsPlayer);
+	void SetupAdditionalProperties(TObjectPtr<UAbility> InAbilityToRefresh);
+	virtual void SetupUpgradeAppliance(const bool bIsPlayer = true);
 protected:
 	bool bIsAbilityInDuration = false;
 	int32 CurrentChargesAmount = 0;
@@ -46,6 +45,8 @@ protected:
 	float CurrentCooldownSecs;
 	float DurationTime;
 	float ReqCooldownSecs;
+	UPROPERTY()
+	TObjectPtr<UAbilityData> Data;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 	
@@ -56,7 +57,6 @@ protected:
 	virtual void SetProprietor(TObjectPtr<AEnemy> InAbilityProprietor) {}
 	void UseCharge();
 	virtual void CooldownLogic(const float InDeltaTime);
-	virtual void SetupUpgradeAppliance(const bool bIsPlayer);
 private:
 	bool bIsCooldownKill = false;
 	bool bIsRefreshingOtherAbility = false;
@@ -65,13 +65,10 @@ private:
 	int32 ReqCooldownKill;
 	float RefreshOtherAbilityAmount;
 	UPROPERTY()
-	TObjectPtr<UAbilityData> Data;
-	UPROPERTY()
 	TObjectPtr<UAbility> RefreshableAbility;
 
 	void ReduceCooldownTimer(const float InRefreshAmount) { CurrentCooldownSecs += InRefreshAmount; }
 	void RefreshOtherAbility() const;
-	void SetupDuration(const float InAbilityDuration, const bool bIsPlayer);
 	void SetupRefreshOtherAbility(const float InRefreshAmount, TObjectPtr<UAbility> InAbilityToRefresh);
 	void ResetDuration();
 	void AbilityInDurationLogic(const float InDeltaTime);

@@ -14,6 +14,8 @@ public:
 	virtual void P_Execute() override;
 	virtual void P_StopAbility() override;
 private:
+	float BaseDamageReduction = 0.8f;
+	float TotalDamageReduction;
 	UPROPERTY()
 	TObjectPtr<AGuardian> Proprietor;
 

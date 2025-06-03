@@ -80,7 +80,7 @@ public:
 	void AI_SetupUpgradesAppliance();
 	virtual void AI_CancelShooting() {}
 
-	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) { bInUpgradeSelection = false; }
+	void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName);
 	void P_UseAbility(const int32 AbilityIndex);
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo) const;
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo, const int32 MaxAmmo) const;

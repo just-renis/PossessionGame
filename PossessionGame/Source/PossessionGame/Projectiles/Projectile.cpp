@@ -52,12 +52,13 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	}
 }
 
-void AProjectile::SetDirection(const FVector InDirection) const { MovementComponent->Velocity = InDirection * MovementComponent->MaxSpeed; }
+void AProjectile::SetDirection(const FVector& InDirection) const { MovementComponent->Velocity = InDirection * MovementComponent->MaxSpeed; }
 
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
+	UpgradeManager = GetWorld()->GetSubsystem<UUpgradeManager>();
 	Mesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 }
 
@@ -122,9 +123,9 @@ EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.Damag
 
 void AProjectile::AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile)
 {
-	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage);
-	const float DamagePercentage = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage);
-	if (DamagePercentage > 0.f) Damage += DefaultDamage * (DamagePercentage / 100.f);
+	Damage += UpgradeManager->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage);
+	const float DamagePercentage = UpgradeManager->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage);
+	if (DamagePercentage > 0.f) Damage += DefaultDamage * DamagePercentage * 0.01f;
 }
 
 void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)

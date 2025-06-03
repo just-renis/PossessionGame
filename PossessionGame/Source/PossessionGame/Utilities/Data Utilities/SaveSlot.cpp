@@ -51,7 +51,7 @@ void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InChoice)
 {
 	if (UnlockedUpgrades.Find(InUpgrade)) UnlockedUpgrades[InUpgrade].AddOrUpdate(InChoice);
 	else UnlockedUpgrades.Add(InUpgrade, FUpgradeChoicesAmountByLevel(InChoice));
-	GameInstance->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.Broadcast(InUpgrade);
+	(void)GameInstance->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.ExecuteIfBound(InUpgrade);
 }
 
 void USaveSlot::AddXp(const int32 InXp)

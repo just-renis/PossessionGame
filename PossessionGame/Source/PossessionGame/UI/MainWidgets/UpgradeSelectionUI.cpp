@@ -18,16 +18,23 @@
 
 void UUpgradeSelectionUI::OpenUI()
 {
+	UpgradesData = GetWorld()->GetSubsystem<UUpgradeManager>()->GetRandomUpgrades();
+	if (UpgradesData.IsEmpty())
+	{
+		CloseUI();
+		(void)DelegateManager->OnUpgradeSelectionFinished.ExecuteIfBound();
+		return;
+	}
+	PlayAnimation(UpgradeMenuOpenAnim);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradePanelAppear);
 	(void)DelegateManager->OnUpgradeSelectionOpened.ExecuteIfBound();
 	Toggle(true);
-	PlayAnimation(UpgradeMenuOpenAnim);
-	UpgradesData = GetWorld()->GetSubsystem<UUpgradeManager>()->GetRandomUpgrades();
 	if (UpgradesData.Num() > 0)
 	{
 		if (PlayerCardOption1)
 		{
-			PlayerCardOption1->SetupCard(true, PlayerCardBackgroundTexture, UpgradesData[0], UpgradesData[0]->GetCharacter() == ECharacterType::Ranger ? RangerIconTexture : TricksterIconTexture, PlayerIconTexture);
+			
+			PlayerCardOption1->SetupCard(true, PlayerCardBackgroundTexture, UpgradesData[0], GetCharacterUpgradeIcon(UpgradesData[0]->GetCharacter()), PlayerIconTexture);
 			PlayerCardOption1->SetUpgradeText(GetUpgradeTextFromUpgrade(UpgradesData[0]->GetUpgradeName()));
 		}
 		if (EnemyCardOption1) EnemyCardOption1->SetupCard(false, EnemyCardBackgroundTexture, UpgradesData[0], EnemyIconTexture);
@@ -36,7 +43,7 @@ void UUpgradeSelectionUI::OpenUI()
 	{
 		if (PlayerCardOption2)
 		{
-			PlayerCardOption2->SetupCard(true, PlayerCardBackgroundTexture, UpgradesData[1], UpgradesData[1]->GetCharacter() == ECharacterType::Ranger ? RangerIconTexture : TricksterIconTexture, PlayerIconTexture);
+			PlayerCardOption2->SetupCard(true, PlayerCardBackgroundTexture, UpgradesData[1], GetCharacterUpgradeIcon(UpgradesData[1]->GetCharacter()), PlayerIconTexture);
 			PlayerCardOption2->SetUpgradeText(GetUpgradeTextFromUpgrade(UpgradesData[1]->GetUpgradeName()));
 		}
 		if (EnemyCardOption2) EnemyCardOption2->SetupCard(false, EnemyCardBackgroundTexture, UpgradesData[1], EnemyIconTexture);
@@ -89,6 +96,18 @@ FString UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 		case EUpgrade::GuardianAbility2: return " TIME STOP UPGRADE";
 	}
 	return "";
+}
+
+TObjectPtr<UTexture2D>& UUpgradeSelectionUI::GetCharacterUpgradeIcon(const ECharacterType InCharacter)
+{
+	switch (InCharacter)
+	{
+		case ECharacterType::Guardian: return GuardianIconTexture;
+		case ECharacterType::Ranger: return RangerIconTexture;
+		case ECharacterType::Trickster: return TricksterIconTexture;
+		default: ;
+	}
+	return GuardianIconTexture;
 }
 
 void UUpgradeSelectionUI::Toggle(const bool bState)

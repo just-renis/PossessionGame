@@ -88,7 +88,9 @@ void UUpgradeManager::Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpg
 		{EAbility::RangerAbility1, EUpgrade::RangerAbility1},
 		{EAbility::RangerAbility2, EUpgrade::RangerAbility2},
 		{EAbility::TricksterAbility1, EUpgrade::TricksterAbility1},
-		{EAbility::TricksterAbility2, EUpgrade::TricksterAbility2}
+		{EAbility::TricksterAbility2, EUpgrade::TricksterAbility2},
+		{EAbility::GuardianAbility1, EUpgrade::GuardianAbility1},
+		{EAbility::GuardianAbility2, EUpgrade::GuardianAbility2}
 	};
 	GameInstance = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance());
 }
