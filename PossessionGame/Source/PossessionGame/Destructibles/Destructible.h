@@ -19,20 +19,23 @@ public:
 	void HandleDeactivation();
 	virtual void Init(bool bInIsPlayerObject) override;
 protected:
+	bool bIsPlayerObject;
+	float LifeSpan;
+	float Hp;
+	float DamageReduction = 1.f;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UDestructibleData> Data;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void DestroyThis();
+	virtual void SetLifeSpan();
+	virtual void SetUpgradesApplication() {}
 private:
 	bool bIsDeactivated = false;
 	bool bIsAffectedByPhysics = false;
-	bool bIsPlayerObject;
-	float LifeSpan;
-	float Hp;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UDestructibleData> Data;
 	UPROPERTY()
 	FTimerHandle DestroyHandle;
 

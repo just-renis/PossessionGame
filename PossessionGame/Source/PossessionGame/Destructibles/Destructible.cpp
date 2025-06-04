@@ -1,6 +1,5 @@
 ﻿#include "Destructible.h"
 #include "Engine/DamageEvents.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DestructibleData.h"
 #include "PossessionGame/Projectiles/Projectile.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -19,18 +18,18 @@ void ADestructible::HandleDeactivation()
 		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		Mesh->SetSimulatePhysics(true);
 	}
-	GetWorldTimerManager().SetTimer(DestroyHandle, this, &ADestructible::DestroyThis, LifeSpan, false);
+	SetLifeSpan();
 }
 
-void ADestructible::Init(bool bInIsPlayerObject)
+void ADestructible::Init(const bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
-	LifeSpan = Data->GetLifeSpan();
 	Hp = Data->GetHp();
 	bIsAffectedByPhysics = Data->GetIsAffectedByPhysics();
 	bIsPlayerObject = bInIsPlayerObject;
 	Mesh->SetCollisionProfileName(bIsPlayerObject ? "PlayerDestructible" : "EnemyDestructible");
-	if (Data->GetIsLifeSpanImmediatelyAdded()) GetWorldTimerManager().SetTimer(DestroyHandle, this, &ADestructible::DestroyThis, LifeSpan, false);
+	if (Data->GetIsLifeSpanImmediatelyAdded()) SetLifeSpan();
+	SetUpgradesApplication();
 }
 
 void ADestructible::BeginPlay()
@@ -47,8 +46,13 @@ void ADestructible::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ADestructible::DestroyThis()
 {
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(Data->GetObjectName(), this);
-	UKismetSystemLibrary::K2_ClearTimer(this, "DestroyThis");
+}
+
+void ADestructible::SetLifeSpan()
+{
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &ADestructible::DestroyThis, LifeSpan, false);
 }
 
 float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -58,12 +62,12 @@ float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	{
 		Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 		const bool bIsPlayerProjectile = Cast<AProjectile>(DamageCauser)->GetIsPlayerProjectile();
-		if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) Hp -= Damage;
+		if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) Hp -= Damage * DamageReduction;
 	}
 	else
 	{
 		Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-		Hp -= Damage;
+		Hp -= Damage * DamageReduction;
 	}
 	if (Hp <= 0)
 	{

@@ -59,7 +59,7 @@ TObjectPtr<UUpgradeData> UUpgradeManager::GetAbilityUpgradeData(const EAbility I
 {
 	if (const EUpgrade* FoundUpgrade = AbilityToUpgradeMap.Find(InAbilityName))
 	{
-		return Upgrades.Contains(*FoundUpgrade) ? Upgrades[*FoundUpgrade] : nullptr;
+		if (TObjectPtr<UUpgradeData>* FoundData = Upgrades.Find(*FoundUpgrade)) return *FoundData;
 	}
 	return nullptr;
 }

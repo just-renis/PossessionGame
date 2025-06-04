@@ -18,6 +18,7 @@ public:
 
 	void SetEventsEnabled(const bool bState);
 	void PlaySelectedAnim();
+	void SetButtonState(const bool bState) const;
 private:
 	bool bEventsEnabled = true;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

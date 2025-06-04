@@ -25,6 +25,7 @@ public:
 	void UpdateUnlockProgressText(const FString& InText);
 	void UnlockVariation();
 	void SetSelected(const bool bState);
+	void SetButtonState(const bool bState) const;
 private:
 	bool bIsSelected = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

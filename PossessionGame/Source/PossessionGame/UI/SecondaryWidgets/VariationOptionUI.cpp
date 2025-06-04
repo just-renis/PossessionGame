@@ -21,6 +21,12 @@ void UVariationOptionUI::SetSelected(const bool bState)
 	SelectedText->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
+void UVariationOptionUI::SetButtonState(const bool bState) const
+{
+	if (!OptionButton) return;
+	OptionButton->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+}
+
 void UVariationOptionUI::SelectVariation()
 {
 	if (bIsLocked || !SelectedText || bIsSelected) return;

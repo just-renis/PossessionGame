@@ -1,5 +1,4 @@
 ﻿#include "UpgradeSelectionUI.h"
-
 #include "PlayerHUD.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"

@@ -1,5 +1,6 @@
 ﻿#include "RangerShield.h"
 #include "Components/AudioComponent.h"
+#include "PossessionGame/Data Assets/Base Data Assets/DestructibleData.h"
 #include "PossessionGame/Enums/EAbility.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
@@ -36,7 +37,7 @@ void ARangerShield::Init(bool bInIsPlayerObject)
 {
 	ShieldMaterialValueChanger = 0;
 	const float SizeIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bInIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::Size);
-	SetActorScale3D(FVector(GetActorScale3D().X + GetActorScale3D().X * (SizeIncrease / 100.f), GetActorScale3D().Y, GetActorScale3D().Z + GetActorScale3D().Z * (SizeIncrease / 100.f)));
+	SetActorScale3D(FVector(GetActorScale3D().X + GetActorScale3D().X * SizeIncrease * 0.01f, GetActorScale3D().Y, GetActorScale3D().Z + GetActorScale3D().Z * SizeIncrease * 0.01f));
 	PlaySound(ESound::RangerDeployShield);
 	UpdateShieldMaterialValues(0.f, 0.7f);
 	Super::Init(bInIsPlayerObject);
@@ -78,4 +79,17 @@ void ARangerShield::DissolveShield()
 		Super::DestroyThis();
 	}
 	UpdateShieldMaterialValues(0.5f - ShieldMaterialValueChanger * 0.05f, 0.4f + ShieldMaterialValueChanger * 0.03f);
+}
+
+void ARangerShield::SetLifeSpan()
+{
+	const float EffectDurationIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::EffectDuration);
+	LifeSpan = Data->GetLifeSpan() + Data->GetLifeSpan() * EffectDurationIncrease * 0.01f;
+	Super::SetLifeSpan();
+}
+
+void ARangerShield::SetUpgradesApplication()
+{
+	Hp = Data->GetHp() + GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::FlatHealth);
+	DamageReduction = 1.f - 0.01f * GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::ReduceDamageTaken);
 }

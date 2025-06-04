@@ -10,6 +10,12 @@ void UVariationCharacterIconUI::SetEventsEnabled(const bool bState)
 
 void UVariationCharacterIconUI::PlaySelectedAnim() { PlayAnimation(SelectAnim); }
 
+void UVariationCharacterIconUI::SetButtonState(const bool bState) const
+{
+	if (!VariationCharacterButton) return;
+	VariationCharacterButton->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+}
+
 void UVariationCharacterIconUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();

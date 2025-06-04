@@ -60,6 +60,7 @@ private:
 	void Toggle(const bool bState);
 	void UpdateVariationUnlocksProgress();
 	void SetSelectedVariation(const EVariation InVariation);
+	void SetButtonStatesOnToggle(const bool bState) const;
 	UFUNCTION()
 	void SwitchVariation(const int32 InIndex);
 	UFUNCTION()

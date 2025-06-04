@@ -35,8 +35,8 @@ private:
 	virtual void DestroyThis() override;
 	void UpdateShieldMaterialValues(const float InOpacity, const float InProgress) const;
 	void PlaySound(const ESound InSoundName);
-	UFUNCTION()
 	void MoveShield();
-	UFUNCTION()
 	void DissolveShield();
+	virtual void SetLifeSpan() override;
+	virtual void SetUpgradesApplication() override;
 };

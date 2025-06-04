@@ -10,7 +10,6 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
-#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
