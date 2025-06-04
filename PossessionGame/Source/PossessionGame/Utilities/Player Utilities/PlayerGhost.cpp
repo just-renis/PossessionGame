@@ -12,7 +12,6 @@
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerGhostUI.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
-#include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -117,7 +116,6 @@ void APlayerGhost::PossessEnemy()
 				(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(Enemy);
 			}
 			Controller->Possess(Enemy);
-			GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
 			Destroy();
 		}
 	}

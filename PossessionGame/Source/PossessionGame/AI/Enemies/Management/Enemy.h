@@ -382,4 +382,5 @@ private:
 	void DestroyCondenseMaterialsProcess();
 	void DisablePossessionOutline() const;
 	void DisableUnPossessionOutline() const;
+	void OpenInfoPanel();
 };

@@ -41,7 +41,8 @@ void UControlsSettingsUI::SetupKeyBinds()
 		FName("Hijack"),
 		FName("Reload"),
 		FName("Escape"),
-		FName("Interact")
+		FName("Interact"),
+		FName("InfoPanel")
 	};
 	TMap<FName, FPlayerKeyMapping> OrderedKeyBinds;
 	SetupOrderOfKeyBinds(DesiredOrder, OrderedKeyBinds);

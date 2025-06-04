@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PlayerHUD.generated.h"
 
+class UInfoPanelUI;
 class UCrosshairUI;
 class UAbility;
 class UAbilitiesPanelUI;
@@ -58,6 +59,7 @@ public:
 	void SetCharacterType(const ECharacterType InCharacterType);
 	void AnnouncePossession();
 	void SetCurrentCrosshair() const;
+	void ToggleInfoPanel(const bool bState) const;
 private:
 	bool bIsHidden = false;
 	float StepHpPercentage;
@@ -130,6 +132,10 @@ private:
 	TObjectPtr<UTextBlock> XpNumberText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> LevelNumberText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInvalidationBox> InfoPanelInv;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInfoPanelUI> InfoPanel;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeOutAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
