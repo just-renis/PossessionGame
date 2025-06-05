@@ -22,7 +22,7 @@ class POSSESSIONGAME_API AUsbTerminal : public AInteractableObject
 	UPROPERTY()
 	TObjectPtr<AMarker> Marker;
 	UPROPERTY()
-	TObjectPtr<UStaticMeshComponent> UsbMeshes[4];
+	TObjectPtr<UStaticMeshComponent> UsbMeshes[5];
 
 	virtual TObjectPtr<UStaticMeshComponent> GetMesh() override { return Mesh; }
 
