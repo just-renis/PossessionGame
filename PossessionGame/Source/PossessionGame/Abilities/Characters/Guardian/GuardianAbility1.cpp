@@ -18,7 +18,6 @@ void UGuardianAbility1::P_Execute()
 	Proprietor->P_SetFov(95.f);
 	const float ReductionIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(IsProprietorPossessed(), Data->GetAbilityName(), EUpgradeAttribute::ReduceDamageTaken);
 	TotalDamageReduction = BaseDamageReduction / (1.f + ReductionIncrease * 0.01f);
-	UE_LOG(LogTemp, Warning, TEXT("TotalDamageReduction: %f"), TotalDamageReduction);
 	Proprietor->SetDamageReduction(TotalDamageReduction);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::GuardianOverCharge, 1.f);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianOverChargeStart);

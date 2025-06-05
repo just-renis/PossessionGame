@@ -39,7 +39,7 @@ void AInteractableObject::ChangeOutlineState(const bool bState)
 {
 	if (bIsSkeletalMesh) GetSkeletalMesh()->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
 	else GetMesh()->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
-	if (bState) GetWorldTimerManager().SetTimer(DisableOutlineHandle, this, &AInteractableObject::DisableOutline, 0.0245f, false);
+	if (bState) GetWorldTimerManager().SetTimer(DisableOutlineHandle, this, &AInteractableObject::DisableOutline, 0.245f, false);
 }
 
 void AInteractableObject::FadeOutAnimFinished() const { if (InteractableWidget)  InteractableWidget->SetVisibility(false); }

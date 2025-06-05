@@ -52,7 +52,6 @@ void UAbility::SetupUpgradeAppliance(const bool bIsPlayer)
 {
 	const float CooldownReduction = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityCooldownReduction);
 	ReqCooldownSecs = Data->GetCooldownSecs() / (1.f + CooldownReduction * 0.01f);
-	UE_LOG(LogTemp, Warning, TEXT("ReqCooldownSecs: %f"), ReqCooldownSecs);
 	MaxChargesAmount = Data->GetChargesAmount() + GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityChargesAmount);
 	if (Data->GetIsAbilityWithDuration())
 	{
