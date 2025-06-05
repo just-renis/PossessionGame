@@ -9,7 +9,7 @@ AUsbTerminal::AUsbTerminal()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("mesh"));
 	Mesh->SetupAttachment(RootComponent);
-	for (int i = 0; i < 4; i++) UsbMeshes[i] = CreateDefaultSubobject<UStaticMeshComponent>(FName("UsbMesh" + FString::FromInt(i)));
+	for (int i = 0; i < 5; i++) UsbMeshes[i] = CreateDefaultSubobject<UStaticMeshComponent>(FName("UsbMesh" + FString::FromInt(i)));
 }
 
 void AUsbTerminal::BeginPlay()
