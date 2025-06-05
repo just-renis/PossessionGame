@@ -22,7 +22,7 @@ public:
 	
 	void SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon, const TObjectPtr<UTexture2D>& InPlayerIcon = nullptr);
 	void ToggleCardVisibility(const bool bState);
-	void SetUpgradeText(const FString& InText) const;
+	void SetUpgradeText(const FText& InText) const;
 	void PlayBlinkAnim() { PlayAnimation(BlinkAnim); }
 	void PlayHoverAnim() { PlayAnimation(HoverAnim); }
 	void PlayUnHoverAnim() { PlayAnimation(UnHoverAnim); }

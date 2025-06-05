@@ -18,7 +18,7 @@ void ADestructible::HandleDeactivation()
 		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		Mesh->SetSimulatePhysics(true);
 	}
-	SetLifeSpan();
+	SetThisLifeSpan();
 }
 
 void ADestructible::Init(const bool bInIsPlayerObject)
@@ -28,7 +28,7 @@ void ADestructible::Init(const bool bInIsPlayerObject)
 	bIsAffectedByPhysics = Data->GetIsAffectedByPhysics();
 	bIsPlayerObject = bInIsPlayerObject;
 	Mesh->SetCollisionProfileName(bIsPlayerObject ? "PlayerDestructible" : "EnemyDestructible");
-	if (Data->GetIsLifeSpanImmediatelyAdded()) SetLifeSpan();
+	if (Data->GetIsLifeSpanImmediatelyAdded()) SetThisLifeSpan();
 	SetUpgradesApplication();
 }
 
@@ -50,7 +50,7 @@ void ADestructible::DestroyThis()
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(Data->GetObjectName(), this);
 }
 
-void ADestructible::SetLifeSpan()
+void ADestructible::SetThisLifeSpan()
 {
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &ADestructible::DestroyThis, LifeSpan, false);
 }

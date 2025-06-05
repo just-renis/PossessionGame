@@ -20,6 +20,7 @@ void UUpgradeCardUI::SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture
 	else
 	{
 		SetCharacterText(FText::FromString("ENEMY"), FColor::Red);
+		SetUpgradeText(FText::FromString(" Gets +10 Hp and +1 Damage"));
 		SetPlayerOrEnemyIconInvisible();
 	}
 }
@@ -30,10 +31,10 @@ void UUpgradeCardUI::ToggleCardVisibility(const bool bState)
 	if (bState && UpgradeButton) UpgradeButton->SetIsEnabled(bState);
 }
 
-void UUpgradeCardUI::SetUpgradeText(const FString& InText) const
+void UUpgradeCardUI::SetUpgradeText(const FText& InText) const
 {
 	if (!UpgradeText) return;
-	UpgradeText->SetText(FText::FromString(InText));
+	UpgradeText->SetText(InText);
 }
 
 void UUpgradeCardUI::NativeConstruct()

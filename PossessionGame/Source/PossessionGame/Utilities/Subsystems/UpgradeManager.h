@@ -2,12 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/Enums/EUpgrade.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "UpgradeManager.generated.h"
 
+class USaveSlot;
 enum class EPoolObject : uint8;
 enum class EAbility : uint8;
-class UPossessionGameInstance;
 enum class EUpgradeAttribute : uint8;
 enum class ECharacterType : uint8;
 class UUpgradeData;
@@ -20,6 +21,7 @@ class POSSESSIONGAME_API UUpgradeManager : public UWorldSubsystem
 public:
 	float GetUpgradeAttributeValue(const bool bIsPlayer, const EPoolObject InProjectileName, const EUpgradeAttribute InUpgradeAttribute);
 	float GetUpgradeAttributeValue(const bool bIsPlayer, const EAbility InAbilityName, const EUpgradeAttribute InUpgradeAttribute);
+	float GetTotalUpgradeAttributeValue(const EUpgradeAttribute InUpgradeAttribute);
 	TObjectPtr<UUpgradeData> GetProjectileUpgradeData(const EPoolObject InProjectileName);
 	TObjectPtr<UUpgradeData> GetAbilityUpgradeData(const EAbility InAbilityName);
 	TArray<TObjectPtr<UUpgradeData>> GetRandomUpgrades();
@@ -27,7 +29,7 @@ public:
 	void Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpgrades);
 private:
 	UPROPERTY()
-	TObjectPtr<UPossessionGameInstance> GameInstance;
+	TObjectPtr<USaveSlot> SaveSlot;
 	UPROPERTY()
 	TMap<EAbility, EUpgrade> AbilityToUpgradeMap;
 	UPROPERTY()

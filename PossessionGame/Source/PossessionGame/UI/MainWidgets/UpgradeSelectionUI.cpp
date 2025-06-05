@@ -82,18 +82,18 @@ void UUpgradeSelectionUI::GoBack()
 	}
 }
 
-FString UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
+FText UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 {
 	switch (InUpgrade)
 	{
-		case EUpgrade::RangerAbility1: return " GRENADE LAUNCHER UPGRADE";
-		case EUpgrade::RangerAbility2: return " SHIELD UPGRADE";
-		case EUpgrade::TricksterAbility1: return " POISON UPGRADE";
-		case EUpgrade::TricksterAbility2: return " EMP UPGRADE";
-		case EUpgrade::GuardianAbility1: return " SHIELD UPGRADE";
-		case EUpgrade::GuardianAbility2: return " TIME STOP UPGRADE";
+		case EUpgrade::RangerAbility1: return FText::FromString(" GRENADE LAUNCHER UPGRADE");
+		case EUpgrade::RangerAbility2: return FText::FromString(" SHIELD UPGRADE");
+		case EUpgrade::TricksterAbility1: return FText::FromString(" POISON UPGRADE");
+		case EUpgrade::TricksterAbility2: return FText::FromString(" EMP UPGRADE");
+		case EUpgrade::GuardianAbility1: return FText::FromString(" SHIELD UPGRADE");
+		case EUpgrade::GuardianAbility2: return FText::FromString(" TIME STOP UPGRADE");
 	}
-	return "";
+	return FText::GetEmpty();
 }
 
 TObjectPtr<UTexture2D>& UUpgradeSelectionUI::GetCharacterUpgradeIcon(const ECharacterType InCharacter)

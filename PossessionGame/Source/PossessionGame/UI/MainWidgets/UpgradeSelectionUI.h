@@ -78,7 +78,7 @@ private:
 	UPROPERTY()
 	TArray<TObjectPtr<UUpgradeData>> UpgradesData;
 
-	FString GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade);
+	FText GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade);
 	TObjectPtr<UTexture2D>& GetCharacterUpgradeIcon(const ECharacterType InCharacter);
 	
 	void Toggle(const bool bState);

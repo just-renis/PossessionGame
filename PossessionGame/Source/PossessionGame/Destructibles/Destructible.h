@@ -31,7 +31,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void DestroyThis();
-	virtual void SetLifeSpan();
+	virtual void SetThisLifeSpan();
 	virtual void SetUpgradesApplication() {}
 private:
 	bool bIsDeactivated = false;

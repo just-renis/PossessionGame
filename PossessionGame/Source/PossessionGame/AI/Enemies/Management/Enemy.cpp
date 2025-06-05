@@ -248,10 +248,7 @@ void AEnemy::AI_TryEvolving()
 	AI_SetupUpgradesAppliance();
 }
 
-void AEnemy::AI_SetupUpgradesAppliance()
-{
-	for (int32 i = 0; i < Abilities.Num(); i++) MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(false, Abilities[i]->GetAbilityName(), EUpgradeAttribute::FlatHealth);
-}
+void AEnemy::AI_SetupUpgradesAppliance() { MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatHealth); }
 
 void AEnemy::InitiateDeath()
 {

@@ -37,6 +37,6 @@ private:
 	void PlaySound(const ESound InSoundName);
 	void MoveShield();
 	void DissolveShield();
-	virtual void SetLifeSpan() override;
+	virtual void SetThisLifeSpan() override;
 	virtual void SetUpgradesApplication() override;
 };

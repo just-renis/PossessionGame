@@ -16,6 +16,12 @@ void UAbility::P_Execute()
 	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(GetAbilityIndex(), GetIsAbilityCharged(), !bIsAbilityInDuration);
 }
 
+void UAbility::P_StopAbility()
+{
+	ResetDuration();
+	(void)DelegateManager->OnAbilityEnd.ExecuteIfBound(GetAbilityIndex(), GetIsAbilityCharged());
+}
+
 void UAbility::Tick(const float InDeltaTime)
 {
 	if (bIsAbilityInDuration) AbilityInDurationLogic(InDeltaTime);
@@ -78,7 +84,6 @@ void UAbility::ResetDuration()
 {
 	CurrentDuration = DurationTime;
 	bIsAbilityInDuration = false;
-	(void)DelegateManager->OnAbilityEnd.ExecuteIfBound(GetAbilityIndex(), GetIsAbilityCharged());
 }
 
 void UAbility::AbilityInDurationLogic(const float InDeltaTime)

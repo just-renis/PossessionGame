@@ -81,11 +81,11 @@ void ARangerShield::DissolveShield()
 	UpdateShieldMaterialValues(0.5f - ShieldMaterialValueChanger * 0.05f, 0.4f + ShieldMaterialValueChanger * 0.03f);
 }
 
-void ARangerShield::SetLifeSpan()
+void ARangerShield::SetThisLifeSpan()
 {
 	const float EffectDurationIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::EffectDuration);
 	LifeSpan = Data->GetLifeSpan() + Data->GetLifeSpan() * EffectDurationIncrease * 0.01f;
-	Super::SetLifeSpan();
+	Super::SetThisLifeSpan();
 }
 
 void ARangerShield::SetUpgradesApplication()

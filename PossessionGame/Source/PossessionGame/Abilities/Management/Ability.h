@@ -30,7 +30,7 @@ public:
 	virtual void AI_StopAbility() { ResetDuration(); }
 
 	virtual void P_Execute();
-	virtual void P_StopAbility() { ResetDuration(); }
+	virtual void P_StopAbility();
 
 	virtual void Tick(const float InDeltaTime);
 	void ReduceKillCooldown() { CurrentCooldownKill++; }
