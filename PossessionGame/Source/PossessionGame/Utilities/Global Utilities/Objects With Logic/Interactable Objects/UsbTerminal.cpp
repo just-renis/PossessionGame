@@ -15,7 +15,7 @@ AUsbTerminal::AUsbTerminal()
 void AUsbTerminal::BeginPlay()
 {
 	Super::BeginPlay();
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		if (UsbMeshes[i])
 		{
@@ -34,12 +34,12 @@ void AUsbTerminal::BeginPlay()
 void AUsbTerminal::Interact()
 {
 	if (!GetIsInteractable()) return;
-	if (CurrentUsbIndex < 4)
+	if (CurrentUsbIndex < 5)
 	{
 		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbInsert);
 		UsbMeshes[CurrentUsbIndex]->SetVisibility(true);
 		(void)DelegateManager->OnUsbInserted.ExecuteIfBound();
-		if (++CurrentUsbIndex < 4) DelegateManager->SetIsUsbDroppable(true);
+		if (++CurrentUsbIndex < 5) DelegateManager->SetIsUsbDroppable(true);
 		else if (Marker) Marker->DestroyThis();
 	}
 	DisableInteraction();
