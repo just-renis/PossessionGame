@@ -8,10 +8,7 @@ void UInfoAbilityDetailsUI::SetAbilityIcon(const TObjectPtr<UTexture2D>& InAbili
 	SetAbilityVisibility(true);
 }
 
-void UInfoAbilityDetailsUI::SetText(const FText& InText) const
-{
-	if (AbilityExplanationText) AbilityExplanationText->SetText(InText);
-}
+void UInfoAbilityDetailsUI::SetText(const FText& InText) const { if (AbilityExplanationText) AbilityExplanationText->SetText(InText); }
 
 void UInfoAbilityDetailsUI::SetAbilityVisibility(const bool bState) const
 {

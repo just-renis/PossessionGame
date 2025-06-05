@@ -16,7 +16,9 @@ void UGuardianAbility1::P_Execute()
 	Proprietor->SetActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::OverCharge);
 	Proprietor->P_SetFov(95.f);
-	TotalDamageReduction = BaseDamageReduction - BaseDamageReduction * GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(IsProprietorPossessed(), Data->GetAbilityName(), EUpgradeAttribute::ReduceDamageTaken) * 0.01f;
+	const float ReductionIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(IsProprietorPossessed(), Data->GetAbilityName(), EUpgradeAttribute::ReduceDamageTaken);
+	TotalDamageReduction = BaseDamageReduction / (1.f + ReductionIncrease * 0.01f);
+	UE_LOG(LogTemp, Warning, TEXT("TotalDamageReduction: %f"), TotalDamageReduction);
 	Proprietor->SetDamageReduction(TotalDamageReduction);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->ToggleMaterial(EPostProcessMaterial::GuardianOverCharge, 1.f);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianOverChargeStart);

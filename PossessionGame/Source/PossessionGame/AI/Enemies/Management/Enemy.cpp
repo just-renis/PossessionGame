@@ -191,6 +191,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(19).Action, ETriggerEvent::Started, this, &AEnemy::P_Stomp);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::OpenInfoPanel);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel);
 	}
 }
 
@@ -854,7 +855,6 @@ void AEnemy::P_HandleEscapeClick()
 		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->CloseUI(); break;
 		case EWidget::VariationsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI(); break;
 		case EWidget::UpgradeSelectionUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->GoBack(); break;
-		case EWidget::InfoPanelUI: if (P_HUD) P_HUD->ToggleInfoPanel(false); break;
 		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 	}
 }
@@ -1238,3 +1238,5 @@ void AEnemy::DisablePossessionOutline() const { SetPossessionOutline(false); }
 void AEnemy::DisableUnPossessionOutline() const { SetUnPossessionOutline(false); }
 
 void AEnemy::OpenInfoPanel() { if (P_HUD) P_HUD->ToggleInfoPanel(true); }
+
+void AEnemy::CloseInfoPanel() { if (P_HUD) P_HUD->ToggleInfoPanel(false); }

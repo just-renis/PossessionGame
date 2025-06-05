@@ -4,15 +4,12 @@
 #include "Components/Image.h"
 #include "Components/InvalidationBox.h"
 #include "Components/TextBlock.h"
-#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
-#include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilitiesPanelUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CrosshairUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/InfoPanelUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
-#include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 bool UPlayerHUD::GetPossessionIndicatorIsShowing() const { return PossessionIndicator ? PossessionIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible : false; }
 
@@ -184,13 +181,10 @@ void UPlayerHUD::SetCurrentCrosshair() const
 void UPlayerHUD::ToggleInfoPanel(const bool bState) const
 {
 	if (!InfoPanelInv) return;
-	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->bShowMouseCursor = bState;
 	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
 	else PlayerController->SetInputMode(FInputModeGameOnly());
 	InfoPanelInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::InfoPanelUI : EWidget::None);
 }
 
 /*void UPlayerHUD::SetHitLocation(const FVector InHitLocation)

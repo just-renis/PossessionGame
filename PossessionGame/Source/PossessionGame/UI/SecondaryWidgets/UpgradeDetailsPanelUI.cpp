@@ -51,8 +51,8 @@ FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const T
 		case EUpgradeAttribute::FlatHealth: return "+" + AttributeValue + " HEALTH\n";
 		case EUpgradeAttribute::DamagePercentage: return "INCREASED " + AttributeValue + "% DAMAGE\n";
 		case EUpgradeAttribute::ProjectilesAmount: return "+" + AttributeValue + " PROJECTILES\n";
-		case EUpgradeAttribute::AbilityCooldownReduction: return "INCREASED " + AttributeValue + "% COOLDOWN\n";
-		case EUpgradeAttribute::AbilityChargesAmount: return "+" + AttributeValue + " CHARGES\n";
+		case EUpgradeAttribute::AbilityCooldownReduction: return "REDUCED " + AttributeValue + "% ABILITY COOLDOWN\n";
+		case EUpgradeAttribute::AbilityChargesAmount: return "+" + AttributeValue + " ABILITY CHARGES\n";
 		case EUpgradeAttribute::Size: return "INCREASED " + AttributeValue + "% AREA\n";
 		case EUpgradeAttribute::AbilityDuration: return "INCREASED " + AttributeValue + "% ABILITY DURATION\n";
 		case EUpgradeAttribute::EffectDuration: return "INCREASED " + AttributeValue + "% EFFECT DURATION\n";

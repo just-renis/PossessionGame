@@ -91,5 +91,7 @@ void ARangerShield::SetLifeSpan()
 void ARangerShield::SetUpgradesApplication()
 {
 	Hp = Data->GetHp() + GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::FlatHealth);
-	DamageReduction = 1.f - 0.01f * GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::ReduceDamageTaken);
+	const float ReductionIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::ReduceDamageTaken);
+	DamageReduction = DamageReduction / (1.f + ReductionIncrease * 0.01f);
+	UE_LOG(LogTemp, Warning, TEXT("RANGER SHIELD TotalDamageReduction: %f"), DamageReduction);
 }

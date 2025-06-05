@@ -383,4 +383,5 @@ private:
 	void DisablePossessionOutline() const;
 	void DisableUnPossessionOutline() const;
 	void OpenInfoPanel();
+	void CloseInfoPanel();
 };

@@ -32,7 +32,6 @@ void UUpgradeSelectionUI::OpenUI()
 	{
 		if (PlayerCardOption1)
 		{
-			
 			PlayerCardOption1->SetupCard(true, PlayerCardBackgroundTexture, UpgradesData[0], GetCharacterUpgradeIcon(UpgradesData[0]->GetCharacter()), PlayerIconTexture);
 			PlayerCardOption1->SetUpgradeText(GetUpgradeTextFromUpgrade(UpgradesData[0]->GetUpgradeName()));
 		}
