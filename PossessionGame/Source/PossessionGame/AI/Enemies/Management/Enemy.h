@@ -53,7 +53,6 @@ public:
 	bool GetIsPossessable() const;
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
 	bool CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
-	bool GetIsElite() const { return bIsElite; }
 	bool GetIsMutant() const { return bIsMutant; }
 	float GetSkeletalMeshHeight() const;
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
@@ -214,7 +213,6 @@ private:
 	bool bIsCriticallyDamaged = false;
 	bool bIsAIBarCreated = false;
 	bool bPlayerDied = false;
-	bool bIsElite = false;
 	bool bIsMutant = false;
 	bool bIsStomping = false;
 	bool bCanStomp = false;
@@ -272,6 +270,8 @@ private:
 	TObjectPtr<UPossessionGameInstance> GameInstance;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> Aura;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> EmpAffected;
 	UPROPERTY()
 	FTimerHandle AI_ClearShootPauseHandle;
 	UPROPERTY()
@@ -384,4 +384,5 @@ private:
 	void DisableUnPossessionOutline() const;
 	void OpenInfoPanel();
 	void CloseInfoPanel();
+	void PlayEmpAffectedVfx(const float InEffectDuration);
 };

@@ -49,9 +49,9 @@ enum class EVfx : uint8
 	MinionBossDeathElectrification,
 	UsbAura,
 	ArtifactAura,
-	EliteAura,
 	MutantAura,
 	MutantExplosion,
 	PlayerStomp,
-	SecretRewardPopUp
+	SecretRewardPopUp,
+	EmpAffected
 };

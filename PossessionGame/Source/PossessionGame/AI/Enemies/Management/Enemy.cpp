@@ -239,12 +239,6 @@ void AEnemy::AI_TryEvolving()
 		MaxHp -= MaxHp * 0.01f * AI_Data->GetMutantHpIncreasePercentage();
 		AssetsManager->AttachVfx(EVfx::MutantAura, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("MutantAuraSocket"));
 	}
-	else if (FMath::FRand() <= AI_Data->GetEliteChance())
-	{
-		bIsElite = true;
-		MaxHp += MaxHp * 0.01f * AI_Data->GetEliteHpIncreasePercentage();
-		AssetsManager->AttachVfx(EVfx::EliteAura, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("SpawnSocket"));
-	}
 	AI_SetupUpgradesAppliance();
 }
 
@@ -303,9 +297,16 @@ void AEnemy::StopSound(const ESound InSoundName)
 
 void AEnemy::SetEmpEffect(const float InEffectDuration)
 {
+	if (!AnimInstance) return;
+	if (bAffectedByEmp)
+	{
+		AnimInstance->ClearMontageWithHoldHandle();
+		AnimInstance->StopMontage(EEnemyAnimState::EmpEffect);
+	}
 	bAffectedByEmp = true;
+	PlayEmpAffectedVfx(InEffectDuration);
 	PlaySound(ESound::EmpEffectApplied, true);
-	if (AnimInstance) AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
+	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
 }
 
 void AEnemy::SetPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr); }
@@ -630,6 +631,7 @@ void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->Set
 void AEnemy::DestroyAI()
 {
 	if (Aura) Aura->Deactivate();
+	if (EmpAffected) EmpAffected->Deactivate();
 	if (AI)
 	{
 		GetWorld()->GetSubsystem<UEnemyCommunicator>()->RemoveEnemy(this);
@@ -1233,3 +1235,17 @@ void AEnemy::DisableUnPossessionOutline() const { SetUnPossessionOutline(false);
 void AEnemy::OpenInfoPanel() { if (P_HUD) P_HUD->ToggleInfoPanel(true); }
 
 void AEnemy::CloseInfoPanel() { if (P_HUD) P_HUD->ToggleInfoPanel(false); }
+
+void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
+{
+	if (!EmpAffected)
+	{
+		AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &EmpAffected, GetMesh(),
+		FName("DeathSocket"), false, { {"Loop Duration", FNiagaraAttribute(true, InEffectDuration) } });
+	}
+	else
+	{
+		if (EmpAffected->IsActive()) EmpAffected->Deactivate();
+		EmpAffected->Activate();
+	}
+}

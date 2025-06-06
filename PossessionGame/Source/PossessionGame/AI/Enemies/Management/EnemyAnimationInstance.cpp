@@ -71,6 +71,8 @@ void UEnemyAnimationInstance::ClearTimers()
     GetWorld()->GetTimerManager().ClearTimer(MontageWithHoldHandle);
 }
 
+void UEnemyAnimationInstance::ClearMontageWithHoldHandle() { GetWorld()->GetTimerManager().ClearTimer(MontageWithHoldHandle); }
+
 bool UEnemyAnimationInstance::IsMontageExisting(const EEnemyAnimState InState) const
 {
     return AssetsManager->GetCharacterData(Proprietor->GetCharacterName())->Montages.Contains(InState);

@@ -507,11 +507,11 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
 	VfxsMap.Add("PA_UsbAura", EVfx::UsbAura);
 	VfxsMap.Add("PA_ArtifactAura", EVfx::ArtifactAura);
-	VfxsMap.Add("PA_EliteAura", EVfx::EliteAura);
 	VfxsMap.Add("PA_MutantAura", EVfx::MutantAura);
 	VfxsMap.Add("PA_MutantExplosion", EVfx::MutantExplosion);
 	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
 	VfxsMap.Add("PA_SecretRewardPopUp", EVfx::SecretRewardPopUp);
+	VfxsMap.Add("PA_EmpAffected", EVfx::EmpAffected);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

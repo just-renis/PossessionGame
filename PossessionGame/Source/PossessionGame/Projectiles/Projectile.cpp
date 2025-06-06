@@ -153,7 +153,6 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 		Damage += DefaultDamage * ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
-	else if (ProjectileData.GetProprietor()->GetIsElite()) Damage += DefaultDamage * 0.01f * ProjectileData.GetProprietor()->GetAIData()->GetEliteDamageIncreasePercentage();
 	else if (ProjectileData.GetProprietor()->GetIsMutant()) Damage -= DefaultDamage * 0.01f * ProjectileData.GetProprietor()->GetAIData()->GetMutantDamageIncreasePercentage();
 	AI_SetupUpgradesAppliance(bIsPlayerProjectile);
 }

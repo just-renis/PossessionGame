@@ -25,6 +25,7 @@ public:
 	void PlayMontageWithHold(const EEnemyAnimState InState, const float InHoldTime, const bool bNeedsToStopAILogic);
 	void StopMontage(const EEnemyAnimState InState, const float InBlendOut = 0.f);
 	virtual void ClearTimers();
+	void ClearMontageWithHoldHandle();
 protected:
 	EEnemyAnimState MontageStateInHold;
 	UPROPERTY()
