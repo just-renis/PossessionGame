@@ -1,9 +1,12 @@
 #include "WaveManagerHUD.h"
+
+#include "UpgradeSelectionUI.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/InvalidationBox.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Enums/EGameMode.h"
+#include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return AnnouncementAnim->GetEndTime(); }
 
@@ -74,17 +77,34 @@ void UWaveManagerHUD::UpdateObjective(const EGameMode InGameMode, const int32 In
 		case EGameMode::BossMode: 
 			ObjectiveTitleText->SetText(FText::FromString("Objectives 4"));
 			ObjectiveText->SetText(FText::FromString("Kill the boss"));
-			break;
 		default: ;
 	}
 }
 
-void UWaveManagerHUD::UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective)
+void UWaveManagerHUD::UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective, const bool bShowUpgradeSelection)
 {
 	if (!ObjectiveProgressText) return;
 	ObjectiveProgressText->SetText(FText::FromString(FString::FromInt(InObjectiveProgress) + " / " + FString::FromInt(InObjective)));
 	if (InObjectiveProgress != InObjective) return;
 	PlayAnimation(ObjectiveCompletedFadeInAnim);
+	if (bShowUpgradeSelection) BindToAnimationFinished(ObjectiveCompletedFadeInAnim, OnObjectivePanelAnimEnd);
+}
+
+void UWaveManagerHUD::ToggleFinishOffEnemiesText(const bool bState) const
+{
+	if (FinishOfEnemiesText) FinishOfEnemiesText->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+}
+
+void UWaveManagerHUD::NativeConstruct()
+{
+	Super::NativeConstruct();
+	OnObjectivePanelAnimEnd.BindUFunction(this, "OpenUpgradeSelection");
 }
 
 void UWaveManagerHUD::HideWaveCompletedAnnouncement() const { if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::Collapsed); }
+
+void UWaveManagerHUD::OpenUpgradeSelection()
+{
+	UnbindFromAnimationFinished(ObjectiveCompletedFadeInAnim, OnObjectivePanelAnimEnd);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+}

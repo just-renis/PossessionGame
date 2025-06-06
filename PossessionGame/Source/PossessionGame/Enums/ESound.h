@@ -80,5 +80,6 @@ enum class ESound : uint16
 	EmpEffectApplied,
 	ClickArrow,
 	PanelFadeIn,
-	PanelFadeOut
+	PanelFadeOut,
+	NotSelectable
 };

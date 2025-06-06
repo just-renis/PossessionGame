@@ -60,6 +60,8 @@ public:
 	void AnnouncePossession();
 	void SetCurrentCrosshair() const;
 	void ToggleInfoPanel(const bool bState) const;
+	void ShowPossessionUnavailable() const;
+	void ShowOutOfAmmo() const;
 private:
 	bool bIsHidden = false;
 	float StepHpPercentage;
@@ -135,6 +137,10 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> InfoPanelInv;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInvalidationBox> OutOfAmmoInv;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInvalidationBox> PossessionUnavailableInv;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInfoPanelUI> InfoPanel;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeOutAnim;
@@ -150,6 +156,10 @@ private:
 	TObjectPtr<UWidgetAnimation> PossessedPopup;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> LevelUpAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> PossessionUnavailableAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> OutOfAmmoAnim;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
 	UPROPERTY()

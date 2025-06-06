@@ -187,6 +187,18 @@ void UPlayerHUD::ToggleInfoPanel(const bool bState) const
 	InfoPanelInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
+void UPlayerHUD::ShowPossessionUnavailable() const
+{
+	if (!PossessionUnavailableInv) return;
+	PossessionUnavailableInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+}
+
+void UPlayerHUD::ShowOutOfAmmo() const
+{
+	if (!OutOfAmmoInv) return;
+	OutOfAmmoInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+}
+
 /*void UPlayerHUD::SetHitLocation(const FVector InHitLocation)
 {
 	const FVector Diff = (Player->GetActorLocation() - InHitLocation).GetSafeNormal(0.001f);
@@ -214,6 +226,7 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->OnBossSpawn.BindUObject(this, &UPlayerHUD::EnableBossHpBar);
 	DelegateManager->OnBossDeath.AddUObject(this, &UPlayerHUD::DisableBossHpBar);
 	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerHUD::UpdatePressToPossessKeyBind);
+	DelegateManager->OnOutOfAmmo.BindUObject(this, &UPlayerHUD::ShowOutOfAmmo);
 }
 
 /*void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)

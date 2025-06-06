@@ -25,7 +25,8 @@ public:
 	void UpdateTaskProgress(const float InProgress, const float InMaxProgress) const;
 	void ToggleTaskProgress(const bool bState, const EGameMode InGameMode) const;
 	void UpdateObjective(const EGameMode InGameMode, const int32 InData) const;
-	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective);
+	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective, const bool bShowUpgradeSelection = false);
+	void ToggleFinishOffEnemiesText(const bool bState) const;
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CountdownText;
@@ -35,6 +36,8 @@ private:
 	TObjectPtr<UTextBlock> ObjectiveText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ObjectiveTitleText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> FinishOfEnemiesText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TaskText;
 	UPROPERTY(meta = (BindWidget))
@@ -57,6 +60,11 @@ private:
 	TObjectPtr<UWidgetAnimation> ObjectiveCompletedFadeInAnim;
 	UPROPERTY()
 	FTimerHandle AnnouncementHandle;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent OnObjectivePanelAnimEnd;
 
+	virtual void NativeConstruct() override;
 	void HideWaveCompletedAnnouncement() const;
+	UFUNCTION()
+	void OpenUpgradeSelection();
 };

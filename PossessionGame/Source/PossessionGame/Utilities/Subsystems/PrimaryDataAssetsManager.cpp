@@ -259,7 +259,7 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubc
 	MarkerClass = InMarkerClass;
 	bTutorialIsFinished = bIsTutorialFinished;
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
-	//RequestSpawnEnemy(ECharacterType::Ranger, EGameMode::TutorialMode1, false, nullptr);
+	//RequestSpawnEnemy(ECharacterType::Trickster, EGameMode::TutorialMode1, false, nullptr);
 	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	else AddSpawnableEnemiesToThePool();
 	DelegateManager = InDelegateManager;
@@ -439,6 +439,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_ClickArrow", ESound::ClickArrow);
 	SoundMap.Add("PA_PanelFadeIn", ESound::PanelFadeIn);
 	SoundMap.Add("PA_PanelFadeOut", ESound::PanelFadeOut);
+	SoundMap.Add("PA_NotSelectable", ESound::NotSelectable);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

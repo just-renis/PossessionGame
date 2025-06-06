@@ -40,6 +40,7 @@ void UHackTerminalModeLogic::UpdateTaskProgress()
 	{
 		bIsHackFinished = true;
 		if (AliveEnemiesAmount <= 0) FinishTerminalHack();
+		else if (WaveManagerHUD) WaveManagerHUD->ToggleFinishOffEnemiesText(true);
 		GetWorld()->GetTimerManager().ClearTimer(TaskProgressHandle);
 	}
 }
@@ -83,6 +84,7 @@ void UHackTerminalModeLogic::FinishTerminalHack()
 		WaveManager->GetDelegateManager()->OnTerminalHackFinish.Broadcast(WaveManager->GetCurrentGameMode());
 	}
 	if (!WaveManagerHUD) return;
+	WaveManagerHUD->ToggleFinishOffEnemiesText(false);
 	WaveManagerHUD->PlayAnnouncementAnim("Hack Completed");
 	WaveManagerHUD->UpdateObjectiveProgress(TerminalsHackedAmount, Data->GetTerminalsAmountToHack());
 	GetWorld()->GetTimerManager().SetTimer(OpenUpgradeSelectionHandle, this, &UHackTerminalModeLogic::ShowUpgradeSelection, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);

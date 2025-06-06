@@ -22,8 +22,11 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 void UChargeTerminalModeLogic::Finalize()
 {
 	Super::Finalize();
-	if (WaveManagerHUD) WaveManagerHUD->UpdateObjectiveProgress(UsbAmountProgress, Data->GetUsbAmountRequired());
-	ShowUpgradeSelection();
+	if (WaveManagerHUD)
+	{
+		WaveManagerHUD->UpdateObjectiveProgress(UsbAmountProgress, Data->GetUsbAmountRequired(), true);
+		WaveManagerHUD->ToggleFinishOffEnemiesText(false);
+	}
 	(void)WaveManager->GetDelegateManager()->OnChargeTerminalModeCompletion.ExecuteIfBound();
 	ResetTaskProgress();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
@@ -48,6 +51,7 @@ void UChargeTerminalModeLogic::UpdateTaskProgress()
 	{
 		bIsTerminalCharged = true;
 		if (AliveEnemiesAmount <= 0) Finalize();
+		else if (WaveManagerHUD) WaveManagerHUD->ToggleFinishOffEnemiesText(true);
 	}
 	if (!WaveManagerHUD) return;
 	WaveManagerHUD->UpdateObjectiveProgress(UsbAmountProgress, Data->GetUsbAmountRequired());

@@ -29,7 +29,12 @@ void UVariationOptionUI::SetButtonState(const bool bState) const
 
 void UVariationOptionUI::SelectVariation()
 {
-	if (bIsLocked || !SelectedText || bIsSelected) return;
+	if (bIsLocked)
+	{
+		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::NotSelectable);
+		return;
+	}
+	if (!SelectedText || bIsSelected) return;
 	PlayAnimation(SelectAnim);
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.Broadcast(CharacterType, Variation);

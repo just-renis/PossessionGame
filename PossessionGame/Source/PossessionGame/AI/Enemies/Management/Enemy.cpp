@@ -771,13 +771,17 @@ void AEnemy::P_PossessEnemy()
 
 void AEnemy::P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy)
 {
-	if (InEnemy && InEnemy->GetIsPossessable() && !InEnemy->GetIsMutant() && !InEnemy->bIsPossessed && InEnemy->bIsAlive)
+	if (!InEnemy || InEnemy->bIsPossessed || !InEnemy->bIsAlive) return;
+	if (!InEnemy->GetIsPossessable() || InEnemy->GetIsMutant())
 	{
-		P_StopAllAbilities();
-		DelegateManager->OnEnemyDeath.Unbind();
-		Controller->Possess(InEnemy);
-		InitiateDeath();
+		AssetsManager->PlaySound2D(ESound::NotSelectable);
+		if (P_HUD) P_HUD->ShowPossessionUnavailable();
+		return;
 	}
+	P_StopAllAbilities();
+	DelegateManager->OnEnemyDeath.Unbind();
+	Controller->Possess(InEnemy);
+	InitiateDeath();
 }
 
 void AEnemy::P_PossessionBarLogic()

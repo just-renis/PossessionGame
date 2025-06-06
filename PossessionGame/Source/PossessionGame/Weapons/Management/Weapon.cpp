@@ -39,12 +39,13 @@ void AWeapon::AI_ResetShootCycles() { ShootCyclesUntilReload = AI_Data->GetShoot
 bool AWeapon::P_CanReload(const int32 InOtherAmmoSource)
 {
 	if (!Proprietor->GetCanReload()) return false;
+	if (TotalAmmo == 0 && CurrentAmmo == 0) (void)DelegateManager->OnOutOfAmmo.ExecuteIfBound();
 	return !HandsAnimInstance->GetIsReloading() && (InOtherAmmoSource != -1 ? InOtherAmmoSource > 0 : TotalAmmo > 0 && CurrentAmmo != MagazineCap);
 }
 
 bool AWeapon::P_CanShoot(const bool bIsFirstWeapon) { return ShootTimer >= ShootCooldown && CurrentAmmo > 0 && !HandsAnimInstance->GetIsReloading(); }
 
-void AWeapon::P_SetWalkingSpeed(const float InSpeed) { if (HandsAnimInstance) HandsAnimInstance->SetSpeed(InSpeed); }
+void AWeapon::P_SetWalkingSpeed(const float InSpeed) const { if (HandsAnimInstance) HandsAnimInstance->SetSpeed(InSpeed); }
 
 void AWeapon::P_Reload(const int32 InOtherAmmoSource)
 {
