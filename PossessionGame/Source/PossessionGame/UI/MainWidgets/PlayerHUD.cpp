@@ -88,7 +88,7 @@ void UPlayerHUD::UpdatePossessionIndicator(const bool bState, const FText& InKey
 	if (PossessionIndicatorOverlay)	PossessionIndicatorOverlay->SetVisibility(bState ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
 	if (bState)
 	{
-		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ReadyToPossess);
+		AssetsManager->PlaySound2D(ESound::ReadyToPossess);
 		PlayAnimation(PossessionIndicatorPopup);
 		PlayAnimation(PressToPossessPopup);
 	}
@@ -187,15 +187,18 @@ void UPlayerHUD::ToggleInfoPanel(const bool bState) const
 	InfoPanelInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
-void UPlayerHUD::ShowPossessionUnavailable() const
+void UPlayerHUD::ShowPossessionUnavailable()
 {
 	if (!PossessionUnavailableInv) return;
+	PlayAnimation(PossessionUnavailableAnim);
 	PossessionUnavailableInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
-void UPlayerHUD::ShowOutOfAmmo() const
+void UPlayerHUD::ShowOutOfAmmo()
 {
 	if (!OutOfAmmoInv) return;
+	PlayAnimation(OutOfAmmoAnim);
+	AssetsManager->PlaySound2D(ESound::OutOfAmmo);
 	OutOfAmmoInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
@@ -219,6 +222,7 @@ TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
 void UPlayerHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
+	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnPlayerDamageDealt.BindUObject(this, &UPlayerHUD::ShowDamageTick);
 	DelegateManager->OnLevelUp.AddUObject(this, &UPlayerHUD::LevelUp);

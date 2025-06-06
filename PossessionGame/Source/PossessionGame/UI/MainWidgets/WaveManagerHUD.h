@@ -26,7 +26,7 @@ public:
 	void ToggleTaskProgress(const bool bState, const EGameMode InGameMode) const;
 	void UpdateObjective(const EGameMode InGameMode, const int32 InData) const;
 	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective, const bool bShowUpgradeSelection = false);
-	void ToggleFinishOffEnemiesText(const bool bState) const;
+	void ToggleFinishOffEnemiesText(const bool bState);
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CountdownText;
@@ -58,6 +58,8 @@ private:
 	TObjectPtr<UWidgetAnimation> CountdownAnnouncementAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> ObjectiveCompletedFadeInAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> FinishOffEnemiesFadeInAnim;
 	UPROPERTY()
 	FTimerHandle AnnouncementHandle;
 	UPROPERTY()

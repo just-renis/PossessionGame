@@ -81,5 +81,7 @@ enum class ESound : uint16
 	ClickArrow,
 	PanelFadeIn,
 	PanelFadeOut,
-	NotSelectable
+	NotSelectable,
+	OutOfAmmo,
+	FinishOffEnemies
 };

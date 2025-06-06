@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PlayerHUD.generated.h"
 
+class UPrimaryDataAssetsManager;
 class UInfoPanelUI;
 class UCrosshairUI;
 class UAbility;
@@ -60,8 +61,8 @@ public:
 	void AnnouncePossession();
 	void SetCurrentCrosshair() const;
 	void ToggleInfoPanel(const bool bState) const;
-	void ShowPossessionUnavailable() const;
-	void ShowOutOfAmmo() const;
+	void ShowPossessionUnavailable();
+	void ShowOutOfAmmo();
 private:
 	bool bIsHidden = false;
 	float StepHpPercentage;
@@ -162,6 +163,8 @@ private:
 	TObjectPtr<UWidgetAnimation> OutOfAmmoAnim;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
+	UPROPERTY()
+	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	UPROPERTY()
 	FTimerHandle UpdateWhiteHpBarHandle;
 	//UPROPERTY()

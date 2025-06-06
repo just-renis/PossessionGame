@@ -440,6 +440,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_PanelFadeIn", ESound::PanelFadeIn);
 	SoundMap.Add("PA_PanelFadeOut", ESound::PanelFadeOut);
 	SoundMap.Add("PA_NotSelectable", ESound::NotSelectable);
+	SoundMap.Add("PA_OutOfAmmo", ESound::OutOfAmmo);
+	SoundMap.Add("PA_FinishOffEnemies", ESound::FinishOffEnemies);
 	FillContainers(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

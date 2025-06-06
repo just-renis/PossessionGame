@@ -6,6 +6,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Enums/EGameMode.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return AnnouncementAnim->GetEndTime(); }
@@ -90,8 +91,13 @@ void UWaveManagerHUD::UpdateObjectiveProgress(const int32 InObjectiveProgress, c
 	if (bShowUpgradeSelection) BindToAnimationFinished(ObjectiveCompletedFadeInAnim, OnObjectivePanelAnimEnd);
 }
 
-void UWaveManagerHUD::ToggleFinishOffEnemiesText(const bool bState) const
+void UWaveManagerHUD::ToggleFinishOffEnemiesText(const bool bState)
 {
+	if (bState)
+	{
+		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::FinishOffEnemies);
+		PlayAnimation(FinishOffEnemiesFadeInAnim);
+	}
 	if (FinishOfEnemiesText) FinishOfEnemiesText->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
