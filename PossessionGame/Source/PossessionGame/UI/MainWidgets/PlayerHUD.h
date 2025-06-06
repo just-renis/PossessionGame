@@ -48,7 +48,7 @@ public:
 	void UpdateFps(const int32 InFps) const;
 	void Reset();
 	void SetColors(const FLinearColor InColor) const;
-	void UpdatePossessionIndicator(const bool bState, const FString& InKeyName = "");
+	void UpdatePossessionIndicator(const bool bState, const FText& InKeyName = FText());
 	void UpdateDashIndicator(const bool bState) const;
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs();
@@ -172,6 +172,7 @@ private:
 	void EnableBossHpBar() const;
 	void DisableBossHpBar() const;
 	void UpdateWhiteHpBar();
+	void UpdatePressToPossessKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };

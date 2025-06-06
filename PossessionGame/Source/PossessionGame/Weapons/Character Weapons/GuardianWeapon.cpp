@@ -24,6 +24,16 @@ void AGuardianWeapon::ResetShootingHoldDuration() const
 	Cast<AGuardianSingularWeapon>(SecondWeapon)->ResetShootingHoldDuration();
 }
 
+void AGuardianWeapon::ToggleHandsMeshAbilityState(const bool bState) const
+{
+	if (!HandsMesh || !MI_Hands) return;
+	Cast<AGuardianSingularWeapon>(FirstWeapon)->ToggleMeshAbilityState(bState);
+	Cast<AGuardianSingularWeapon>(SecondWeapon)->ToggleMeshAbilityState(bState);
+	MI_Hands->SetScalarParameterValue("Hue", bState ? 0.9f : 1.f);
+	MI_Hands->SetScalarParameterValue("Emissive Effect", bState ? 1.f : 0.f);
+	MI_Hands->SetScalarParameterValue("Width", bState ? 0.2f : 0.f);
+}
+
 bool AGuardianWeapon::P_CanShoot(const bool InbIsFirstWeapon) { return !HandsAnimInstance->IsPlaying(EHandsAnimState::Shoot); }
 
 void AGuardianWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(-1); }
@@ -59,7 +69,8 @@ void AGuardianWeapon::SetMeshes(const EWeapon InPrimaryDataAssetName)
 	{
 		HandsMesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(InPrimaryDataAssetName)->HandsMesh.Get());
 		if (!HandsMesh) return;
-		if (const TObjectPtr<UMaterialInstanceDynamic> MI_Hands = HandsMesh->CreateAndSetMaterialInstanceDynamic(0)) MI_Hands->SetScalarParameterValue("Progress", 0.4f);
+		MI_Hands = HandsMesh->CreateAndSetMaterialInstanceDynamic(0);
+		if (MI_Hands) MI_Hands->SetScalarParameterValue("Progress", 0.4f);
 	}
 }
 

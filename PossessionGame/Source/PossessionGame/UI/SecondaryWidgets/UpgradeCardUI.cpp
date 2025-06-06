@@ -20,7 +20,7 @@ void UUpgradeCardUI::SetupCard(const bool bPlayerCard, const TObjectPtr<UTexture
 	else
 	{
 		SetCharacterText(FText::FromString("ENEMY"), FColor::Red);
-		SetUpgradeText(FText::FromString(" Gets +10 Hp and +1 Damage"));
+		SetUpgradeText(FText::FromString(" +10 Hp +1 Damage"));
 		SetPlayerOrEnemyIconInvisible();
 	}
 }

@@ -20,7 +20,7 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 		case EUIBar::Hp:
 			if (HpBar && HpWhiteBar && HpNumberText)
 			{
-				StepHpPercentage = (HpBar->GetPercent() - InCurrent / InMax) / 10.f;
+				StepHpPercentage = (HpBar->GetPercent() - InCurrent / InMax) * 0.1f;
 				HpWhiteBar->SetPercent(HpBar->GetPercent());
 				HpBar->SetPercent(InCurrent / InMax);
 				HpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
@@ -80,11 +80,11 @@ void UPlayerHUD::Reset()
 
 void UPlayerHUD::SetColors(const FLinearColor InColor) const { if (ScreenGlow) ScreenGlow->SetColorAndOpacity(InColor); }
 
-void UPlayerHUD::UpdatePossessionIndicator(const bool bState, const FString& InKeyName)
+void UPlayerHUD::UpdatePossessionIndicator(const bool bState, const FText& InKeyName)
 {
 	if (PossessionIndicator) PossessionIndicator->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	if (PressKeyBindInv) PressKeyBindInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	if (PressKeyBindText) PressKeyBindText->SetText(FText::FromString("Press " + InKeyName + " to possess"));
+	UpdatePressToPossessKeyBind(FName(), InKeyName);
 	if (PossessionIndicatorOverlay)	PossessionIndicatorOverlay->SetVisibility(bState ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
 	if (bState)
 	{
@@ -213,6 +213,7 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->OnBossDamaged.BindUObject(this, &UPlayerHUD::UpdateBossHpBar);
 	DelegateManager->OnBossSpawn.BindUObject(this, &UPlayerHUD::EnableBossHpBar);
 	DelegateManager->OnBossDeath.AddUObject(this, &UPlayerHUD::DisableBossHpBar);
+	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerHUD::UpdatePressToPossessKeyBind);
 }
 
 /*void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
@@ -287,6 +288,11 @@ void UPlayerHUD::UpdateWhiteHpBar()
 		GetWorld()->GetTimerManager().ClearTimer(UpdateWhiteHpBarHandle);
 	}
 	HpWhiteBar->SetPercent(NewPercentage);
+}
+
+void UPlayerHUD::UpdatePressToPossessKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const
+{
+	if (PressKeyBindText && InKeyBindName.IsEqual("Hijack")) PressKeyBindText->SetText(FText::Format(FText::FromString("Press {0} to possess"), InKeyBindText));
 }
 
 /*float UPlayerHUD::GetHitDamageIndicatorSection(const float InAngle)

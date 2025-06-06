@@ -12,7 +12,11 @@ public:
 	void CancelShootingHold() const;
 	void ShootingHoldStarted() const;
 	void ResetShootingHoldDuration() const;
+	void ToggleHandsMeshAbilityState(const bool bState) const;
 private:
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MI_Hands;
+	
 	virtual bool P_CanShoot(const bool InbIsFirstWeapon) override;
 	
 	virtual void P_UpdateAmmoTextHUD() override;

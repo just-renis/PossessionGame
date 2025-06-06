@@ -784,10 +784,7 @@ void AEnemy::P_PossessionBarLogic()
 	if (PossessionBarTimer >= P_Data->GetPossessionBarCooldown())
 	{
 		bCanPossessOtherEnemy = true;
-		for (const FPlayerKeyMapping KeyBind : GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings()->GetCurrentKeyProfile()->GetPlayerMappingRows().Find("Hijack")->Mappings)
-		{
-			if (P_HUD && !P_HUD->GetPossessionIndicatorIsShowing()) P_HUD->UpdatePossessionIndicator(true, KeyBind.GetCurrentKey().ToString());
-		}
+		if (P_HUD && !P_HUD->GetPossessionIndicatorIsShowing()) P_HUD->UpdatePossessionIndicator(true, GameInstance->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Hijack"));
 	}
 	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Possession, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
 }
@@ -915,7 +912,6 @@ void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
 	const TObjectPtr<UPostProcessManager> PostProcessManager = GetWorld()->GetSubsystem<UPostProcessManager>();
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::BloodPumping, 0.f);
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::ScreenCrack, 0.f);
-	PostProcessManager->ToggleMaterial(EPostProcessMaterial::SpeedLines, 0.f);
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathGlitching, 1.f);
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathBloodPumping, 1.f);
 	PostProcessManager->ToggleMaterial(EPostProcessMaterial::DeathScreenCrack, 1.f);

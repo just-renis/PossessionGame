@@ -12,6 +12,7 @@ public:
 	void CancelShootingHold();
 	void ResetShootingHoldDuration() { ShootingHoldDuration = 0.f; }
 	void ShootingHoldStarted() { bIsShootingHolding = true; }
+	void ToggleMeshAbilityState(const bool bState) const;
 private:
 	AGuardianSingularWeapon();
 	
@@ -19,6 +20,8 @@ private:
 	float ShootingHoldDuration = 0.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_GuardianWeaponMaterial;
+	//UPROPERTY()
+	//TObjectPtr<UMaterialInstanceDynamic> MID_GuardianWeaponMaterial;
 	
 	virtual void AI_Shoot() override;
 

@@ -12,6 +12,14 @@ void AGuardianSingularWeapon::CancelShootingHold()
 	ShootingHoldDuration = 0.f;
 }
 
+void AGuardianSingularWeapon::ToggleMeshAbilityState(const bool bState) const
+{
+	//if (!MID_GuardianWeaponMaterial) return;
+//	MID_GuardianWeaponMaterial->SetScalarParameterValue("Hue", bState ? 0.9f : 1.f);
+	//MID_GuardianWeaponMaterial->SetScalarParameterValue("Emissive Effect", bState ? 1.f : 0.f);
+//	MID_GuardianWeaponMaterial->SetScalarParameterValue("Width", bState ? 0.2f : 0.f);
+}
+
 AGuardianSingularWeapon::AGuardianSingularWeapon()
 {
 	Sounds.Add(ESound::GuardianShoot, CreateDefaultSubobject<UAudioComponent>(TEXT("shootSound")));
@@ -62,6 +70,9 @@ void AGuardianSingularWeapon::SetMeshes(EWeapon PrimaryDataAssetName)
 {
 	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(PrimaryDataAssetName)->WeaponMesh.Get());
 	Mesh->SetMaterial(0, MI_GuardianWeaponMaterial);
+	
+	//MID_GuardianWeaponMaterial = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(0), this);
+	//Mesh->SetMaterial(0, MID_GuardianWeaponMaterial);
 	OriginalScale = Mesh->GetRelativeScale3D();
 }
 
