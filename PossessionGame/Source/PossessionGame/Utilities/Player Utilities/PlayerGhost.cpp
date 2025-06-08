@@ -27,13 +27,14 @@ APlayerGhost::APlayerGhost()
 void APlayerGhost::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorial();
+	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	Tags.Add("PlayerGhost");
 	GetWorld()->GetTimerManager().SetTimer(CheckHandle, this, &APlayerGhost::CheckIfPlayerFallOutOfWorld, 2.f, true);
 	if (const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
 	{
-		if (bTutorialModeEnabled)
+		if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
 		{
+			bTutorialModeEnabled = true;
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &APlayerGhost::SetPressKeyState);
 			PlayerController->SetInputMode(FInputModeUIOnly());
@@ -113,8 +114,8 @@ void APlayerGhost::PossessEnemy()
 			{
 				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(3);
 				(void)DelegateManager->StopShowingHint.ExecuteIfBound();
-				(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(Enemy);
 			}
+			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(Enemy);
 			Controller->Possess(Enemy);
 			Destroy();
 		}
@@ -131,13 +132,6 @@ void APlayerGhost::HandleEscapeClick()
 		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->CloseUI(); break;
 		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 	}
-}
-
-void APlayerGhost::SetupTutorial()
-{
-	bTutorialModeEnabled = true;
-	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI);
 }
 
 void APlayerGhost::PressKeyToContinue()

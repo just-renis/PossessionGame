@@ -18,6 +18,7 @@ public:
 	TObjectPtr<USaveSlot> GetSaveSlot() const { return PlayerSaveSlot; };
 	
 	void LoadPlayerSaveSlot();
+	void ResetSaveSlot();
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Game Data", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerLevelData> PlayerLevelData;

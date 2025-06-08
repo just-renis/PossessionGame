@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "AudioSettingsUI.generated.h"
 
+class UButton;
 class USliderUI;
 
 UCLASS()
@@ -11,21 +12,23 @@ class POSSESSIONGAME_API UAudioSettingsUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void UpdateDefaultAudioSettings();
-	void ApplySettings();
-	void SetSavedSettings();
+	void UpdateDefaultAudioSettings() const;
+	void ApplySettings() const;
+	void SetSavedSettings() const;
 private:
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USliderUI> MasterVolumeSlider;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USliderUI> MusicVolumeSlider;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USliderUI> SfxVolumeSlider;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> ResetSaveSlotButton;
 
+	virtual void NativeConstruct() override;
+	void ApplyMasterVolumeValue(const float InValue) const;
+	void ApplySfxVolumeValue(const float InValue) const;
+	void ApplyMusicVolumeValue(const float InValue) const;
 	UFUNCTION()
-	void ApplyMasterVolumeValue(float Value);
-	UFUNCTION()
-	void ApplySfxVolumeValue(float Value);
-	UFUNCTION()
-	void ApplyMusicVolumeValue(float Value);
+	void ResetSaveSlot();
 };

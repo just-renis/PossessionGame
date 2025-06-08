@@ -127,7 +127,6 @@ void UPlayerGhostUI::HintLifeSpanEnd()
 void UPlayerGhostUI::DestroyThis()
 {
 	GetWorld()->GetTimerManager().ClearTimer(HintLifeSpanHandle);
-	(void)DelegateManager->OnFullTutorialEnd.ExecuteIfBound();
 	DelegateManager->OnKeyBindChange.RemoveAll(this);
 	GetWorld()->GetSubsystem<UWidgetManager>()->DestroyWidget(EWidget::TutorialUI);
 }

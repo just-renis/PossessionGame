@@ -5,7 +5,9 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/TutorialDialogue.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -23,12 +25,12 @@ ATutorialDrone::ATutorialDrone()
 void ATutorialDrone::BeginPlay()
 {
 	Super::BeginPlay();
+	GetWorldTimerManager().SetTimer(LookAtTargetHandle, this, &ATutorialDrone::LookAtTarget, 0.02f, true);
 	PlaySound(ESound::DroneBuzz);
 	SetupAttachments();
-	SetupDelegates();
 	RetrieveDroneWaypoints();
+	SetupDelegates();
 	PlayDroneAnimation();
-	DelegateManager->OnGameModeFinished.AddUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
 	GetWorldTimerManager().SetTimer(SpinPropellersHandle, this, &ATutorialDrone::SpinPropellers, 0.05f, true);
 }
 
@@ -91,9 +93,14 @@ void ATutorialDrone::SetupAttachments()
 void ATutorialDrone::SetupDelegates()
 {
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
+	{
+		DelegateManager->OnCheckDistanceToTutorialDrone.BindUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
+	}
+	else SetDroneMoveLocation(2, true);
 	DelegateManager->StartTutorialDroneMoveToLocation.BindUObject(this, &ATutorialDrone::SetDroneMoveLocation);
 	DelegateManager->SendTargetToTutorialDrone.BindUObject(this, &ATutorialDrone::SetDroneLookAtLocation);
-	DelegateManager->OnCheckDistanceToTutorialDrone.BindUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
+	DelegateManager->OnGameModeFinished.AddUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
 }
 
 void ATutorialDrone::ShowRandomTip() const { (void)DelegateManager->OnShowDialogue.ExecuteIfBound(-1); }
@@ -119,7 +126,9 @@ void ATutorialDrone::MoveToLocation()
 				DelegateManager->DestroyTutorialForceField.Broadcast(1);
 				EnableCheckDistanceToTarget(1);
 				break;
-			case 2: EnableCheckDistanceToTarget(2); break;
+			case 2:
+				if (Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished()) EnableCheckDistanceToTarget(3);
+				else EnableCheckDistanceToTarget(2);
 			default: ;
 		}
 	}
@@ -152,7 +161,6 @@ void ATutorialDrone::CheckDistanceToTarget()
 			case 0:
 				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(0);
 				(void)DelegateManager->StopShowingHint.ExecuteIfBound();
-				GetWorldTimerManager().SetTimer(LookAtTargetHandle, this, &ATutorialDrone::LookAtTarget, 0.02f, true);
 				break;
 			case 1:
 				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(4);

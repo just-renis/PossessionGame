@@ -447,7 +447,11 @@ void AEnemy::P_Destroy()
 	Weapon->SetToOriginalSettings();
 	GetMesh()->SetCollisionProfileName("Enemy");
 	NavAreaModifier->Destroy();
-	if (bPlayerDied) return;
+	if (bPlayerDied)
+	{
+		GameInstance->GetSaveSlot()->SaveSlot();
+		return;
+	}
 	P_HUD->Reset();
 	P_HUD = nullptr;
 }

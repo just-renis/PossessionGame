@@ -18,6 +18,12 @@ void UPossessionGameInstance::LoadPlayerSaveSlot()
 	PlayerSaveSlot->SetupSlot(this);
 }
 
+void UPossessionGameInstance::ResetSaveSlot()
+{
+	UGameplayStatics::DeleteGameInSlot(TEXT("PlayerSaveSlot"), 0);
+	LoadPlayerSaveSlot();
+}
+
 void UPossessionGameInstance::Init()
 {
 	Super::Init();

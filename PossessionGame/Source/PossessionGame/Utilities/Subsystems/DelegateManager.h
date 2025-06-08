@@ -21,7 +21,6 @@ DECLARE_DELEGATE(FOnArtifactCollected);
 DECLARE_DELEGATE(FOnSecretDoorOpened);
 DECLARE_DELEGATE(FUpdateGameModeEnemiesAmount);
 DECLARE_DELEGATE(FOnBossSpawn);
-DECLARE_DELEGATE(FOnFullTutorialEnd);
 DECLARE_DELEGATE(FOnOutOfAmmo);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FSendTargetToTutorialDrone, const TObjectPtr<AActor>&);
@@ -77,7 +76,6 @@ public:
 	FOnSecretDoorOpened OnSecretDoorOpened;
 	FUpdateGameModeEnemiesAmount UpdateGameModeEnemiesAmount;
 	FOnBossSpawn OnBossSpawn;
-	FOnFullTutorialEnd OnFullTutorialEnd;
 	FOnOutOfAmmo OnOutOfAmmo;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;

@@ -1,4 +1,6 @@
 ﻿#include "SaveSlot.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Base Data Assets/PlayerLevelData.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -36,12 +38,18 @@ const TMap<int32, int32>* USaveSlot::GetUpgradeChoicesData(const EUpgrade InUpgr
 	return nullptr;
 }
 
+void USaveSlot::SetTutorialFinished()
+{
+	bTutorialFinished = true;
+	SaveSlot();
+}
+
 void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance)
 {
 	GameInstance = InGameInstance;
 	PlayerLevelData = GameInstance->GetPlayerLevelData();
 	GameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
-	GameInstance->GetSubsystem<UDelegateManager>()->OnFullTutorialEnd.BindUObject(this, &USaveSlot::SetTutorialFinished);
+	GameInstance->GetSubsystem<UDelegateManager>()->OnMainTutorialEnd.AddUObject(this, &USaveSlot::SetTutorialFinished);
 	#if WITH_EDITOR
 		CurrentLevel = GameInstance->GetPlayerLevel();
 	#endif
@@ -66,5 +74,7 @@ void USaveSlot::AddXp(const int32 InXp)
 }
 
 void USaveSlot::ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName) { VariationUnlockData.ProgressVariationUnlock(InVariationUnlockName); }
+
+void USaveSlot::SaveSlot() { UGameplayStatics::SaveGameToSlot(this, "PlayerSaveSlot", 0); }
 
 void USaveSlot::UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation) { VariationUnlockData.UpdateSelectedVariation(InCharacter, InVariation); }

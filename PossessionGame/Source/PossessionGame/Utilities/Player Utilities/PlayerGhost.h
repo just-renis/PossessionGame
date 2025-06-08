@@ -44,7 +44,6 @@ private:
 	void PossessEnemy();
 	void RestartLevel() const;
 	void HandleEscapeClick();
-	void SetupTutorial();
 	void PressKeyToContinue();
 	void CheckIfPlayerFallOutOfWorld();
 	void EnablePlayerInput() const;
