@@ -37,11 +37,7 @@ ARanger::ARanger()
 
 void ARanger::AI_ToggleGrenadeLaunchTrigger(const bool bState) const
 {
-	if (AIGrenadeLaunchTriggerSphere)
-	{
-		AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
-		AIGrenadeLaunchTriggerSphere->SetActorHiddenInGame(!bState);
-	}
+	if (AIGrenadeLaunchTriggerSphere) AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
 }
 
 void ARanger::LaunchGrenade()
