@@ -35,7 +35,7 @@ struct POSSESSIONGAME_API FUpgrades
 	UPROPERTY(EditDefaultsOnly)
 	TMap<int32, FUpgradeAttributes> AIUpgrades;
 	UPROPERTY(EditDefaultsOnly)
-	int32 MaxLevel;
+	int32 MaxLevel = 4;
 
 	int32 GetMaxLevel() const { return MaxLevel; }
 };

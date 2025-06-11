@@ -6,7 +6,7 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
@@ -88,8 +88,8 @@ void UUpgradeDetailsPanelUI::SetUpgradeText()
 {
 	if (!UpgradeText) return;
 	FString UpgradeTextString = "";
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
-	const int32 NextLevel = SaveSlot->GetLevelOfChoice(UpgradeData->GetUpgradeName(), ChoiceIndex) + 1;
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetRunSaveSlot();
+	const int32 NextLevel = RunSaveSlot->GetLevelOfChoice(UpgradeData->GetUpgradeName(), ChoiceIndex) + 1;
 	FUpgradeAttributes CurrentUpgradeData = UpgradeData->GetAttributesForLevel(true, NextLevel, ChoiceIndex);
 	if (NextLevel > 1)
 	{
@@ -106,8 +106,8 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
 	bHasBeenSelected = true;
 	PlayAnimation(PressAnim);
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
-	SaveSlot->AddUpgrade(UpgradeData->GetUpgradeName(), ChoiceIndex);
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetRunSaveSlot();
+	RunSaveSlot->AddUpgrade(Cast<UPossessionGameInstance>(GetGameInstance()), UpgradeData->GetUpgradeName(), ChoiceIndex);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->TriggerUpgradeMenuCloseAnimation();
 }
 

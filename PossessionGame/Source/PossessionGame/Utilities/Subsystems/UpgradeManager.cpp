@@ -3,7 +3,7 @@
 #include "PossessionGame/Enums/EAbility.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 
 float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EPoolObject InProjectileName, const EUpgradeAttribute InUpgradeAttribute)
@@ -11,7 +11,7 @@ float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EPoo
 	if (const TObjectPtr<UUpgradeData> UpgradeData = GetProjectileUpgradeData(InProjectileName))
 	{
 		float AttributeValue = 0.f;
-		if (const TMap<int32, int32>* UpgradeChoicesData = SaveSlot->GetUpgradeChoicesData(UpgradeData->GetUpgradeName()))
+		if (const TMap<int32, int32>* UpgradeChoicesData = RunSaveSlot->GetUpgradeChoicesData(UpgradeData->GetUpgradeName()))
 		{
 			for (const TPair<int32, int32>& ChoicePair : *UpgradeChoicesData)
 			{
@@ -29,7 +29,7 @@ float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EAbi
 	if (const TObjectPtr<UUpgradeData> UpgradeData = GetAbilityUpgradeData(InAbilityName))
 	{
 		float AttributeValue = 0.f;
-		if (const TMap<int32, int32>* UpgradeChoicesData = SaveSlot->GetUpgradeChoicesData(UpgradeData->GetUpgradeName()))
+		if (const TMap<int32, int32>* UpgradeChoicesData = RunSaveSlot->GetUpgradeChoicesData(UpgradeData->GetUpgradeName()))
 		{
 			for (const TPair<int32, int32>& ChoicePair : *UpgradeChoicesData)
 			{
@@ -47,8 +47,8 @@ float UUpgradeManager::GetTotalUpgradeAttributeValue(const EUpgradeAttribute InU
 	float Value = 0.f;
 	for (const TPair<EUpgrade, TObjectPtr<UUpgradeData>> Upgrade : Upgrades)
 	{
-		if (InUpgradeAttribute == EUpgradeAttribute::FlatHealth) Value += 10.f * SaveSlot->GetLevelOfAnUpgrade(Upgrade.Key);
-		else if (InUpgradeAttribute == EUpgradeAttribute::FlatDamage) Value += 1.f * SaveSlot->GetLevelOfAnUpgrade(Upgrade.Key);
+		if (InUpgradeAttribute == EUpgradeAttribute::FlatHealth) Value += 10.f * RunSaveSlot->GetLevelOfAnUpgrade(Upgrade.Key);
+		else if (InUpgradeAttribute == EUpgradeAttribute::FlatDamage) Value += 1.f * RunSaveSlot->GetLevelOfAnUpgrade(Upgrade.Key);
 	}
 	return Value;
 }
@@ -80,7 +80,7 @@ TArray<TObjectPtr<UUpgradeData>> UUpgradeManager::GetRandomUpgrades()
 	TMap<EUpgrade, TObjectPtr<UUpgradeData>> ChoosableUpgrades = Upgrades;
 	for (const TPair<EUpgrade, TObjectPtr<UUpgradeData>> UpgradeData : ChoosableUpgrades)
 	{
-		if (UpgradeData.Value->GetMaxLevel() <= SaveSlot->GetLevelOfAnUpgrade(UpgradeData.Key)) UpgradeKeys.Add(UpgradeData.Key);
+		if (UpgradeData.Value->GetMaxLevel() <= RunSaveSlot->GetLevelOfAnUpgrade(UpgradeData.Key)) UpgradeKeys.Add(UpgradeData.Key);
 	}
 	for (const EUpgrade& UpgradeKey : UpgradeKeys) ChoosableUpgrades.Remove(UpgradeKey);
 	UpgradeKeys.Empty();
@@ -100,7 +100,7 @@ void UUpgradeManager::Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpg
 		{EAbility::GuardianAbility1, EUpgrade::GuardianAbility1},
 		{EAbility::GuardianAbility2, EUpgrade::GuardianAbility2}
 	};
-	SaveSlot = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance())->GetSaveSlot();
+	RunSaveSlot = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance())->GetRunSaveSlot();
 }
 
 void UUpgradeManager::AddRandomlyChosenUpgrade(TArray<EUpgrade>& UpgradeKeys, TArray<TObjectPtr<UUpgradeData>>& ChosenUpgrades)

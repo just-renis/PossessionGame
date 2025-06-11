@@ -6,7 +6,7 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "UpgradeManager.generated.h"
 
-class USaveSlot;
+class URunSaveSlot;
 enum class EPoolObject : uint8;
 enum class EAbility : uint8;
 enum class EUpgradeAttribute : uint8;
@@ -29,7 +29,7 @@ public:
 	void Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpgrades);
 private:
 	UPROPERTY()
-	TObjectPtr<USaveSlot> SaveSlot;
+	TObjectPtr<URunSaveSlot> RunSaveSlot;
 	UPROPERTY()
 	TMap<EAbility, EUpgrade> AbilityToUpgradeMap;
 	UPROPERTY()

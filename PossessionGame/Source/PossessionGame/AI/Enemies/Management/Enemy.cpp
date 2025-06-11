@@ -1167,7 +1167,7 @@ void AEnemy::ProcessSpawnEffects()
 
 void AEnemy::AddXp(const int32 InXp) const
 {
-	GameInstance->GetSaveSlot()->AddXp(InXp);
+	GameInstance->GetSaveSlot()->AddXp(GameInstance, InXp);
 	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSaveSlot()->GetXp(), GameInstance->GetSaveSlot()->GetCurrentLevelNeededXp());
 }
 

@@ -1,10 +1,11 @@
 ﻿#include "SaveSlot.h"
-
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Base Data Assets/PlayerLevelData.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+
+constexpr int32 CURRENT_SAVE_VERSION = 1;
 
 bool USaveSlot::GetIsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.IsVariationUnlocked(InVariationUnlockName); }
 
@@ -18,25 +19,7 @@ int32 USaveSlot::GetVariationUnlockProgress(const EVariationUnlock InVariationUn
 
 int32 USaveSlot::GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockRequirement(InVariationUnlockName); }
 
-int32 USaveSlot::GetLevelOfChoice(const EUpgrade InUpgrade, const int32 InChoice)
-{
-	if (const FUpgradeChoicesAmountByLevel* ChoicesAmountByLevel = UnlockedUpgrades.Find(InUpgrade)) return ChoicesAmountByLevel->GetLevelOfChoice(InChoice);
-	return 0;
-}
-
-int32 USaveSlot::GetLevelOfAnUpgrade(const EUpgrade InUpgrade)
-{
-	if (const FUpgradeChoicesAmountByLevel* Choices = UnlockedUpgrades.Find(InUpgrade)) return Choices->GetCurrentLevelOfAnUpgrade();
-	return 0;
-}
-
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
-
-const TMap<int32, int32>* USaveSlot::GetUpgradeChoicesData(const EUpgrade InUpgrade)
-{
-	if (const FUpgradeChoicesAmountByLevel* Choices = UnlockedUpgrades.Find(InUpgrade)) return &Choices->Data;
-	return nullptr;
-}
 
 void USaveSlot::SetTutorialFinished()
 {
@@ -44,37 +27,38 @@ void USaveSlot::SetTutorialFinished()
 	SaveSlot();
 }
 
-void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance)
+void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName)
 {
-	GameInstance = InGameInstance;
-	PlayerLevelData = GameInstance->GetPlayerLevelData();
-	GameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
-	GameInstance->GetSubsystem<UDelegateManager>()->OnMainTutorialEnd.AddUObject(this, &USaveSlot::SetTutorialFinished);
+	PlayerLevelData = InGameInstance->GetPlayerLevelData();
+	SlotName = InSlotName;
+	InGameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
+	InGameInstance->GetSubsystem<UDelegateManager>()->OnMainTutorialEnd.AddUObject(this, &USaveSlot::SetTutorialFinished);
 	#if WITH_EDITOR
-		CurrentLevel = GameInstance->GetPlayerLevel();
+		CurrentLevel = InGameInstance->GetPlayerLevel();
 	#endif
+	VersionMigration();
 }
 
-void USaveSlot::AddUpgrade(const EUpgrade InUpgrade, const int32 InChoice)
-{
-	if (UnlockedUpgrades.Find(InUpgrade)) UnlockedUpgrades[InUpgrade].AddOrUpdate(InChoice);
-	else UnlockedUpgrades.Add(InUpgrade, FUpgradeChoicesAmountByLevel(InChoice));
-	(void)GameInstance->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.ExecuteIfBound(InUpgrade);
-}
-
-void USaveSlot::AddXp(const int32 InXp)
+void USaveSlot::AddXp(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const int32 InXp)
 {
 	CurrentXp += InXp;
 	while (CurrentXp >= GetCurrentLevelNeededXp())
 	{
-		GameInstance->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::LevelUp);
+		InGameInstance->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::LevelUp);
 		CurrentXp -= GetCurrentLevelNeededXp();
-		GameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast(++CurrentLevel);
+		InGameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast(++CurrentLevel);
 	}
 }
 
 void USaveSlot::ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName) { VariationUnlockData.ProgressVariationUnlock(InVariationUnlockName); }
 
-void USaveSlot::SaveSlot() { UGameplayStatics::SaveGameToSlot(this, "PlayerSaveSlot", 0); }
+void USaveSlot::SaveSlot() { UGameplayStatics::SaveGameToSlot(this, SlotName, 0); }
 
 void USaveSlot::UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation) { VariationUnlockData.UpdateSelectedVariation(InCharacter, InVariation); }
+
+void USaveSlot::VersionMigration()
+{
+	if (SaveVersion >= CURRENT_SAVE_VERSION) return;
+	SaveVersion = CURRENT_SAVE_VERSION;
+	SaveSlot();
+}

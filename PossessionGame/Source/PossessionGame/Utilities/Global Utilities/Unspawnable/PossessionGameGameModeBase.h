@@ -27,7 +27,7 @@ struct POSSESSIONGAME_API FSpawnableEnemyByTotalAmount
 	UPROPERTY(EditDefaultsOnly)
 	int32 SpawnThreshold = 0;
 	UPROPERTY(EditDefaultsOnly)
-	ECharacterType Character;
+	ECharacterType Character = ECharacterType::Random;
 };
 
 UCLASS()
