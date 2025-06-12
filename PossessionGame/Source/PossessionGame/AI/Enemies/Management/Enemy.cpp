@@ -667,6 +667,7 @@ void AEnemy::AI_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++)
 
 void AEnemy::AI_SetupHpBar()
 {
+	if (!AI_HpBarComponent) return;
 	AI_HpBar = Cast<UAIHpBarUI>(AI_HpBarComponent->GetWidget());
 	AI_HideHpBar();
 }

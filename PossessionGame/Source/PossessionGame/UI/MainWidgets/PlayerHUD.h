@@ -66,6 +66,7 @@ public:
 private:
 	bool bIsHidden = false;
 	float StepHpPercentage;
+	float BossStepHpPercentage;
 	ECharacterType CharacterType;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> DamageTickTexture;
@@ -107,6 +108,8 @@ private:
 	TObjectPtr<UProgressBar> HpBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HpWhiteBar;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> BossHpWhiteBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> BossHpBar;
 	UPROPERTY(meta = (BindWidget))
@@ -167,6 +170,8 @@ private:
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	UPROPERTY()
 	FTimerHandle UpdateWhiteHpBarHandle;
+	UPROPERTY()
+	FTimerHandle UpdateBossWhiteHpBarHandle;
 	//UPROPERTY()
 	//TArray<TObjectPtr<UImage>> HitDamageIndicatorsPool;
 	//UPROPERTY()
@@ -185,6 +190,7 @@ private:
 	void EnableBossHpBar() const;
 	void DisableBossHpBar() const;
 	void UpdateWhiteHpBar();
+	void UpdateBossWhiteHpBar();
 	void UpdatePressToPossessKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);

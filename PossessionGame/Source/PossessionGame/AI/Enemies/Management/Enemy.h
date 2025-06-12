@@ -131,6 +131,8 @@ protected:
 	TSubclassOf<UCameraShakeBase> StompCameraShake;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;
+	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UWidgetComponent> AI_HpBarComponent;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MI_MeshBaseMaterial;
 	UPROPERTY()
@@ -254,8 +256,6 @@ private:
 	TObjectPtr<UMaterialInterface> PossessionOutlineMaterial;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> UnPossessionOutlineMaterial;
-	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UWidgetComponent> AI_HpBarComponent;
 	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()

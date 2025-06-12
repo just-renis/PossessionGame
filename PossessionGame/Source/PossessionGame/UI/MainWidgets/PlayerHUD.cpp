@@ -18,24 +18,25 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 	switch (InBar)
 	{
 		case EUIBar::Hp:
-			if (HpBar && HpWhiteBar && HpNumberText)
-			{
-				StepHpPercentage = (HpBar->GetPercent() - InCurrent / InMax) * 0.1f;
-				HpWhiteBar->SetPercent(HpBar->GetPercent());
-				HpBar->SetPercent(InCurrent / InMax);
-				HpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
-				GetWorld()->GetTimerManager().SetTimer(UpdateWhiteHpBarHandle, this, &UPlayerHUD::UpdateWhiteHpBar, 0.02f, true);
-			}
+			if (!HpBar || !HpWhiteBar || !HpNumberText) return;
+			StepHpPercentage = (HpBar->GetPercent() - InCurrent / InMax) * 0.1f;
+			HpWhiteBar->SetPercent(HpBar->GetPercent());
+			HpBar->SetPercent(InCurrent / InMax);
+			HpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
+			GetWorld()->GetTimerManager().SetTimer(UpdateWhiteHpBarHandle, this, &UPlayerHUD::UpdateWhiteHpBar, 0.02f, true);
 			break;
 		case EUIBar::Possession: if (PossessionBar) PossessionBar->SetPercent(InCurrent / InMax); break;
 		case EUIBar::Xp:
-			if (XpBar && XpNumberText)
-			{
-				XpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
-				XpBar->SetPercent(InCurrent / InMax);;
-			}
+			if (!XpBar || !XpNumberText) return;
+			XpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
+			XpBar->SetPercent(InCurrent / InMax);
 		break;
-		case EUIBar::Boss: if (BossHpBar) BossHpBar->SetPercent(InCurrent / InMax);
+		case EUIBar::Boss:
+			if (!BossHpBar || !BossHpWhiteBar) return;
+			BossStepHpPercentage = (BossHpBar->GetPercent() - InCurrent / InMax) * 0.1f;
+			BossHpWhiteBar->SetPercent(BossHpBar->GetPercent());
+			BossHpBar->SetPercent(InCurrent / InMax);
+			GetWorld()->GetTimerManager().SetTimer(UpdateBossWhiteHpBarHandle, this, &UPlayerHUD::UpdateBossWhiteHpBar, 0.02f, true);
 		default: ;
 	}
 }
@@ -305,6 +306,18 @@ void UPlayerHUD::UpdateWhiteHpBar()
 		GetWorld()->GetTimerManager().ClearTimer(UpdateWhiteHpBarHandle);
 	}
 	HpWhiteBar->SetPercent(NewPercentage);
+}
+
+void UPlayerHUD::UpdateBossWhiteHpBar()
+{
+	if (!BossHpWhiteBar || !BossHpBar) return;
+	float NewPercentage = BossHpWhiteBar->GetPercent() - BossStepHpPercentage;
+	if (NewPercentage <= BossHpBar->GetPercent())
+	{
+		NewPercentage = BossHpBar->GetPercent();
+		GetWorld()->GetTimerManager().ClearTimer(UpdateBossWhiteHpBarHandle);
+	}
+	BossHpWhiteBar->SetPercent(NewPercentage);
 }
 
 void UPlayerHUD::UpdatePressToPossessKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const

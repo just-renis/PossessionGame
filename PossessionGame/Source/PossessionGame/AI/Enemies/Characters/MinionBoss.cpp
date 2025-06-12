@@ -4,6 +4,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Engine/TriggerSphere.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
@@ -49,6 +50,11 @@ void AMinionBoss::OnLaserFinish()
 
 AMinionBoss::AMinionBoss()
 {
+	if (AI_HpBarComponent)
+	{
+		AI_HpBarComponent->DestroyComponent();
+		AI_HpBarComponent = nullptr;
+	}
 	LaserCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("laserCollision"));
 	LaserCollision->SetupAttachment(GetMesh());
 	LaserCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
