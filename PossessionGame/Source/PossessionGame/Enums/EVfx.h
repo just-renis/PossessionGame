@@ -53,5 +53,6 @@ enum class EVfx : uint8
 	MutantExplosion,
 	PlayerStomp,
 	SecretRewardPopUp,
-	EmpAffected
+	EmpAffected,
+	PossessionViable
 };

@@ -99,7 +99,7 @@ public:
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired = false);
 	void StopSound(const ESound InSoundName);
 	virtual void SetEmpEffect(const float InEffectDuration);
-	void SetPossessionOutline(const bool bState) const;
+	void SetPossessionOutline(const bool bState);
 	void SetUnPossessionOutline(const bool bState) const;
 	void SetPossessionOutlineTimer();
 	void SetUnPossessionOutlineTimer();
@@ -273,6 +273,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> EmpAffected;
 	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> PossessionViable;
+	UPROPERTY()
 	FTimerHandle AI_ClearShootPauseHandle;
 	UPROPERTY()
 	FTimerHandle P_ContinuousFovChangeHandle;
@@ -380,7 +382,7 @@ private:
 	void CheckIfFallOutOfWorld();
 	void SpawnCondenseMaterialsProcess();
 	void DestroyCondenseMaterialsProcess();
-	void DisablePossessionOutline() const;
+	void DisablePossessionOutline();
 	void DisableUnPossessionOutline() const;
 	void OpenInfoPanel();
 	void CloseInfoPanel();

@@ -309,13 +309,36 @@ void AEnemy::SetEmpEffect(const float InEffectDuration)
 	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
 }
 
-void AEnemy::SetPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr); }
+void AEnemy::SetPossessionOutline(const bool bState)
+{
+	if (!PossessionViable)
+	{
+		AssetsManager->AttachVfx(EVfx::PossessionViable, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &PossessionViable, GetMesh(), FName("StompSocket"));
+	}
+	else
+	{
+		if (PossessionViable->IsActive()) PossessionViable->Deactivate();
+		PossessionViable->Activate();
+	}
+	//GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr);
+}
 
-void AEnemy::SetUnPossessionOutline(const bool bState) const { GetMesh()->SetOverlayMaterial(bState ? UnPossessionOutlineMaterial : nullptr); }
+void AEnemy::SetUnPossessionOutline(const bool bState) const
+{
+	if (!PossessionViable) return;
+	if (PossessionViable->IsActive()) PossessionViable->Deactivate();
+//	GetMesh()->SetOverlayMaterial(bState ? UnPossessionOutlineMaterial : nullptr);
+}
 
-void AEnemy::SetPossessionOutlineTimer() { GetWorldTimerManager().SetTimer(DisablePossessionOutlineHandle, this, &AEnemy::DisablePossessionOutline, 0.245f, false); }
+void AEnemy::SetPossessionOutlineTimer()
+{
+	GetWorldTimerManager().SetTimer(DisablePossessionOutlineHandle, this, &AEnemy::DisablePossessionOutline, 0.245f, false);
+}
 
-void AEnemy::SetUnPossessionOutlineTimer() { GetWorldTimerManager().SetTimer(DisableUnPossessionOutlineHandle, this, &AEnemy::DisableUnPossessionOutline, 0.245f, false); }
+void AEnemy::SetUnPossessionOutlineTimer()
+{
+	GetWorldTimerManager().SetTimer(DisableUnPossessionOutlineHandle, this, &AEnemy::DisableUnPossessionOutline, 0.245f, false);
+}
 
 void AEnemy::EmpEffectEnded()
 {
@@ -1087,6 +1110,7 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 			if (!Enemy || !Enemy->GetIsAlive()) return;
 			if (Enemy->GetIsPossessable() && !Enemy->GetIsMutant())
 			{
+				UE_LOG(LogTemp, Error, TEXT("SETPOSSESSION OUTLINE"));
 				Enemy->SetPossessionOutline(true);
 				Enemy->SetPossessionOutlineTimer();
 			}
@@ -1240,7 +1264,7 @@ void AEnemy::DestroyCondenseMaterialsProcess()
 	}
 }
 
-void AEnemy::DisablePossessionOutline() const { SetPossessionOutline(false); }
+void AEnemy::DisablePossessionOutline() { SetPossessionOutline(false); }
 
 void AEnemy::DisableUnPossessionOutline() const { SetUnPossessionOutline(false); }
 

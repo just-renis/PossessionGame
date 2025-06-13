@@ -416,7 +416,9 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_ButtonHover", ESound::ButtonHover);
 	SoundMap.Add("PA_ButtonSelect", ESound::ButtonSelect);
 	SoundMap.Add("PA_UpgradeCardSelect", ESound::UpgradeCardSelect);
-	SoundMap.Add("PA_UpgradePanelAppear", ESound::UpgradePanelAppear);
+	SoundMap.Add("PA_UpgradePanelFadeIn", ESound::UpgradePanelFadeIn);
+	SoundMap.Add("PA_UpgradePanelFadeOut", ESound::UpgradePanelFadeOut);
+	SoundMap.Add("PA_UpgradeChoicesFadeIn", ESound::UpgradeChoicesFadeIn);
 	SoundMap.Add("PA_TaskAnnouncement", ESound::TaskAnnouncement);
 	SoundMap.Add("PA_LevelUp", ESound::LevelUp);
 	SoundMap.Add("PA_GeneratorCompleted", ESound::GeneratorCompleted);
@@ -516,6 +518,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
 	VfxsMap.Add("PA_SecretRewardPopUp", EVfx::SecretRewardPopUp);
 	VfxsMap.Add("PA_EmpAffected", EVfx::EmpAffected);
+	VfxsMap.Add("PA_PossessionViable", EVfx::PossessionViable);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

@@ -25,7 +25,6 @@ void UUpgradeSelectionUI::OpenUI()
 		return;
 	}
 	PlayAnimation(UpgradeMenuOpenAnim);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradePanelAppear);
 	(void)DelegateManager->OnUpgradeSelectionOpened.ExecuteIfBound();
 	Toggle(true);
 	if (UpgradesData.Num() > 0)
@@ -114,7 +113,7 @@ void UUpgradeSelectionUI::Toggle(const bool bState)
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	SetIsEnabled(bState);
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::UpgradePanelFadeIn : ESound::UpgradePanelFadeOut);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
 	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
@@ -163,6 +162,7 @@ void UUpgradeSelectionUI::NativeConstruct()
 void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData)
 {
 	if (!UpgradeChoicesPanel) return;
+	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeChoicesFadeIn);
 	bChoicesOpen = true;
 	if (BackButton) BackButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	PlayerCardOption1->GetUpgradeButton()->SetIsEnabled(false);
