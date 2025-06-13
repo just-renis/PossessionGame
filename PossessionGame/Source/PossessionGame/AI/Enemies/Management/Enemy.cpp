@@ -311,7 +311,7 @@ void AEnemy::SetEmpEffect(const float InEffectDuration)
 
 void AEnemy::SetPossessionOutline(const bool bState)
 {
-	bPossessionOutlineState = bState;
+	/*bPossessionOutlineState = bState;
 	if (bState)
 	{
 		if (!PossessionViable)
@@ -324,15 +324,15 @@ void AEnemy::SetPossessionOutline(const bool bState)
 			PossessionViable->Activate();
 		}
 	}
-	else if (PossessionViable) PossessionViable->Deactivate();
-	//GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr);
+	else if (PossessionViable) PossessionViable->Deactivate();*/
+	GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr);
 }
 
 void AEnemy::SetUnPossessionOutline(const bool bState) const
 {
 	//if (!PossessionViable) return;
 //	if (PossessionViable->IsActive()) PossessionViable->Deactivate();
-//	GetMesh()->SetOverlayMaterial(bState ? UnPossessionOutlineMaterial : nullptr);
+	GetMesh()->SetOverlayMaterial(bState ? UnPossessionOutlineMaterial : nullptr);
 }
 
 void AEnemy::SetPossessionOutlineTimer()
