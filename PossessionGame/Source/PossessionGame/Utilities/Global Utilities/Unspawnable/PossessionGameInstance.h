@@ -13,7 +13,8 @@ class POSSESSIONGAME_API UPossessionGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 public:
-	bool GetIsDemo() const { return bIsDemo; }
+	bool IsDemo() const { return bIsDemo; }
+	bool IsPlayerTakenDamageEffectsEnabled() const { return bPlayerTakenDamageEffectsEnabled; }
 	float GetTimeDilation() const { return GlobalTimeDilation; }
 	int32 GetPlayerLevel() const { return PlayerLevel; }
 	TObjectPtr<UPlayerLevelData> GetPlayerLevelData() const { return PlayerLevelData; }
@@ -25,6 +26,8 @@ public:
 	void ResetSaveSlot();
 	void ResetRunSaveSlot();
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
+	bool bPlayerTakenDamageEffectsEnabled = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Demo", meta = (AllowPrivateAccess = true))
 	bool bIsDemo = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Game Data", meta = (AllowPrivateAccess = true))
