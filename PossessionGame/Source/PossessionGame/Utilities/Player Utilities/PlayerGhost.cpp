@@ -115,6 +115,7 @@ void APlayerGhost::PossessEnemy()
 				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(3);
 				(void)DelegateManager->StopShowingHint.ExecuteIfBound();
 			}
+			else DelegateManager->DestroyTutorialForceField.Broadcast(1);
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(Enemy);
 			Controller->Possess(Enemy);
 			Destroy();

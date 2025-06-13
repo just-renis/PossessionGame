@@ -1,7 +1,5 @@
 ﻿#include "ForceField.h"
 #include "Components/AudioComponent.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -18,11 +16,7 @@ void AForceField::BeginPlay()
 {
 	Super::BeginPlay();
 	MI_Material = ForceField->CreateAndSetMaterialInstanceDynamic(0);
-	if (TutorialForceFieldIndex != 0)
-	{
-		if (Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished()) DestroyThis();
-		else GetGameInstance()->GetSubsystem<UDelegateManager>()->DestroyTutorialForceField.AddUObject(this, &AForceField::StartDissolveTutorialForceField);
-	}
+	if (TutorialForceFieldIndex != 0) GetGameInstance()->GetSubsystem<UDelegateManager>()->DestroyTutorialForceField.AddUObject(this, &AForceField::StartDissolveTutorialForceField);
 	else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnChargeTerminalModeCompletion.BindUObject(this, &AForceField::StartDissolveForceField);
 }
 

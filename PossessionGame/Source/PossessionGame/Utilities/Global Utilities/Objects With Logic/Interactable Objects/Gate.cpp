@@ -34,13 +34,7 @@ void AGate::BeginPlay()
 	Super::BeginPlay();
 	InteractableUI = Cast<UInteractableUI>(InteractableWidget->GetWidget());
 	bNeededArtifact = bNeedsArtifact;
-	if (bIsUnlockableByInteraction)
-	{
-		Collision->OnComponentBeginOverlap.AddDynamic(this, &AGate::EnableInteractionWidget);
-		Collision->OnComponentEndOverlap.AddDynamic(this, &AGate::DisableInteractionWidget);
-		Collision->SetBoxExtent(FVector(250.f, 450.f, 175.f));
-		SetIsInteractable(true);
-	}
+	if (bIsUnlockableByInteraction) SetupInteractability();
 	if (!bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGateAndShowMarker);
 	else if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished()) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMainTutorialEnd.AddUObject(this, &AGate::OpenAsTutorialEndGate);
 	else OpenAsTutorialEndGate();
@@ -135,6 +129,14 @@ void AGate::CloseGateSides()
 	SecondGateSide->SetRelativeLocation(SecondGateSide->GetRelativeLocation() + FVector(0.f, 9.f, 0.f));
 	TimePassed += 0.025f;
 	if (TimePassed >= 1.f) GetWorldTimerManager().ClearTimer(CloseGatesHandle);
+}
+
+void AGate::SetupInteractability()
+{
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &AGate::EnableInteractionWidget);
+	Collision->OnComponentEndOverlap.AddDynamic(this, &AGate::DisableInteractionWidget);
+	Collision->SetBoxExtent(FVector(250.f, 450.f, 175.f));
+	SetIsInteractable(true);
 }
 
 void AGate::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
