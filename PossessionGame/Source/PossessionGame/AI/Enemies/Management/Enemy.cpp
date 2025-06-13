@@ -311,22 +311,27 @@ void AEnemy::SetEmpEffect(const float InEffectDuration)
 
 void AEnemy::SetPossessionOutline(const bool bState)
 {
-	if (!PossessionViable)
+	bPossessionOutlineState = bState;
+	if (bState)
 	{
-		AssetsManager->AttachVfx(EVfx::PossessionViable, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &PossessionViable, GetMesh(), FName("StompSocket"));
+		if (!PossessionViable)
+		{
+			AssetsManager->AttachVfx(EVfx::PossessionViable, [this]() -> bool { return GetIsAlive() && bPossessionOutlineState; }, FNiagaraVariationData(), &PossessionViable, GetMesh(), FName("RootSocket"));
+		}
+		else
+		{
+			if (PossessionViable->IsActive()) PossessionViable->Deactivate();
+			PossessionViable->Activate();
+		}
 	}
-	else
-	{
-		if (PossessionViable->IsActive()) PossessionViable->Deactivate();
-		PossessionViable->Activate();
-	}
+	else if (PossessionViable) PossessionViable->Deactivate();
 	//GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr);
 }
 
 void AEnemy::SetUnPossessionOutline(const bool bState) const
 {
-	if (!PossessionViable) return;
-	if (PossessionViable->IsActive()) PossessionViable->Deactivate();
+	//if (!PossessionViable) return;
+//	if (PossessionViable->IsActive()) PossessionViable->Deactivate();
 //	GetMesh()->SetOverlayMaterial(bState ? UnPossessionOutlineMaterial : nullptr);
 }
 
@@ -1110,7 +1115,6 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 			if (!Enemy || !Enemy->GetIsAlive()) return;
 			if (Enemy->GetIsPossessable() && !Enemy->GetIsMutant())
 			{
-				UE_LOG(LogTemp, Error, TEXT("SETPOSSESSION OUTLINE"));
 				Enemy->SetPossessionOutline(true);
 				Enemy->SetPossessionOutlineTimer();
 			}
