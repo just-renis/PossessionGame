@@ -47,11 +47,15 @@ void UPossessionGameInstance::ResetRunSaveSlot()
 	LoadPlayerRunSaveSlot();
 }
 
+void UPossessionGameInstance::InitAssetsManager() const
+{
+	GetSubsystem<UPrimaryDataAssetsManager>()->Init(PlayerSaveSlot->GetIsTutorialFinished(), MarkerClass, GetSubsystem<UDelegateManager>(), SpawnableEnemiesByTotalAmount);
+}
+
 void UPossessionGameInstance::Init()
 {
 	Super::Init();
 	LoadPlayerSaveSlot();
 	LoadPlayerRunSaveSlot();
 	Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings())->LoadSettings();
-	GetSubsystem<UPrimaryDataAssetsManager>()->Init(PlayerSaveSlot->GetIsTutorialFinished(), MarkerClass, GetSubsystem<UDelegateManager>(), SpawnableEnemiesByTotalAmount);
 }

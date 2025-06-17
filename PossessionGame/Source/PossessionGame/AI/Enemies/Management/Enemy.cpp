@@ -566,21 +566,22 @@ void AEnemy::BeginPlay()
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (AnimInstance) AnimInstance->ClearTimers();
-	GetWorldTimerManager().ClearTimer(AI_ClearShootPauseHandle);
 	GetWorldTimerManager().ClearTimer(P_ContinuousFovChangeHandle);
-	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
-	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	GetWorldTimerManager().ClearTimer(P_ControlLogicHandle);
 	GetWorldTimerManager().ClearTimer(P_StopDashHandle);
-	GetWorldTimerManager().ClearTimer(CheckIfFallOutOfWorldHandle);
-	GetWorldTimerManager().ClearTimer(AI_SetCharacterMovementSpeedHandle);
-	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
-	GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);
-	GetWorldTimerManager().ClearTimer(AI_HideHpBarHandle);
 	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
 	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
 	GetWorldTimerManager().ClearTimer(P_OpenDeathMenuHandle);
 	GetWorldTimerManager().ClearTimer(P_DeathHandle);
+	GetWorldTimerManager().ClearTimer(P_DamageTakenEffectHandle);
+	GetWorldTimerManager().ClearTimer(AI_ClearShootPauseHandle);
+	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
+	GetWorldTimerManager().ClearTimer(AI_SetCharacterMovementSpeedHandle);
+	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
+	GetWorldTimerManager().ClearTimer(AI_HideHpBarHandle);
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	GetWorldTimerManager().ClearTimer(CheckIfFallOutOfWorldHandle);
+	GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);
 	GetWorldTimerManager().ClearTimer(SpawnCondenseMaterialsProcessHandle);
 	Super::EndPlay(EndPlayReason);
 }
@@ -894,9 +895,11 @@ void AEnemy::P_HandlingDamageTaken()
 	if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamage();
 }
 
-void AEnemy::P_TriggerTakeDamageEffects() const
+void AEnemy::P_TriggerTakeDamageEffects()
 {
 	P_MakeCameraShake(ReceivingDamageCameraShake);
+	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 1.f);
+	GetWorldTimerManager().SetTimer(P_DamageTakenEffectHandle, this, &AEnemy::P_DisableDamageTakenRedFlash, 0.1f, false);
 	if (UKismetMathLibrary::RandomInteger(100) >= 75)
 	{
 		AssetsManager->PlaySound2D(ESound::TakeDamageLayer2);
@@ -1136,6 +1139,8 @@ void AEnemy::P_ContinuousFovChange()
 }
 
 void AEnemy::P_StopDash() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
+
+void AEnemy::P_DisableDamageTakenRedFlash() const { if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 0.f); }
 
 void AEnemy::TickAbilities(const float InDeltaTime)
 {

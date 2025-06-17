@@ -38,6 +38,7 @@ public:
 	void LoadPlayerRunSaveSlot();
 	void ResetSaveSlot();
 	void ResetRunSaveSlot();
+	void InitAssetsManager() const;
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	bool bPlayerTakenDamageEffectsEnabled = true;

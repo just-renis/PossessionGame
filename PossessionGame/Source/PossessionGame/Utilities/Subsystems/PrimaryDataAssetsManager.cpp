@@ -255,6 +255,7 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 
 void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount)
 {
+	ClearBeforeInit();
 	MarkerClass = InMarkerClass;
 	bTutorialIsFinished = bIsTutorialFinished;
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
@@ -263,11 +264,11 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubc
 	else AddSpawnableEnemiesToThePool();
 	DelegateManager = InDelegateManager;
 	if (!bTutorialIsFinished) DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
+	SetupSpawnLocations();
 }
 
 void UPrimaryDataAssetsManager::SetupSpawnLocations()
 {
-	SpawnLocations.Empty();
 	TArray<AActor*> Actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnLocation::StaticClass(), Actors);
 	for (TObjectPtr<AActor> Actor : Actors)
@@ -620,6 +621,14 @@ void UPrimaryDataAssetsManager::AddSpawnableEnemiesToThePool()
 		EnemyTypes.Add(SpawnableEnemiesByTotalAmount[NextSpawnableEnemyIndex].Character);
 		NextSpawnableEnemyIndex++;
 	}
+}
+
+void UPrimaryDataAssetsManager::ClearBeforeInit()
+{
+	bCanAsyncLoadHappen = true;
+	bIsSpawnInProcess = false;
+	EnemyTypes.Empty();
+	SpawnLocations.Empty();
 }
 
 template<typename T, typename U>

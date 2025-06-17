@@ -8,7 +8,6 @@
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
-#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
@@ -31,7 +30,7 @@ void APossessionGameGameModeBase::BeginPlay()
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
 	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SetupSpawnLocations();
+	Cast<UPossessionGameInstance>(GetGameInstance())->InitAssetsManager();
 	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
 	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);

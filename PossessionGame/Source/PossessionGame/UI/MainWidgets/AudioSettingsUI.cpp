@@ -48,7 +48,6 @@ void UAudioSettingsUI::NativeConstruct()
 	#if WITH_EDITOR
 		if (ResetSaveSlotButton)
 		{
-			UE_LOG(LogTemp, Error, TEXT("BUTTON WORKS"));
 			ResetSaveSlotButton->OnClicked.AddDynamic(this, &UAudioSettingsUI::ResetSaveSlot);
 			ResetSaveSlotButton->SetVisibility(ESlateVisibility::Visible);
 		}

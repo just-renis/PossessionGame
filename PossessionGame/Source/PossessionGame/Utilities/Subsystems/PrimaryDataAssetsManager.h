@@ -159,6 +159,7 @@ private:
 	void SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode);
 	void AddSpawnableEnemiesToThePool();
+	void ClearBeforeInit();
 	template<typename T, typename U>
 	void FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type);
 };
