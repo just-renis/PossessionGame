@@ -108,7 +108,7 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 
 void UPrimaryDataAssetsManager::DeleteLoadedHandles()
 {
-	for (int32 i = 0; i < AsyncHandles.Num(); i++)
+	for (int32 i = AsyncHandles.Num() - 1; i >= 0; i--)
 	{
 		if (AsyncHandles[i].Handle->HasLoadCompleted())
 		{

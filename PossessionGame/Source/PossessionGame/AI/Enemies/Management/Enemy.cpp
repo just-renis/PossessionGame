@@ -311,7 +311,7 @@ void AEnemy::SetEmpEffect(const float InEffectDuration)
 
 void AEnemy::SetPossessionOutline(const bool bState)
 {
-	/*bPossessionOutlineState = bState;
+	bPossessionOutlineState = bState;
 	if (bState)
 	{
 		if (!PossessionViable)
@@ -324,25 +324,13 @@ void AEnemy::SetPossessionOutline(const bool bState)
 			PossessionViable->Activate();
 		}
 	}
-	else if (PossessionViable) PossessionViable->Deactivate();*/
+	else if (PossessionViable) PossessionViable->Deactivate();
 	GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr);
 }
 
 void AEnemy::SetUnPossessionOutline(const bool bState) const
 {
-	//if (!PossessionViable) return;
-//	if (PossessionViable->IsActive()) PossessionViable->Deactivate();
 	GetMesh()->SetOverlayMaterial(bState ? UnPossessionOutlineMaterial : nullptr);
-}
-
-void AEnemy::SetPossessionOutlineTimer()
-{
-	GetWorldTimerManager().SetTimer(DisablePossessionOutlineHandle, this, &AEnemy::DisablePossessionOutline, 0.245f, false);
-}
-
-void AEnemy::SetUnPossessionOutlineTimer()
-{
-	GetWorldTimerManager().SetTimer(DisableUnPossessionOutlineHandle, this, &AEnemy::DisableUnPossessionOutline, 0.245f, false);
 }
 
 void AEnemy::EmpEffectEnded()
@@ -582,8 +570,6 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorldTimerManager().ClearTimer(P_ContinuousFovChangeHandle);
 	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
-	GetWorldTimerManager().ClearTimer(DisablePossessionOutlineHandle);
-	GetWorldTimerManager().ClearTimer(DisableUnPossessionOutlineHandle);
 	GetWorldTimerManager().ClearTimer(P_ControlLogicHandle);
 	GetWorldTimerManager().ClearTimer(P_StopDashHandle);
 	GetWorldTimerManager().ClearTimer(CheckIfFallOutOfWorldHandle);
@@ -654,7 +640,6 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		if (RadialDamageEvent) GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
 		else if (PointDamageEvent) GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
 	}
-	//else if (P_HUD) P_HUD->SetHitLocation(RadialDamageEvent ? RadialDamageEvent->Origin : PointDamageEvent->HitInfo.Location);
 	return Damage;
 }
 
@@ -783,7 +768,6 @@ void AEnemy::P_SetupUI()
 	Weapon->P_UpdateAmmoTextHUD();
 	P_SetupColorsForUI();
 	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.25f, true);
-	//UKismetSystemLibrary::K2_SetTimer(this, "P_UpdateHitDamageIndicators", 0.25f, true);
 }
 
 void AEnemy::P_PossessEnemy()
@@ -1109,21 +1093,27 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 			IInteractable* Interactable = Cast<IInteractable>(HitActor);
 			if (Interactable->GetIsInteractable()) Interactable->ChangeOutlineState(true);
 		}
-		else
+		else if (bCanPossessOtherEnemy)
 		{
 			const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
-			if (!Enemy || !Enemy->GetIsAlive()) return;
-			if (Enemy->GetIsPossessable() && !Enemy->GetIsMutant())
+			if (Enemy && Enemy->GetIsAlive())
 			{
-				Enemy->SetPossessionOutline(true);
-				Enemy->SetPossessionOutlineTimer();
-			}
-			else
-			{
-				Enemy->SetUnPossessionOutline(true);
-				Enemy->SetUnPossessionOutlineTimer();
+				if (Enemy != CurrentLookedAtEnemy)
+				{
+					if (CurrentLookedAtEnemy) CurrentLookedAtEnemy->SetPossessionOutline(false);
+					if (Enemy->GetIsPossessable() && !Enemy->GetIsMutant()) Enemy->SetPossessionOutline(true);
+					else Enemy->SetUnPossessionOutline(true);
+					CurrentLookedAtEnemy = Enemy;
+				}
+				return;
 			}
 		}
+	}
+	if (CurrentLookedAtEnemy)
+	{
+		CurrentLookedAtEnemy->SetPossessionOutline(false);
+		CurrentLookedAtEnemy->SetUnPossessionOutline(false);
+		CurrentLookedAtEnemy = nullptr;
 	}
 }
 
@@ -1146,8 +1136,6 @@ void AEnemy::P_ContinuousFovChange()
 }
 
 void AEnemy::P_StopDash() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
-
-//void AEnemy::P_UpdateHitDamageIndicators() const { if (P_HUD) P_HUD->UpdateHitDamageIndicators(); }
 
 void AEnemy::TickAbilities(const float InDeltaTime)
 {
@@ -1186,7 +1174,6 @@ void AEnemy::ClearTimers()
 
 void AEnemy::ProcessSpawnEffects()
 {
-//	if (CharacterName != ECharacterType::Guardian && CharacterName != ECharacterType::Minion) return;
 	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetMesh()->GetSocketLocation("SpawnSocket"));
 	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
 	{
@@ -1267,10 +1254,6 @@ void AEnemy::DestroyCondenseMaterialsProcess()
 		Destroy();
 	}
 }
-
-void AEnemy::DisablePossessionOutline() { SetPossessionOutline(false); }
-
-void AEnemy::DisableUnPossessionOutline() const { SetUnPossessionOutline(false); }
 
 void AEnemy::OpenInfoPanel() { if (P_HUD) P_HUD->ToggleInfoPanel(true); }
 

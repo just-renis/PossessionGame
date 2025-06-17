@@ -54,8 +54,6 @@ public:
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs();
 	void PlayFadeOutAnim(const bool bState);
-//	void SetHitLocation(const FVector InHitLocation);
-	//void UpdateHitDamageIndicators();
 	void UpdateReceiveDamageInv();
 	void SetCharacterType(const ECharacterType InCharacterType);
 	void AnnouncePossession();
@@ -72,8 +70,6 @@ private:
 	TObjectPtr<UTexture2D> DamageTickTexture;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> CriticalDamageTickTexture;
-//	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-//	TObjectPtr<UMaterialInterface> MI_HitDamageIndicator;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UAbilitiesPanelUI> RangerAbilitiesPanel;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
@@ -126,8 +122,6 @@ private:
 	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> BossHpBarInv;
-	//UPROPERTY(meta = (BindWidget))
-//	TObjectPtr<UOverlay> HitDamageIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> PressKeyBindInv;
 	UPROPERTY(meta = (BindWidget))
@@ -172,16 +166,10 @@ private:
 	FTimerHandle UpdateWhiteHpBarHandle;
 	UPROPERTY()
 	FTimerHandle UpdateBossWhiteHpBarHandle;
-	//UPROPERTY()
-	//TArray<TObjectPtr<UImage>> HitDamageIndicatorsPool;
-	//UPROPERTY()
-	//TArray<FHitDamageIndicator> InUseHitDamageIndicators;
 
-	//float GetHitDamageIndicatorSection(const float InAngle);
 	TObjectPtr<UAbilitiesPanelUI> GetAbilityPanel();
 	
 	virtual void NativeConstruct() override;
-	//void SpawnHitDamageIndicator(const float InAngle);
 	void ShowDamageTick(const bool bIsCritical);
 	void LevelUp(const int32 InLevel);
 	void PlayLevelUpAnim();

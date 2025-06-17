@@ -203,13 +203,6 @@ void UPlayerHUD::ShowOutOfAmmo()
 	OutOfAmmoInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
-/*void UPlayerHUD::SetHitLocation(const FVector InHitLocation)
-{
-	const FVector Diff = (Player->GetActorLocation() - InHitLocation).GetSafeNormal(0.001f);
-	const float Angle = FMath::Atan2(Player->GetActorForwardVector().X * Diff.Y - Player->GetActorForwardVector().Y * Diff.X, Player->GetActorForwardVector().Dot(Diff));
-	SpawnHitDamageIndicator(Angle);
-}*/
-
 TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
 {
 	switch (CharacterType)
@@ -233,36 +226,6 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerHUD::UpdatePressToPossessKeyBind);
 	DelegateManager->OnOutOfAmmo.BindUObject(this, &UPlayerHUD::ShowOutOfAmmo);
 }
-
-/*void UPlayerHUD::SpawnHitDamageIndicator(const float InAngle)
-{
-	if (HitDamageIndicatorsPool.IsEmpty())
-	{
-		if (!WidgetTree) return;
-		HitDamageIndicatorsPool.Push(WidgetTree->ConstructWidget<UImage>(UImage::StaticClass()));
-		if (!HitDamageIndicator || HitDamageIndicatorsPool.IsEmpty()) return;
-		HitDamageIndicator->AddChild(HitDamageIndicatorsPool[0]);
-		const TObjectPtr<UImage> HitDamageIndicatorImg = HitDamageIndicatorsPool.Pop();
-		const TObjectPtr<UMaterialInstanceDynamic> Material = UMaterialInstanceDynamic::Create(MI_HitDamageIndicator, this);
-		Material->SetScalarParameterValue("Angle", GetHitDamageIndicatorSection(FMath::RadiansToDegrees(InAngle)));
-		if (!HitDamageIndicatorImg || !HitDamageIndicatorImg->Slot) return;
-		const TObjectPtr<UOverlaySlot> OverlaySlot = Cast<UOverlaySlot>(HitDamageIndicatorImg->Slot);
-		if (!OverlaySlot) return;
-		OverlaySlot->SetHorizontalAlignment(HAlign_Fill);
-		OverlaySlot->SetVerticalAlignment(VAlign_Fill);
-		HitDamageIndicatorImg->SetBrushFromMaterial(Material);
-		InUseHitDamageIndicators.Push(FHitDamageIndicator(HitDamageIndicatorImg));
-	}
-	else
-	{
-		if (!HitDamageIndicator || HitDamageIndicatorsPool.IsEmpty()) return;
-		HitDamageIndicator->AddChild(HitDamageIndicatorsPool[0]);
-		const TObjectPtr<UImage> HitDamageIndicatorImg = HitDamageIndicatorsPool.Pop();
-		if (!HitDamageIndicatorImg) return;
-		HitDamageIndicatorImg->GetDynamicMaterial()->SetScalarParameterValue("Angle", GetHitDamageIndicatorSection(FMath::RadiansToDegrees(InAngle)));HitDamageIndicatorImg->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		InUseHitDamageIndicators.Push(FHitDamageIndicator(HitDamageIndicatorImg));
-	}
-}*/
 
 void UPlayerHUD::ShowDamageTick(const bool bIsCritical)
 {
@@ -324,32 +287,6 @@ void UPlayerHUD::UpdatePressToPossessKeyBind(const FName& InKeyBindName, const F
 {
 	if (PressKeyBindText && InKeyBindName.IsEqual("Hijack")) PressKeyBindText->SetText(FText::Format(FText::FromString("Press {0} to possess"), InKeyBindText));
 }
-
-/*float UPlayerHUD::GetHitDamageIndicatorSection(const float InAngle)
-{
-	float SectionValue = 0.75f;
-	if (InAngle >= -90.f && InAngle < 0.f) SectionValue = 0.5f;
-	else if (InAngle >= 0.f && InAngle < 90.f) SectionValue = 0.25f;
-	else if (InAngle >= 90.f && InAngle <= 180.f) SectionValue = 0.f;
-	return SectionValue;
-}*/
-
-/*void UPlayerHUD::UpdateHitDamageIndicators()
-{
-	for (int32 i = InUseHitDamageIndicators.Num() - 1; i >= 0; i--)
-	{
-		if (InUseHitDamageIndicators[i].Image)
-		{
-			InUseHitDamageIndicators[i].CurrentDelay += 0.25f;
-			if (InUseHitDamageIndicators[i].CurrentDelay >= InUseHitDamageIndicators[i].Delay)
-			{
-				InUseHitDamageIndicators[i].Image->SetVisibility(ESlateVisibility::Collapsed);
-				HitDamageIndicatorsPool.Push(InUseHitDamageIndicators[i].Image);
-				InUseHitDamageIndicators.RemoveAt(i);
-			}
-		}
-	}
-}*/
 
 template<typename T>
 void UPlayerHUD::ToggleUI(const TObjectPtr<T>& InUI)

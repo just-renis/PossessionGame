@@ -100,9 +100,7 @@ public:
 	void StopSound(const ESound InSoundName);
 	virtual void SetEmpEffect(const float InEffectDuration);
 	void SetPossessionOutline(const bool bState);
-	void SetUnPossessionOutline(const bool bState) const;
-	void SetPossessionOutlineTimer();
-	void SetUnPossessionOutlineTimer();
+	virtual void SetUnPossessionOutline(const bool bState) const;
 	virtual void EmpEffectEnded();
 	void SetInputState(const bool bState) { bIsInputLocked = bState; }
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
@@ -276,6 +274,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> PossessionViable;
 	UPROPERTY()
+	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
+	UPROPERTY()
 	FTimerHandle AI_ClearShootPauseHandle;
 	UPROPERTY()
 	FTimerHandle P_ContinuousFovChangeHandle;
@@ -283,10 +283,6 @@ private:
 	FTimerHandle AI_TriggerDeathVoiceLineHandle;
 	UPROPERTY()
 	FTimerHandle DestroyHandle;
-	UPROPERTY()
-	FTimerHandle DisablePossessionOutlineHandle;
-	UPROPERTY()
-	FTimerHandle DisableUnPossessionOutlineHandle;
 	UPROPERTY()
 	FTimerHandle P_ControlLogicHandle;
 	UPROPERTY()
@@ -365,8 +361,6 @@ private:
 	void P_OpenDeathMenu() const;
 	void P_ContinuousFovChange();
 	void P_StopDash() const;
-	//UFUNCTION()
-	//void P_UpdateHitDamageIndicators() const;
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	void TickAbilities(const float InDeltaTime);
@@ -383,8 +377,6 @@ private:
 	void CheckIfFallOutOfWorld();
 	void SpawnCondenseMaterialsProcess();
 	void DestroyCondenseMaterialsProcess();
-	void DisablePossessionOutline();
-	void DisableUnPossessionOutline() const;
 	void OpenInfoPanel();
 	void CloseInfoPanel();
 	void PlayEmpAffectedVfx(const float InEffectDuration);

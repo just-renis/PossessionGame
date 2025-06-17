@@ -190,7 +190,6 @@ void AMinionBoss::ToggleStompTrigger(const bool bState) const
 	if (StompTriggerSphere)
 	{
 		StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
-		StompTriggerSphere->SetActorHiddenInGame(!bState);
 	}
 }
 
