@@ -44,7 +44,7 @@ void USaveSlot::AddXp(const TObjectPtr<UPossessionGameInstance>& InGameInstance,
 	CurrentXp += InXp;
 	while (CurrentXp >= GetCurrentLevelNeededXp())
 	{
-		InGameInstance->GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::LevelUp);
+		InGameInstance->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::LevelUp);
 		CurrentXp -= GetCurrentLevelNeededXp();
 		InGameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast(++CurrentLevel);
 	}

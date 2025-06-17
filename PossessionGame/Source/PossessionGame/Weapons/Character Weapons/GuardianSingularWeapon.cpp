@@ -68,7 +68,7 @@ void AGuardianSingularWeapon::BeginPlay()
 
 void AGuardianSingularWeapon::SetMeshes(EWeapon PrimaryDataAssetName)
 {
-	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(PrimaryDataAssetName)->WeaponMesh.Get());
+	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(PrimaryDataAssetName)->WeaponMesh.Get());
 	Mesh->SetMaterial(0, MI_GuardianWeaponMaterial);
 	
 	//MID_GuardianWeaponMaterial = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(0), this);

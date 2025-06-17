@@ -53,7 +53,7 @@ void UHandsAnimInstance::NativeBeginPlay()
 {
     Super::NativeBeginPlay();
     DelegateManager = GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>();
-    AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
+    AssetsManager = GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
     OnMontageBlendingOut.AddDynamic(this, &UHandsAnimInstance::OnMontageEnd);
 }
 

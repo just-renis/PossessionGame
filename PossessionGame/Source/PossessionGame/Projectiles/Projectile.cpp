@@ -57,7 +57,7 @@ void AProjectile::SetDirection(const FVector& InDirection) const { MovementCompo
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
+	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	UpgradeManager = GetWorld()->GetSubsystem<UUpgradeManager>();
 	Mesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 }

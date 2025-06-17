@@ -27,7 +27,7 @@ void USettingsUI::BeginRebind(const TObjectPtr<UKeyBindingUI>& InTargetKeyWidget
 void USettingsUI::OpenUI()
 {
 	SetIsEnabled(true);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	PlayAnimation(SettingsFadeInAnim);
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(EWidget::SettingsUI);
@@ -37,7 +37,7 @@ void USettingsUI::CloseUI()
 {
 	SetIsEnabled(false);
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(EWidget::None);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
 	PlayAnimation(SettingsFadeInAnim, 0, 1, EUMGSequencePlayMode::Reverse);
 	BindToAnimationFinished(SettingsFadeInAnim, SettingsPanelFadeOutDelegate);
 	SetSavedSettings();
@@ -113,12 +113,12 @@ void USettingsUI::ToggleRebindPanel(const bool bState)
 	if (!RebindPanelInv) return;
 	if (bState)
 	{
-		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
 		RebindPanelInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 	else
 	{
-		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
 		BindToAnimationFinished(RebindPanelFadeInAnim, RebindPanelFadeOutDelegate);
 	}
 	PlayAnimation(RebindPanelFadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
@@ -140,13 +140,13 @@ void USettingsUI::SettingsFadeOutFinished()
 
 void USettingsUI::CloseWithButton()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
 	CloseUI();
 }
 
 void USettingsUI::ApplySettings()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 	if (ControlsSettings && !ControlsSettings->ApplySettings()) OpenDuplicateKeyBindsPopup();
 	else
 	{
@@ -186,7 +186,7 @@ void USettingsUI::ResetKeyBindsToDefault()
 {
 	if (!ControlsSettings) return;
 	ControlsSettings->ResetKeyBindsToDefault();
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 }
 
 void USettingsUI::CloseDuplicateKeyBindsPopup()

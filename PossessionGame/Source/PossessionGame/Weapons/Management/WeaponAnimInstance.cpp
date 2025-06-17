@@ -64,7 +64,7 @@ void UWeaponAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupte
 void UWeaponAnimInstance::NativeBeginPlay()
 {
     Super::NativeBeginPlay();
-    AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
+    AssetsManager = GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
     OnMontageBlendingOut.AddDynamic(this, &UWeaponAnimInstance::OnMontageEnd);
 }
 

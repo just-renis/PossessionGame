@@ -62,7 +62,7 @@ void ATricksterWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> 
 
 void ATricksterWeapon::SetMeshes(const EWeapon InPrimaryDataAssetName)
 {
-	if (!HandsMesh->GetSkeletalMeshAsset()) HandsMesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(InPrimaryDataAssetName)->HandsMesh.Get());
+	if (!HandsMesh->GetSkeletalMeshAsset()) HandsMesh->SetSkeletalMesh(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(InPrimaryDataAssetName)->HandsMesh.Get());
 }
 
 void ATricksterWeapon::PlayShootMontage()

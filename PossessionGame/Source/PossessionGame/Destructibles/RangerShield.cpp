@@ -61,7 +61,7 @@ void ARangerShield::UpdateShieldMaterialValues(const float InOpacity, const floa
 
 void ARangerShield::PlaySound(const ESound InSoundName)
 {
-	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], nullptr, InSoundName);
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], nullptr, InSoundName);
 }
 
 void ARangerShield::MoveShield()

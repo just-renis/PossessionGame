@@ -81,7 +81,7 @@ bool UEnemyAnimationInstance::IsMontageExisting(const EEnemyAnimState InState) c
 void UEnemyAnimationInstance::NativeBeginPlay()
 {
     Super::NativeBeginPlay();
-    AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
+    AssetsManager = GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
     SetProprietor();
     AssignOnMontageEnd();
 }

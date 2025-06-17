@@ -113,7 +113,7 @@ void UUpgradeSelectionUI::Toggle(const bool bState)
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	SetIsEnabled(bState);
 	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::UpgradePanelFadeIn : ESound::UpgradePanelFadeOut);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::UpgradePanelFadeIn : ESound::UpgradePanelFadeOut);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
 	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
@@ -162,7 +162,7 @@ void UUpgradeSelectionUI::NativeConstruct()
 void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData)
 {
 	if (!UpgradeChoicesPanel) return;
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeChoicesFadeIn);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeChoicesFadeIn);
 	bChoicesOpen = true;
 	if (BackButton) BackButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	PlayerCardOption1->GetUpgradeButton()->SetIsEnabled(false);
@@ -177,7 +177,7 @@ void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>
 
 void UUpgradeSelectionUI::TriggerHoverAnimForFirstOption()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayerCardOption1->StopUnHoverAnim();
 	EnemyCardOption1->StopUnHoverAnim();
 	PlayerCardOption1->PlayHoverAnim();
@@ -194,7 +194,7 @@ void UUpgradeSelectionUI::TriggerUnHoverAnimForFirstOption()
 
 void UUpgradeSelectionUI::TriggerHoverAnimForSecondOption()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayerCardOption2->StopUnHoverAnim();
 	EnemyCardOption2->StopUnHoverAnim();
 	PlayerCardOption2->PlayHoverAnim();

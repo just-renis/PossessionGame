@@ -50,13 +50,13 @@ void ASecretCrate::GiveReward()
 	const int32 RandomIndex = FMath::RandRange(0, RewardMaterials.Num() - 1);
 	SetupRewardText(RandomIndex);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSecretRewardCollected.ExecuteIfBound(RandomIndex);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::SecretRewardPopUp, nullptr, GetActorLocation() + FVector(0.f, 0.f, 30.f), FRotator::ZeroRotator,
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::SecretRewardPopUp, nullptr, GetActorLocation() + FVector(0.f, 0.f, 30.f), FRotator::ZeroRotator,
 	FNiagaraVariationData(), {{"Material", FNiagaraAttribute(true, RewardMaterials[RandomIndex])}});
 }
 
 void ASecretCrate::PlaySound(const ESound InSoundName)
 {
-	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], nullptr, InSoundName);
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], nullptr, InSoundName);
 }
 
 void ASecretCrate::StopSound(const ESound InSoundName)

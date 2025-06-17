@@ -20,7 +20,7 @@ void UDialogueUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
+	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
     if (DialogueText) DialogueText->SetText(FText::FromString(""));
 }
 

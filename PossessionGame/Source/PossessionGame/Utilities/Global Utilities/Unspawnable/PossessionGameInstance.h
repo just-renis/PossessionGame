@@ -2,11 +2,24 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGameInstance.generated.h"
 
+class AMarker;
 class URunSaveSlot;
 class UPlayerLevelData;
 class USaveSlot;
+
+USTRUCT()
+struct POSSESSIONGAME_API FSpawnableEnemyByTotalAmount
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 SpawnThreshold = 0;
+	UPROPERTY(EditDefaultsOnly)
+	ECharacterType Character = ECharacterType::Random;
+};
 
 UCLASS()
 class POSSESSIONGAME_API UPossessionGameInstance : public UGameInstance
@@ -36,6 +49,10 @@ private:
 	float GlobalTimeDilation = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	int32 PlayerLevel = 0;
+	UPROPERTY(EditAnywhere, Category = "Marker", meta = (AllowPrivateAccess = true))
+	TSubclassOf<AMarker> MarkerClass;
+	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
+	TArray<FSpawnableEnemyByTotalAmount> SpawnableEnemiesByTotalAmount;
 	UPROPERTY()
 	TObjectPtr<USaveSlot> PlayerSaveSlot;
 	UPROPERTY()

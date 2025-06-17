@@ -225,7 +225,7 @@ void AWeapon::P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName)
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
+	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	if (Name != EWeapon::MinionWeapon) SetMeshes(Name);
 	AI_Setup();

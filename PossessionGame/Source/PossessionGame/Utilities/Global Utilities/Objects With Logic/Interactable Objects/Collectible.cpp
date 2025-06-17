@@ -25,7 +25,7 @@ ACollectible::ACollectible()
 void ACollectible::BeginPlay()
 {
 	Super::BeginPlay();
-	if (Data->HasAura()) GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(Data->GetAuraName(), nullptr, FNiagaraVariationData(), &Aura, Collision, NAME_None);
+	if (Data->HasAura()) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(Data->GetAuraName(), nullptr, FNiagaraVariationData(), &Aura, Collision, NAME_None);
 	PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
 	InteractableUI = Cast<UInteractableUI>(InteractableWidget->GetWidget());
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACollectible::EnableInteractionWidget);
@@ -59,7 +59,7 @@ void ACollectible::Interact()
 {
 	if (!GetIsInteractable()) return;
 	if (Aura) Aura->Deactivate();
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbCollect);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbCollect);
 	GetWorldTimerManager().ClearTimer(FloatHandle);
 	GetWorldTimerManager().ClearTimer(SpinHandle);
 	PoolingManager->ReturnObjectToPool(Data->GetCollectibleName(), this);
@@ -70,7 +70,7 @@ void ACollectible::Interact()
 
 void ACollectible::ShowMarker()
 {
-	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 50.f), FRotator::ZeroRotator);
+	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 50.f), FRotator::ZeroRotator);
 	Marker->Toggle(true);
 	Marker->SetActorLocation(GetActorLocation() + FVector(0.f, 0.f, 50.f));
 }

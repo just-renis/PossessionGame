@@ -43,6 +43,6 @@ void ATricksterSingularWeapon::BeginPlay()
 
 void ATricksterSingularWeapon::SetMeshes(EWeapon PrimaryDataAssetName)
 {
-	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(PrimaryDataAssetName)->WeaponMesh.Get());
+	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(PrimaryDataAssetName)->WeaponMesh.Get());
 	OriginalScale = Mesh->GetRelativeScale3D();
 }

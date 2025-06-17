@@ -29,12 +29,9 @@ void APossessionGameGameModeBase::BeginPlay()
 	//GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->Init(DelegateManager);
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->Init(SaveSlot->GetIsTutorialFinished(), MarkerClass, DelegateManager, SpawnableEnemiesByTotalAmount);
 	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
-//	FString LevelName = GetWorld()->GetMapName();
-//	LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
-//	if (!LevelName.Equals("TutorialLevel")) SaveSlot->SetTutorialFinished();
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SetupSpawnLocations();
 	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
 	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);

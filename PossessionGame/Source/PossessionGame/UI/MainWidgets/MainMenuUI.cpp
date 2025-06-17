@@ -39,21 +39,21 @@ void UMainMenuUI::SetupButtons()
 	if (PlayButton) PlayButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::Play);
 	if (SettingsButton) SettingsButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::OpenSettings);
 	if (QuitButton) QuitButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopupFadeIn);
-	if (QuitConfirmationPopup->GetAcceptButton()) QuitConfirmationPopup->GetAcceptButton()->OnClicked.AddDynamic(this, &UMainMenuUI::QuitGame);
-	if (QuitConfirmationPopup->GetDeclineButton()) QuitConfirmationPopup->GetDeclineButton()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopupFadeOut);
+	if (QuitConfirmationPopup->GetAcceptButton()) QuitConfirmationPopup->GetAcceptButton()->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::QuitGame);
+	if (QuitConfirmationPopup->GetDeclineButton()) QuitConfirmationPopup->GetDeclineButton()->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopupFadeOut);
 }
 
 void UMainMenuUI::TriggerMainMenuFadeInAnim()
 {
 	ToggleMenuButtons(true);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
 	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim));
 }
 
 void UMainMenuUI::TriggerMainMenuFadeOutAnim()
 {
 	ToggleMenuButtons(false);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
 	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim), 1, EUMGSequencePlayMode::Reverse);
 }
 

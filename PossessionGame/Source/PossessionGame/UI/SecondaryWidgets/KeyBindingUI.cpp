@@ -50,7 +50,7 @@ void UKeyBindingUI::OnSelectingKeyChanged()
 {
 	if (!InputKeySelectorButton || !ParentWidget) return;
 	PlayKeyBindButtonSelectAnim();
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 	InputKeySelectorButton->SetIsEnabled(false);
 	ParentWidget->BeginRebind(this);
 }
@@ -97,14 +97,14 @@ void UKeyBindingUI::ResetSingularKeyBind()
 {
 	PlayResetButtonSelectAnim();
 	ResetKeyBind();
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
 }
 
 void UKeyBindingUI::PlayResetButtonSelectAnim() { PlayAnimation(ResetSelectAnim); }
 
 void UKeyBindingUI::PlayResetHoverAnim()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayAnimation(ResetHoverAnim, GetAnimationCurrentTime(ResetHoverAnim));
 }
 
@@ -117,7 +117,7 @@ void UKeyBindingUI::PlayKeyBindButtonSelectAnim() { PlayAnimation(KeyBindSelectA
 
 void UKeyBindingUI::PlayKeyBindHoverAnim()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayAnimation(KeyBindHoverAnim, GetAnimationCurrentTime(KeyBindHoverAnim));
 }
 

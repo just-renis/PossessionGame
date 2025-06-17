@@ -6,7 +6,7 @@
 void UGuardianAbility2::P_Execute()
 {
 	bIsAbilityInDuration = true;
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianSlowMotion, true);
+	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianSlowMotion, true);
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.2f);
 	Proprietor->SetCustomTimeDilation(5.f);
 	Super::P_Execute();
@@ -16,7 +16,7 @@ void UGuardianAbility2::P_StopAbility()
 {
 	if (bIsAbilityInDuration)
 	{
-		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->RemoveStoredSound(ESound::GuardianSlowMotion);
+		GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RemoveStoredSound(ESound::GuardianSlowMotion);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 		Proprietor->SetCustomTimeDilation(1.f);
 		Super::P_StopAbility();

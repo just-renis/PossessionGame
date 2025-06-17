@@ -146,7 +146,7 @@ void APlayerGhost::CheckIfPlayerFallOutOfWorld()
 {
 	if (GetActorLocation().Z <= -1000.f)
 	{
-		if (GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->IsAsyncLoadingFinished())
+		if (GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->IsAsyncLoadingFinished())
 		{
 			GetWorld()->GetTimerManager().ClearTimer(CheckHandle);
 			RestartLevel();

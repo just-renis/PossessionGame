@@ -74,7 +74,7 @@ FORCEINLINE uint32 GetTypeHash(const FCharacterPairWrapper& PairWrapper)
 }
 
 UCLASS()
-class POSSESSIONGAME_API UPrimaryDataAssetsManager : public UWorldSubsystem
+class POSSESSIONGAME_API UPrimaryDataAssetsManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 public:
@@ -103,6 +103,7 @@ public:
 	void ChangeVfxVariation(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const FNiagaraVariationData& InNiagaraVariationData);
 	void RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount);
+	void SetupSpawnLocations();
 private:
 	bool bCanAsyncLoadHappen = true;
 	bool bIsSpawnInProcess = false;
@@ -155,7 +156,6 @@ private:
 	void SetupVfx(TFunction<bool()> InCallback, const FNiagaraVariationData& InNiagaraVariationData, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes, const bool bDeactivate = false);
 	void AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
-	void SetupSpawnLocations();
 	void SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode);
 	void AddSpawnableEnemiesToThePool();

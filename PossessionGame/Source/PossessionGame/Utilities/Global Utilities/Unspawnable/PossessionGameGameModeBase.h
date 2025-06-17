@@ -17,18 +17,6 @@ class USettingsSave;
 enum class EWidget : uint8;
 class APoolObject;
 enum class EPoolObject : uint8;
-enum class ECharacterType : uint8;
-
-USTRUCT()
-struct POSSESSIONGAME_API FSpawnableEnemyByTotalAmount
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly)
-	int32 SpawnThreshold = 0;
-	UPROPERTY(EditDefaultsOnly)
-	ECharacterType Character = ECharacterType::Random;
-};
 
 UCLASS()
 class POSSESSIONGAME_API APossessionGameGameModeBase : public AGameModeBase
@@ -43,12 +31,8 @@ private:
 	bool bToggleDebugMode = false;
 	UPROPERTY(EditAnywhere, Category = "Save Data", meta = (AllowPrivateAccess = true))
 	TSubclassOf<USettingsSave> SettingsSaveClass;
-	UPROPERTY(EditAnywhere, Category = "Marker", meta = (AllowPrivateAccess = true))
-	TSubclassOf<AMarker> MarkerClass;
 	UPROPERTY(EditAnywhere, Category = "EQS", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UEnvQuery> TargetEQS;
-	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
-	TArray<FSpawnableEnemyByTotalAmount> SpawnableEnemiesByTotalAmount;
 	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
 	TMap<EGameMode, TObjectPtr<UGameModeData>> GameModesData;
 	UPROPERTY(EditAnywhere, Category = "Level Prefabs", meta = (AllowPrivateAccess = true))

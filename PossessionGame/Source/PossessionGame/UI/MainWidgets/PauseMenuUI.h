@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PauseMenuUI.generated.h"
 
+class UConfirmationPopupUI;
 class UMainMenuButtonUI;
 class UTextBlock;
 class UButton;
@@ -24,10 +25,13 @@ private:
 	TObjectPtr<UMainMenuButtonUI> SettingsButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> ReturnToMenuButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UConfirmationPopupUI> ReturnToMainMenuPopup;
 
 	virtual void NativeConstruct() override;
 	void Toggle(bool bState);
 	void SetupButtons();
+	void SetButtonsState(const bool bState) const;
 	UFUNCTION()
 	void OpenSettings();
 	UFUNCTION()
@@ -36,4 +40,8 @@ private:
 	void RestartLevel();
 	UFUNCTION()
 	void QuitGame();
+	UFUNCTION()
+	void TriggerReturnToMainMenuPopupFadeIn();
+	UFUNCTION()
+	void TriggerReturnToMainMenuPopupFadeOut();
 };

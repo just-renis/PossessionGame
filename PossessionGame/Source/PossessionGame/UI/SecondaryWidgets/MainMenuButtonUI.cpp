@@ -31,13 +31,13 @@ void UMainMenuButtonUI::SetupButtonEvents()
 
 void UMainMenuButtonUI::TriggerClickAnim()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 	PlayAnimation(ButtonClickAnim);
 }
 
 void UMainMenuButtonUI::TriggerHoverAnim()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim));
 }
 

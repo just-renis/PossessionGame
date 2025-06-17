@@ -36,7 +36,7 @@ void AUsbTerminal::Interact()
 	if (!GetIsInteractable()) return;
 	if (CurrentUsbIndex < 5)
 	{
-		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbInsert);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbInsert);
 		UsbMeshes[CurrentUsbIndex]->SetVisibility(true);
 		(void)DelegateManager->OnUsbInserted.ExecuteIfBound();
 		if (++CurrentUsbIndex < 5) DelegateManager->SetIsUsbDroppable(true);
@@ -47,7 +47,7 @@ void AUsbTerminal::Interact()
 
 void AUsbTerminal::ShowMarker()
 {
-	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 140.f), FRotator::ZeroRotator);
+	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 140.f), FRotator::ZeroRotator);
 	Marker->Toggle(true);
 }
 

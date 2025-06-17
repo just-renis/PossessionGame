@@ -54,7 +54,7 @@ void AGate::OpenGate(const EGameMode InGameMode)
 {
 	if (GameModeToFinish == InGameMode)
 	{
-		OpenGatesSfx->Sound ? OpenGatesSfx->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(OpenGatesSfx, nullptr, ESound::GatesOpen);
+		OpenGatesSfx->Sound ? OpenGatesSfx->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(OpenGatesSfx, nullptr, ESound::GatesOpen);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AGate::CloseGate);
 		GetWorldTimerManager().SetTimer(OpenGatesHandle, this, &AGate::OpenGateSides, 0.025f, true);
 	}
@@ -102,7 +102,7 @@ void AGate::ChangeOutlineState(const bool bState)
 void AGate::ShowMarker(const EGameMode InGameMode)
 {
 	if (GameModeToFinish != InGameMode) return;
-	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 100.f), FRotator::ZeroRotator);
+	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 100.f), FRotator::ZeroRotator);
 	Marker->Toggle(true);
 }
 

@@ -103,7 +103,7 @@ void UUpgradeDetailsPanelUI::SetUpgradeText()
 
 void UUpgradeDetailsPanelUI::SelectUpgrade()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
 	bHasBeenSelected = true;
 	PlayAnimation(PressAnim);
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetRunSaveSlot();
@@ -113,7 +113,7 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 
 void UUpgradeDetailsPanelUI::PlayHoverAnim()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	StopAnimation(UnHoverAnim);
 	PlayAnimation(HoverAnim);
 }

@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ConfirmationPopupUI.generated.h"
 
+class UMainMenuButtonUI;
 class UButton;
 class UTextBlock;
 
@@ -12,12 +13,12 @@ class POSSESSIONGAME_API UConfirmationPopupUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	TObjectPtr<UButton> GetAcceptButton() { return AcceptButton; }
-	TObjectPtr<UButton> GetDeclineButton() { return DeclineButton; }
+	TObjectPtr<UMainMenuButtonUI> GetAcceptButton() { return AcceptButton; }
+	TObjectPtr<UMainMenuButtonUI> GetDeclineButton() { return DeclineButton; }
 
 	void PlayPopupFadeInAnim(const bool bState);
 private:
-	UPROPERTY(EditAnywhere, Category = "Confirmation Settings", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = "Confirmation Settings", meta = (MultiLine, AllowPrivateAccess = true))
 	FText ConfirmationTitleText;
 	UPROPERTY(EditAnywhere, Category = "Confirmation Settings", meta = (AllowPrivateAccess = true))
 	FText AcceptText;
@@ -26,13 +27,9 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UTextBlock> ConfirmationTitle;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	TObjectPtr<UTextBlock> AcceptButtonText;
+	TObjectPtr<UMainMenuButtonUI> AcceptButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	TObjectPtr<UTextBlock> DeclineButtonText;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	TObjectPtr<UButton> AcceptButton;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	TObjectPtr<UButton> DeclineButton;
+	TObjectPtr<UMainMenuButtonUI> DeclineButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> PopupFadeIn;
 	UPROPERTY()

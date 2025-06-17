@@ -17,7 +17,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/SpawnLocation.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 
 bool UPrimaryDataAssetsManager::IsAsyncLoadingFinished()
 {
@@ -255,7 +255,6 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 
 void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount)
 {
-	SetupSpawnLocations();
 	MarkerClass = InMarkerClass;
 	bTutorialIsFinished = bIsTutorialFinished;
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
@@ -263,8 +262,21 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubc
 	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	else AddSpawnableEnemiesToThePool();
 	DelegateManager = InDelegateManager;
-	if (bTutorialIsFinished) SpawnTutorialEnemy(ECharacterType::Guardian, EGameMode::TutorialMode1);
-	else DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
+	if (!bTutorialIsFinished) DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
+}
+
+void UPrimaryDataAssetsManager::SetupSpawnLocations()
+{
+	SpawnLocations.Empty();
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnLocation::StaticClass(), Actors);
+	for (TObjectPtr<AActor> Actor : Actors)
+	{
+		TObjectPtr<ASpawnLocation> SpawnLocation = Cast<ASpawnLocation>(Actor);
+		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
+		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
+	}
+	SpawnTutorialEnemy(ECharacterType::Guardian, EGameMode::TutorialMode1);
 }
 
 bool UPrimaryDataAssetsManager::IsGameRunning()
@@ -572,18 +584,6 @@ void UPrimaryDataAssetsManager::AsyncLoadCallback(const EWeapon InSingularWeapon
 	}
 	GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
 	SpawnEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack);
-}
-
-void UPrimaryDataAssetsManager::SetupSpawnLocations()
-{
-	TArray<AActor*> Actors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnLocation::StaticClass(), Actors);
-	for (TObjectPtr<AActor> Actor : Actors)
-	{
-		TObjectPtr<ASpawnLocation> SpawnLocation = Cast<ASpawnLocation>(Actor);
-		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
-		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
-	}
 }
 
 void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)

@@ -216,7 +216,7 @@ TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
 void UPlayerHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
-	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
+	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnPlayerDamageDealt.BindUObject(this, &UPlayerHUD::ShowDamageTick);
 	DelegateManager->OnLevelUp.AddUObject(this, &UPlayerHUD::LevelUp);

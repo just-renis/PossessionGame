@@ -9,7 +9,7 @@ void UPA_VfxContainer::LoadVfx(const TObjectPtr<UWorld>& InWorld, const TFunctio
 	if (!bIsInLoad)
 	{
 		bIsInLoad = true;
-		const TObjectPtr<UPrimaryDataAssetsManager> AssetsManager = World->GetSubsystem<UPrimaryDataAssetsManager>();
+		const TObjectPtr<UPrimaryDataAssetsManager> AssetsManager = World->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 		if (AssetsManager->GetCanAsyncLoadHappen())
 		{
 			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(VfxEffect.ToSoftObjectPath(), [this]

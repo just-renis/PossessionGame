@@ -13,13 +13,13 @@ void USettingsOptionUI::NativeConstruct()
 
 void USettingsOptionUI::OnLeftArrowClicked()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
 	PlayAnimation(LeftArrowClickAnim);
 }
 
 void USettingsOptionUI::OnRightArrowClicked()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
 	PlayAnimation(RightArrowClickAnim);
 }
 

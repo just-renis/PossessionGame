@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EWidget.h"
+#include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
@@ -48,7 +49,7 @@ void UPauseMenuUI::Toggle(const bool bState)
 	if (WidgetManager->ContainsWidget(EWidget::PlayerHUD)) WidgetManager->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
 	SetIsEnabled(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
@@ -60,8 +61,18 @@ void UPauseMenuUI::Toggle(const bool bState)
 void UPauseMenuUI::SetupButtons()
 {
 	if (ContinueButton) ContinueButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::CloseUI);
-	if (ReturnToMenuButton) ReturnToMenuButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::ReturnToMainMenu);
+	if (ReturnToMenuButton) ReturnToMenuButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::TriggerReturnToMainMenuPopupFadeIn);
 	if (SettingsButton) SettingsButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::OpenSettings);
+	if (ReturnToMainMenuPopup->GetAcceptButton()) ReturnToMainMenuPopup->GetAcceptButton()->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::ReturnToMainMenu);
+	if (ReturnToMainMenuPopup->GetDeclineButton()) ReturnToMainMenuPopup->GetDeclineButton()->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::TriggerReturnToMainMenuPopupFadeOut);
+
+}
+
+void UPauseMenuUI::SetButtonsState(const bool bState) const
+{
+	if (ContinueButton) ContinueButton->Get()->SetIsEnabled(bState);
+	if (ReturnToMenuButton) ReturnToMenuButton->Get()->SetIsEnabled(bState);
+	if (SettingsButton) SettingsButton->Get()->SetIsEnabled(bState);
 }
 
 void UPauseMenuUI::ReturnToMainMenu() { UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenuLevel")); }
@@ -80,4 +91,18 @@ void UPauseMenuUI::RestartLevel()
 void UPauseMenuUI::QuitGame()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+}
+
+void UPauseMenuUI::TriggerReturnToMainMenuPopupFadeIn()
+{
+	if (!ReturnToMainMenuPopup) return;
+	SetButtonsState(false);
+	ReturnToMainMenuPopup->PlayPopupFadeInAnim(true);
+}
+
+void UPauseMenuUI::TriggerReturnToMainMenuPopupFadeOut()
+{
+	if (!ReturnToMainMenuPopup) return;
+	SetButtonsState(true);
+	ReturnToMainMenuPopup->PlayPopupFadeInAnim(false);
 }

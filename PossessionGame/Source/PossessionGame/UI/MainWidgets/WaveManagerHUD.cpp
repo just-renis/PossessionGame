@@ -95,7 +95,7 @@ void UWaveManagerHUD::ToggleFinishOffEnemiesText(const bool bState)
 {
 	if (bState)
 	{
-		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::FinishOffEnemies);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::FinishOffEnemies);
 		PlayAnimation(FinishOffEnemiesFadeInAnim);
 	}
 	if (FinishOfEnemiesText) FinishOfEnemiesText->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);

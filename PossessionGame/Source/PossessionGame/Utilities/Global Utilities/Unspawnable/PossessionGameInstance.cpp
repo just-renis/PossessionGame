@@ -3,6 +3,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UPossessionGameInstance::LoadPlayerSaveSlot()
 {
@@ -52,4 +53,5 @@ void UPossessionGameInstance::Init()
 	LoadPlayerSaveSlot();
 	LoadPlayerRunSaveSlot();
 	Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings())->LoadSettings();
+	GetSubsystem<UPrimaryDataAssetsManager>()->Init(PlayerSaveSlot->GetIsTutorialFinished(), MarkerClass, GetSubsystem<UDelegateManager>(), SpawnableEnemiesByTotalAmount);
 }

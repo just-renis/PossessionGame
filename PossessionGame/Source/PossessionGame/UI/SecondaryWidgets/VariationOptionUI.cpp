@@ -31,12 +31,12 @@ void UVariationOptionUI::SelectVariation()
 {
 	if (bIsLocked)
 	{
-		GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::NotSelectable);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::NotSelectable);
 		return;
 	}
 	if (!SelectedText || bIsSelected) return;
 	PlayAnimation(SelectAnim);
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.Broadcast(CharacterType, Variation);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(CharacterType);
 	SetSelected(true);
@@ -76,7 +76,7 @@ void UVariationOptionUI::SelectionChange(const ECharacterType InCharacterType, c
 
 void UVariationOptionUI::VariationOptionHovered()
 {
-	GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	if (!VariationOptionBorder) return;
 	(void)ShowDetailsPanel.ExecuteIfBound(true, bIsLocked ? UnlockProgressText : DetailsPanelText);
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward);

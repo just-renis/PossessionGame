@@ -67,7 +67,7 @@ void AGuardianWeapon::SetMeshes(const EWeapon InPrimaryDataAssetName)
 {
 	if (!HandsMesh->GetSkeletalMeshAsset())
 	{
-		HandsMesh->SetSkeletalMesh(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(InPrimaryDataAssetName)->HandsMesh.Get());
+		HandsMesh->SetSkeletalMesh(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(InPrimaryDataAssetName)->HandsMesh.Get());
 		if (!HandsMesh) return;
 		MI_Hands = HandsMesh->CreateAndSetMaterialInstanceDynamic(0);
 		if (MI_Hands) MI_Hands->SetScalarParameterValue("Progress", 0.4f);

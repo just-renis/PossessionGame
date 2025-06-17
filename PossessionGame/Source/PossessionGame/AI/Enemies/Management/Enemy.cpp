@@ -546,7 +546,7 @@ void AEnemy::BeginPlay()
 	DelegateManager = GameInstance->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 	AI_SetupHpBar();
-	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
+	AssetsManager = GameInstance->GetSubsystem<UPrimaryDataAssetsManager>();
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
 	SetMesh(CharacterName);
 	ProcessSpawnEffects();

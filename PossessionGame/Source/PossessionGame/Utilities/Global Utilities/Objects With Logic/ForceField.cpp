@@ -41,7 +41,7 @@ void AForceField::StartDissolveTutorialForceField(const int32 InIndex)
 
 void AForceField::StartDissolveForceField()
 {
-	DissolveSfx->Sound ? DissolveSfx->Play() : GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(DissolveSfx, nullptr, ESound::ForceFieldDissolve);
+	DissolveSfx->Sound ? DissolveSfx->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(DissolveSfx, nullptr, ESound::ForceFieldDissolve);
 	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AForceField::DissolveForceField, 0.025f, true);
 }
 

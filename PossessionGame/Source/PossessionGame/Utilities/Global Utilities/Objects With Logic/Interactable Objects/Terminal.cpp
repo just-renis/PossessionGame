@@ -32,7 +32,7 @@ void ATerminal::Interact()
 
 void ATerminal::ShowMarker()
 {
-	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 140.f), FRotator::ZeroRotator);
+	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 140.f), FRotator::ZeroRotator);
 	Marker->Toggle(true);
 }
 

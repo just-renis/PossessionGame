@@ -6,7 +6,7 @@
 void AMusicPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
+	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AMusicPlayer::ChangeSoundTrack);
 }
 

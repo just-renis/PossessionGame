@@ -11,7 +11,7 @@ void UWaveManager::Init(const TObjectPtr<UDelegateManager>& InDelegateManager, c
 {
 	DelegateManager = InDelegateManager;
 	GameModesData = InGameModesData;
-	AssetsManager = GetWorld()->GetSubsystem<UPrimaryDataAssetsManager>();
+	AssetsManager = GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &UWaveManager::SetAndStartGameMode);
 	CurrentGameMode = EGameMode::TutorialMode1;
 	//DelegateManager->OnTutorialEnd.AddUObject(this, &UWaveManager::FinishTutorial);
