@@ -19,20 +19,6 @@ class UProgressBar;
 class UImage;
 class UTextBlock;
 
-/*USTRUCT()
-struct POSSESSIONGAME_API FHitDamageIndicator
-{
-	GENERATED_BODY()
-
-	FHitDamageIndicator() : Image(nullptr) {}
-	FHitDamageIndicator(const TObjectPtr<UImage>& InImage) : Image(InImage) {}
-
-	float Delay = 1.f;
-	float CurrentDelay = 0.f;
-	UPROPERTY()
-	TObjectPtr<UImage> Image;
-};*/
-
 UCLASS()
 class POSSESSIONGAME_API UPlayerHUD : public UUserWidget
 {
@@ -56,7 +42,6 @@ public:
 	void PlayFadeOutAnim(const bool bState);
 	void UpdateReceiveDamageInv();
 	void SetCharacterType(const ECharacterType InCharacterType);
-	void AnnouncePossession();
 	void SetCurrentCrosshair() const;
 	void ToggleInfoPanel(const bool bState) const;
 	void ShowPossessionUnavailable();
@@ -91,7 +76,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> DamageTickInv;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> PossessionAnnouncementInv;
+	TObjectPtr<UInvalidationBox> AnnouncementInv;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> AnnouncementText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> DamageTickImage;
 	UPROPERTY(meta = (BindWidget))
@@ -180,6 +167,7 @@ private:
 	void UpdateWhiteHpBar();
 	void UpdateBossWhiteHpBar();
 	void UpdatePressToPossessKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const;
+	void PlayAnnouncement(const FText& InText);
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };

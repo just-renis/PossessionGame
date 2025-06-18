@@ -211,7 +211,7 @@ void AEnemy::PossessedBy(AController* NewController)
 			AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
 			GetWorldTimerManager().SetTimer(AI_TriggerDeathVoiceLineHandle, this, &AEnemy::AI_TriggerDeathVoiceLine, 1.f, false);
 			P_Setup();
-			if (P_HUD) P_HUD->AnnouncePossession();
+			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Hijacked"));
 			SetInputState(false);
 		}
 	}
