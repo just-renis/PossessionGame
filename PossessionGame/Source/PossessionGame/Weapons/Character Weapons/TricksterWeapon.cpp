@@ -19,7 +19,7 @@ void ATricksterWeapon::AI_Reload() { PlaySound(ESound::TricksterReload, true); }
 
 void ATricksterWeapon::P_Reload(int32 OtherAmmoSource)
 {
-	PlaySound(ESound::TricksterReload, true);
+	AssetsManager->PlaySound2D(ESound::TricksterReload);
 	P_PlayOverChargeVfx();
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
 	Super::P_Reload(OtherAmmoSource);

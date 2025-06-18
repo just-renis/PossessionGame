@@ -26,7 +26,7 @@ void ATricksterSingularWeapon::P_Shoot(bool bIsFirstWeapon)
 {
 	if (ShootTimer >= ShootCooldown)
 	{
-		PlaySound(ESound::TricksterShoot, true);
+		AssetsManager->PlaySound2D(ESound::TricksterShoot);
 		MuzzleFlashLogic();
 		MakeShootingCameraShake();
 		CurrentAmmo--;

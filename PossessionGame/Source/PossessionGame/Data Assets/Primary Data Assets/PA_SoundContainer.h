@@ -13,6 +13,12 @@ public:
 	FName SoundName;
 	UPROPERTY(EditAnywhere, Category = "Sound Data")
 	TSoftObjectPtr<USoundBase> Sound;
+	UPROPERTY(EditDefaultsOnly, Category = "Sound Data")
+	bool bIsCharacterTypeDependant = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Sound Data", meta = (EditCondition = "bIsCharacterTypeDependant", EditConditionHides = true))
+	float PlayerVolume = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Sound Data", meta = (EditCondition = "bIsCharacterTypeDependant", EditConditionHides = true))
+	float EnemyVolume = 1.f;
 	
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 };

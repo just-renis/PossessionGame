@@ -13,8 +13,8 @@ class POSSESSIONGAME_API ATrickster : public AEnemy
 public:
 	FOnWeaponShootStateChange& GetOnWeaponShootStateChangeDelegate() { return OnWeaponShootStateChange; }
 	
-	void ThrowPoisonGrenade();
-	void ThrowEmpGrenade();
+	void P_ThrowPoisonGrenade() const;
+	void P_ThrowEmpGrenade() const;
 private:
 	ATrickster();
 	

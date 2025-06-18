@@ -15,8 +15,10 @@ public:
 	ARanger();
 	
 	void AI_ToggleGrenadeLaunchTrigger(const bool bState) const;
+	void AI_LaunchGrenade();
+
+	void P_LaunchGrenade();
 	
-	void LaunchGrenade();
 	void SpawnShield();
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade Launcher", meta = (AllowPrivateAccess = true))

@@ -44,7 +44,7 @@ void AGuardianSingularWeapon::P_Shoot(const bool bIsFirstWeapon)
 {
 	if (ShootTimer >= ShootCooldown)
 	{
-		PlaySound(ESound::GuardianShoot, true);
+		AssetsManager->PlaySound2D(ESound::GuardianShoot);
 		MuzzleFlashLogic();
 		MakeShootingCameraShake();
 		ShootTimer = 0.f;

@@ -286,7 +286,7 @@ void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageRea
 void AEnemy::PlaySound(const ESound InSoundName, const bool bIsCallbackRequired)
 {
 	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() :
-	AssetsManager->ConfigureSound(Sounds[InSoundName], bIsCallbackRequired ? [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); } : TFunction<bool()>(), InSoundName);
+	AssetsManager->ConfigureSound(Sounds[InSoundName], bIsCallbackRequired ? [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); } : TFunction<bool()>(), InSoundName, bIsPossessed);
 }
 
 void AEnemy::StopSound(const ESound InSoundName)
@@ -689,7 +689,7 @@ void AEnemy::AI_SetupHpBar()
 void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason)
 {
 	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 1.f);
-	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.1f, false);
+	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.02f, false);
 	ProcessDamageReason(InDamageReason);
 	if (!AI_HpBar) return;
 	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);

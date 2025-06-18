@@ -33,7 +33,7 @@ void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInter
 	}
 }
 
-void URangerAnimationInstance::LaunchGrenade() const { if (Proprietor->IsAsyncAssetStillAllowedToBeUsed()) Cast<ARanger>(Proprietor)->LaunchGrenade(); }
+void URangerAnimationInstance::LaunchGrenade() const { if (Proprietor->IsAsyncAssetStillAllowedToBeUsed()) Cast<ARanger>(Proprietor)->AI_LaunchGrenade(); }
 
 void URangerAnimationInstance::TriggerGrenadeProjection() const
 {

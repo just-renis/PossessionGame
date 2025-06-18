@@ -40,9 +40,16 @@ void ARanger::AI_ToggleGrenadeLaunchTrigger(const bool bState) const
 	if (AIGrenadeLaunchTriggerSphere) AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
 }
 
-void ARanger::LaunchGrenade()
+void ARanger::AI_LaunchGrenade()
 {
 	PlaySound(ESound::RangerGrenadeLaunch, true);
+	Weapon->ShootProjectile(EPoolObject::RangerGrenadeLauncherProjectile, false);
+	GrenadeLauncherMuzzleFlashLogic();
+}
+
+void ARanger::P_LaunchGrenade()
+{
+	AssetsManager->PlaySound2D(ESound::RangerGrenadeLaunch);
 	Weapon->ShootProjectile(EPoolObject::RangerGrenadeLauncherProjectile, false);
 	GrenadeLauncherMuzzleFlashLogic();
 }

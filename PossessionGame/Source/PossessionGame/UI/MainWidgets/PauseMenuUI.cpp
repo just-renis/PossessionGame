@@ -1,5 +1,4 @@
 ﻿#include "PauseMenuUI.h"
-
 #include "PlayerHUD.h"
 #include "SettingsUI.h"
 #include "Components/Button.h"
@@ -52,7 +51,6 @@ void UPauseMenuUI::Toggle(const bool bState)
 {
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>(); 
 	if (WidgetManager->ContainsWidget(EWidget::PlayerHUD)) WidgetManager->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
-	UE_LOG(LogTemp, Warning, TEXT("TOGGLE STATE: %i"), bState);
 	if (bState) PlayAnimation(FadeInAnim);
 	SetIsEnabled(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);

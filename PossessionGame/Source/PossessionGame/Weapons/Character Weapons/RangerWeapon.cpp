@@ -28,14 +28,14 @@ void ARangerWeapon::AI_Shoot()
 
 void ARangerWeapon::P_Shoot(bool bIsFirstWeapon)
 {
-	PlaySound(ESound::RangerShoot, true);
+	AssetsManager->PlaySound2D(ESound::RangerShoot);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
 	Super::P_Shoot(bIsFirstWeapon);
 }
 
 void ARangerWeapon::P_Reload(int32 OtherAmmoSource)
 {
-	PlaySound(ESound::RangerReload, true);
+	AssetsManager->PlaySound2D(ESound::RangerReload);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
 	if (AnimInstance) AnimInstance->PlayMontage(EWeaponAnimState::Reload);
 	Super::P_Reload(OtherAmmoSource);

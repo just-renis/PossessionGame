@@ -94,8 +94,8 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	void AddAsyncHandle(TSharedPtr<FStreamableHandle>& Handle) { AsyncHandles.Add(FAsyncHandle(Handle)); }
 	void DeleteLoadedHandles();
-	void ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, ESound InSoundName);
-	void PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef = false);
+	void ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer = true);
+	void PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef = false, const bool bIsPlayer = true);
 	void RemoveStoredSound(const ESound InSoundName);
 	void AttachVfx(const EVfx InVfxName, TFunction<bool()> InCallback, const FNiagaraVariationData& InNiagaraVariationData, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo = nullptr, const FName InSocketName = NAME_None, const bool bDeactivate = false, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>(), const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EAttachLocation::Type InAttachType = EAttachLocation::SnapToTarget, const bool bAutoDestroy = false);
 	void SpawnVfx(const EVfx InVfxName, TFunction<bool()> InCallback, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const FNiagaraVariationData& InNiagaraVariationData = FNiagaraVariationData(), const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
@@ -152,7 +152,7 @@ private:
 	void SetupSoundsPrimaryAssets();
 	void SetupCharactersPrimaryAssets();
 	void SetupVfxsPrimaryAssets();
-	void SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, ESound InSoundName);
+	void SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, ESound InSoundName, const bool bIsPlayer);
 	void SetupVfx(TFunction<bool()> InCallback, const FNiagaraVariationData& InNiagaraVariationData, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes, const bool bDeactivate = false);
 	void AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);

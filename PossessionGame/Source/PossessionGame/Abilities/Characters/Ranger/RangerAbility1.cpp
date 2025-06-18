@@ -20,7 +20,7 @@ void URangerAbility1::P_Execute()
 {
 	Proprietor->SetActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::GrenadeLaunch);
-	Proprietor->LaunchGrenade();
+	Proprietor->P_LaunchGrenade();
 	Super::P_Execute();
 }
 

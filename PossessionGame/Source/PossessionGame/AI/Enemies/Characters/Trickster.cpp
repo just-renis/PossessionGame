@@ -22,15 +22,15 @@ ATrickster::ATrickster()
 	Sounds[ESound::TricksterGrenadeThrow]->SetupAttachment(GetMesh());
 }
 
-void ATrickster::ThrowPoisonGrenade()
+void ATrickster::P_ThrowPoisonGrenade() const
 {
-	PlaySound(ESound::TricksterGrenadeThrow, true);
+	AssetsManager->PlaySound2D(ESound::TricksterGrenadeThrow);
 	Weapon->ShootProjectile(EPoolObject::TricksterPoisonProjectile);
 }
 
-void ATrickster::ThrowEmpGrenade()
+void ATrickster::P_ThrowEmpGrenade() const
 {
-	PlaySound(ESound::TricksterGrenadeThrow, true);
+	AssetsManager->PlaySound2D(ESound::TricksterGrenadeThrow);
 	Weapon->ShootProjectile(EPoolObject::TricksterEmpProjectile, false);
 }
 

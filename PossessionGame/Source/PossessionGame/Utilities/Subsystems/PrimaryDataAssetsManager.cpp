@@ -119,30 +119,33 @@ void UPrimaryDataAssetsManager::DeleteLoadedHandles()
 	if (AsyncHandles.IsEmpty()) bCanAsyncLoadHappen = false;
 }
 
-void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, ESound InSoundName)
+void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
 {
 	if (GetCanAsyncLoadHappen())
 	{
 		const FSoftObjectPath PathToLoad = GetSoundData(InSoundName)->Sound.ToSoftObjectPath();
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, InAudioComp, InCallback, InSoundName]
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, InAudioComp, InCallback, InSoundName, bIsPlayer]
 		{
-			if (IsGameRunning()) SetAndPlaySoundCallback(InAudioComp, InCallback, InSoundName);
+			if (IsGameRunning()) SetAndPlaySoundCallback(InAudioComp, InCallback, InSoundName, bIsPlayer);
 		});
 		AddAsyncHandle(Handle);
 	}
 }
 
-void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef)
+void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef, const bool bIsPlayer)
 {
 	if (GetCanAsyncLoadHappen())
 	{
 		const FSoftObjectPath PathToLoad = GetSoundData(InSoundName)->Sound.ToSoftObjectPath();
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, InSoundName, bStoreSoundRef]
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, InSoundName, bStoreSoundRef, bIsPlayer]
 		{
 			if (IsGameRunning())
 			{
-				if (bStoreSoundRef) StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), GetSoundData(InSoundName)->Sound.Get()));
-				else UGameplayStatics::PlaySound2D(GetWorld(), GetSoundData(InSoundName)->Sound.Get());
+				const TObjectPtr<UPA_SoundContainer> SoundData = GetSoundData(InSoundName);
+				float VolumeMultiplier = 1.f;
+				if (SoundData->bIsCharacterTypeDependant) VolumeMultiplier = bIsPlayer ? SoundData->PlayerVolume : SoundData->EnemyVolume;
+				if (bStoreSoundRef) StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), SoundData->Sound.Get(), VolumeMultiplier));
+				else UGameplayStatics::PlaySound2D(GetWorld(), SoundData->Sound.Get(), VolumeMultiplier);
 			}
 		});
 		AddAsyncHandle(Handle);
@@ -536,10 +539,15 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Empty();
 }
 
-void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName)
+void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
 {
+	const TObjectPtr<UPA_SoundContainer> SoundData = GetSoundData(InSoundName);
 	InAudioComp->SetSound(GetSoundData(InSoundName)->Sound.Get());
 	if (InCallback && !InCallback()) return;
+	if (SoundData->bIsCharacterTypeDependant)
+	{
+		InAudioComp->SetFloatParameter("Volume", bIsPlayer ? SoundData->PlayerVolume : SoundData->EnemyVolume);
+	}
 	InAudioComp->Play();
 }
 

@@ -38,7 +38,8 @@ void ARangerShield::Init(bool bInIsPlayerObject)
 	ShieldMaterialValueChanger = 0;
 	const float SizeIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bInIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::Size);
 	SetActorScale3D(FVector(GetActorScale3D().X + GetActorScale3D().X * SizeIncrease * 0.01f, GetActorScale3D().Y, GetActorScale3D().Z + GetActorScale3D().Z * SizeIncrease * 0.01f));
-	PlaySound(ESound::RangerDeployShield);
+	if (bInIsPlayerObject) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::RangerDeployShield);
+	else PlaySound(ESound::RangerDeployShield);
 	UpdateShieldMaterialValues(0.f, 0.7f);
 	Super::Init(bInIsPlayerObject);
 	GetWorldTimerManager().SetTimer(MoveShieldHandle, this, &ARangerShield::MoveShield, 0.05f, true);

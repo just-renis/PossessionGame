@@ -279,7 +279,7 @@ void AWeapon::DetachWeapon()
 void AWeapon::PlaySound(const ESound InSoundName, const bool bIsCallbackRequired)
 {
 	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() :
-	AssetsManager->ConfigureSound(Sounds[InSoundName], bIsCallbackRequired ? [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); } : TFunction<bool()>(), InSoundName);
+	AssetsManager->ConfigureSound(Sounds[InSoundName], bIsCallbackRequired ? [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); } : TFunction<bool()>(), InSoundName, bIsPossessed);
 }
 
 void AWeapon::MuzzleFlashLogic()
