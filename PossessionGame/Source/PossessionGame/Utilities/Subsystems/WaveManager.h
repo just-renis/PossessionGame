@@ -34,5 +34,4 @@ private:
 	TObjectPtr<UGameModeData> GetGameModeData(const EGameMode InGameMode);
 
 	void SetAndStartGameMode(const EGameMode InGameMode);
-	//void FinishTutorial();
 };

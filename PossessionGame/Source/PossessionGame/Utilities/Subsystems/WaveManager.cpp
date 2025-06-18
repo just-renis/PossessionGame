@@ -14,7 +14,6 @@ void UWaveManager::Init(const TObjectPtr<UDelegateManager>& InDelegateManager, c
 	AssetsManager = GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &UWaveManager::SetAndStartGameMode);
 	CurrentGameMode = EGameMode::TutorialMode1;
-	//DelegateManager->OnTutorialEnd.AddUObject(this, &UWaveManager::FinishTutorial);
 }
 
 TObjectPtr<UGameModeData> UWaveManager::GetGameModeData(const EGameMode InGameMode)
@@ -38,5 +37,3 @@ void UWaveManager::SetAndStartGameMode(const EGameMode InGameMode)
 	if (!CurrentModeLogic) return;
 	CurrentModeLogic->Init(this, GetGameModeData(InGameMode));
 }
-
-//void UWaveManager::FinishTutorial() { bTutorialIsFinished = true; }
