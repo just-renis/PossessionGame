@@ -32,7 +32,6 @@ DECLARE_DELEGATE_OneParam(FOnSecretRewardCollected, const int32);
 DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const TObjectPtr<UUpgradeData>&);
 DECLARE_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
-DECLARE_DELEGATE_OneParam(FRequirePlayerAnnouncementInfo, const FText&);
 DECLARE_DELEGATE_TwoParams(FStartTutorialDroneMoveToLocation, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
@@ -91,7 +90,6 @@ public:
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
 	FOnUpgradeCardSelected OnUpgradeCardSelected;
 	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
-	FRequirePlayerAnnouncementInfo RequirePlayerAnnouncementInfo;
 	FStartTutorialDroneMoveToLocation StartTutorialDroneMoveToLocation;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnAbilityUse OnAbilityUse;

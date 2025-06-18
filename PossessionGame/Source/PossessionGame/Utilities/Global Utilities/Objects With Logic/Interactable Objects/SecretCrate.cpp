@@ -1,6 +1,8 @@
 ﻿#include "SecretCrate.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
+#include "PossessionGame/UI/SecondaryWidgets/CustomTextUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -8,6 +10,9 @@ ASecretCrate::ASecretCrate()
 {
 	CrateMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("crateMesh"));
 	CrateMesh->SetupAttachment(RootComponent);
+	CustomTextWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("customTextWidgetComponent"));
+	CustomTextWidget->SetupAttachment(RootComponent);
+	CustomTextWidget->SetVisibility(false);
 	Sounds.Add(ESound::SecretCratePassive, CreateDefaultSubobject<UAudioComponent>(TEXT("passiveSound")));
 	Sounds[ESound::SecretCratePassive]->SetAutoActivate(false);
 	Sounds[ESound::SecretCratePassive]->SetupAttachment(CrateMesh);
@@ -62,11 +67,14 @@ void ASecretCrate::StopSound(const ESound InSoundName)
 
 void ASecretCrate::SetupRewardText(const int32 InIndex) const
 {
+	const TObjectPtr<UCustomTextUI> CustomTextUI = Cast<UCustomTextUI>(CustomTextWidget->GetWidget());
 	switch (InIndex)
 	{
-		case 0: DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Health Restored")); break;
-		case 1: DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Hijack Restored")); break;
-		case 2: DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("XP Gained"));
+		case 0: CustomTextUI->SetText(FText::FromString("HP Restored")); break;
+		case 1: CustomTextUI->SetText(FText::FromString("Hijack Charge Restored")); break;
+		case 2: CustomTextUI->SetText(FText::FromString("XP Gained"));
 		default: ;
 	}
+	CustomTextWidget->SetVisibility(true);
+	CustomTextUI->PlayFadeInAnim(true);
 }
