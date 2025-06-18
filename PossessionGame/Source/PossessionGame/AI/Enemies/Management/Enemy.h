@@ -276,22 +276,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
 	UPROPERTY()
-	FTimerHandle P_DetectIfPlayerPointingAtOutlineObjectsHandle;
-	UPROPERTY()
-	FTimerHandle P_TriggerCriticalDamageIndicatorHandle;
-	UPROPERTY()
-	FTimerHandle P_OpenDeathMenuHandle;
-	UPROPERTY()
-	FTimerHandle P_DeathHandle;
-	UPROPERTY()
-	FTimerHandle P_DamageTakenEffectHandle;
-	UPROPERTY()
-	FTimerHandle P_ContinuousFovChangeHandle;
-	UPROPERTY()
-	FTimerHandle P_ControlLogicHandle;
-	UPROPERTY()
-	FTimerHandle P_StopDashHandle;
-	UPROPERTY()
 	FTimerHandle AI_ClearShootPauseHandle;
 	UPROPERTY()
 	FTimerHandle AI_TriggerDeathVoiceLineHandle;
@@ -301,6 +285,22 @@ private:
 	FTimerHandle AI_PlaySpawnSoundHandle;
 	UPROPERTY()
 	FTimerHandle AI_HideHpBarHandle;
+	UPROPERTY()
+	FTimerHandle AI_DamageTakenEffectHandle;
+	UPROPERTY()
+	FTimerHandle P_DetectIfPlayerPointingAtOutlineObjectsHandle;
+	UPROPERTY()
+	FTimerHandle P_TriggerCriticalDamageIndicatorHandle;
+	UPROPERTY()
+	FTimerHandle P_OpenDeathMenuHandle;
+	UPROPERTY()
+	FTimerHandle P_DeathHandle;
+	UPROPERTY()
+	FTimerHandle P_ContinuousFovChangeHandle;
+	UPROPERTY()
+	FTimerHandle P_ControlLogicHandle;
+	UPROPERTY()
+	FTimerHandle P_StopDashHandle;
 	UPROPERTY()
 	FTimerHandle DestroyHandle;
 	UPROPERTY()
@@ -321,6 +321,7 @@ private:
 	void AI_HideHpBar() const;
 	void AI_ClearShootPause();
 	void AI_SetCharacterMovementSpeed();
+	void AI_DisableDamageTakenRedFlash() const;
 
 	void P_SetupData();
 	void P_SetupUI();
@@ -338,7 +339,7 @@ private:
 	void P_TriggerGlitchingEffect() const;
 	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
 	void P_HandlingDamageTaken();
-	void P_TriggerTakeDamageEffects();
+	void P_TriggerTakeDamageEffects() const;
 	void P_EnableCriticalDamage();
 	void P_ToggleCriticallyDamagedEffects(const float InValue) const;
 	void P_InitiateDeathEvents();
@@ -363,7 +364,6 @@ private:
 	void P_OpenDeathMenu() const;
 	void P_ContinuousFovChange();
 	void P_StopDash() const;
-	void P_DisableDamageTakenRedFlash() const;
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	void TickAbilities(const float InDeltaTime);

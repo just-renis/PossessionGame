@@ -27,6 +27,12 @@ private:
 	TObjectPtr<UMainMenuButtonUI> ReturnToMenuButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UConfirmationPopupUI> ReturnToMainMenuPopup;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> FadeInAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> FadeOutAnim;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent FadeOutAnimDelegate;
 
 	virtual void NativeConstruct() override;
 	void Toggle(bool bState);
@@ -44,4 +50,6 @@ private:
 	void TriggerReturnToMainMenuPopupFadeIn();
 	UFUNCTION()
 	void TriggerReturnToMainMenuPopupFadeOut();
+	UFUNCTION()
+	void FadeOutFinished();
 };

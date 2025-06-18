@@ -35,11 +35,16 @@ void UPauseMenuUI::ChangeUIToDeathMenu()
 	}
 }
 
-void UPauseMenuUI::CloseUI() { Toggle(false); }
+void UPauseMenuUI::CloseUI()
+{
+	BindToAnimationFinished(FadeOutAnim, FadeOutAnimDelegate);
+	PlayAnimation(FadeOutAnim);
+}
 
 void UPauseMenuUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+	FadeOutAnimDelegate.BindDynamic(this, &UPauseMenuUI::FadeOutFinished);
 	SetupButtons();
 }
 
@@ -47,6 +52,8 @@ void UPauseMenuUI::Toggle(const bool bState)
 {
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>(); 
 	if (WidgetManager->ContainsWidget(EWidget::PlayerHUD)) WidgetManager->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
+	UE_LOG(LogTemp, Warning, TEXT("TOGGLE STATE: %i"), bState);
+	if (bState) PlayAnimation(FadeInAnim);
 	SetIsEnabled(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
@@ -105,4 +112,10 @@ void UPauseMenuUI::TriggerReturnToMainMenuPopupFadeOut()
 	if (!ReturnToMainMenuPopup) return;
 	SetButtonsState(true);
 	ReturnToMainMenuPopup->PlayPopupFadeInAnim(false);
+}
+
+void UPauseMenuUI::FadeOutFinished()
+{
+	UnbindAllFromAnimationFinished(FadeOutAnim);
+	Toggle(false);
 }

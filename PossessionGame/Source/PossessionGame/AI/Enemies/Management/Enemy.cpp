@@ -566,6 +566,12 @@ void AEnemy::BeginPlay()
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (AnimInstance) AnimInstance->ClearTimers();
+	GetWorldTimerManager().ClearTimer(AI_ClearShootPauseHandle);
+	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
+	GetWorldTimerManager().ClearTimer(AI_SetCharacterMovementSpeedHandle);
+	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
+	GetWorldTimerManager().ClearTimer(AI_HideHpBarHandle);
+	GetWorldTimerManager().ClearTimer(AI_DamageTakenEffectHandle);
 	GetWorldTimerManager().ClearTimer(P_ContinuousFovChangeHandle);
 	GetWorldTimerManager().ClearTimer(P_ControlLogicHandle);
 	GetWorldTimerManager().ClearTimer(P_StopDashHandle);
@@ -573,12 +579,6 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
 	GetWorldTimerManager().ClearTimer(P_OpenDeathMenuHandle);
 	GetWorldTimerManager().ClearTimer(P_DeathHandle);
-	GetWorldTimerManager().ClearTimer(P_DamageTakenEffectHandle);
-	GetWorldTimerManager().ClearTimer(AI_ClearShootPauseHandle);
-	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
-	GetWorldTimerManager().ClearTimer(AI_SetCharacterMovementSpeedHandle);
-	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
-	GetWorldTimerManager().ClearTimer(AI_HideHpBarHandle);
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	GetWorldTimerManager().ClearTimer(CheckIfFallOutOfWorldHandle);
 	GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);
@@ -688,8 +688,10 @@ void AEnemy::AI_SetupHpBar()
 
 void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason)
 {
-	if (!AI_HpBar) return;
+	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 1.f);
+	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.1f, false);
 	ProcessDamageReason(InDamageReason);
+	if (!AI_HpBar) return;
 	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
 	AI_HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	GetWorldTimerManager().SetTimer(AI_HideHpBarHandle, this, &AEnemy::AI_HideHpBar, 2.f, false);
@@ -743,6 +745,8 @@ void AEnemy::AI_ClearShootPause()
 }
 
 void AEnemy::AI_SetCharacterMovementSpeed() { AnimInstance->SetSpeed(GetCharacterMovement()->Velocity.Size()); }
+
+void AEnemy::AI_DisableDamageTakenRedFlash() const { if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 0.f); }
 
 void AEnemy::P_SetupData()
 {
@@ -895,11 +899,9 @@ void AEnemy::P_HandlingDamageTaken()
 	if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamage();
 }
 
-void AEnemy::P_TriggerTakeDamageEffects()
+void AEnemy::P_TriggerTakeDamageEffects() const
 {
 	P_MakeCameraShake(ReceivingDamageCameraShake);
-	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 1.f);
-	GetWorldTimerManager().SetTimer(P_DamageTakenEffectHandle, this, &AEnemy::P_DisableDamageTakenRedFlash, 0.1f, false);
 	if (UKismetMathLibrary::RandomInteger(100) >= 75)
 	{
 		AssetsManager->PlaySound2D(ESound::TakeDamageLayer2);
@@ -1140,8 +1142,6 @@ void AEnemy::P_ContinuousFovChange()
 
 void AEnemy::P_StopDash() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
 
-void AEnemy::P_DisableDamageTakenRedFlash() const { if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 0.f); }
-
 void AEnemy::TickAbilities(const float InDeltaTime)
 {
 	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->Tick(InDeltaTime);
@@ -1170,11 +1170,11 @@ void AEnemy::SetupUserSettings() const
 
 void AEnemy::ClearTimers()
 {
+	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
+	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 	GetWorldTimerManager().ClearTimer(P_ControlLogicHandle);
 	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
 	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
-	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
-	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 }
 
 void AEnemy::ProcessSpawnEffects()
