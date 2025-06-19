@@ -13,22 +13,22 @@ void UPostProcessManager::Init(const TMap<EPostProcessMaterial, TObjectPtr<UMate
 
 void UPostProcessManager::TriggerGlitchingMaterial(const float InDuration)
 {
-	if (Materials.Contains(EPostProcessMaterial::Glitching))
+	if (const TObjectPtr<UMaterialInterface>* MI_Glitching = Materials.Find(EPostProcessMaterial::Glitching))
 	{
-		PostProcessVolume->AddOrUpdateBlendable(Materials[EPostProcessMaterial::Glitching], 1.f);
-		GetWorld()->GetTimerManager().SetTimer(DisableGlitchingMaterialHandle, this, &UPostProcessManager::DisableGlitchingMaterial, InDuration, false);
+		PostProcessVolume->AddOrUpdateBlendable(*MI_Glitching, 1.f);
+		GetWorld()->GetTimerManager().SetTimer(DisableGlitchingMaterialHandle, this, &UPostProcessManager::DisableGlitchingMaterial, InDuration);
 	}
 }
 
 void UPostProcessManager::ToggleMaterial(const EPostProcessMaterial InMaterialName, const float InValue)
 {
-	if (Materials.Contains(InMaterialName)) PostProcessVolume->AddOrUpdateBlendable(Materials[InMaterialName], InValue);
+	if (const TObjectPtr<UMaterialInterface>* Material = Materials.Find(InMaterialName)) PostProcessVolume->AddOrUpdateBlendable(*Material, InValue);
 }
 
 void UPostProcessManager::AddOrUpdateDynamicMaterial(const EPostProcessMaterial InMaterialName, const TObjectPtr<UMaterialInstanceDynamic>& InMaterial, const float InWeight)
 {
-	if (!Materials.Contains(InMaterialName)) Materials.Add(InMaterialName, InMaterial);
-	PostProcessVolume->AddOrUpdateBlendable(Materials[InMaterialName], InWeight);
+	Materials.FindOrAdd(InMaterialName, InMaterial);
+	PostProcessVolume->AddOrUpdateBlendable(InMaterial, InWeight);
 }
 
 void UPostProcessManager::FadeOutDeathMaterials()
@@ -39,15 +39,15 @@ void UPostProcessManager::FadeOutDeathMaterials()
 
 void UPostProcessManager::DisableGlitchingMaterial()
 {
-	if (Materials.Contains(EPostProcessMaterial::Glitching)) PostProcessVolume->AddOrUpdateBlendable(Materials[EPostProcessMaterial::Glitching], 0.f);
+	if (const TObjectPtr<UMaterialInterface>* MI_Glitching = Materials.Find(EPostProcessMaterial::Glitching)) PostProcessVolume->AddOrUpdateBlendable(*MI_Glitching, 0.f);
 }
 
 void UPostProcessManager::ProcessFadingOfDeathMaterials()
 {
 	FadingOutDeathMaterialsCounter -= 0.025f;
-	if (Materials.Contains(EPostProcessMaterial::DeathGlitching)) PostProcessVolume->AddOrUpdateBlendable(Materials[EPostProcessMaterial::DeathGlitching], FadingOutDeathMaterialsCounter);
-	if (Materials.Contains(EPostProcessMaterial::DeathBloodPumping)) PostProcessVolume->AddOrUpdateBlendable(Materials[EPostProcessMaterial::DeathBloodPumping], FadingOutDeathMaterialsCounter);
-	if (Materials.Contains(EPostProcessMaterial::DeathScreenCrack)) PostProcessVolume->AddOrUpdateBlendable(Materials[EPostProcessMaterial::DeathScreenCrack], FadingOutDeathMaterialsCounter);
+	if (const TObjectPtr<UMaterialInterface>* Material = Materials.Find(EPostProcessMaterial::DeathGlitching)) PostProcessVolume->AddOrUpdateBlendable(*Material, FadingOutDeathMaterialsCounter);
+	if (const TObjectPtr<UMaterialInterface>* Material = Materials.Find(EPostProcessMaterial::DeathBloodPumping)) PostProcessVolume->AddOrUpdateBlendable(*Material, FadingOutDeathMaterialsCounter);
+	if (const TObjectPtr<UMaterialInterface>* Material = Materials.Find(EPostProcessMaterial::DeathScreenCrack)) PostProcessVolume->AddOrUpdateBlendable(*Material, FadingOutDeathMaterialsCounter);
 	if (FadingOutDeathMaterialsCounter <= 0.001f) GetWorld()->GetTimerManager().ClearTimer(FadingOfDeathMaterialsHandle);
 }
 

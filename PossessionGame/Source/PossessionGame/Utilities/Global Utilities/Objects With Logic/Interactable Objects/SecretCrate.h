@@ -6,6 +6,14 @@
 
 enum class ESound : uint16;
 
+UENUM()
+enum class ERewardMaterial : uint8
+{
+	Health,
+	Hijack,
+	Xp
+};
+
 UCLASS()
 class POSSESSIONGAME_API ASecretCrate : public AInteractableObject
 {
@@ -13,12 +21,19 @@ class POSSESSIONGAME_API ASecretCrate : public AInteractableObject
 
 	ASecretCrate();
 
+	int32 ProcessRewardLoopValue = 0;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> CrateMesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAnimSequence> OpenAnim;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<UMaterialInterface>> RewardMaterials;
+	UPROPERTY(EditDefaultsOnly, Category = "Post Process Materials", meta = (AllowPrivateAccess = true))
+	TMap<ERewardMaterial, TObjectPtr<UMaterialInterface>> PP_Materials;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> PP_Material;
+	UPROPERTY()
+	FTimerHandle ProcessRewardHandle;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 	
@@ -29,5 +44,7 @@ class POSSESSIONGAME_API ASecretCrate : public AInteractableObject
 	void GiveReward();
 	void PlaySound(const ESound InSoundName);
 	void StopSound(const ESound InSoundName);
-	void SetupRewardText(const int32 InIndex) const;
+	void SetupReward(const int32 InIndex);
+	void ProcessRewardAppear();
+	void ProcessRewardDisappear();
 };
