@@ -106,7 +106,7 @@ void UPlayerHUD::ToggleCriticalDamageIndicator() const
 void UPlayerHUD::ConfigureUIs()
 {
 	if (PressKeyBindInv) PressKeyBindInv->SetVisibility(ESlateVisibility::Collapsed);
-	if (PossessionAnnouncementInv) PossessionAnnouncementInv->SetVisibility(ESlateVisibility::Collapsed);
+	if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::Collapsed);
 	if (PossessionIndicator) PossessionIndicator->SetVisibility(ESlateVisibility::Collapsed);
 	if (CriticalDamageIndicator) CriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
 	if (InfoPanel) InfoPanel->Setup(CharacterType);
@@ -150,12 +150,6 @@ void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
 			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	SetCurrentCrosshair();
-}
-
-void UPlayerHUD::AnnouncePossession()
-{
-	if (PossessionAnnouncementInv) PossessionAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	PlayAnimation(PossessedPopup);
 }
 
 void UPlayerHUD::SetCurrentCrosshair() const
@@ -225,6 +219,7 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->OnBossDeath.AddUObject(this, &UPlayerHUD::DisableBossHpBar);
 	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerHUD::UpdatePressToPossessKeyBind);
 	DelegateManager->OnOutOfAmmo.BindUObject(this, &UPlayerHUD::ShowOutOfAmmo);
+	DelegateManager->RequirePlayerAnnouncementInfo.BindUObject(this, &UPlayerHUD::PlayAnnouncement);
 }
 
 void UPlayerHUD::ShowDamageTick(const bool bIsCritical)
@@ -286,6 +281,14 @@ void UPlayerHUD::UpdateBossWhiteHpBar()
 void UPlayerHUD::UpdatePressToPossessKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const
 {
 	if (PressKeyBindText && InKeyBindName.IsEqual("Hijack")) PressKeyBindText->SetText(FText::Format(FText::FromString("Press {0} to possess"), InKeyBindText));
+}
+
+void UPlayerHUD::PlayAnnouncement(const FText& InText)
+{
+	if (!AnnouncementInv || !AnnouncementText) return;
+	AnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	AnnouncementText->SetText(InText);
+	PlayAnimation(PossessedPopup);
 }
 
 template<typename T>
