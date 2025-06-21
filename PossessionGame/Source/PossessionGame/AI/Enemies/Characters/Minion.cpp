@@ -35,7 +35,7 @@ void AMinion::AI_PlaySpawnSound() { PlaySound(ESound::MinionSpawn, true); }
 
 void AMinion::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::MinionDeathElectrification, nullptr, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+	AssetsManager->AttachVfx(EVfx::MinionDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
 }
 
 void AMinion::BeginPlay()

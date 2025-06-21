@@ -10,8 +10,6 @@
 #include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EVfxType.h"
-#include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
-#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -43,10 +41,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	{
 		if (const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail); VfxName != EVfx::None)
 		{
-			const TObjectPtr<AWeapon> Weapon = ProjectileData.GetProprietor()->GetWeapon();
-			const FNiagaraVariationData NiagaraVariationData(ProjectileData.bIsPlayerProjectile ? Weapon->GetPlayerData()->GetNiagaraVariationData(ProjectileData.GetProprietor()->GetVariation()) : Weapon->GetAIData()->GetNiagaraVariationData(EVariation::Default));
-			Attributes.Add(TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color));
-			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), nullptr, FNiagaraVariationData(), &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), false, Attributes);
+			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), nullptr, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, ProjectileData.GetProprietor()->GetVariation(), Attributes);
 		}
 		bHasBeenPooled = true;
 	}
@@ -89,10 +84,7 @@ void AProjectile::DisableProjectileComponents() const
 
 void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact)
 {
-	const TObjectPtr<AWeapon> Weapon = ProjectileData.GetProprietor()->GetWeapon();
-	const FNiagaraVariationData NiagaraVariationData(ProjectileData.bIsPlayerProjectile ? Weapon->GetPlayerData()->GetNiagaraVariationData(ProjectileData.GetProprietor()->GetVariation()) : Weapon->GetAIData()->GetNiagaraVariationData(EVariation::Default));
-	Attributes.Add(TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color));
-	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), nullptr, InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), NiagaraVariationData, Attributes);
+	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), nullptr, InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), ProjectileData.GetProprietor()->GetVariation(), Attributes);
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -191,7 +183,6 @@ void AProjectile::ApplyCurrentVariation()
 void AProjectile::DestroyThis()
 {
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
-	Attributes.Empty();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	DisableProjectileComponents();
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);

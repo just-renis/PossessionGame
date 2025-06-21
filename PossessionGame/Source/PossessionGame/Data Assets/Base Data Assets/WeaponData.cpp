@@ -7,11 +7,6 @@ FProjectileData& UWeaponData::GetProjectileData(EPoolObject ProjectileName)
 	return ProjectilesData[ProjectileName];
 }
 
-FNiagaraVariationData UWeaponData::GetNiagaraVariationData(const EVariation InVariation)
-{
-	return VfxVariationData.Contains(InVariation) ? VfxVariationData[InVariation] : FNiagaraVariationData();
-}
-
 void UWeaponData::SetAllProjectilesWalkSpread(bool bState)
 {
 	for (TPair<EPoolObject, FProjectileData> ProjectileData : ProjectilesData) ProjectileData.Value.SetWalkSpread(bState);

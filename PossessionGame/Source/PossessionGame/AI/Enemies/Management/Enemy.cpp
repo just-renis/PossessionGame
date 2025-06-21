@@ -40,7 +40,7 @@
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/AIHpBarUI.h"
-#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
+#include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
@@ -237,7 +237,7 @@ void AEnemy::AI_TryEvolving()
 	{
 		bIsMutant = true;
 		MaxHp -= MaxHp * 0.01f * AI_Data->GetMutantHpIncreasePercentage();
-		AssetsManager->AttachVfx(EVfx::MutantAura, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &Aura, GetMesh(), FName("MutantAuraSocket"));
+		AssetsManager->AttachVfx(EVfx::MutantAura, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &Aura, GetMesh(), FName("MutantAuraSocket"));
 	}
 	AI_SetupUpgradesAppliance();
 }
@@ -316,7 +316,7 @@ void AEnemy::SetPossessionOutline(const bool bState)
 	{
 		if (!PossessionViable)
 		{
-			AssetsManager->AttachVfx(EVfx::PossessionViable, [this]() -> bool { return GetIsAlive() && bPossessionOutlineState; }, FNiagaraVariationData(), &PossessionViable, GetMesh(), FName("RootSocket"));
+			AssetsManager->AttachVfx(EVfx::PossessionViable, [this]() -> bool { return GetIsAlive() && bPossessionOutlineState; }, &PossessionViable, GetMesh(), FName("RootSocket"));
 		}
 		else
 		{
@@ -1268,8 +1268,7 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 {
 	if (!EmpAffected)
 	{
-		AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, FNiagaraVariationData(), &EmpAffected, GetMesh(),
-		FName("DeathSocket"), false, { {"Loop Duration", FNiagaraAttribute(true, InEffectDuration) } });
+		AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, &EmpAffected, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(true, InEffectDuration)}});
 	}
 	else
 	{

@@ -14,8 +14,6 @@
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Projectiles/Projectile.h"
-#include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
-#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/SpawnLocation.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 
@@ -161,88 +159,36 @@ void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
 	}
 }
 
-void UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, TFunction<bool()> InCallback, const FNiagaraVariationData& InNiagaraVariationData, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const TMap<FName, FNiagaraAttribute>& InAttributes, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy)
+void UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (InVfxName == EVfx::None) return;
-	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
+	const TObjectPtr<UPA_VfxContainer> VfxData = GetVfxData(InVfxName);
+	if (VfxData->GetVfxEffect().IsValid())
 	{
 		if (InVfxComponent)
 		{
 			*InVfxComponent = AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
-			SetupVfx(InCallback, InNiagaraVariationData, *InVfxComponent, InAttributes, bDeactivate);
+			SetupVfx(VfxData, InCallbackOfDeactivation, *InVfxComponent, bDeactivate, InVariationName, InAttributes);
 		}
-		else SetupVfx(InCallback, InNiagaraVariationData, AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy), InAttributes, bDeactivate);
+		else SetupVfx(VfxData, InCallbackOfDeactivation, AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy), bDeactivate, InVariationName, InAttributes);
 	}
-	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InCallback, InNiagaraVariationData, InVfxComponent, InVfxName, InAttachTo, InAttributes, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy]
+	else if (GetCanAsyncLoadHappen())
 	{
-		if (!IsGameRunning()) return;
-		if (InVfxComponent)
-		{
-			*InVfxComponent = AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
-			SetupVfx(InCallback, InNiagaraVariationData, *InVfxComponent, InAttributes, bDeactivate);
-		}
-		else SetupVfx(InCallback, InNiagaraVariationData, AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy), InAttributes, bDeactivate);
-	});
+		LoadVfx(VfxData, InVfxName, InCallbackOfDeactivation, InVfxComponent, InAttachTo, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy, InVariationName, InAttributes);
+	}
 }
 
-void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, TFunction<bool()> InCallback, const FVector& InLocation, const FRotator& InRotation, const FNiagaraVariationData& InNiagaraVariationData, const TMap<FName, FNiagaraAttribute>& InAttributes)
+void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation, const FRotator& InRotation, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (InVfxName == EVfx::None) return;
-	if (GetVfxData(InVfxName)->GetVfxEffect().IsValid())
-	{
-		SetupVfx(InCallback, InNiagaraVariationData, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation), InAttributes);
-	}
-	else GetVfxData(InVfxName)->LoadVfx(GetWorld(), [this, InCallback, InNiagaraVariationData, InVfxName, InAttributes, InLocation, InRotation]
-	{
-		if (!IsGameRunning()) return;
-		SetupVfx(InCallback, InNiagaraVariationData, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation), InAttributes);
-	});
+	const TObjectPtr<UPA_VfxContainer> VfxData = GetVfxData(InVfxName);
+	if (VfxData->GetVfxEffect().IsValid()) SetupVfx(VfxData, InCallbackOfDeactivation, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation), false, InVariationName, InAttributes);
+	else if (GetCanAsyncLoadHappen()) LoadVfx(VfxData, InVfxName, InCallbackOfDeactivation, InLocation, InRotation, InVariationName, InAttributes);
 }
 
-void UPrimaryDataAssetsManager::ApplyAttributesToVfxComponent(const TMap<FName, FNiagaraAttribute>& InAttributes, const TObjectPtr<UNiagaraComponent>& Component)
+void UPrimaryDataAssetsManager::ChangeVfxVariation(const TObjectPtr<UPA_VfxContainer>& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName)
 {
-	for (const TPair<FName, FNiagaraAttribute> Attribute : InAttributes)
-	{
-		if (!Attribute.Value.bIsReplacingValue) // Only float works currently, if there will be need for FVector / FLinearColor changes will occur.
-		{
-			if (FMath::IsNearlyEqual(Attribute.Value.GetFloat(), 0.f, 0.001f)) continue;
-			const float ComponentAttributeValue = GetVfxAttributeValue(Component, Attribute.Key);
-			const float AttributeValue = ComponentAttributeValue + ComponentAttributeValue * (Attribute.Value.GetFloat() * 0.01f);
-			Component->SetVariableFloat(Attribute.Key, AttributeValue);
-	//		if (Attribute.Value.IsFloat()) 
-		}
-		else
-		{
-			if (Attribute.Value.IsFloat()) Component->SetVariableFloat(Attribute.Key, Attribute.Value.GetFloat());
-			else if (Attribute.Value.IsVector()) Component->SetVectorParameter(Attribute.Key, Attribute.Value.GetVector());
-			else if (Attribute.Value.IsColor()) Component->SetColorParameter(Attribute.Key, Attribute.Value.GetColor());
-			else if (Attribute.Value.IsMaterial()) Component->SetVariableMaterial(Attribute.Key, Attribute.Value.GetMaterial());
-		}
-	}
-}
-
-void UPrimaryDataAssetsManager::ChangeVfxVariation(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const FNiagaraVariationData& InNiagaraVariationData)
-{
-	if (!InVfxComponent) return;
-	TArray<FNiagaraVariable> UserParameters;
-	InVfxComponent->GetOverrideParameters().GetUserParameters(UserParameters);
-	for (const FNiagaraVariable& Param : UserParameters)
-	{
-		if (Param.GetType() != FNiagaraTypeDefinition(UMaterialInterface::StaticClass())) continue;
-		if (TObjectPtr<UObject> MaterialObj = InVfxComponent->GetOverrideParameters().GetUObject(Param))
-		{
-			if (TObjectPtr<UMaterialInstanceDynamic> MI_Dynamic = Cast<UMaterialInstanceDynamic>(MaterialObj))
-			{
-				MI_Dynamic->SetScalarParameterValue("Hue", InNiagaraVariationData.Hue);
-			}
-			else if (TObjectPtr<UMaterialInterface> MI = Cast<UMaterialInterface>(MaterialObj))
-			{
-				MI_Dynamic = UMaterialInstanceDynamic::Create(MI, this);
-				InVfxComponent->SetVariableMaterial(Param.GetName(), MI_Dynamic);
-				MI_Dynamic->SetScalarParameterValue("Hue", InNiagaraVariationData.Hue);
-			}
-		}
-	}
+	SetupVfx(InVfxData, InCallbackOfDeactivation, InVfxComponent, bDeactivate, InVariationName, TMap<FName, FNiagaraAttribute>());
 }
 
 void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
@@ -280,7 +226,23 @@ void UPrimaryDataAssetsManager::SetupSpawnLocations()
 		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
 		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
 	}
-	SpawnTutorialEnemy(ECharacterType::Guardian, EGameMode::TutorialMode1);
+	SpawnTutorialEnemy(ECharacterType::Trickster, EGameMode::TutorialMode1);
+}
+
+void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes)
+{
+	if (!InVfxComponent) return;
+	for (const TPair<FName, FNiagaraAttribute> Attribute : InAttributes)
+	{
+		if (!Attribute.Value.bIsReplacingValue)
+		{
+			if (FMath::IsNearlyEqual(Attribute.Value.Value, 0.f, 0.001f)) continue;
+			const float ComponentAttributeValue = GetVfxAttributeValue(InVfxComponent, Attribute.Key);
+			const float AttributeValue = ComponentAttributeValue + ComponentAttributeValue * (Attribute.Value.Value * 0.01f);
+			InVfxComponent->SetVariableFloat(Attribute.Key, AttributeValue);
+		}
+		else InVfxComponent->SetVariableFloat(Attribute.Key, Attribute.Value.Value);
+	}
 }
 
 bool UPrimaryDataAssetsManager::IsGameRunning()
@@ -544,18 +506,38 @@ void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const TObjectPtr<UAudioC
 	const TObjectPtr<UPA_SoundContainer> SoundData = GetSoundData(InSoundName);
 	InAudioComp->SetSound(GetSoundData(InSoundName)->Sound.Get());
 	if (InCallback && !InCallback()) return;
-	if (SoundData->bIsCharacterTypeDependant)
-	{
-		InAudioComp->SetFloatParameter("Volume", bIsPlayer ? SoundData->PlayerVolume : SoundData->EnemyVolume);
-	}
+	if (SoundData->bIsCharacterTypeDependant) InAudioComp->SetFloatParameter("Volume", bIsPlayer ? SoundData->PlayerVolume : SoundData->EnemyVolume);
 	InAudioComp->Play();
 }
 
-void UPrimaryDataAssetsManager::SetupVfx(TFunction<bool()> InCallback, const FNiagaraVariationData& InNiagaraVariationData, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes, const bool bDeactivate)
+void UPrimaryDataAssetsManager::SetupVfx(const TObjectPtr<UPA_VfxContainer>& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
-	if (bDeactivate || (InCallback && !InCallback())) InVfxComponent->Deactivate();
-	if (InNiagaraVariationData.bRequiredVfxChange) ChangeVfxVariation(InVfxComponent, InNiagaraVariationData);
-	if (!InAttributes.IsEmpty()) ApplyAttributesToVfxComponent(InAttributes, InVfxComponent);
+	UpdateVfxAttributes(InVfxComponent, InAttributes);
+	if (!InVfxComponent) return;
+	if (bDeactivate || (InCallbackOfDeactivation && !InCallbackOfDeactivation())) InVfxComponent->Deactivate();
+	TMap<FName, FNiagaraUserParam>* Params = InVfxData->GetParams(InVariationName);
+	if (!Params) return;
+	FNiagaraUserRedirectionParameterStore& NiagaraParams = InVfxComponent->GetOverrideParameters();
+	for (const TPair<FName, FNiagaraUserParam>& Param : *Params)
+	{
+		switch (Param.Value.ParamType)
+		{
+			case EUserParamType::Int: InVfxComponent->SetIntParameter(Param.Key, Param.Value.IntValue); break;
+			case EUserParamType::Float: InVfxComponent->SetFloatParameter(Param.Key, Param.Value.FloatValue); break;
+			case EUserParamType::Vector: InVfxComponent->SetVectorParameter(Param.Key, Param.Value.VectorValue); break;
+			case EUserParamType::Color: InVfxComponent->SetColorParameter(Param.Key, Param.Value.ColorValue); break;
+			case EUserParamType::Material:
+				FNiagaraVariable NiagaraParamName(UMaterialInterface::StaticClass(), Param.Key);
+				TObjectPtr<UMaterialInstanceDynamic> MI_Dynamic = Cast<UMaterialInstanceDynamic>(NiagaraParams.GetUObject(NiagaraParamName));
+				if (!MI_Dynamic)
+				{
+					MI_Dynamic = UMaterialInstanceDynamic::Create(Param.Value.MaterialValue, this);
+					InVfxComponent->SetVariableMaterial(Param.Key, MI_Dynamic);
+				}
+				TMap<FName, FDynamicMaterialParams> MaterialParams = Param.Value.MaterialParams;
+				for (const TPair<FName, FDynamicMaterialParams> MaterialParam : MaterialParams) MI_Dynamic->SetScalarParameterValue(MaterialParam.Key, MaterialParam.Value.FloatValue);
+		}
+	}
 }
 
 void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
@@ -637,6 +619,51 @@ void UPrimaryDataAssetsManager::ClearBeforeInit()
 	bIsSpawnInProcess = false;
 	EnemyTypes.Empty();
 	SpawnLocations.Empty();
+}
+
+void UPrimaryDataAssetsManager::LoadVfx(const TObjectPtr<UPA_VfxContainer>& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
+{
+	InVfxData->AddVfxLoadedCallback([this, InVfxData, InCallbackOfDeactivation, InVfxComponent, InVfxName, InAttachTo, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy, InVariationName, InAttributes]
+	{
+		if (!IsGameRunning()) return;
+		if (InVfxComponent)
+		{
+			*InVfxComponent = AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+			SetupVfx(InVfxData, InCallbackOfDeactivation, *InVfxComponent, bDeactivate, InVariationName, InAttributes);
+		}
+		else SetupVfx(InVfxData, InCallbackOfDeactivation, AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy), bDeactivate, InVariationName, InAttributes);
+	});
+	RequestVfxLoad(InVfxData);
+}
+
+void UPrimaryDataAssetsManager::LoadVfx(const TObjectPtr<UPA_VfxContainer>& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation, const FRotator& InRotation, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
+{
+	InVfxData->AddVfxLoadedCallback([this, InVfxData, InCallbackOfDeactivation, InVfxName, InLocation, InRotation, InVariationName, InAttributes]
+	{
+		if (!IsGameRunning()) return;
+		SetupVfx(InVfxData, InCallbackOfDeactivation, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation),  false, InVariationName, InAttributes);
+	});
+	RequestVfxLoad(InVfxData);
+}
+
+void UPrimaryDataAssetsManager::RequestVfxLoad(const TObjectPtr<UPA_VfxContainer>& InVfxData)
+{
+	if (!InVfxData->GetIsInLoad())
+	{
+		InVfxData->SetIsInLoad(true);
+		if (GetCanAsyncLoadHappen())
+		{
+			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InVfxData->GetVfxEffect().ToSoftObjectPath(), [this, InVfxData]
+			{
+				if (IsGameRunning())
+				{
+					InVfxData->SetIsLoaded(true);
+					InVfxData->TriggerVfxCallbacks();
+				}
+			});
+			AddAsyncHandle(Handle);
+		}
+	}
 }
 
 template<typename T, typename U>

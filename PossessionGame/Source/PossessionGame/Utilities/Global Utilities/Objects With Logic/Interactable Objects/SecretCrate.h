@@ -5,6 +5,7 @@
 #include "SecretCrate.generated.h"
 
 enum class ESound : uint16;
+enum class EVariation : uint8;
 
 UENUM()
 enum class ERewardMaterial : uint8
@@ -37,6 +38,7 @@ class POSSESSIONGAME_API ASecretCrate : public AInteractableObject
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 	
+	EVariation SetupReward(const int32 InIndex);
 	virtual TObjectPtr<USkeletalMeshComponent> GetSkeletalMesh() override { return CrateMesh; }
 
 	virtual void BeginPlay() override;
@@ -44,7 +46,6 @@ class POSSESSIONGAME_API ASecretCrate : public AInteractableObject
 	void GiveReward();
 	void PlaySound(const ESound InSoundName);
 	void StopSound(const ESound InSoundName);
-	void SetupReward(const int32 InIndex);
 	void ProcessRewardAppear();
 	void ProcessRewardDisappear();
 };

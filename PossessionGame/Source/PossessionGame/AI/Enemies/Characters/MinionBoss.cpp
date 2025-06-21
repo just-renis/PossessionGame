@@ -12,7 +12,6 @@
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EWeapon.h"
-#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
@@ -29,13 +28,13 @@ void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->OnMin
 void AMinionBoss::EnableLaserEyeBall()
 {
 	if (bStompIsReady) ToggleStompTrigger(false);
-	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &LaserEyeBallVfx, GetMesh(), "LaserSocket");
+	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &LaserEyeBallVfx, GetMesh(), "LaserSocket");
 	else LaserEyeBallVfx->Activate();
 }
 
 void AMinionBoss::EnableLaser()
 {
-	if (!LaserVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaser, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &LaserVfx, GetMesh(), "LaserSocket");
+	if (!LaserVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaser, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &LaserVfx, GetMesh(), "LaserSocket");
 	else LaserVfx->Activate();
 }
 
@@ -118,12 +117,12 @@ void AMinionBoss::AI_PlayDeathExplosion()
 {
 	PlaySound(ESound::MinionBossDeathExplosion);
 	PlaySound(ESound::MinionBossElectrificationDeathPassive);
-	AssetsManager->AttachVfx(EVfx::MinionBossDeathExplosion, nullptr, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+	AssetsManager->AttachVfx(EVfx::MinionBossDeathExplosion, nullptr, nullptr, GetMesh(), "DeathSocket");
 }
 
 void AMinionBoss::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::MinionBossDeathElectrification, nullptr, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+	AssetsManager->AttachVfx(EVfx::MinionBossDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
 }
 
 void AMinionBoss::BeginPlay()

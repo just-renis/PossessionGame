@@ -11,7 +11,6 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
-#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -79,7 +78,7 @@ void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn, true); }
 
 void ARanger::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, nullptr, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+	AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
 }
 
 void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor)
@@ -113,7 +112,7 @@ void ARanger::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ARanger::GrenadeLauncherMuzzleFlashLogic()
 {
-	if (!GrenadeLauncherMuzzleFlashComponent) AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
+	if (!GrenadeLauncherMuzzleFlashComponent) AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
 	else
 	{
 		if (GrenadeLauncherMuzzleFlashComponent->IsActive()) GrenadeLauncherMuzzleFlashComponent->Deactivate();

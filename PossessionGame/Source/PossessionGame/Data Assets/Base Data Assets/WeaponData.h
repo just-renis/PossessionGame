@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
-#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "WeaponData.generated.h"
 
 enum class EPoolObject : uint8;
@@ -21,7 +20,6 @@ public:
     float GetShootCooldown() const { return ShootCooldown; }
 	EDamageReason GetDamageReason() const { return DamageReason; }
 	FProjectileData& GetProjectileData(EPoolObject ProjectileName);
-    FNiagaraVariationData GetNiagaraVariationData(const EVariation InVariation);
 
 	void SetAllProjectilesWalkSpread(bool bState);
 private:
@@ -41,6 +39,4 @@ private:
 	EDamageReason DamageReason;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TMap<EPoolObject, FProjectileData> ProjectilesData;
-	UPROPERTY(EditAnywhere, Category = "Vfx Variation Data", meta = (AllowPrivateAccess = true))
-	TMap<EVariation, FNiagaraVariationData> VfxVariationData;
 };

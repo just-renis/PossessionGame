@@ -9,7 +9,6 @@
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerWeaponData.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
-#include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
@@ -126,7 +125,13 @@ void AWeapon::P_SetVariationMaterial()
 	MI_Variation->SetScalarParameterValue("EmissiveHue", P_Data->GetVariationHueValue(Proprietor->GetVariation()));
 }
 
-void AWeapon::P_ChangeVfxVariation() { if (MuzzleFlashComponent) AssetsManager->ChangeVfxVariation(MuzzleFlashComponent, P_Data->GetNiagaraVariationData(Proprietor->GetVariation())); }
+void AWeapon::P_ChangeVfxVariation()
+{
+	if (MuzzleFlashComponent)
+	{
+		AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle)), nullptr, MuzzleFlashComponent, false, Proprietor->GetVariation());
+	}
+}
 
 void AWeapon::P_ReduceShootCooldown(const float InPercentage) { ShootCooldown -= P_Data->GetShootCooldown() * InPercentage * 0.01f; }
 
@@ -243,12 +248,10 @@ void AWeapon::HitScanLogic()
 	const FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
 	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
-	const FNiagaraVariationData NiagaraVariationData(bIsPossessed ? P_Data->GetNiagaraVariationData(Proprietor->GetVariation()) : AI_Data->GetNiagaraVariationData(EVariation::Default));
-	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), nullptr, GetSocketLocation("FpsProjectileSocket"), GetSocketRotation("FpsProjectileSocket"), NiagaraVariationData, {{TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color)}});
+	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), nullptr, GetSocketLocation("FpsProjectileSocket"), GetSocketRotation("FpsProjectileSocket"), Proprietor->GetVariation());
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
 	{
-		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), nullptr, HitResult.Location, HitResult.ImpactNormal.Rotation(),
-		NiagaraVariationData, {{TEXT("Color"), FNiagaraAttribute(true, NiagaraVariationData.Color)}});
+		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), nullptr, HitResult.Location, HitResult.ImpactNormal.Rotation(), Proprietor->GetVariation());
 		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
 	}
 }
@@ -286,9 +289,8 @@ void AWeapon::MuzzleFlashLogic()
 {
 	if (!MuzzleFlashComponent)
 	{
-		const FNiagaraVariationData NiagaraVariationData = bIsPossessed ? P_Data->GetNiagaraVariationData(Proprietor->GetVariation()) : AI_Data->GetNiagaraVariationData(EVariation::Default);
 		AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); },
-		NiagaraVariationData, &MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true);
+		&MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true,FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, Proprietor->GetVariation());
 	}
 	else
 	{

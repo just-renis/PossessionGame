@@ -2,8 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/Interfaces/DamageReasonProvider.h"
-#include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "Projectile.generated.h"
 

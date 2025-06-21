@@ -20,6 +20,32 @@ ASecretCrate::ASecretCrate()
 	Sounds[ESound::SecretCrateReceivePowerUp]->SetupAttachment(CrateMesh);
 }
 
+EVariation ASecretCrate::SetupReward(const int32 InIndex)
+{
+	EVariation VariationName = {};
+	switch (InIndex)
+	{
+		case 0:
+			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Health Restored"));
+			if (const TObjectPtr<UMaterialInterface>* Material = PP_Materials.Find(ERewardMaterial::Health)) PP_Material = UMaterialInstanceDynamic::Create(*Material, this);
+			VariationName = EVariation::SecretCrateRewardHealth;
+			break;
+		case 1:
+			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Hijack Restored"));
+			if (const TObjectPtr<UMaterialInterface>* Material = PP_Materials.Find(ERewardMaterial::Hijack)) PP_Material = UMaterialInstanceDynamic::Create(*Material, this);
+			VariationName = EVariation::SecretCrateRewardHijack;
+			break;
+		case 2:
+			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("XP Gained"));
+			if (const TObjectPtr<UMaterialInterface>* Material = PP_Materials.Find(ERewardMaterial::Xp)) PP_Material = UMaterialInstanceDynamic::Create(*Material, this);
+			VariationName = EVariation::SecretCrateRewardXp;
+		default: ;
+	}
+	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SecretCrateReward, PP_Material, 1.f);
+	GetWorldTimerManager().SetTimer(ProcessRewardHandle, this, &ASecretCrate::ProcessRewardAppear, 0.0125f, true);
+	return VariationName;
+}
+
 void ASecretCrate::BeginPlay()
 {
 	Super::BeginPlay();
@@ -44,10 +70,8 @@ void ASecretCrate::GiveReward()
 {
 	PlaySound(ESound::SecretCrateReceivePowerUp);
 	const int32 RandomIndex = FMath::RandRange(0, RewardMaterials.Num() - 1);
-	SetupReward(RandomIndex);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSecretRewardCollected.ExecuteIfBound(RandomIndex);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::SecretRewardPopUp, nullptr, GetActorLocation() + FVector(0.f, 0.f, 30.f), FRotator::ZeroRotator,
-	FNiagaraVariationData(), {{"Material", FNiagaraAttribute(true, RewardMaterials[RandomIndex])}});
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::SecretRewardPopUp, nullptr, GetActorLocation() + FVector(0.f, 0.f, 30.f), FRotator::ZeroRotator, SetupReward(RandomIndex));
 }
 
 void ASecretCrate::PlaySound(const ESound InSoundName)
@@ -59,27 +83,6 @@ void ASecretCrate::StopSound(const ESound InSoundName)
 {
 	if (!Sounds.Contains(InSoundName)) return;
 	Sounds[InSoundName]->Stop();
-}
-
-void ASecretCrate::SetupReward(const int32 InIndex)
-{
-	switch (InIndex)
-	{
-		case 0:
-			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Health Restored"));
-			if (const TObjectPtr<UMaterialInterface>* Material = PP_Materials.Find(ERewardMaterial::Health)) PP_Material = UMaterialInstanceDynamic::Create(*Material, this);
-			break;
-		case 1:
-			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Hijack Restored"));
-			if (const TObjectPtr<UMaterialInterface>* Material = PP_Materials.Find(ERewardMaterial::Hijack)) PP_Material = UMaterialInstanceDynamic::Create(*Material, this);
-			break;
-		case 2:
-			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("XP Gained"));
-			if (const TObjectPtr<UMaterialInterface>* Material = PP_Materials.Find(ERewardMaterial::Xp)) PP_Material = UMaterialInstanceDynamic::Create(*Material, this);
-		default: ;
-	}
-	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SecretCrateReward, PP_Material, 1.f);
-	GetWorldTimerManager().SetTimer(ProcessRewardHandle, this, &ASecretCrate::ProcessRewardAppear, 0.0125f, true);
 }
 
 void ASecretCrate::ProcessRewardAppear()

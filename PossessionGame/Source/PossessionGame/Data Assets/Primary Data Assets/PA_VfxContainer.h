@@ -4,7 +4,18 @@
 #include "Engine/DataAsset.h"
 #include "PA_VfxContainer.generated.h"
 
+enum class EVariation : uint8;
 class UNiagaraSystem;
+
+UENUM()
+enum class EUserParamType : uint8
+{
+	Int,
+	Float,
+	Vector,
+	Color,
+	Material
+};
 
 USTRUCT()
 struct FTFunctionCallback
@@ -14,16 +25,62 @@ struct FTFunctionCallback
 	TFunction<void()> Function;
 };
 
+USTRUCT()
+struct FDynamicMaterialParams
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	EUserParamType ParamType;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Float", EditConditionHides))
+	float FloatValue = 0.f;
+};
+
+USTRUCT()
+struct FNiagaraUserParam
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	EUserParamType ParamType;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Int", EditConditionHides))
+	int32 IntValue = 0;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Float", EditConditionHides))
+	float FloatValue = 0.f;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Vector", EditConditionHides))
+	FVector VectorValue = FVector::ZeroVector;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Color", EditConditionHides))
+	FLinearColor ColorValue = FLinearColor::White;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Material", EditConditionHides))
+	TObjectPtr<UMaterialInterface> MaterialValue = nullptr;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Material", EditConditionHides))
+	TMap<FName, FDynamicMaterialParams> MaterialParams;
+};
+
+USTRUCT()
+struct FVariationVfxParams
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx Data", meta = (AllowPrivateAccess = true))
+	TMap<FName, FNiagaraUserParam> Params;
+};
+
 UCLASS()
 class POSSESSIONGAME_API UPA_VfxContainer : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 public:
-	bool GetIsLoaded () const { return bIsLoaded; }
+	bool GetIsInLoad() const { return bIsInLoad; }
+	bool GetIsLoaded() const { return bIsLoaded; }
 	TSoftObjectPtr<UNiagaraSystem>& GetVfxEffect() { return VfxEffect; }
+	TMap<FName, FNiagaraUserParam>* GetParams(const EVariation InVariationName);
 
-	void LoadVfx(const TObjectPtr<UWorld>& InWorld, const TFunction<void()>& OnVfxLoaded);
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	void AddVfxLoadedCallback(const TFunction<void()>& InCallback) { VfxLoadedCallbacks.Add(FTFunctionCallback(InCallback)); }
+	void SetIsInLoad(const bool bState) { bIsInLoad = bState; }
+	void SetIsLoaded(const bool bState) { bIsLoaded = bState; }
+	void TriggerVfxCallbacks();
 private:
 	bool bIsInLoad = false;
 	bool bIsLoaded = false;
@@ -31,10 +88,8 @@ private:
 	FName VfxPrimaryName;
 	UPROPERTY(EditAnywhere, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UNiagaraSystem> VfxEffect;
-	UPROPERTY()
-	TObjectPtr<UWorld> World;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx Data", meta = (AllowPrivateAccess = true))
+	TMap<EVariation, FVariationVfxParams> VariationParams;
 	UPROPERTY()
 	TArray<FTFunctionCallback> VfxLoadedCallbacks;
-	
-	bool IsGameRunning() { return IsValid(this) && World && !World->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed); }
 };

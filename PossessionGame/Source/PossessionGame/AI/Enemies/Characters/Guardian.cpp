@@ -21,9 +21,9 @@ void AGuardian::SetCustomTimeDilation(const float InDilation)
 {
 	if (FMath::IsNearlyEqual(InDilation, 5.f, 0.1f))
 	{
-		AssetsManager->AttachVfx(EVfx::StopTimeAbility, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), nullptr, Cast<USceneComponent>(GetCamera()), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+		AssetsManager->AttachVfx(EVfx::StopTimeAbility, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); },nullptr, Cast<USceneComponent>(GetCamera()), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	}
-	else AssetsManager->AttachVfx(EVfx::StopTimeAbilityReverse, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, FNiagaraVariationData(), nullptr, Cast<USceneComponent>(GetCamera()), NAME_None, false, TMap<FName, FNiagaraAttribute>(), FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
+	else AssetsManager->AttachVfx(EVfx::StopTimeAbilityReverse, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, nullptr, Cast<USceneComponent>(GetCamera()), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	CustomTimeDilation = InDilation;
 	GetWeapon()->SetCustomDilation(InDilation);
 }
@@ -62,7 +62,7 @@ void AGuardian::AI_PlaySpawnSound() { PlaySound(ESound::GuardianSpawn, true); }
 
 void AGuardian::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::GuardianDeathElectrification, nullptr, FNiagaraVariationData(), nullptr, GetMesh(), "DeathSocket");
+	AssetsManager->AttachVfx(EVfx::GuardianDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
 }
 
 void AGuardian::P_Setup()

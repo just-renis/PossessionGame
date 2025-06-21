@@ -5,7 +5,6 @@
 #include "PossessionGame/Data Assets/Base Data Assets/CollectibleData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/UI/SecondaryWidgets/InteractableUI.h"
-#include "PossessionGame/Utilities/Data Utilities/FNiagaraVariationData.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -25,7 +24,7 @@ ACollectible::ACollectible()
 void ACollectible::BeginPlay()
 {
 	Super::BeginPlay();
-	if (Data->HasAura()) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(Data->GetAuraName(), nullptr, FNiagaraVariationData(), &Aura, Collision, NAME_None);
+	if (Data->HasAura()) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(Data->GetAuraName(), nullptr, &Aura, Collision, NAME_None);
 	PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
 	InteractableUI = Cast<UInteractableUI>(InteractableWidget->GetWidget());
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACollectible::EnableInteractionWidget);

@@ -9,5 +9,8 @@ enum class EVariation : uint8
 	RangerVariationDefault,
 	RangerVariationBlue,
 	TricksterVariationDefault,
-	TricksterVariationPurple
+	TricksterVariationPurple,
+	SecretCrateRewardHealth,
+	SecretCrateRewardHijack,
+	SecretCrateRewardXp
 };
