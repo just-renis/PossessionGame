@@ -27,8 +27,8 @@ AProjectile::AProjectile()
 	RootComponent = Mesh;
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("movementComponent"));
 	MovementComponent->InitialSpeed = 2000.f;
-	MovementComponent->MaxSpeed = 2000.0f;
-	MovementComponent->ProjectileGravityScale = 0.0f;
+	MovementComponent->MaxSpeed = 2000.f;
+	MovementComponent->ProjectileGravityScale = 0.f;
 }
 
 void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale, const int32 InWhich)

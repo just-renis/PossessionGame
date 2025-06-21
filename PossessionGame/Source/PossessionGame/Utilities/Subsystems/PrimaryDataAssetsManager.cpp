@@ -73,7 +73,7 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::RangerProjectile, EVfxType::Muzzle }), EVfx::RangerMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::RangerProjectile, EVfxType::FpsTrail }), EVfx::RangerFpsBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::RangerGrenadeLauncherProjectile, EVfxType::Impact }), EVfx::RangerGrenadeExplosion },
-		{FPoolObjectPairWrapper({ EPoolObject::RangerGrenadeLauncherProjectile, EVfxType::FpsTrail }), EVfx::RangerGrenadeFpsTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::RangerGrenadeLauncherProjectile, EVfxType::Trail }), EVfx::RangerGrenadeTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Muzzle }), EVfx::MinionMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Trail }), EVfx::MinionBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionProjectile, EVfxType::Impact }), EVfx::MinionBulletImpact },
@@ -82,7 +82,9 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Trail }), EVfx::TricksterBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::Impact }), EVfx::TricksterPoisonImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::SecondaryImpact }), EVfx::TricksterPoison },
+		{FPoolObjectPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::Trail }), EVfx::TricksterPoisonGrenadeTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterEmpProjectile, EVfxType::Impact }), EVfx::TricksterEmpImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::TricksterEmpProjectile, EVfxType::Trail }), EVfx::TricksterEmpGrenadeTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Trail }), EVfx::SpyBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Impact }), EVfx::SpyBulletImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::SpyProjectile, EVfxType::Muzzle }), EVfx::SpyMuzzle },
@@ -454,6 +456,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_RangerGrenadeLauncherMuzzle", EVfx::RangerGrenadeLauncherMuzzle);
 	VfxsMap.Add("PA_RangerGrenadeLauncherMarker", EVfx::RangerGrenadeLauncherMarker);
 	VfxsMap.Add("PA_RangerDeathElectrification", EVfx::RangerDeathElectrification);
+	VfxsMap.Add("PA_RangerGrenadeTrail", EVfx::RangerGrenadeTrail);
 	VfxsMap.Add("PA_StopTimeAbility", EVfx::StopTimeAbility);
 	VfxsMap.Add("PA_StopTimeAbilityReverse", EVfx::StopTimeAbilityReverse);
 	VfxsMap.Add("PA_MinionMuzzle", EVfx::MinionMuzzle);
@@ -469,6 +472,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TricksterEmpImpact", EVfx::TricksterEmpImpact);
 	VfxsMap.Add("PA_TricksterReload", EVfx::TricksterReload);
 	VfxsMap.Add("PA_TricksterDeathElectrification", EVfx::TricksterDeathElectrification);
+	VfxsMap.Add("PA_TricksterEmpGrenadeTrail", EVfx::TricksterEmpGrenadeTrail);
+	VfxsMap.Add("PA_TricksterPoisonGrenadeTrail", EVfx::TricksterPoisonGrenadeTrail);
 	VfxsMap.Add("PA_SpyMuzzle", EVfx::SpyMuzzle);
 	VfxsMap.Add("PA_SpyBulletTrail", EVfx::SpyBulletTrail);
 	VfxsMap.Add("PA_SpyBulletImpact", EVfx::SpyBulletImpact);
@@ -498,7 +503,6 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_SecretRewardPopUp", EVfx::SecretRewardPopUp);
 	VfxsMap.Add("PA_EmpAffected", EVfx::EmpAffected);
 	VfxsMap.Add("PA_PossessionViable", EVfx::PossessionViable);
-	VfxsMap.Add("PA_RangerGrenadeFpsTrail", EVfx::RangerGrenadeFpsTrail);
 	FillContainers(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
