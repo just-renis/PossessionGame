@@ -25,7 +25,6 @@ void UMainMenuUI::NativeConstruct()
 void UMainMenuUI::Toggle(const bool bState)
 {
 	SetIsEnabled(bState);
-	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;

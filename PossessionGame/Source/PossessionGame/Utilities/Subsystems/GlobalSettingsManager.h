@@ -20,6 +20,8 @@ private:
 	UPROPERTY()
 	TMap<FKey, FText> CustomKeyDisplayNames = {
 		{ EKeys::LeftMouseButton, FText::FromString("M1") },
-		{ EKeys::RightMouseButton, FText::FromString("M2") }
+		{ EKeys::RightMouseButton, FText::FromString("M2") },
+		{ EKeys::LeftShift, FText::FromString("L Shift") },
+		{ EKeys::LeftControl, FText::FromString("L Ctrl") }
 	};
 };

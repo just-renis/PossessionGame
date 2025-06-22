@@ -17,17 +17,17 @@ public:
 	UFUNCTION()
 	void CloseUI();
 private:
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> PlayButton;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> SettingsButton;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> QuitButton;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UConfirmationPopupUI> QuitConfirmationPopup;
-	UPROPERTY(Transient, meta = (BindWidgetAnim, AllowPrivateAccess = true))
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> MainMenuFadeInAnim;
-	UPROPERTY(Transient, meta = (BindWidget, AllowPrivateAccess = true))
+	UPROPERTY(Transient, meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> MainMenuInv;
 
 	virtual void NativeConstruct() override;

@@ -27,7 +27,7 @@ private:
 	USettingsUI(const FObjectInitializer& ObjectInitializer);
 	
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> ApplySettingsButton;
+	TObjectPtr<UMainMenuButtonUI> ApplySettingsButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UButton> CloseButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
@@ -45,7 +45,7 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UControlsSettingsUI> ControlsSettings;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> ResetKeyBindsButton;
+	TObjectPtr<UMainMenuButtonUI> ResetKeyBindsButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UInvalidationBox> TabsInv;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))

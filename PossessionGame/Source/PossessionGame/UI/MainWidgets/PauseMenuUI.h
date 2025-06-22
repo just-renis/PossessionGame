@@ -15,7 +15,6 @@ class POSSESSIONGAME_API UPauseMenuUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void OpenUI();
-	void ChangeUIToDeathMenu();
 	UFUNCTION()
 	void CloseUI();
 private:
@@ -42,10 +41,6 @@ private:
 	void OpenSettings();
 	UFUNCTION()
 	void ReturnToMainMenu();
-	UFUNCTION()
-	void RestartLevel();
-	UFUNCTION()
-	void QuitGame();
 	UFUNCTION()
 	void TriggerReturnToMainMenuPopupFadeIn();
 	UFUNCTION()

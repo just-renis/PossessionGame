@@ -12,28 +12,6 @@
 
 void UPauseMenuUI::OpenUI() { Toggle(true); }
 
-void UPauseMenuUI::ChangeUIToDeathMenu()
-{
-	if (ContinueButton)
-	{
-		ContinueButton->Get()->OnClicked.RemoveAll(this);
-		ContinueButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::RestartLevel);
-		ContinueButton->SetText(FText::FromString("Restart Level"));
-	}
-	if (SettingsButton)
-	{
-		SettingsButton->Get()->OnClicked.RemoveAll(this);
-		SettingsButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::ReturnToMainMenu);
-		SettingsButton->SetText(FText::FromString("Return To Menu"));
-	}
-	if (ReturnToMenuButton)
-	{
-		ReturnToMenuButton->Get()->OnClicked.RemoveAll(this);
-		ReturnToMenuButton->Get()->OnClicked.AddDynamic(this, &UPauseMenuUI::QuitGame);
-		ReturnToMenuButton->SetText(FText::FromString("Quit Game"));
-	}
-}
-
 void UPauseMenuUI::CloseUI()
 {
 	BindToAnimationFinished(FadeOutAnim, FadeOutAnimDelegate);
@@ -86,16 +64,6 @@ void UPauseMenuUI::OpenSettings()
 {
 	SetVisibility(ESlateVisibility::Collapsed);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->OpenUI();
-}
-
-void UPauseMenuUI::RestartLevel()
-{
-	UGameplayStatics::OpenLevel(this, *UGameplayStatics::GetCurrentLevelName(GetWorld(), true));
-}
-
-void UPauseMenuUI::QuitGame()
-{
-	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 }
 
 void UPauseMenuUI::TriggerReturnToMainMenuPopupFadeIn()

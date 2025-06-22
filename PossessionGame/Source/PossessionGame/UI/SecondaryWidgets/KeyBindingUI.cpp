@@ -19,7 +19,7 @@ void UKeyBindingUI::Setup(const TObjectPtr<UEnhancedInputUserSettings>& InUserSe
 FText UKeyBindingUI::GetDisplayName(const FKey& InKeyName) const
 {
 	const FText* CustomName = GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyDisplayName(InKeyName);
-	return CustomName ? *CustomName :InKeyName.GetDisplayName();
+	return CustomName ? *CustomName : InKeyName.GetDisplayName();
 }
 
 void UKeyBindingUI::NativeConstruct()

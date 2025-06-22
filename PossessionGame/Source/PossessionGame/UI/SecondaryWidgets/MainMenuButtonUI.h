@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MainMenuButtonUI.generated.h"
 
+class UBorder;
 class UTextBlock;
 class UButton;
 
@@ -20,10 +21,14 @@ private:
 	int32 FontSize;
 	UPROPERTY(EditAnywhere, Category = "Button Text", meta = (AllowPrivateAccess = true))
 	FText Text;
+	UPROPERTY(EditAnywhere, Category = "Button Background", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> BackgroundTexture;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> Button;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ButtonText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UBorder> ButtonContainer;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> ButtonHoverAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))

@@ -1,4 +1,5 @@
 ﻿#include "MainMenuButtonUI.h"
+#include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -13,6 +14,10 @@ void UMainMenuButtonUI::NativePreConstruct()
 	FSlateFontInfo FontInfo = ButtonText->GetFont();
 	FontInfo.Size = FontSize;
 	ButtonText->SetFont(FontInfo);
+	if (!BackgroundTexture || !ButtonContainer) return;
+	FSlateBrush Brush;
+	Brush.SetResourceObject(BackgroundTexture);
+	ButtonContainer->SetBrush(Brush);
 }
 
 void UMainMenuButtonUI::NativeConstruct()

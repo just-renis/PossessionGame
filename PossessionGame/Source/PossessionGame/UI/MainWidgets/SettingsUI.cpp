@@ -80,8 +80,8 @@ void USettingsUI::NativeConstruct()
 void USettingsUI::SetupUIEvents()
 {
 	if (GraphicsSettings) GraphicsSettings->SetupUIEvents();
-	if (ResetKeyBindsButton) ResetKeyBindsButton->OnClicked.AddDynamic(this, &USettingsUI::ResetKeyBindsToDefault);
-	if (ApplySettingsButton) ApplySettingsButton->OnClicked.AddDynamic(this, &USettingsUI::ApplySettings);
+	if (ResetKeyBindsButton) ResetKeyBindsButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::ResetKeyBindsToDefault);
+	if (ApplySettingsButton) ApplySettingsButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::ApplySettings);
 	if (CloseButton) CloseButton->OnClicked.AddDynamic(this, &USettingsUI::CloseWithButton);
 	if (MainTabButton)
 	{

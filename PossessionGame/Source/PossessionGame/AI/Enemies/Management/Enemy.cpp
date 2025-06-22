@@ -33,6 +33,7 @@
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Interfaces/Interactable.h"
+#include "PossessionGame/UI/MainWidgets/DeathMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerGhostUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
@@ -1124,11 +1125,7 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 
 void AEnemy::P_TriggerCriticalDamageIndicator() const { if (P_HUD) P_HUD->ToggleCriticalDamageIndicator(); }
 
-void AEnemy::P_OpenDeathMenu() const
-{
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->ChangeUIToDeathMenu();
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
-}
+void AEnemy::P_OpenDeathMenu() const {	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UDeathMenuUI>(EWidget::DeathMenuUI)->OpenUI(); }
 
 void AEnemy::P_ContinuousFovChange()
 {
