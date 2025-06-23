@@ -301,7 +301,7 @@ void AEnemy::SetEmpEffect(const float InEffectDuration)
 	if (bAffectedByEmp)
 	{
 		AnimInstance->ClearMontageWithHoldHandle();
-		AnimInstance->StopMontage(EEnemyAnimState::EmpEffect);
+		AnimInstance->StopAllMontages(0.f);
 	}
 	bAffectedByEmp = true;
 	PlayEmpAffectedVfx(InEffectDuration);

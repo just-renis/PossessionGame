@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "PossessionGame/Utilities/Data Utilities/FTFunctionCallback.h"
 #include "PA_VfxContainer.generated.h"
 
 enum class EVariation : uint8;
@@ -18,20 +19,12 @@ enum class EUserParamType : uint8
 };
 
 USTRUCT()
-struct FTFunctionCallback
-{
-	GENERATED_BODY()
-
-	TFunction<void()> Function;
-};
-
-USTRUCT()
 struct FDynamicMaterialParams
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	EUserParamType ParamType;
+	EUserParamType ParamType = EUserParamType::Float;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Float", EditConditionHides))
 	float FloatValue = 0.f;
 };
@@ -42,7 +35,7 @@ struct FNiagaraUserParam
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	EUserParamType ParamType;
+	EUserParamType ParamType = EUserParamType::Float;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Int", EditConditionHides))
 	int32 IntValue = 0;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Float", EditConditionHides))
@@ -73,6 +66,7 @@ class POSSESSIONGAME_API UPA_VfxContainer : public UPrimaryDataAsset
 public:
 	bool GetIsInLoad() const { return bIsInLoad; }
 	bool GetIsLoaded() const { return bIsLoaded; }
+	FName GetVfxName() const { return VfxPrimaryName; }
 	TSoftObjectPtr<UNiagaraSystem>& GetVfxEffect() { return VfxEffect; }
 	TMap<FName, FNiagaraUserParam>* GetParams(const EVariation InVariationName);
 

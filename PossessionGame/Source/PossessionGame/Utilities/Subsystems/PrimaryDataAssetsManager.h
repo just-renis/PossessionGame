@@ -153,7 +153,7 @@ private:
 	void SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, ESound InSoundName, const bool bIsPlayer);
 	void SetupVfx(const TObjectPtr<UPA_VfxContainer>& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);
 	void AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
-	void AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
+	void AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode);
 	void AddSpawnableEnemiesToThePool();
@@ -162,6 +162,10 @@ private:
 	void LoadVfx(const TObjectPtr<UPA_VfxContainer>& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation, const FRotator& InRotation, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);
 	void RequestVfxLoad(const TObjectPtr<UPA_VfxContainer>& InVfxData);
 	void UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes);
+	void SetupSound2D(const TObjectPtr<UPA_SoundContainer>& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef);
+	void LoadSound2D(const TObjectPtr<UPA_SoundContainer>& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef);
+	void LoadSound3D(const TObjectPtr<UPA_SoundContainer>& InSoundData, TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer);
+	void RequestSoundLoad(const TObjectPtr<UPA_SoundContainer>& InSoundData);
 	template<typename T, typename U>
 	void FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type);
 };

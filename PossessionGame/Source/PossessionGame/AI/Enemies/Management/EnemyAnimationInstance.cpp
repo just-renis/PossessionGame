@@ -105,7 +105,11 @@ void UEnemyAnimationInstance::MontageWithHoldEnd() // If more such montages will
 
 void UEnemyAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted)
 {
-    if (Montages.Contains(EEnemyAnimState::EmpRecover) && InMontage == Montages.Find(EEnemyAnimState::EmpRecover)->Get()) Proprietor->EmpEffectEnded();
+    if (!bIsInterrupted && Montages.Contains(EEnemyAnimState::EmpRecover) && InMontage == Montages.Find(EEnemyAnimState::EmpRecover)->Get())
+    {
+        Proprietor->EmpEffectEnded();
+        return;
+    }
     if (Montages.Contains(EEnemyAnimState::Shoot) && InMontage == Montages.Find(EEnemyAnimState::Shoot)->Get()) Proprietor->AI_SetCanShoot(false);
 }
 

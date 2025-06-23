@@ -122,43 +122,18 @@ void UPrimaryDataAssetsManager::DeleteLoadedHandles()
 
 void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
 {
-	if (GetCanAsyncLoadHappen())
-	{
-		const FSoftObjectPath PathToLoad = GetSoundData(InSoundName)->Sound.ToSoftObjectPath();
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, InAudioComp, InCallback, InSoundName, bIsPlayer]
-		{
-			if (IsGameRunning()) SetAndPlaySoundCallback(InAudioComp, InCallback, InSoundName, bIsPlayer);
-		});
-		AddAsyncHandle(Handle);
-	}
+	if (!GetCanAsyncLoadHappen()) return;
+	const TObjectPtr<UPA_SoundContainer> SoundData = GetSoundData(InSoundName);
+	if (SoundData->Sound.IsValid()) SetAndPlaySoundCallback(InAudioComp, InCallback, InSoundName, bIsPlayer);
+	else LoadSound3D(SoundData, InAudioComp, InCallback, InSoundName, bIsPlayer);
 }
 
 void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef, const bool bIsPlayer)
 {
 	if (!GetCanAsyncLoadHappen()) return;
-	if (const TObjectPtr<UPA_SoundContainer> SoundData = GetSoundData(InSoundName); SoundData->Sound.IsValid())
-	{
-		float VolumeMultiplier = 1.f;
-		if (SoundData->bIsCharacterTypeDependant) VolumeMultiplier = bIsPlayer ? SoundData->PlayerVolume : SoundData->EnemyVolume;
-		if (bStoreSoundRef) StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), SoundData->Sound.Get(), VolumeMultiplier));
-		else UGameplayStatics::PlaySound2D(GetWorld(), SoundData->Sound.Get(), VolumeMultiplier);
-	}
-	else
-	{
-		const FSoftObjectPath PathToLoad = GetSoundData(InSoundName)->Sound.ToSoftObjectPath();
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, InSoundName, bStoreSoundRef, bIsPlayer]
-		{
-			if (IsGameRunning())
-			{
-				const TObjectPtr<UPA_SoundContainer> SoundData = GetSoundData(InSoundName);
-				float VolumeMultiplier = 1.f;
-				if (SoundData->bIsCharacterTypeDependant) VolumeMultiplier = bIsPlayer ? SoundData->PlayerVolume : SoundData->EnemyVolume;
-				if (bStoreSoundRef) StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), SoundData->Sound.Get(), VolumeMultiplier));
-				else UGameplayStatics::PlaySound2D(GetWorld(), SoundData->Sound.Get(), VolumeMultiplier);
-			}
-		});
-		AddAsyncHandle(Handle);
-	}
+	const TObjectPtr<UPA_SoundContainer> SoundData = GetSoundData(InSoundName);
+	if (SoundData->Sound.IsValid()) SetupSound2D(GetSoundData(InSoundName), InSoundName, bIsPlayer, bStoreSoundRef);
+	else LoadSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
 }
 
 void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
@@ -219,7 +194,6 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubc
 	MarkerClass = InMarkerClass;
 	bTutorialIsFinished = bIsTutorialFinished;
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
-	//RequestSpawnEnemy(ECharacterType::Trickster, EGameMode::TutorialMode1, false, nullptr);
 	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	else AddSpawnableEnemiesToThePool();
 	DelegateManager = InDelegateManager;
@@ -253,6 +227,49 @@ void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraCom
 			InVfxComponent->SetVariableFloat(Attribute.Key, AttributeValue);
 		}
 		else InVfxComponent->SetVariableFloat(Attribute.Key, Attribute.Value.Value);
+	}
+}
+
+void UPrimaryDataAssetsManager::SetupSound2D(const TObjectPtr<UPA_SoundContainer>& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef)
+{
+	float VolumeMultiplier = 1.f;
+	if (InSoundData->bIsCharacterTypeDependant) VolumeMultiplier = bIsPlayer ? InSoundData->PlayerVolume : InSoundData->EnemyVolume;
+	if (bStoreSoundRef) StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), InSoundData->Sound.Get(), VolumeMultiplier));
+	else UGameplayStatics::PlaySound2D(GetWorld(), InSoundData->Sound.Get(), VolumeMultiplier);
+}
+
+void UPrimaryDataAssetsManager::LoadSound2D(const TObjectPtr<UPA_SoundContainer>& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef)
+{
+	InSoundData->AddSoundLoadedCallback([this, InSoundData, InSoundName, bIsPlayer, bStoreSoundRef] { SetupSound2D(InSoundData, InSoundName, bIsPlayer, bStoreSoundRef); });
+	RequestSoundLoad(InSoundData);
+}
+
+void UPrimaryDataAssetsManager::LoadSound3D(const TObjectPtr<UPA_SoundContainer>& InSoundData, TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
+{
+	InSoundData->AddSoundLoadedCallback([this, InAudioComp, InCallback, InSoundName, bIsPlayer]
+	{
+		if (IsGameRunning()) SetAndPlaySoundCallback(InAudioComp, InCallback, InSoundName, bIsPlayer);
+	});
+	RequestSoundLoad(InSoundData);
+}
+
+void UPrimaryDataAssetsManager::RequestSoundLoad(const TObjectPtr<UPA_SoundContainer>& InSoundData)
+{
+	if (!InSoundData->GetIsInLoad())
+	{
+		InSoundData->SetIsInLoad(true);
+		if (GetCanAsyncLoadHappen())
+		{
+			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InSoundData->Sound.ToSoftObjectPath(), [this, InSoundData]
+			{
+				if (IsGameRunning())
+				{
+					InSoundData->SetIsLoaded(true);
+					InSoundData->TriggerSoundsCallbacks();
+				}
+			});
+			AddAsyncHandle(Handle);
+		}
 	}
 }
 
@@ -574,13 +591,13 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 		else PathsToLoad.Add(GetWeaponData(Weapon)->WeaponMesh.ToSoftObjectPath());
 		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack]
 		{
-			if (IsGameRunning()) AsyncLoadCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
+			if (IsGameRunning()) AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
 		});
 		AddAsyncHandle(Handle);
 	}
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
+void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
 	LoadedEnemies.Add(InCharacter, Cast<UClass>(GetCharacterData(InCharacter)->CharacterClass.ToSoftObjectPath().TryLoad()));
 	if (InSingularWeapon != EWeapon::None)
