@@ -21,7 +21,7 @@ public:
 	void ApplySettings();
 private:
 	bool Vsync;
-	int32 ResolutionIndex;
+	int32 ResolutionIndex = -1;
 	FIntPoint Resolution;
 	EWindowMode::Type ScreenMode;
 	TArray<FIntPoint> SupportedResolutions;

@@ -1,5 +1,6 @@
 ﻿#include "GraphicsSettingsUI.h"
 #include "Components/Button.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "PossessionGame/UI/SecondaryWidgets/SettingsOptionUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/SettingsQualityUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/SliderUI.h"
@@ -36,8 +37,8 @@ void UGraphicsSettingsUI::UpdateDefaultGraphicsSettings()
 	if (Effects) Effects->UpdateDefaultQuality(GameUserSettings->GetVisualEffectQuality());
 	if (Shading) Shading->UpdateDefaultQuality(GameUserSettings->GetShadingQuality());
 	if (ScreenMode) ScreenMode = GameUserSettings->GetFullscreenMode();
-	if (ScreenModeOption)ScreenModeOption->SetText(FText::FromString(GetFixedScreenMode()));
-	Resolution = GameUserSettings->GetScreenResolution();
+	if (ScreenModeOption) ScreenModeOption->SetText(FText::FromString(GetFixedScreenMode()));
+	Resolution = GEngine->GetGameUserSettings()->GetDesktopResolution();
 	if (ResolutionOption) ResolutionOption->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
 	Vsync = GameUserSettings->IsVSyncEnabled();
 	if (VsyncOption) VsyncOption->SetText(FText::FromString(Vsync ? "Enabled" : "Disabled"));
@@ -122,16 +123,13 @@ void UGraphicsSettingsUI::NativeConstruct()
 
 void UGraphicsSettingsUI::InitResolutions()
 {
-	SupportedResolutions.Add(FIntPoint(800, 600));
-	SupportedResolutions.Add(FIntPoint(1280, 720));
-	SupportedResolutions.Add(FIntPoint(1440, 900));
-	SupportedResolutions.Add(FIntPoint(1600, 900));
-	SupportedResolutions.Add(FIntPoint(1920, 1080));
+	UKismetSystemLibrary::GetSupportedFullscreenResolutions(SupportedResolutions);
+	if (SupportedResolutions.IsEmpty()) SupportedResolutions.Add(FIntPoint(1920, 1080));
 	ResolutionIndex = SupportedResolutions.IndexOfByPredicate([&](const FIntPoint& Resolution)
 	{
-		return Resolution == GEngine->GetGameUserSettings()->GetScreenResolution();
+		return Resolution == GEngine->GetGameUserSettings()->GetDesktopResolution();
 	});
-	if (ResolutionIndex == INDEX_NONE) ResolutionIndex = 4;
+	if (ResolutionIndex == -1) ResolutionIndex = SupportedResolutions.Num() - 1;
 }
 
 void UGraphicsSettingsUI::ApplyBrightnessValue(const float InValue)
