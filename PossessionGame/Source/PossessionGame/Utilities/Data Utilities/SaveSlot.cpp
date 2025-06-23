@@ -54,6 +54,12 @@ void USaveSlot::ProgressVariationUnlock(const EVariationUnlock InVariationUnlock
 
 void USaveSlot::SaveSlot() { UGameplayStatics::SaveGameToSlot(this, SlotName, 0); }
 
+void USaveSlot::SetLaunchedOnce()
+{
+	bIsFirstLaunch = false;
+	SaveSlot();
+}
+
 void USaveSlot::UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation) { VariationUnlockData.UpdateSelectedVariation(InCharacter, InVariation); }
 
 void USaveSlot::VersionMigration()

@@ -1,16 +1,31 @@
 ﻿#include "MainMenuUI.h"
 #include "SettingsUI.h"
+#include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
+#include "Components/InvalidationBox.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UMainMenuUI::OpenUI()
 {
-	TriggerMainMenuFadeInAnim();
+	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	if (SaveSlot->GetIsFirstLaunch())
+	{
+		SaveSlot->SetLaunchedOnce();
+		BindToAnimationFinished(FirstLaunchAnim, FirstLaunchAnimDelegate);
+		PlayAnimation(FirstLaunchAnim);
+	}
+	else
+	{
+		if (BlackScreenInv) BlackScreenInv->SetRenderOpacity(0.f);
+		TriggerMainMenuFadeInAnim();
+	}
 	Toggle(true);
 }
 
@@ -20,6 +35,7 @@ void UMainMenuUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	SetupButtons();
+	FirstLaunchAnimDelegate.BindUFunction(this, "TriggerMainMenuFadeInAnim");
 }
 
 void UMainMenuUI::Toggle(const bool bState)
@@ -44,6 +60,7 @@ void UMainMenuUI::SetupButtons()
 
 void UMainMenuUI::TriggerMainMenuFadeInAnim()
 {
+	UnbindFromAnimationFinished(FirstLaunchAnim, FirstLaunchAnimDelegate);
 	ToggleMenuButtons(true);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
 	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim));

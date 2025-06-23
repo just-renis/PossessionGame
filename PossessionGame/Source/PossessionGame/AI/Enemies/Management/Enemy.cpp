@@ -33,7 +33,6 @@
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Interfaces/Interactable.h"
-#include "PossessionGame/UI/MainWidgets/DeathMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerGhostUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
@@ -578,12 +577,12 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorldTimerManager().ClearTimer(P_StopDashHandle);
 	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
 	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
-	GetWorldTimerManager().ClearTimer(P_OpenDeathMenuHandle);
 	GetWorldTimerManager().ClearTimer(P_DeathHandle);
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	GetWorldTimerManager().ClearTimer(CheckIfFallOutOfWorldHandle);
 	GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);
 	GetWorldTimerManager().ClearTimer(SpawnCondenseMaterialsProcessHandle);
+	GetWorldTimerManager().ClearTimer(RestartLevelHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -936,7 +935,7 @@ void AEnemy::P_InitiateDeathEvents()
 	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
 	DelegateManager->OnPlayerDeath.Broadcast();
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor::Black, false, true);
-	GetWorldTimerManager().SetTimer(P_OpenDeathMenuHandle, this, &AEnemy::P_OpenDeathMenu, 3.f, false);
+	GetWorldTimerManager().SetTimer(RestartLevelHandle, this, &AEnemy::RestartLevel, 3.f, false);
 }
 
 void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
@@ -1125,8 +1124,6 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 
 void AEnemy::P_TriggerCriticalDamageIndicator() const { if (P_HUD) P_HUD->ToggleCriticalDamageIndicator(); }
 
-void AEnemy::P_OpenDeathMenu() const {	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UDeathMenuUI>(EWidget::DeathMenuUI)->OpenUI(); }
-
 void AEnemy::P_ContinuousFovChange()
 {
 	Camera->SetFieldOfView(Camera->FieldOfView + FovChangeTick);
@@ -1273,3 +1270,5 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 		EmpAffected->Activate();
 	}
 }
+
+void AEnemy::RestartLevel() const { UGameplayStatics::OpenLevel(this, *UGameplayStatics::GetCurrentLevelName(GetWorld(), true)); }

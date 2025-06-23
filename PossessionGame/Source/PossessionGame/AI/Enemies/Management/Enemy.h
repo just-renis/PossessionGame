@@ -292,8 +292,6 @@ private:
 	UPROPERTY()
 	FTimerHandle P_TriggerCriticalDamageIndicatorHandle;
 	UPROPERTY()
-	FTimerHandle P_OpenDeathMenuHandle;
-	UPROPERTY()
 	FTimerHandle P_DeathHandle;
 	UPROPERTY()
 	FTimerHandle P_ContinuousFovChangeHandle;
@@ -309,6 +307,8 @@ private:
 	FTimerHandle DestroyCondenseMaterialsProcessHandle;
 	UPROPERTY()
 	FTimerHandle SpawnCondenseMaterialsProcessHandle;
+	UPROPERTY()
+	FTimerHandle RestartLevelHandle;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
@@ -361,7 +361,6 @@ private:
 	void P_ControlLogic();
 	void P_DetectIfPlayerPointingAtOutlineObjects();
 	void P_TriggerCriticalDamageIndicator() const;
-	void P_OpenDeathMenu() const;
 	void P_ContinuousFovChange();
 	void P_StopDash() const;
 
@@ -383,4 +382,5 @@ private:
 	void OpenInfoPanel();
 	void CloseInfoPanel();
 	void PlayEmpAffectedVfx(const float InEffectDuration);
+	void RestartLevel() const;
 };

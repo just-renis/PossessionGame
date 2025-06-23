@@ -15,6 +15,7 @@ class POSSESSIONGAME_API USaveSlot : public USaveGame
 public:
 	bool GetIsTutorialFinished() const { return bTutorialFinished; }
 	bool GetIsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const;
+	bool GetIsFirstLaunch() const { return bIsFirstLaunch; }
 	int32 GetXp() const { return CurrentXp; }
 	int32 GetCurrentLevelNeededXp() const;
 	int32 GetLevelDamageIncrease(const int32 InLevel = -1) const;
@@ -28,7 +29,10 @@ public:
 	void AddXp(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const int32 InXp);
 	void ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName);
 	void SaveSlot();
+	void SetLaunchedOnce();
 private:
+	UPROPERTY()
+	bool bIsFirstLaunch = true;
 	UPROPERTY()
 	bool bTutorialFinished = false;
 	UPROPERTY()

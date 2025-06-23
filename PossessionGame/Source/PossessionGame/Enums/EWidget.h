@@ -12,6 +12,5 @@ enum class EWidget : uint8
     UpgradeSelectionUI,
     NodeMapUI,
     TutorialUI,
-    VariationsUI,
-    DeathMenuUI
+    VariationsUI
 };

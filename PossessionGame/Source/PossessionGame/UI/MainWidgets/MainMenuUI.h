@@ -25,10 +25,16 @@ private:
 	TObjectPtr<UMainMenuButtonUI> QuitButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UConfirmationPopupUI> QuitConfirmationPopup;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInvalidationBox> MainMenuInv;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UInvalidationBox> BlackScreenInv;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> MainMenuFadeInAnim;
-	UPROPERTY(Transient, meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> MainMenuInv;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> FirstLaunchAnim;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent FirstLaunchAnimDelegate;
 
 	virtual void NativeConstruct() override;
 	void Toggle(const bool bState);

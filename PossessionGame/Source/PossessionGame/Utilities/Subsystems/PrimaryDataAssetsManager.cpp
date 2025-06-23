@@ -135,7 +135,15 @@ void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAud
 
 void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef, const bool bIsPlayer)
 {
-	if (GetCanAsyncLoadHappen())
+	if (!GetCanAsyncLoadHappen()) return;
+	if (const TObjectPtr<UPA_SoundContainer> SoundData = GetSoundData(InSoundName); SoundData->Sound.IsValid())
+	{
+		float VolumeMultiplier = 1.f;
+		if (SoundData->bIsCharacterTypeDependant) VolumeMultiplier = bIsPlayer ? SoundData->PlayerVolume : SoundData->EnemyVolume;
+		if (bStoreSoundRef) StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), SoundData->Sound.Get(), VolumeMultiplier));
+		else UGameplayStatics::PlaySound2D(GetWorld(), SoundData->Sound.Get(), VolumeMultiplier);
+	}
+	else
 	{
 		const FSoftObjectPath PathToLoad = GetSoundData(InSoundName)->Sound.ToSoftObjectPath();
 		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathToLoad, [this, InSoundName, bStoreSoundRef, bIsPlayer]
