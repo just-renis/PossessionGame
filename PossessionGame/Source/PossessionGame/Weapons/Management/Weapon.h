@@ -41,7 +41,7 @@ public:
 	FRotator GetSocketRotation(const FName InSocketName) const { return Mesh->GetSocketRotation(InSocketName); }
 	FVector GetSocketScale(const FName InSocketName) const { return Mesh->GetSocketTransform(InSocketName).GetScale3D(); }
 	FVector GetHandsSocketLocation(const FName InSocketName) const { return HandsMesh->GetSocketLocation(InSocketName); }
-	FProjectileData& GetProjectileData(const EPoolObject InProjectileName) const { return bIsPossessed ? P_Data->GetProjectileData(InProjectileName) : AI_Data->GetProjectileData(InProjectileName); }
+	FProjectileData* GetProjectileData(const EPoolObject InProjectileName) const { return bIsPossessed ? P_Data->GetProjectileData(InProjectileName) : AI_Data->GetProjectileData(InProjectileName); }
 	TObjectPtr<UAIWeaponData>& GetAIData() { return AI_Data; }
 	TObjectPtr<UPlayerWeaponData>& GetPlayerData() { return P_Data; }
 	TObjectPtr<UWeaponAnimInstance>& GetAnimInstance() { return AnimInstance; }

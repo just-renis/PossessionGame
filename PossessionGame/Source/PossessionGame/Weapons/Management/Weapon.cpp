@@ -169,24 +169,26 @@ void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh
 
 void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bFromFirstWeapon)
 {
+	FProjectileData* ProjectileData = GetProjectileData(InProjectileName);
+	if (!ProjectileData) return;
 	const int32 ProjectilesAmount = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPossessed, InProjectileName, EUpgradeAttribute::ProjectilesAmount);
-	GetProjectileData(InProjectileName).SetProprietor(Proprietor);
-	GetProjectileData(InProjectileName).SetAmount(ProjectilesAmount + 1);
-	const FName& ProjectileSocketName = GetProjectileData(InProjectileName).ProjectileSocketName;
+	ProjectileData->SetProprietor(Proprietor);
+	ProjectileData->SetAmount(ProjectilesAmount + 1);
+	const FName& ProjectileSocketName = ProjectileData->ProjectileSocketName;
 	const FRotator BaseRotation = GetSocketRotation(ProjectileSocketName);
-	if (GetProjectileData(InProjectileName).Amount > 1)
+	if (ProjectileData->Amount > 1)
 	{
-		const FAdditionalProjectiles ProjectilesData = GetProjectileData(InProjectileName).GetMultiProjectileData(GetProjectileData(InProjectileName).Amount);
+		const FAdditionalProjectiles ProjectilesData = ProjectileData->GetMultiProjectileData(ProjectileData->Amount);
 		for (int32 i = 0; i < ProjectilesData.Data.Num(); i++)
 		{
 			GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, GetSocketLocation(ProjectileSocketName), BaseRotation.RotateVector(ProjectilesData.Data[i].Direction).Rotation())
-			->Init(GetProjectileData(InProjectileName), BaseRotation.RotateVector(ProjectilesData.Data[i].Direction).Rotation(), GetSocketScale(ProjectileSocketName), i);
+			->Init(*ProjectileData, BaseRotation.RotateVector(ProjectilesData.Data[i].Direction).Rotation(), GetSocketScale(ProjectileSocketName), i);
 		}
 	}
 	else
 	{
 		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, GetSocketLocation(ProjectileSocketName), BaseRotation)
-		->Init(GetProjectileData(InProjectileName), BaseRotation, GetSocketScale(ProjectileSocketName));
+		->Init(*ProjectileData, BaseRotation, GetSocketScale(ProjectileSocketName));
 	}
 }
 

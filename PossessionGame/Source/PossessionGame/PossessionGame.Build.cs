@@ -27,7 +27,8 @@ public class PossessionGame : ModuleRules
 			"StateTreeModule",
 			"AnimGraphRuntime",
 			"LevelSequence",
-			"MovieScene"
+			"MovieScene",
+			"RenderCore"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

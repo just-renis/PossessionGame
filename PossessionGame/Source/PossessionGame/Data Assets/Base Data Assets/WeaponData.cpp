@@ -1,10 +1,14 @@
 #include "WeaponData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 
-FProjectileData& UWeaponData::GetProjectileData(EPoolObject ProjectileName)
+FProjectileData* UWeaponData::GetProjectileData(const EPoolObject InProjectileName)
 {
-	if (ProjectilesData[ProjectileName].ProjectileName == EPoolObject::None) ProjectilesData[ProjectileName].ProjectileName = ProjectileName;
-	return ProjectilesData[ProjectileName];
+	if (FProjectileData* FoundData = ProjectilesData.Find(InProjectileName))
+	{
+		if (FoundData->ProjectileName == EPoolObject::None) FoundData->ProjectileName = InProjectileName;
+		return FoundData;
+	}
+	return nullptr;
 }
 
 void UWeaponData::SetAllProjectilesWalkSpread(bool bState)

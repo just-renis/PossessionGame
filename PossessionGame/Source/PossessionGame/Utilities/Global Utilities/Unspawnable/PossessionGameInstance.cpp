@@ -1,8 +1,10 @@
 #include "PossessionGameInstance.h"
 #include "PossessionGameUserSettings.h"
+#include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UPossessionGameInstance::LoadPlayerSaveSlot()
@@ -55,7 +57,16 @@ void UPossessionGameInstance::InitAssetsManager() const
 void UPossessionGameInstance::Init()
 {
 	Super::Init();
+	UE_LOG(LogTemp, Error, TEXT("NUMPRECOMPILES REMAINING: %i"), FShaderPipelineCache::NumPrecompilesRemaining());
 	LoadPlayerSaveSlot();
 	LoadPlayerRunSaveSlot();
 	Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings())->LoadSettings();
+	GetSubsystem<UDelegateManager>()->OnPlayerDeath.AddUObject(this, &UPossessionGameInstance::SetRestartLevelTimer);
 }
+
+void UPossessionGameInstance::SetRestartLevelTimer()
+{
+	GetTimerManager().SetTimer(RestartLevelHandle, this, &UPossessionGameInstance::RestartLevel, 3.f);
+}
+
+void UPossessionGameInstance::RestartLevel() { UGameplayStatics::OpenLevel(this, TEXT("/Game/Levels/Chapter1/Levels/Level_1")); }

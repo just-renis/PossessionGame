@@ -37,15 +37,16 @@ void URangerAnimationInstance::LaunchGrenade() const { if (Proprietor->IsAsyncAs
 
 void URangerAnimationInstance::TriggerGrenadeProjection() const
 {
+	FProjectileData* ProjectileData = Proprietor->GetWeapon()->GetProjectileData(EPoolObject::RangerGrenadeLauncherProjectile);
+	if (!ProjectileData) return;
 	FPredictProjectilePathParams PathParams;
-	FProjectileData ProjectileData = Proprietor->GetWeapon()->GetProjectileData(EPoolObject::RangerGrenadeLauncherProjectile);
-	PathParams.StartLocation = Proprietor->GetWeapon()->GetSocketLocation(ProjectileData.ProjectileSocketName);
-	PathParams.LaunchVelocity = Proprietor->GetWeapon()->GetSocketRotation(ProjectileData.ProjectileSocketName).Vector() * ProjectileData.GetMultiProjectileData(1).Data[0].MaxSpeed;
+	PathParams.StartLocation = Proprietor->GetWeapon()->GetSocketLocation(ProjectileData->ProjectileSocketName);
+	PathParams.LaunchVelocity = Proprietor->GetWeapon()->GetSocketRotation(ProjectileData->ProjectileSocketName).Vector() * ProjectileData->GetMultiProjectileData(1).Data[0].MaxSpeed;
 	PathParams.bTraceWithCollision = true;
 	PathParams.ProjectileRadius = 1.f;
 	PathParams.MaxSimTime = 8.f;
 	PathParams.SimFrequency = 30.f;
-	PathParams.OverrideGravityZ = GetWorld()->GetGravityZ() * ProjectileData.GetMultiProjectileData(1).Data[0].GravityScale;
+	PathParams.OverrideGravityZ = GetWorld()->GetGravityZ() * ProjectileData->GetMultiProjectileData(1).Data[0].GravityScale;
 	PathParams.TraceChannel = ECC_GameTraceChannel6;
 	FPredictProjectilePathResult PathResult;
 	if (UGameplayStatics::PredictProjectilePath(GetWorld(), PathParams, PathResult))

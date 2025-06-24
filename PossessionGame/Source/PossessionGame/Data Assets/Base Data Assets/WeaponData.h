@@ -19,7 +19,7 @@ public:
 	int32 GetShootCyclesUntilReload() const { return ShootCyclesUntilReload; }
     float GetShootCooldown() const { return ShootCooldown; }
 	EDamageReason GetDamageReason() const { return DamageReason; }
-	FProjectileData& GetProjectileData(EPoolObject ProjectileName);
+	FProjectileData* GetProjectileData(const EPoolObject InProjectileName);
 
 	void SetAllProjectilesWalkSpread(bool bState);
 private:

@@ -935,7 +935,7 @@ void AEnemy::P_InitiateDeathEvents()
 	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
 	DelegateManager->OnPlayerDeath.Broadcast();
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor::Black, false, true);
-	GetWorldTimerManager().SetTimer(RestartLevelHandle, this, &AEnemy::RestartLevel, 3.f, false);
+//	GetWorldTimerManager().SetTimer(RestartLevelHandle, this, &AEnemy::RestartLevel, 3.f, false);
 }
 
 void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
@@ -1271,4 +1271,4 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 	}
 }
 
-void AEnemy::RestartLevel() const { UGameplayStatics::OpenLevel(this, *UGameplayStatics::GetCurrentLevelName(GetWorld(), true)); }
+//void AEnemy::RestartLevel() { UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Levels/Chapter1/Levels/Level_1")); }

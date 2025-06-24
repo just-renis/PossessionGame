@@ -58,6 +58,10 @@ private:
 	TObjectPtr<USaveSlot> PlayerSaveSlot;
 	UPROPERTY()
 	TObjectPtr<URunSaveSlot> PlayerRunSaveSlot;
+	UPROPERTY()
+	FTimerHandle RestartLevelHandle;
 
 	virtual void Init() override;
+	void SetRestartLevelTimer();
+	void RestartLevel();
 };
