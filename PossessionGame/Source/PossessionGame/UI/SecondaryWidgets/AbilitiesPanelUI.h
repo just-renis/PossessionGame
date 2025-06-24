@@ -22,13 +22,13 @@ public:
 private:
 	bool bFirstAbilityFullyCharged = false;
 	bool bSecondAbilityFullyCharged = false;
-	bool bThirdAbilityFullyCharged = false;
+//	bool bThirdAbilityFullyCharged = false;
 	UPROPERTY(EditAnywhere, Category = "Ability Icons", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> AbilityIcon1;
 	UPROPERTY(EditAnywhere, Category = "Ability Icons", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> AbilityIcon2;
-	UPROPERTY(EditAnywhere, Category = "Ability Icons", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UTexture2D> AbilityIcon3;
+	/*UPROPERTY(EditAnywhere, Category = "Ability Icons", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> AbilityIcon3;*/
 	UPROPERTY(EditDefaultsOnly, Category = "Material", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_RadialProgress;
 	UPROPERTY(meta = (BindWidget))
@@ -39,46 +39,46 @@ private:
 	TObjectPtr<UImage> SecondAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> SecondAbilityImage;
-	UPROPERTY(meta = (BindWidget))
+	/*UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ThirdAbilityProgressBar;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> ThirdAbilityImage;
+	TObjectPtr<UImage> ThirdAbilityImage;*/
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UOverlay> FirstAbilityOverlay;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UOverlay> SecondAbilityOverlay;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UOverlay> ThirdAbilityOverlay;
+	/*UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UOverlay> ThirdAbilityOverlay;*/
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FirstChargesText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SecondChargesText;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ThirdChargesText;
+	/*UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ThirdChargesText;*/
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FirstKeyBindText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SecondKeyBindText;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ThirdKeyBindText;
+	/*UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ThirdKeyBindText;*/
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> Ability1UseAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> Ability2UseAnim;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> Ability3UseAnim;
+	/*UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> Ability3UseAnim;*/
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MI_FirstAbilityRadial;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MI_SecondAbilityRadial;
-	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> MI_ThirdAbilityRadial;
+	/*UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MI_ThirdAbilityRadial;*/
 	UPROPERTY()
 	FTimerHandle FirstAbilityHandle;
 	UPROPERTY()
 	FTimerHandle SecondAbilityHandle;
-	UPROPERTY()
-	FTimerHandle ThirdAbilityHandle;
+	/*UPROPERTY()
+	FTimerHandle ThirdAbilityHandle;*/
 
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;

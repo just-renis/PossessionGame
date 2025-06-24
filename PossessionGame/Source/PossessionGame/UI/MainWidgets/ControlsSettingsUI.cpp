@@ -37,7 +37,7 @@ void UControlsSettingsUI::SetupKeyBinds()
 		FName("Melee"),
 		FName("FirstAbility"),
 		FName("SecondAbility"),
-		FName("ThirdAbility"),
+		//FName("ThirdAbility"),
 		FName("Hijack"),
 		FName("Reload"),
 		FName("Escape"),
