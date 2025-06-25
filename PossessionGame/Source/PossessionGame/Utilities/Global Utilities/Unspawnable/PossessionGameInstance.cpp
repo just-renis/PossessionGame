@@ -61,12 +61,4 @@ void UPossessionGameInstance::Init()
 	LoadPlayerSaveSlot();
 	LoadPlayerRunSaveSlot();
 	Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings())->LoadSettings();
-	GetSubsystem<UDelegateManager>()->OnPlayerDeath.AddUObject(this, &UPossessionGameInstance::SetRestartLevelTimer);
 }
-
-void UPossessionGameInstance::SetRestartLevelTimer()
-{
-	GetTimerManager().SetTimer(RestartLevelHandle, this, &UPossessionGameInstance::RestartLevel, 3.f);
-}
-
-void UPossessionGameInstance::RestartLevel() { UGameplayStatics::OpenLevel(this, TEXT("/Game/Levels/Chapter1/Levels/Level_1")); }

@@ -10,9 +10,3 @@ FPrimaryAssetId UPA_VfxContainer::GetPrimaryAssetId() const
 {
 	return FPrimaryAssetId(TEXT("Vfx"), VfxPrimaryName);
 }
-
-void UPA_VfxContainer::TriggerVfxCallbacks()
-{
-	for (const FTFunctionCallback Callback : VfxLoadedCallbacks) if (Callback.Function) Callback.Function();
-	VfxLoadedCallbacks.Empty();
-}

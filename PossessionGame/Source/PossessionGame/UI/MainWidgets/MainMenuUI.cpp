@@ -80,7 +80,7 @@ void UMainMenuUI::ToggleMenuButtons(const bool bState) const
 	if (QuitButton) QuitButton->SetIsEnabled(bState);
 }
 
-void UMainMenuUI::Play() { UGameplayStatics::OpenLevel(GetWorld(), TEXT("/Game/Levels/Chapter1/Levels/Level_1")); }
+void UMainMenuUI::Play() { UGameplayStatics::OpenLevel(GetWorld(), "Level_1"); }
 
 void UMainMenuUI::QuitGame() { UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false); }
 

@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/Enums/EUpgrade.h"
-#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "UpgradeManager.generated.h"
 

@@ -52,11 +52,11 @@ EVfx UPrimaryDataAssetsManager::GetCharacterVfxName(const ECharacterType InChara
 
 TObjectPtr<UPA_WeaponContainer>& UPrimaryDataAssetsManager::GetWeaponData(EWeapon WeaponName) { return WeaponContainers[WeaponName]; }
 
-TObjectPtr<UPA_SoundContainer>& UPrimaryDataAssetsManager::GetSoundData(ESound SoundName) { return SoundContainers[SoundName]; }
+FSoundContainer& UPrimaryDataAssetsManager::GetSoundData(const ESound InSoundName) { return SoundContainers[InSoundName]; }
 
 TObjectPtr<UPA_CharacterContainer>& UPrimaryDataAssetsManager::GetCharacterData(ECharacterType CharacterName) { return CharacterContainers[CharacterName]; }
 
-TObjectPtr<UPA_VfxContainer>& UPrimaryDataAssetsManager::GetVfxData(EVfx VfxName) { return VfxContainers[VfxName]; }
+FVfxContainer& UPrimaryDataAssetsManager::GetVfxData(const EVfx InVfxName) { return VfxContainers[InVfxName]; }
 
 TObjectPtr<AEnemy> UPrimaryDataAssetsManager::SpawnVariationReplacement(const ECharacterType InCharacter)
 {
@@ -123,16 +123,16 @@ void UPrimaryDataAssetsManager::DeleteLoadedHandles()
 void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
 {
 	if (!GetCanAsyncLoadHappen()) return;
-	const TObjectPtr<UPA_SoundContainer> SoundData = GetSoundData(InSoundName);
-	if (SoundData->Sound.IsValid()) SetAndPlaySoundCallback(InAudioComp, InCallback, InSoundName, bIsPlayer);
+	FSoundContainer& SoundData = GetSoundData(InSoundName);
+	if (SoundData.GetSoundContainer()->Sound.IsValid()) SetAndPlaySoundCallback(SoundData, InAudioComp, InCallback, InSoundName, bIsPlayer);
 	else LoadSound3D(SoundData, InAudioComp, InCallback, InSoundName, bIsPlayer);
 }
 
 void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef, const bool bIsPlayer)
 {
 	if (!GetCanAsyncLoadHappen()) return;
-	const TObjectPtr<UPA_SoundContainer> SoundData = GetSoundData(InSoundName);
-	if (SoundData->Sound.IsValid()) SetupSound2D(GetSoundData(InSoundName), InSoundName, bIsPlayer, bStoreSoundRef);
+	FSoundContainer& SoundData = GetSoundData(InSoundName);
+	if (SoundData.GetSoundContainer()->Sound.IsValid()) SetupSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
 	else LoadSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
 }
 
@@ -148,8 +148,8 @@ void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
 void UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (InVfxName == EVfx::None) return;
-	const TObjectPtr<UPA_VfxContainer> VfxData = GetVfxData(InVfxName);
-	if (VfxData->GetVfxEffect().IsValid())
+	FVfxContainer& VfxData = GetVfxData(InVfxName);
+	if (VfxData.GetVfxContainer()->GetVfxEffect().IsValid())
 	{
 		if (InVfxComponent)
 		{
@@ -164,15 +164,15 @@ void UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, TFunction<bool()
 	}
 }
 
-void UPrimaryDataAssetsManager::SpawnVfx(const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation, const FRotator& InRotation, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
+void UPrimaryDataAssetsManager::SpawnVfx(EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation, const FRotator& InRotation, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (InVfxName == EVfx::None) return;
-	const TObjectPtr<UPA_VfxContainer> VfxData = GetVfxData(InVfxName);
-	if (VfxData->GetVfxEffect().IsValid()) SetupVfx(VfxData, InCallbackOfDeactivation, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation), false, InVariationName, InAttributes);
+	FVfxContainer& VfxData = GetVfxData(InVfxName);
+	if (VfxData.GetVfxContainer()->GetVfxEffect().IsValid()) SetupVfx(VfxData, InCallbackOfDeactivation, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation), false, InVariationName, InAttributes);
 	else if (GetCanAsyncLoadHappen()) LoadVfx(VfxData, InVfxName, InCallbackOfDeactivation, InLocation, InRotation, InVariationName, InAttributes);
 }
 
-void UPrimaryDataAssetsManager::ChangeVfxVariation(const TObjectPtr<UPA_VfxContainer>& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName)
+void UPrimaryDataAssetsManager::ChangeVfxVariation(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName)
 {
 	SetupVfx(InVfxData, InCallbackOfDeactivation, InVfxComponent, bDeactivate, InVariationName, TMap<FName, FNiagaraAttribute>());
 }
@@ -190,15 +190,16 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 
 void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount)
 {
-	ClearBeforeInit();
-	MarkerClass = InMarkerClass;
 	bTutorialIsFinished = bIsTutorialFinished;
+	ClearBeforeInit();
+	SetupSpawnLocations();
+	if (bIsInitialized) return;
+	bIsInitialized = true;
+	MarkerClass = InMarkerClass;
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
 	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	else AddSpawnableEnemiesToThePool();
-	DelegateManager = InDelegateManager;
-	if (!bTutorialIsFinished) DelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
-	SetupSpawnLocations();
+	if (!bTutorialIsFinished) InDelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
 }
 
 void UPrimaryDataAssetsManager::SetupSpawnLocations()
@@ -230,42 +231,42 @@ void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraCom
 	}
 }
 
-void UPrimaryDataAssetsManager::SetupSound2D(const TObjectPtr<UPA_SoundContainer>& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef)
+void UPrimaryDataAssetsManager::SetupSound2D(const FSoundContainer& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef)
 {
 	float VolumeMultiplier = 1.f;
-	if (InSoundData->bIsCharacterTypeDependant) VolumeMultiplier = bIsPlayer ? InSoundData->PlayerVolume : InSoundData->EnemyVolume;
-	if (bStoreSoundRef) StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), InSoundData->Sound.Get(), VolumeMultiplier));
-	else UGameplayStatics::PlaySound2D(GetWorld(), InSoundData->Sound.Get(), VolumeMultiplier);
+	if (InSoundData.GetSoundContainer()->bIsCharacterTypeDependant) VolumeMultiplier = bIsPlayer ? InSoundData.GetSoundContainer()->PlayerVolume : InSoundData.GetSoundContainer()->EnemyVolume;
+	if (bStoreSoundRef) StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), VolumeMultiplier));
+	else UGameplayStatics::PlaySound2D(GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), VolumeMultiplier);
 }
 
-void UPrimaryDataAssetsManager::LoadSound2D(const TObjectPtr<UPA_SoundContainer>& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef)
+void UPrimaryDataAssetsManager::LoadSound2D(FSoundContainer& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef)
 {
-	InSoundData->AddSoundLoadedCallback([this, InSoundData, InSoundName, bIsPlayer, bStoreSoundRef] { SetupSound2D(InSoundData, InSoundName, bIsPlayer, bStoreSoundRef); });
+	InSoundData.AddSoundLoadedCallback([this, InSoundData, InSoundName, bIsPlayer, bStoreSoundRef] { SetupSound2D(InSoundData, InSoundName, bIsPlayer, bStoreSoundRef); });
 	RequestSoundLoad(InSoundData);
 }
 
-void UPrimaryDataAssetsManager::LoadSound3D(const TObjectPtr<UPA_SoundContainer>& InSoundData, TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
+void UPrimaryDataAssetsManager::LoadSound3D(FSoundContainer& InSoundData, TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
 {
-	InSoundData->AddSoundLoadedCallback([this, InAudioComp, InCallback, InSoundName, bIsPlayer]
+	InSoundData.AddSoundLoadedCallback([this, InSoundData, InAudioComp, InCallback, InSoundName, bIsPlayer]
 	{
-		if (IsGameRunning()) SetAndPlaySoundCallback(InAudioComp, InCallback, InSoundName, bIsPlayer);
+		if (IsGameRunning()) SetAndPlaySoundCallback(InSoundData, InAudioComp, InCallback, InSoundName, bIsPlayer);
 	});
 	RequestSoundLoad(InSoundData);
 }
 
-void UPrimaryDataAssetsManager::RequestSoundLoad(const TObjectPtr<UPA_SoundContainer>& InSoundData)
+void UPrimaryDataAssetsManager::RequestSoundLoad(FSoundContainer& InSoundData)
 {
-	if (!InSoundData->GetIsInLoad())
+	if (!InSoundData.GetIsInLoad())
 	{
-		InSoundData->SetIsInLoad(true);
+		InSoundData.SetIsInLoad(true);
 		if (GetCanAsyncLoadHappen())
 		{
-			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InSoundData->Sound.ToSoftObjectPath(), [this, InSoundData]
+			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InSoundData.GetSoundContainer()->Sound.ToSoftObjectPath(), [this, &InSoundData]
 			{
 				if (IsGameRunning())
 				{
-					InSoundData->SetIsLoaded(true);
-					InSoundData->TriggerSoundsCallbacks();
+					InSoundData.SetIsLoaded(true);
+					InSoundData.TriggerSoundsCallbacks();
 				}
 			});
 			AddAsyncHandle(Handle);
@@ -297,12 +298,12 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 
 TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachAndReceiveVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation,  const EAttachLocation::Type InAttachType,  const bool bAutoDestroy)
 {
-	return UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName)->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+	return UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName).GetVfxContainer()->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
 }
 
 TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::SpawnAndReceiveVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
 {
-	return UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetVfxData(InVfxName)->GetVfxEffect().Get(), InLocation, InRotation);
+	return UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetVfxData(InVfxName).GetVfxContainer()->GetVfxEffect().Get(), InLocation, InRotation);
 }
 
 EWeapon UPrimaryDataAssetsManager::GetWeaponByCharacter(const ECharacterType InCharacter)
@@ -451,7 +452,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_NotSelectable", ESound::NotSelectable);
 	SoundMap.Add("PA_OutOfAmmo", ESound::OutOfAmmo);
 	SoundMap.Add("PA_FinishOffEnemies", ESound::FinishOffEnemies);
-	FillContainers(SoundMap, SoundContainers, "Sound");
+	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
 
@@ -528,25 +529,24 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_SecretRewardPopUp", EVfx::SecretRewardPopUp);
 	VfxsMap.Add("PA_EmpAffected", EVfx::EmpAffected);
 	VfxsMap.Add("PA_PossessionViable", EVfx::PossessionViable);
-	FillContainers(VfxsMap, VfxContainers, "Vfx");
+	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
 
-void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
+void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const FSoundContainer& SoundData, const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
 {
-	const TObjectPtr<UPA_SoundContainer> SoundData = GetSoundData(InSoundName);
-	InAudioComp->SetSound(GetSoundData(InSoundName)->Sound.Get());
+	InAudioComp->SetSound(SoundData.GetSoundContainer()->Sound.Get());
 	if (InCallback && !InCallback()) return;
-	if (SoundData->bIsCharacterTypeDependant) InAudioComp->SetFloatParameter("Volume", bIsPlayer ? SoundData->PlayerVolume : SoundData->EnemyVolume);
+	if (SoundData.GetSoundContainer()->bIsCharacterTypeDependant) InAudioComp->SetFloatParameter("Volume", bIsPlayer ? SoundData.GetSoundContainer()->PlayerVolume : SoundData.GetSoundContainer()->EnemyVolume);
 	InAudioComp->Play();
 }
 
-void UPrimaryDataAssetsManager::SetupVfx(const TObjectPtr<UPA_VfxContainer>& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
+void UPrimaryDataAssetsManager::SetupVfx(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	UpdateVfxAttributes(InVfxComponent, InAttributes);
 	if (!InVfxComponent) return;
 	if (bDeactivate || (InCallbackOfDeactivation && !InCallbackOfDeactivation())) InVfxComponent->Deactivate();
-	TMap<FName, FNiagaraUserParam>* Params = InVfxData->GetParams(InVariationName);
+	TMap<FName, FNiagaraUserParam>* Params = InVfxData.GetVfxContainer()->GetParams(InVariationName);
 	if (!Params) return;
 	FNiagaraUserRedirectionParameterStore& NiagaraParams = InVfxComponent->GetOverrideParameters();
 	for (const TPair<FName, FNiagaraUserParam>& Param : *Params)
@@ -610,16 +610,17 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularW
 
 void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
-	if (!SpawnLocations.Find(InCurrentGameMode)) return;
-	if (SpawnLocations[InCurrentGameMode].SpawnLocations.Num() > 0)
+	FGameModeSpawnLocations* SpawnLocationsByGameMode = SpawnLocations.Find(InCurrentGameMode);
+	if (!SpawnLocationsByGameMode) return;
+	if (SpawnLocationsByGameMode->SpawnLocations.Num() > 0)
 	{
-		const int32 LastIndex = SpawnLocations[InCurrentGameMode].SpawnLocations.Num() - 1;
+		const int32 LastIndex = SpawnLocationsByGameMode->SpawnLocations.Num() - 1;
 		for (int32 i = 0; i <= LastIndex; i++)
 		{
 			const int32 Index = FMath::RandRange(i, LastIndex);
-			if (i != Index) SpawnLocations[InCurrentGameMode].SpawnLocations.Swap(i, Index);
+			if (i != Index) SpawnLocationsByGameMode->SpawnLocations.Swap(i, Index);
 		}
-		for (const TObjectPtr<ASpawnLocation>& Location : SpawnLocations[InCurrentGameMode].SpawnLocations)
+		for (const TObjectPtr<ASpawnLocation>& Location : SpawnLocationsByGameMode->SpawnLocations)
 		{
 			if (const TObjectPtr<AEnemy> Enemy = Location->SpawnEnemy(LoadedEnemies[InCharacter]))
 			{
@@ -648,13 +649,15 @@ void UPrimaryDataAssetsManager::ClearBeforeInit()
 {
 	bCanAsyncLoadHappen = true;
 	bIsSpawnInProcess = false;
-	EnemyTypes.Empty();
+	for (TPair<ESound, FSoundContainer>& SoundContainer : SoundContainers) SoundContainer.Value.ResetLoadVariables();
+	for (TPair<EVfx, FVfxContainer>& VfxContainer : VfxContainers) VfxContainer.Value.ResetLoadVariables();
 	SpawnLocations.Empty();
+	LoadedEnemies.Empty();
 }
 
-void UPrimaryDataAssetsManager::LoadVfx(const TObjectPtr<UPA_VfxContainer>& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
+void UPrimaryDataAssetsManager::LoadVfx(FVfxContainer& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
-	InVfxData->AddVfxLoadedCallback([this, InVfxData, InCallbackOfDeactivation, InVfxComponent, InVfxName, InAttachTo, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy, InVariationName, InAttributes]
+	InVfxData.AddVfxLoadedCallback([this, InVfxData, InCallbackOfDeactivation, InVfxComponent, InVfxName, InAttachTo, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy, InVariationName, InAttributes]
 	{
 		if (!IsGameRunning()) return;
 		if (InVfxComponent)
@@ -667,9 +670,9 @@ void UPrimaryDataAssetsManager::LoadVfx(const TObjectPtr<UPA_VfxContainer>& InVf
 	RequestVfxLoad(InVfxData);
 }
 
-void UPrimaryDataAssetsManager::LoadVfx(const TObjectPtr<UPA_VfxContainer>& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation, const FRotator& InRotation, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
+void UPrimaryDataAssetsManager::LoadVfx(FVfxContainer& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation, const FRotator& InRotation, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
-	InVfxData->AddVfxLoadedCallback([this, InVfxData, InCallbackOfDeactivation, InVfxName, InLocation, InRotation, InVariationName, InAttributes]
+	InVfxData.AddVfxLoadedCallback([this, InVfxData, InCallbackOfDeactivation, InVfxName, InLocation, InRotation, InVariationName, InAttributes]
 	{
 		if (!IsGameRunning()) return;
 		SetupVfx(InVfxData, InCallbackOfDeactivation, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation),  false, InVariationName, InAttributes);
@@ -677,19 +680,19 @@ void UPrimaryDataAssetsManager::LoadVfx(const TObjectPtr<UPA_VfxContainer>& InVf
 	RequestVfxLoad(InVfxData);
 }
 
-void UPrimaryDataAssetsManager::RequestVfxLoad(const TObjectPtr<UPA_VfxContainer>& InVfxData)
+void UPrimaryDataAssetsManager::RequestVfxLoad(FVfxContainer& InVfxData)
 {
-	if (!InVfxData->GetIsInLoad())
+	if (!InVfxData.GetIsInLoad())
 	{
-		InVfxData->SetIsInLoad(true);
+		InVfxData.SetIsInLoad(true);
 		if (GetCanAsyncLoadHappen())
 		{
-			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InVfxData->GetVfxEffect().ToSoftObjectPath(), [this, InVfxData]
+			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InVfxData.GetVfxContainer()->GetVfxEffect().ToSoftObjectPath(), [this, &InVfxData]
 			{
 				if (IsGameRunning())
 				{
-					InVfxData->SetIsLoaded(true);
-					InVfxData->TriggerVfxCallbacks();
+					InVfxData.SetIsLoaded(true);
+					InVfxData.TriggerVfxsCallbacks();
 				}
 			});
 			AddAsyncHandle(Handle);
@@ -697,11 +700,20 @@ void UPrimaryDataAssetsManager::RequestVfxLoad(const TObjectPtr<UPA_VfxContainer
 	}
 }
 
-template<typename T, typename U>
-void UPrimaryDataAssetsManager::FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type)
+template<typename EnumType, typename ContainerType, typename AssetType>
+void UPrimaryDataAssetsManager::FillContainers(TMap<FName, EnumType>& InMap, TMap<EnumType, ContainerType>& InContainers, const FName InType)
 {
 	TArray<FAssetData> Assets;
-	UAssetManager::Get().GetPrimaryAssetDataList(FPrimaryAssetType(Type), Assets);
-	for (int i = 0; i < Assets.Num(); i++) Containers.Add(Map[Assets[i].AssetName], Cast<U>(Assets[i].GetAsset()));
+	UAssetManager::Get().GetPrimaryAssetDataList(FPrimaryAssetType(InType), Assets);
+	for (int i = 0; i < Assets.Num(); i++) InContainers.Add(InMap[Assets[i].AssetName], ContainerType(Cast<AssetType>(Assets[i].GetAsset())));
+	Assets.Empty();
+}
+
+template<typename EnumType, typename ContainerType>
+void UPrimaryDataAssetsManager::FillContainers(TMap<FName, EnumType>& InMap, TMap<EnumType, TObjectPtr<ContainerType>>& InContainers, const FName InType)
+{
+	TArray<FAssetData> Assets;
+	UAssetManager::Get().GetPrimaryAssetDataList(FPrimaryAssetType(InType), Assets);
+	for (int i = 0; i < Assets.Num(); i++) InContainers.Add(InMap[Assets[i].AssetName], Cast<ContainerType>(Assets[i].GetAsset()));
 	Assets.Empty();
 }

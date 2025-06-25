@@ -382,5 +382,5 @@ private:
 	void OpenInfoPanel();
 	void CloseInfoPanel();
 	void PlayEmpAffectedVfx(const float InEffectDuration);
-	//void RestartLevel();
+	void RestartLevel() const;
 };

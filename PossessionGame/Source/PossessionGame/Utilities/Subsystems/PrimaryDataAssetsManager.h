@@ -8,6 +8,7 @@
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Data Utilities/FAsyncHandle.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/FTFunctionCallback.h"
 #include "PrimaryDataAssetsManager.generated.h"
 
 class AMarker;
@@ -72,6 +73,74 @@ FORCEINLINE uint32 GetTypeHash(const FCharacterPairWrapper& PairWrapper)
 	return HashCombine(Hash1, Hash2);
 }
 
+USTRUCT()
+struct POSSESSIONGAME_API FSoundContainer
+{
+	GENERATED_BODY()
+
+	FSoundContainer() {}
+	explicit FSoundContainer(const TObjectPtr<UPA_SoundContainer>& InSoundContainer) { SoundContainer = InSoundContainer; }
+
+	bool GetIsInLoad() const { return bIsInLoad; }
+	bool GetIsLoaded() const { return bIsLoaded; }
+	TObjectPtr<UPA_SoundContainer> GetSoundContainer() const { return SoundContainer; }
+	
+	void SetIsInLoad(const bool bState) { bIsInLoad = bState; }
+	void SetIsLoaded(const bool bState) { bIsLoaded = bState; }
+	void ResetLoadVariables()
+	{
+		SetIsLoaded(false);
+		SetIsInLoad(false);
+	}
+	void TriggerSoundsCallbacks()
+	{
+		for (const FTFunctionCallback Callback : SoundsLoadedCallbacks) if (Callback.Function) Callback.Function();
+		SoundsLoadedCallbacks.Empty();
+	}
+	void AddSoundLoadedCallback(const TFunction<void()>& InCallback) { SoundsLoadedCallbacks.Add(FTFunctionCallback(InCallback)); }
+private:
+	bool bIsInLoad = false;
+	bool bIsLoaded = false;
+	UPROPERTY()
+	TObjectPtr<UPA_SoundContainer> SoundContainer;
+	UPROPERTY()
+	TArray<FTFunctionCallback> SoundsLoadedCallbacks;
+};
+
+USTRUCT()
+struct POSSESSIONGAME_API FVfxContainer
+{
+	GENERATED_BODY()
+
+	FVfxContainer() {}
+	explicit FVfxContainer(const TObjectPtr<UPA_VfxContainer>& InVfxContainer) { VfxContainer = InVfxContainer; }
+
+	bool GetIsInLoad() const { return bIsInLoad; }
+	bool GetIsLoaded() const { return bIsLoaded; }
+	TObjectPtr<UPA_VfxContainer> GetVfxContainer() const { return VfxContainer; }
+	
+	void SetIsInLoad(const bool bState) { bIsInLoad = bState; }
+	void SetIsLoaded(const bool bState) { bIsLoaded = bState; }
+	void ResetLoadVariables()
+	{
+		SetIsLoaded(false);
+		SetIsInLoad(false);
+	}
+	void TriggerVfxsCallbacks()
+	{
+		for (const FTFunctionCallback Callback : VfxLoadedCallbacks) if (Callback.Function) Callback.Function();
+		VfxLoadedCallbacks.Empty();
+	}
+	void AddVfxLoadedCallback(const TFunction<void()>& InCallback) { VfxLoadedCallbacks.Add(FTFunctionCallback(InCallback)); }
+private:
+	bool bIsInLoad = false;
+	bool bIsLoaded = false;
+	UPROPERTY()
+	TObjectPtr<UPA_VfxContainer> VfxContainer;
+	UPROPERTY()
+	TArray<FTFunctionCallback> VfxLoadedCallbacks;
+};
+
 UCLASS()
 class POSSESSIONGAME_API UPrimaryDataAssetsManager : public UGameInstanceSubsystem
 {
@@ -84,9 +153,9 @@ public:
 	EVfx GetProjectileVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType);
 	EVfx GetCharacterVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType);
 	TObjectPtr<UPA_WeaponContainer>& GetWeaponData(EWeapon WeaponName);
-	TObjectPtr<UPA_SoundContainer>& GetSoundData(ESound SoundName);
+	FSoundContainer& GetSoundData(const ESound InSoundName);
 	TObjectPtr<UPA_CharacterContainer>& GetCharacterData(ECharacterType CharacterName);
-	TObjectPtr<UPA_VfxContainer>& GetVfxData(EVfx VfxName);
+	FVfxContainer& GetVfxData(const EVfx InVfxName);
 	TSubclassOf<AMarker>& GetMarkerClass() { return MarkerClass; }
 	TObjectPtr<AEnemy> SpawnVariationReplacement(const ECharacterType InCharacter);
 	
@@ -97,12 +166,13 @@ public:
 	void PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef = false, const bool bIsPlayer = true);
 	void RemoveStoredSound(const ESound InSoundName);
 	void AttachVfx(const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo = nullptr, const FName InSocketName = NAME_None, const bool bDeactivate = false, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EAttachLocation::Type InAttachType = EAttachLocation::SnapToTarget, const bool bAutoDestroy = false, const EVariation InVariationName = EVariation::Default, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
-	void SpawnVfx(const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EVariation InVariationName = EVariation::Default, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
-	void ChangeVfxVariation(const TObjectPtr<UPA_VfxContainer>& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName);
+	void SpawnVfx(EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EVariation InVariationName = EVariation::Default, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
+	void ChangeVfxVariation(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName);
 	void RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount);
 	void SetupSpawnLocations();
 private:
+	bool bIsInitialized = false;
 	bool bCanAsyncLoadHappen = true;
 	bool bIsSpawnInProcess = false;
 	bool bTutorialIsFinished = false;
@@ -111,15 +181,13 @@ private:
 	UPROPERTY()
 	TSubclassOf<AMarker> MarkerClass; // To not put tons of references everywhere where i need it and also it doesn't work with pooling FUCK 3D UI WIDGETS.
 	UPROPERTY()
-	TObjectPtr<UDelegateManager> DelegateManager;
-	UPROPERTY()
 	TMap<EWeapon, TObjectPtr<UPA_WeaponContainer>> WeaponContainers;
 	UPROPERTY()
-	TMap<ESound, TObjectPtr<UPA_SoundContainer>> SoundContainers;
+	TMap<ESound, FSoundContainer> SoundContainers;
 	UPROPERTY()
 	TMap<ECharacterType, TObjectPtr<UPA_CharacterContainer>> CharacterContainers;
 	UPROPERTY()
-	TMap<EVfx, TObjectPtr<UPA_VfxContainer>> VfxContainers;
+	TMap<EVfx, FVfxContainer> VfxContainers;
 	UPROPERTY()
 	TArray<FAsyncHandle> AsyncHandles;
 	UPROPERTY()
@@ -150,22 +218,24 @@ private:
 	void SetupSoundsPrimaryAssets();
 	void SetupCharactersPrimaryAssets();
 	void SetupVfxsPrimaryAssets();
-	void SetAndPlaySoundCallback(const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, ESound InSoundName, const bool bIsPlayer);
-	void SetupVfx(const TObjectPtr<UPA_VfxContainer>& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);
+	void SetAndPlaySoundCallback(const FSoundContainer& SoundData, const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, ESound InSoundName, const bool bIsPlayer);
+	void SetupVfx(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);
 	void AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode);
 	void AddSpawnableEnemiesToThePool();
 	void ClearBeforeInit();
-	void LoadVfx(const TObjectPtr<UPA_VfxContainer>& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);
-	void LoadVfx(const TObjectPtr<UPA_VfxContainer>& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation, const FRotator& InRotation, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);
-	void RequestVfxLoad(const TObjectPtr<UPA_VfxContainer>& InVfxData);
+	void LoadVfx(FVfxContainer& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);
+	void LoadVfx(FVfxContainer& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation, const FRotator& InRotation, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);
+	void RequestVfxLoad(FVfxContainer& InVfxData);
 	void UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes);
-	void SetupSound2D(const TObjectPtr<UPA_SoundContainer>& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef);
-	void LoadSound2D(const TObjectPtr<UPA_SoundContainer>& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef);
-	void LoadSound3D(const TObjectPtr<UPA_SoundContainer>& InSoundData, TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer);
-	void RequestSoundLoad(const TObjectPtr<UPA_SoundContainer>& InSoundData);
-	template<typename T, typename U>
-	void FillContainers(TMap<FName, T>& Map, TMap<T, TObjectPtr<U>>& Containers, FName Type);
+	void SetupSound2D(const FSoundContainer& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef);
+	void LoadSound2D(FSoundContainer& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef);
+	void LoadSound3D(FSoundContainer& InSoundData, TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer);
+	void RequestSoundLoad(FSoundContainer& InSoundData);
+	template<typename EnumType, typename ContainerType, typename AssetType>
+	void FillContainers(TMap<FName, EnumType>& InMap, TMap<EnumType, ContainerType>& InContainers, const FName InType);
+	template<typename EnumType, typename ContainerType>
+	void FillContainers(TMap<FName, EnumType>& InMap, TMap<EnumType, TObjectPtr<ContainerType>>& InContainers, const FName InType);
 };

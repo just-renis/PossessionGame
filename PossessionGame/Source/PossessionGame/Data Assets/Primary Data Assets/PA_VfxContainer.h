@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "PossessionGame/Utilities/Data Utilities/FTFunctionCallback.h"
 #include "PA_VfxContainer.generated.h"
 
 enum class EVariation : uint8;
@@ -64,26 +63,16 @@ class POSSESSIONGAME_API UPA_VfxContainer : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 public:
-	bool GetIsInLoad() const { return bIsInLoad; }
-	bool GetIsLoaded() const { return bIsLoaded; }
 	FName GetVfxName() const { return VfxPrimaryName; }
 	TSoftObjectPtr<UNiagaraSystem>& GetVfxEffect() { return VfxEffect; }
 	TMap<FName, FNiagaraUserParam>* GetParams(const EVariation InVariationName);
 
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
-	void AddVfxLoadedCallback(const TFunction<void()>& InCallback) { VfxLoadedCallbacks.Add(FTFunctionCallback(InCallback)); }
-	void SetIsInLoad(const bool bState) { bIsInLoad = bState; }
-	void SetIsLoaded(const bool bState) { bIsLoaded = bState; }
-	void TriggerVfxCallbacks();
 private:
-	bool bIsInLoad = false;
-	bool bIsLoaded = false;
 	UPROPERTY(EditAnywhere, Category = "Vfx Data", meta = (AllowPrivateAccess = true))
 	FName VfxPrimaryName;
 	UPROPERTY(EditAnywhere, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	TSoftObjectPtr<UNiagaraSystem> VfxEffect;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx Data", meta = (AllowPrivateAccess = true))
 	TMap<EVariation, FVariationVfxParams> VariationParams;
-	UPROPERTY()
-	TArray<FTFunctionCallback> VfxLoadedCallbacks;
 };
