@@ -1,6 +1,5 @@
 #include "PossessionGameInstance.h"
 #include "PossessionGameUserSettings.h"
-#include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
@@ -57,7 +56,6 @@ void UPossessionGameInstance::InitAssetsManager() const
 void UPossessionGameInstance::Init()
 {
 	Super::Init();
-	UE_LOG(LogTemp, Error, TEXT("NUMPRECOMPILES REMAINING: %i"), FShaderPipelineCache::NumPrecompilesRemaining());
 	LoadPlayerSaveSlot();
 	LoadPlayerRunSaveSlot();
 	Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings())->LoadSettings();

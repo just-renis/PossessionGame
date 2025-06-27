@@ -45,12 +45,15 @@ private:
 	TMap<EWidget, TSubclassOf<UUserWidget>> WidgetClasses;
 	UPROPERTY(EditAnywhere, Category = "Upgrades", meta = (AllowPrivateAccess = true))
 	TMap<EUpgrade, TObjectPtr<UUpgradeData>> Upgrades;
+	UPROPERTY()
+	FTimerHandle PSOPrecachingHandle;
 //	UPROPERTY()
 //	FTimerHandle FCutsceneTimerHandle;
 
 	virtual void BeginPlay() override;
 	void LoadSettingsData();
 	void SpawnArtifact() const;
+	void InitAfterPSOPrecache();
 //	void PlayCutscene(const EGameMode InGameMode);
 //	void CutsceneEnded() const;
 };

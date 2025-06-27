@@ -16,7 +16,10 @@ class POSSESSIONGAME_API AMainMenuBase : public AGameModeBase
 	TSubclassOf<USettingsSave> SettingsSaveClass;
 	UPROPERTY(EditAnywhere, Category = "Widget Manager", meta = (AllowPrivateAccess = true))
 	TMap<EWidget, TSubclassOf<UUserWidget>> WidgetClasses;
+	UPROPERTY()
+	FTimerHandle PSOPrecachingHandle;
 
 	virtual void BeginPlay() override;
-	void LoadSettingsData();
+	void LoadSettingsData() const;
+	void InitAfterPSOPrecache() const;
 };

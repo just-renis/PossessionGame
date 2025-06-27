@@ -1,6 +1,7 @@
 #include "PossessionGameGameModeBase.h"
 #include "PossessionGameInstance.h"
 #include "SettingsSave.h"
+#include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/ArtifactSpawnLocation.h"
@@ -22,23 +23,18 @@ TArray<TSubclassOf<APrefab>>* APossessionGameGameModeBase::GetPrefabsByCategory(
 void APossessionGameGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
-	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	//DelegateManager->OnGameModeInitiator.AddUObject(this, &APossessionGameGameModeBase::PlayCutscene);
-	//GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->Init(DelegateManager);
-	LoadSettingsData();
-	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
-	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
-	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
-	Cast<UPossessionGameInstance>(GetGameInstance())->InitAssetsManager();
-	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);
-	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
-	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);
-	GetWorld()->GetSubsystem<UPostProcessManager>()->Init(PostProcessMaterials);
-	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->bShowMouseCursor = false;
-	PlayerController->SetInputMode(FInputModeGameOnly());
-	SpawnArtifact();
+	InitAfterPSOPrecache();
+	UE_LOG(LogTemp, Error, TEXT("Level_1 Total PSO Precompiles: %i"), FShaderPipelineCache::NumPrecompilesRemaining());
+/*	GetWorld()->GetTimerManager().SetTimer(PSOPrecachingHandle, [this]
+	{
+		const int32 Remaining = FShaderPipelineCache::NumPrecompilesRemaining();
+		UE_LOG(LogTemp, Log, TEXT("Level_1 Remaining PSO Precompiles: %d"), Remaining);
+
+		if (Remaining == 0)
+		{
+			GetWorld()->GetTimerManager().ClearTimer(PSOPrecachingHandle);
+		}
+	}, 0.05f, true);*/
 }
 
 void APossessionGameGameModeBase::LoadSettingsData()
@@ -63,6 +59,27 @@ void APossessionGameGameModeBase::SpawnArtifact() const
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AArtifactSpawnLocation::StaticClass(), SpawnLocations);
 	if (SpawnLocations.IsEmpty()) return;
 	Cast<AArtifactSpawnLocation>(SpawnLocations[FMath::RandRange(0, SpawnLocations.Num() - 1)])->SpawnArtifact();
+}
+
+void APossessionGameGameModeBase::InitAfterPSOPrecache()
+{
+	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	//DelegateManager->OnGameModeInitiator.AddUObject(this, &APossessionGameGameModeBase::PlayCutscene);
+	//GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->Init(DelegateManager);
+	LoadSettingsData();
+	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
+	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
+	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
+	Cast<UPossessionGameInstance>(GetGameInstance())->InitAssetsManager();
+	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);
+	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
+	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);
+	GetWorld()->GetSubsystem<UPostProcessManager>()->Init(PostProcessMaterials);
+	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerController->bShowMouseCursor = false;
+	PlayerController->SetInputMode(FInputModeGameOnly());
+	SpawnArtifact();
 }
 
 /*void APossessionGameGameModeBase::PlayCutscene(const EGameMode InGameMode)
