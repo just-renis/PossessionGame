@@ -210,7 +210,7 @@ private:
 	TMap<EGameMode, FGameModeSpawnLocations> SpawnLocations;
 
 	bool IsGameRunning();
-	bool IsVfxWorldValid(const FVfxContainer& InVfxData);
+	bool IsVfxWorldValid(const TWeakObjectPtr<UWorld>& InWorld);
 	EPoolObject GetProjectileNameByCharacterName(ECharacterType InCharacterType);
 	TObjectPtr<UNiagaraComponent> AttachAndReceiveVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy);
 	TObjectPtr<UNiagaraComponent> SpawnAndReceiveVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);

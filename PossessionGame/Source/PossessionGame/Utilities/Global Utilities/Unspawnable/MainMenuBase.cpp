@@ -1,5 +1,6 @@
 ﻿#include "MainMenuBase.h"
 #include "SettingsSave.h"
+#include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
 #include "PossessionGame/UI/MainWidgets/MainMenuUI.h"
@@ -10,7 +11,12 @@ void AMainMenuBase::BeginPlay()
 	Super::BeginPlay();
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
 	WidgetManager->Init(WidgetClasses);
-	WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init([this]{ InitAfterPSOPrecache(); });
+	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("NUMPRECOMPILES REMAINING ON LOAD: %i"), FShaderPipelineCache::NumPrecompilesRemaining());
+		WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init([this]{ InitAfterPSOPrecache(); });
+	}
+	else InitAfterPSOPrecache();
 }
 
 void AMainMenuBase::LoadSettingsData() const

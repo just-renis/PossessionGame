@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "LoadingScreenUI.generated.h"
 
+struct FTFunctionCallback;
 class UProgressBar;
 class UTextBlock;
 
@@ -26,8 +27,12 @@ private:
 	UPROPERTY()
 	FTimerHandle PSOPrecachingHandle;
 	UPROPERTY()
-	FTimerHandle DestroyHandle;
+	FWidgetAnimationDynamicEvent FadeOutFinishedAnimDelegate;
 
-	void SetDestroyTimer();
-	void DestroyThis() const;
+	virtual void NativeConstruct() override;
+	void PlayFadeInAnim();
+	void PlayFadeOutAnim();
+	void DestroyThis();
+	UFUNCTION()
+	void LoadingProcess(const FTFunctionCallback& InCallback);
 };

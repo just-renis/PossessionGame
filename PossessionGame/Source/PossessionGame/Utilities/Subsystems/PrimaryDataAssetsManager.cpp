@@ -281,11 +281,10 @@ bool UPrimaryDataAssetsManager::IsGameRunning()
 	return IsValid(World) && !World->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed);
 }
 
-bool UPrimaryDataAssetsManager::IsVfxWorldValid(const FVfxContainer& InVfxData)
+bool UPrimaryDataAssetsManager::IsVfxWorldValid(const TWeakObjectPtr<UWorld>& InWorld)
 {
-	const TWeakObjectPtr<UWorld> WeakWorld = InVfxData.GetWorld();
-	if (!WeakWorld.IsValid()) return false;
-	const TObjectPtr<UWorld> World = WeakWorld.Get();
+	if (!InWorld.IsValid()) return false;
+	const TObjectPtr<UWorld> World = InWorld.Get();
 	return !World->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed);
 }
 
@@ -698,7 +697,7 @@ void UPrimaryDataAssetsManager::RequestVfxLoad(FVfxContainer& InVfxData)
 		{
 			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InVfxData.GetVfxContainer()->GetVfxEffect().ToSoftObjectPath(), [this, &InVfxData]
 			{
-				if (IsVfxWorldValid(InVfxData))
+				if (IsVfxWorldValid(InVfxData.GetWorld()))
 				{
 					InVfxData.SetIsLoaded(true);
 					InVfxData.TriggerVfxsCallbacks();

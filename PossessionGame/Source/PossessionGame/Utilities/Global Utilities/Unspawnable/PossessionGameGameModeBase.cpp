@@ -3,6 +3,7 @@
 #include "SettingsSave.h"
 #include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/ArtifactSpawnLocation.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -69,7 +70,9 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	//GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->Init(DelegateManager);
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
-	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
+	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
+	WidgetManager->Init(WidgetClasses);
+	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0) WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init(nullptr);
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
 	Cast<UPossessionGameInstance>(GetGameInstance())->InitAssetsManager();
 	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);
