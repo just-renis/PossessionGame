@@ -117,10 +117,12 @@ struct POSSESSIONGAME_API FVfxContainer
 
 	bool GetIsInLoad() const { return bIsInLoad; }
 	bool GetIsLoaded() const { return bIsLoaded; }
+	TWeakObjectPtr<UWorld> GetWorld() const { return World; }
 	TObjectPtr<UPA_VfxContainer> GetVfxContainer() const { return VfxContainer; }
 	
 	void SetIsInLoad(const bool bState) { bIsInLoad = bState; }
 	void SetIsLoaded(const bool bState) { bIsLoaded = bState; }
+	void SetWorld(const TObjectPtr<UWorld>& InWorld) { World = InWorld; }
 	void ResetLoadVariables()
 	{
 		SetIsLoaded(false);
@@ -135,6 +137,8 @@ struct POSSESSIONGAME_API FVfxContainer
 private:
 	bool bIsInLoad = false;
 	bool bIsLoaded = false;
+	UPROPERTY()
+	TWeakObjectPtr<UWorld> World;
 	UPROPERTY()
 	TObjectPtr<UPA_VfxContainer> VfxContainer;
 	UPROPERTY()
@@ -206,6 +210,7 @@ private:
 	TMap<EGameMode, FGameModeSpawnLocations> SpawnLocations;
 
 	bool IsGameRunning();
+	bool IsVfxWorldValid(const FVfxContainer& InVfxData);
 	EPoolObject GetProjectileNameByCharacterName(ECharacterType InCharacterType);
 	TObjectPtr<UNiagaraComponent> AttachAndReceiveVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy);
 	TObjectPtr<UNiagaraComponent> SpawnAndReceiveVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);

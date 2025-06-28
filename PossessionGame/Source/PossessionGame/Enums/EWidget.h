@@ -12,5 +12,6 @@ enum class EWidget : uint8
     UpgradeSelectionUI,
     NodeMapUI,
     TutorialUI,
-    VariationsUI
+    VariationsUI,
+    LoadingScreenUI
 };

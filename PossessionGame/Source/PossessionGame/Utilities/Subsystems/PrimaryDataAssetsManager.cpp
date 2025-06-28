@@ -281,6 +281,14 @@ bool UPrimaryDataAssetsManager::IsGameRunning()
 	return IsValid(World) && !World->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed);
 }
 
+bool UPrimaryDataAssetsManager::IsVfxWorldValid(const FVfxContainer& InVfxData)
+{
+	const TWeakObjectPtr<UWorld> WeakWorld = InVfxData.GetWorld();
+	if (!WeakWorld.IsValid()) return false;
+	const TObjectPtr<UWorld> World = WeakWorld.Get();
+	return !World->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed);
+}
+
 EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharacterType InCharacterType)
 {
 	switch (InCharacterType)
@@ -685,14 +693,19 @@ void UPrimaryDataAssetsManager::RequestVfxLoad(FVfxContainer& InVfxData)
 	if (!InVfxData.GetIsInLoad())
 	{
 		InVfxData.SetIsInLoad(true);
+		InVfxData.SetWorld(GetWorld());
 		if (GetCanAsyncLoadHappen())
 		{
 			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InVfxData.GetVfxContainer()->GetVfxEffect().ToSoftObjectPath(), [this, &InVfxData]
 			{
-				if (IsGameRunning())
+				if (IsVfxWorldValid(InVfxData))
 				{
 					InVfxData.SetIsLoaded(true);
 					InVfxData.TriggerVfxsCallbacks();
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("VFX load finished but target world destroyed, skipping callbacks"));
 				}
 			});
 			AddAsyncHandle(Handle);

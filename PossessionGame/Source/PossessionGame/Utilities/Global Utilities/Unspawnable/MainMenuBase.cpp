@@ -1,25 +1,16 @@
 ﻿#include "MainMenuBase.h"
 #include "SettingsSave.h"
-#include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
 #include "PossessionGame/UI/MainWidgets/MainMenuUI.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void AMainMenuBase::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Error, TEXT("MainMenuLevel Total PSO Precompiles: %i"), FShaderPipelineCache::NumPrecompilesRemaining());
-	GetWorld()->GetTimerManager().SetTimer(PSOPrecachingHandle, [this]
-	{
-		const int32 Remaining = FShaderPipelineCache::NumPrecompilesRemaining();
-		UE_LOG(LogTemp, Log, TEXT("MainMenuLevel Remaining PSO Precompiles: %d"), Remaining);
-
-		if (Remaining == 0)
-		{
-			GetWorld()->GetTimerManager().ClearTimer(PSOPrecachingHandle);
-			InitAfterPSOPrecache();
-		}
-	}, 0.05f, true);
+	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
+	WidgetManager->Init(WidgetClasses);
+	WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init([this]{ InitAfterPSOPrecache(); });
 }
 
 void AMainMenuBase::LoadSettingsData() const
@@ -41,7 +32,5 @@ void AMainMenuBase::LoadSettingsData() const
 void AMainMenuBase::InitAfterPSOPrecache() const
 {
 	LoadSettingsData();
-	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
-	WidgetManager->Init(WidgetClasses);
-	WidgetManager->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();
 }
