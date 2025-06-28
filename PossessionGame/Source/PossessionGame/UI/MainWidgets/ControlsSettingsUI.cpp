@@ -53,7 +53,7 @@ void UControlsSettingsUI::SetupOrderOfKeyBinds(TArray<FName>& DesiredOrder, TMap
 {
 	for (FName ActionName : DesiredOrder)
 	{
-		for (FPlayerKeyMapping KeyBind : UserSettings->GetCurrentKeyProfile()->GetPlayerMappingRows().Find(ActionName)->Mappings)
+		for (FPlayerKeyMapping KeyBind : UserSettings->GetActiveKeyProfile()->GetPlayerMappingRows().Find(ActionName)->Mappings)
 		{
 			OrderedKeyBinds.Add(ActionName, KeyBind);
 			break;

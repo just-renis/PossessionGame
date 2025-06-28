@@ -10,7 +10,7 @@ FText UGlobalSettingsManager::GetKeyBindText(const FName& InKeyName) const
 	if (!Subsystem) return FText::GetEmpty();
 	const TObjectPtr<UEnhancedInputUserSettings> UserSettings = Subsystem->GetUserSettings();
 	if (!UserSettings) return FText::GetEmpty();
-	const TObjectPtr<UEnhancedPlayerMappableKeyProfile> CurrentProfile = UserSettings->GetCurrentKeyProfile();
+	const TObjectPtr<UEnhancedPlayerMappableKeyProfile> CurrentProfile = UserSettings->GetActiveKeyProfile();
 	if (!CurrentProfile) return FText::GetEmpty();
 	const FKeyMappingRow* MappingRow = CurrentProfile->GetPlayerMappingRows().Find(InKeyName);
 	if (!MappingRow || MappingRow->Mappings.Num() == 0) return FText::GetEmpty();
