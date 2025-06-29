@@ -13,7 +13,6 @@ void AMainMenuBase::BeginPlay()
 	WidgetManager->Init(WidgetClasses);
 	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0)
 	{
-		UE_LOG(LogTemp, Error, TEXT("NUMPRECOMPILES REMAINING ON LOAD: %i"), FShaderPipelineCache::NumPrecompilesRemaining());
 		WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init([this]{ InitAfterPSOPrecache(); });
 	}
 	else InitAfterPSOPrecache();

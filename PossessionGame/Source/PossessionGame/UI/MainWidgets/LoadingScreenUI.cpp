@@ -49,5 +49,6 @@ void ULoadingScreenUI::LoadingProcess(const FTFunctionCallback& InCallback)
 		const float ProgressPercent = (1.f - Remaining / static_cast<float>(TotalPreCompiles)) * 100.f;
 		if (LoadingBarText) LoadingBarText->SetText(FText::Format(FText::FromString("{0}%"), FMath::RoundToInt(ProgressPercent)));
 		if (LoadingBar) LoadingBar->SetPercent(ProgressPercent * 0.01f);
+		if (ShadersText) ShadersText->SetText(FText::Format(FText::FromString("{0} / {1} Shaders Compiled"), TotalPreCompiles - Remaining, TotalPreCompiles));
 	}
 }

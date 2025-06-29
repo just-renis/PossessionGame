@@ -25,17 +25,6 @@ void APossessionGameGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 	InitAfterPSOPrecache();
-	UE_LOG(LogTemp, Error, TEXT("Level_1 Total PSO Precompiles: %i"), FShaderPipelineCache::NumPrecompilesRemaining());
-/*	GetWorld()->GetTimerManager().SetTimer(PSOPrecachingHandle, [this]
-	{
-		const int32 Remaining = FShaderPipelineCache::NumPrecompilesRemaining();
-		UE_LOG(LogTemp, Log, TEXT("Level_1 Remaining PSO Precompiles: %d"), Remaining);
-
-		if (Remaining == 0)
-		{
-			GetWorld()->GetTimerManager().ClearTimer(PSOPrecachingHandle);
-		}
-	}, 0.05f, true);*/
 }
 
 void APossessionGameGameModeBase::LoadSettingsData()

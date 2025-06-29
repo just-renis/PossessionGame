@@ -20,6 +20,8 @@ private:
 	TObjectPtr<UProgressBar> LoadingBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> LoadingBarText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ShadersText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
