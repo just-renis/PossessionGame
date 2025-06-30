@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
 #include "PossessionGame/UI/MainWidgets/MainMenuUI.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void AMainMenuBase::BeginPlay()
@@ -13,6 +14,7 @@ void AMainMenuBase::BeginPlay()
 	WidgetManager->Init(WidgetClasses);
 	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0)
 	{
+		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ChangeMusicPlayerState.ExecuteIfBound(false);
 		WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init([this]{ InitAfterPSOPrecache(); });
 	}
 	else InitAfterPSOPrecache();
@@ -36,6 +38,7 @@ void AMainMenuBase::LoadSettingsData() const
 
 void AMainMenuBase::InitAfterPSOPrecache() const
 {
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ChangeMusicPlayerState.ExecuteIfBound(true);
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();
 }

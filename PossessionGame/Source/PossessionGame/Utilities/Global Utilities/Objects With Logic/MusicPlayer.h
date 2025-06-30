@@ -23,4 +23,5 @@ class POSSESSIONGAME_API AMusicPlayer : public AAmbientSound
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void ChangeSoundTrack(const EGameMode InGameMode);
 	void OnFadeOutFinished() const;
+	void ChangeState(const bool bState) const;
 };

@@ -7,7 +7,9 @@ void AMusicPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AMusicPlayer::ChangeSoundTrack);
+	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	DelegateManager->OnGameModeInitiator.AddUObject(this, &AMusicPlayer::ChangeSoundTrack);
+	DelegateManager->ChangeMusicPlayerState.BindUObject(this, &AMusicPlayer::ChangeState);
 }
 
 void AMusicPlayer::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -28,4 +30,10 @@ void AMusicPlayer::OnFadeOutFinished() const
 {
 	AssetsManager->ConfigureSound(GetAudioComponent(), nullptr, CurrentSoundtrack);
 	GetAudioComponent()->FadeIn(0.5f, 1.f, 0.f);
+}
+
+void AMusicPlayer::ChangeState(const bool bState) const
+{
+	if (bState) GetAudioComponent()->Play();
+	else GetAudioComponent()->Stop();
 }

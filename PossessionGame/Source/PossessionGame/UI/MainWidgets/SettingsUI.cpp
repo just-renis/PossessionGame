@@ -134,7 +134,7 @@ void USettingsUI::SettingsFadeOutFinished()
 {
 	UnbindAllFromAnimationFinished(SettingsFadeInAnim);
 	SetVisibility(ESlateVisibility::Collapsed);
-	if (UGameplayStatics::GetCurrentLevelName(this, true).Equals("MainMenuLevel")) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();
+	if (UGameplayStatics::GetCurrentLevelName(this, true).Equals("MainMenu")) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();
 	else GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 }
 

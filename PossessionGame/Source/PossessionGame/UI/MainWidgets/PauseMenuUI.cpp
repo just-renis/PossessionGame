@@ -58,7 +58,7 @@ void UPauseMenuUI::SetButtonsState(const bool bState) const
 	if (SettingsButton) SettingsButton->Get()->SetIsEnabled(bState);
 }
 
-void UPauseMenuUI::ReturnToMainMenu() { UGameplayStatics::OpenLevel(GetWorld(), "MainMenuLevel"); }
+void UPauseMenuUI::ReturnToMainMenu() { UGameplayStatics::OpenLevel(GetWorld(), "MainMenu"); }
 
 void UPauseMenuUI::OpenSettings()
 {

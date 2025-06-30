@@ -1271,4 +1271,4 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 	}
 }
 
-void AEnemy::RestartLevel() const { UGameplayStatics::OpenLevel(this, "MainMenuLevel"); }
+void AEnemy::RestartLevel() const { UGameplayStatics::OpenLevel(this, "MainMenu"); }
