@@ -8,7 +8,7 @@ EStateTreeRunStatus USTTaskRangerDeployShield::EnterState(FStateTreeExecutionCon
 	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::RangerDeployShield);
 	CachedController->GetProprietor()->AI_UseAbility(1);
 	CachedController->OnDeployShieldFinished.BindUObject(this, &USTTaskRangerDeployShield::DeployShieldFinished);
-	return EStateTreeRunStatus::Running;
+	return Super::EnterState(Context, Transition);
 }
 
 void USTTaskRangerDeployShield::DeployShieldFinished()

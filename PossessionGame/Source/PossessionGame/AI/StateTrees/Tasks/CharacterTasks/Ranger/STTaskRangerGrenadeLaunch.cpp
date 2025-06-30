@@ -8,7 +8,7 @@ EStateTreeRunStatus USTTaskRangerGrenadeLaunch::EnterState(FStateTreeExecutionCo
 	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::RangerLaunchGrenade);
 	CachedController->GetProprietor()->AI_UseAbility(0);
 	CachedController->OnGrenadeLaunchFinished.BindUObject(this, &USTTaskRangerGrenadeLaunch::GrenadeLaunchFinished);
-	return EStateTreeRunStatus::Running;
+	return Super::EnterState(Context, Transition);
 }
 
 void USTTaskRangerGrenadeLaunch::GrenadeLaunchFinished()

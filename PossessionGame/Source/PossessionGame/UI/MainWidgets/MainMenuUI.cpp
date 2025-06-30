@@ -62,7 +62,6 @@ void UMainMenuUI::TriggerMainMenuFadeInAnim()
 {
 	UnbindFromAnimationFinished(FirstLaunchAnim, FirstLaunchAnimDelegate);
 	ToggleMenuButtons(true);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
 	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim));
 }
 

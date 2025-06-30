@@ -1,6 +1,5 @@
 ﻿#include "VariationsComputer.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
-#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 AVariationsComputer::AVariationsComputer()
@@ -9,8 +8,4 @@ AVariationsComputer::AVariationsComputer()
 	Mesh->SetupAttachment(RootComponent);
 }
 
-void AVariationsComputer::Interact()
-{
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->OpenUI();
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradePanelFadeIn);
-}
+void AVariationsComputer::Interact() { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->OpenUI(); }
