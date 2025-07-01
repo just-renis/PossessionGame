@@ -54,6 +54,7 @@ public:
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
 	bool CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
 	bool GetIsMutant() const { return bIsMutant; }
+	bool GetIsAbilityInAction() const { return bIsAbilityInAction; }
 	float GetSkeletalMeshHeight() const;
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
@@ -89,8 +90,8 @@ public:
 	void P_IncreaseMovementSpeed(const float InPercentage) const;
 	void P_ResetMovementSpeed() const;
 
-	void SetAbilityInAction(const bool bState) { bAbilityInAction = bState; }
-	void SetActionInMotion(const bool bState);
+	void SetIsAbilityInAction(const bool bState) { bIsAbilityInAction = bState; }
+	void SetIsActionInMotion(const bool bState);
 	virtual void Tick(const float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
@@ -111,7 +112,7 @@ protected:
 	bool bCanShoot = false;
 	bool bIsActionInMotion = false;
 	bool bShootPauseActive = false;
-	bool bAbilityInAction = false;
+	bool bIsAbilityInAction = false;
 	bool bAffectedByEmp = false;
 	float MaxHp;
 	float CurrentHp;

@@ -12,7 +12,7 @@
 
 void UGuardianAbility1::P_Execute()
 {
-	Proprietor->SetActionInMotion(true);
+	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::OverCharge);
 	Proprietor->P_SetFov(95.f);
 	Cast<AGuardianWeapon>(Proprietor->GetWeapon())->ToggleHandsMeshAbilityState(true);

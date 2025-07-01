@@ -67,7 +67,7 @@ void UHandsAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted
         return;
     }
     const TObjectPtr<UAnimMontage>* QuickMeleeMontage = Montages.Find(EHandsAnimState::QuickMelee);
-    if (QuickMeleeMontage && Montage == QuickMeleeMontage->Get())  Proprietor->SetActionInMotion(false);
+    if (QuickMeleeMontage && Montage == QuickMeleeMontage->Get())  Proprietor->SetIsActionInMotion(false);
 }
 
 bool UHandsAnimInstance::IsMontageExisting(EHandsAnimState State)

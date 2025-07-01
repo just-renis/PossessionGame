@@ -6,7 +6,7 @@
 
 void UTricksterAbility1::P_Execute()
 {
-	Proprietor->SetActionInMotion(true);
+	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::SecondaryGrenadeLaunch);
 	Proprietor->P_ThrowPoisonGrenade();
 	Super::P_Execute();

@@ -20,14 +20,19 @@
 void AMinionBoss::ActivateStompTrigger()
 {
 	bStompIsReady = true;
-	if (!bAbilityInAction) ToggleStompTrigger(true);
+	if (!bIsAbilityInAction)
+	{
+	UE_LOG(LogTemp, Error, TEXT("ActivateStompTrigger TRUE"));
+		ToggleStompTrigger(true);
+	}
 }
 
 void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->OnMinionBossStomp.ExecuteIfBound(StompCameraShake); }
 
 void AMinionBoss::EnableLaserEyeBall()
-{
-	if (bStompIsReady) ToggleStompTrigger(false);
+{	UE_LOG(LogTemp, Error, TEXT("EnableLaserEyeBall FALSE"));
+
+	ToggleStompTrigger(false);
 	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &LaserEyeBallVfx, GetMesh(), "LaserSocket");
 	else LaserEyeBallVfx->Activate();
 }
@@ -42,9 +47,13 @@ void AMinionBoss::EnableDistanceCheckForLaserEye() { GetWorld()->GetTimerManager
 
 void AMinionBoss::OnLaserFinish()
 {
-	SetActionInMotion(false);
-	SetAbilityInAction(false);
-	if (bStompIsReady) ToggleStompTrigger(true);
+	SetIsActionInMotion(false);
+	SetIsAbilityInAction(false);
+	if (bStompIsReady)
+	{
+	UE_LOG(LogTemp, Error, TEXT("OnLaserFinish TRUE"));
+		ToggleStompTrigger(true);
+	}
 }
 
 AMinionBoss::AMinionBoss()
@@ -186,10 +195,7 @@ void AMinionBoss::InitiateDeath()
 
 void AMinionBoss::ToggleStompTrigger(const bool bState) const
 {
-	if (StompTriggerSphere)
-	{
-		StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
-	}
+	if (StompTriggerSphere) StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
 }
 
 void AMinionBoss::SetEmpEffect(const float InEffectDuration)
@@ -219,7 +225,7 @@ void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDama
 
 void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 {
-	if (!AI || bAbilityInAction || bAffectedByEmp) return;
+	if (!AI || bIsAbilityInAction || bAffectedByEmp) return;
 	const TObjectPtr<AActor> Target = AI->GetStateTreeData().GetTarget();
 	if (!Target) return;
 	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) >= FMath::Square(1000.f))
@@ -235,6 +241,7 @@ void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* Oth
 {
 	if (!AI || bAffectedByEmp) return;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
+	UE_LOG(LogTemp, Error, TEXT("OnPlayerEnterStompTrigger false"));
 	ToggleStompTrigger(false);
 	bStompIsReady = false;
 }

@@ -10,7 +10,7 @@
 
 void URangerAbility1::AI_Execute()
 {
-	Proprietor->SetActionInMotion(true);
+	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::GrenadeLaunch);
 	Proprietor->PlaySound(ESound::RangerGrenadeLaunchAim, true);
 	Super::AI_Execute();
@@ -18,7 +18,7 @@ void URangerAbility1::AI_Execute()
 
 void URangerAbility1::P_Execute()
 {
-	Proprietor->SetActionInMotion(true);
+	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::GrenadeLaunch);
 	Proprietor->P_LaunchGrenade();
 	Super::P_Execute();

@@ -8,8 +8,8 @@
 
 void UMinionBossAbility1::AI_Execute()
 {
-	Proprietor->SetActionInMotion(true);
-	Proprietor->SetAbilityInAction(true);
+	Proprietor->SetIsActionInMotion(true);
+	Proprietor->SetIsAbilityInAction(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Stomp);
 	Proprietor->PlaySound(ESound::MinionBossStomp, true);
 	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetIsActionMontagePlaying(true);
@@ -31,7 +31,11 @@ void UMinionBossAbility1::SetProprietor(const TObjectPtr<AEnemy> AbilityPropriet
 void UMinionBossAbility1::CooldownLogic(const float InDeltaTime)
 {
 	Super::CooldownLogic(InDeltaTime);
-	if (CurrentChargesAmount > 0) Proprietor->ActivateStompTrigger();
+	if (CurrentChargesAmount > 0)
+	{
+		if (!Proprietor->GetIsAbilityInAction()) Proprietor->ActivateStompTrigger();
+		else Proprietor->SetIsStompReady(true);
+	}
 }
 
 void UMinionBossAbility1::StompHitTheGround() const

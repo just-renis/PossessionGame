@@ -7,7 +7,7 @@
 
 void URangerAbility2::AI_Execute()
 {
-	Proprietor->SetActionInMotion(true);
+	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::DeployShield);
 	Proprietor->SpawnShield();
 	Super::AI_Execute();
@@ -15,7 +15,7 @@ void URangerAbility2::AI_Execute()
 
 void URangerAbility2::P_Execute()
 {
-	Proprietor->SetActionInMotion(true);
+	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::RangerDeployShield);
 	Proprietor->SpawnShield();
 	Super::P_Execute();

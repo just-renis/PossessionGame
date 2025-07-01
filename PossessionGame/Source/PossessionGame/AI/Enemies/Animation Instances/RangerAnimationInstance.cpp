@@ -22,13 +22,13 @@ void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInter
 	const TObjectPtr<UAnimMontage>* GrenadeLaunchMontage = Montages.Find(EEnemyAnimState::GrenadeLaunch);
 	if (GrenadeLaunchMontage && Montage == GrenadeLaunchMontage->Get())
 	{
-		Proprietor->SetActionInMotion(false);
+		Proprietor->SetIsActionInMotion(false);
 		(void)Cast<ARangerAIController>(Proprietor->GetAI())->OnGrenadeLaunchFinished.ExecuteIfBound();
 	}
 	const TObjectPtr<UAnimMontage>* DeployShieldMontage = Montages.Find(EEnemyAnimState::DeployShield);
 	if (DeployShieldMontage && Montage == DeployShieldMontage->Get())
 	{
-		Proprietor->SetActionInMotion(false);
+		Proprietor->SetIsActionInMotion(false);
 		(void)Cast<ARangerAIController>(Proprietor->GetAI())->OnDeployShieldFinished.ExecuteIfBound();
 	}
 }

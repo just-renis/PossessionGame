@@ -148,7 +148,7 @@ void AEnemy::P_IncreaseMovementSpeed(const float InPercentage) const { SetMaxWal
 
 void AEnemy::P_ResetMovementSpeed() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
 
-void AEnemy::SetActionInMotion(const bool bState)
+void AEnemy::SetIsActionInMotion(const bool bState)
 {
 	bIsActionInMotion = bState;
 	if (AI) AI->GetStateTreeData().SetIsActionInMotion(bState);
@@ -336,7 +336,7 @@ void AEnemy::SetUnPossessionOutline(const bool bState) const
 void AEnemy::EmpEffectEnded()
 {
 	bAffectedByEmp = false;
-	SetActionInMotion(false);
+	SetIsActionInMotion(false);
 	if (AI) AI->ResumeLogic();
 }
 

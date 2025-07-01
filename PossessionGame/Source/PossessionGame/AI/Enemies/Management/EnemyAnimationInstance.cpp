@@ -48,7 +48,7 @@ void UEnemyAnimationInstance::PlayMontageWithHold(const EEnemyAnimState InState,
     {
         LoadMontageIfNotLoaded(InState);
         InnerPlayMontage(InState);
-        if (Proprietor) Proprietor->SetActionInMotion(true);
+        if (Proprietor) Proprietor->SetIsActionInMotion(true);
         MontageStateInHold = InState;
         if (bNeedsToStopAILogic && Proprietor && Proprietor->GetAI()) Proprietor->GetAI()->StopLogic(false);
         GetWorld()->GetTimerManager().SetTimer(MontageWithHoldHandle, this, &UEnemyAnimationInstance::MontageWithHoldEnd, InHoldTime, false);

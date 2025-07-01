@@ -27,6 +27,7 @@ public:
 	void EnableLaser();
 	void EnableDistanceCheckForLaserEye();
 	void OnLaserFinish();
+	void SetIsStompReady(const bool bState) { bStompIsReady = bState; }
 private:
 	AMinionBoss();
 
