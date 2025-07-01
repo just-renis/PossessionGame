@@ -15,6 +15,8 @@ class AAIPath;
 class UEnemyCommunicator;
 class AEnemy;
 
+DECLARE_DELEGATE(FOnEqsTargetUpdate);
+
 UCLASS()
 class POSSESSIONGAME_API AEnemyAIController : public AAIController
 {
@@ -26,6 +28,7 @@ public:
 	EStateTreeEvent GetCurrentStateTreeEvent() const { return CurrentStateTreeEvent; }
 	TObjectPtr<AEnemy> GetProprietor() { return Proprietor; }
 	FStateTreeData& GetStateTreeData() { return StateTreeData; }
+	FOnEqsTargetUpdate& GetEqsTargetUpdateDelegate() { return OnEqsTargetUpdate; }
 
 	void SetShootCooldown(const float InValue);
 	void SetReloadDelay(const float InValue);
@@ -52,6 +55,7 @@ protected:
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 private:
 	EStateTreeEvent CurrentStateTreeEvent;
+	FOnEqsTargetUpdate OnEqsTargetUpdate;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	FStateTreeData StateTreeData;
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))

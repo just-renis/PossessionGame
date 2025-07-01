@@ -74,6 +74,25 @@ FORCEINLINE uint32 GetTypeHash(const FCharacterPairWrapper& PairWrapper)
 }
 
 USTRUCT()
+struct POSSESSIONGAME_API FCharacterContainer
+{
+	GENERATED_BODY()
+
+	FCharacterContainer() {}
+	explicit FCharacterContainer(const TObjectPtr<UPA_CharacterContainer>& InCharacterContainer) { CharacterContainer = InCharacterContainer; }
+
+	TWeakObjectPtr<UWorld> GetWorld() const { return World; }
+	TObjectPtr<UPA_CharacterContainer> GetCharacterContainer() const { return CharacterContainer; }
+	
+	void SetWorld(const TObjectPtr<UWorld>& InWorld) { World = InWorld; }
+private:
+	UPROPERTY()
+	TWeakObjectPtr<UWorld> World;
+	UPROPERTY()
+	TObjectPtr<UPA_CharacterContainer> CharacterContainer;
+};
+
+USTRUCT()
 struct POSSESSIONGAME_API FSoundContainer
 {
 	GENERATED_BODY()
@@ -83,10 +102,12 @@ struct POSSESSIONGAME_API FSoundContainer
 
 	bool GetIsInLoad() const { return bIsInLoad; }
 	bool GetIsLoaded() const { return bIsLoaded; }
+	TWeakObjectPtr<UWorld> GetWorld() const { return World; }
 	TObjectPtr<UPA_SoundContainer> GetSoundContainer() const { return SoundContainer; }
 	
 	void SetIsInLoad(const bool bState) { bIsInLoad = bState; }
 	void SetIsLoaded(const bool bState) { bIsLoaded = bState; }
+	void SetWorld(const TObjectPtr<UWorld>& InWorld) { World = InWorld; }
 	void ResetLoadVariables()
 	{
 		SetIsLoaded(false);
@@ -101,6 +122,8 @@ struct POSSESSIONGAME_API FSoundContainer
 private:
 	bool bIsInLoad = false;
 	bool bIsLoaded = false;
+	UPROPERTY()
+	TWeakObjectPtr<UWorld> World;
 	UPROPERTY()
 	TObjectPtr<UPA_SoundContainer> SoundContainer;
 	UPROPERTY()
@@ -158,7 +181,7 @@ public:
 	EVfx GetCharacterVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType);
 	TObjectPtr<UPA_WeaponContainer>& GetWeaponData(EWeapon WeaponName);
 	FSoundContainer& GetSoundData(const ESound InSoundName);
-	TObjectPtr<UPA_CharacterContainer>& GetCharacterData(ECharacterType CharacterName);
+	FCharacterContainer& GetCharacterData(const ECharacterType InCharacterName);
 	FVfxContainer& GetVfxData(const EVfx InVfxName);
 	TSubclassOf<AMarker>& GetMarkerClass() { return MarkerClass; }
 	TObjectPtr<AEnemy> SpawnVariationReplacement(const ECharacterType InCharacter);
@@ -189,7 +212,7 @@ private:
 	UPROPERTY()
 	TMap<ESound, FSoundContainer> SoundContainers;
 	UPROPERTY()
-	TMap<ECharacterType, TObjectPtr<UPA_CharacterContainer>> CharacterContainers;
+	TMap<ECharacterType, FCharacterContainer> CharacterContainers;
 	UPROPERTY()
 	TMap<EVfx, FVfxContainer> VfxContainers;
 	UPROPERTY()
@@ -209,8 +232,7 @@ private:
 	UPROPERTY()
 	TMap<EGameMode, FGameModeSpawnLocations> SpawnLocations;
 
-	bool IsGameRunning();
-	bool IsVfxWorldValid(const TWeakObjectPtr<UWorld>& InWorld);
+	bool IsAsyncAssetWorldValid(const TWeakObjectPtr<UWorld>& InWorld);
 	EPoolObject GetProjectileNameByCharacterName(ECharacterType InCharacterType);
 	TObjectPtr<UNiagaraComponent> AttachAndReceiveVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy);
 	TObjectPtr<UNiagaraComponent> SpawnAndReceiveVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);

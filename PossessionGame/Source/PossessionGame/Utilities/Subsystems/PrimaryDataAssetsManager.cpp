@@ -54,7 +54,7 @@ TObjectPtr<UPA_WeaponContainer>& UPrimaryDataAssetsManager::GetWeaponData(EWeapo
 
 FSoundContainer& UPrimaryDataAssetsManager::GetSoundData(const ESound InSoundName) { return SoundContainers[InSoundName]; }
 
-TObjectPtr<UPA_CharacterContainer>& UPrimaryDataAssetsManager::GetCharacterData(ECharacterType CharacterName) { return CharacterContainers[CharacterName]; }
+FCharacterContainer& UPrimaryDataAssetsManager::GetCharacterData(const ECharacterType InCharacterName) { return CharacterContainers[InCharacterName]; }
 
 FVfxContainer& UPrimaryDataAssetsManager::GetVfxData(const EVfx InVfxName) { return VfxContainers[InVfxName]; }
 
@@ -247,10 +247,7 @@ void UPrimaryDataAssetsManager::LoadSound2D(FSoundContainer& InSoundData, const 
 
 void UPrimaryDataAssetsManager::LoadSound3D(FSoundContainer& InSoundData, TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
 {
-	InSoundData.AddSoundLoadedCallback([this, InSoundData, InAudioComp, InCallback, InSoundName, bIsPlayer]
-	{
-		if (IsGameRunning()) SetAndPlaySoundCallback(InSoundData, InAudioComp, InCallback, InSoundName, bIsPlayer);
-	});
+	InSoundData.AddSoundLoadedCallback([this, InSoundData, InAudioComp, InCallback, InSoundName, bIsPlayer] { SetAndPlaySoundCallback(InSoundData, InAudioComp, InCallback, InSoundName, bIsPlayer); });
 	RequestSoundLoad(InSoundData);
 }
 
@@ -259,11 +256,12 @@ void UPrimaryDataAssetsManager::RequestSoundLoad(FSoundContainer& InSoundData)
 	if (!InSoundData.GetIsInLoad())
 	{
 		InSoundData.SetIsInLoad(true);
+		InSoundData.SetWorld(GetWorld());
 		if (GetCanAsyncLoadHappen())
 		{
 			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InSoundData.GetSoundContainer()->Sound.ToSoftObjectPath(), [this, &InSoundData]
 			{
-				if (IsGameRunning())
+				if (IsAsyncAssetWorldValid(InSoundData.GetWorld()))
 				{
 					InSoundData.SetIsLoaded(true);
 					InSoundData.TriggerSoundsCallbacks();
@@ -274,14 +272,7 @@ void UPrimaryDataAssetsManager::RequestSoundLoad(FSoundContainer& InSoundData)
 	}
 }
 
-bool UPrimaryDataAssetsManager::IsGameRunning()
-{
-	if (!IsValid(this)) return false;
-	const TObjectPtr<UWorld> World = GetWorld();
-	return IsValid(World) && !World->HasAnyFlags(RF_BeginDestroyed | RF_FinishDestroyed);
-}
-
-bool UPrimaryDataAssetsManager::IsVfxWorldValid(const TWeakObjectPtr<UWorld>& InWorld)
+bool UPrimaryDataAssetsManager::IsAsyncAssetWorldValid(const TWeakObjectPtr<UWorld>& InWorld)
 {
 	if (!InWorld.IsValid()) return false;
 	const TObjectPtr<UWorld> World = InWorld.Get();
@@ -474,7 +465,7 @@ void UPrimaryDataAssetsManager::SetupCharactersPrimaryAssets()
 	CharactersMap.Add("PA_Samurai", ECharacterType::Samurai);
 	CharactersMap.Add("PA_Guardian", ECharacterType::Guardian);
 	CharactersMap.Add("PA_MinionBoss", ECharacterType::MinionBoss);
-	FillContainers(CharactersMap, CharacterContainers, "Character");
+	FillContainers<ECharacterType, FCharacterContainer, UPA_CharacterContainer>(CharactersMap, CharacterContainers, "Character");
 	CharactersMap.Empty();
 }
 
@@ -583,22 +574,26 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 	bIsSpawnInProcess = true;
 	if (GetCanAsyncLoadHappen())
 	{
+		FCharacterContainer& CharacterContainer = GetCharacterData(InCharacter);
+		CharacterContainer.SetWorld(GetWorld());
 		TArray<FSoftObjectPath> PathsToLoad;
-		PathsToLoad.Add(GetCharacterData(InCharacter)->CharacterClass.ToSoftObjectPath());
-		PathsToLoad.Add(GetCharacterData(InCharacter)->CharacterMesh.ToSoftObjectPath());
+		PathsToLoad.Add(CharacterContainer.GetCharacterContainer()->CharacterClass.ToSoftObjectPath());
+		PathsToLoad.Add(CharacterContainer.GetCharacterContainer()->CharacterMesh.ToSoftObjectPath());
 		EWeapon Weapon = GetWeaponByCharacter(InCharacter);
-		PathsToLoad.Add(GetWeaponData(Weapon)->WeaponClass.ToSoftObjectPath());
-		PathsToLoad.Add(GetWeaponData(Weapon)->HandsMesh.ToSoftObjectPath());
+		const TObjectPtr<UPA_WeaponContainer> WeaponContainer = GetWeaponData(Weapon);
+		PathsToLoad.Add(WeaponContainer->WeaponClass.ToSoftObjectPath());
+		PathsToLoad.Add(WeaponContainer->HandsMesh.ToSoftObjectPath());
 		EWeapon SingularWeapon = GetSingularWeapon(Weapon);
 		if (SingularWeapon != EWeapon::None)
 		{
-			PathsToLoad.Add(GetWeaponData(SingularWeapon)->WeaponClass.ToSoftObjectPath());
-			PathsToLoad.Add(GetWeaponData(SingularWeapon)->WeaponMesh.ToSoftObjectPath());
+			const TObjectPtr<UPA_WeaponContainer> SingularWeaponContainer = GetWeaponData(SingularWeapon);
+			PathsToLoad.Add(SingularWeaponContainer->WeaponClass.ToSoftObjectPath());
+			PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
 		}
-		else PathsToLoad.Add(GetWeaponData(Weapon)->WeaponMesh.ToSoftObjectPath());
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack]
+		else PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, &CharacterContainer, SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack]
 		{
-			if (IsGameRunning()) AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
+			if (IsAsyncAssetWorldValid(CharacterContainer.GetWorld())) AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
 		});
 		AddAsyncHandle(Handle);
 	}
@@ -606,12 +601,12 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 
 void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
-	LoadedEnemies.Add(InCharacter, Cast<UClass>(GetCharacterData(InCharacter)->CharacterClass.ToSoftObjectPath().TryLoad()));
+	LoadedEnemies.Add(InCharacter, Cast<UClass>(GetCharacterData(InCharacter).GetCharacterContainer()->CharacterClass.ToSoftObjectPath().TryLoad()));
 	if (InSingularWeapon != EWeapon::None)
 	{
-		GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InSingularWeapon, Cast<UClass>(GetWeaponData(InSingularWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
+		GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InSingularWeapon, Cast<UClass>(GetWeaponData(InSingularWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
 	}
-	GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
+	GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
 	SpawnEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack);
 }
 
@@ -666,7 +661,6 @@ void UPrimaryDataAssetsManager::LoadVfx(FVfxContainer& InVfxData, const EVfx InV
 {
 	InVfxData.AddVfxLoadedCallback([this, InVfxData, InCallbackOfDeactivation, InVfxComponent, InVfxName, InAttachTo, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy, InVariationName, InAttributes]
 	{
-		if (!IsGameRunning()) return;
 		if (InVfxComponent)
 		{
 			*InVfxComponent = AttachAndReceiveVfx(InVfxName, InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
@@ -681,7 +675,6 @@ void UPrimaryDataAssetsManager::LoadVfx(FVfxContainer& InVfxData, const EVfx InV
 {
 	InVfxData.AddVfxLoadedCallback([this, InVfxData, InCallbackOfDeactivation, InVfxName, InLocation, InRotation, InVariationName, InAttributes]
 	{
-		if (!IsGameRunning()) return;
 		SetupVfx(InVfxData, InCallbackOfDeactivation, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation),  false, InVariationName, InAttributes);
 	});
 	RequestVfxLoad(InVfxData);
@@ -697,14 +690,10 @@ void UPrimaryDataAssetsManager::RequestVfxLoad(FVfxContainer& InVfxData)
 		{
 			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InVfxData.GetVfxContainer()->GetVfxEffect().ToSoftObjectPath(), [this, &InVfxData]
 			{
-				if (IsVfxWorldValid(InVfxData.GetWorld()))
+				if (IsAsyncAssetWorldValid(InVfxData.GetWorld()))
 				{
 					InVfxData.SetIsLoaded(true);
 					InVfxData.TriggerVfxsCallbacks();
-				}
-				else
-				{
-					UE_LOG(LogTemp, Warning, TEXT("VFX load finished but target world destroyed, skipping callbacks"));
 				}
 			});
 			AddAsyncHandle(Handle);

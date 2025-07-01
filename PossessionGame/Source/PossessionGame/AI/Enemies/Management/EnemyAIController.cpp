@@ -151,6 +151,7 @@ void AEnemyAIController::SetupEQSTarget()
 void AEnemyAIController::SetEQSTargetLocation()
 {
 	const FVector PointLocation = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetPointLocation(Proprietor->GetCharacterName(), Proprietor->GetActorLocation());
+	(void)OnEqsTargetUpdate.ExecuteIfBound();
 	if (!PointLocation.ContainsNaN()) GetStateTreeData().SetEQSPointLocation(PointLocation);
 }
 

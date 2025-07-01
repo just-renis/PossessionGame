@@ -24,5 +24,5 @@ class POSSESSIONGAME_API USTConditionDistanceCompare : public UStateTreeConditio
 	TObjectPtr<AActor> Target;
 
 	virtual bool TestCondition(FStateTreeExecutionContext& Context) const override;
-	bool ConditionResult(float DistanceBetweenLocations) const;
+	bool ConditionResult(const float InDistanceBetweenLocations) const;
 };

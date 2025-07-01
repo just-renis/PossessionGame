@@ -340,7 +340,7 @@ void AEnemy::EmpEffectEnded()
 	if (AI) AI->ResumeLogic();
 }
 
-void AEnemy::AI_SetupAbilities() { SetupAbilities(AssetsManager->GetCharacterData(CharacterName)->AI_Abilities_Data); }
+void AEnemy::AI_SetupAbilities() { SetupAbilities(AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->AI_Abilities_Data); }
 
 void AEnemy::AI_Setup()
 {
@@ -365,7 +365,7 @@ void AEnemy::AI_Shoot() { Weapon->AI_Shoot(); }
 
 void AEnemy::AI_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 {
-	if (!AI_Data) AI_Data = AssetsManager->GetCharacterData(PrimaryDataAssetName)->AI_Data.LoadSynchronous();
+	if (!AI_Data) AI_Data = AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->AI_Data.LoadSynchronous();
 }
 
 void AEnemy::AI_SetController() { AI = Cast<AEnemyAIController>(GetController()); }
@@ -392,7 +392,7 @@ void AEnemy::AI_PlayDeathSound() { PlaySound(ESound::MechanicalDeath); }
 void AEnemy::P_SetupAbilities()
 {
 	Abilities.Empty();
-	SetupAbilities(AssetsManager->GetCharacterData(CharacterName)->P_Abilities_Data);
+	SetupAbilities(AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->P_Abilities_Data);
 }
 
 void AEnemy::P_Setup()
@@ -474,7 +474,7 @@ void AEnemy::P_Destroy()
 
 void AEnemy::P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 {
-	if (!P_Data) P_Data = AssetsManager->GetCharacterData(PrimaryDataAssetName)->P_Data.LoadSynchronous();
+	if (!P_Data) P_Data = AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->P_Data.LoadSynchronous();
 }
 
 void AEnemy::P_SetupCharacterMovement()
@@ -505,7 +505,7 @@ void AEnemy::P_InitiateDash()
 	if (P_HUD) P_HUD->UpdateDashIndicator(false);
 	AssetsManager->PlaySound2D(ESound::Dash);
 	CurrentDashCooldown = 0.f;
-	FVector DashDirection = GetVelocity().GetSafeNormal();
+	FVector DashDirection = FVector(GetVelocity().X, GetVelocity().Y, 0.f).GetSafeNormal();
 	if (DashDirection.IsNearlyZero()) DashDirection = GetActorForwardVector();
 	DashDirection.Z = 0.f;
 	GetCharacterMovement()->StopMovementImmediately();
@@ -644,7 +644,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	return Damage;
 }
 
-void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName)->CharacterMesh.Get()); }
+void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->CharacterMesh.Get()); }
 
 void AEnemy::DestroyAI()
 {

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "AITypes.h"
 #include "Blueprint/StateTreeTaskBlueprintBase.h"
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "STTaskMoveToActor.generated.h"
@@ -44,12 +45,25 @@ private:
 	TObjectPtr<AActor> Target = nullptr;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UNavigationQueryFilter> FilterClass;
+	UPROPERTY(EditAnywhere, Category = "Move Mode Switch", meta = (AllowPrivateAccess = true))
+	bool bMoveModeSwitchEnabled = false;
+	UPROPERTY(EditAnywhere, Category = "Move Mode Switch", meta = (EditCondition = "bMoveModeSwitchEnabled"))
+	bool bCheckWithTargetObject = false;
+	UPROPERTY(EditAnywhere, Category = "Move Mode Switch", meta = (EditCondition = "bMoveModeSwitchEnabled"))
+	bool bInvert = false;
+	UPROPERTY(EditAnywhere, Category = "Move Mode Switch", meta = (EditCondition = "bMoveModeSwitchEnabled"))
+	float Distance = 0.f;
+	UPROPERTY(EditAnywhere, Category = "Move Mode Switch", meta = (EditCondition = "bMoveModeSwitchEnabled"))
+	EGenericAICheck Operator = EGenericAICheck::Equal;
 	UPROPERTY()
 	FTimerHandle CheckForNewMoveReqHandle;
 
 	static EStateTreeRunStatus PathFollowingRequestResultHandling(EPathFollowingRequestResult::Type MoveResult);
 	FAIMoveRequest SetupAndGetMoveReq();
+	bool DistanceTestCondition(const float InDistance) const;
+	EMoveMode ReceiveMoveMode() const;
 	
 	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result);
 	void CheckForNewMoveReq();
+	void SetMoveMode();
 };

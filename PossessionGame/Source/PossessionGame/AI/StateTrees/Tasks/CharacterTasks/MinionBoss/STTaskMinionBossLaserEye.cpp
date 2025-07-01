@@ -8,7 +8,7 @@ EStateTreeRunStatus USTTaskMinionBossLaserEye::EnterState(FStateTreeExecutionCon
 	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::MinionBossLaserEye);
 	CachedController->GetProprietor()->AI_UseAbility(1);
 	CachedController->OnLaserEyeFinished.BindUObject(this, &USTTaskMinionBossLaserEye::LaserEyeFinished);;
-	return EStateTreeRunStatus::Running;
+	return Super::EnterState(Context, Transition);
 }
 
 void USTTaskMinionBossLaserEye::LaserEyeFinished()

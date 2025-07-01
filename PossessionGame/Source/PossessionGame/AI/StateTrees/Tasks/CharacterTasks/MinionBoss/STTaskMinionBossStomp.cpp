@@ -8,7 +8,7 @@ EStateTreeRunStatus USTTaskMinionBossStomp::EnterState(FStateTreeExecutionContex
 	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::MinionBossStomp);
 	CachedController->GetProprietor()->AI_UseAbility(0);
 	CachedController->OnStompFinished.BindUObject(this, &USTTaskMinionBossStomp::StompFinished);
-	return EStateTreeRunStatus::Running;
+	return Super::EnterState(Context, Transition);
 }
 
 void USTTaskMinionBossStomp::StompFinished()

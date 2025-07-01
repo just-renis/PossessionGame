@@ -75,7 +75,7 @@ void UEnemyAnimationInstance::ClearMontageWithHoldHandle() { GetWorld()->GetTime
 
 bool UEnemyAnimationInstance::IsMontageExisting(const EEnemyAnimState InState) const
 {
-    return AssetsManager->GetCharacterData(Proprietor->GetCharacterName())->Montages.Contains(InState);
+    return AssetsManager->GetCharacterData(Proprietor->GetCharacterName()).GetCharacterContainer()->Montages.Contains(InState);
 }
 
 void UEnemyAnimationInstance::NativeBeginPlay()
@@ -121,5 +121,5 @@ void UEnemyAnimationInstance::NativeUpdateAnimation(const float InDeltaSeconds)
 
 void UEnemyAnimationInstance::LoadMontageIfNotLoaded(const EEnemyAnimState InState)
 {
-    if (!Montages.Contains(InState)) Montages.Add(InState, AssetsManager->GetCharacterData(Proprietor->GetCharacterName())->Montages[InState].LoadSynchronous());
+    if (!Montages.Contains(InState)) Montages.Add(InState, AssetsManager->GetCharacterData(Proprietor->GetCharacterName()).GetCharacterContainer()->Montages[InState].LoadSynchronous());
 }

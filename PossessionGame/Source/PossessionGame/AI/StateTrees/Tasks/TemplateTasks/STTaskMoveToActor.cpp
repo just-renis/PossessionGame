@@ -10,6 +10,7 @@ EStateTreeRunStatus USTTaskMoveToActor::EnterState(FStateTreeExecutionContext& C
 	CachedController = Cast<AEnemyAIController>(Context.GetOwner());
 	const EStateTreeRunStatus Status = PathFollowingRequestResultHandling(CachedController->MoveTo(SetupAndGetMoveReq()));
 	if (Status != EStateTreeRunStatus::Running) return Status;
+	if (!CachedController->GetEqsTargetUpdateDelegate().IsBound() && bMoveModeSwitchEnabled) CachedController->GetEqsTargetUpdateDelegate().BindUObject(this, &USTTaskMoveToActor::SetMoveMode);
 	CachedController->SetMoveMode(MoveMode);
 	CachedController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this, &USTTaskMoveToActor::OnMoveCompleted);
 	return Super::EnterState(Context, Transition);
@@ -54,6 +55,37 @@ FAIMoveRequest USTTaskMoveToActor::SetupAndGetMoveReq()
 	return MoveReq;
 }
 
+bool USTTaskMoveToActor::DistanceTestCondition(const float InDistance) const
+{
+	switch (Operator)
+	{
+		case EGenericAICheck::Less:
+			return InDistance < Distance;
+		case EGenericAICheck::LessOrEqual:
+			return InDistance <= Distance;
+		case EGenericAICheck::Equal:
+			return FMath::IsNearlyEqual(InDistance, Distance, 0.001f);
+		case EGenericAICheck::NotEqual:
+			return !FMath::IsNearlyEqual(InDistance, Distance, 0.001f);
+		case EGenericAICheck::GreaterOrEqual:
+			return InDistance >= Distance;
+		case EGenericAICheck::Greater:
+			return InDistance > Distance;
+		case EGenericAICheck::IsTrue:
+			return Distance != 0.f;
+		default:
+			return false;
+	}
+}
+
+EMoveMode USTTaskMoveToActor::ReceiveMoveMode() const
+{
+	const FVector ActorLocation = CachedController->GetPawn()->GetActorLocation();
+	const FVector TargetActorLocation = Target->GetActorLocation();
+	const bool Result = bCheckWithTargetObject ? DistanceTestCondition(FVector::Dist(ActorLocation, TargetActorLocation)) : DistanceTestCondition(FVector::Dist(ActorLocation, TargetLocation));
+	return bInvert ? (Result ? EMoveMode::Walk : EMoveMode::Run) : Result ? EMoveMode::Run : EMoveMode::Walk;
+}
+
 void USTTaskMoveToActor::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
 	CachedController->GetStateTreeData().SetEQSPointAvailability(false);
@@ -69,6 +101,13 @@ void USTTaskMoveToActor::CheckForNewMoveReq()
 {
 	if (!CachedController->GetStateTreeData().GetIsEQSPointAvailable()) return;
 	PathFollowingRequestResultHandling(CachedController->MoveTo(SetupAndGetMoveReq()));
+	if (bMoveModeSwitchEnabled) MoveMode = ReceiveMoveMode();
 	CachedController->SetMoveMode(MoveMode);
 	GetWorld()->GetTimerManager().ClearTimer(CheckForNewMoveReqHandle);
+}
+
+void USTTaskMoveToActor::SetMoveMode()
+{
+	MoveMode = ReceiveMoveMode();
+	CachedController->SetMoveMode(MoveMode);
 }

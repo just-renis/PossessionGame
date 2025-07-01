@@ -12,22 +12,22 @@ bool USTConditionDistanceCompare::TestCondition(FStateTreeExecutionContext& Cont
 	return bInvert ? !Result : Result;
 }
 
-bool USTConditionDistanceCompare::ConditionResult(float DistanceBetweenLocations) const
+bool USTConditionDistanceCompare::ConditionResult(const float InDistanceBetweenLocations) const
 {
 	switch (Operator)
 	{
 		case EGenericAICheck::Less:
-			return DistanceBetweenLocations < Distance;
+			return InDistanceBetweenLocations < Distance;
 		case EGenericAICheck::LessOrEqual:
-			return DistanceBetweenLocations <= Distance;
+			return InDistanceBetweenLocations <= Distance;
 		case EGenericAICheck::Equal:
-			return FMath::IsNearlyEqual(DistanceBetweenLocations, Distance, 0.001f);
+			return FMath::IsNearlyEqual(InDistanceBetweenLocations, Distance, 0.001f);
 		case EGenericAICheck::NotEqual:
-			return !FMath::IsNearlyEqual(DistanceBetweenLocations, Distance, 0.001f);
+			return !FMath::IsNearlyEqual(InDistanceBetweenLocations, Distance, 0.001f);
 		case EGenericAICheck::GreaterOrEqual:
-			return DistanceBetweenLocations >= Distance;
+			return InDistanceBetweenLocations >= Distance;
 		case EGenericAICheck::Greater:
-			return DistanceBetweenLocations > Distance;
+			return InDistanceBetweenLocations > Distance;
 		case EGenericAICheck::IsTrue:
 			return Distance != 0.f;
 		default:
