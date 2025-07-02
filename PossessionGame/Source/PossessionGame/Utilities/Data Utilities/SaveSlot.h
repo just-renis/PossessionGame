@@ -22,6 +22,7 @@ public:
 	int32 GetLevelHpIncrease(const int32 InLevel = -1) const;
 	int32 GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const;
 	int32 GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const;
+	int32 GetCurrencyAmount() const { return CurrencyAmount; }
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
 	void SetTutorialFinished();
@@ -30,6 +31,7 @@ public:
 	void ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName);
 	void SaveSlot();
 	void SetLaunchedOnce();
+	void AddCurrencyAmount(const int32 InCurrencyAmount) { CurrencyAmount += InCurrencyAmount; }
 private:
 	UPROPERTY()
 	bool bIsFirstLaunch = true;
@@ -39,6 +41,8 @@ private:
 	int32 CurrentXp = 0;
 	UPROPERTY()
 	int32 CurrentLevel = 0;
+	UPROPERTY()
+	int32 CurrencyAmount = 0;
 	UPROPERTY()
 	int32 SaveVersion = 1;
 	UPROPERTY()

@@ -32,6 +32,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> VariationsSwitcher;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationUnlockDetailsUI> VariationDetailsPanel;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationUnlockDetailsUI> UnlockDetailsPanel;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationOptionUI> GuardianVariationDefault;
@@ -64,7 +66,7 @@ private:
 	UFUNCTION()
 	void SwitchVariation(const int32 InIndex);
 	UFUNCTION()
-	void ToggleDetailsPanel(const bool bState, const FString& InDetailsText);
+	void ToggleDetailsPanel(const bool bState, const FString& InVariationDetailsText, const FString& InUnlockDetailsText);
 	UFUNCTION()
 	void HideDetailsPanel();
 	UFUNCTION()

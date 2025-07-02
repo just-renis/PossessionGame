@@ -33,7 +33,8 @@ DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const TObjectPtr<UUpgradeData>&);
 DECLARE_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
 DECLARE_DELEGATE_OneParam(FRequirePlayerAnnouncementInfo, const FText&);
-DECLARE_DELEGATE_OneParam(FChangeMusicPlayerState, bool);
+DECLARE_DELEGATE_OneParam(FChangeMusicPlayerState, const bool);
+DECLARE_DELEGATE_OneParam(FOnCoinCollected, const int32);
 DECLARE_DELEGATE_TwoParams(FStartTutorialDroneMoveToLocation, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
@@ -94,6 +95,7 @@ public:
 	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
 	FRequirePlayerAnnouncementInfo RequirePlayerAnnouncementInfo;
 	FChangeMusicPlayerState ChangeMusicPlayerState;
+	FOnCoinCollected OnCoinCollected;
 	FStartTutorialDroneMoveToLocation StartTutorialDroneMoveToLocation;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnAbilityUse OnAbilityUse;

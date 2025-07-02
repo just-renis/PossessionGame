@@ -63,8 +63,13 @@ void ACollectible::Interact()
 	GetWorldTimerManager().ClearTimer(SpinHandle);
 	PoolingManager->ReturnObjectToPool(Data->GetCollectibleName(), this);
 	DisableCollectible();
-	if (Data->GetCollectibleName() == EPoolObject::Usb) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.ExecuteIfBound();
-	else if (Data->GetCollectibleName() == EPoolObject::Artifact) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.ExecuteIfBound();
+	switch (Data->GetCollectibleName())
+	{
+		case EPoolObject::Usb: (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.ExecuteIfBound(); break;
+		case EPoolObject::Artifact: (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.ExecuteIfBound(); break;
+		case EPoolObject::Coin: (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnCoinCollected.ExecuteIfBound(1);
+		default: ;
+	}
 }
 
 void ACollectible::ShowMarker()
@@ -120,7 +125,7 @@ void ACollectible::Float()
 void ACollectible::Spin()
 {
 	FRotator NewRotation = GetActorRotation();
-	NewRotation.Yaw += 1.5f;
+	NewRotation.Yaw += Data->GetSpinningSpeed() * 0.025f;
 	SetActorRotation(NewRotation);
 }
 

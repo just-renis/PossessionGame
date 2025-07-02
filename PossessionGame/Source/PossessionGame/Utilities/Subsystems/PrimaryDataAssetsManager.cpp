@@ -522,6 +522,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_UsbAura", EVfx::UsbAura);
 	VfxsMap.Add("PA_ArtifactAura", EVfx::ArtifactAura);
 	VfxsMap.Add("PA_MutantAura", EVfx::MutantAura);
+	VfxsMap.Add("PA_CoinAura", EVfx::CoinAura);
 	VfxsMap.Add("PA_MutantExplosion", EVfx::MutantExplosion);
 	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
 	VfxsMap.Add("PA_SecretRewardPopUp", EVfx::SecretRewardPopUp);

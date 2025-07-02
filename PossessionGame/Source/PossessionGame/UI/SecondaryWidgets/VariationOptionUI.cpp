@@ -78,13 +78,13 @@ void UVariationOptionUI::VariationOptionHovered()
 {
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	if (!VariationOptionBorder) return;
-	(void)ShowDetailsPanel.ExecuteIfBound(true, bIsLocked ? UnlockProgressText : DetailsPanelText);
+	(void)ShowDetailsPanel.ExecuteIfBound(true, VariationDetailsPanelText, UnlockProgressText);
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward);
 }
 
 void UVariationOptionUI::VariationOptionUnHovered()
 {
 	if (!VariationOptionBorder) return;
-	(void)ShowDetailsPanel.ExecuteIfBound(false, "");
+	(void)ShowDetailsPanel.ExecuteIfBound(false, "", "");
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }

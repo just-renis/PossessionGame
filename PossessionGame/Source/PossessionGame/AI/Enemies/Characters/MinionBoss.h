@@ -81,6 +81,7 @@ private:
 	void CheckDistanceOfLaserEyeTrigger();
 	void DealLaserDamageToPlayer() const;
 	virtual void SetUnPossessionOutline(const bool bState) const override {}
+	void SpawnCoins() const;
 	UFUNCTION()
 	void OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor);
 	UFUNCTION()

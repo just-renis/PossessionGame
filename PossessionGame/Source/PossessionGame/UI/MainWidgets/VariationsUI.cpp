@@ -1,5 +1,4 @@
 ﻿#include "VariationsUI.h"
-
 #include "PlayerHUD.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/WidgetSwitcher.h"
@@ -80,20 +79,20 @@ void UVariationsUI::Toggle(const bool bState)
 void UVariationsUI::UpdateVariationUnlocksProgress()
 {
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
-	if (GuardianVariationGold && GuardianVariationGold->GetIsLocked())
+	if (GuardianVariationGold)
 	{
 		if (SaveSlot->GetIsVariationUnlocked(EVariationUnlock::KillsWithGuardian)) GuardianVariationGold->UnlockVariation();
-		else GuardianVariationGold->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::KillsWithGuardian));
+		GuardianVariationGold->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::KillsWithGuardian));
 	}
-	if (RangerVariationBlue && RangerVariationBlue->GetIsLocked())
+	if (RangerVariationBlue)
 	{
 		if (SaveSlot->GetIsVariationUnlocked(EVariationUnlock::KillsWithRangerGrenade)) RangerVariationBlue->UnlockVariation();
-		else RangerVariationBlue->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::KillsWithRangerGrenade));
+		RangerVariationBlue->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::KillsWithRangerGrenade));
 	}
-	if (TricksterVariationPurple && TricksterVariationPurple->GetIsLocked())
+	if (TricksterVariationPurple)
 	{
 		if (SaveSlot->GetIsVariationUnlocked(EVariationUnlock::DamageDealtWithTricksterPoisonGrenade)) TricksterVariationPurple->UnlockVariation();
-		else TricksterVariationPurple->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::DamageDealtWithTricksterPoisonGrenade));
+		TricksterVariationPurple->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::DamageDealtWithTricksterPoisonGrenade));
 	}
 }
 
@@ -137,14 +136,16 @@ void UVariationsUI::SwitchVariation(const int32 InIndex)
 	CurrentCharacterSelected = InIndex;
 }
 
-void UVariationsUI::ToggleDetailsPanel(const bool bState, const FString& InDetailsText)
+void UVariationsUI::ToggleDetailsPanel(const bool bState, const FString& InVariationDetailsText, const FString& InUnlockDetailsText)
 {
-	if (!UnlockDetailsPanel) return;
+	if (!UnlockDetailsPanel || !VariationDetailsPanel) return;
 	if (bState)
 	{
 		UnbindAllFromAnimationFinished(DetailPanelFadeInAnim);
+		VariationDetailsPanel->SetDetailsText(FText::FromString(InVariationDetailsText));
+		VariationDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		UnlockDetailsPanel->SetDetailsText(FText::FromString(InUnlockDetailsText));
 		UnlockDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		UnlockDetailsPanel->SetDetailsText(FText::FromString(InDetailsText));
 	}
 	else BindToAnimationFinished(DetailPanelFadeInAnim, DetailsPanelFadeOutDelegate);
 	PlayAnimation(DetailPanelFadeInAnim, GetAnimationCurrentTime(DetailPanelFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
@@ -154,6 +155,7 @@ void UVariationsUI::HideDetailsPanel()
 {
 	UnbindAllFromAnimationFinished(DetailPanelFadeInAnim);
 	if (UnlockDetailsPanel) UnlockDetailsPanel->SetVisibility(ESlateVisibility::Hidden);
+	if (VariationDetailsPanel) VariationDetailsPanel->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UVariationsUI::HideVariationsPanel() { UnbindAllFromAnimationFinished(VariationMenuFadeInAnim); }

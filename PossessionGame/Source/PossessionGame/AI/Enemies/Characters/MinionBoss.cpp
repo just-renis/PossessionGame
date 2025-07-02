@@ -12,7 +12,9 @@
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -20,18 +22,13 @@
 void AMinionBoss::ActivateStompTrigger()
 {
 	bStompIsReady = true;
-	if (!bIsAbilityInAction)
-	{
-	UE_LOG(LogTemp, Error, TEXT("ActivateStompTrigger TRUE"));
-		ToggleStompTrigger(true);
-	}
+	if (!bIsAbilityInAction) ToggleStompTrigger(true);
 }
 
 void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->OnMinionBossStomp.ExecuteIfBound(StompCameraShake); }
 
 void AMinionBoss::EnableLaserEyeBall()
-{	UE_LOG(LogTemp, Error, TEXT("EnableLaserEyeBall FALSE"));
-
+{
 	ToggleStompTrigger(false);
 	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &LaserEyeBallVfx, GetMesh(), "LaserSocket");
 	else LaserEyeBallVfx->Activate();
@@ -49,11 +46,7 @@ void AMinionBoss::OnLaserFinish()
 {
 	SetIsActionInMotion(false);
 	SetIsAbilityInAction(false);
-	if (bStompIsReady)
-	{
-	UE_LOG(LogTemp, Error, TEXT("OnLaserFinish TRUE"));
-		ToggleStompTrigger(true);
-	}
+	if (bStompIsReady) ToggleStompTrigger(true);
 }
 
 AMinionBoss::AMinionBoss()
@@ -189,6 +182,7 @@ void AMinionBoss::InitiateDeath()
 	(void)StopLaser.ExecuteIfBound();
 	DestroyStompTriggerSphere();
 	GetMesh()->SetMaterial(0, MI_MeshBaseMaterial);
+	SpawnCoins();
 	Super::InitiateDeath();
 	DelegateManager->OnBossDeath.Broadcast();
 }
@@ -237,11 +231,30 @@ void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 
 void AMinionBoss::DealLaserDamageToPlayer() const { if (Player) Player->ReceiveDamage(2.f, EDamageReason::MinionBossDamage); }
 
+void AMinionBoss::SpawnCoins() const
+{
+	UE_LOG(LogTemp, Error, TEXT("SPAWN COINS"));
+	const FVector Location = GetActorLocation();
+	const TObjectPtr<UPoolingManager> PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
+	switch (FMath::RandRange(1, 3))
+	{
+		case 1: PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location)->Init(); break;
+		case 2:
+			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(50.f, 0.f, 0.f))->Init();
+			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location - FVector(50.f, 0.f, 0.f))->Init();
+			break;
+		case 3:
+			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(0.f, 30.f, 0.f))->Init();
+			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(-50.f, -30.f, 0.f))->Init();
+			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(50.f, -30.f, 0.f))->Init();
+		default: ;
+	}
+}
+
 void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {
 	if (!AI || bAffectedByEmp) return;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
-	UE_LOG(LogTemp, Error, TEXT("OnPlayerEnterStompTrigger false"));
 	ToggleStompTrigger(false);
 	bStompIsReady = false;
 }

@@ -16,6 +16,7 @@ public:
 	bool GetIsSpinning() const { return bIsSpinning; }
 	bool GetIsMarkerEnabled() const { return bIsMarkerEnabled; }
 	bool HasAura() const { return bHasAura; }
+	float GetSpinningSpeed() const { return SpinningSpeed; }
 	FRotator GetRotation() const { return Rotation; }
 	EVfx GetAuraName() const { return AuraName; }
 	EPoolObject GetCollectibleName() const { return CollectibleName; }
@@ -24,6 +25,8 @@ private:
 	bool bIsFloating = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsSpinning = false;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bIsSpinning", EditConditionHides, AllowPrivateAccess = true))
+	float SpinningSpeed = 60.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsMarkerEnabled = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

@@ -53,6 +53,7 @@ enum class EVfx : uint8
 	UsbAura,
 	ArtifactAura,
 	MutantAura,
+	CoinAura,
 	MutantExplosion,
 	PlayerStomp,
 	SecretRewardPopUp,

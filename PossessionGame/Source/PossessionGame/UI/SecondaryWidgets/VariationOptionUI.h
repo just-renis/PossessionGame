@@ -11,7 +11,7 @@ class UImage;
 class UTextBlock;
 class UBorder;
 
-DECLARE_DELEGATE_TwoParams(FShowDetailsPanel, const bool, const FString&);
+DECLARE_DELEGATE_ThreeParams(FShowDetailsPanel, const bool, const FString&, const FString&);
 
 UCLASS()
 class POSSESSIONGAME_API UVariationOptionUI : public UUserWidget
@@ -35,7 +35,7 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	ECharacterType CharacterType;
 	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true, MultiLine = true))
-	FString DetailsPanelText;
+	FString VariationDetailsPanelText;
 	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true, MultiLine = true))
 	FString DefaultUnlockText;
 	UPROPERTY(EditAnywhere, Category = "Icon", meta = (AllowPrivateAccess = true))
