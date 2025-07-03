@@ -17,8 +17,9 @@ public:
 	FOnVariationClicked OnVariationClicked;
 
 	void SetEventsEnabled(const bool bState);
-	void PlaySelectedAnim();
 	void SetButtonState(const bool bState) const;
+	UFUNCTION()
+	void PlayHoverAnim();
 private:
 	bool bEventsEnabled = true;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -36,10 +37,9 @@ private:
 
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
+	void PlaySelectedAnim();
 	UFUNCTION()
 	void HandleClicked();
-	UFUNCTION()
-	void PlayHoverAnim();
 	UFUNCTION()
 	void PlayUnHoverAnim();
 };

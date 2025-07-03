@@ -314,7 +314,7 @@ private:
 	void AI_SetupData();
 	void AI_StopAllAbilities();
 	void AI_SetupHpBar();
-	void AI_ReceivedDamage(const EDamageReason InDamageReason);
+	void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage);
 	void AI_DestroyHpBar();
 	void AI_ShowDamageNumber(const float InDamageAmount) const;
 	void AI_SpawnUsbOnDeath() const;
@@ -374,7 +374,7 @@ private:
 	void ProcessSpawnEffects();
 	void AddXp(const int32 InXp) const;
 	void AddHp(const int32 InHp);
-	void ProcessDamageReason(const EDamageReason InDamageReason) const;
+	void ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage) const;
 	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;
 	virtual void Landed(const FHitResult& Hit) override;
 	void CheckIfFallOutOfWorld();

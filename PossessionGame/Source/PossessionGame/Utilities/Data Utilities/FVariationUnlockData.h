@@ -4,17 +4,20 @@
 
 enum class EVariation : uint8;
 enum class ECharacterType : uint8;
-enum class EVariationUnlock : uint8;
 
 USTRUCT()
 struct FVariationUnlockGoal
 {
 	GENERATED_BODY()
 
-	explicit FVariationUnlockGoal(const int32 InRequirement) : Requirement(InRequirement), Current(0) {}
-	FVariationUnlockGoal() : Requirement(0), Current(0) {}
+	explicit FVariationUnlockGoal(const int32 InRequirement, const int32 InCoinRequirement) : Requirement(InRequirement), CoinRequirement(InCoinRequirement), bIsBought(false), Current(0) {}
+	FVariationUnlockGoal() : Requirement(0), CoinRequirement(0), bIsBought(false), Current(0) {}
 
 	int32 Requirement;
+	int32 CoinRequirement;
+	UPROPERTY()
+	bool bIsBought;
+	UPROPERTY()
 	int32 Current;
 };
 
@@ -25,16 +28,17 @@ struct FVariationUnlockData
 
 	FVariationUnlockData();
 
-	bool IsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const;
-	int32 GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const;
-	int32 GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const;
+	bool IsVariationUnlocked(const EVariation InVariationUnlockName);
+	bool IsVariationTaskCompleted(const EVariation InVariationUnlockName) const;
+	int32 GetVariationUnlockProgress(const EVariation InVariationUnlockName) const;
+	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
-	void ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName);
+	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);
 	void UpdateSelectedVariation(const ECharacterType InCharacterType, const EVariation InVariationName);
 private:
 	UPROPERTY()
 	TMap<ECharacterType, EVariation> SelectedVariations;
 	UPROPERTY()
-	TMap<EVariationUnlock, FVariationUnlockGoal> VariationUnlocks;
+	TMap<EVariation, FVariationUnlockGoal> VariationUnlocks;
 };

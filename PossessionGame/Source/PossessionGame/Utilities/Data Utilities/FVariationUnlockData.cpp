@@ -1,26 +1,34 @@
 ﻿#include "FVariationUnlockData.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EVariation.h"
-#include "PossessionGame/Enums/EVariationUnlock.h"
 
 FVariationUnlockData::FVariationUnlockData()
 {
 	SelectedVariations.Add(ECharacterType::Guardian, EVariation::GuardianVariationDefault);
 	SelectedVariations.Add(ECharacterType::Ranger, EVariation::RangerVariationDefault);
 	SelectedVariations.Add(ECharacterType::Trickster, EVariation::TricksterVariationDefault);
-	VariationUnlocks.Add(EVariationUnlock::KillsWithGuardian, FVariationUnlockGoal(10));
-	VariationUnlocks.Add(EVariationUnlock::KillsWithRangerGrenade, FVariationUnlockGoal(15));
-	VariationUnlocks.Add(EVariationUnlock::DamageDealtWithTricksterPoisonGrenade, FVariationUnlockGoal(800));
+	VariationUnlocks.Add(EVariation::GuardianVariationGold, FVariationUnlockGoal(10, 1));
+	VariationUnlocks.Add(EVariation::RangerVariationBlue, FVariationUnlockGoal(15, 1));
+	VariationUnlocks.Add(EVariation::TricksterVariationPurple, FVariationUnlockGoal(100, 1));
 }
 
-bool FVariationUnlockData::IsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const { return VariationUnlocks[InVariationUnlockName].Current >= VariationUnlocks[InVariationUnlockName].Requirement; }
+bool FVariationUnlockData::IsVariationUnlocked(const EVariation InVariationUnlockName)
+{
+	if (const FVariationUnlockGoal* VariationUnlockGoal = VariationUnlocks.Find(InVariationUnlockName))
+	{
+		return VariationUnlockGoal->bIsBought && VariationUnlockGoal->Current >= VariationUnlockGoal->Requirement;
+	}
+	return true;
+}
 
-int32 FVariationUnlockData::GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const { return VariationUnlocks[InVariationUnlockName].Current; }
+bool FVariationUnlockData::IsVariationTaskCompleted(const EVariation InVariationUnlockName) const { return VariationUnlocks[InVariationUnlockName].Current >= VariationUnlocks[InVariationUnlockName].Requirement; }
 
-int32 FVariationUnlockData::GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const { return VariationUnlocks[InVariationUnlockName].Requirement; }
+int32 FVariationUnlockData::GetVariationUnlockProgress(const EVariation InVariationUnlockName) const { return VariationUnlocks[InVariationUnlockName].Current; }
+
+int32 FVariationUnlockData::GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const { return VariationUnlocks[InVariationUnlockName].Requirement; }
 
 EVariation FVariationUnlockData::GetSelectedVariation(const ECharacterType InCharacter) const { return SelectedVariations[InCharacter]; }
 
-void FVariationUnlockData::ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName) { VariationUnlocks[InVariationUnlockName].Current++; }
+void FVariationUnlockData::ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount) { VariationUnlocks[InVariationUnlockName].Current += InAmount; }
 
 void FVariationUnlockData::UpdateSelectedVariation(const ECharacterType InCharacterType, const EVariation InVariationName) { SelectedVariations[InCharacterType] = InVariationName; }

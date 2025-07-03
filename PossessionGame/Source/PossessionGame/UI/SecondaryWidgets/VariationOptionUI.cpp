@@ -3,10 +3,12 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
-void UVariationOptionUI::UpdateUnlockProgressText(const FString& InText) { UnlockProgressText = DefaultUnlockText + InText; }
+void UVariationOptionUI::UpdateUnlockProgressText(const TObjectPtr<USaveSlot>& InSaveSlot) { UnlockProgressText = DefaultUnlockText + GetUnlockProgressString(InSaveSlot); }
 
 void UVariationOptionUI::UnlockVariation()
 {
@@ -40,6 +42,11 @@ void UVariationOptionUI::SelectVariation()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.Broadcast(CharacterType, Variation);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(CharacterType);
 	SetSelected(true);
+}
+
+FString UVariationOptionUI::GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot) const
+{
+	return TEXT(" [") + FString::FromInt(InSaveSlot->GetVariationUnlockProgress(Variation)) + TEXT(" / ") + FString::FromInt(InSaveSlot->GetVariationUnlockRequirement(Variation)) + TEXT("]");
 }
 
 FReply UVariationOptionUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -78,13 +85,15 @@ void UVariationOptionUI::VariationOptionHovered()
 {
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	if (!VariationOptionBorder) return;
-	(void)ShowDetailsPanel.ExecuteIfBound(true, VariationDetailsPanelText, UnlockProgressText);
+	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	if (!SaveSlot->GetIsVariationUnlocked(Variation)) UpdateUnlockProgressText(SaveSlot);
+	(void)ShowDetailsPanel.ExecuteIfBound(true, Variation, VariationDetailsPanelText, UnlockProgressText);
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward);
 }
 
 void UVariationOptionUI::VariationOptionUnHovered()
 {
 	if (!VariationOptionBorder) return;
-	(void)ShowDetailsPanel.ExecuteIfBound(false, "", "");
+	(void)ShowDetailsPanel.ExecuteIfBound(false, Variation, "", "");
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }

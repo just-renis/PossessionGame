@@ -7,7 +7,9 @@
 
 constexpr int32 CURRENT_SAVE_VERSION = 1;
 
-bool USaveSlot::GetIsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.IsVariationUnlocked(InVariationUnlockName); }
+bool USaveSlot::GetIsVariationUnlocked(const EVariation InVariationUnlockName) { return VariationUnlockData.IsVariationUnlocked(InVariationUnlockName); }
+
+bool USaveSlot::GetIsVariationTaskCompleted(const EVariation InVariationUnlockName) const { return VariationUnlockData.IsVariationTaskCompleted(InVariationUnlockName); }
 
 int32 USaveSlot::GetCurrentLevelNeededXp() const { return PlayerLevelData->GetXpNeeded(CurrentLevel); }
 
@@ -15,9 +17,9 @@ int32 USaveSlot::GetLevelDamageIncrease(const int32 InLevel) const { return Play
 
 int32 USaveSlot::GetLevelHpIncrease(const int32 InLevel) const { return PlayerLevelData->GetHpIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
 
-int32 USaveSlot::GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockProgress(InVariationUnlockName); }
+int32 USaveSlot::GetVariationUnlockProgress(const EVariation InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockProgress(InVariationUnlockName); }
 
-int32 USaveSlot::GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockRequirement(InVariationUnlockName); }
+int32 USaveSlot::GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockRequirement(InVariationUnlockName); }
 
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
 
@@ -50,7 +52,7 @@ void USaveSlot::AddXp(const TObjectPtr<UPossessionGameInstance>& InGameInstance,
 	}
 }
 
-void USaveSlot::ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName) { VariationUnlockData.ProgressVariationUnlock(InVariationUnlockName); }
+void USaveSlot::ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount) { VariationUnlockData.ProgressVariationUnlock(InVariationUnlockName, InAmount); }
 
 void USaveSlot::SaveSlot() { UGameplayStatics::SaveGameToSlot(this, SlotName, 0); }
 

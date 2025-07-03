@@ -5,16 +5,16 @@
 void UVariationCharacterIconUI::SetEventsEnabled(const bool bState)
 {
 	bEventsEnabled = bState;
-	if (bEventsEnabled) PlayAnimation(HoverAnim, 0, 1, EUMGSequencePlayMode::Reverse);
+	PlayUnHoverAnim();
 }
-
-void UVariationCharacterIconUI::PlaySelectedAnim() { PlayAnimation(SelectAnim); }
 
 void UVariationCharacterIconUI::SetButtonState(const bool bState) const
 {
 	if (!VariationCharacterButton) return;
 	VariationCharacterButton->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 }
+
+void UVariationCharacterIconUI::PlayHoverAnim() { if (bEventsEnabled) PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward); }
 
 void UVariationCharacterIconUI::NativePreConstruct()
 {
@@ -36,14 +36,14 @@ void UVariationCharacterIconUI::NativeConstruct()
 	VariationCharacterButton->OnUnhovered.AddDynamic(this, &UVariationCharacterIconUI::PlayUnHoverAnim);
 }
 
+void UVariationCharacterIconUI::PlaySelectedAnim() { PlayAnimation(SelectAnim); }
+
 void UVariationCharacterIconUI::HandleClicked()
 {
-	(void)OnVariationClicked.ExecuteIfBound(VariationIndex);
 	if (!bEventsEnabled) return;
+	(void)OnVariationClicked.ExecuteIfBound(VariationIndex);
 	PlayAnimation(SelectAnim);
 	SetEventsEnabled(false);
 }
-
-void UVariationCharacterIconUI::PlayHoverAnim() { if (bEventsEnabled) PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward); }
 
 void UVariationCharacterIconUI::PlayUnHoverAnim() { if (bEventsEnabled) PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Reverse); }

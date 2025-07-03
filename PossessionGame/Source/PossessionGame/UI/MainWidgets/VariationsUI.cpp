@@ -11,7 +11,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EVariation.h"
-#include "PossessionGame/Enums/EVariationUnlock.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UVariationsUI::OpenUI()
@@ -23,31 +22,26 @@ void UVariationsUI::OpenUI()
 		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Ranger));
 		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Trickster));
 		bHasAlreadyOpened = true;
-		GuardianCharacterIcon->SetEventsEnabled(false);
-		GuardianCharacterIcon->PlaySelectedAnim();
 	}
 	Toggle(true);
 }
 
 void UVariationsUI::CloseUI() { Toggle(false); }
 
-FString UVariationsUI::GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot, const EVariationUnlock InVariationUnlockName)
-{
-	return TEXT(" [") + FString::FromInt(InSaveSlot->GetVariationUnlockProgress(InVariationUnlockName)) + TEXT(" / ") + FString::FromInt(InSaveSlot->GetVariationUnlockRequirement(InVariationUnlockName)) + TEXT("]");
-}
-
 void UVariationsUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (GuardianCharacterIcon) GuardianCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
-	if (RangerCharacterIcon) RangerCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
-	if (TricksterCharacterIcon) TricksterCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
-	if (GuardianVariationDefault) GuardianVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
-	if (GuardianVariationGold) GuardianVariationGold->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
-	if (RangerVariationDefault) RangerVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
-	if (RangerVariationBlue) RangerVariationBlue->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
-	if (TricksterVariationDefault) TricksterVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
-	if (TricksterVariationPurple) TricksterVariationPurple->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	SwitchVariation(0);
+	GuardianCharacterIcon->PlayHoverAnim();
+	GuardianCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
+	RangerCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
+	TricksterCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
+	GuardianVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	GuardianVariationGold->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	RangerVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	RangerVariationBlue->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	TricksterVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	TricksterVariationPurple->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	FadeOutDelegate.BindDynamic(this, &UVariationsUI::HideVariationsPanel);
 	DetailsPanelFadeOutDelegate.BindDynamic(this, &UVariationsUI::HideDetailsPanel);
 }
@@ -65,7 +59,6 @@ void UVariationsUI::Toggle(const bool bState)
 	if (bState)
 	{
 		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		UpdateVariationUnlocksProgress();
 		PlayerController->SetInputMode(FInputModeGameAndUI());
 	}
 	else
@@ -74,26 +67,6 @@ void UVariationsUI::Toggle(const bool bState)
 		BindToAnimationFinished(VariationMenuFadeInAnim, FadeOutDelegate);
 	}
 	PlayAnimation(VariationMenuFadeInAnim, GetAnimationCurrentTime(VariationMenuFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
-}
-
-void UVariationsUI::UpdateVariationUnlocksProgress()
-{
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
-	if (GuardianVariationGold)
-	{
-		if (SaveSlot->GetIsVariationUnlocked(EVariationUnlock::KillsWithGuardian)) GuardianVariationGold->UnlockVariation();
-		GuardianVariationGold->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::KillsWithGuardian));
-	}
-	if (RangerVariationBlue)
-	{
-		if (SaveSlot->GetIsVariationUnlocked(EVariationUnlock::KillsWithRangerGrenade)) RangerVariationBlue->UnlockVariation();
-		RangerVariationBlue->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::KillsWithRangerGrenade));
-	}
-	if (TricksterVariationPurple)
-	{
-		if (SaveSlot->GetIsVariationUnlocked(EVariationUnlock::DamageDealtWithTricksterPoisonGrenade)) TricksterVariationPurple->UnlockVariation();
-		TricksterVariationPurple->UpdateUnlockProgressText(GetUnlockProgressString(SaveSlot, EVariationUnlock::DamageDealtWithTricksterPoisonGrenade));
-	}
 }
 
 void UVariationsUI::SetSelectedVariation(const EVariation InVariation)
@@ -125,37 +98,42 @@ void UVariationsUI::SetButtonStatesOnToggle(const bool bState) const
 
 void UVariationsUI::SwitchVariation(const int32 InIndex)
 {
+	if (CurrentlySelectedIcon) CurrentlySelectedIcon->SetEventsEnabled(true);
+	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	VariationsSwitcher->SetActiveWidgetIndex(InIndex);
-	switch (CurrentCharacterSelected)
+	switch (InIndex)
 	{
-		case 0: if (GuardianCharacterIcon) GuardianCharacterIcon->SetEventsEnabled(true); break;
-		case 1: if (RangerCharacterIcon) RangerCharacterIcon->SetEventsEnabled(true); break;
-		case 2: if (TricksterCharacterIcon) TricksterCharacterIcon->SetEventsEnabled(true);
+		case 0:
+			CurrentlySelectedIcon = GuardianCharacterIcon;
+			if (SaveSlot->GetIsVariationUnlocked(EVariation::GuardianVariationGold)) GuardianVariationGold->UnlockVariation();
+			break;
+		case 1:
+			CurrentlySelectedIcon = RangerCharacterIcon;
+			if (SaveSlot->GetIsVariationUnlocked(EVariation::RangerVariationBlue)) RangerVariationBlue->UnlockVariation();
+			break;
+		case 2:
+			CurrentlySelectedIcon = TricksterCharacterIcon;
+			if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
 		default: ;
 	}
-	CurrentCharacterSelected = InIndex;
 }
 
-void UVariationsUI::ToggleDetailsPanel(const bool bState, const FString& InVariationDetailsText, const FString& InUnlockDetailsText)
+void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVariationName, const FString& InVariationDetailsText, const FString& InUnlockDetailsText)
 {
 	if (!UnlockDetailsPanel || !VariationDetailsPanel) return;
 	if (bState)
 	{
 		UnbindAllFromAnimationFinished(DetailPanelFadeInAnim);
 		VariationDetailsPanel->SetDetailsText(FText::FromString(InVariationDetailsText));
-		VariationDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		UnlockDetailsPanel->SetDetailsText(FText::FromString(InUnlockDetailsText));
-		UnlockDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+		if (SaveSlot->GetIsVariationUnlocked(InVariationName)) UnlockDetailsPanel->SetUnlockedVariation(true);
+		else UnlockDetailsPanel->SetTaskCompleted(SaveSlot->GetIsVariationTaskCompleted(InVariationName));
 	}
 	else BindToAnimationFinished(DetailPanelFadeInAnim, DetailsPanelFadeOutDelegate);
 	PlayAnimation(DetailPanelFadeInAnim, GetAnimationCurrentTime(DetailPanelFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
 
-void UVariationsUI::HideDetailsPanel()
-{
-	UnbindAllFromAnimationFinished(DetailPanelFadeInAnim);
-	if (UnlockDetailsPanel) UnlockDetailsPanel->SetVisibility(ESlateVisibility::Hidden);
-	if (VariationDetailsPanel) VariationDetailsPanel->SetVisibility(ESlateVisibility::Hidden);
-}
+void UVariationsUI::HideDetailsPanel() { UnbindAllFromAnimationFinished(DetailPanelFadeInAnim); }
 
 void UVariationsUI::HideVariationsPanel() { UnbindAllFromAnimationFinished(VariationMenuFadeInAnim); }

@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "VariationOptionUI.generated.h"
 
+class USaveSlot;
 enum class EVariation : uint8;
 enum class ECharacterType : uint8;
 class UButton;
@@ -11,7 +12,7 @@ class UImage;
 class UTextBlock;
 class UBorder;
 
-DECLARE_DELEGATE_ThreeParams(FShowDetailsPanel, const bool, const FString&, const FString&);
+DECLARE_DELEGATE_FourParams(FShowDetailsPanel, const bool, const EVariation, const FString&, const FString&);
 
 UCLASS()
 class POSSESSIONGAME_API UVariationOptionUI : public UUserWidget
@@ -22,7 +23,7 @@ public:
 
 	bool GetIsLocked() const { return bIsLocked; }
 
-	void UpdateUnlockProgressText(const FString& InText);
+	void UpdateUnlockProgressText(const TObjectPtr<USaveSlot>& InSaveSlot);
 	void UnlockVariation();
 	void SetSelected(const bool bState);
 	void SetButtonState(const bool bState) const;
@@ -54,7 +55,8 @@ private:
 	TObjectPtr<UWidgetAnimation> SelectAnim;
 	UPROPERTY()
 	FString UnlockProgressText;
-	
+
+	FString GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot) const;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	virtual void NativePreConstruct() override;

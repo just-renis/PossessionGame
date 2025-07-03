@@ -29,7 +29,6 @@
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
-#include "PossessionGame/Enums/EVariationUnlock.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Interfaces/Interactable.h"
@@ -268,12 +267,13 @@ void AEnemy::InitiateDeath()
 
 void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
 {
-	CurrentHp -= InDamage * DamageReduction;
+	const float TrueDamage = InDamage * DamageReduction;
+	CurrentHp -= TrueDamage;
 	if (P_HUD) P_HandlingDamageTaken();
 	else if (bIsAlive)
 	{
-		AI_ReceivedDamage(InDamageReason);
-		AI_ShowDamageNumber(InDamage);
+		AI_ReceivedDamage(InDamageReason, TrueDamage);
+		AI_ShowDamageNumber(TrueDamage);
 	}
 	if (bIsAlive && CurrentHp <= 0)
 	{
@@ -686,11 +686,11 @@ void AEnemy::AI_SetupHpBar()
 	AI_HideHpBar();
 }
 
-void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason)
+void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
 {
 	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 1.f);
 	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.02f, false);
-	ProcessDamageReason(InDamageReason);
+	ProcessDamageReason(InDamageReason, InDamage);
 	if (!AI_HpBar) return;
 	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
 	AI_HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -1196,11 +1196,11 @@ void AEnemy::AddHp(const int32 InHp)
 	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
 }
 
-void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason) const
+void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage) const
 {
 	switch (InDamageReason)
 	{
-		case EDamageReason::TricksterPoisonDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariationUnlock::DamageDealtWithTricksterPoisonGrenade); break;
+		case EDamageReason::TricksterPoisonDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariation::TricksterVariationPurple, InDamage); break;
 		default: ;
 	}
 }
@@ -1209,8 +1209,8 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 {
 	switch (InDamageReason)
 	{
-		case EDamageReason::GuardianDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariationUnlock::KillsWithGuardian); break;
-		case EDamageReason::RangerGrenadeDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariationUnlock::KillsWithRangerGrenade); break;
+		case EDamageReason::GuardianDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariation::GuardianVariationGold, 1); break;
+		case EDamageReason::RangerGrenadeDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariation::RangerVariationBlue, 1); break;
 		default: ;
 	}
 }

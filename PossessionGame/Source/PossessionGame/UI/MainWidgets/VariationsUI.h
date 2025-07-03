@@ -5,7 +5,6 @@
 #include "VariationsUI.generated.h"
 
 enum class EVariation : uint8;
-enum class EVariationUnlock : uint8;
 class USaveSlot;
 class UInvalidationBox;
 class UVariationOptionUI;
@@ -22,7 +21,8 @@ public:
 	void CloseUI();
 private:
 	bool bHasAlreadyOpened = false;
-	int32 CurrentCharacterSelected = 0;
+	UPROPERTY()
+	TObjectPtr<UVariationCharacterIconUI> CurrentlySelectedIcon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> GuardianCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
@@ -56,17 +56,14 @@ private:
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent DetailsPanelFadeOutDelegate;
 
-	FString GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot, const EVariationUnlock InVariationUnlockName);
-
 	virtual void NativeConstruct() override;
 	void Toggle(const bool bState);
-	void UpdateVariationUnlocksProgress();
 	void SetSelectedVariation(const EVariation InVariation);
 	void SetButtonStatesOnToggle(const bool bState) const;
 	UFUNCTION()
 	void SwitchVariation(const int32 InIndex);
 	UFUNCTION()
-	void ToggleDetailsPanel(const bool bState, const FString& InVariationDetailsText, const FString& InUnlockDetailsText);
+	void ToggleDetailsPanel(const bool bState, const EVariation InVariationName, const FString& InVariationDetailsText, const FString& InUnlockDetailsText);
 	UFUNCTION()
 	void HideDetailsPanel();
 	UFUNCTION()

@@ -5,6 +5,7 @@
 #include "GameFramework/SaveGame.h"
 #include "SaveSlot.generated.h"
 
+class UDelegateManager;
 class UPlayerLevelData;
 class UPossessionGameInstance;
 
@@ -14,21 +15,22 @@ class POSSESSIONGAME_API USaveSlot : public USaveGame
 	GENERATED_BODY()
 public:
 	bool GetIsTutorialFinished() const { return bTutorialFinished; }
-	bool GetIsVariationUnlocked(const EVariationUnlock InVariationUnlockName) const;
+	bool GetIsVariationUnlocked(const EVariation InVariationUnlockName);
+	bool GetIsVariationTaskCompleted(const EVariation InVariationUnlockName) const;
 	bool GetIsFirstLaunch() const { return bIsFirstLaunch; }
 	int32 GetXp() const { return CurrentXp; }
 	int32 GetCurrentLevelNeededXp() const;
 	int32 GetLevelDamageIncrease(const int32 InLevel = -1) const;
 	int32 GetLevelHpIncrease(const int32 InLevel = -1) const;
-	int32 GetVariationUnlockProgress(const EVariationUnlock InVariationUnlockName) const;
-	int32 GetVariationUnlockRequirement(const EVariationUnlock InVariationUnlockName) const;
+	int32 GetVariationUnlockProgress(const EVariation InVariationUnlockName) const;
+	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
 	int32 GetCurrencyAmount() const { return CurrencyAmount; }
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
 	void SetTutorialFinished();
 	void SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName);
 	void AddXp(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const int32 InXp);
-	void ProgressVariationUnlock(const EVariationUnlock InVariationUnlockName);
+	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);
 	void SaveSlot();
 	void SetLaunchedOnce();
 	void AddCurrencyAmount(const int32 InCurrencyAmount) { CurrencyAmount += InCurrencyAmount; }
