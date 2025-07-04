@@ -1,7 +1,10 @@
 ﻿#include "MainMenuBase.h"
+
+#include "PossessionGameInstance.h"
 #include "SettingsSave.h"
 #include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/UI/MainWidgets/GameLaunchUI.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
 #include "PossessionGame/UI/MainWidgets/MainMenuUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -12,12 +15,14 @@ void AMainMenuBase::BeginPlay()
 	Super::BeginPlay();
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
 	WidgetManager->Init(WidgetClasses);
-	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0)
+	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+	if (!GameInstance->GetIsMainMenuLaunchedOnce())
 	{
-		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ChangeMusicPlayerState.ExecuteIfBound(false);
-		WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init([this]{ InitAfterPSOPrecache(); });
+		GameInstance->SetMainMenuLaunchedOnce();
+		WidgetManager->GetWidget<UGameLaunchUI>(EWidget::GameLaunchUI);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameLaunchFinished.BindUObject(this, &AMainMenuBase::Show);
 	}
-	else InitAfterPSOPrecache();
+	else Show();
 }
 
 void AMainMenuBase::LoadSettingsData() const
@@ -41,4 +46,14 @@ void AMainMenuBase::InitAfterPSOPrecache() const
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ChangeMusicPlayerState.ExecuteIfBound(true);
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();
+}
+
+void AMainMenuBase::Show() const
+{
+	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0)
+	{
+		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ChangeMusicPlayerState.ExecuteIfBound(false);
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init([this]{ InitAfterPSOPrecache(); });
+	}
+	else InitAfterPSOPrecache();
 }

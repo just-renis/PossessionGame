@@ -17,7 +17,6 @@ void UVariationsUI::OpenUI()
 {
 	if (!bHasAlreadyOpened)
 	{
-		const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Guardian));
 		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Ranger));
 		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Trickster));
@@ -31,8 +30,11 @@ void UVariationsUI::CloseUI() { Toggle(false); }
 void UVariationsUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+	SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	UnlockDetailsPanel->SetSaveSlot(SaveSlot);
 	SwitchVariation(0);
 	GuardianCharacterIcon->PlayHoverAnim();
+	GuardianCharacterIcon->SetEventsEnabled(false);
 	GuardianCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
 	RangerCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
 	TricksterCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
@@ -99,7 +101,6 @@ void UVariationsUI::SetButtonStatesOnToggle(const bool bState) const
 void UVariationsUI::SwitchVariation(const int32 InIndex)
 {
 	if (CurrentlySelectedIcon) CurrentlySelectedIcon->SetEventsEnabled(true);
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	VariationsSwitcher->SetActiveWidgetIndex(InIndex);
 	switch (InIndex)
 	{
@@ -126,7 +127,8 @@ void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVar
 		UnbindAllFromAnimationFinished(DetailPanelFadeInAnim);
 		VariationDetailsPanel->SetDetailsText(FText::FromString(InVariationDetailsText));
 		UnlockDetailsPanel->SetDetailsText(FText::FromString(InUnlockDetailsText));
-		const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+		if (const int32* UnlockPrice = UnlockPrices.Find(InVariationName)) UnlockDetailsPanel->SetupDetailsPanel(InVariationName, *UnlockPrice);
+		else UnlockDetailsPanel->SetupDetailsPanel(InVariationName, INT_MAX);
 		if (SaveSlot->GetIsVariationUnlocked(InVariationName)) UnlockDetailsPanel->SetUnlockedVariation(true);
 		else UnlockDetailsPanel->SetTaskCompleted(SaveSlot->GetIsVariationTaskCompleted(InVariationName));
 	}

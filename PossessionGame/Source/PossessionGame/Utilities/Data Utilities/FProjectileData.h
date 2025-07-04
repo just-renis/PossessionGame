@@ -66,8 +66,9 @@ struct POSSESSIONGAME_API FProjectileData
 	float DamageFalloff = 0.f;
 	UPROPERTY(EditAnywhere)
 	FName ProjectileSocketName = "ProjectileSocket";
-	EPoolObject ProjectileName = EPoolObject::None;
+	UPROPERTY(EditDefaultsOnly)
 	EDamageReason DamageReason;
+	EPoolObject ProjectileName = EPoolObject::None;
 	int32 Amount = 1;
 	FAdditionalProjectiles GetMultiProjectileData(const int32 InAmount)
 	{

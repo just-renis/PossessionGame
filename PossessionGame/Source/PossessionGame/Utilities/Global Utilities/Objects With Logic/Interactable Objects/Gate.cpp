@@ -4,12 +4,14 @@
 #include "Components/WidgetComponent.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/UI/MainWidgets/DemoEndUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/InteractableUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 AGate::AGate()
 {
@@ -90,6 +92,7 @@ void AGate::Interact()
 	if (InteractableUI) InteractableUI->PlayFadeInAnim(false);
 	GetWorldTimerManager().SetTimer(FadeOutAnimHandle, this, &AGate::FadeOutAnimFinished, InteractableUI->GetFadeInAnimLength(), false);
 	OpenGate(EGameMode::None);
+	if (bIsDemoGate) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UDemoEndUI>(EWidget::DemoEndUI);
 }
 
 void AGate::ChangeOutlineState(const bool bState)

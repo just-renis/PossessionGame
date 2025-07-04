@@ -13,5 +13,7 @@ enum class EWidget : uint8
     NodeMapUI,
     TutorialUI,
     VariationsUI,
-    LoadingScreenUI
+    LoadingScreenUI,
+    GameLaunchUI,
+    DemoEndUI
 };

@@ -25,15 +25,17 @@ public:
 	int32 GetVariationUnlockProgress(const EVariation InVariationUnlockName) const;
 	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
 	int32 GetCurrencyAmount() const { return CurrencyAmount; }
+	int32 GetVariationPrice(const EVariation InVariationUnlockName) const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
+	void AddCurrencyAmount(const int32 InCurrencyAmount) { CurrencyAmount += InCurrencyAmount; }
 	void SetTutorialFinished();
 	void SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName);
 	void AddXp(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const int32 InXp);
 	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);
 	void SaveSlot();
 	void SetLaunchedOnce();
-	void AddCurrencyAmount(const int32 InCurrencyAmount) { CurrencyAmount += InCurrencyAmount; }
+	void UnlockVariation(const EVariation InVariationUnlockName);
 private:
 	UPROPERTY()
 	bool bIsFirstLaunch = true;

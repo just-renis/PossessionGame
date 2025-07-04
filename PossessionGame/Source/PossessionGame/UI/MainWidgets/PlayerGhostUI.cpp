@@ -40,7 +40,6 @@ void UPlayerGhostUI::NativeConstruct()
 
 void UPlayerGhostUI::ShowHint(const int32 InIndex)
 {
-	UE_LOG(LogTemp, Error, TEXT("SHOWHINT INDEX: %i"), InIndex);
 	GetWorld()->GetTimerManager().ClearTimer(HintLifeSpanHandle);
 	if (HintTexts.IsValidIndex(InIndex))
 	{

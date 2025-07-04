@@ -62,6 +62,8 @@ void USaveSlot::SetLaunchedOnce()
 	SaveSlot();
 }
 
+void USaveSlot::UnlockVariation(const EVariation InVariationUnlockName) { VariationUnlockData.UnlockVariation(InVariationUnlockName); }
+
 void USaveSlot::UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation) { VariationUnlockData.UpdateSelectedVariation(InCharacter, InVariation); }
 
 void USaveSlot::VersionMigration()

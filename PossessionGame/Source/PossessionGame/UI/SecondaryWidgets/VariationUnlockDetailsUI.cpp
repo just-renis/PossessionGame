@@ -4,6 +4,8 @@
 #include "Components/CheckBox.h"
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 void UVariationUnlockDetailsUI::SetDetailsText(const FText& InText) const
 {
@@ -28,6 +30,13 @@ void UVariationUnlockDetailsUI::SetUnlockedVariation(const bool bState) const
 	FSlateFontInfo FontInfo = DetailsText->GetFont();
 	FontInfo.Size = bState ? 40 : 18;
 	DetailsText->SetFont(FontInfo);
+}
+
+void UVariationUnlockDetailsUI::SetupDetailsPanel(const EVariation InVariation, const int32 InUnlockPrice)
+{
+	Variation = InVariation;
+	UnlockPrice = InUnlockPrice;
+	if (CostPriceText) CostPriceText->SetText(FText::AsNumber(UnlockPrice));
 }
 
 void UVariationUnlockDetailsUI::NativePreConstruct()
@@ -56,6 +65,12 @@ void UVariationUnlockDetailsUI::ChangeVisibilityOfUnlockElements(const bool bSta
 
 void UVariationUnlockDetailsUI::UnlockVariation()
 {
-	
-	UE_LOG(LogTemp, Error, TEXT("UNLOCK THE VARIATION"));
+	if (SaveSlot->GetCurrencyAmount() >= UnlockPrice)
+	{
+		SaveSlot->AddCurrencyAmount(-UnlockPrice);
+		SaveSlot->UnlockVariation(Variation);
+		SetUnlockedVariation(true);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationUnlocked.Broadcast(Variation);
+		SaveSlot->SaveSlot();
+	}
 }

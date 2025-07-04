@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "VariationsUI.generated.h"
 
+class UVariationCurrencyPanelUI;
 enum class EVariation : uint8;
 class USaveSlot;
 class UInvalidationBox;
@@ -21,8 +22,6 @@ public:
 	void CloseUI();
 private:
 	bool bHasAlreadyOpened = false;
-	UPROPERTY()
-	TObjectPtr<UVariationCharacterIconUI> CurrentlySelectedIcon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> GuardianCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
@@ -51,6 +50,12 @@ private:
 	TObjectPtr<UWidgetAnimation> VariationMenuFadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DetailPanelFadeInAnim;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TMap<EVariation, int32> UnlockPrices;
+	UPROPERTY()
+	TObjectPtr<USaveSlot> SaveSlot;
+	UPROPERTY()
+	TObjectPtr<UVariationCharacterIconUI> CurrentlySelectedIcon;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeOutDelegate;
 	UPROPERTY()

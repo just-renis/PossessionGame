@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "PossessionGame/Enums/EVariation.h"
 
 #include "FVariationUnlockData.generated.h"
 
@@ -10,11 +11,10 @@ struct FVariationUnlockGoal
 {
 	GENERATED_BODY()
 
-	explicit FVariationUnlockGoal(const int32 InRequirement, const int32 InCoinRequirement) : Requirement(InRequirement), CoinRequirement(InCoinRequirement), bIsBought(false), Current(0) {}
-	FVariationUnlockGoal() : Requirement(0), CoinRequirement(0), bIsBought(false), Current(0) {}
+	explicit FVariationUnlockGoal(const int32 InRequirement) : Requirement(InRequirement), bIsBought(false), Current(0) {}
+	FVariationUnlockGoal() : Requirement(0), bIsBought(false), Current(0) {}
 
 	int32 Requirement;
-	int32 CoinRequirement;
 	UPROPERTY()
 	bool bIsBought;
 	UPROPERTY()
@@ -32,9 +32,11 @@ struct FVariationUnlockData
 	bool IsVariationTaskCompleted(const EVariation InVariationUnlockName) const;
 	int32 GetVariationUnlockProgress(const EVariation InVariationUnlockName) const;
 	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
+	int32 GetVariationUnlockPrice(const EVariation InVariationUnlockName) const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
 	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);
+	void UnlockVariation(const EVariation InVariationUnlockName);
 	void UpdateSelectedVariation(const ECharacterType InCharacterType, const EVariation InVariationName);
 private:
 	UPROPERTY()

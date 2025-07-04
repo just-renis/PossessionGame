@@ -10,6 +10,7 @@ void UVariationCurrencyPanelUI::NativeConstruct()
 	PlayerSaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	UpdateCurrencyText();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnCoinCollected.BindUObject(this, &UVariationCurrencyPanelUI::AddCurrency);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationUnlocked.AddUObject(this, &UVariationCurrencyPanelUI::UpdateCurrencyText);
 }
 
 void UVariationCurrencyPanelUI::AddCurrency(const int32 InCurrencyAmount) const
@@ -24,3 +25,5 @@ void UVariationCurrencyPanelUI::UpdateCurrencyText() const
 {
 	if (CurrencyText) CurrencyText->SetText(FText::AsNumber(PlayerSaveSlot->GetCurrencyAmount()));
 }
+
+void UVariationCurrencyPanelUI::UpdateCurrencyText(const EVariation InVariationName) const { UpdateCurrencyText(); }

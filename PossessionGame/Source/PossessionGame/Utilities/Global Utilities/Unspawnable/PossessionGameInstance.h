@@ -28,6 +28,7 @@ class POSSESSIONGAME_API UPossessionGameInstance : public UGameInstance
 public:
 	bool IsDemo() const { return bIsDemo; }
 	bool IsPlayerTakenDamageEffectsEnabled() const { return bPlayerTakenDamageEffectsEnabled; }
+	bool GetIsMainMenuLaunchedOnce() const { return bMainMenuLaunchedOnce; }
 	float GetTimeDilation() const { return GlobalTimeDilation; }
 	int32 GetPlayerLevel() const { return PlayerLevel; }
 	TObjectPtr<UPlayerLevelData> GetPlayerLevelData() const { return PlayerLevelData; }
@@ -39,7 +40,9 @@ public:
 	void ResetSaveSlot();
 	void ResetRunSaveSlot();
 	void InitAssetsManager() const;
+	void SetMainMenuLaunchedOnce() { bMainMenuLaunchedOnce = true;}
 private:
+	bool bMainMenuLaunchedOnce = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	bool bPlayerTakenDamageEffectsEnabled = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Demo", meta = (AllowPrivateAccess = true))

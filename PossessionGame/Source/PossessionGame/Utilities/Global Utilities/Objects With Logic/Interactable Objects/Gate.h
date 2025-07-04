@@ -21,6 +21,8 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	bool bIsGateOpened = false;
 	float TimePassed = 0.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bIsDemoGate = false;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bNeedsArtifact = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bNeededArtifact = false;

@@ -20,4 +20,5 @@ class POSSESSIONGAME_API AMainMenuBase : public AGameModeBase
 	virtual void BeginPlay() override;
 	void LoadSettingsData() const;
 	void InitAfterPSOPrecache() const;
+	void Show() const;
 };

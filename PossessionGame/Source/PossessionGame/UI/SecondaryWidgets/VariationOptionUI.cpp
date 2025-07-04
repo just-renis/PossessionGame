@@ -68,6 +68,7 @@ void UVariationOptionUI::NativePreConstruct()
 void UVariationOptionUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationUnlocked.AddUObject(this, &UVariationOptionUI::UnlockVariation);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &UVariationOptionUI::SelectionChange);
 	if (!OptionButton) return;
 	OptionButton->OnClicked.AddDynamic(this, &UVariationOptionUI::SelectVariation);
@@ -80,6 +81,8 @@ void UVariationOptionUI::SelectionChange(const ECharacterType InCharacterType, c
 	if (InCharacterType != CharacterType || Variation == InVariationName) return;
 	SetSelected(false);
 }
+
+void UVariationOptionUI::UnlockVariation(const EVariation InVariationName) { if (Variation == InVariationName) UnlockVariation(); }
 
 void UVariationOptionUI::VariationOptionHovered()
 {
