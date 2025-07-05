@@ -45,7 +45,6 @@ void UVariationsUI::NativeConstruct()
 	TricksterVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	TricksterVariationPurple->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	FadeOutDelegate.BindDynamic(this, &UVariationsUI::HideVariationsPanel);
-	DetailsPanelFadeOutDelegate.BindDynamic(this, &UVariationsUI::HideDetailsPanel);
 }
 
 void UVariationsUI::Toggle(const bool bState)
@@ -124,18 +123,15 @@ void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVar
 	if (!UnlockDetailsPanel || !VariationDetailsPanel) return;
 	if (bState)
 	{
-		UnbindAllFromAnimationFinished(DetailPanelFadeInAnim);
 		VariationDetailsPanel->SetDetailsText(FText::FromString(InVariationDetailsText));
 		UnlockDetailsPanel->SetDetailsText(FText::FromString(InUnlockDetailsText));
 		if (const int32* UnlockPrice = UnlockPrices.Find(InVariationName)) UnlockDetailsPanel->SetupDetailsPanel(InVariationName, *UnlockPrice);
 		else UnlockDetailsPanel->SetupDetailsPanel(InVariationName, INT_MAX);
 		if (SaveSlot->GetIsVariationUnlocked(InVariationName)) UnlockDetailsPanel->SetUnlockedVariation(true);
 		else UnlockDetailsPanel->SetTaskCompleted(SaveSlot->GetIsVariationTaskCompleted(InVariationName));
+		UnlockDetailsPanel->PlayFadeInAnim();
+		VariationDetailsPanel->PlayFadeInAnim();
 	}
-	else BindToAnimationFinished(DetailPanelFadeInAnim, DetailsPanelFadeOutDelegate);
-	PlayAnimation(DetailPanelFadeInAnim, GetAnimationCurrentTime(DetailPanelFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
-
-void UVariationsUI::HideDetailsPanel() { UnbindAllFromAnimationFinished(DetailPanelFadeInAnim); }
 
 void UVariationsUI::HideVariationsPanel() { UnbindAllFromAnimationFinished(VariationMenuFadeInAnim); }

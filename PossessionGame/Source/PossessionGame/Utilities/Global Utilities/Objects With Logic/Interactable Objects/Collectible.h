@@ -21,6 +21,7 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 
 	ACollectible();
 
+	int32 SpawnProcessIndex = 0;
 	float InitialSpawnZ;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
@@ -41,6 +42,10 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	UPROPERTY()
 	TObjectPtr<UPoolingManager> PoolingManager;
 	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Border;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Main;
+	UPROPERTY()
 	FTimerHandle FadeOutAnimHandle;
 	UPROPERTY()
 	FTimerHandle FloatHandle;
@@ -48,6 +53,8 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	FTimerHandle SpinHandle;
 	UPROPERTY()
 	FTimerHandle DisableOutlineHandle;
+	UPROPERTY()
+	FTimerHandle ProcessSpawnHandle;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -62,6 +69,8 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public IInteractable
 	void DisableOutline() { ChangeOutlineState(false); }
 	void Float();
 	void Spin();
+	void ProcessSpawnVisualization();
+	void ClearSpawnVisualization();
 	UFUNCTION()
 	void EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

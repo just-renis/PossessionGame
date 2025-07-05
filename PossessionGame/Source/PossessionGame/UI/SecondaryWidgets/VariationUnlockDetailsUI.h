@@ -21,6 +21,7 @@ public:
 	void SetUnlockedVariation(const bool bState) const;
 	void SetupDetailsPanel(const EVariation InVariation, const int32 InUnlockPrice);
 	void SetSaveSlot(const TObjectPtr<USaveSlot>& InSaveSlot) { SaveSlot = InSaveSlot; }
+	void PlayFadeInAnim() { PlayAnimation(FadeInAnim); }
 private:
 	int32 UnlockPrice = INT_MAX;
 	UPROPERTY(EditAnywhere, Category = "Details Panel", meta = (AllowPrivateAccess = true))
@@ -35,6 +36,8 @@ private:
 	TObjectPtr<UMainMenuButtonUI> UnlockButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> CostPriceBox;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY()
 	EVariation Variation = EVariation::Default;
 	UPROPERTY()

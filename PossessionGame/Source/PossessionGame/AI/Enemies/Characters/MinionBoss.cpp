@@ -233,20 +233,19 @@ void AMinionBoss::DealLaserDamageToPlayer() const { if (Player) Player->ReceiveD
 
 void AMinionBoss::SpawnCoins() const
 {
-	UE_LOG(LogTemp, Error, TEXT("SPAWN COINS"));
-	const FVector Location = GetActorLocation();
+	const FVector Location = GetSocketLocation("RootSocket");
 	const TObjectPtr<UPoolingManager> PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
 	switch (FMath::RandRange(1, 3))
 	{
-		case 1: PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location)->Init(); break;
+		case 1: PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(0.f, 0.f, 50.f))->Init(); break;
 		case 2:
-			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(50.f, 0.f, 0.f))->Init();
-			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location - FVector(50.f, 0.f, 0.f))->Init();
+			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(50.f, 0.f, 50.f))->Init();
+			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location - FVector(50.f, 0.f, 50.f))->Init();
 			break;
 		case 3:
-			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(0.f, 30.f, 0.f))->Init();
-			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(-50.f, -30.f, 0.f))->Init();
-			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(50.f, -30.f, 0.f))->Init();
+			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(0.f, 30.f, 50.f))->Init();
+			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(-50.f, -30.f, 50.f))->Init();
+			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(50.f, -30.f, 50.f))->Init();
 		default: ;
 	}
 }

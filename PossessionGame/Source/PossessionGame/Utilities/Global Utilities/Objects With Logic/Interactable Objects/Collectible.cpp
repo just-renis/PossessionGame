@@ -43,6 +43,17 @@ void ACollectible::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ACollectible::Init(bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
+	if (Data->GetNeedSpawnVisualization())
+	{
+		GetWorldTimerManager().SetTimer(ProcessSpawnHandle, this, &ACollectible::ProcessSpawnVisualization, 0.05f, true);
+		if (Mesh->GetNumMaterials() > 0)
+		{
+			if (!MID_Border) MID_Border = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(0), this);
+			if (!MID_Main) MID_Main = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(1), this);
+			MID_Border->SetScalarParameterValue("Progress", 0.4f);
+			MID_Main->SetScalarParameterValue("Progress", 0.f);
+		}
+	}
 	if (Aura) Aura->Activate();
 	if (Data->GetIsFloating())
 	{
@@ -57,6 +68,7 @@ void ACollectible::Init(bool bInIsPlayerObject)
 void ACollectible::Interact()
 {
 	if (!GetIsInteractable()) return;
+	if (Data->GetNeedSpawnVisualization()) ClearSpawnVisualization();
 	if (Aura) Aura->Deactivate();
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbCollect);
 	GetWorldTimerManager().ClearTimer(FloatHandle);
@@ -127,6 +139,21 @@ void ACollectible::Spin()
 	FRotator NewRotation = GetActorRotation();
 	NewRotation.Yaw += Data->GetSpinningSpeed() * 0.025f;
 	SetActorRotation(NewRotation);
+}
+
+void ACollectible::ProcessSpawnVisualization()
+{
+	SpawnProcessIndex++;
+	if (!MID_Border || !MID_Main) return;
+	MID_Border->SetScalarParameterValue("Progress", 0.4f + 0.015f * SpawnProcessIndex);
+	MID_Main->SetScalarParameterValue("Progress", 0.05f * SpawnProcessIndex);
+	if (SpawnProcessIndex >= 20) ClearSpawnVisualization();
+}
+
+void ACollectible::ClearSpawnVisualization()
+{
+	GetWorldTimerManager().ClearTimer(ProcessSpawnHandle);
+	SpawnProcessIndex = 0;
 }
 
 void ACollectible::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

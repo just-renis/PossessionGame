@@ -48,8 +48,6 @@ private:
 	TObjectPtr<UVariationOptionUI> TricksterVariationPurple;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> VariationMenuFadeInAnim;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> DetailPanelFadeInAnim;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TMap<EVariation, int32> UnlockPrices;
 	UPROPERTY()
@@ -58,8 +56,6 @@ private:
 	TObjectPtr<UVariationCharacterIconUI> CurrentlySelectedIcon;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeOutDelegate;
-	UPROPERTY()
-	FWidgetAnimationDynamicEvent DetailsPanelFadeOutDelegate;
 
 	virtual void NativeConstruct() override;
 	void Toggle(const bool bState);
@@ -69,8 +65,6 @@ private:
 	void SwitchVariation(const int32 InIndex);
 	UFUNCTION()
 	void ToggleDetailsPanel(const bool bState, const EVariation InVariationName, const FString& InVariationDetailsText, const FString& InUnlockDetailsText);
-	UFUNCTION()
-	void HideDetailsPanel();
 	UFUNCTION()
 	void HideVariationsPanel();
 };
