@@ -123,6 +123,8 @@ void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVar
 	if (!UnlockDetailsPanel || !VariationDetailsPanel) return;
 	if (bState)
 	{
+		if (VariationDetailsPanel->GetVisibility() == ESlateVisibility::Hidden) VariationDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		if (UnlockDetailsPanel->GetVisibility() == ESlateVisibility::Hidden) UnlockDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		VariationDetailsPanel->SetDetailsText(FText::FromString(InVariationDetailsText));
 		UnlockDetailsPanel->SetDetailsText(FText::FromString(InUnlockDetailsText));
 		if (const int32* UnlockPrice = UnlockPrices.Find(InVariationName)) UnlockDetailsPanel->SetupDetailsPanel(InVariationName, *UnlockPrice);
