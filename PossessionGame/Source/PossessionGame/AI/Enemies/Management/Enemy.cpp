@@ -466,6 +466,7 @@ void AEnemy::P_Destroy()
 	if (bPlayerDied)
 	{
 		GameInstance->GetSaveSlot()->SaveSlot();
+		GameInstance->ResetRunSaveSlot();
 		return;
 	}
 	P_HUD->Reset();

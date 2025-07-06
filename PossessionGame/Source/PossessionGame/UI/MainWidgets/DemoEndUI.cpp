@@ -33,5 +33,6 @@ void UDemoEndUI::ReturnToMainMenu() { UGameplayStatics::OpenLevel(GetWorld(), "M
 void UDemoEndUI::Continue()
 {
 	Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->SaveSlot();
+	Cast<UPossessionGameInstance>(GetGameInstance())->ResetRunSaveSlot();
 	UGameplayStatics::OpenLevel(GetWorld(), "Level_1");
 }

@@ -16,6 +16,7 @@ void AMainMenuBase::BeginPlay()
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
 	WidgetManager->Init(WidgetClasses);
 	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+	GameInstance->ResetRunSaveSlot();
 	if (!GameInstance->GetIsMainMenuLaunchedOnce())
 	{
 		GameInstance->SetMainMenuLaunchedOnce();

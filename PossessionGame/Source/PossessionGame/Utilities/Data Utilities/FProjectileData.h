@@ -2,6 +2,7 @@
 
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Enums/EDamageReason.h"
 #include "FProjectileData.generated.h"
 
 class AEnemy;
@@ -67,7 +68,7 @@ struct POSSESSIONGAME_API FProjectileData
 	UPROPERTY(EditAnywhere)
 	FName ProjectileSocketName = "ProjectileSocket";
 	UPROPERTY(EditDefaultsOnly)
-	EDamageReason DamageReason;
+	EDamageReason DamageReason = EDamageReason::None;
 	EPoolObject ProjectileName = EPoolObject::None;
 	int32 Amount = 1;
 	FAdditionalProjectiles GetMultiProjectileData(const int32 InAmount)
