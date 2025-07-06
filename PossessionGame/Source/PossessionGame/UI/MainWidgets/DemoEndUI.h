@@ -19,8 +19,11 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeInFinishedDelegate;
+	UPROPERTY()
+	FTimerHandle PauseHandle;
 
 	virtual void NativeConstruct() override;
+	void PauseGame() const;
 	UFUNCTION()
 	void FadeInFinished();
 	UFUNCTION()

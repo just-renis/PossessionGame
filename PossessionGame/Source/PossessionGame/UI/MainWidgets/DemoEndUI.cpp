@@ -17,21 +17,28 @@ void UDemoEndUI::NativeConstruct()
 	PlayerController->bShowMouseCursor = true;
 	PlayerController->SetInputMode(FInputModeGameAndUI());
 	PlayAnimation(FadeInAnim);
+	GetWorld()->GetTimerManager().SetTimer(PauseHandle, this, &UDemoEndUI::PauseGame, 1.f);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(true);
 }
+
+void UDemoEndUI::PauseGame() const { UGameplayStatics::SetGamePaused(GetWorld(), true); }
 
 void UDemoEndUI::FadeInFinished()
 {
 	if (ReturnToMenuButton) ReturnToMenuButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::ReturnToMainMenu);
 	if (ContinueButton) ContinueButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Continue);
 	UnbindFromAnimationFinished(FadeInAnim, FadeInFinishedDelegate);
-	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
 
-void UDemoEndUI::ReturnToMainMenu() { UGameplayStatics::OpenLevel(GetWorld(), "MainMenu"); }
+void UDemoEndUI::ReturnToMainMenu()
+{
+	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
+	UGameplayStatics::OpenLevel(GetWorld(), "MainMenu");
+}
 
 void UDemoEndUI::Continue()
 {
+	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
 	Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->SaveSlot();
 	Cast<UPossessionGameInstance>(GetGameInstance())->ResetRunSaveSlot();
 	UGameplayStatics::OpenLevel(GetWorld(), "Level_1");
