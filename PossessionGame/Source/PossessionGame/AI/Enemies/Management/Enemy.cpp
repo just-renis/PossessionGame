@@ -592,7 +592,6 @@ void AEnemy::SetAnimInstance() { AnimInstance = Cast<UEnemyAnimationInstance>(Ge
 
 void AEnemy::SetMaxWalkSpeed(const float Speed) const
 {
-	
 	GetCharacterMovement()->MaxWalkSpeed = Speed;
 	GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetSafeNormal() * Speed;
 }

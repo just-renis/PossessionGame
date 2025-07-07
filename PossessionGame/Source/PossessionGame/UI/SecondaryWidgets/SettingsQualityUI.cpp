@@ -5,16 +5,20 @@
 
 EGraphicsQuality USettingsQualityUI::GetQualityEnum(const uint8 InValue)
 {
+	EGraphicsQuality Quality;
 	switch (InValue)
 	{
-		case 0: return EGraphicsQuality::Low;
-		case 1: return EGraphicsQuality::Medium;
-		case 2: return EGraphicsQuality::High;
-		case 3: return EGraphicsQuality::Epic;
-		case 4: return EGraphicsQuality::Ultra;
-		case 5: return EGraphicsQuality::Custom;
-		default: return EGraphicsQuality::Low;
+		case 0: Quality = EGraphicsQuality::Low; break;
+		case 1: Quality = EGraphicsQuality::Medium; break;
+		case 2: Quality = EGraphicsQuality::High; break;
+		case 3: Quality = EGraphicsQuality::Epic; break;
+		case 4: Quality = EGraphicsQuality::Ultra; break;
+		case 5: Quality = EGraphicsQuality::Custom; break;
+		default: Quality = EGraphicsQuality::Low;
 	}
+	if (IsGlobalGraphicsSetting) return Quality;
+	if (Quality > Cap) Quality = Cap;
+	return Quality;
 }
 
 void USettingsQualityUI::NativeConstruct()
@@ -39,7 +43,7 @@ void USettingsQualityUI::OnLeftArrowClicked()
 void USettingsQualityUI::OnRightArrowClicked()
 {
 	Super::OnRightArrowClicked();
-	if (TemporalQuality != EGraphicsQuality::Ultra)
+	if (TemporalQuality != Cap)
 	{
 		const uint8 QualityInt = static_cast<uint8>(TemporalQuality) + 1;
 		UpdateQuality(QualityInt);

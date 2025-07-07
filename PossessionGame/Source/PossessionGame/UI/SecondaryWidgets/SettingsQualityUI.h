@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "SettingsOptionUI.h"
+#include "PossessionGame/Enums/EGraphicsQuality.h"
 #include "SettingsQualityUI.generated.h"
 
 enum class EGraphicsQuality : uint8;
@@ -20,6 +21,8 @@ public:
 private:
 	EGraphicsQuality TemporalQuality;
 	EGraphicsQuality AppliedQuality;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	EGraphicsQuality Cap = EGraphicsQuality::Ultra;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool IsGlobalGraphicsSetting = false;
 
