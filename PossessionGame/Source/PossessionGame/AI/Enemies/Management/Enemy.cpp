@@ -201,6 +201,7 @@ void AEnemy::PossessedBy(AController* NewController)
 		Super::PossessedBy(NewController);
 		if (Cast<APlayerController>(NewController))
 		{
+			P_DisablePossessionViableVfx();
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			bIsActionInMotion = false;
 			P_TriggerGlitchingEffect();
@@ -324,7 +325,7 @@ void AEnemy::SetPossessionOutline(const bool bState)
 			PossessionViable->Activate();
 		}
 	}
-	else if (PossessionViable) PossessionViable->Deactivate();
+	else P_DisablePossessionViableVfx();
 	GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr);
 }
 
@@ -591,6 +592,7 @@ void AEnemy::SetAnimInstance() { AnimInstance = Cast<UEnemyAnimationInstance>(Ge
 
 void AEnemy::SetMaxWalkSpeed(const float Speed) const
 {
+	
 	GetCharacterMovement()->MaxWalkSpeed = Speed;
 	GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetSafeNormal() * Speed;
 }
@@ -1136,6 +1138,8 @@ void AEnemy::P_ContinuousFovChange()
 }
 
 void AEnemy::P_StopDash() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
+
+void AEnemy::P_DisablePossessionViableVfx() const { if (PossessionViable) PossessionViable->Deactivate(); }
 
 void AEnemy::TickAbilities(const float InDeltaTime)
 {

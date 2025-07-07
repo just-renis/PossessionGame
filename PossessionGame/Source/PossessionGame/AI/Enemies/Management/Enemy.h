@@ -59,6 +59,7 @@ public:
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
 	EVariation GetVariation() const { return Variation; }
+	EMoveMode GetMoveMode() const { return CurrentMoveMode; }
 	TObjectPtr<APossessionGameGameModeBase> GetGameModeBase() const { return GameModeBase; }
 	TObjectPtr<AEnemyAIController> GetAI() const { return AI; }
 	TObjectPtr<UAICharacterData> GetAIData() const { return AI_Data; }
@@ -364,6 +365,7 @@ private:
 	void P_TriggerCriticalDamageIndicator() const;
 	void P_ContinuousFovChange();
 	void P_StopDash() const;
+	void P_DisablePossessionViableVfx() const;
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	void TickAbilities(const float InDeltaTime);

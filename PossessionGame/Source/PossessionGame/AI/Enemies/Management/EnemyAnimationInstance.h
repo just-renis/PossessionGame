@@ -20,6 +20,7 @@ public:
 	void SetIsTargetInSight(const bool bState) { bIsTargetInSight = bState; }
 	void SetSpeed(const float InValue) { Speed = InValue; }
 	void SetLookAtLocation(const FVector& InLookAtLocation) { LookAtLocation = InLookAtLocation; }
+	void SetIsControlRigEnabled(const bool bState) { bIsControlRigEnabled = bState; }
 	void SetDirectionalAngle();
 	void PlayMontage(const EEnemyAnimState InState);
 	void PlayMontageWithHold(const EEnemyAnimState InState, const float InHoldTime, const bool bNeedsToStopAILogic);
@@ -44,6 +45,8 @@ protected:
 	UFUNCTION()
 	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted);
 private:
+	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
+	bool bIsControlRigEnabled = false;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	bool bIsTargetInSight = false;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
