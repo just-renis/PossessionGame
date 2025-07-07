@@ -12,7 +12,7 @@ void UBossModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const T
 	SetupWaveManagerUI();
 	WaveManager->GetDelegateManager()->OnBossDeath.AddUObject(this, &UBossModeLogic::BossDeath);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UBossModeLogic::UpdateEnemiesAmount);
-	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, WaveManager->GetCurrentGameMode(), false, [this] {IncreaseAliveEnemiesAmount(); });
+	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, WaveManager->GetCurrentGameMode(), false, [this] { IncreaseAliveEnemiesAmount(); });
 	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UBossModeLogic::HandleSpawning, SpawnRate, true);
 }
 

@@ -108,7 +108,7 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 	PlayAnimation(PressAnim);
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetRunSaveSlot();
 	RunSaveSlot->AddUpgrade(Cast<UPossessionGameInstance>(GetGameInstance()), UpgradeData->GetUpgradeName(), ChoiceIndex);
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->TriggerUpgradeMenuCloseAnimation();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI, 1)->TriggerUpgradeMenuCloseAnimation();
 }
 
 void UUpgradeDetailsPanelUI::PlayHoverAnim()

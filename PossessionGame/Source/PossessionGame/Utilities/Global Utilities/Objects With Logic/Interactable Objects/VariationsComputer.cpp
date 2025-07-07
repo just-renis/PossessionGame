@@ -8,4 +8,4 @@ AVariationsComputer::AVariationsComputer()
 	Mesh->SetupAttachment(RootComponent);
 }
 
-void AVariationsComputer::Interact() { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->OpenUI(); }
+void AVariationsComputer::Interact() { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI, 1)->OpenUI(); }

@@ -31,7 +31,7 @@ int32 UGameModeBaseLogic::ConvertGameModeToDroneLocation() const
 
 void UGameModeBaseLogic::SetupWaveManagerUI()
 {
-	WaveManagerHUD = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD);
+	WaveManagerHUD = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD, 0);
 	FadeInObjectivePanel();
 }
 
@@ -59,4 +59,4 @@ void UGameModeBaseLogic::FadeOutObjectivePanel() const
 
 void UGameModeBaseLogic::FadeInObjectivePanel() const { if (WaveManagerHUD) WaveManagerHUD->PlayObjectivePanelFadeInAnim(true); }
 
-void UGameModeBaseLogic::ShowUpgradeSelection() const { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI(); }
+void UGameModeBaseLogic::ShowUpgradeSelection() const { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI, 1)->OpenUI(); }
