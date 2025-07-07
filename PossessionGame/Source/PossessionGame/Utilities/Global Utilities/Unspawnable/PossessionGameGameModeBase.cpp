@@ -61,7 +61,7 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
 	WidgetManager->Init(WidgetClasses);
-	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0) WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init(nullptr);
+	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0) WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI, 3)->Init(nullptr);
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
 	Cast<UPossessionGameInstance>(GetGameInstance())->InitAssetsManager();
 	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);

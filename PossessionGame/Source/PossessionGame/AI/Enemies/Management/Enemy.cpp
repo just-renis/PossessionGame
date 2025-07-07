@@ -513,7 +513,7 @@ void AEnemy::P_InitiateDash()
 	LaunchCharacter(DashDirection * P_Data->GetDashStrength(), true, true);
 	GetWorldTimerManager().SetTimer(P_StopDashHandle, this, &AEnemy::P_StopDash, 0.2f, false);
 	if (GameInstance->GetSaveSlot()->GetIsTutorialFinished()) return;
-	if (GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI)->GetCurrentHintIndex() == 3) (void)DelegateManager->OnShowHint.ExecuteIfBound(4);
+	if (GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI, 0)->GetCurrentHintIndex() == 3) (void)DelegateManager->OnShowHint.ExecuteIfBound(4);
 }
 
 void AEnemy::P_InitiateJump()
@@ -525,7 +525,7 @@ void AEnemy::P_InitiateJump()
 	if (!bIsDoubleJump) return;
 	bCanStomp = true;
 	if (GameInstance->GetSaveSlot()->GetIsTutorialFinished()) return;
-	if (GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI)->GetCurrentHintIndex() == 4) (void)DelegateManager->OnShowHint.ExecuteIfBound(5);
+	if (GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI, 0)->GetCurrentHintIndex() == 4) (void)DelegateManager->OnShowHint.ExecuteIfBound(5);
 }
 
 void AEnemy::P_InitiateStomp()
@@ -763,7 +763,7 @@ void AEnemy::P_SetupData()
 
 void AEnemy::P_SetupUI()
 {
-	P_HUD = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD);
+	P_HUD = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD, 0);
 	P_HUD->SetCharacterType(CharacterName);
 	P_HUD->SetPlayerRef(this);
 	P_HUD->UpdateProgressBar(EUIBar::Possession, 0.f, P_Data->GetPossessionBarCooldown());
@@ -874,11 +874,11 @@ void AEnemy::P_HandleEscapeClick()
 	if (bIsInputLocked) return;
 	switch (GetWorld()->GetSubsystem<UWidgetManager>()->GetCurrentStateOfUI())
 	{
-		case EWidget::PauseMenuUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->CloseUI(); break;
-		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->CloseUI(); break;
-		case EWidget::VariationsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI(); break;
-		case EWidget::UpgradeSelectionUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->GoBack(); break;
-		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
+		case EWidget::PauseMenuUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI, 2)->CloseUI(); break;
+		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI, 2)->CloseUI(); break;
+		case EWidget::VariationsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI, 1)->CloseUI(); break;
+		case EWidget::UpgradeSelectionUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI, 1)->GoBack(); break;
+		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI, 2)->OpenUI();
 	}
 }
 
@@ -1029,7 +1029,7 @@ void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {
 	if (CharacterName != InCharacterType) return;
 	P_PossessionLogic(AssetsManager->SpawnVariationReplacement(InCharacterType));
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI, 1)->CloseUI();
 }
 
 void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName); }

@@ -112,5 +112,5 @@ void UWaveManagerHUD::HideWaveCompletedAnnouncement() const { if (AnnouncementIn
 void UWaveManagerHUD::OpenUpgradeSelection()
 {
 	UnbindFromAnimationFinished(ObjectiveCompletedFadeInAnim, OnObjectivePanelAnimEnd);
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI, 1)->OpenUI();
 }

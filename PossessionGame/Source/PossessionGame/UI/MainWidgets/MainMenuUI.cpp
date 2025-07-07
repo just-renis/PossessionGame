@@ -100,5 +100,5 @@ void UMainMenuUI::TriggerQuitPopupFadeOut()
 void UMainMenuUI::OpenSettings()
 {
 	TriggerMainMenuFadeOutAnim();
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->OpenUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI, 2)->OpenUI();
 }

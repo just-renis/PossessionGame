@@ -13,17 +13,8 @@
 void AMainMenuBase::BeginPlay()
 {
 	Super::BeginPlay();
-	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
-	WidgetManager->Init(WidgetClasses);
-	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
-	GameInstance->ResetRunSaveSlot();
-	if (!GameInstance->GetIsMainMenuLaunchedOnce())
-	{
-		GameInstance->SetMainMenuLaunchedOnce();
-		WidgetManager->GetWidget<UGameLaunchUI>(EWidget::GameLaunchUI);
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameLaunchFinished.BindUObject(this, &AMainMenuBase::Show);
-	}
-	else Show();
+	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
+	ShowLoadingScreen();
 }
 
 void AMainMenuBase::LoadSettingsData() const
@@ -46,15 +37,27 @@ void AMainMenuBase::InitAfterPSOPrecache() const
 {
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ChangeMusicPlayerState.ExecuteIfBound(true);
 	LoadSettingsData();
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI, 0)->OpenUI();
 }
 
-void AMainMenuBase::Show() const
+void AMainMenuBase::ShowLoadingScreen()
 {
 	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0)
 	{
 		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ChangeMusicPlayerState.ExecuteIfBound(false);
-		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init([this]{ InitAfterPSOPrecache(); });
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI, 3)->Init([this]{ ShowGameLaunchUI(); });
+	}
+	else ShowGameLaunchUI();
+}
+
+void AMainMenuBase::ShowGameLaunchUI()
+{
+	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+	if (!GameInstance->GetIsMainMenuLaunchedOnce())
+	{
+		GameInstance->SetMainMenuLaunchedOnce();
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UGameLaunchUI>(EWidget::GameLaunchUI, 3);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameLaunchFinished.BindUObject(this, &AMainMenuBase::InitAfterPSOPrecache);
 	}
 	else InitAfterPSOPrecache();
 }

@@ -46,7 +46,7 @@ void UPlayerGhostUI::ShowHint(const int32 InIndex)
 		PlayAnimation(HintAppearAnim);
 		CurrentHintIndex = InIndex;
 		SetHintText(InIndex);
-		if (InIndex > 2) GetWorld()->GetTimerManager().SetTimer(HintLifeSpanHandle, this, &UPlayerGhostUI::HintLifeSpanEnd, 15.f, false);
+		if (InIndex > 2) GetWorld()->GetTimerManager().SetTimer(HintLifeSpanHandle, this, &UPlayerGhostUI::HintLifeSpanEnd, 5.f, false);
 	}
 	if (InIndex == 0 && PopupInv && HintImage)
 	{
