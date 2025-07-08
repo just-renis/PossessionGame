@@ -85,12 +85,12 @@ FText UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 {
 	switch (InUpgrade)
 	{
-		case EUpgrade::RangerAbility1: return FText::FromString(" GRENADE LAUNCHER UPGRADE");
-		case EUpgrade::RangerAbility2: return FText::FromString(" SHIELD UPGRADE");
-		case EUpgrade::TricksterAbility1: return FText::FromString(" POISON UPGRADE");
-		case EUpgrade::TricksterAbility2: return FText::FromString(" EMP UPGRADE");
-		case EUpgrade::GuardianAbility1: return FText::FromString(" SHIELD UPGRADE");
-		case EUpgrade::GuardianAbility2: return FText::FromString(" TIME STOP UPGRADE");
+		case EUpgrade::RangerAbility1: return NSLOCTEXT("ST_Localization", "GrenadeLauncherUpgrade", " GRENADE LAUNCHER UPGRADE");
+		case EUpgrade::RangerAbility2: return NSLOCTEXT("ST_Localization", "ShieldUpgrade", " SHIELD UPGRADE");
+		case EUpgrade::TricksterAbility1: return NSLOCTEXT("ST_Localization", "PoisonUpgrade", " POISON UPGRADE");
+		case EUpgrade::TricksterAbility2: return NSLOCTEXT("ST_Localization", "EmpUpgrade", " EMP UPGRADE");
+		case EUpgrade::GuardianAbility1: return NSLOCTEXT("ST_Localization", "ShieldUpgrade", " SHIELD UPGRADE");
+		case EUpgrade::GuardianAbility2: return NSLOCTEXT("ST_Localization", "TimeStopUpgrade", " TIME STOP UPGRADE");
 	}
 	return FText::GetEmpty();
 }
