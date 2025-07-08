@@ -365,7 +365,6 @@ private:
 	void P_TriggerCriticalDamageIndicator() const;
 	void P_ContinuousFovChange();
 	void P_StopDash() const;
-	void P_DisablePossessionViableVfx() const;
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	void TickAbilities(const float InDeltaTime);
@@ -386,4 +385,5 @@ private:
 	void CloseInfoPanel();
 	void PlayEmpAffectedVfx(const float InEffectDuration);
 	void RestartLevel() const;
+	void DisablePossessionViableVfx() const;
 };

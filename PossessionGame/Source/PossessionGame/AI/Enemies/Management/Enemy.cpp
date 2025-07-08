@@ -201,7 +201,7 @@ void AEnemy::PossessedBy(AController* NewController)
 		Super::PossessedBy(NewController);
 		if (Cast<APlayerController>(NewController))
 		{
-			P_DisablePossessionViableVfx();
+			DisablePossessionViableVfx();
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			bIsActionInMotion = false;
 			P_TriggerGlitchingEffect();
@@ -246,6 +246,7 @@ void AEnemy::AI_SetupUpgradesAppliance() { MaxHp += GetWorld()->GetSubsystem<UUp
 
 void AEnemy::InitiateDeath()
 {
+	DisablePossessionViableVfx();
 	ClearTimers();
 	AI_DestroyHpBar();
 	bIsAlive = false;
@@ -325,7 +326,7 @@ void AEnemy::SetPossessionOutline(const bool bState)
 			PossessionViable->Activate();
 		}
 	}
-	else P_DisablePossessionViableVfx();
+	else DisablePossessionViableVfx();
 	GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr);
 }
 
@@ -1138,8 +1139,6 @@ void AEnemy::P_ContinuousFovChange()
 
 void AEnemy::P_StopDash() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
 
-void AEnemy::P_DisablePossessionViableVfx() const { if (PossessionViable) PossessionViable->Deactivate(); }
-
 void AEnemy::TickAbilities(const float InDeltaTime)
 {
 	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->Tick(InDeltaTime);
@@ -1276,3 +1275,5 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 }
 
 void AEnemy::RestartLevel() const { UGameplayStatics::OpenLevel(this, "MainMenu"); }
+
+void AEnemy::DisablePossessionViableVfx() const { if (PossessionViable) PossessionViable->Deactivate(); }
