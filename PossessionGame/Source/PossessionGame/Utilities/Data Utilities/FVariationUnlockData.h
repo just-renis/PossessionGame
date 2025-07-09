@@ -32,7 +32,6 @@ struct FVariationUnlockData
 	bool IsVariationTaskCompleted(const EVariation InVariationUnlockName) const;
 	int32 GetVariationUnlockProgress(const EVariation InVariationUnlockName) const;
 	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
-	int32 GetVariationUnlockPrice(const EVariation InVariationUnlockName) const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
 	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);

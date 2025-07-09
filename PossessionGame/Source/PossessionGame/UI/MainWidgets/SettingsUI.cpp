@@ -26,8 +26,8 @@ void USettingsUI::BeginRebind(const TObjectPtr<UKeyBindingUI>& InTargetKeyWidget
 
 void USettingsUI::OpenUI()
 {
-	SetIsEnabled(true);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
+	SetButtonsVisibilityState(true);
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	PlayAnimation(SettingsFadeInAnim);
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(EWidget::SettingsUI);
@@ -35,8 +35,8 @@ void USettingsUI::OpenUI()
 
 void USettingsUI::CloseUI()
 {
-	SetIsEnabled(false);
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(EWidget::None);
+	SetButtonsVisibilityState(false);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
 	PlayAnimation(SettingsFadeInAnim, 0, 1, EUMGSequencePlayMode::Reverse);
 	BindToAnimationFinished(SettingsFadeInAnim, SettingsPanelFadeOutDelegate);
@@ -90,7 +90,7 @@ void USettingsUI::SetupUIEvents()
 	}
 	if (GraphicsTabButton) GraphicsTabButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::OpenGraphicsTab);
 	if (ControlsTabButton) ControlsTabButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::OpenControlsTab);
-	if (DuplicateKeyBindsAlert->GetAlertButton()) DuplicateKeyBindsAlert->GetAlertButton()->OnClicked.AddDynamic(this, &USettingsUI::CloseDuplicateKeyBindsPopup);
+	if (DuplicateKeyBindsAlert->GetAlertButton()) DuplicateKeyBindsAlert->GetAlertButton()->Get()->OnClicked.AddDynamic(this, &USettingsUI::CloseDuplicateKeyBindsPopup);
 }
 
 void USettingsUI::UpdateDefaultSettings()
@@ -122,6 +122,15 @@ void USettingsUI::ToggleRebindPanel(const bool bState)
 		BindToAnimationFinished(RebindPanelFadeInAnim, RebindPanelFadeOutDelegate);
 	}
 	PlayAnimation(RebindPanelFadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
+}
+
+void USettingsUI::SetButtonsVisibilityState(const bool bState) const
+{
+	if (ApplySettingsButton) ApplySettingsButton->SetButtonVisibility(bState);
+	if (GraphicsTabButton) GraphicsTabButton->SetButtonVisibility(bState);
+	if (MainTabButton) MainTabButton->SetButtonVisibility(bState);
+	if (ControlsTabButton) ControlsTabButton->SetButtonVisibility(bState);
+	if (ResetKeyBindsButton) ResetKeyBindsButton->SetButtonVisibility(bState);
 }
 
 void USettingsUI::RebindPanelFadeOutFinished()

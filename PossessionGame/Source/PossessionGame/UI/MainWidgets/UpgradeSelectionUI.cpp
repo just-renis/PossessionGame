@@ -77,7 +77,7 @@ void UUpgradeSelectionUI::GoBack()
 		if (UpgradeChoice1) UpgradeChoice1->SetButtonVisibility(false);
 		if (UpgradeChoice2) UpgradeChoice2->SetButtonVisibility(false);
 		if (UpgradeChoice3) UpgradeChoice3->SetButtonVisibility(false);
-		if (BackButton) BackButton->SetVisibility(ESlateVisibility::Collapsed);
+		if (BackButton) BackButton->SetButtonVisibility(false);
 	}
 }
 
@@ -111,8 +111,7 @@ void UUpgradeSelectionUI::Toggle(const bool bState)
 {
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD, 0)->PlayFadeOutAnim(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
-	SetIsEnabled(bState);
-	SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::UpgradePanelFadeIn : ESound::UpgradePanelFadeOut);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
@@ -155,7 +154,7 @@ void UUpgradeSelectionUI::NativeConstruct()
 	if (BackButton)
 	{
 		BackButton->Get()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::GoBack);
-		BackButton->SetVisibility(ESlateVisibility::Collapsed);
+		BackButton->SetButtonVisibility(false);
 	}
 }
 
@@ -164,7 +163,7 @@ void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>
 	if (!UpgradeChoicesPanel) return;
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeChoicesFadeIn);
 	bChoicesOpen = true;
-	if (BackButton) BackButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (BackButton) BackButton->SetButtonVisibility(true);
 	PlayerCardOption1->GetUpgradeButton()->SetIsEnabled(false);
 	EnemyCardOption1->GetUpgradeButton()->SetIsEnabled(false);
 	PlayerCardOption2->GetUpgradeButton()->SetIsEnabled(false);

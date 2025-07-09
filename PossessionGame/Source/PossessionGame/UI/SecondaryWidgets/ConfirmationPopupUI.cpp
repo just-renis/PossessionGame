@@ -1,13 +1,15 @@
 ﻿#include "ConfirmationPopupUI.h"
+#include "MainMenuButtonUI.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UConfirmationPopupUI::PlayPopupFadeInAnim(const bool bState)
 {
-	SetIsEnabled(bState);
 	PlayAnimation(PopupFadeIn, GetAnimationCurrentTime(PopupFadeIn), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn :ESound::PanelFadeOut);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	if (bState) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (AcceptButton) AcceptButton->SetButtonVisibility(bState);
+	if (DeclineButton) DeclineButton->SetButtonVisibility(bState);
 	else BindToAnimationFinished(PopupFadeIn, FadeOutDelegate);
 }
 

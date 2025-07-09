@@ -78,6 +78,7 @@ private:
 	void SetSavedSettings();
 	void OpenDuplicateKeyBindsPopup() const;
 	void ToggleRebindPanel(const bool bState);
+	void SetButtonsVisibilityState(const bool bState) const;
 	UFUNCTION()
 	void RebindPanelFadeOutFinished();
 	UFUNCTION()

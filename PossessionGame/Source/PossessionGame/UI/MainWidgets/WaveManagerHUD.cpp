@@ -11,8 +11,6 @@
 
 float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return AnnouncementAnim->GetEndTime(); }
 
-float UWaveManagerHUD::GetObjectivePanelFadeInEndTime() const { return ObjectivePanelFadeInAnim->GetEndTime(); }
-
 void UWaveManagerHUD::UpdateCountdown(const int32 InCountdown)
 {
 	if (!CountdownText) return;

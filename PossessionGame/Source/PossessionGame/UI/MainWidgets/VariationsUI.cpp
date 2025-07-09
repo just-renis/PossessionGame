@@ -49,14 +49,12 @@ void UVariationsUI::NativeConstruct()
 
 void UVariationsUI::Toggle(const bool bState)
 {
-	SetIsEnabled(bState);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD, 0)->PlayFadeOutAnim(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::VariationsUI : EWidget::None);
-	SetButtonStatesOnToggle(bState);
 	if (bState)
 	{
 		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -82,19 +80,6 @@ void UVariationsUI::SetSelectedVariation(const EVariation InVariation)
 		case EVariation::TricksterVariationPurple: TricksterVariationPurple->SetSelected(true);
 		default: ;
 	}
-}
-
-void UVariationsUI::SetButtonStatesOnToggle(const bool bState) const
-{
-	if (GuardianCharacterIcon) GuardianCharacterIcon->SetButtonState(bState);
-	if (RangerCharacterIcon) RangerCharacterIcon->SetButtonState(bState);
-	if (TricksterCharacterIcon) TricksterCharacterIcon->SetButtonState(bState);
-	if (GuardianVariationDefault) GuardianVariationDefault->SetButtonState(bState);
-	if (GuardianVariationGold) GuardianVariationGold->SetButtonState(bState);
-	if (RangerVariationDefault) RangerVariationDefault->SetButtonState(bState);
-	if (RangerVariationBlue) RangerVariationBlue->SetButtonState(bState);
-	if (TricksterVariationDefault) TricksterVariationDefault->SetButtonState(bState);
-	if (TricksterVariationPurple) TricksterVariationPurple->SetButtonState(bState);
 }
 
 void UVariationsUI::SwitchVariation(const int32 InIndex)
@@ -136,4 +121,8 @@ void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVar
 	}
 }
 
-void UVariationsUI::HideVariationsPanel() { UnbindAllFromAnimationFinished(VariationMenuFadeInAnim); }
+void UVariationsUI::HideVariationsPanel()
+{
+	UnbindAllFromAnimationFinished(VariationMenuFadeInAnim);
+	SetVisibility(ESlateVisibility::Collapsed);
+}

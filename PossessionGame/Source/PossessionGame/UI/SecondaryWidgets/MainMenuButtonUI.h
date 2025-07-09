@@ -16,6 +16,7 @@ public:
 	TObjectPtr<UButton> Get() { return Button; }
 	
 	void SetText(const FText& InText) const;
+	void SetButtonVisibility(const bool bState) const;
 private:
 	UPROPERTY(EditAnywhere, Category = "Button Text", meta = (AllowPrivateAccess = true))
 	int32 FontSize;

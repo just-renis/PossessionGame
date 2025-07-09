@@ -60,7 +60,6 @@ private:
 	virtual void NativeConstruct() override;
 	void Toggle(const bool bState);
 	void SetSelectedVariation(const EVariation InVariation);
-	void SetButtonStatesOnToggle(const bool bState) const;
 	UFUNCTION()
 	void SwitchVariation(const int32 InIndex);
 	UFUNCTION()

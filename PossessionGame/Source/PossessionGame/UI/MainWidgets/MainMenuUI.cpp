@@ -40,7 +40,6 @@ void UMainMenuUI::NativeConstruct()
 
 void UMainMenuUI::Toggle(const bool bState)
 {
-	SetIsEnabled(bState);
 	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
@@ -74,9 +73,9 @@ void UMainMenuUI::TriggerMainMenuFadeOutAnim()
 
 void UMainMenuUI::ToggleMenuButtons(const bool bState) const
 {
-	if (PlayButton) PlayButton->SetIsEnabled(bState);
-	if (SettingsButton) SettingsButton->SetIsEnabled(bState);
-	if (QuitButton) QuitButton->SetIsEnabled(bState);
+	if (PlayButton) PlayButton->SetButtonVisibility(bState);
+	if (SettingsButton) SettingsButton->SetButtonVisibility(bState);
+	if (QuitButton) QuitButton->SetButtonVisibility(bState);
 }
 
 void UMainMenuUI::Play() { UGameplayStatics::OpenLevel(GetWorld(), "Level_1"); }

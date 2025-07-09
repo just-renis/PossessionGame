@@ -38,7 +38,6 @@ void APossessionGameGameModeBase::LoadSettingsData()
 	else
 	{
 		const TObjectPtr<USettingsSave> SavedSettings = Cast<USettingsSave>(UGameplayStatics::CreateSaveGameObject(SettingsSaveClass));
-		SavedSettings->LoadSettingsOnFirstLaunch(GetWorld());
 		UGameplayStatics::SaveGameToSlot(SavedSettings, SettingsSlot, 0);
 	}
 }

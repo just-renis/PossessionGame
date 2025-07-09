@@ -28,8 +28,10 @@ void UPauseMenuUI::NativeConstruct()
 void UPauseMenuUI::Toggle(const bool bState)
 {
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
-	SetIsEnabled(bState);
 	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (ContinueButton) ContinueButton->SetButtonVisibility(bState);
+	if (SettingsButton) SettingsButton->SetButtonVisibility(bState);
+	if (ReturnToMenuButton) ReturnToMenuButton->SetButtonVisibility(bState);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>(); 
 	if (WidgetManager->ContainsWidget(EWidget::PlayerHUD)) WidgetManager->GetWidget<UPlayerHUD>(EWidget::PlayerHUD, 0)->PlayFadeOutAnim(bState);

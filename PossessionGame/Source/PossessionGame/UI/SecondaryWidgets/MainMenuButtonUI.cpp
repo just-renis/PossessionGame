@@ -6,6 +6,8 @@
 
 void UMainMenuButtonUI::SetText(const FText& InText) const { if (ButtonText) ButtonText->SetText(InText); }
 
+void UMainMenuButtonUI::SetButtonVisibility(const bool bState) const { if (Button) Button->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }
+
 void UMainMenuButtonUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();

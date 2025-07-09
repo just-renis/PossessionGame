@@ -9,22 +9,25 @@ class POSSESSIONGAME_API USettingsSave : public USaveGame
 {
 	GENERATED_BODY()
 public:
-	float GetMasterVolumeValue() { return MasterVolumeValue; }
-	float GetSfxVolumeValue() { return SfxVolumeValue; }
-	float GetMusicVolumeValue() { return MusicVolumeValue; }
+	float GetMasterVolumeValue() const { return MasterVolumeValue; }
+	float GetSfxVolumeValue() const { return SfxVolumeValue; }
+	float GetMusicVolumeValue() const { return MusicVolumeValue; }
+	FString GetCurrentLanguage() const { return Language; }
 	
 	void SetMasterVolume(float InMasterVolumeValue) { MasterVolumeValue = InMasterVolumeValue; }
 	void SetMusicVolume(TObjectPtr<UWorld> WorldRef, float InMusicVolumeValue);
 	void SetSfxVolume(TObjectPtr<UWorld> WorldRef, float InSfxVolumeValue);
 	void LoadSettings(TObjectPtr<UWorld> WorldRef);
-	void LoadSettingsOnFirstLaunch(TObjectPtr<UWorld> WorldRef);
+	void SetLanguage(const FString& InLanguage) { Language = InLanguage; }
 private:
 	UPROPERTY()
-	float MasterVolumeValue;
+	float MasterVolumeValue = 1.f;
 	UPROPERTY()
-	float MusicVolumeValue;
+	float MusicVolumeValue = 1.f;
 	UPROPERTY()
-	float SfxVolumeValue;
+	float SfxVolumeValue = 1.f;
+	UPROPERTY()
+	FString Language = "en";
 	UPROPERTY(EditAnywhere, Category = "Audio", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USoundClass> MusicSoundClass;
 	UPROPERTY(EditAnywhere, Category = "Audio", meta = (AllowPrivateAccess = true))

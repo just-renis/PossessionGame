@@ -15,7 +15,6 @@ class POSSESSIONGAME_API UWaveManagerHUD : public UUserWidget
 	GENERATED_BODY()
 public:
 	float GetWaveAnnouncementEndTime() const;
-	float GetObjectivePanelFadeInEndTime() const;
 	
 	void UpdateCountdown(const int32 InCountdown);
 	void ToggleCountdownText();

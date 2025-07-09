@@ -59,6 +59,7 @@ void UVariationUnlockDetailsUI::ChangeVisibilityOfUnlockElements(const bool bSta
 {
 	if (!DetailsCheck || !UnlockButton || !CostPriceBox) return;
 	DetailsCheck->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	UnlockButton->SetButtonVisibility(bState);
 	UnlockButton->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	CostPriceBox->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }

@@ -9,7 +9,7 @@ FVariationUnlockData::FVariationUnlockData()
 	SelectedVariations.Add(ECharacterType::Trickster, EVariation::TricksterVariationDefault);
 	VariationUnlocks.Add(EVariation::GuardianVariationGold, FVariationUnlockGoal(10));
 	VariationUnlocks.Add(EVariation::RangerVariationBlue, FVariationUnlockGoal(15));
-	VariationUnlocks.Add(EVariation::TricksterVariationPurple, FVariationUnlockGoal(100));
+	VariationUnlocks.Add(EVariation::TricksterVariationPurple, FVariationUnlockGoal(800));
 }
 
 bool FVariationUnlockData::IsVariationUnlocked(const EVariation InVariationUnlockName)

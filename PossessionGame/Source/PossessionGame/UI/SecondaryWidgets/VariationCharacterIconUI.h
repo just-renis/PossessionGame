@@ -17,7 +17,6 @@ public:
 	FOnVariationClicked OnVariationClicked;
 
 	void SetEventsEnabled(const bool bState);
-	void SetButtonState(const bool bState) const;
 	UFUNCTION()
 	void PlayHoverAnim();
 private:

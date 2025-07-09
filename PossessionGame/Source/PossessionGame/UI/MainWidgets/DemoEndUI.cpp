@@ -25,8 +25,16 @@ void UDemoEndUI::PauseGame() const { UGameplayStatics::SetGamePaused(GetWorld(),
 
 void UDemoEndUI::FadeInFinished()
 {
-	if (ReturnToMenuButton) ReturnToMenuButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::ReturnToMainMenu);
-	if (ContinueButton) ContinueButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Continue);
+	if (ReturnToMenuButton)
+	{
+		ReturnToMenuButton->SetButtonVisibility(true);
+		ReturnToMenuButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::ReturnToMainMenu);
+	}
+	if (ContinueButton)
+	{
+		ContinueButton->SetButtonVisibility(true);
+		ContinueButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Continue);
+	}
 	UnbindFromAnimationFinished(FadeInAnim, FadeInFinishedDelegate);
 }
 

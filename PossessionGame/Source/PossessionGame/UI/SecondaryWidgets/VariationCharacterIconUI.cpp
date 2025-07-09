@@ -8,12 +8,6 @@ void UVariationCharacterIconUI::SetEventsEnabled(const bool bState)
 	PlayUnHoverAnim();
 }
 
-void UVariationCharacterIconUI::SetButtonState(const bool bState) const
-{
-	if (!VariationCharacterButton) return;
-	VariationCharacterButton->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-}
-
 void UVariationCharacterIconUI::PlayHoverAnim() { if (bEventsEnabled) PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward); }
 
 void UVariationCharacterIconUI::NativePreConstruct()
