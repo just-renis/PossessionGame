@@ -12,14 +12,14 @@ UCLASS()
 class POSSESSIONGAME_API UVariationCurrencyPanelUI : public UUserWidget
 {
 	GENERATED_BODY()
-	
+public:
+	void UpdateCurrencyText() const;
+private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CurrencyText;
 	UPROPERTY()
 	TObjectPtr<USaveSlot> PlayerSaveSlot;
 	
 	virtual void NativeConstruct() override;
-	void AddCurrency(const int32 InCurrencyAmount) const;
-	void UpdateCurrencyText() const;
 	void UpdateCurrencyText(const EVariation InVariationName) const;
 };

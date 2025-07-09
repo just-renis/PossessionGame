@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EVariation.h"
+#include "PossessionGame/UI/SecondaryWidgets/VariationCurrencyPanelUI.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UVariationsUI::OpenUI()
@@ -57,6 +58,7 @@ void UVariationsUI::Toggle(const bool bState)
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::VariationsUI : EWidget::None);
 	if (bState)
 	{
+		if (VariationCurrencyPanel) VariationCurrencyPanel->UpdateCurrencyText();
 		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		PlayerController->SetInputMode(FInputModeGameAndUI());
 	}

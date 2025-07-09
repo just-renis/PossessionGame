@@ -55,6 +55,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UVariationCharacterIconUI> CurrentlySelectedIcon;
 	UPROPERTY()
+	TObjectPtr<UVariationCurrencyPanelUI> VariationCurrencyPanel;
+	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeOutDelegate;
 
 	virtual void NativeConstruct() override;

@@ -27,7 +27,7 @@ public:
 	int32 GetCurrencyAmount() const { return CurrencyAmount; }
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
-	void AddCurrencyAmount(const int32 InCurrencyAmount) { CurrencyAmount += InCurrencyAmount; }
+	void AddCurrencyAmount(const int32 InCurrencyAmount);
 	void SetTutorialFinished();
 	void SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName);
 	void AddXp(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const int32 InXp);

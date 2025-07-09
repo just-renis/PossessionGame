@@ -23,6 +23,12 @@ int32 USaveSlot::GetVariationUnlockRequirement(const EVariation InVariationUnloc
 
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
 
+void USaveSlot::AddCurrencyAmount(const int32 InCurrencyAmount)
+{
+	CurrencyAmount += InCurrencyAmount;
+	SaveSlot();
+}
+
 void USaveSlot::SetTutorialFinished()
 {
 	bTutorialFinished = true;
@@ -33,6 +39,7 @@ void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInsta
 {
 	PlayerLevelData = InGameInstance->GetPlayerLevelData();
 	SlotName = InSlotName;
+	InGameInstance->GetSubsystem<UDelegateManager>()->OnCoinCollected.BindUObject(this, &USaveSlot::AddCurrencyAmount);
 	InGameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
 	InGameInstance->GetSubsystem<UDelegateManager>()->OnMainTutorialEnd.AddUObject(this, &USaveSlot::SetTutorialFinished);
 	#if WITH_EDITOR

@@ -4,26 +4,17 @@
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
+void UVariationCurrencyPanelUI::UpdateCurrencyText() const
+{
+	if (CurrencyText) CurrencyText->SetText(FText::AsNumber(PlayerSaveSlot->GetCurrencyAmount()));
+}
+
 void UVariationCurrencyPanelUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	PlayerSaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	UpdateCurrencyText();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnCoinCollected.BindUObject(this, &UVariationCurrencyPanelUI::AddCurrency);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationUnlocked.AddUObject(this, &UVariationCurrencyPanelUI::UpdateCurrencyText);
-}
-
-void UVariationCurrencyPanelUI::AddCurrency(const int32 InCurrencyAmount) const
-{
-	if (!PlayerSaveSlot) return;
-	PlayerSaveSlot->AddCurrencyAmount(InCurrencyAmount);
-	UpdateCurrencyText();
-	PlayerSaveSlot->SaveSlot();
-}
-
-void UVariationCurrencyPanelUI::UpdateCurrencyText() const
-{
-	if (CurrencyText) CurrencyText->SetText(FText::AsNumber(PlayerSaveSlot->GetCurrencyAmount()));
 }
 
 void UVariationCurrencyPanelUI::UpdateCurrencyText(const EVariation InVariationName) const { UpdateCurrencyText(); }
