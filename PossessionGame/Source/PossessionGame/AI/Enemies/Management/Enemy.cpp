@@ -548,6 +548,7 @@ void AEnemy::BeginPlay()
 	GameInstance = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance());
 	DelegateManager = GameInstance->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
+	GlobalSettingsManager = GameInstance->GetSubsystem<UGlobalSettingsManager>();
 	AI_SetupHpBar();
 	AssetsManager = GameInstance->GetSubsystem<UPrimaryDataAssetsManager>();
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
@@ -753,7 +754,7 @@ void AEnemy::AI_DisableDamageTakenRedFlash() const { if (MI_MeshBaseMaterial) MI
 
 void AEnemy::P_SetupData()
 {
-	P_Data->SetIsGodModeEnabled(GameInstance->GetSubsystem<UGlobalSettingsManager>()->GetIsGodModeEnabled());
+	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
 	MaxHp = P_Data->GetMaxHp();
 	MaxHp += MaxHp * GetGameInstance()->GetSaveSlot()->GetLevelHpIncrease() * 0.01f;
 	CurrentHp = MaxHp;
@@ -815,21 +816,20 @@ void AEnemy::P_PossessionBarLogic()
 	if (PossessionBarTimer >= P_Data->GetPossessionBarCooldown())
 	{
 		bCanPossessOtherEnemy = true;
-		if (P_HUD && !P_HUD->GetPossessionIndicatorIsShowing()) P_HUD->UpdatePossessionIndicator(true, GameInstance->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Hijack"));
+		if (P_HUD && !P_HUD->GetPossessionIndicatorIsShowing()) P_HUD->UpdatePossessionIndicator(true, GlobalSettingsManager->GetKeyBindText("Hijack"));
 	}
 	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Possession, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
 }
 
-void AEnemy::P_Rotate(const FInputActionValue& Value)
+void AEnemy::P_Rotate(const FInputActionValue& InValue)
 {
-	const FVector2D RotationVector = Value.Get<FVector2D>();
-	if (Controller)
-	{
-		AddControllerYawInput(RotationVector.X * MouseSensitivity.X);
-		FRotator NewRotation = Camera->GetComponentRotation();
-		NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + RotationVector.Y * MouseSensitivity.Y, -89.f, 89.f);
-		Camera->SetWorldRotation(NewRotation);
-	}
+	if (!Controller) return;
+	const FVector2D RotationVector = InValue.Get<FVector2D>();
+	const FVector2D MouseSensitivity = GlobalSettingsManager->GetMouseSensitivity();
+	AddControllerYawInput(RotationVector.X * MouseSensitivity.X);
+	FRotator NewRotation = Camera->GetComponentRotation();
+	NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + RotationVector.Y * MouseSensitivity.Y, -89.f, 89.f);
+	Camera->SetWorldRotation(NewRotation);
 }
 
 void AEnemy::P_Reload() 
@@ -860,7 +860,6 @@ void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InPossessionTime
 
 void AEnemy::P_ToggleGodMode()
 {
-	const TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager = GameInstance->GetSubsystem<UGlobalSettingsManager>();
 	GlobalSettingsManager->ToggleGodModeEnabled();
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
 	MaxHp = P_Data->GetMaxHp();

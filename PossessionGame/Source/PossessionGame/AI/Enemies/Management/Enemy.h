@@ -10,6 +10,7 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "Enemy.generated.h"
 
+class UGlobalSettingsManager;
 class AAIHpBar;
 enum class EVariation : uint8;
 enum class EDamageReason : uint8;
@@ -120,7 +121,6 @@ protected:
 	ECharacterType CharacterName;
 	EVariation Variation;
 	EMoveMode CurrentMoveMode = EMoveMode::Walk;
-	FVector2D MouseSensitivity = FVector2D(1.f, 1.f);
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompRadiusInMeters = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
@@ -278,6 +278,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
 	UPROPERTY()
+	TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager;
+	UPROPERTY()
 	FTimerHandle AI_ClearShootPauseHandle;
 	UPROPERTY()
 	FTimerHandle AI_TriggerDeathVoiceLineHandle;
@@ -330,7 +332,7 @@ private:
 	void P_PossessEnemy();
 	void P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy);
 	void P_PossessionBarLogic();
-	void P_Rotate(const FInputActionValue& Value);
+	void P_Rotate(const FInputActionValue& InValue);
 	void P_Reload();
 	void P_Dash();
 	void P_OnEnemyDeathEvents(const int32 InXp, const float InPossessionTimeValue);

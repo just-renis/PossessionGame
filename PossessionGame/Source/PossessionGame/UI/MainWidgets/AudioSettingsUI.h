@@ -29,7 +29,7 @@ class POSSESSIONGAME_API UAudioSettingsUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void UpdateDefaultAudioSettings() const;
+	void UpdateDefaultMainSettings() const;
 	void ApplySettings();
 	void SetSavedSettings() const;
 private:
@@ -42,6 +42,10 @@ private:
 	TObjectPtr<USliderUI> MusicVolumeSlider;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USliderUI> SfxVolumeSlider;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<USliderUI> HorizontalSensitivitySlider;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<USliderUI> VerticalSensitivitySlider;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> ResetSaveSlotButton;
 	UPROPERTY(meta = (BindWidget))
@@ -56,6 +60,8 @@ private:
 	void ApplySfxVolumeValue(const float InValue) const;
 	void ApplyMusicVolumeValue(const float InValue) const;
 	void SetupLanguagesData();
+	void ApplyHorizontalSensitivityValue(const float InValue) const;
+	void ApplyVerticalSensitivityValue(const float InValue) const;
 	UFUNCTION()
 	void ResetSaveSlot();
 	UFUNCTION()

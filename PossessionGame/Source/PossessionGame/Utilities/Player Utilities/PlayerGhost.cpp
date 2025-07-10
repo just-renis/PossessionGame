@@ -15,6 +15,7 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 
 APlayerGhost::APlayerGhost()
@@ -88,9 +89,10 @@ void APlayerGhost::Rotate(const FInputActionValue& InValue)
 {
 	if (!Controller) return;
 	const FVector2D RotationVector = InValue.Get<FVector2D>();
-	AddControllerYawInput(RotationVector.X);
+	const FVector2D MouseSensitivity = GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetMouseSensitivity();
+	AddControllerYawInput(RotationVector.X * MouseSensitivity.X);
 	FRotator NewRotation = Camera->GetComponentRotation();
-	NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + RotationVector.Y, -89.f, 89.f);
+	NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + RotationVector.Y * MouseSensitivity.Y, -89.f, 89.f);
 	Camera->SetWorldRotation(NewRotation);
 }
 

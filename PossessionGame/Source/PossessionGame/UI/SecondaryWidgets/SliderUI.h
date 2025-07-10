@@ -17,12 +17,16 @@ public:
 	float GetSavedValue() const { return SavedValue; }
 
 	void SaveValue();
-	void SetValue(float InValue);
-	void SetSliderValue(float InValue);
+	void SetValue(const float InValue);
+	void SetSliderValue(const float InValue);
 private:
 	float SavedValue;
+	UPROPERTY(EditAnywhere, Category = "Slider Settings")
+	float MinValue = 0.f;
+	UPROPERTY(EditAnywhere, Category = "Slider Settings")
+	float MaxValue = 1.f;
 	UPROPERTY(EditAnywhere, Category = "Slider Bar Settings")
-	float BarThickness;
+	float BarThickness = 4.f;
 	UPROPERTY(EditAnywhere, Category = "Slider Handle Settings")
 	FVector2D SliderHandleSize;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
@@ -33,5 +37,5 @@ private:
 	virtual void NativeConstruct() override;
 	virtual void NativePreConstruct() override;
 	UFUNCTION()
-	void OnSliderValueChanged(float Value);
+	void OnSliderValueChanged(float Value = 0.f);
 };

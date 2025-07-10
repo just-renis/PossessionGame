@@ -96,7 +96,7 @@ void USettingsUI::SetupUIEvents()
 void USettingsUI::UpdateDefaultSettings()
 {
 	if (GraphicsSettings) GraphicsSettings->UpdateDefaultGraphicsSettings();
-	if (MainSettings) MainSettings->UpdateDefaultAudioSettings();
+	if (MainSettings) MainSettings->UpdateDefaultMainSettings();
 }
 
 void USettingsUI::SetSavedSettings()

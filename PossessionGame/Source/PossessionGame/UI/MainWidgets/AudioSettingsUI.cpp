@@ -6,13 +6,16 @@
 #include "PossessionGame/UI/SecondaryWidgets/SliderUI.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/SettingsSave.h"
+#include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 
-void UAudioSettingsUI::UpdateDefaultAudioSettings() const
+void UAudioSettingsUI::UpdateDefaultMainSettings() const
 {
 	const TObjectPtr<USettingsSave> SavedSettings = Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot("SettingsSlot", 0));
 	ApplyMasterVolumeValue(SavedSettings->GetMasterVolumeValue());
 	ApplySfxVolumeValue(SavedSettings->GetSfxVolumeValue());
 	ApplyMusicVolumeValue(SavedSettings->GetMusicVolumeValue());
+	ApplyHorizontalSensitivityValue(SavedSettings->GetMouseHorizontalSensitivity());
+	ApplyVerticalSensitivityValue(SavedSettings->GetMouseVerticalSensitivity());
 }
 
 void UAudioSettingsUI::ApplySettings()
@@ -33,6 +36,16 @@ void UAudioSettingsUI::ApplySettings()
 		MusicVolumeSlider->SaveValue();
 		SavedSettings->SetMusicVolume(GetWorld(), MusicVolumeSlider->GetSavedValue());
 	}
+	if (HorizontalSensitivitySlider)
+	{
+		HorizontalSensitivitySlider->SaveValue();
+		SavedSettings->SetMouseHorizontalSensitivity(HorizontalSensitivitySlider->GetSavedValue());
+	}
+	if (VerticalSensitivitySlider)
+	{
+		VerticalSensitivitySlider->SaveValue();
+		SavedSettings->SetMouseVerticalSensitivity(VerticalSensitivitySlider->GetSavedValue());
+	}
 	const FString& LanguageEncode = GetLanguageOption(LanguageCode).LanguageCode;
 	SavedSettings->SetLanguage(LanguageEncode);
 	FInternationalization::Get().SetCurrentCulture(LanguageEncode);
@@ -44,7 +57,8 @@ void UAudioSettingsUI::SetSavedSettings() const
 	if (MasterVolumeSlider) ApplyMasterVolumeValue(MasterVolumeSlider->GetSavedValue());
 	if (SfxVolumeSlider) ApplySfxVolumeValue(SfxVolumeSlider->GetSavedValue());
 	if (MusicVolumeSlider) ApplyMusicVolumeValue(MusicVolumeSlider->GetSavedValue());
-	//if (LanguageOption) LanguageOption->SetText()
+	if (HorizontalSensitivitySlider) ApplyHorizontalSensitivityValue(HorizontalSensitivitySlider->GetSavedValue());
+	if (VerticalSensitivitySlider) ApplyVerticalSensitivityValue(VerticalSensitivitySlider->GetSavedValue());
 }
 
 ELanguageCode UAudioSettingsUI::GetLanguageCode(const FString& InCode)
@@ -106,6 +120,20 @@ void UAudioSettingsUI::SetupLanguagesData()
 {
 	TArray<FString> AvailableCultures = FTextLocalizationManager::Get().GetLocalizedCultureNames(ELocalizationLoadFlags::Game);
 	for (const FString& CultureName : AvailableCultures) Languages.Add(GetLanguageCode(CultureName), FLanguageOption(GetLanguageNameByCode(CultureName), CultureName));
+}
+
+void UAudioSettingsUI::ApplyHorizontalSensitivityValue(const float InValue) const
+{
+	GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->SetMouseHorizontalSensitivity(InValue);
+	Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot("SettingsSlot", 0))->SetMouseHorizontalSensitivity(InValue);
+	if (HorizontalSensitivitySlider) HorizontalSensitivitySlider->SetValue(InValue);
+}
+
+void UAudioSettingsUI::ApplyVerticalSensitivityValue(const float InValue) const
+{
+	GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->SetMouseVerticalSensitivity(InValue);
+	Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot("SettingsSlot", 0))->SetMouseVerticalSensitivity(InValue);
+	if (VerticalSensitivitySlider) VerticalSensitivitySlider->SetValue(InValue);
 }
 
 void UAudioSettingsUI::ResetSaveSlot() { if (GetGameInstance()) Cast<UPossessionGameInstance>(GetGameInstance())->ResetSaveSlot(); }
