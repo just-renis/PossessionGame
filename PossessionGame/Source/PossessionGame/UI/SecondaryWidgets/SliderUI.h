@@ -37,5 +37,5 @@ private:
 	virtual void NativeConstruct() override;
 	virtual void NativePreConstruct() override;
 	UFUNCTION()
-	void OnSliderValueChanged(float Value = 0.f);
+	void OnSliderValueChanged(const float InValue = 0.f);
 };

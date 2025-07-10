@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/ELanguageCode.h"
 #include "AudioSettingsUI.generated.h"
 
+class UTextBlock;
 enum class ELanguageCode : uint8;
 class USettingsOptionUI;
 class UButton;
@@ -29,9 +30,9 @@ class POSSESSIONGAME_API UAudioSettingsUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void UpdateDefaultMainSettings() const;
+	void UpdateDefaultMainSettings();
 	void ApplySettings();
-	void SetSavedSettings() const;
+	void SetSavedSettings();
 private:
 	ELanguageCode LanguageCode;
 	UPROPERTY()
@@ -47,9 +48,17 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USliderUI> VerticalSensitivitySlider;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<USliderUI> FpsCapSlider;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> ResetSaveSlotButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USettingsOptionUI> LanguageOption;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<USettingsOptionUI> FpsCapNumber;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> HorizontalSensitivityNumber;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> VerticalSensitivityNumber;
 
 	ELanguageCode GetLanguageCode(const FString& InCode);
 	FText GetLanguageNameByCode(const FString& InCode);
@@ -60,12 +69,19 @@ private:
 	void ApplySfxVolumeValue(const float InValue) const;
 	void ApplyMusicVolumeValue(const float InValue) const;
 	void SetupLanguagesData();
-	void ApplyHorizontalSensitivityValue(const float InValue) const;
-	void ApplyVerticalSensitivityValue(const float InValue) const;
+	void ApplyHorizontalSensitivityValue(const float InValue);
+	void ApplyVerticalSensitivityValue(const float InValue);
+	void ApplyFpsCapValue(const float InValue) const;
 	UFUNCTION()
 	void ResetSaveSlot();
 	UFUNCTION()
 	void LanguageSwitchLeft();
 	UFUNCTION()
 	void LanguageSwitchRight();
+	UFUNCTION()
+	void SetFpsValue(const float InValue);
+	UFUNCTION()
+	void SetHorizontalSensitivityNumberValue(const float InValue);
+	UFUNCTION()
+	void SetVerticalSensitivityNumberValue(const float InValue);
 };

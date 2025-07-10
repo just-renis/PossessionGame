@@ -159,8 +159,8 @@ void USettingsUI::ApplySettings()
 	if (ControlsSettings && !ControlsSettings->ApplySettings()) OpenDuplicateKeyBindsPopup();
 	else
 	{
-		if (GraphicsSettings) GraphicsSettings->ApplySettings();
 		if (MainSettings) MainSettings->ApplySettings();
+		if (GraphicsSettings) GraphicsSettings->ApplySettings();
 	}
 }
 

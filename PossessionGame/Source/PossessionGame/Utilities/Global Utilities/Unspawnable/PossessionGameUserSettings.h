@@ -11,10 +11,10 @@ class POSSESSIONGAME_API UPossessionGameUserSettings : public UGameUserSettings
 {
 	GENERATED_BODY()
 public:
-	float GetGamma() { return GammaValue; }
+	float GetGamma() const { return GammaValue; }
 	
-	void SetGamma(float InGammaValue);
-	virtual void LoadSettings(bool bForceReload = true) override;
+	void SetGamma(const float InGammaValue);
+	virtual void LoadSettings(const bool bForceReload) override;
 private:
 	UPROPERTY(Config)
 	float GammaValue = 2.2f;

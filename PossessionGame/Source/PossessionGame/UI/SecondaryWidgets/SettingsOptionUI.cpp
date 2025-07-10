@@ -8,7 +8,8 @@ void USettingsOptionUI::SetText(const FText& InText) const { if (Text) Text->Set
 void USettingsOptionUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	SetupButtonEvents();
+	if (bArrowsRequired) SetupButtonEvents();
+	else DisableButtons();
 }
 
 void USettingsOptionUI::OnLeftArrowClicked()
@@ -48,6 +49,12 @@ void USettingsOptionUI::SetupButtonEvents()
 		DownscaleButton->OnHovered.AddDynamic(this, &USettingsOptionUI::OnLeftArrowHovered);
 		DownscaleButton->OnUnhovered.AddDynamic(this, &USettingsOptionUI::OnLeftArrowUnHovered);
 	}
+}
+
+void USettingsOptionUI::DisableButtons() const
+{
+	if (UpscaleButton) UpscaleButton->SetVisibility(ESlateVisibility::Collapsed);
+	if (DownscaleButton) DownscaleButton->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void USettingsOptionUI::OnLeftArrowHovered()
