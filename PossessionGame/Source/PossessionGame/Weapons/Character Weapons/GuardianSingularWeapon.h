@@ -28,7 +28,6 @@ private:
 	virtual float P_ReceiveHitScanDamage() override;
 
 	virtual void P_Shoot(const bool bIsFirstWeapon) override;
-	virtual void P_ApplyCurrentVariation() override;
 
 	virtual void BeginPlay() override;
 	virtual void SetMeshes(EWeapon PrimaryDataAssetName) override;

@@ -1,9 +1,6 @@
 ﻿#include "GuardianSingularWeapon.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
-#include "PossessionGame/Enums/EVariation.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void AGuardianSingularWeapon::CancelShootingHold()
@@ -36,7 +33,7 @@ void AGuardianSingularWeapon::AI_Shoot()
 
 float AGuardianSingularWeapon::P_ReceiveHitScanDamage()
 {
-	const int32 NumIntervals = FMath::Clamp(FMath::FloorToInt(ShootingHoldDuration / 0.5f), 0, 10);
+	const int32 NumIntervals = FMath::Clamp(FMath::FloorToInt(ShootingHoldDuration * 2.f), 0, 10);
 	return HitScanDamage + DefaultHitScanDamage * 0.1f * NumIntervals;
 }
 
@@ -52,14 +49,6 @@ void AGuardianSingularWeapon::P_Shoot(const bool bIsFirstWeapon)
 	}
 }
 
-void AGuardianSingularWeapon::P_ApplyCurrentVariation()
-{
-	if (EVariation::GuardianVariationGold == Proprietor->GetGameInstance()->GetSaveSlot()->GetSelectedVariation(Proprietor->GetCharacterName()))
-	{
-		HitScanDamage = DefaultHitScanDamage *= 0.7f;
-	}
-}
-
 void AGuardianSingularWeapon::BeginPlay()
 {
 	Name = EWeapon::GuardianSingularWeapon;
@@ -70,7 +59,6 @@ void AGuardianSingularWeapon::SetMeshes(EWeapon PrimaryDataAssetName)
 {
 	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(PrimaryDataAssetName)->WeaponMesh.Get());
 	Mesh->SetMaterial(0, MI_GuardianWeaponMaterial);
-	
 	//MID_GuardianWeaponMaterial = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(0), this);
 	//Mesh->SetMaterial(0, MID_GuardianWeaponMaterial);
 	OriginalScale = Mesh->GetRelativeScale3D();
