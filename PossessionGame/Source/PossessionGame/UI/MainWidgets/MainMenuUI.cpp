@@ -57,13 +57,6 @@ void UMainMenuUI::SetupButtons()
 	if (QuitConfirmationPopup->GetDeclineButton()) QuitConfirmationPopup->GetDeclineButton()->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopupFadeOut);
 }
 
-void UMainMenuUI::TriggerMainMenuFadeInAnim()
-{
-	UnbindFromAnimationFinished(FirstLaunchAnim, FirstLaunchAnimDelegate);
-	ToggleMenuButtons(true);
-	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim));
-}
-
 void UMainMenuUI::TriggerMainMenuFadeOutAnim()
 {
 	ToggleMenuButtons(false);
@@ -79,6 +72,12 @@ void UMainMenuUI::ToggleMenuButtons(const bool bState) const
 }
 
 void UMainMenuUI::Play() { UGameplayStatics::OpenLevel(GetWorld(), "Level_1"); }
+
+void UMainMenuUI::OpenSettings()
+{
+	TriggerMainMenuFadeOutAnim();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI, 2)->OpenUI();
+}
 
 void UMainMenuUI::QuitGame() { UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false); }
 
@@ -96,8 +95,9 @@ void UMainMenuUI::TriggerQuitPopupFadeOut()
 	QuitConfirmationPopup->PlayPopupFadeInAnim(false);
 }
 
-void UMainMenuUI::OpenSettings()
+void UMainMenuUI::TriggerMainMenuFadeInAnim()
 {
-	TriggerMainMenuFadeOutAnim();
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI, 2)->OpenUI();
+	UnbindFromAnimationFinished(FirstLaunchAnim, FirstLaunchAnimDelegate);
+	ToggleMenuButtons(true);
+	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim));
 }

@@ -39,7 +39,6 @@ private:
 	virtual void NativeConstruct() override;
 	void Toggle(const bool bState);
 	void SetupButtons();
-	void TriggerMainMenuFadeInAnim();
 	void TriggerMainMenuFadeOutAnim();
 	void ToggleMenuButtons(const bool bState) const;
 	UFUNCTION()
@@ -52,4 +51,6 @@ private:
 	void TriggerQuitPopupFadeIn();
 	UFUNCTION()
 	void TriggerQuitPopupFadeOut();
+	UFUNCTION()
+	void TriggerMainMenuFadeInAnim();
 };

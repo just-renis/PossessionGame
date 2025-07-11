@@ -36,4 +36,4 @@ void USliderUI::NativePreConstruct()
 	}
 }
 
-void USliderUI::OnSliderValueChanged(float Value) { if (ProgressBar) ProgressBar->SetPercent((Slider->GetValue() - MinValue) / (MaxValue - MinValue)); }
+void USliderUI::OnSliderValueChanged(const float InValue) { if (ProgressBar) ProgressBar->SetPercent((Slider->GetValue() - MinValue) / (MaxValue - MinValue)); }

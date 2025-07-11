@@ -1,14 +1,16 @@
 ﻿#include "AudioSettingsUI.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ELanguageCode.h"
 #include "PossessionGame/UI/SecondaryWidgets/SettingsOptionUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/SliderUI.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameUserSettings.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/SettingsSave.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 
-void UAudioSettingsUI::UpdateDefaultMainSettings() const
+void UAudioSettingsUI::UpdateDefaultMainSettings()
 {
 	const TObjectPtr<USettingsSave> SavedSettings = Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot("SettingsSlot", 0));
 	ApplyMasterVolumeValue(SavedSettings->GetMasterVolumeValue());
@@ -16,6 +18,7 @@ void UAudioSettingsUI::UpdateDefaultMainSettings() const
 	ApplyMusicVolumeValue(SavedSettings->GetMusicVolumeValue());
 	ApplyHorizontalSensitivityValue(SavedSettings->GetMouseHorizontalSensitivity());
 	ApplyVerticalSensitivityValue(SavedSettings->GetMouseVerticalSensitivity());
+	ApplyFpsCapValue(Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings())->GetFrameRateLimit());
 }
 
 void UAudioSettingsUI::ApplySettings()
@@ -46,19 +49,21 @@ void UAudioSettingsUI::ApplySettings()
 		VerticalSensitivitySlider->SaveValue();
 		SavedSettings->SetMouseVerticalSensitivity(VerticalSensitivitySlider->GetSavedValue());
 	}
+	if (FpsCapSlider) FpsCapSlider->SaveValue();
 	const FString& LanguageEncode = GetLanguageOption(LanguageCode).LanguageCode;
 	SavedSettings->SetLanguage(LanguageEncode);
 	FInternationalization::Get().SetCurrentCulture(LanguageEncode);
 	UGameplayStatics::SaveGameToSlot(SavedSettings, "SettingsSlot", 0);
 }
 
-void UAudioSettingsUI::SetSavedSettings() const
+void UAudioSettingsUI::SetSavedSettings()
 {
 	if (MasterVolumeSlider) ApplyMasterVolumeValue(MasterVolumeSlider->GetSavedValue());
 	if (SfxVolumeSlider) ApplySfxVolumeValue(SfxVolumeSlider->GetSavedValue());
 	if (MusicVolumeSlider) ApplyMusicVolumeValue(MusicVolumeSlider->GetSavedValue());
 	if (HorizontalSensitivitySlider) ApplyHorizontalSensitivityValue(HorizontalSensitivitySlider->GetSavedValue());
 	if (VerticalSensitivitySlider) ApplyVerticalSensitivityValue(VerticalSensitivitySlider->GetSavedValue());
+	if (FpsCapSlider) ApplyFpsCapValue(FpsCapSlider->GetSavedValue());
 }
 
 ELanguageCode UAudioSettingsUI::GetLanguageCode(const FString& InCode)
@@ -96,6 +101,9 @@ void UAudioSettingsUI::NativeConstruct()
 	LanguageOption->SetText(GetLanguageOption(LanguageCode).LanguageName);
 	LanguageOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchLeft);
 	LanguageOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchRight);
+	if (FpsCapSlider) FpsCapSlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::SetFpsValue);
+	if (HorizontalSensitivitySlider) HorizontalSensitivitySlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::SetHorizontalSensitivityNumberValue);
+	if (VerticalSensitivitySlider) VerticalSensitivitySlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::UAudioSettingsUI::SetVerticalSensitivityNumberValue);
 }
 
 void UAudioSettingsUI::ApplyMasterVolumeValue(const float InValue) const
@@ -122,18 +130,30 @@ void UAudioSettingsUI::SetupLanguagesData()
 	for (const FString& CultureName : AvailableCultures) Languages.Add(GetLanguageCode(CultureName), FLanguageOption(GetLanguageNameByCode(CultureName), CultureName));
 }
 
-void UAudioSettingsUI::ApplyHorizontalSensitivityValue(const float InValue) const
+void UAudioSettingsUI::ApplyHorizontalSensitivityValue(const float InValue)
 {
 	GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->SetMouseHorizontalSensitivity(InValue);
 	Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot("SettingsSlot", 0))->SetMouseHorizontalSensitivity(InValue);
-	if (HorizontalSensitivitySlider) HorizontalSensitivitySlider->SetValue(InValue);
+	if (!HorizontalSensitivitySlider) return;
+	HorizontalSensitivitySlider->SetValue(InValue);
+	SetHorizontalSensitivityNumberValue(InValue);
 }
 
-void UAudioSettingsUI::ApplyVerticalSensitivityValue(const float InValue) const
+void UAudioSettingsUI::ApplyVerticalSensitivityValue(const float InValue)
 {
 	GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->SetMouseVerticalSensitivity(InValue);
 	Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot("SettingsSlot", 0))->SetMouseVerticalSensitivity(InValue);
-	if (VerticalSensitivitySlider) VerticalSensitivitySlider->SetValue(InValue);
+	if (!VerticalSensitivitySlider) return;
+	VerticalSensitivitySlider->SetValue(InValue);
+	SetVerticalSensitivityNumberValue(InValue);
+}
+
+void UAudioSettingsUI::ApplyFpsCapValue(const float InValue) const
+{
+	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
+	GameUserSettings->SetFrameRateLimit(InValue);
+	if (FpsCapNumber) FpsCapNumber->SetText(FText::AsNumber(static_cast<int32>(GameUserSettings->GetFrameRateLimit())));
+	if (FpsCapSlider) FpsCapSlider->SetValue(InValue);
 }
 
 void UAudioSettingsUI::ResetSaveSlot() { if (GetGameInstance()) Cast<UPossessionGameInstance>(GetGameInstance())->ResetSaveSlot(); }
@@ -152,4 +172,27 @@ void UAudioSettingsUI::LanguageSwitchRight()
 	if (!Languages.Contains(static_cast<ELanguageCode>(NextValue))) NextValue = Languages.Num() - 1;
 	LanguageCode = static_cast<ELanguageCode>(NextValue);
 	if (LanguageOption) LanguageOption->SetText(Languages[LanguageCode].LanguageName);
+}
+
+void UAudioSettingsUI::SetFpsValue(const float InValue)
+{
+	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
+	GameUserSettings->SetFrameRateLimit(InValue);
+	if (FpsCapNumber) FpsCapNumber->SetText(FText::AsNumber(static_cast<int32>(GameUserSettings->GetFrameRateLimit())));
+}
+
+void UAudioSettingsUI::SetHorizontalSensitivityNumberValue(const float InValue)
+{
+	if (!HorizontalSensitivityNumber) return;
+	FNumberFormattingOptions Options;
+	Options.SetMinimumFractionalDigits(2).SetMaximumFractionalDigits(2);
+	HorizontalSensitivityNumber->SetText(FText::AsNumber(InValue, &Options));
+}
+
+void UAudioSettingsUI::SetVerticalSensitivityNumberValue(const float InValue)
+{
+	if (!VerticalSensitivityNumber) return;
+	FNumberFormattingOptions Options;
+	Options.SetMinimumFractionalDigits(2).SetMaximumFractionalDigits(2);
+	VerticalSensitivityNumber->SetText(FText::AsNumber(InValue, &Options));
 }

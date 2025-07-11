@@ -58,5 +58,12 @@ void UPossessionGameInstance::Init()
 	Super::Init();
 	LoadPlayerSaveSlot();
 	LoadPlayerRunSaveSlot();
-	Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings())->LoadSettings();
+	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
+	if (PlayerSaveSlot->GetIsFirstLaunch())
+	{
+		GameUserSettings->LoadSettings(false);
+		GameUserSettings->SetFrameRateLimit(60.f);
+		GameUserSettings->ApplySettings(true);
+	}
+	else GameUserSettings->LoadSettings(false);
 }

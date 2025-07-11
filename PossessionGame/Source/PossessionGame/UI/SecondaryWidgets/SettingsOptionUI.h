@@ -34,6 +34,8 @@ protected:
 	UFUNCTION()
 	virtual void OnRightArrowClicked();
 private:
+	UPROPERTY(EditAnywhere, Category = "Buttons", meta = (AllowPrivateAccess = true))
+	bool bArrowsRequired = true;
 	UPROPERTY(EditAnywhere, Category = "Text Font Size", meta = (AllowPrivateAccess = true))
 	int32 FontSize = 20;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -43,6 +45,7 @@ private:
 
 	virtual void NativePreConstruct() override;
 	void SetupButtonEvents();
+	void DisableButtons() const;
 	UFUNCTION()
 	void OnLeftArrowHovered();
 	UFUNCTION()
