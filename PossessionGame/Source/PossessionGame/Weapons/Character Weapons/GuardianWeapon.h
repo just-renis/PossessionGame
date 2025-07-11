@@ -16,6 +16,8 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MI_Hands;
+	UPROPERTY()
+	FTimerHandle SecondWeaponShotHandle;
 	
 	virtual bool P_CanShoot(const bool InbIsFirstWeapon) override;
 	
@@ -26,4 +28,6 @@ private:
 	virtual void SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh) override;
 	virtual void SetMeshes(const EWeapon InPrimaryDataAssetName) override;
 	virtual void SetCustomDilation(const float InDilation) override;
+	void ShootSecondWeaponShot() const;
+	virtual void DestroyThis() override;
 };

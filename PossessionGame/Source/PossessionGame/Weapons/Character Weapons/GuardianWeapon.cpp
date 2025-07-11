@@ -41,7 +41,7 @@ void AGuardianWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChang
 void AGuardianWeapon::P_Shoot(const bool bIsFirstWeapon)
 {
 	FirstWeapon->P_Shoot();
-	SecondWeapon->P_Shoot();
+	GetWorldTimerManager().SetTimer(SecondWeaponShotHandle, this, &AGuardianWeapon::ShootSecondWeaponShot, 0.2f);
 	if (ShootTimer >= ShootCooldown)
 	{
 		PlayShootMontage();
@@ -79,4 +79,12 @@ void AGuardianWeapon::SetCustomDilation(const float InDilation)
 	Super::SetCustomDilation(InDilation);
 	FirstWeapon->SetCustomDilation(InDilation);
 	SecondWeapon->SetCustomDilation(InDilation);
+}
+
+void AGuardianWeapon::ShootSecondWeaponShot() const { SecondWeapon->P_Shoot(); }
+
+void AGuardianWeapon::DestroyThis()
+{
+	GetWorldTimerManager().ClearTimer(SecondWeaponShotHandle);
+	Super::DestroyThis();
 }

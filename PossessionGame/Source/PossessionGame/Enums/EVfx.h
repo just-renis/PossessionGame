@@ -41,7 +41,6 @@ enum class EVfx : uint8
 	GuardianSpawn,
 	GuardianBulletTrail,
 	GuardianMuzzle,
-	GuardianFpsBulletTrail,
 	GuardianBulletImpact,
 	GuardianDeathElectrification,
 	MinionBossMuzzle,
