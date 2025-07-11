@@ -54,7 +54,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USettingsOptionUI> LanguageOption;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USettingsOptionUI> FpsCapNumber;
+	TObjectPtr<UTextBlock> FpsCapNumberText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> HorizontalSensitivityNumber;
 	UPROPERTY(meta = (BindWidget))

@@ -54,7 +54,7 @@ void APlayerGhost::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	{
 		if (const TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
-			Subsystem->AddMappingContext(PlayerMappingContext, 0);
+			if (!Subsystem->HasMappingContext(PlayerMappingContext)) Subsystem->AddMappingContext(PlayerMappingContext, 0);
 		}
 	}
 	if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
@@ -125,7 +125,7 @@ void APlayerGhost::PossessEnemy()
 	}
 }
 
-void APlayerGhost::RestartLevel() const { UGameplayStatics::OpenLevel(GetWorld(), "/Game/Levels/Chapter1/Levels/Level_1"); }
+void APlayerGhost::RestartLevel() const { UGameplayStatics::OpenLevel(GetWorld(), "Level_1"); }
 
 void APlayerGhost::HandleEscapeClick()
 {

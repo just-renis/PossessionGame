@@ -152,7 +152,7 @@ void UAudioSettingsUI::ApplyFpsCapValue(const float InValue) const
 {
 	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
 	GameUserSettings->SetFrameRateLimit(InValue);
-	if (FpsCapNumber) FpsCapNumber->SetText(FText::AsNumber(static_cast<int32>(GameUserSettings->GetFrameRateLimit())));
+	if (FpsCapNumberText) FpsCapNumberText->SetText(FText::AsNumber(static_cast<int32>(GameUserSettings->GetFrameRateLimit())));
 	if (FpsCapSlider) FpsCapSlider->SetValue(InValue);
 }
 
@@ -178,7 +178,7 @@ void UAudioSettingsUI::SetFpsValue(const float InValue)
 {
 	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
 	GameUserSettings->SetFrameRateLimit(InValue);
-	if (FpsCapNumber) FpsCapNumber->SetText(FText::AsNumber(static_cast<int32>(GameUserSettings->GetFrameRateLimit())));
+	if (FpsCapNumberText) FpsCapNumberText->SetText(FText::AsNumber(static_cast<int32>(GameUserSettings->GetFrameRateLimit())));
 }
 
 void UAudioSettingsUI::SetHorizontalSensitivityNumberValue(const float InValue)
