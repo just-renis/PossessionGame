@@ -135,9 +135,10 @@ void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 {
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AProjectile::DestroyThis, ProjectileData.LifeSpan, false);
-	MovementComponent->InitialSpeed = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].InitialSpeed;
-	MovementComponent->MaxSpeed = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].MaxSpeed;
-	MovementComponent->ProjectileGravityScale = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich].GravityScale;
+	const FAdditionalProjectileData AdditionalProjectileData = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich];
+	MovementComponent->InitialSpeed = AdditionalProjectileData.InitialSpeed;
+	MovementComponent->MaxSpeed = AdditionalProjectileData.MaxSpeed;
+	MovementComponent->ProjectileGravityScale = AdditionalProjectileData.GravityScale;
 	Damage = DefaultDamage = ProjectileData.Damage;
 	if (bIsPlayerProjectile)
 	{

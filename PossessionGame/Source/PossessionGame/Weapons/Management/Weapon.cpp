@@ -178,11 +178,11 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bFromFirs
 	const FRotator BaseRotation = GetSocketRotation(ProjectileSocketName);
 	if (ProjectileData->Amount > 1)
 	{
-		const FAdditionalProjectiles ProjectilesData = ProjectileData->GetMultiProjectileData(ProjectileData->Amount);
-		for (int32 i = 0; i < ProjectilesData.Data.Num(); i++)
+		const FAdditionalProjectiles AdditionalProjectilesData = ProjectileData->GetMultiProjectileData(ProjectileData->Amount);
+		for (int32 i = 0; i < AdditionalProjectilesData.Data.Num(); i++)
 		{
-			GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, GetSocketLocation(ProjectileSocketName), BaseRotation.RotateVector(ProjectilesData.Data[i].Direction).Rotation())
-			->Init(*ProjectileData, BaseRotation.RotateVector(ProjectilesData.Data[i].Direction).Rotation(), GetSocketScale(ProjectileSocketName), i);
+			GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, GetSocketLocation(ProjectileSocketName), BaseRotation.RotateVector(AdditionalProjectilesData.Data[i].Direction).Rotation())
+			->Init(*ProjectileData, BaseRotation.RotateVector(AdditionalProjectilesData.Data[i].Direction).Rotation(), GetSocketScale(ProjectileSocketName), i);
 		}
 	}
 	else
