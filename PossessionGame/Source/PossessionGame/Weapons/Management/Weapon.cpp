@@ -96,7 +96,7 @@ void AWeapon::P_AttachHandsToCamera(const FVector& InLocation, const FRotator& I
 	HandsMesh->SetHiddenInGame(false);
 	HandsMesh->AttachToComponent(GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetTransformComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	HandsMesh->SetRelativeLocationAndRotation(InLocation, InRotation);
-	if (InScale != FVector::Zero()) HandsMesh->SetRelativeScale3D(InScale);
+	if (InScale != FVector::ZeroVector) HandsMesh->SetRelativeScale3D(InScale);
 	if (Mesh)
 	{
 		Mesh->SetRelativeLocationAndRotation(InLocation, InRotation);
@@ -107,7 +107,7 @@ void AWeapon::P_AttachHandsToCamera(const FVector& InLocation, const FRotator& I
 
 void AWeapon::P_AttachWeaponToHands(const TObjectPtr<USkeletalMeshComponent>& InHandsMesh, const FName& InSocketName)
 {
-	Mesh->AttachToComponent(InHandsMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, InSocketName);
+	Mesh->AttachToComponent(InHandsMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, InSocketName);
 }
 
 void AWeapon::P_SetWalkSpread(const bool bState)
