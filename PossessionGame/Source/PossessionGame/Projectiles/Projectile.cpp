@@ -115,6 +115,7 @@ EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.Damag
 
 void AProjectile::AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile)
 {
+	if (bIsPlayerProjectile) return;
 	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatDamage);
 	const float DamagePercentage = UpgradeManager->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage);
 	if (DamagePercentage > 0.f) Damage += DefaultDamage * DamagePercentage * 0.01f;

@@ -102,6 +102,8 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 	CharacterVfxCombinationsMap =
 	{
 		{FCharacterPairWrapper({ ECharacterType::Guardian, EVfxType::Spawn }), EVfx::GuardianSpawn },
+		{FCharacterPairWrapper({ ECharacterType::Ranger, EVfxType::Spawn }), EVfx::RangerSpawn },
+		{FCharacterPairWrapper({ ECharacterType::Trickster, EVfxType::Spawn }), EVfx::TricksterSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Minion, EVfxType::Spawn }), EVfx::MinionSpawn }
 	};
 	PrimaryInit();
@@ -212,7 +214,7 @@ void UPrimaryDataAssetsManager::SetupSpawnLocations()
 		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
 		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
 	}
-	if (bTutorialIsFinished) SpawnTutorialEnemy(ECharacterType::Guardian, EGameMode::TutorialMode1);
+	if (bTutorialIsFinished) SpawnTutorialEnemy(ECharacterType::Trickster, EGameMode::TutorialMode1);
 }
 
 void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes)
@@ -414,6 +416,9 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_MinionBossLaserEyeHold", ESound::MinionBossLaserEyeHold);
 	SoundMap.Add("PA_MinionBossDeathExplosion", ESound::MinionBossDeathExplosion);
 	SoundMap.Add("PA_MinionBossElectrificationDeathPassive", ESound::MinionBossElectrificationDeathPassive);
+	SoundMap.Add("PA_MinionBossDeath", ESound::MinionBossDeath);
+	SoundMap.Add("PA_MinionBossSpawn", ESound::MinionBossSpawn);
+	SoundMap.Add("PA_MinionBossTakeDamage", ESound::MinionBossTakeDamage);
 	SoundMap.Add("PA_DroneBuzz", ESound::DroneBuzz);
 	SoundMap.Add("PA_DialogueStart", ESound::DialogueStart);
 	SoundMap.Add("PA_RestSoundtrack", ESound::RestSoundtrack);
@@ -481,6 +486,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_RangerGrenadeLauncherMarker", EVfx::RangerGrenadeLauncherMarker);
 	VfxsMap.Add("PA_RangerDeathElectrification", EVfx::RangerDeathElectrification);
 	VfxsMap.Add("PA_RangerGrenadeTrail", EVfx::RangerGrenadeTrail);
+	VfxsMap.Add("PA_RangerSpawn", EVfx::RangerSpawn);
 	VfxsMap.Add("PA_StopTimeAbility", EVfx::StopTimeAbility);
 	VfxsMap.Add("PA_StopTimeAbilityReverse", EVfx::StopTimeAbilityReverse);
 	VfxsMap.Add("PA_MinionMuzzle", EVfx::MinionMuzzle);
@@ -498,6 +504,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TricksterDeathElectrification", EVfx::TricksterDeathElectrification);
 	VfxsMap.Add("PA_TricksterEmpGrenadeTrail", EVfx::TricksterEmpGrenadeTrail);
 	VfxsMap.Add("PA_TricksterPoisonGrenadeTrail", EVfx::TricksterPoisonGrenadeTrail);
+	VfxsMap.Add("PA_TricksterSpawn", EVfx::TricksterSpawn);
 	VfxsMap.Add("PA_SpyMuzzle", EVfx::SpyMuzzle);
 	VfxsMap.Add("PA_SpyBulletTrail", EVfx::SpyBulletTrail);
 	VfxsMap.Add("PA_SpyBulletImpact", EVfx::SpyBulletImpact);
@@ -518,6 +525,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_MinionBossLaser", EVfx::MinionBossLaser);
 	VfxsMap.Add("PA_MinionBossDeathExplosion", EVfx::MinionBossDeathExplosion);
 	VfxsMap.Add("PA_MinionBossDeathElectrification", EVfx::MinionBossDeathElectrification);
+	VfxsMap.Add("PA_MinionBossSpawn", EVfx::MinionBossSpawn);
 	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
 	VfxsMap.Add("PA_UsbAura", EVfx::UsbAura);
 	VfxsMap.Add("PA_ArtifactAura", EVfx::ArtifactAura);

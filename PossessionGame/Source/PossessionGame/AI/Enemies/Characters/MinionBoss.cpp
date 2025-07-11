@@ -74,6 +74,15 @@ AMinionBoss::AMinionBoss()
 	Sounds.Add(ESound::MinionBossElectrificationDeathPassive, CreateDefaultSubobject<UAudioComponent>(TEXT("electrificationDeathPassiveSfx")));
 	Sounds[ESound::MinionBossElectrificationDeathPassive]->SetAutoActivate(false);
 	Sounds[ESound::MinionBossElectrificationDeathPassive]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::MinionBossSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
+	Sounds[ESound::MinionBossSpawn]->SetAutoActivate(false);
+	Sounds[ESound::MinionBossSpawn]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::MinionBossDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("deathSound")));
+	Sounds[ESound::MinionBossDeath]->SetAutoActivate(false);
+	Sounds[ESound::MinionBossDeath]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::MinionBossTakeDamage, CreateDefaultSubobject<UAudioComponent>(TEXT("takeDamageSound")));
+	Sounds[ESound::MinionBossTakeDamage]->SetAutoActivate(false);
+	Sounds[ESound::MinionBossTakeDamage]->SetupAttachment(GetMesh());
 }
 
 TObjectPtr<AWeapon>& AMinionBoss::GetWeapon() { return Weapons[0]; }
@@ -125,6 +134,14 @@ void AMinionBoss::AI_PlayDeathExplosion()
 void AMinionBoss::AI_PlayDeathElectrification()
 {
 	AssetsManager->AttachVfx(EVfx::MinionBossDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
+}
+
+void AMinionBoss::AI_PlaySpawnSound() { PlaySound(ESound::MinionBossSpawn, true); }
+
+void AMinionBoss::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::MinionBossDeath);
 }
 
 void AMinionBoss::BeginPlay()
@@ -214,6 +231,7 @@ void AMinionBoss::EmpEffectEnded()
 void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
 {
 	Super::ReceiveDamage(InDamage, InDamageReason);
+	PlaySound(ESound::MinionBossTakeDamage);
 	(void)DelegateManager->OnBossDamaged.ExecuteIfBound(CurrentHp, MaxHp);
 }
 
