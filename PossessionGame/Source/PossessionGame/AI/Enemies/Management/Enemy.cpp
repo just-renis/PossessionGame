@@ -972,16 +972,7 @@ void AEnemy::P_TryInteracting()
 		P_TutorialPressKeyToContinueLogic();
 		return;
 	}
-	FHitResult Hit;
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(this);
-	if (GetWorld()->LineTraceSingleByChannel(Hit, Camera->GetComponentLocation(), Camera->GetComponentLocation() + Camera->GetForwardVector() * 450.f, ECC_Visibility, CollisionParams))
-	{
-		if (const TObjectPtr<AActor> HitActor = Hit.GetActor(); HitActor->Implements<UInteractable>())
-		{
-			if (IInteractable* Interactable = Cast<IInteractable>(HitActor); Interactable->GetIsInteractable()) Interactable->Interact();
-		}
-	}
+	DelegateManager->OnInteractionTry.Broadcast();
 }
 
 void AEnemy::P_TutorialPressKeyToContinueLogic()

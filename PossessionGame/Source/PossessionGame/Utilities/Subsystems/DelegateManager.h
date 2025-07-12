@@ -47,6 +47,7 @@ DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_MULTICAST_DELEGATE(FOnHackModeStart);
 DECLARE_MULTICAST_DELEGATE(FOnBossDeath);
 DECLARE_MULTICAST_DELEGATE(FOnMainTutorialEnd);
+DECLARE_MULTICAST_DELEGATE(FOnInteractionTry);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelUp, const int32);
@@ -107,6 +108,7 @@ public:
 	FOnHackModeStart OnHackModeStart;
 	FOnBossDeath OnBossDeath;
 	FOnMainTutorialEnd OnMainTutorialEnd;
+	FOnInteractionTry OnInteractionTry;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnConcealAbilityChange OnConcealAbilityChange;
 	FOnLevelUp OnLevelUp;

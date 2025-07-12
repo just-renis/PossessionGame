@@ -2,6 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "PossessionGame/UI/SecondaryWidgets/InteractableUI.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 void AInteractableObject::FadeOutInteractableUI()
 {
@@ -23,6 +24,7 @@ void AInteractableObject::BeginPlay()
 {
 	Super::BeginPlay();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	DelegateManager->OnInteractionTry.AddUObject(this, &AInteractableObject::Interact);
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AInteractableObject::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &AInteractableObject::DisableInteractionWidget);
 	InteractableUI = Cast<UInteractableUI>(InteractableWidget->GetWidget());

@@ -34,6 +34,7 @@ bool AGate::GetIsInteractable() const { return IInteractable::GetIsInteractable(
 void AGate::BeginPlay()
 {
 	Super::BeginPlay();
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnInteractionTry.AddUObject(this, &AGate::Interact);
 	InteractableUI = Cast<UInteractableUI>(InteractableWidget->GetWidget());
 	bNeededArtifact = bNeedsArtifact;
 	if (bIsUnlockableByInteraction) SetupInteractability();
@@ -139,7 +140,6 @@ void AGate::SetupInteractability()
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AGate::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &AGate::DisableInteractionWidget);
 	Collision->SetBoxExtent(FVector(250.f, 450.f, 175.f));
-	SetIsInteractable(true);
 }
 
 void AGate::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -147,6 +147,7 @@ void AGate::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AA
 	if (bNeedsArtifact || !OtherActor->ActorHasTag("Player")) return;
 	if (InteractableWidget) InteractableWidget->SetVisibility(true);
 	if (InteractableUI) InteractableUI->PlayFadeInAnim(true);
+	SetIsInteractable(true);
 }
 
 void AGate::DisableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -154,4 +155,5 @@ void AGate::DisableInteractionWidget(UPrimitiveComponent* OverlappedComponent, A
 	if (bNeedsArtifact || !OtherActor->ActorHasTag("Player")) return;
 	if (InteractableUI) InteractableUI->PlayFadeInAnim(false);
 	GetWorldTimerManager().SetTimer(FadeOutAnimHandle, this, &AGate::FadeOutAnimFinished, InteractableUI->GetFadeInAnimLength(), false);
+	SetIsInteractable(false);
 }

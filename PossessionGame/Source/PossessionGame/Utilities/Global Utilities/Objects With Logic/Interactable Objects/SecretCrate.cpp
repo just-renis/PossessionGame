@@ -50,7 +50,6 @@ void ASecretCrate::BeginPlay()
 {
 	Super::BeginPlay();
 	PlaySound(ESound::SecretCratePassive);
-	SetIsInteractable(true);
 }
 
 void ASecretCrate::Interact()
