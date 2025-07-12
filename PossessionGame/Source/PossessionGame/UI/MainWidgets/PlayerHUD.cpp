@@ -1,5 +1,4 @@
 #include "PlayerHUD.h"
-#include "Blueprint/WidgetTree.h"
 #include "Components/ProgressBar.h"
 #include "Components/Image.h"
 #include "Components/InvalidationBox.h"
@@ -92,8 +91,8 @@ void UPlayerHUD::UpdateHijackIndicator(const bool bState, const FText& InKeyName
 	{
 		AssetsManager->PlaySound2D(ESound::ReadyToPossess);
 		PlayAnimation(HijackIndicatorPopup);
-		PlayAnimation(PressToHijackPopup);
 	}
+	else if (PressKeyBindSizeBox) PressKeyBindSizeBox->SetRenderOpacity(0.f);
 }
 
 void UPlayerHUD::UpdateDashIndicator(const bool bState) const { if (DashIndicator) DashIndicator->SetOpacity(bState ? 1.f : 0.3f); }

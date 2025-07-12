@@ -1088,12 +1088,7 @@ void AEnemy::P_ControlLogic()
 	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size());
 	if (!bCanPossessOtherEnemy && !bInUpgradeSelection) P_PossessionBarLogic();
 	if (bCanDash) return;
-	CurrentDashCooldown += 0.05f;
-	if (CurrentDashCooldown >= P_Data->GetDashCooldown())
-	{
-		bCanDash = true;
-		if (P_HUD) P_HUD->UpdateDashIndicator(true);
-	}
+	P_DashCooldownLogic();
 }
 
 void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
@@ -1144,6 +1139,16 @@ void AEnemy::P_ContinuousFovChange()
 }
 
 void AEnemy::P_StopDash() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
+
+void AEnemy::P_DashCooldownLogic()
+{
+	CurrentDashCooldown += 0.05f;
+	if (CurrentDashCooldown >= P_Data->GetDashCooldown())
+	{
+		bCanDash = true;
+		if (P_HUD) P_HUD->UpdateDashIndicator(true);
+	}
+}
 
 void AEnemy::TickAbilities(const float InDeltaTime)
 {

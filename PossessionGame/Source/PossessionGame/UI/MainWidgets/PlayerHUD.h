@@ -124,6 +124,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> HijackChargeText;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidget> PressKeyBindSizeBox;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInfoPanelUI> InfoPanel;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeOutAnim;
@@ -133,8 +135,6 @@ private:
 	TObjectPtr<UWidgetAnimation> DamageTickFadeOut;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> HijackIndicatorPopup;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PressToHijackPopup;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> HijackedPopup;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
