@@ -42,7 +42,7 @@ public:
 	void SetCharacterType(const ECharacterType InCharacterType);
 	void SetCurrentCrosshair() const;
 	void ToggleInfoPanel(const bool bState) const;
-	void ShowPossessionUnavailable();
+	void ShowHijackUnavailable();
 	void ShowOutOfAmmo();
 private:
 	bool bIsHidden = false;
@@ -59,8 +59,6 @@ private:
 	TObjectPtr<UAbilitiesPanelUI> TricksterAbilitiesPanel;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UAbilitiesPanelUI> GuardianAbilitiesPanel;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> PossessionBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> XpBar;
 	UPROPERTY(meta = (BindWidget))
@@ -116,13 +114,11 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> OutOfAmmoInv;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> PossessionUnavailableInv;
+	TObjectPtr<UInvalidationBox> HijackUnavailableInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> HijackProgressBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> HijackChargedImage;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> HijackIndicatorUncharged;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> HijackIndicatorCharged;
 	UPROPERTY(meta = (BindWidget))
@@ -136,15 +132,15 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DamageTickFadeOut;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PossessionIndicatorPopup;
+	TObjectPtr<UWidgetAnimation> HijackIndicatorPopup;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PressToPossessPopup;
+	TObjectPtr<UWidgetAnimation> PressToHijackPopup;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PossessedPopup;
+	TObjectPtr<UWidgetAnimation> HijackedPopup;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> LevelUpAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> PossessionUnavailableAnim;
+	TObjectPtr<UWidgetAnimation> HijackUnavailableAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> OutOfAmmoAnim;
 	UPROPERTY()

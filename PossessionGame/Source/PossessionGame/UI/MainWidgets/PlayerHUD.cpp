@@ -91,8 +91,8 @@ void UPlayerHUD::UpdateHijackIndicator(const bool bState, const FText& InKeyName
 	if (bState)
 	{
 		AssetsManager->PlaySound2D(ESound::ReadyToPossess);
-		PlayAnimation(PossessionIndicatorPopup);
-		PlayAnimation(PressToPossessPopup);
+		PlayAnimation(HijackIndicatorPopup);
+		PlayAnimation(PressToHijackPopup);
 	}
 }
 
@@ -181,11 +181,11 @@ void UPlayerHUD::ToggleInfoPanel(const bool bState) const
 	InfoPanelInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
-void UPlayerHUD::ShowPossessionUnavailable()
+void UPlayerHUD::ShowHijackUnavailable()
 {
-	if (!PossessionUnavailableInv) return;
-	PlayAnimation(PossessionUnavailableAnim);
-	PossessionUnavailableInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (!HijackUnavailableInv) return;
+	PlayAnimation(HijackUnavailableAnim);
+	HijackUnavailableInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UPlayerHUD::ShowOutOfAmmo()
@@ -289,7 +289,7 @@ void UPlayerHUD::PlayAnnouncement(const FText& InText)
 	if (!AnnouncementInv || !AnnouncementText) return;
 	AnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	AnnouncementText->SetText(InText);
-	PlayAnimation(PossessedPopup);
+	PlayAnimation(HijackedPopup);
 }
 
 template<typename T>

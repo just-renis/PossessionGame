@@ -808,7 +808,7 @@ void AEnemy::P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy)
 	if (!InEnemy->GetIsPossessable() || InEnemy->GetIsMutant())
 	{
 		AssetsManager->PlaySound2D(ESound::NotSelectable);
-		if (P_HUD) P_HUD->ShowPossessionUnavailable();
+		if (P_HUD) P_HUD->ShowHijackUnavailable();
 		return;
 	}
 	P_StopAllAbilities();
