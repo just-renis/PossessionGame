@@ -776,7 +776,7 @@ void AEnemy::P_SetupUI()
 	P_HUD = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD, 0);
 	P_HUD->SetCharacterType(CharacterName);
 	P_HUD->SetPlayerRef(this);
-	P_HUD->UpdateProgressBar(EUIBar::Possession, 0.f, P_Data->GetPossessionBarCooldown());
+	P_HUD->UpdateProgressBar(EUIBar::Hijack, 0.f, P_Data->GetPossessionBarCooldown());
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
 	P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSaveSlot()->GetXp(), GameInstance->GetSaveSlot()->GetCurrentLevelNeededXp());
 	P_HUD->ConfigureUIs();
@@ -823,9 +823,9 @@ void AEnemy::P_PossessionBarLogic()
 	if (PossessionBarTimer >= P_Data->GetPossessionBarCooldown())
 	{
 		bCanPossessOtherEnemy = true;
-		if (P_HUD && !P_HUD->GetPossessionIndicatorIsShowing()) P_HUD->UpdatePossessionIndicator(true, GlobalSettingsManager->GetKeyBindText("Hijack"));
+		if (P_HUD) P_HUD->UpdateHijackIndicator(true, GlobalSettingsManager->GetKeyBindText("Hijack"));
 	}
-	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Possession, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
+	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hijack, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
 }
 
 void AEnemy::P_Rotate(const FInputActionValue& InValue)

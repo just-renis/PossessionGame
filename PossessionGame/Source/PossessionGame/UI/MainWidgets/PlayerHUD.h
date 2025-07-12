@@ -24,8 +24,6 @@ class POSSESSIONGAME_API UPlayerHUD : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	bool GetPossessionIndicatorIsShowing() const;
-	
 	void SetPlayerRef(const TObjectPtr<AEnemy>& InPlayerRef) { Player = InPlayerRef; }
 	void UpdateProgressBar(const EUIBar InBar, const float InCurrent, const float InMax);
 	void UpdateAmmoText(const int32 InWeaponAmmo) const;
@@ -35,7 +33,7 @@ public:
 	void UpdateFps(const int32 InFps) const;
 	void Reset();
 	void SetColors(const FLinearColor InColor) const;
-	void UpdatePossessionIndicator(const bool bState, const FText& InKeyName = FText());
+	void UpdateHijackIndicator(const bool bState, const FText& InKeyName = FText());
 	void UpdateDashIndicator(const bool bState) const;
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs();
@@ -100,17 +98,11 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FpsText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> PossessionIndicator;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> PossessionIndicatorOverlay;
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> DashIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> BossHpBarInv;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> PressKeyBindInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> PressKeyBindText;
 	UPROPERTY(meta = (BindWidget))
@@ -125,6 +117,16 @@ private:
 	TObjectPtr<UInvalidationBox> OutOfAmmoInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> PossessionUnavailableInv;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> HijackProgressBar;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> HijackChargedImage;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> HijackIndicatorUncharged;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> HijackIndicatorCharged;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> HijackChargeText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInfoPanelUI> InfoPanel;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -150,6 +152,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_HijackProgress;
+	UPROPERTY()
 	FTimerHandle UpdateWhiteHpBarHandle;
 	UPROPERTY()
 	FTimerHandle UpdateBossWhiteHpBarHandle;
@@ -166,7 +170,7 @@ private:
 	void DisableBossHpBar() const;
 	void UpdateWhiteHpBar();
 	void UpdateBossWhiteHpBar();
-	void UpdatePressToPossessKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const;
+	void UpdatePressToHijackKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const;
 	void PlayAnnouncement(const FText& InText);
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);

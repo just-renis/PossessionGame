@@ -11,21 +11,24 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
-bool UPlayerHUD::GetPossessionIndicatorIsShowing() const { return PossessionIndicator ? PossessionIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible : false; }
-
 void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, const float InMax)
 {
+	float Progress = InCurrent / InMax;
 	switch (InBar)
 	{
 		case EUIBar::Hp:
 			if (!HpBar || !HpWhiteBar || !HpNumberText) return;
-			StepHpPercentage = (HpBar->GetPercent() - InCurrent / InMax) * 0.1f;
+			StepHpPercentage = (HpBar->GetPercent() - Progress) * 0.1f;
 			HpWhiteBar->SetPercent(HpBar->GetPercent());
-			HpBar->SetPercent(InCurrent / InMax);
+			HpBar->SetPercent(Progress);
 			HpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
 			GetWorld()->GetTimerManager().SetTimer(UpdateWhiteHpBarHandle, this, &UPlayerHUD::UpdateWhiteHpBar, 0.02f, true);
 			break;
-		case EUIBar::Possession: if (PossessionBar) PossessionBar->SetPercent(InCurrent / InMax); break;
+		case EUIBar::Hijack:
+			if (Progress > 1.f) Progress = 1.f;
+			if (MID_HijackProgress) MID_HijackProgress->SetScalarParameterValue("Progress", Progress);
+			if (HijackChargeText) HijackChargeText->SetText(FText::FromString(FString::FromInt(Progress * 100.f) + "%"));
+			break;
 		case EUIBar::Xp:
 			if (!XpBar || !XpNumberText) return;
 			XpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
@@ -33,9 +36,9 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 		break;
 		case EUIBar::Boss:
 			if (!BossHpBar || !BossHpWhiteBar) return;
-			BossStepHpPercentage = (BossHpBar->GetPercent() - InCurrent / InMax) * 0.1f;
+			BossStepHpPercentage = (BossHpBar->GetPercent() - Progress) * 0.1f;
 			BossHpWhiteBar->SetPercent(BossHpBar->GetPercent());
-			BossHpBar->SetPercent(InCurrent / InMax);
+			BossHpBar->SetPercent(Progress);
 			GetWorld()->GetTimerManager().SetTimer(UpdateBossWhiteHpBarHandle, this, &UPlayerHUD::UpdateBossWhiteHpBar, 0.02f, true);
 		default: ;
 	}
@@ -70,23 +73,21 @@ void UPlayerHUD::UpdateFps(const int32 InFps) const
 
 void UPlayerHUD::Reset()
 {
-	if (PossessionBar) PossessionBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (XpBar) XpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (Crosshair) Crosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (AmmoText) AmmoText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	if (HpBar) HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	UpdatePossessionIndicator(false);
+	UpdateHijackIndicator(false);
 	GetAbilityPanel()->SetOverlaysVisibility(true);
 }
 
 void UPlayerHUD::SetColors(const FLinearColor InColor) const { if (ScreenGlow) ScreenGlow->SetColorAndOpacity(InColor); }
 
-void UPlayerHUD::UpdatePossessionIndicator(const bool bState, const FText& InKeyName)
+void UPlayerHUD::UpdateHijackIndicator(const bool bState, const FText& InKeyName)
 {
-	if (PossessionIndicator) PossessionIndicator->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	if (PressKeyBindInv) PressKeyBindInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	UpdatePressToPossessKeyBind(FName(), InKeyName);
-	if (PossessionIndicatorOverlay)	PossessionIndicatorOverlay->SetVisibility(bState ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
+	if (HijackChargedImage) HijackChargedImage->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (HijackIndicatorCharged)	HijackIndicatorCharged->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	UpdatePressToHijackKeyBind(FName(), InKeyName);
 	if (bState)
 	{
 		AssetsManager->PlaySound2D(ESound::ReadyToPossess);
@@ -105,9 +106,7 @@ void UPlayerHUD::ToggleCriticalDamageIndicator() const
 
 void UPlayerHUD::ConfigureUIs()
 {
-	if (PressKeyBindInv) PressKeyBindInv->SetVisibility(ESlateVisibility::Collapsed);
 	if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::Collapsed);
-	if (PossessionIndicator) PossessionIndicator->SetVisibility(ESlateVisibility::Collapsed);
 	if (CriticalDamageIndicator) CriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
 	if (InfoPanel) InfoPanel->Setup(CharacterType);
 	if (!GetAbilityPanel()) return;
@@ -217,9 +216,11 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->OnBossDamaged.BindUObject(this, &UPlayerHUD::UpdateBossHpBar);
 	DelegateManager->OnBossSpawn.BindUObject(this, &UPlayerHUD::EnableBossHpBar);
 	DelegateManager->OnBossDeath.AddUObject(this, &UPlayerHUD::DisableBossHpBar);
-	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerHUD::UpdatePressToPossessKeyBind);
+	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerHUD::UpdatePressToHijackKeyBind);
 	DelegateManager->OnOutOfAmmo.BindUObject(this, &UPlayerHUD::ShowOutOfAmmo);
 	DelegateManager->RequirePlayerAnnouncementInfo.BindUObject(this, &UPlayerHUD::PlayAnnouncement);
+	if (HijackProgressBar) MID_HijackProgress = HijackProgressBar->GetDynamicMaterial();
+	UpdateHijackIndicator(false);
 }
 
 void UPlayerHUD::ShowDamageTick(const bool bIsCritical)
@@ -278,9 +279,9 @@ void UPlayerHUD::UpdateBossWhiteHpBar()
 	BossHpWhiteBar->SetPercent(NewPercentage);
 }
 
-void UPlayerHUD::UpdatePressToPossessKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const
+void UPlayerHUD::UpdatePressToHijackKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const
 {
-	if (PressKeyBindText && InKeyBindName.IsEqual("Hijack")) PressKeyBindText->SetText(FText::Format(FText::FromString("Press {0} to possess"), InKeyBindText));
+	if (PressKeyBindText && InKeyBindName.IsEqual("Hijack")) PressKeyBindText->SetText(FText::Format(FText::FromString("{0}"), InKeyBindText));
 }
 
 void UPlayerHUD::PlayAnnouncement(const FText& InText)

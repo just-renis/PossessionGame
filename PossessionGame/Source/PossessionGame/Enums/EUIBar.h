@@ -5,7 +5,7 @@ enum class EUIBar : uint8
 {
 	None,
 	Hp,
-	Possession,
+	Hijack,
 	Xp,
 	Boss
 };
