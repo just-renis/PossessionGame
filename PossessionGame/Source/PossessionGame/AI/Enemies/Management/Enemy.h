@@ -49,9 +49,9 @@ public:
 
 	bool GetIsAlive() const { return bIsAlive; }
 	bool IsAsyncAssetStillAllowedToBeUsed() const { return bIsAlive && !bAffectedByEmp; }
-	bool GetIsPossessed() const { return bIsPossessed; }
+	bool GetIsHijacked() const { return bIsHijacked; }
 	bool GetCanReload() const { return bCanReload; }
-	bool GetIsPossessable() const;
+	bool GetIsHijackAble() const;
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
 	bool CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
 	bool GetIsMutant() const { return bIsMutant; }
@@ -102,15 +102,15 @@ public:
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired = false);
 	void StopSound(const ESound InSoundName);
 	virtual void SetEmpEffect(const float InEffectDuration);
-	void SetPossessionOutline(const bool bState);
-	virtual void SetUnPossessionOutline(const bool bState) const;
+	void SetHijackOutline(const bool bState);
+	virtual void SetUnHijackOutline(const bool bState) const;
 	virtual void EmpEffectEnded();
 	void SetInputState(const bool bState) { bIsInputLocked = bState; }
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
-	bool bIsPossessed = false;
+	bool bIsHijacked = false;
 	bool bCanShoot = false;
 	bool bIsActionInMotion = false;
 	bool bShootPauseActive = false;
@@ -209,7 +209,7 @@ protected:
 private:
 	bool bPressKeyEnabled = false;
 	bool bInUpgradeSelection = false;
-	bool bCanPossessOtherEnemy = false;
+	bool bCanHijackOtherEnemy = false;
 	bool bIsAlive = true;
 	bool bEnableUnloadLevel = false;
 	bool bIsCriticallyDamaged = false;
@@ -219,8 +219,8 @@ private:
 	bool bIsStomping = false;
 	bool bCanStomp = false;
 	bool bCanDash = true;
-	bool bPossessionOutlineState = false;
-	float PossessionBarTimer = 0.f;
+	bool bHijackOutlineState = false;
+	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
 	float FovChangeTick;
@@ -254,9 +254,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> QuickMeleeCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UMaterialInterface> PossessionOutlineMaterial;
+	TObjectPtr<UMaterialInterface> HijackOutlineMaterial;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UMaterialInterface> UnPossessionOutlineMaterial;
+	TObjectPtr<UMaterialInterface> UnHijackOutlineMaterial;
 	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
@@ -274,7 +274,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> EmpAffected;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> PossessionViable;
+	TObjectPtr<UNiagaraComponent> HijackViable;
 	UPROPERTY()
 	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
 	UPROPERTY()
@@ -329,13 +329,13 @@ private:
 
 	void P_SetupData();
 	void P_SetupUI();
-	void P_PossessEnemy();
-	void P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy);
-	void P_PossessionBarLogic();
+	void P_HijackEnemy();
+	void P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy);
+	void P_HijackBarLogic();
 	void P_Rotate(const FInputActionValue& InValue);
 	void P_Reload();
 	void P_Dash();
-	void P_OnEnemyDeathEvents(const int32 InXp, const float InPossessionTimeValue);
+	void P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue);
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
 	void P_StopAllAbilities();
@@ -388,5 +388,5 @@ private:
 	void CloseInfoPanel();
 	void PlayEmpAffectedVfx(const float InEffectDuration);
 	void RestartLevel() const;
-	void DisablePossessionViableVfx() const;
+	void DisableHijackViableVfx() const;
 };

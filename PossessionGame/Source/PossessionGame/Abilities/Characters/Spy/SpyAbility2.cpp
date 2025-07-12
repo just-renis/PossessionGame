@@ -15,7 +15,7 @@ void USpyAbility2::AI_Execute()
 
 void USpyAbility2::P_Execute() { CastLineTrace(); }
 
-bool USpyAbility2::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
+bool USpyAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void USpyAbility2::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ASpy>(AbilityProprietor); }
 

@@ -21,6 +21,6 @@ void URangerAbility2::P_Execute()
 	Super::P_Execute();
 }
 
-bool URangerAbility2::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
+bool URangerAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void URangerAbility2::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ARanger>(AbilityProprietor); }

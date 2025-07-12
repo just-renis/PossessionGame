@@ -4,7 +4,7 @@
 void UAIHpBarUI::UpdateHpBar(const float InCurrentHp, const float InMaxHp)
 {
 	if (!HpBar || !HpWhiteBar) return;
-	StepHpPercentage = (HpBar->GetPercent() - InCurrentHp / InMaxHp) / 10.f;
+	StepHpPercentage = (HpBar->GetPercent() - InCurrentHp / InMaxHp) * 0.1f;
 	HpWhiteBar->SetPercent(HpBar->GetPercent());
 	HpBar->SetPercent(InCurrentHp / InMaxHp);
 	GetWorld()->GetTimerManager().SetTimer(UpdateWhiteHpBarHandle, this, &UAIHpBarUI::UpdateWhiteHpBar, 0.02f, true);

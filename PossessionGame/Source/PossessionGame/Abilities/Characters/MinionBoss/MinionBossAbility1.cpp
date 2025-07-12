@@ -24,7 +24,7 @@ void UMinionBossAbility1::AI_StopAbility()
 	Super::AI_StopAbility();
 }
 
-bool UMinionBossAbility1::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
+bool UMinionBossAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void UMinionBossAbility1::SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<AMinionBoss>(AbilityProprietor); }
 

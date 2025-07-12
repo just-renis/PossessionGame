@@ -20,6 +20,6 @@ void USpyAbility3::P_StopAbility()
 	}
 }
 
-bool USpyAbility3::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
+bool USpyAbility3::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void USpyAbility3::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ASpy>(AbilityProprietor); }

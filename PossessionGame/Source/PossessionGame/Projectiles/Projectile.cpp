@@ -108,7 +108,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		DealDamageToSentientActor(OtherActor, Hit);
 		return;
 	}
-	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2 && Cast<AEnemy>(OtherActor)->GetIsPossessed()) DealDamageToSentientActor(OtherActor, Hit); // If player got hit.
+	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2 && Cast<AEnemy>(OtherActor)->GetIsHijacked()) DealDamageToSentientActor(OtherActor, Hit); // If player got hit.
 }
 
 EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.DamageReason; }

@@ -40,11 +40,11 @@ void AGuardianWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChang
 
 void AGuardianWeapon::P_Shoot(const bool bIsFirstWeapon)
 {
-	FirstWeapon->P_Shoot();
-	GetWorldTimerManager().SetTimer(SecondWeaponShotHandle, this, &AGuardianWeapon::ShootSecondWeaponShot, 0.2f);
 	if (ShootTimer >= ShootCooldown)
 	{
 		PlayShootMontage();
+		FirstWeapon->P_Shoot();
+		GetWorldTimerManager().SetTimer(SecondWeaponShotHandle, this, &AGuardianWeapon::ShootSecondWeaponShot, 0.2f);
 		ShootTimer = 0.f;
 		DelegateManager->OnWeaponAmmoChangeThreeParams.Broadcast(FirstWeapon->GetCurrentAmmoAmount(), SecondWeapon->GetCurrentAmmoAmount(), TotalAmmo);
 	}

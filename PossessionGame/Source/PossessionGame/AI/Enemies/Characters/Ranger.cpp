@@ -56,11 +56,11 @@ void ARanger::P_LaunchGrenade()
 void ARanger::SpawnShield()
 {
 	const TObjectPtr<APoolObject> Shield = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::RangerShield, GetActorLocation() + GetActorForwardVector() * 100.f, GetActorRotation() + FRotator(0.f, -90.f, 0.f));
-	Shield->Init(bIsPossessed);
+	Shield->Init(bIsHijacked);
 	Cast<ARangerShield>(Shield)->SetProprietor(this);
 }
 
-void ARanger::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::RangerOnPossession); }
+void ARanger::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::RangerOnHijack); }
 
 void ARanger::AI_SetupWeapon()
 {
@@ -123,7 +123,7 @@ void ARanger::GrenadeLauncherMuzzleFlashLogic()
 float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float ReturnDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	if (!bIsActionInMotion && !bIsPossessed && CurrentHp <= MaxHp * 0.5f && CanAbilityBeExecuted(1)) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerDeployShield);
+	if (!bIsActionInMotion && !bIsHijacked && CurrentHp <= MaxHp * 0.5f && CanAbilityBeExecuted(1)) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerDeployShield);
 	return ReturnDamage;
 }
 

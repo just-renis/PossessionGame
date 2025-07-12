@@ -75,7 +75,7 @@ AEnemy::AEnemy()
 	Sounds[ESound::EmpEffectApplied]->SetupAttachment(GetMesh());
 }
 
-bool AEnemy::GetIsPossessable() const { return AI_Data->GetIsPossessable(); }
+bool AEnemy::GetIsHijackAble() const { return AI_Data->GetIsPossessable(); }
 
 float AEnemy::GetSkeletalMeshHeight() const { return GetMesh()->GetSocketLocation(TEXT("Head")).Z - GetMesh()->GetComponentLocation().Z; }
 
@@ -180,7 +180,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Started, this, &AEnemy::P_Jump);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Rotate);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Dash);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &AEnemy::P_PossessEnemy);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &AEnemy::P_HijackEnemy);
 		P_SetupLeftClickInput(EnhancedInputComponent);
 		if (bCanReload) EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(9).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Reload);
 		#if WITH_EDITOR
@@ -204,17 +204,17 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::PossessedBy(AController* NewController)
 {
-	if (!bIsPossessed)
+	if (!bIsHijacked)
 	{
 		Super::PossessedBy(NewController);
 		if (Cast<APlayerController>(NewController))
 		{
-			DisablePossessionViableVfx();
+			DisableHijackViableVfx();
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			bIsActionInMotion = false;
 			P_TriggerGlitchingEffect();
 			P_ToggleCriticallyDamagedEffects(0.f);
-			AssetsManager->PlaySound2D(ESound::OnPossession);
+			AssetsManager->PlaySound2D(ESound::OnHijack);
 			AssetsManager->RemoveStoredSound(ESound::GuardianSlowMotion);
 			AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
 			GetWorldTimerManager().SetTimer(AI_TriggerDeathVoiceLineHandle, this, &AEnemy::AI_TriggerDeathVoiceLine, 1.f, false);
@@ -250,16 +250,20 @@ void AEnemy::AI_TryEvolving()
 	AI_SetupUpgradesAppliance();
 }
 
-void AEnemy::AI_SetupUpgradesAppliance() { MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatHealth); }
+void AEnemy::AI_SetupUpgradesAppliance()
+{
+	MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatHealth);
+	CurrentHp = MaxHp;
+}
 
 void AEnemy::InitiateDeath()
 {
-	DisablePossessionViableVfx();
+	DisableHijackViableVfx();
 	ClearTimers();
 	AI_DestroyHpBar();
 	bIsAlive = false;
 	Tags.Remove("AliveEnemy");
-	if (!bIsPossessed)
+	if (!bIsHijacked)
 	{
 		AI_SpawnUsbOnDeath();
 		AI_PlayDeathSound();
@@ -287,7 +291,7 @@ void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageRea
 	}
 	if (bIsAlive && CurrentHp <= 0)
 	{
-		if (bIsPossessed) P_Death();
+		if (bIsHijacked) P_Death();
 		else ProcessKillDamageReason(InDamageReason);
 		InitiateDeath();
 	}
@@ -296,7 +300,7 @@ void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageRea
 void AEnemy::PlaySound(const ESound InSoundName, const bool bIsCallbackRequired)
 {
 	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() :
-	AssetsManager->ConfigureSound(Sounds[InSoundName], bIsCallbackRequired ? [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); } : TFunction<bool()>(), InSoundName, bIsPossessed);
+	AssetsManager->ConfigureSound(Sounds[InSoundName], bIsCallbackRequired ? [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); } : TFunction<bool()>(), InSoundName, bIsHijacked);
 }
 
 void AEnemy::StopSound(const ESound InSoundName)
@@ -319,28 +323,28 @@ void AEnemy::SetEmpEffect(const float InEffectDuration)
 	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
 }
 
-void AEnemy::SetPossessionOutline(const bool bState)
+void AEnemy::SetHijackOutline(const bool bState)
 {
-	bPossessionOutlineState = bState;
+	bHijackOutlineState = bState;
 	if (bState)
 	{
-		if (!PossessionViable)
+		if (!HijackViable)
 		{
-			AssetsManager->AttachVfx(EVfx::PossessionViable, [this]() -> bool { return GetIsAlive() && bPossessionOutlineState; }, &PossessionViable, GetMesh(), FName("RootSocket"));
+			AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && bHijackOutlineState; }, &HijackViable, GetMesh(), FName("RootSocket"));
 		}
 		else
 		{
-			if (PossessionViable->IsActive()) PossessionViable->Deactivate();
-			PossessionViable->Activate();
+			if (HijackViable->IsActive()) HijackViable->Deactivate();
+			HijackViable->Activate();
 		}
 	}
-	else DisablePossessionViableVfx();
-	GetMesh()->SetOverlayMaterial(bState ? PossessionOutlineMaterial : nullptr);
+	else DisableHijackViableVfx();
+	GetMesh()->SetOverlayMaterial(bState ? HijackOutlineMaterial : nullptr);
 }
 
-void AEnemy::SetUnPossessionOutline(const bool bState) const
+void AEnemy::SetUnHijackOutline(const bool bState) const
 {
-	GetMesh()->SetOverlayMaterial(bState ? UnPossessionOutlineMaterial : nullptr);
+	GetMesh()->SetOverlayMaterial(bState ? UnHijackOutlineMaterial : nullptr);
 }
 
 void AEnemy::EmpEffectEnded()
@@ -683,8 +687,7 @@ void AEnemy::DestroyThis()
 
 void AEnemy::AI_SetupData()
 {
-	MaxHp = AI_Data->GetMaxHp();
-	CurrentHp = MaxHp;
+	CurrentHp = MaxHp = AI_Data->GetMaxHp();
 	SetMaxWalkSpeed(AI_Data->GetMaxWalkSpeed());
 }
 
@@ -765,7 +768,7 @@ void AEnemy::P_SetupData()
 	MaxHp = P_Data->GetMaxHp();
 	MaxHp += MaxHp * GetGameInstance()->GetSaveSlot()->GetLevelHpIncrease() * 0.01f;
 	CurrentHp = MaxHp;
-	bIsPossessed = true;
+	bIsHijacked = true;
 	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 	bCanShoot = true;
 	SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed());
@@ -786,10 +789,10 @@ void AEnemy::P_SetupUI()
 	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.25f, true);
 }
 
-void AEnemy::P_PossessEnemy()
+void AEnemy::P_HijackEnemy()
 {
 	if (bIsInputLocked) return;
-	if (bCanPossessOtherEnemy)
+	if (bCanHijackOtherEnemy)
 	{
 		FHitResult HitResult;
 		FCollisionQueryParams QueryParams;
@@ -797,15 +800,15 @@ void AEnemy::P_PossessEnemy()
 		QueryParams.AddIgnoredActor(this);
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_GameTraceChannel5, QueryParams))
 		{
-			P_PossessionLogic(Cast<AEnemy>(HitResult.GetActor()));
+			P_HijackLogic(Cast<AEnemy>(HitResult.GetActor()));
 		}
 	}
 }
 
-void AEnemy::P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy)
+void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy)
 {
-	if (!InEnemy || InEnemy->bIsPossessed || !InEnemy->bIsAlive) return;
-	if (!InEnemy->GetIsPossessable() || InEnemy->GetIsMutant())
+	if (!InEnemy || InEnemy->bIsHijacked || !InEnemy->bIsAlive) return;
+	if (!InEnemy->GetIsHijackAble() || InEnemy->GetIsMutant())
 	{
 		AssetsManager->PlaySound2D(ESound::NotSelectable);
 		if (P_HUD) P_HUD->ShowHijackUnavailable();
@@ -817,15 +820,15 @@ void AEnemy::P_PossessionLogic(const TObjectPtr<AEnemy>& InEnemy)
 	InitiateDeath();
 }
 
-void AEnemy::P_PossessionBarLogic()
+void AEnemy::P_HijackBarLogic()
 {
-	PossessionBarTimer += 0.05f;
-	if (PossessionBarTimer >= P_Data->GetPossessionBarCooldown())
+	HijackBarTimer += 0.05f;
+	if (HijackBarTimer >= P_Data->GetPossessionBarCooldown())
 	{
-		bCanPossessOtherEnemy = true;
+		bCanHijackOtherEnemy = true;
 		if (P_HUD) P_HUD->UpdateHijackIndicator(true, GlobalSettingsManager->GetKeyBindText("Hijack"));
 	}
-	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hijack, PossessionBarTimer, P_Data->GetPossessionBarCooldown());
+	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hijack, HijackBarTimer, P_Data->GetPossessionBarCooldown());
 }
 
 void AEnemy::P_Rotate(const FInputActionValue& InValue)
@@ -851,9 +854,9 @@ void AEnemy::P_Dash()
 	if (bCanDash) P_InitiateDash();
 }
 
-void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InPossessionTimeValue)
+void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue)
 {
-	PossessionBarTimer += InPossessionTimeValue;
+	HijackBarTimer += InHijackTimeValue;
 	AddXp(InXp);
 	for (int32 i = 0; i < Abilities.Num(); i++)
 	{
@@ -873,7 +876,7 @@ void AEnemy::P_ToggleGodMode()
 	CurrentHp = MaxHp;
 }
 
-void AEnemy::P_UpdateAbilitiesUI() { for (int32 i = 0; i < Abilities.Num(); i++) if (bIsPossessed && !Abilities[i]->GetIsCooldownKill() && !Abilities[i]->GetIsAbilityInDuration()) P_HUD->UpdateAbilityUI(Abilities[i]); }
+void AEnemy::P_UpdateAbilitiesUI() { for (int32 i = 0; i < Abilities.Num(); i++) if (bIsHijacked && !Abilities[i]->GetIsCooldownKill() && !Abilities[i]->GetIsAbilityInDuration()) P_HUD->UpdateAbilityUI(Abilities[i]); }
 
 void AEnemy::P_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->P_StopAbility(); }
 
@@ -1013,7 +1016,7 @@ void AEnemy::P_ApplySecretReward(const int32 InIndex)
 	switch (InIndex)
 	{
 		case 0: AddHp(30); break; // Hp.
-		case 1: PossessionBarTimer += 30.f; break; // Possession.
+		case 1: HijackBarTimer += 30.f; break; // Possession.
 		default: AddXp(10); // Xp.
 	}
 }
@@ -1027,7 +1030,7 @@ void AEnemy::P_SetupNavArea()
 void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {
 	if (CharacterName != InCharacterType) return;
-	P_PossessionLogic(AssetsManager->SpawnVariationReplacement(InCharacterType));
+	P_HijackLogic(AssetsManager->SpawnVariationReplacement(InCharacterType));
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI, 1)->CloseUI();
 }
 
@@ -1077,7 +1080,7 @@ void AEnemy::P_ControlLogic()
 {
 	Weapon->P_SetWalkSpread(GetCharacterMovement()->Velocity.Size() >= P_Data->GetMaxWalkSpeed() - 0.1f);
 	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size());
-	if (!bCanPossessOtherEnemy && !bInUpgradeSelection) P_PossessionBarLogic();
+	if (!bCanHijackOtherEnemy && !bInUpgradeSelection) P_HijackBarLogic();
 	if (bCanDash) return;
 	P_DashCooldownLogic();
 }
@@ -1093,16 +1096,16 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 			IInteractable* Interactable = Cast<IInteractable>(HitActor);
 			if (Interactable->GetIsInteractable()) Interactable->ChangeOutlineState(true);
 		}
-		else if (bCanPossessOtherEnemy)
+		else if (bCanHijackOtherEnemy)
 		{
 			const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
 			if (Enemy && Enemy->GetIsAlive())
 			{
 				if (Enemy != CurrentLookedAtEnemy)
 				{
-					if (CurrentLookedAtEnemy) CurrentLookedAtEnemy->SetPossessionOutline(false);
-					if (Enemy->GetIsPossessable() && !Enemy->GetIsMutant()) Enemy->SetPossessionOutline(true);
-					else Enemy->SetUnPossessionOutline(true);
+					if (CurrentLookedAtEnemy) CurrentLookedAtEnemy->SetHijackOutline(false);
+					if (Enemy->GetIsHijackAble() && !Enemy->GetIsMutant()) Enemy->SetHijackOutline(true);
+					else Enemy->SetUnHijackOutline(true);
 					CurrentLookedAtEnemy = Enemy;
 				}
 				return;
@@ -1111,8 +1114,8 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 	}
 	if (CurrentLookedAtEnemy)
 	{
-		CurrentLookedAtEnemy->SetPossessionOutline(false);
-		CurrentLookedAtEnemy->SetUnPossessionOutline(false);
+		CurrentLookedAtEnemy->SetHijackOutline(false);
+		CurrentLookedAtEnemy->SetUnHijackOutline(false);
 		CurrentLookedAtEnemy = nullptr;
 	}
 }
@@ -1235,7 +1238,7 @@ void AEnemy::Landed(const FHitResult& Hit)
 	}
 }
 
-void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsPossessed ? P_Death() : InitiateDeath(); }
+void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsHijacked ? P_Death() : InitiateDeath(); }
 
 void AEnemy::SpawnCondenseMaterialsProcess()
 {
@@ -1278,4 +1281,8 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 
 void AEnemy::RestartLevel() const { UGameplayStatics::OpenLevel(this, "MainMenu"); }
 
-void AEnemy::DisablePossessionViableVfx() const { if (PossessionViable) PossessionViable->Deactivate(); }
+void AEnemy::DisableHijackViableVfx() const
+{
+	if (!HijackViable) return;
+	HijackViable->DeactivateImmediate();
+}

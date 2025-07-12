@@ -23,6 +23,6 @@ void UGuardianAbility2::P_StopAbility()
 	}
 }
 
-bool UGuardianAbility2::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
+bool UGuardianAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void UGuardianAbility2::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<AGuardian>(AbilityProprietor); }

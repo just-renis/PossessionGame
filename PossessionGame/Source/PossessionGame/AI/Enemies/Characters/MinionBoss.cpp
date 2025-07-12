@@ -278,7 +278,7 @@ void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* Oth
 
 void AMinionBoss::OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor); Enemy->GetIsPossessed())
+	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor); Enemy->GetIsHijacked())
 	{
 		Player = Enemy;
 		GetWorld()->GetTimerManager().SetTimer(DealLaserDamageToPlayerHandle, this, &AMinionBoss::DealLaserDamageToPlayer, 0.05f, true);
@@ -287,7 +287,7 @@ void AMinionBoss::OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedCo
 
 void AMinionBoss::OnLaserCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor); Enemy->GetIsPossessed())
+	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor); Enemy->GetIsHijacked())
 	{
 		Player = nullptr;
 		GetWorld()->GetTimerManager().ClearTimer(DealLaserDamageToPlayerHandle);

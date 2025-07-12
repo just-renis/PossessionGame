@@ -33,12 +33,12 @@ void URangerAbility1::P_ApplyVariation()
 	}
 }
 
-bool URangerAbility1::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
+bool URangerAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void URangerAbility1::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ARanger>(AbilityProprietor); }
 
 void URangerAbility1::CooldownLogic(const float DeltaTime)
 {
 	Super::CooldownLogic(DeltaTime);
-	if (!Proprietor->GetIsPossessed() && CurrentChargesAmount > 0) Proprietor->AI_ToggleGrenadeLaunchTrigger(true);
+	if (!Proprietor->GetIsHijacked() && CurrentChargesAmount > 0) Proprietor->AI_ToggleGrenadeLaunchTrigger(true);
 }

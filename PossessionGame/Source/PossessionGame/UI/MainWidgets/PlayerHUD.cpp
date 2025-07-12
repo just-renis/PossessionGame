@@ -89,7 +89,7 @@ void UPlayerHUD::UpdateHijackIndicator(const bool bState, const FText& InKeyName
 	UpdatePressToHijackKeyBind(FName(), InKeyName);
 	if (bState)
 	{
-		AssetsManager->PlaySound2D(ESound::ReadyToPossess);
+		AssetsManager->PlaySound2D(ESound::ReadyToHijack);
 		PlayAnimation(HijackIndicatorPopup);
 	}
 	else if (PressKeyBindSizeBox) PressKeyBindSizeBox->SetRenderOpacity(0.f);

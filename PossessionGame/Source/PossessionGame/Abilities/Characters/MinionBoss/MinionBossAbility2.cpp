@@ -27,7 +27,7 @@ void UMinionBossAbility2::AI_StopAbility()
 	StopLaser();
 }
 
-bool UMinionBossAbility2::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
+bool UMinionBossAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void UMinionBossAbility2::SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor)
 {

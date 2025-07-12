@@ -12,6 +12,6 @@ void UTricksterAbility2::P_Execute()
 	Super::P_Execute();
 }
 
-bool UTricksterAbility2::IsProprietorPossessed() { return Proprietor->GetIsPossessed(); }
+bool UTricksterAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void UTricksterAbility2::SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ATrickster>(AbilityProprietor); }

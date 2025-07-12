@@ -82,7 +82,7 @@ private:
 	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason) override;
 	void CheckDistanceOfLaserEyeTrigger();
 	void DealLaserDamageToPlayer() const;
-	virtual void SetUnPossessionOutline(const bool bState) const override {}
+	virtual void SetUnHijackOutline(const bool bState) const override {}
 	void SpawnCoins() const;
 	UFUNCTION()
 	void OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor);

@@ -214,7 +214,7 @@ void UPrimaryDataAssetsManager::SetupSpawnLocations()
 		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
 		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
 	}
-	if (bTutorialIsFinished) SpawnTutorialEnemy(ECharacterType::Trickster, EGameMode::TutorialMode1);
+	if (bTutorialIsFinished) SpawnTutorialEnemy(ECharacterType::Guardian, EGameMode::TutorialMode1);
 }
 
 void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes)
@@ -375,14 +375,14 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_WaveCompleted", ESound::WaveCompleted);
 	SoundMap.Add("PA_RangerShoot", ESound::RangerShoot);
 	SoundMap.Add("PA_RangerReload", ESound::RangerReload);
-	SoundMap.Add("PA_OnPossession", ESound::OnPossession);
-	SoundMap.Add("PA_ReadyToPossess", ESound::ReadyToPossess);
+	SoundMap.Add("PA_OnPossession", ESound::OnHijack);
+	SoundMap.Add("PA_ReadyToPossess", ESound::ReadyToHijack);
 	SoundMap.Add("PA_TakeDamageLayer1", ESound::TakeDamageLayer1);
 	SoundMap.Add("PA_TakeDamageLayer2", ESound::TakeDamageLayer2);
 	SoundMap.Add("PA_CriticalDamageBeep", ESound::CriticalDamageBeep);
 	SoundMap.Add("PA_CriticalHealthEnter", ESound::CriticalHealthEnter);
 	SoundMap.Add("PA_PlayerDeath", ESound::PlayerDeath);
-	SoundMap.Add("PA_RangerOnPossession", ESound::RangerOnPossession);
+	SoundMap.Add("PA_RangerOnPossession", ESound::RangerOnHijack);
 	SoundMap.Add("PA_RangerSpawn", ESound::RangerSpawn);
 	SoundMap.Add("PA_RangerDeath", ESound::RangerDeath);
 	SoundMap.Add("PA_RangerDeployShield", ESound::RangerDeployShield);
@@ -398,7 +398,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TricksterReload", ESound::TricksterReload);
 	SoundMap.Add("PA_TricksterSpawn", ESound::TricksterSpawn);
 	SoundMap.Add("PA_TricksterDeath", ESound::TricksterDeath);
-	SoundMap.Add("PA_TricksterOnPossession", ESound::TricksterOnPossession);
+	SoundMap.Add("PA_TricksterOnPossession", ESound::TricksterOnHijack);
 	SoundMap.Add("PA_TricksterGrenadeThrow", ESound::TricksterGrenadeThrow);
 	SoundMap.Add("PA_TricksterPoisonImpact", ESound::TricksterPoisonImpact);
 	SoundMap.Add("PA_TricksterPoisonRelease", ESound::TricksterPoisonRelease);
@@ -535,7 +535,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
 	VfxsMap.Add("PA_SecretRewardPopUp", EVfx::SecretRewardPopUp);
 	VfxsMap.Add("PA_EmpAffected", EVfx::EmpAffected);
-	VfxsMap.Add("PA_PossessionViable", EVfx::PossessionViable);
+	VfxsMap.Add("PA_PossessionViable", EVfx::HijackViable);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
