@@ -11,11 +11,7 @@ void UPossessionGameUserSettings::SetAntiAliasingMethod(const int32 InAntiAliasi
 {
 	AntiAliasingMethod = InAntiAliasingMethod;
 	static IConsoleVariable* AntiAliasingMethodConsoleVariable = IConsoleManager::Get().FindConsoleVariable(TEXT("r.AntiAliasingMethod"));
-	if (AntiAliasingMethodConsoleVariable)
-	{
-		UE_LOG(LogTemp, Error, TEXT("ANTIALIASING METHOD IS SET TO: %i"), AntiAliasingMethod);
-		AntiAliasingMethodConsoleVariable->Set(AntiAliasingMethod);
-	}
+	if (AntiAliasingMethodConsoleVariable) AntiAliasingMethodConsoleVariable->Set(AntiAliasingMethod);
 }
 
 void UPossessionGameUserSettings::LoadSettings(const bool bForceReload)

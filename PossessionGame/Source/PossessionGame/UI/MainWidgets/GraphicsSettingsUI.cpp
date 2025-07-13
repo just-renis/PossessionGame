@@ -8,6 +8,11 @@
 
 void UGraphicsSettingsUI::SetupUIEvents()
 {
+	if (AntiAliasingMethod)
+	{
+		AntiAliasingMethod->GetDownscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::ChangeAntiAliasingMethodToLeft);
+		AntiAliasingMethod->GetUpscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::ChangeAntiAliasingMethodToRight);
+	}
 	if (ScreenModeOption)
 	{
 		ScreenModeOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::LowerWindowMode);
@@ -29,8 +34,10 @@ void UGraphicsSettingsUI::SetupUIEvents()
 void UGraphicsSettingsUI::UpdateDefaultGraphicsSettings()
 {
 	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
+	CurrentAntiAliasingMethod = GameUserSettings->GetAntiAliasingMethod();
 	if (GlobalGraphics) GlobalGraphics->UpdateDefaultQuality(GetGlobalGraphicsQuality());
 	if (AntiAliasing) AntiAliasing->UpdateDefaultQuality(GameUserSettings->GetAntiAliasingQuality());
+	if (AntiAliasingMethod) AntiAliasingMethod->SetText(GetAntiAliasingMethodName());
 	if (PostProcessing) PostProcessing->UpdateDefaultQuality(GameUserSettings->GetPostProcessingQuality());
 	if (GlobalIllumination) GlobalIllumination->UpdateDefaultQuality(GameUserSettings->GetGlobalIlluminationQuality());
 	if (Textures) Textures->UpdateDefaultQuality(GameUserSettings->GetTextureQuality());
@@ -53,6 +60,7 @@ void UGraphicsSettingsUI::SetSavedSettings()
 {
 	if (GlobalGraphics) GlobalGraphics->UpdateQuality();
 	if (AntiAliasing) AntiAliasing->UpdateQuality();
+	if (AntiAliasingMethod) AntiAliasingMethod->SetText(GetAntiAliasingMethodName());
 	if (PostProcessing) PostProcessing->UpdateQuality();
 	if (GlobalIllumination) GlobalIllumination->UpdateQuality();
 	if (Textures) Textures->UpdateQuality();
@@ -70,7 +78,7 @@ void UGraphicsSettingsUI::ApplySettings()
 	if (const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings()))
 	{
 		if (AntiAliasing) GameUserSettings->SetAntiAliasingQuality(static_cast<uint8>(AntiAliasing->SetAndGetAppliedQuality()));
-	//	if (AntiAliasingMethod) GameUserSettings->SetAntiAliasingMethod(AntiAliasingMethod);
+		if (AntiAliasingMethod) GameUserSettings->SetAntiAliasingMethod(CurrentAntiAliasingMethod);
 		if (PostProcessing) GameUserSettings->SetPostProcessingQuality(static_cast<uint8>(PostProcessing->SetAndGetAppliedQuality()));
 		if (GlobalIllumination) GameUserSettings->SetGlobalIlluminationQuality(static_cast<uint8>(GlobalIllumination->SetAndGetAppliedQuality()));
 		if (Textures) GameUserSettings->SetTextureQuality(static_cast<uint8>(Textures->SetAndGetAppliedQuality()));
@@ -114,6 +122,18 @@ FString UGraphicsSettingsUI::GetFixedScreenMode() const
 	FString WindowMode = UEnum::GetValueAsString(ScreenMode).Replace(TEXT("EWindowMode::"), TEXT(""));
 	if (WindowMode.Equals("WindowedFullscreen")) WindowMode = "WindowFull";
 	return WindowMode;
+}
+
+FText UGraphicsSettingsUI::GetAntiAliasingMethodName() const
+{
+	switch (CurrentAntiAliasingMethod)
+	{
+		case 0: return FText::FromString("None");
+		case 1: return FText::FromString("FXAA");
+		case 2: return FText::FromString("TAA");
+		case 3: return FText::FromString("MSAA");
+		default: return FText::FromString("TSR");
+	}
 }
 
 void UGraphicsSettingsUI::NativeConstruct()
@@ -184,4 +204,16 @@ void UGraphicsSettingsUI::EnableVsync()
 {
 	Vsync = true;
 	if (VsyncOption) VsyncOption->SetText(FText::FromString("Enabled"));
+}
+
+void UGraphicsSettingsUI::ChangeAntiAliasingMethodToRight()
+{
+	if (++CurrentAntiAliasingMethod > 4) CurrentAntiAliasingMethod = 0;
+	AntiAliasingMethod->SetText(GetAntiAliasingMethodName());
+}
+
+void UGraphicsSettingsUI::ChangeAntiAliasingMethodToLeft()
+{
+	if (--CurrentAntiAliasingMethod < 0) CurrentAntiAliasingMethod = 4;
+	AntiAliasingMethod->SetText(GetAntiAliasingMethodName());
 }

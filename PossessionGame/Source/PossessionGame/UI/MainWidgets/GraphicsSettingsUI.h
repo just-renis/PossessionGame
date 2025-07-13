@@ -22,6 +22,7 @@ public:
 private:
 	bool Vsync;
 	int32 ResolutionIndex = -1;
+	int32 CurrentAntiAliasingMethod = 4;
 	FIntPoint Resolution;
 	EWindowMode::Type ScreenMode;
 	TArray<FIntPoint> SupportedResolutions;
@@ -29,8 +30,8 @@ private:
 	TObjectPtr<USettingsQualityUI> GlobalGraphics;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<USettingsQualityUI> AntiAliasing;
-	//UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	//TObjectPtr<USettingsOptionUI> AntiAliasingMethod;
+	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	TObjectPtr<USettingsOptionUI> AntiAliasingMethod;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<USettingsQualityUI> PostProcessing;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
@@ -52,6 +53,7 @@ private:
 
 	uint8 GetGlobalGraphicsQuality();
 	FString GetFixedScreenMode() const;
+	FText GetAntiAliasingMethodName() const;
 
 	virtual void NativeConstruct() override;
 	void InitResolutions();
@@ -69,4 +71,8 @@ private:
 	void EnableVsync();
 	UFUNCTION()
 	void ApplyBrightnessValue(const float InValue);
+	UFUNCTION()
+	void ChangeAntiAliasingMethodToRight();
+	UFUNCTION()
+	void ChangeAntiAliasingMethodToLeft();
 };
