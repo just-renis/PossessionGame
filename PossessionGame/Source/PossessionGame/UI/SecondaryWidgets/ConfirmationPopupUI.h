@@ -13,6 +13,7 @@ class POSSESSIONGAME_API UConfirmationPopupUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	bool GetIsAnimationPlaying() const { return IsAnimationPlaying(PopupFadeIn); }
 	TObjectPtr<UMainMenuButtonUI> GetAcceptButton() { return AcceptButton; }
 	TObjectPtr<UMainMenuButtonUI> GetDeclineButton() { return DeclineButton; }
 

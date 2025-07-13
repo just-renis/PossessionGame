@@ -8,9 +8,9 @@ void UConfirmationPopupUI::PlayPopupFadeInAnim(const bool bState)
 	PlayAnimation(PopupFadeIn, GetAnimationCurrentTime(PopupFadeIn), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	if (bState) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	else BindToAnimationFinished(PopupFadeIn, FadeOutDelegate);
 	if (AcceptButton) AcceptButton->SetButtonVisibility(bState);
 	if (DeclineButton) DeclineButton->SetButtonVisibility(bState);
-	else BindToAnimationFinished(PopupFadeIn, FadeOutDelegate);
 }
 
 void UConfirmationPopupUI::NativePreConstruct()

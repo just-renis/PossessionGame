@@ -14,6 +14,12 @@ void UPauseMenuUI::OpenUI() { Toggle(true); }
 
 void UPauseMenuUI::CloseUI()
 {
+	if (ReturnToMainMenuPopup->GetVisibility() == ESlateVisibility::SelfHitTestInvisible && !ReturnToMainMenuPopup->GetIsAnimationPlaying())
+	{
+		TriggerReturnToMainMenuPopupFadeOut();
+		return;
+	}
+	if (IsAnimationPlaying(FadeOutAnim)) return;
 	BindToAnimationFinished(FadeOutAnim, FadeOutAnimDelegate);
 	PlayAnimation(FadeOutAnim);
 }
