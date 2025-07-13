@@ -149,7 +149,7 @@ private:
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
 	
 	void P_SetupLevelUpAppliance(const int32 InLevel);
-	virtual void P_ApplyCurrentVariation() {}
+	virtual void P_VariationHitScanDamageAppliance() {}
 
 	virtual EDamageReason GetDamageReason() const override { return P_Data->GetDamageReason(); } // It does not matter from which data i will get damage reason, since it would be the same.
 };

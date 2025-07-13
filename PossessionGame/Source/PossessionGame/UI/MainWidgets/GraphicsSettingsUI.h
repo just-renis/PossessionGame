@@ -29,6 +29,8 @@ private:
 	TObjectPtr<USettingsQualityUI> GlobalGraphics;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<USettingsQualityUI> AntiAliasing;
+	//UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	//TObjectPtr<USettingsOptionUI> AntiAliasingMethod;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<USettingsQualityUI> PostProcessing;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))

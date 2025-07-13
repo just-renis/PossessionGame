@@ -41,9 +41,10 @@ void ARangerWeapon::P_Reload(int32 OtherAmmoSource)
 	Super::P_Reload(OtherAmmoSource);
 }
 
-void ARangerWeapon::P_ApplyCurrentVariation()
+void ARangerWeapon::P_VariationHitScanDamageAppliance()
 {
-	if (EVariation::RangerVariationBlue == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(Proprietor->GetCharacterName())) HitScanDamage = DefaultHitScanDamage *= 0.6f;
+	if (EVariation::RangerVariationBlue != GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(Proprietor->GetCharacterName())) return;
+	HitScanDamage = DefaultHitScanDamage *= 0.6f;
 }
 
 void ARangerWeapon::BeginPlay()

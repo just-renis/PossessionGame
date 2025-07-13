@@ -12,10 +12,14 @@ class POSSESSIONGAME_API UPossessionGameUserSettings : public UGameUserSettings
 	GENERATED_BODY()
 public:
 	float GetGamma() const { return GammaValue; }
+	float GetAntiAliasingMethod() const { return AntiAliasingMethod; }
 	
 	void SetGamma(const float InGammaValue);
+	void SetAntiAliasingMethod(const int32 InAntiAliasingMethod);
 	virtual void LoadSettings(const bool bForceReload) override;
 private:
+	UPROPERTY(Config)
+	int32 AntiAliasingMethod = 4;
 	UPROPERTY(Config)
 	float GammaValue = 2.2f;
 };

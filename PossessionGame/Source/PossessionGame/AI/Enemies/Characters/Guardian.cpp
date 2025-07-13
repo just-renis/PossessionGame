@@ -88,11 +88,11 @@ void AGuardian::P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedIn
 	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Completed, this, &AGuardian::P_CancelShootingHold);
 }
 
-void AGuardian::P_OnShootStarted() { Cast<AGuardianWeapon>(Weapon)->ShootingHoldStarted(); }
+void AGuardian::P_OnShootStarted() { Cast<AGuardianWeapon>(Weapon)->P_ShootingHoldStarted(); }
 
-void AGuardian::P_ResetShootHoldDuration() const { Cast<AGuardianWeapon>(Weapon)->ResetShootingHoldDuration(); }
+void AGuardian::P_ResetShootHoldDuration() const { Cast<AGuardianWeapon>(Weapon)->P_ResetShootingHoldDuration(); }
 
-void AGuardian::P_CancelShootingHold() { Cast<AGuardianWeapon>(Weapon)->CancelShootingHold(); }
+void AGuardian::P_CancelShootingHold() { Cast<AGuardianWeapon>(Weapon)->P_CancelShootingHold(); }
 
 void AGuardian::P_InitiateJump()
 {

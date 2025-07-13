@@ -3,32 +3,19 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 
-void AGuardianWeapon::CancelShootingHold() const
+void AGuardianWeapon::P_CancelShootingHold()
 {
-	Cast<AGuardianSingularWeapon>(FirstWeapon)->CancelShootingHold();
-	Cast<AGuardianSingularWeapon>(SecondWeapon)->CancelShootingHold();
-}
-
-void AGuardianWeapon::ShootingHoldStarted() const
-{
-	Cast<AGuardianSingularWeapon>(FirstWeapon)->ShootingHoldStarted();
-	Cast<AGuardianSingularWeapon>(SecondWeapon)->ShootingHoldStarted();
-}
-
-void AGuardianWeapon::ResetShootingHoldDuration() const
-{
-	Cast<AGuardianSingularWeapon>(FirstWeapon)->ResetShootingHoldDuration();
-	Cast<AGuardianSingularWeapon>(SecondWeapon)->ResetShootingHoldDuration();
+	bIsShootingHolding = false;
+	ShootingHoldDuration = 0.f;
 }
 
 void AGuardianWeapon::ToggleHandsMeshAbilityState(const bool bState) const
 {
 	if (!HandsMesh || !MI_Hands) return;
-	Cast<AGuardianSingularWeapon>(FirstWeapon)->ToggleMeshAbilityState(bState);
-	Cast<AGuardianSingularWeapon>(SecondWeapon)->ToggleMeshAbilityState(bState);
 	MI_Hands->SetScalarParameterValue("Hue", bState ? 0.9f : 1.f);
 	MI_Hands->SetScalarParameterValue("Emissive Effect", bState ? 1.f : 0.f);
 	MI_Hands->SetScalarParameterValue("Width", bState ? 0.2f : 0.f);
@@ -49,6 +36,8 @@ void AGuardianWeapon::P_Shoot(const bool bIsFirstWeapon)
 		DelegateManager->OnWeaponAmmoChangeThreeParams.Broadcast(FirstWeapon->GetCurrentAmmoAmount(), SecondWeapon->GetCurrentAmmoAmount(), TotalAmmo);
 	}
 }
+
+void AGuardianWeapon::P_UpdateShootingHoldDuration() { if (bIsShootingHolding) ShootingHoldDuration += 0.1f; }
 
 void AGuardianWeapon::BeginPlay()
 {
@@ -86,5 +75,13 @@ void AGuardianWeapon::ShootSecondWeaponShot() const { SecondWeapon->P_Shoot(); }
 void AGuardianWeapon::DestroyThis()
 {
 	GetWorldTimerManager().ClearTimer(SecondWeaponShotHandle);
+	GetWorldTimerManager().ClearTimer(ShootingHoldDurationHandle);
 	Super::DestroyThis();
+}
+
+void AGuardianWeapon::PostProprietorSetup()
+{
+	Super::PostProprietorSetup();
+	if (EVariation::GuardianVariationGold != GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(Proprietor->GetCharacterName())) return;
+	GetWorldTimerManager().SetTimer(ShootingHoldDurationHandle, this, &AGuardianWeapon::P_UpdateShootingHoldDuration, 0.1f, true);
 }

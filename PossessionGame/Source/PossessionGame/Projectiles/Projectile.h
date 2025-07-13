@@ -74,6 +74,6 @@ private:
 	void DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
 	virtual void SpawnFirstProjectileImpactVfx(const FHitResult& Hit);
 	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) {}
-	virtual void ApplyCurrentVariation();
+	virtual void VariationDamageAppliance() {}
 	virtual void DestroyThis();
 };

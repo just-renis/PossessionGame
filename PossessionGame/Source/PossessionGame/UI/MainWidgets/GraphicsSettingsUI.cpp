@@ -67,28 +67,29 @@ void UGraphicsSettingsUI::SetSavedSettings()
 
 void UGraphicsSettingsUI::ApplySettings()
 {
-	if (const TObjectPtr<UPossessionGameUserSettings> UserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings()))
+	if (const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings()))
 	{
-		if (AntiAliasing) UserSettings->SetAntiAliasingQuality(static_cast<uint8>(AntiAliasing->SetAndGetAppliedQuality()));
-		if (PostProcessing) UserSettings->SetPostProcessingQuality(static_cast<uint8>(PostProcessing->SetAndGetAppliedQuality()));
-		if (GlobalIllumination) UserSettings->SetGlobalIlluminationQuality(static_cast<uint8>(GlobalIllumination->SetAndGetAppliedQuality()));
-		if (Textures) UserSettings->SetTextureQuality(static_cast<uint8>(Textures->SetAndGetAppliedQuality()));
-		if (Effects) UserSettings->SetVisualEffectQuality(static_cast<uint8>(Effects->SetAndGetAppliedQuality()));
-		if (Shading) UserSettings->SetShadingQuality(static_cast<uint8>(Shading->SetAndGetAppliedQuality()));
+		if (AntiAliasing) GameUserSettings->SetAntiAliasingQuality(static_cast<uint8>(AntiAliasing->SetAndGetAppliedQuality()));
+	//	if (AntiAliasingMethod) GameUserSettings->SetAntiAliasingMethod(AntiAliasingMethod);
+		if (PostProcessing) GameUserSettings->SetPostProcessingQuality(static_cast<uint8>(PostProcessing->SetAndGetAppliedQuality()));
+		if (GlobalIllumination) GameUserSettings->SetGlobalIlluminationQuality(static_cast<uint8>(GlobalIllumination->SetAndGetAppliedQuality()));
+		if (Textures) GameUserSettings->SetTextureQuality(static_cast<uint8>(Textures->SetAndGetAppliedQuality()));
+		if (Effects) GameUserSettings->SetVisualEffectQuality(static_cast<uint8>(Effects->SetAndGetAppliedQuality()));
+		if (Shading) GameUserSettings->SetShadingQuality(static_cast<uint8>(Shading->SetAndGetAppliedQuality()));
 		if (GlobalGraphics)
 		{
 			GlobalGraphics->UpdateQuality(GetGlobalGraphicsQuality());
 			GlobalGraphics->SetAndGetAppliedQuality();
 		}
-		UserSettings->SetFullscreenMode(ScreenMode);
-		UserSettings->SetScreenResolution(Resolution);
-		UserSettings->SetVSyncEnabled(Vsync);
+		GameUserSettings->SetFullscreenMode(ScreenMode);
+		GameUserSettings->SetScreenResolution(Resolution);
+		GameUserSettings->SetVSyncEnabled(Vsync);
 		if (BrightnessSlider)
 		{
 			BrightnessSlider->SaveValue();
-			UserSettings->SetGamma(BrightnessSlider->GetSavedValue() * 4.f + 1.f);
+			GameUserSettings->SetGamma(BrightnessSlider->GetSavedValue() * 4.f + 1.f);
 		}
-		UserSettings->ApplySettings(true);
+		GameUserSettings->ApplySettings(true);
 	}
 }
 

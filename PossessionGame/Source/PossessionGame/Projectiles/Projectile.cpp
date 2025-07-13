@@ -7,7 +7,6 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/AI/Base Data/AICharacterData.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
-#include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
@@ -17,7 +16,6 @@
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
-#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
 AProjectile::AProjectile()
@@ -143,7 +141,7 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 	Damage = DefaultDamage = ProjectileData.Damage;
 	if (bIsPlayerProjectile)
 	{
-		ApplyCurrentVariation();
+		VariationDamageAppliance();
 		Damage += DefaultDamage * ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
@@ -173,14 +171,6 @@ void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor
 }
 
 void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, true); }
-
-void AProjectile::ApplyCurrentVariation()
-{
-	if (ProjectileData.ProjectileName == EPoolObject::TricksterPoisonProjectile && EVariation::TricksterVariationPurple == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ProjectileData.GetProprietor()->GetCharacterName()))
-	{
-		Damage = DefaultDamage = DefaultDamage * 2.5f;
-	}
-}
 
 void AProjectile::DestroyThis()
 {

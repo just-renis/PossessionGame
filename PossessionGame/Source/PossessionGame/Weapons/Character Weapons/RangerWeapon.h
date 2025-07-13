@@ -18,7 +18,7 @@ private:
 	
 	virtual void P_Shoot(bool bIsFirstWeapon) override;
 	virtual void P_Reload(int32 OtherAmmoSource) override;
-	virtual void P_ApplyCurrentVariation() override;
+	virtual void P_VariationHitScanDamageAppliance() override;
 
 	virtual void BeginPlay() override;
 };

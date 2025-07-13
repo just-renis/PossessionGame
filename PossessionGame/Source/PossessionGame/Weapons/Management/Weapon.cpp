@@ -217,7 +217,7 @@ void AWeapon::P_Setup()
 	MagazineCap = P_Data->GetMagazineCap();
 	TotalAmmo = P_Data->GetTotalAmmo();
 	HitScanDamage = DefaultHitScanDamage = P_Data->GetHitScanDamage();
-	P_ApplyCurrentVariation();
+	P_VariationHitScanDamageAppliance();
 	HitScanDamage += DefaultHitScanDamage * Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
