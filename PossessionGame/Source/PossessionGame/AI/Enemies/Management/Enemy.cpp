@@ -199,6 +199,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(19).Action, ETriggerEvent::Started, this, &AEnemy::P_Stomp);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::OpenInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_Crouch);
 	}
 }
 
@@ -494,6 +495,9 @@ void AEnemy::P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 
 void AEnemy::P_SetupCharacterMovement()
 {
+	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = bCanCrouch;
+	GetCharacterMovement()->SetCrouchedHalfHeight(CrouchHalfHeight);
+	GetCharacterMovement()->MaxWalkSpeedCrouched = MaxWalkSpeedCrouched;
 	GetCharacterMovement()->GravityScale = GravityScale;
 	GetCharacterMovement()->JumpZVelocity = JumpVelocity;
 	GetCharacterMovement()->AirControl = AirControl;
@@ -1141,6 +1145,20 @@ void AEnemy::P_DashCooldownLogic()
 	{
 		bCanDash = true;
 		if (P_HUD) P_HUD->UpdateDashIndicator(true);
+	}
+}
+
+void AEnemy::P_Crouch()
+{
+	if (CanCrouch())
+	{
+		SetMaxWalkSpeed(MaxWalkSpeedCrouched);
+		Crouch(false);
+	}
+	else
+	{
+		SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed());
+		UnCrouch(false);
 	}
 }
 

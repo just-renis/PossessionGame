@@ -247,6 +247,12 @@ private:
 	float BrakingFrictionFactor = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	int32 MaxJumpAmount = 2;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Crouch", meta = (AllowPrivateAccess = true))
+	bool bCanCrouch = true;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Crouch", meta = (EditConditionHides = "bCanCrouch", AllowPrivateAccess = true))
+	float CrouchHalfHeight = 65.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Crouch", meta = (EditConditionHides = "bCanCrouch", AllowPrivateAccess = true))
+	float MaxWalkSpeedCrouched = 350.f;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -368,6 +374,7 @@ private:
 	void P_ContinuousFovChange();
 	void P_StopDash() const;
 	void P_DashCooldownLogic();
+	void P_Crouch();
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	void TickAbilities(const float InDeltaTime);
