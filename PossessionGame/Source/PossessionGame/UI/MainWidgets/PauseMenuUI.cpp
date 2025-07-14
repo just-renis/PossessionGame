@@ -10,16 +10,21 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
-void UPauseMenuUI::OpenUI() { Toggle(true); }
+void UPauseMenuUI::OpenUI()
+{
+	bIsPauseMenuClosed = false;
+	Toggle(true);
+}
 
 void UPauseMenuUI::CloseUI()
 {
-	if (ReturnToMainMenuPopup->GetVisibility() == ESlateVisibility::SelfHitTestInvisible && !ReturnToMainMenuPopup->GetIsAnimationPlaying())
+	if (bIsReturnToMainMenuPopupOpened)
 	{
 		TriggerReturnToMainMenuPopupFadeOut();
 		return;
 	}
 	if (IsAnimationPlaying(FadeOutAnim)) return;
+	bIsPauseMenuClosed = true;
 	BindToAnimationFinished(FadeOutAnim, FadeOutAnimDelegate);
 	PlayAnimation(FadeOutAnim);
 }
@@ -76,7 +81,8 @@ void UPauseMenuUI::OpenSettings()
 
 void UPauseMenuUI::TriggerReturnToMainMenuPopupFadeIn()
 {
-	if (!ReturnToMainMenuPopup) return;
+	if (!ReturnToMainMenuPopup || bIsPauseMenuClosed) return;
+	bIsReturnToMainMenuPopupOpened = true;
 	SetButtonsState(false);
 	ReturnToMainMenuPopup->PlayPopupFadeInAnim(true);
 }
@@ -84,6 +90,7 @@ void UPauseMenuUI::TriggerReturnToMainMenuPopupFadeIn()
 void UPauseMenuUI::TriggerReturnToMainMenuPopupFadeOut()
 {
 	if (!ReturnToMainMenuPopup) return;
+	bIsReturnToMainMenuPopupOpened = false;
 	SetButtonsState(true);
 	ReturnToMainMenuPopup->PlayPopupFadeInAnim(false);
 }

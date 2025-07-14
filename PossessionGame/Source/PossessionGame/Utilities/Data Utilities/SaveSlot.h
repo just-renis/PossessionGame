@@ -19,6 +19,7 @@ public:
 	bool GetIsVariationTaskCompleted(const EVariation InVariationUnlockName) const;
 	bool GetIsFirstLaunch() const { return bIsFirstLaunch; }
 	int32 GetXp() const { return CurrentXp; }
+	int32 GetPlayerLevel() const { return CurrentLevel; }
 	int32 GetCurrentLevelNeededXp() const;
 	int32 GetLevelDamageIncrease(const int32 InLevel = -1) const;
 	int32 GetLevelHpIncrease(const int32 InLevel = -1) const;

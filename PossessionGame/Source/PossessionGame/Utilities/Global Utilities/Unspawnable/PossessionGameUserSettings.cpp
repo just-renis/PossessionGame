@@ -1,5 +1,12 @@
 ﻿#include "PossessionGameUserSettings.h"
 
+void UPossessionGameUserSettings::SetMotionBlur(const bool bState)
+{
+	bIsMotionBlurEnabled = bState;
+	static IConsoleVariable* MotionBlurCVar = IConsoleManager::Get().FindConsoleVariable(TEXT("r.MotionBlurQuality"));
+	if (MotionBlurCVar) MotionBlurCVar->Set(bIsMotionBlurEnabled ? 3 : 0);
+}
+
 void UPossessionGameUserSettings::SetGamma(const float InGammaValue)
 {
     GammaValue = InGammaValue;
@@ -10,8 +17,8 @@ void UPossessionGameUserSettings::SetGamma(const float InGammaValue)
 void UPossessionGameUserSettings::SetAntiAliasingMethod(const int32 InAntiAliasingMethod)
 {
 	AntiAliasingMethod = InAntiAliasingMethod;
-	static IConsoleVariable* AntiAliasingMethodConsoleVariable = IConsoleManager::Get().FindConsoleVariable(TEXT("r.AntiAliasingMethod"));
-	if (AntiAliasingMethodConsoleVariable) AntiAliasingMethodConsoleVariable->Set(AntiAliasingMethod);
+	static IConsoleVariable* AntiAliasingMethodCVar = IConsoleManager::Get().FindConsoleVariable(TEXT("r.AntiAliasingMethod"));
+	if (AntiAliasingMethodCVar) AntiAliasingMethodCVar->Set(AntiAliasingMethod);
 }
 
 void UPossessionGameUserSettings::LoadSettings(const bool bForceReload)

@@ -18,6 +18,8 @@ public:
 	UFUNCTION()
 	void CloseUI();
 private:
+	bool bIsPauseMenuClosed = false;
+	bool bIsReturnToMainMenuPopupOpened = false;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> ContinueButton;
 	UPROPERTY(meta = (BindWidget))

@@ -25,8 +25,13 @@ void UGraphicsSettingsUI::SetupUIEvents()
 	}
 	if (VsyncOption)
 	{
-		VsyncOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::DisableVsync);
-		VsyncOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::EnableVsync);
+		VsyncOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::ToggleVsync);
+		VsyncOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::ToggleVsync);
+	}
+	if (MotionBlurOption)
+	{
+		MotionBlurOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::ToggleMotionBlur);
+		MotionBlurOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UGraphicsSettingsUI::ToggleMotionBlur);
 	}
 	if (BrightnessSlider) BrightnessSlider->GetSlider()->OnValueChanged.AddDynamic(this, &UGraphicsSettingsUI::ApplyBrightnessValue);
 }
@@ -49,6 +54,8 @@ void UGraphicsSettingsUI::UpdateDefaultGraphicsSettings()
 	if (ResolutionOption) ResolutionOption->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
 	Vsync = GameUserSettings->IsVSyncEnabled();
 	if (VsyncOption) VsyncOption->SetText(FText::FromString(Vsync ? "Enabled" : "Disabled"));
+	MotionBlur = GameUserSettings->GetMotionBlur();
+	if (MotionBlurOption) MotionBlurOption->SetText(FText::FromString(MotionBlur ? "Enabled" : "Disabled"));
 	if (BrightnessSlider)
 	{
 		BrightnessSlider->SetValue((GameUserSettings->GetGamma() - 1.f) / 4.f);
@@ -92,6 +99,7 @@ void UGraphicsSettingsUI::ApplySettings()
 		GameUserSettings->SetFullscreenMode(ScreenMode);
 		GameUserSettings->SetScreenResolution(Resolution);
 		GameUserSettings->SetVSyncEnabled(Vsync);
+		GameUserSettings->SetMotionBlur(MotionBlur);
 		if (BrightnessSlider)
 		{
 			BrightnessSlider->SaveValue();
@@ -194,16 +202,16 @@ void UGraphicsSettingsUI::IncreaseResolution()
 	}
 }
 
-void UGraphicsSettingsUI::DisableVsync()
+void UGraphicsSettingsUI::ToggleVsync()
 {
-	Vsync = false;
-	if (VsyncOption) VsyncOption->SetText(FText::FromString("Disabled"));
+	Vsync = !Vsync;
+	if (VsyncOption) VsyncOption->SetText(FText::FromString(Vsync ? "Enabled" : "Disabled"));
 }
 
-void UGraphicsSettingsUI::EnableVsync()
+void UGraphicsSettingsUI::ToggleMotionBlur()
 {
-	Vsync = true;
-	if (VsyncOption) VsyncOption->SetText(FText::FromString("Enabled"));
+	MotionBlur = !MotionBlur;
+	if (MotionBlurOption) MotionBlurOption->SetText(FText::FromString(MotionBlur ? "Enabled" : "Disabled"));
 }
 
 void UGraphicsSettingsUI::ChangeAntiAliasingMethodToRight()

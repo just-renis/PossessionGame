@@ -35,6 +35,11 @@ void USettingsUI::OpenUI()
 
 void USettingsUI::CloseUI()
 {
+	if (bIsDuplicateKeyBindsPanelOpened)
+	{
+		CloseDuplicateKeyBindsPopup();
+		return;
+	}
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(EWidget::None);
 	SetButtonsVisibilityState(false);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeOut);
@@ -106,7 +111,12 @@ void USettingsUI::SetSavedSettings()
 	if (ControlsSettings) ControlsSettings->SetSavedSettings();
 }
 
-void USettingsUI::OpenDuplicateKeyBindsPopup() const { if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(true); }
+void USettingsUI::OpenDuplicateKeyBindsPopup()
+{
+	if (!DuplicateKeyBindsAlert) return;
+	bIsDuplicateKeyBindsPanelOpened = true;
+	DuplicateKeyBindsAlert->PlayPopupFadeInAnim(true);
+}
 
 void USettingsUI::ToggleRebindPanel(const bool bState)
 {
@@ -200,5 +210,7 @@ void USettingsUI::ResetKeyBindsToDefault()
 
 void USettingsUI::CloseDuplicateKeyBindsPopup()
 {
-	if (DuplicateKeyBindsAlert) DuplicateKeyBindsAlert->PlayPopupFadeInAnim(false);
+	if (!DuplicateKeyBindsAlert) return;
+	bIsDuplicateKeyBindsPanelOpened = false;
+	DuplicateKeyBindsAlert->PlayPopupFadeInAnim(false);
 }

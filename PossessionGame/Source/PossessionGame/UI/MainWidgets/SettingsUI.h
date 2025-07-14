@@ -25,7 +25,8 @@ public:
 	void CloseUI();
 private:
 	USettingsUI(const FObjectInitializer& ObjectInitializer);
-	
+
+	bool bIsDuplicateKeyBindsPanelOpened = false;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UMainMenuButtonUI> ApplySettingsButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
@@ -76,7 +77,7 @@ private:
 	void SetupUIEvents();
 	void UpdateDefaultSettings();
 	void SetSavedSettings();
-	void OpenDuplicateKeyBindsPopup() const;
+	void OpenDuplicateKeyBindsPopup();
 	void ToggleRebindPanel(const bool bState);
 	void SetButtonsVisibilityState(const bool bState) const;
 	UFUNCTION()

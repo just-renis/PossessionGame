@@ -21,6 +21,7 @@ public:
 	void ApplySettings();
 private:
 	bool Vsync;
+	bool MotionBlur;
 	int32 ResolutionIndex = -1;
 	int32 CurrentAntiAliasingMethod = 4;
 	FIntPoint Resolution;
@@ -49,6 +50,8 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<USettingsOptionUI> VsyncOption;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
+	TObjectPtr<USettingsOptionUI> MotionBlurOption;
+	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<USliderUI> BrightnessSlider;
 
 	uint8 GetGlobalGraphicsQuality();
@@ -66,9 +69,9 @@ private:
 	UFUNCTION()
 	void IncreaseResolution();
 	UFUNCTION()
-	void DisableVsync();
+	void ToggleVsync();
 	UFUNCTION()
-	void EnableVsync();
+	void ToggleMotionBlur();
 	UFUNCTION()
 	void ApplyBrightnessValue(const float InValue);
 	UFUNCTION()
