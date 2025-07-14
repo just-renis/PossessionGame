@@ -292,6 +292,7 @@ void UPlayerHUD::PlayAnnouncement(const FText& InText)
 	AnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	AnnouncementText->SetText(InText);
 	PlayAnimation(HijackedPopup);
+	if (InText.ToString().Equals("Hijacked")) PlayAnimation(HijackIndicatorPopup, 0, 1, EUMGSequencePlayMode::Reverse);
 }
 
 template<typename T>
