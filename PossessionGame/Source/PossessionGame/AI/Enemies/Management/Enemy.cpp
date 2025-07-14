@@ -854,7 +854,7 @@ void AEnemy::P_Reload()
 
 void AEnemy::P_Dash()
 {
-	if (bIsInputLocked) return;
+	if (bIsInputLocked || bIsCrouched) return;
 	if (bCanDash) P_InitiateDash();
 }
 
@@ -1150,16 +1150,8 @@ void AEnemy::P_DashCooldownLogic()
 
 void AEnemy::P_Crouch()
 {
-	if (CanCrouch())
-	{
-		SetMaxWalkSpeed(MaxWalkSpeedCrouched);
-		Crouch(false);
-	}
-	else
-	{
-		SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed());
-		UnCrouch(false);
-	}
+	if (CanCrouch()) Crouch(false);
+	else UnCrouch(false);
 }
 
 void AEnemy::TickAbilities(const float InDeltaTime)
