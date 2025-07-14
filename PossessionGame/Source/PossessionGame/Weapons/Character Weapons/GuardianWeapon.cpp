@@ -31,7 +31,7 @@ void AGuardianWeapon::P_Shoot(const bool bIsFirstWeapon)
 	{
 		PlayShootMontage();
 		FirstWeapon->P_Shoot();
-		GetWorldTimerManager().SetTimer(SecondWeaponShotHandle, this, &AGuardianWeapon::ShootSecondWeaponShot, 0.24f);
+		GetWorldTimerManager().SetTimer(SecondWeaponShotHandle, this, &AGuardianWeapon::ShootSecondWeaponShot, 0.2f);
 		ShootTimer = 0.f;
 		DelegateManager->OnWeaponAmmoChangeThreeParams.Broadcast(FirstWeapon->GetCurrentAmmoAmount(), SecondWeapon->GetCurrentAmmoAmount(), TotalAmmo);
 	}
