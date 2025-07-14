@@ -3,15 +3,10 @@
 #include "PossessionGame/Data Assets/AI/Base Data/AIWeaponData.h"
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerWeaponData.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
-#include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
-#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 
-ADualWieldingWeapon::ADualWieldingWeapon()
-{
-	RootComponent = CreateDefaultSubobject<USceneComponent>("RootComponent");
-}
+ADualWieldingWeapon::ADualWieldingWeapon() { RootComponent = CreateDefaultSubobject<USceneComponent>("RootComponent"); }
 
 void ADualWieldingWeapon::AI_Setup()
 {
@@ -19,10 +14,7 @@ void ADualWieldingWeapon::AI_Setup()
 	CyclingState.bIsCycling = AI_Data->GetIsCyclingEnabled();
 }
 
-void ADualWieldingWeapon::AI_Shoot()
-{
-	CyclingState.bIsCycling ? CyclingModeLogic() : NonCyclingModeLogic();
-}
+void ADualWieldingWeapon::AI_Shoot() { CyclingState.bIsCycling ? CyclingModeLogic() : NonCyclingModeLogic(); }
 
 bool ADualWieldingWeapon::P_CanShoot(bool bIsFirstWeapon)
 {
@@ -125,12 +117,7 @@ void ADualWieldingWeapon::SetProprietor(TObjectPtr<AEnemy> InProprietor)
 
 void ADualWieldingWeapon::PlayShootMontage() { HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot); }
 
-void ADualWieldingWeapon::PostProprietorSetup()
-{
-	SetupHandsAnimInstance();
-	AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &FirstWeapon->GetMuzzleFlashComponent(), FirstWeapon->GetMesh(), FName("MuzzleSocket"), true);
-	AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &SecondWeapon->GetMuzzleFlashComponent(), SecondWeapon->GetMesh(), FName("MuzzleSocket"), true);
-}
+void ADualWieldingWeapon::PostProprietorSetup() { SetupHandsAnimInstance(); }
 
 void ADualWieldingWeapon::P_SetVariationMaterial()
 {
