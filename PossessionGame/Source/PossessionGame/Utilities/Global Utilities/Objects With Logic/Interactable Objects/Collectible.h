@@ -54,6 +54,7 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public ICollectable
 	void Spin();
 	void ProcessSpawnVisualization();
 	void ClearSpawnVisualization();
+	void EnableCollectCollision();
 	UFUNCTION()
-	void EnableCollectability(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void EnableCollectAbility(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

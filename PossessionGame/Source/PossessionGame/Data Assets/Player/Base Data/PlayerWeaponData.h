@@ -48,6 +48,7 @@ public:
     float GetHitScanSpread() const { return HitScanSpread; }
     float GetDamageMultiplierFromRange(const float InMeters) const;
     float GetVariationHueValue(const EVariation InVariation);
+    float GetCriticalDamage() const { return CriticalDamage; }
     FVector GetFirstWeaponLocation() const { return FirstWeaponLocation; }
     FRotator GetFirstWeaponRotation() const { return FirstWeaponRotation; }
     FVector GetFirstWeaponScale() const { return FirstWeaponScale; }
@@ -63,6 +64,8 @@ private:
     float HitScanDamage;
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
     float HitScanSpread;
+    UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+    float CriticalDamage;
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
     FVector FirstWeaponLocation;
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

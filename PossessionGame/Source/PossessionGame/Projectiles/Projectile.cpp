@@ -168,10 +168,14 @@ void AProjectile::DealAreaDamage()
 
 void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)
 {
+	if (!bIsPlayerProjectile)
+	{
+		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
+		return;
+	}
 	const bool bIsCritical = Hit.BoneName == "head";
-	const float DamageMultiplier = bIsCritical ? 2.f : 1.f;
+	const float DamageMultiplier = bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f;
 	UGameplayStatics::ApplyPointDamage(OtherActor, Damage * DamageMultiplier, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
-	if (!bIsPlayerProjectile) return;
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 	AssetsManager->PlaySound2D(bIsCritical ? ESound::CriticalDamageTick : ESound::DamageTick);
 }

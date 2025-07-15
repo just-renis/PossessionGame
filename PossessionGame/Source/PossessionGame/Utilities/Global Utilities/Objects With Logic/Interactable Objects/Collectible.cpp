@@ -21,7 +21,6 @@ void ACollectible::BeginPlay()
 	Super::BeginPlay();
 	if (Data->HasAura()) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(Data->GetAuraName(), nullptr, &Aura, Collision, NAME_None);
 	PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
-	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACollectible::EnableCollectability);
 }
 
 void ACollectible::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -54,11 +53,12 @@ void ACollectible::Init(bool bInIsPlayerObject)
 	if (Data->GetIsSpinning()) GetWorldTimerManager().SetTimer(SpinHandle, this, &ACollectible::Spin, 0.025f, true);
 	SetActorRotation(Data->GetRotation());
 	ToggleCollectible(true, true);
+	EnableCollectCollision();
 }
 
 void ACollectible::Collect()
 {
-	UE_LOG(LogTemp, Error, TEXT("COLLECTED %s"), *UEnum::GetValueAsString(Data->GetCollectibleName()));
+	Collision->OnComponentBeginOverlap.RemoveAll(this);
 	if (Data->GetNeedSpawnVisualization()) ClearSpawnVisualization();
 	if (Aura) Aura->Deactivate();
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbCollect);
@@ -125,7 +125,15 @@ void ACollectible::ClearSpawnVisualization()
 	SpawnProcessIndex = 0;
 }
 
-void ACollectible::EnableCollectability(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ACollectible::EnableCollectCollision()
+{
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &ACollectible::EnableCollectAbility);
+	// To check if player is in range on spawn.
+	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void ACollectible::EnableCollectAbility(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag("Player")) return;
 	Collect();

@@ -315,7 +315,7 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	if (FMath::IsNearlyEqual(Damage, 0.f, 0.01f)) return;
 	(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 	AssetsManager->PlaySound2D(bIsCritical ? ESound::CriticalDamageTick : ESound::DamageTick);
-	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? Damage * 2 : Damage,
+	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? Damage * P_Data->GetCriticalDamage() : Damage,
 	(InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 
