@@ -190,9 +190,10 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 	}
 }
 
-void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount)
+void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount, const ECharacterType InToSpawnAfterTutorial)
 {
 	bTutorialIsFinished = bIsTutorialFinished;
+	ToSpawnAfterTutorial = InToSpawnAfterTutorial;
 	ClearBeforeInit();
 	SetupSpawnLocations();
 	if (bIsInitialized) return;
@@ -214,7 +215,7 @@ void UPrimaryDataAssetsManager::SetupSpawnLocations()
 		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
 		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
 	}
-	if (bTutorialIsFinished) SpawnTutorialEnemy(ECharacterType::Guardian, EGameMode::TutorialMode1);
+	if (bTutorialIsFinished) SpawnTutorialEnemy(ToSpawnAfterTutorial, EGameMode::TutorialMode1);
 }
 
 void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes)

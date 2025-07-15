@@ -101,12 +101,14 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		return;
 	}
 	if (!OtherActor->ActorHasTag("Enemy")) return;
-	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel1) // If enemy got hit.
+	const bool bIsPlayerProjectile = Mesh->GetCollisionObjectType() == ECC_GameTraceChannel1;
+	if (bIsPlayerProjectile)
 	{
-		DealDamageToSentientActor(OtherActor, Hit);
+		DealDamageToSentientActor(bIsPlayerProjectile, OtherActor, Hit);
 		return;
 	}
-	if (Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2 && Cast<AEnemy>(OtherActor)->GetIsHijacked()) DealDamageToSentientActor(OtherActor, Hit); // If player got hit.
+	const bool bIsEnemyProjectile = Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2;
+	if (bIsEnemyProjectile && Cast<AEnemy>(OtherActor)->GetIsHijacked()) DealDamageToSentientActor(bIsPlayerProjectile, OtherActor, Hit);
 }
 
 EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.DamageReason; }
@@ -164,10 +166,14 @@ void AProjectile::DealAreaDamage()
 	//DrawDebugSphere(GetWorld(), GetActorLocation(), 500.f, 12, FColor::Red, false, 3.f);
 }
 
-void AProjectile::DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)
+void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)
 {
-	const float DamageMultiplier = Hit.BoneName == "head" ? 2.f : 1.f;
+	const bool bIsCritical = Hit.BoneName == "head";
+	const float DamageMultiplier = bIsCritical ? 2.f : 1.f;
 	UGameplayStatics::ApplyPointDamage(OtherActor, Damage * DamageMultiplier, Hit.ImpactNormal, Hit, nullptr, this, UDamageType::StaticClass());
+	if (!bIsPlayerProjectile) return;
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
+	AssetsManager->PlaySound2D(bIsCritical ? ESound::CriticalDamageTick : ESound::DamageTick);
 }
 
 void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, true); }

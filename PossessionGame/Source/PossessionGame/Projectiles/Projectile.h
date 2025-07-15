@@ -71,7 +71,7 @@ private:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
 	void DealAreaDamage();
-	void DealDamageToSentientActor(const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
+	void DealDamageToSentientActor(const bool bIsPlayerProjectile, const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
 	virtual void SpawnFirstProjectileImpactVfx(const FHitResult& Hit);
 	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) {}
 	virtual void VariationDamageAppliance() {}

@@ -31,13 +31,13 @@ void UControlsSettingsUI::SetupKeyBinds()
 		FName("MoveRight"),
 		FName("Jump"),
 		FName("Dash"),
+		FName("Crouch"),
 		FName("Shoot"),
 		FName("SecondaryShoot"),
 		FName("Stomp"),
 		FName("Melee"),
 		FName("FirstAbility"),
 		FName("SecondAbility"),
-		//FName("ThirdAbility"),
 		FName("Hijack"),
 		FName("Reload"),
 		FName("Escape"),
@@ -74,9 +74,9 @@ void UControlsSettingsUI::AddKeyBinds(TArray<FName>& DesiredOrder, TMap<FName, F
 			FSlateChildSize ChildSize(ESlateSizeRule::Fill);
 			ChildSize.Value = 1.f;
 			ElementSlot->SetSize(ChildSize);
-			if (i != DesiredOrder.Num() - 1 && i != 5 && i != 12) ElementSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 50.f));
+			if (i != DesiredOrder.Num() - 1 && i != DesiredOrderMovement && i != DesiredOrderAction) ElementSlot->SetPadding(FMargin(0.f, 0.f, 0.f, 50.f));
 		}
-		if (i != 5 && i != 12) continue;
+		if (i != DesiredOrderMovement && i != DesiredOrderAction) continue;
 		const TObjectPtr<UImage> LineSeparator = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
 		if (!LineSeparator) continue;
 		LineSeparator->SetBrushFromAtlasInterface(LineSeparatorTexture);

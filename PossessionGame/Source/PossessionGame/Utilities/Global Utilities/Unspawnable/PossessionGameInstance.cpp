@@ -50,7 +50,7 @@ void UPossessionGameInstance::ResetRunSaveSlot()
 
 void UPossessionGameInstance::InitAssetsManager() const
 {
-	GetSubsystem<UPrimaryDataAssetsManager>()->Init(PlayerSaveSlot->GetIsTutorialFinished(), MarkerClass, GetSubsystem<UDelegateManager>(), SpawnableEnemiesByTotalAmount);
+	GetSubsystem<UPrimaryDataAssetsManager>()->Init(PlayerSaveSlot->GetIsTutorialFinished(), MarkerClass, GetSubsystem<UDelegateManager>(), SpawnableEnemiesByTotalAmount, ToSpawnAfterTutorial);
 }
 
 void UPossessionGameInstance::Init()
