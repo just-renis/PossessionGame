@@ -4,6 +4,7 @@
 #include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UPossessionGameInstance::LoadPlayerSaveSlot()
@@ -48,8 +49,9 @@ void UPossessionGameInstance::ResetRunSaveSlot()
 	LoadPlayerRunSaveSlot();
 }
 
-void UPossessionGameInstance::InitAssetsManager() const
+void UPossessionGameInstance::InitGameInstanceManagers()
 {
+	GetTimerManager().SetTimer(TickHandle, this, &UPossessionGameInstance::Tick, 0.1f, true);
 	GetSubsystem<UPrimaryDataAssetsManager>()->Init(PlayerSaveSlot->GetIsTutorialFinished(), MarkerClass, GetSubsystem<UDelegateManager>(), SpawnableEnemiesByTotalAmount, ToSpawnAfterTutorial);
 }
 
@@ -66,4 +68,12 @@ void UPossessionGameInstance::Init()
 		GameUserSettings->ApplySettings(true);
 	}
 	else GameUserSettings->LoadSettings(false);
+}
+
+void UPossessionGameInstance::Tick() const { GetSubsystem<UPlayerDataManager>()->Tick(TickTime); }
+
+void UPossessionGameInstance::Shutdown()
+{
+	GetTimerManager().ClearTimer(TickHandle);
+	Super::Shutdown();
 }

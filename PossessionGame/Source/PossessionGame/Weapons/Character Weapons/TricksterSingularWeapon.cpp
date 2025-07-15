@@ -1,6 +1,7 @@
 #include "TricksterSingularWeapon.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 ATricksterSingularWeapon::ATricksterSingularWeapon()
@@ -20,6 +21,12 @@ void ATricksterSingularWeapon::AI_Shoot()
 bool ATricksterSingularWeapon::P_CanReload(int32 OtherAmmoSource)
 {
 	return (OtherAmmoSource != -1 ? OtherAmmoSource > 0 : TotalAmmo > 0) && CurrentAmmo != MagazineCap;
+}
+
+float ATricksterSingularWeapon::P_ReceiveHitScanDamage()
+{
+	if (Proprietor->GetVariation() == EVariation::TricksterVariationDefault) return Super::P_ReceiveHitScanDamage();
+	return Super::P_ReceiveHitScanDamage() + DefaultHitScanDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetPoisonAreaStackBoost();
 }
 
 void ATricksterSingularWeapon::P_Shoot(bool bIsFirstWeapon)

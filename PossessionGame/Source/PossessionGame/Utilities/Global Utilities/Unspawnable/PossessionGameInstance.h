@@ -39,10 +39,11 @@ public:
 	void LoadPlayerRunSaveSlot();
 	void ResetSaveSlot();
 	void ResetRunSaveSlot();
-	void InitAssetsManager() const;
+	void InitGameInstanceManagers();
 	void SetMainMenuLaunchedOnce() { bMainMenuLaunchedOnce = true;}
 private:
 	bool bMainMenuLaunchedOnce = false;
+	float TickTime = 0.1f;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	bool bPlayerTakenDamageEffectsEnabled = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Demo", meta = (AllowPrivateAccess = true))
@@ -63,6 +64,10 @@ private:
 	TObjectPtr<USaveSlot> PlayerSaveSlot;
 	UPROPERTY()
 	TObjectPtr<URunSaveSlot> PlayerRunSaveSlot;
+	UPROPERTY()
+	FTimerHandle TickHandle;
 
 	virtual void Init() override;
+	void Tick() const;
+	virtual void Shutdown() override;
 };

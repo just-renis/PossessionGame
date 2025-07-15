@@ -5,7 +5,7 @@
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
-#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamager.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamagers/OvertimeDamager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"

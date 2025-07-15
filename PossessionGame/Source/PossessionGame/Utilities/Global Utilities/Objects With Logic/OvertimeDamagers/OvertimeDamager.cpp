@@ -9,8 +9,9 @@ void AOvertimeDamager::Setup(const float InDamage, const float InDamageTick, con
 {
 	Damage = InDamage;
 	DamageReason = InDamageReason;
+	DamageTick = InDamageTick;
 	Radius->SetSphereRadius(InRadiusSize);
-	GetWorldTimerManager().SetTimer(DamageOvertimeHandle, this, &AOvertimeDamager::DealOvertimeDamage, InDamageTick, true);
+	GetWorldTimerManager().SetTimer(DamageOvertimeHandle, this, &AOvertimeDamager::DealOvertimeDamage, DamageTick, true);
 	GetWorldTimerManager().SetTimer(DestroyThisHandle, this, &AOvertimeDamager::DestroyThis, InLifeSpan, false);
 }
 
@@ -41,8 +42,6 @@ void AOvertimeDamager::DestroyThis()
 	GetWorldTimerManager().ClearTimer(DamageOvertimeHandle);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::PoisonArea, this);
 }
-
-void AOvertimeDamager::DealOvertimeDamage() { for (int32 i = 0; i < Targets.Num(); i++) if (Targets[i]) Targets[i]->ReceiveDamage(Damage, DamageReason); }
 
 void AOvertimeDamager::AddOverlappedTarget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
