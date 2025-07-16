@@ -64,9 +64,10 @@ private:
 
 	virtual EDamageReason GetDamageReason() const override;
 	
-	void AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile);
+	void AI_SetupUpgradesAppliance();
 
 	void P_SetupLevelUpAppliance(const int32 InLevel);
+	void P_SetupUpgradesAppliance();
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);

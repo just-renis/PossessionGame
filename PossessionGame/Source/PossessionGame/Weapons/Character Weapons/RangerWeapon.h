@@ -4,8 +4,6 @@
 #include "PossessionGame/Weapons/Categories/OneHandedWeapon.h"
 #include "RangerWeapon.generated.h"
 
-class UCameraComponent;
-
 UCLASS()
 class POSSESSIONGAME_API ARangerWeapon : public AOneHandedWeapon
 {
@@ -18,7 +16,6 @@ private:
 	
 	virtual void P_Shoot(bool bIsFirstWeapon) override;
 	virtual void P_Reload(int32 OtherAmmoSource) override;
-	virtual void P_VariationHitScanDamageAppliance() override;
 
 	virtual void BeginPlay() override;
 };

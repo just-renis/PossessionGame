@@ -18,6 +18,4 @@ class POSSESSIONGAME_API APoisonGrenade : public AProjectile
 	virtual void PlayImpactSound() override;
 	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) override;
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
-	void VariationAreaAppliance();
-	virtual void VariationDamageAppliance() override;
 };

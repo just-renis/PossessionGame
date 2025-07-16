@@ -99,8 +99,8 @@ void UAudioSettingsUI::NativeConstruct()
 	LanguageCode = GetLanguageCode(SavedSettings->GetCurrentLanguage());
 	SetupLanguagesData();
 	LanguageOption->SetText(GetLanguageOption(LanguageCode).LanguageName);
-	LanguageOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchLeft);
-	LanguageOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchRight);
+//	LanguageOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchLeft);
+//	LanguageOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchRight);
 	if (FpsCapSlider) FpsCapSlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::SetFpsValue);
 	if (HorizontalSensitivitySlider) HorizontalSensitivitySlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::SetHorizontalSensitivityNumberValue);
 	if (VerticalSensitivitySlider) VerticalSensitivitySlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::UAudioSettingsUI::SetVerticalSensitivityNumberValue);

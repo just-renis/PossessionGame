@@ -43,6 +43,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 		}
 		bHasBeenPooled = true;
 	}
+	else AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail)), nullptr, BulletTrailComponent, false, ProjectileData.GetProprietor()->GetVariation());
 }
 
 void AProjectile::SetDirection(const FVector& InDirection) const { MovementComponent->Velocity = InDirection * MovementComponent->MaxSpeed; }
@@ -113,11 +114,10 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 
 EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.DamageReason; }
 
-void AProjectile::AI_SetupUpgradesAppliance(const bool bIsPlayerProjectile)
+void AProjectile::AI_SetupUpgradesAppliance()
 {
-	if (bIsPlayerProjectile) return;
-	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatDamage);
-	const float DamagePercentage = UpgradeManager->GetUpgradeAttributeValue(bIsPlayerProjectile, ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage);
+	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->AI_GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatDamage);
+	const float DamagePercentage = UpgradeManager->GetUpgradeAttributeValue(false, ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage);
 	if (DamagePercentage > 0.f) Damage += DefaultDamage * DamagePercentage * 0.01f;
 }
 
@@ -125,6 +125,13 @@ void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)
 {
 	Damage -= DefaultDamage * ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
 	Damage += DefaultDamage * ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
+}
+
+void AProjectile::P_SetupUpgradesAppliance()
+{
+	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage);
+	const float DamagePercentage = UpgradeManager->GetUpgradeAttributeValue(true, ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage);
+	if (DamagePercentage > 0.f) Damage += DefaultDamage * DamagePercentage * 0.01f;
 }
 
 void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -143,12 +150,16 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 	Damage = DefaultDamage = ProjectileData.Damage;
 	if (bIsPlayerProjectile)
 	{
+		P_SetupUpgradesAppliance();
 		VariationDamageAppliance();
 		Damage += DefaultDamage * ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
-	else if (ProjectileData.GetProprietor()->GetIsMutant()) Damage -= DefaultDamage * 0.01f * ProjectileData.GetProprietor()->GetAIData()->GetMutantDamageIncreasePercentage();
-	AI_SetupUpgradesAppliance(bIsPlayerProjectile);
+	else
+	{
+		AI_SetupUpgradesAppliance();
+		if (ProjectileData.GetProprietor()->GetIsMutant()) Damage -= Damage * 0.01f * ProjectileData.GetProprietor()->GetAIData()->GetMutantDamageIncreasePercentage();
+	}
 }
 
 void AProjectile::DealAreaDamage()

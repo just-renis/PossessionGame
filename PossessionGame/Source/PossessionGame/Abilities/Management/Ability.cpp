@@ -35,8 +35,8 @@ void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbility
 	ReqCooldownKill = InAbilityData->GetCurrentCooldownKill();
 	if (CurrentCooldownKill > 0) bIsCooldownKill = true;
 	SetProprietor(InAbilityProprietor);
-	if (InAbilityProprietor->GetIsHijacked()) P_ApplyVariation();
 	SetupUpgradeAppliance(IsProprietorPossessed());
+	if (InAbilityProprietor->GetIsHijacked()) P_ApplyVariation();
 }
 
 void UAbility::UseCharge()

@@ -253,7 +253,7 @@ void AEnemy::AI_TryEvolving()
 
 void AEnemy::AI_SetupUpgradesAppliance()
 {
-	MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatHealth);
+	MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->AI_GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatHealth);
 	CurrentHp = MaxHp;
 }
 

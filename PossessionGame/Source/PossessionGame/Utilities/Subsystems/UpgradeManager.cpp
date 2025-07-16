@@ -7,6 +7,17 @@
 #include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 
+float UUpgradeManager::AI_GetTotalUpgradeAttributeValue(const EUpgradeAttribute InUpgradeAttribute)
+{
+	float Value = 0.f;
+	for (const TPair<EUpgrade, TObjectPtr<UUpgradeData>> Upgrade : Upgrades)
+	{
+		if (InUpgradeAttribute == EUpgradeAttribute::FlatHealth) Value += 5.f * RunSaveSlot->GetLevelOfAnUpgrade(Upgrade.Key);
+		else if (InUpgradeAttribute == EUpgradeAttribute::FlatDamage) Value += 1.f * RunSaveSlot->GetLevelOfAnUpgrade(Upgrade.Key);
+	}
+	return Value;
+}
+
 float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EPoolObject InProjectileName, const EUpgradeAttribute InUpgradeAttribute)
 {
 	if (const TObjectPtr<UUpgradeData> UpgradeData = GetProjectileUpgradeData(InProjectileName))
@@ -41,17 +52,6 @@ float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EAbi
 		return AttributeValue;
 	}
 	return 0.f;
-}
-
-float UUpgradeManager::GetTotalUpgradeAttributeValue(const EUpgradeAttribute InUpgradeAttribute)
-{
-	float Value = 0.f;
-	for (const TPair<EUpgrade, TObjectPtr<UUpgradeData>> Upgrade : Upgrades)
-	{
-		if (InUpgradeAttribute == EUpgradeAttribute::FlatHealth) Value += 10.f * RunSaveSlot->GetLevelOfAnUpgrade(Upgrade.Key);
-		else if (InUpgradeAttribute == EUpgradeAttribute::FlatDamage) Value += 1.f * RunSaveSlot->GetLevelOfAnUpgrade(Upgrade.Key);
-	}
-	return Value;
 }
 
 TObjectPtr<UUpgradeData> UUpgradeManager::GetProjectileUpgradeData(const EPoolObject InProjectileName)

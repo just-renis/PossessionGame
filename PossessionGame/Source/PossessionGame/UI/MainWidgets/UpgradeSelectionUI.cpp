@@ -231,7 +231,7 @@ void UUpgradeSelectionUI::TriggerSelectAnimForSecondOption()
 void UUpgradeSelectionUI::UpgradeSelectionPanelFadeOutFinished()
 {
 	UnbindAllFromAnimationFinished(UpgradeMenuCloseAnim);
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI, 1)->CloseUI();
+	CloseUI();
 	(void)DelegateManager->OnUpgradeSelectionFinished.ExecuteIfBound();
 }
 

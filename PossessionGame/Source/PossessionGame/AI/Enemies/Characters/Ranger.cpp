@@ -92,10 +92,19 @@ void ARanger::P_Setup()
 	GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeLaunchHandle);
 	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
+	P_ChangeRangerVariationMuzzle();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ARanger::SetIsActionInMotion);
 }
 
 void ARanger::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.58431f, 0.11373f, 0.f)); }
+
+void ARanger::P_ChangeRangerVariationMuzzle() const
+{
+	if (GrenadeLauncherMuzzleFlashComponent)
+	{
+		AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(EVfx::RangerGrenadeLauncherMuzzle), nullptr, GrenadeLauncherMuzzleFlashComponent, false, GetVariation());
+	}
+}
 
 void ARanger::BeginPlay()
 {
@@ -112,7 +121,11 @@ void ARanger::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ARanger::GrenadeLauncherMuzzleFlashLogic()
 {
-	if (!GrenadeLauncherMuzzleFlashComponent) AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &GrenadeLauncherMuzzleFlashComponent, Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true);
+	if (!GrenadeLauncherMuzzleFlashComponent)
+	{
+		AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &GrenadeLauncherMuzzleFlashComponent,
+		Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true,FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, GetVariation());
+	}
 	else
 	{
 		if (GrenadeLauncherMuzzleFlashComponent->IsActive()) GrenadeLauncherMuzzleFlashComponent->Deactivate();
