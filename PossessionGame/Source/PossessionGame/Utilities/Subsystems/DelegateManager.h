@@ -125,10 +125,4 @@ public:
 	FOnTargetChange OnTargetChange;
 	FOnKeyBindChange OnKeyBindChange;
 	FOnWeaponAmmoChangeThreeParams OnWeaponAmmoChangeThreeParams;
-
-	bool GetIsUsbDroppable() const { return bIsUsbDroppable; }
-
-	void SetIsUsbDroppable(const bool bState) { bIsUsbDroppable = bState; }
-private:
-	bool bIsUsbDroppable = false;
 };

@@ -2,6 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AUsbTerminal::AUsbTerminal()
@@ -38,7 +39,7 @@ void AUsbTerminal::Interact()
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbInsert);
 		UsbMeshes[CurrentUsbIndex]->SetVisibility(true);
 		(void)DelegateManager->OnUsbInserted.ExecuteIfBound();
-		if (++CurrentUsbIndex < 5) DelegateManager->SetIsUsbDroppable(true);
+		if (++CurrentUsbIndex < 5) GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(true);
 		else if (Marker) Marker->DestroyThis();
 	}
 	DisableInteraction();

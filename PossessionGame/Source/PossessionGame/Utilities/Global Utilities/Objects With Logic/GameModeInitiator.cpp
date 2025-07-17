@@ -2,6 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 
 AGameModeInitiator::AGameModeInitiator()
 {
@@ -19,7 +20,7 @@ void AGameModeInitiator::Initiate(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	if (OtherActor->ActorHasTag("Player"))
 	{
-		if (GameMode == EGameMode::ChargeTerminalMode) GetGameInstance()->GetSubsystem<UDelegateManager>()->SetIsUsbDroppable(true);
+		if (GameMode == EGameMode::ChargeTerminalMode) GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(true);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		Destroy();

@@ -731,11 +731,11 @@ void AEnemy::AI_ShowDamageNumber(const float InDamageAmount) const
 
 void AEnemy::AI_SpawnUsbOnDeath() const
 {
-	if (!DelegateManager->GetIsUsbDroppable()) return;
+	if (!GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetIsUsbDroppable()) return;
 	if (FMath::FRand() <= AI_Data->GetUsbDropChance())
 	{
 		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Usb, GetActorLocation())->Init();
-		DelegateManager->SetIsUsbDroppable(false);
+		GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(false);
 	}
 }
 
