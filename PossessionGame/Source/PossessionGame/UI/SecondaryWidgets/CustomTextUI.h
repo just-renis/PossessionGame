@@ -18,8 +18,4 @@ private:
 	TObjectPtr<UTextBlock> CustomText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
-	UPROPERTY()
-	FTimerHandle FadeInHandle;
-
-	void FadeInAnimFinished();
 };

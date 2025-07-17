@@ -9,6 +9,7 @@
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EVfxType.h"
+#include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -151,8 +152,9 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 	if (bIsPlayerProjectile)
 	{
 		P_SetupUpgradesAppliance();
-		VariationDamageAppliance();
+		P_VariationDamageAppliance();
 		Damage += DefaultDamage * ProjectileData.GetProprietor()->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
+		Damage += Damage * ProjectileData.GetProprietor()->GetGameInstance()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
 	else

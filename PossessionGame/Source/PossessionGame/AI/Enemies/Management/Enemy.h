@@ -359,7 +359,6 @@ private:
 	void P_TutorialPressKeyToContinueLogic();
 	void P_QuickMeleeAttack();
 	void P_ProcessMeleeAttack();
-	void P_ApplySecretReward(const int32 InIndex);
 	void P_SetupNavArea();
 	void P_OnVariationSelection(const ECharacterType InCharacterType);
 	void P_ReceiveCurrentlySelectedVariation();
@@ -375,6 +374,8 @@ private:
 	void P_StopDash() const;
 	void P_DashCooldownLogic();
 	void P_Crouch();
+	void P_AddXp(const int32 InXp) const;
+	void P_ApplySecretBoostHp(const int32 InPercentage);
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	void TickAbilities(const float InDeltaTime);
@@ -383,8 +384,6 @@ private:
 	void SetupUserSettings() const;
 	void ClearTimers();
 	void ProcessSpawnEffects();
-	void AddXp(const int32 InXp) const;
-	void AddHp(const int32 InHp);
 	void ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage) const;
 	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;
 	virtual void Landed(const FHitResult& Hit) override;

@@ -2,8 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "PossessionGame/Enums/EVariation.h"
 #include "RunSaveSlot.generated.h"
 
+enum class EVariation : uint8;
 class UPossessionGameInstance;
 enum class EUpgrade : uint8;
 
@@ -45,11 +47,13 @@ class POSSESSIONGAME_API URunSaveSlot : public USaveGame
 public:
 	int32 GetLevelOfChoice(const EUpgrade InUpgrade, const int32 InChoice);
 	int32 GetLevelOfAnUpgrade(const EUpgrade InUpgrade);
+	int32 GetSecretBoost(const EVariation InVariation);
 	const TMap<int32, int32>* GetUpgradeChoicesData(const EUpgrade InUpgrade);
 	
 	void AddUpgrade(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const EUpgrade InUpgrade, const int32 InChoice);
 	void SaveSlot();
 	void SetupSlot(const FString& InSlotName) { SlotName = InSlotName; }
+	void AddSecretCrateBoost(const EVariation InVariation, const int32 InPercentage);
 private:
 	UPROPERTY()
 	int32 SaveVersion = 1;
@@ -57,4 +61,6 @@ private:
 	FString SlotName;
 	UPROPERTY()
 	TMap<EUpgrade, FUpgradeChoicesAmountByLevel> UnlockedUpgrades;
+	UPROPERTY()
+	TMap<EVariation, int32> SecretCrateBoosts;
 };

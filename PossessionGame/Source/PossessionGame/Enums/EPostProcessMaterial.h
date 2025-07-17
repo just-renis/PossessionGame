@@ -10,6 +10,5 @@ enum class EPostProcessMaterial : uint8
     DeathGlitching,
     DeathScreenCrack,
     DeathBloodPumping,
-    GuardianShield,
-    SecretCrateReward,
+    GuardianShield
 };

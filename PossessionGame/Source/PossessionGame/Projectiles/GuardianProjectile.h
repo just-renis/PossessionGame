@@ -9,5 +9,5 @@ class POSSESSIONGAME_API AGuardianProjectile : public AProjectile
 {
 	GENERATED_BODY()
 
-	virtual void VariationDamageAppliance() override;
+	virtual void P_VariationDamageAppliance() override;
 };

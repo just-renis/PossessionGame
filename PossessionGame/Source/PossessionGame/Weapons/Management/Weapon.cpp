@@ -10,6 +10,7 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfxType.h"
+#include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
@@ -310,8 +311,8 @@ void AWeapon::DisableHandsMesh() const
 void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 {
 	const bool bIsCritical = InHitResult.BoneName == "head";
-	const float Damage = P_ReceiveHitScanDamage() * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
-//	UE_LOG(LogTemp, Warning, TEXT("AWeapon::DealPointDamage %f"), Damage);
+	const float SecretBoostDamage = P_ReceiveHitScanDamage() + P_ReceiveHitScanDamage() * Proprietor->GetGameInstance()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
+	const float Damage = SecretBoostDamage * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
 	if (FMath::IsNearlyEqual(Damage, 0.f, 0.01f)) return;
 	(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 	AssetsManager->PlaySound2D(bIsCritical ? ESound::CriticalDamageTick : ESound::DamageTick);

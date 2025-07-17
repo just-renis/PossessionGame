@@ -16,6 +16,7 @@ public:
 	TObjectPtr<UMainMenuButtonUI> GetAlertButton() { return AlertButton; }
 
 	void PlayPopupFadeInAnim(const bool bState);
+	void SetText(const FText& InText) const;
 private:
 	UPROPERTY(EditAnywhere, Category = "Alert Settings", meta = (AllowPrivateAccess = true))
 	FText AlertTitleText;

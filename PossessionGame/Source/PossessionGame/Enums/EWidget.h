@@ -14,5 +14,6 @@ enum class EWidget : uint8
     VariationsUI,
     LoadingScreenUI,
     GameLaunchUI,
-    DemoEndUI
+    DemoEndUI,
+    SecretRoomUI
 };

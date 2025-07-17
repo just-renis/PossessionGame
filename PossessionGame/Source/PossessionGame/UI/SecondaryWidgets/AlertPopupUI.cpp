@@ -10,10 +10,12 @@ void UAlertPopupUI::PlayPopupFadeInAnim(const bool bState)
 	PlayAnimation(PopupFadeInAnim, GetAnimationCurrentTime(PopupFadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
 
+void UAlertPopupUI::SetText(const FText& InText) const { if (AlertTitle) AlertTitle->SetText(InText); }
+
 void UAlertPopupUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-	if (AlertTitle) AlertTitle->SetText(AlertTitleText);
+	SetText(AlertTitleText);
 }
 
 void UAlertPopupUI::NativeConstruct()

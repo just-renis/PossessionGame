@@ -15,6 +15,12 @@ int32 URunSaveSlot::GetLevelOfAnUpgrade(const EUpgrade InUpgrade)
 	return 0;
 }
 
+int32 URunSaveSlot::GetSecretBoost(const EVariation InVariation)
+{
+	if (const int32* BoostAmount = SecretCrateBoosts.Find(InVariation)) return *BoostAmount;
+	return 0;
+}
+
 const TMap<int32, int32>* URunSaveSlot::GetUpgradeChoicesData(const EUpgrade InUpgrade)
 {
 	if (const FUpgradeChoicesAmountByLevel* Choices = UnlockedUpgrades.Find(InUpgrade)) return &Choices->Data;
@@ -29,3 +35,9 @@ void URunSaveSlot::AddUpgrade(const TObjectPtr<UPossessionGameInstance>& InGameI
 }
 
 void URunSaveSlot::SaveSlot() { UGameplayStatics::SaveGameToSlot(this, SlotName, 0); }
+
+void URunSaveSlot::AddSecretCrateBoost(const EVariation InVariation, const int32 InPercentage)
+{
+	int32& BoostAmount = SecretCrateBoosts.FindOrAdd(InVariation);
+	BoostAmount += InPercentage;
+}

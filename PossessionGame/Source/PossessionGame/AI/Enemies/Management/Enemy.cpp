@@ -40,6 +40,7 @@
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/AIHpBarUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
@@ -416,9 +417,10 @@ void AEnemy::P_Setup()
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
-	DelegateManager->OnSecretRewardCollected.BindUObject(this, &AEnemy::P_ApplySecretReward);
 	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
 	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_SetupLevelUpAppliance);
+	DelegateManager->OnXpReceived.BindUObject(this, &AEnemy::P_AddXp);
+	DelegateManager->ApplySecretBoostHealth.BindUObject(this, &AEnemy::P_ApplySecretBoostHp);
 	Tags.Remove("AliveEnemy");
 	Tags.Add("Player");
 	P_ReceiveCurrentlySelectedVariation();
@@ -771,6 +773,7 @@ void AEnemy::P_SetupData()
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
 	MaxHp = P_Data->GetMaxHp();
 	MaxHp += MaxHp * GetGameInstance()->GetSaveSlot()->GetLevelHpIncrease() * 0.01f;
+	MaxHp += MaxHp * GetGameInstance()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardHealth) * 0.01f;
 	CurrentHp = MaxHp;
 	bIsHijacked = true;
 	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
@@ -861,7 +864,7 @@ void AEnemy::P_Dash()
 void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue)
 {
 	HijackBarTimer += InHijackTimeValue;
-	AddXp(InXp);
+	P_AddXp(InXp);
 	for (int32 i = 0; i < Abilities.Num(); i++)
 	{
 		if (Abilities[i]->GetIsCooldownKill())
@@ -1015,16 +1018,6 @@ void AEnemy::P_ProcessMeleeAttack()
 	}
 }
 
-void AEnemy::P_ApplySecretReward(const int32 InIndex)
-{
-	switch (InIndex)
-	{
-		case 0: AddHp(30); break; // Hp.
-		case 1: HijackBarTimer += 30.f; break; // Possession.
-		default: AddXp(10); // Xp.
-	}
-}
-
 void AEnemy::P_SetupNavArea()
 {
 	NavAreaModifier = GetWorld()->SpawnActor<ANavAreaModifier>(P_NavAreaDefaultClass, GetActorLocation(), GetActorRotation());
@@ -1154,6 +1147,20 @@ void AEnemy::P_Crouch()
 	else UnCrouch(false);
 }
 
+void AEnemy::P_AddXp(const int32 InXp) const
+{
+	GameInstance->GetSaveSlot()->AddXp(GameInstance, InXp);
+	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSaveSlot()->GetXp(), GameInstance->GetSaveSlot()->GetCurrentLevelNeededXp());
+}
+
+void AEnemy::P_ApplySecretBoostHp(const int32 InPercentage)
+{
+	const int32 MaxHpIncrease = MaxHp * InPercentage * 0.01f;
+	MaxHp += MaxHpIncrease;
+	CurrentHp += MaxHpIncrease;
+	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
+}
+
 void AEnemy::TickAbilities(const float InDeltaTime)
 {
 	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->Tick(InDeltaTime);
@@ -1199,19 +1206,6 @@ void AEnemy::ProcessSpawnEffects()
 	}
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", 0.7f);
 	GetWorldTimerManager().SetTimer(SpawnCondenseMaterialsProcessHandle, this, &AEnemy::SpawnCondenseMaterialsProcess, 0.05f, true);
-}
-
-void AEnemy::AddXp(const int32 InXp) const
-{
-	GameInstance->GetSaveSlot()->AddXp(GameInstance, InXp);
-	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSaveSlot()->GetXp(), GameInstance->GetSaveSlot()->GetCurrentLevelNeededXp());
-}
-
-void AEnemy::AddHp(const int32 InHp)
-{
-	CurrentHp += InHp;
-	if (CurrentHp > MaxHp) CurrentHp = MaxHp;
-	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
 }
 
 void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage) const

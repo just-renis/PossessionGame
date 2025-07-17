@@ -1,9 +1,9 @@
 ﻿#include "SecretCrate.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
-#include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
+#include "PossessionGame/UI/MainWidgets/SecretRoomUI.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 ASecretCrate::ASecretCrate()
 {
@@ -18,32 +18,6 @@ ASecretCrate::ASecretCrate()
 	Sounds.Add(ESound::SecretCrateReceivePowerUp, CreateDefaultSubobject<UAudioComponent>(TEXT("receivePowerUpSound")));
 	Sounds[ESound::SecretCrateReceivePowerUp]->SetAutoActivate(false);
 	Sounds[ESound::SecretCrateReceivePowerUp]->SetupAttachment(CrateMesh);
-}
-
-EVariation ASecretCrate::SetupReward(const int32 InIndex)
-{
-	EVariation VariationName = {};
-	switch (InIndex)
-	{
-		case 0:
-			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Health Restored"));
-			if (const TObjectPtr<UMaterialInterface>* Material = PP_Materials.Find(ERewardMaterial::Health)) PP_Material = UMaterialInstanceDynamic::Create(*Material, this);
-			VariationName = EVariation::SecretCrateRewardHealth;
-			break;
-		case 1:
-			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Hijack Restored"));
-			if (const TObjectPtr<UMaterialInterface>* Material = PP_Materials.Find(ERewardMaterial::Hijack)) PP_Material = UMaterialInstanceDynamic::Create(*Material, this);
-			VariationName = EVariation::SecretCrateRewardHijack;
-			break;
-		case 2:
-			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("XP Gained"));
-			if (const TObjectPtr<UMaterialInterface>* Material = PP_Materials.Find(ERewardMaterial::Xp)) PP_Material = UMaterialInstanceDynamic::Create(*Material, this);
-			VariationName = EVariation::SecretCrateRewardXp;
-		default: ;
-	}
-	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SecretCrateReward, PP_Material, 1.f);
-	GetWorldTimerManager().SetTimer(ProcessRewardHandle, this, &ASecretCrate::ProcessRewardAppear, 0.0125f, true);
-	return VariationName;
 }
 
 void ASecretCrate::BeginPlay()
@@ -68,9 +42,8 @@ void ASecretCrate::Interact()
 void ASecretCrate::GiveReward()
 {
 	PlaySound(ESound::SecretCrateReceivePowerUp);
-	const int32 RandomIndex = FMath::RandRange(0, RewardMaterials.Num() - 1);
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSecretRewardCollected.ExecuteIfBound(RandomIndex);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::SecretRewardPopUp, nullptr, GetActorLocation() + FVector(0.f, 0.f, 30.f), FRotator::ZeroRotator, SetupReward(RandomIndex));
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::SecretRewardPopUp, nullptr, GetActorLocation() + FVector(0.f, 0.f, 30.f));
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USecretRoomUI>(EWidget::SecretRoomUI, 1)->OpenUI();
 }
 
 void ASecretCrate::PlaySound(const ESound InSoundName)
@@ -82,31 +55,4 @@ void ASecretCrate::StopSound(const ESound InSoundName)
 {
 	if (!Sounds.Contains(InSoundName)) return;
 	Sounds[InSoundName]->Stop();
-}
-
-void ASecretCrate::ProcessRewardAppear()
-{
-	ProcessRewardLoopValue++;
-	if (!PP_Material) return;
-	PP_Material->SetScalarParameterValue("Appear", 0.05f * ProcessRewardLoopValue);
-	PP_Material->SetScalarParameterValue("RadialDensity", 3 - 0.09f * ProcessRewardLoopValue);
-	if (ProcessRewardLoopValue >= 20)
-	{
-		ProcessRewardLoopValue = 0;
-		GetWorldTimerManager().ClearTimer(ProcessRewardHandle);
-		GetWorldTimerManager().SetTimer(ProcessRewardHandle, this, &ASecretCrate::ProcessRewardDisappear, 0.0125f, true, 1.f);
-	}
-}
-
-void ASecretCrate::ProcessRewardDisappear()
-{
-	ProcessRewardLoopValue++;
-	if (!PP_Material) return;
-	PP_Material->SetScalarParameterValue("Appear", 1.f - 0.05f * ProcessRewardLoopValue);
-	PP_Material->SetScalarParameterValue("RadialDensity", 1.8f + 0.09f * ProcessRewardLoopValue);
-	if (ProcessRewardLoopValue >= 20)
-	{
-		ProcessRewardLoopValue = 0;
-		GetWorldTimerManager().ClearTimer(ProcessRewardHandle);
-	}
 }
