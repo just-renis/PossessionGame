@@ -1,7 +1,9 @@
 ﻿#include "AbilitiesMenuUI.h"
 #include "PlayerHUD.h"
+#include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilityIconUI.h"
+#include "PossessionGame/UI/SecondaryWidgets/AbilityResetButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CustomTextUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationCharacterIconUI.h"
@@ -29,6 +31,7 @@ void UAbilitiesMenuUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	Abilities = { FirstAbility, SecondAbility, ThirdAbility, FourthAbility };
+	SetupButtons();
 	TriggerSwitchOnTheFirstOpen();
 	FadeOutAnimEndDelegate.BindDynamic(this, &UAbilitiesMenuUI::FadeOutAnimFinished);
 	GuardianCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
@@ -86,8 +89,68 @@ void UAbilitiesMenuUI::TriggerSwitchOnTheFirstOpen()
 	GuardianCharacterIcon->SetEventsEnabled(false);
 }
 
+void UAbilitiesMenuUI::SetupButtons()
+{
+	FirstAbility->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::FirstAbilitySelected);
+	SecondAbility->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::SecondAbilitySelected);
+	FirstAbilityResetButton->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::FirstSlotResetClicked);
+	SecondAbilityResetButton->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::SecondSlotResetClicked);
+}
+
 void UAbilitiesMenuUI::FadeOutAnimFinished()
 {
 	UnbindAllFromAnimationFinished(FadeInAnim);
 	SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UAbilitiesMenuUI::FirstAbilitySelected()
+{
+	if (FirstAbility->GetIsInSlot()) return;
+	FirstAbility->SetIsInSlot(true);
+	if (!FirstAbilitySlot)
+	{
+		FirstAbilitySlot = FirstAbility;
+		PlayAnimationForward(Select1To1Anim);
+	}
+	else if (!SecondAbilitySlot)
+	{
+		SecondAbilitySlot = FirstAbility;
+		PlayAnimationForward(Select1To2Anim);
+	}
+	else FirstAbility->PlayWobbleAnim();
+}
+
+void UAbilitiesMenuUI::SecondAbilitySelected()
+{
+	if (SecondAbility->GetIsInSlot()) return;
+	SecondAbility->SetIsInSlot(true);
+	if (!FirstAbilitySlot)
+	{
+		FirstAbilitySlot = SecondAbility;
+		PlayAnimationForward(Select2To1Anim);
+	}
+	else if (!SecondAbilitySlot)
+	{
+		SecondAbilitySlot = SecondAbility;
+		PlayAnimationForward(Select2To2Anim);
+	}
+	else SecondAbility->PlayWobbleAnim();
+}
+
+void UAbilitiesMenuUI::FirstSlotResetClicked()
+{
+	if (!FirstAbilitySlot) return;
+	if (FirstAbilitySlot == FirstAbility) PlayAnimationReverse(Select1To1Anim);
+	else if (FirstAbilitySlot == SecondAbility) PlayAnimationReverse(Select2To1Anim);
+	FirstAbilitySlot->SetIsInSlot(false);
+	FirstAbilitySlot = nullptr;
+}
+
+void UAbilitiesMenuUI::SecondSlotResetClicked()
+{
+	if (!SecondAbilitySlot) return;
+	if (SecondAbilitySlot == FirstAbility) PlayAnimationReverse(Select1To2Anim);
+	else if (SecondAbilitySlot == SecondAbility) PlayAnimationReverse(Select2To2Anim);
+	SecondAbilitySlot->SetIsInSlot(false);
+	SecondAbilitySlot = nullptr;
 }

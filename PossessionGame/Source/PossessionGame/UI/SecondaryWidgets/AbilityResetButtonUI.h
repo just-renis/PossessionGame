@@ -10,7 +10,9 @@ UCLASS()
 class POSSESSIONGAME_API UAbilityResetButtonUI : public UUserWidget
 {
 	GENERATED_BODY()
-
+public:
+	TObjectPtr<UButton> GetButton() { return AbilityResetButton; }
+private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> AbilityResetButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -19,8 +21,6 @@ class POSSESSIONGAME_API UAbilityResetButtonUI : public UUserWidget
 	TObjectPtr<UWidgetAnimation> SelectAnim;
 
 	virtual void NativeConstruct() override;
-	UFUNCTION()
-	void OnPressed();
 	UFUNCTION()
 	void OnHovered();
 	UFUNCTION()

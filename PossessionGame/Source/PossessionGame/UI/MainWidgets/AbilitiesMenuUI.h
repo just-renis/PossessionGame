@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "AbilitiesMenuUI.generated.h"
 
+class UAbilityResetButtonUI;
 class UMainMenuButtonUI;
 enum class ECharacterType : uint8;
 class UVariationCharacterIconUI;
@@ -70,13 +71,29 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> TricksterCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UAbilityResetButtonUI> FirstAbilityResetButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UAbilityResetButtonUI> SecondAbilityResetButton;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCustomTextUI> DetailsPanel;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> ConfirmButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> Select1To1Anim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> Select1To2Anim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> Select2To1Anim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> Select2To2Anim;
 	UPROPERTY()
 	TObjectPtr<UVariationCharacterIconUI> CurrentlySelectedIcon;
+	UPROPERTY()
+	TObjectPtr<UAbilityIconUI> FirstAbilitySlot;
+	UPROPERTY()
+	TObjectPtr<UAbilityIconUI> SecondAbilitySlot;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeOutAnimEndDelegate;
 	UPROPERTY()
@@ -86,6 +103,15 @@ private:
 	void Toggle(const bool bState);
 	void SwitchCharacterAbilities(const ECharacterType InCharacterName);
 	void TriggerSwitchOnTheFirstOpen();
+	void SetupButtons();
 	UFUNCTION()
 	void FadeOutAnimFinished();
+	UFUNCTION()
+	void FirstAbilitySelected();
+	UFUNCTION()
+	void SecondAbilitySelected();
+	UFUNCTION()
+	void FirstSlotResetClicked();
+	UFUNCTION()
+	void SecondSlotResetClicked();
 };

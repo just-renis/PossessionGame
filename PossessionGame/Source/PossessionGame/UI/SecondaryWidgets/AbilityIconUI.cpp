@@ -10,18 +10,18 @@ void UAbilityIconUI::SetAbilityData(const TObjectPtr<UTexture2D>& InIcon, const 
 	DetailsText = InDetailsText;
 }
 
+void UAbilityIconUI::SetIsInSlot(const bool bState)
+{
+	bIsInSlot = bState;
+	if (AbilityButton) AbilityButton->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible :ESlateVisibility::Visible);
+}
+
 void UAbilityIconUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	if (!AbilityButton) return;
-	AbilityButton->OnClicked.AddDynamic(this, &UAbilityIconUI::ProcessClickEvent);
 	AbilityButton->OnHovered.AddDynamic(this, &UAbilityIconUI::OnHovered);
 	AbilityButton->OnUnhovered.AddDynamic(this, &UAbilityIconUI::OnUnHovered);
-}
-
-void UAbilityIconUI::ProcessClickEvent()
-{
-	
 }
 
 void UAbilityIconUI::OnHovered()
