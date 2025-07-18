@@ -1,4 +1,5 @@
 ﻿#include "VariationsComputer.h"
+#include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -11,5 +12,6 @@ AVariationsComputer::AVariationsComputer()
 void AVariationsComputer::Interact()
 {
 	if (!GetIsInteractable()) return;
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI, 1)->OpenUI();
+	if (ComputerType == EWidget::VariationsUI) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI, 1)->OpenUI();
+	else GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI, 1)->OpenUI();
 }

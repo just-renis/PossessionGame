@@ -4,10 +4,11 @@
 #include "Blueprint/UserWidget.h"
 #include "VariationCharacterIconUI.generated.h"
 
+enum class ECharacterType : uint8;
 class UButton;
 class UBorder;
 
-DECLARE_DELEGATE_OneParam(FOnVariationClicked, const int32);
+DECLARE_DELEGATE_OneParam(FOnVariationClicked, const ECharacterType);
 
 UCLASS()
 class POSSESSIONGAME_API UVariationCharacterIconUI : public UUserWidget
@@ -22,7 +23,7 @@ public:
 private:
 	bool bEventsEnabled = true;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	int32 VariationIndex = 0;
+	ECharacterType CharacterName;
 	UPROPERTY(EditAnywhere, Category = "Icon", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> VariationCharacterIcon;
 	UPROPERTY(meta = (BindWidget))

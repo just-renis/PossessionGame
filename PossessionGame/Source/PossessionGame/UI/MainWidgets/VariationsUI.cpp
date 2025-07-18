@@ -33,7 +33,7 @@ void UVariationsUI::NativeConstruct()
 	Super::NativeConstruct();
 	SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	UnlockDetailsPanel->SetSaveSlot(SaveSlot);
-	SwitchVariation(0);
+	SwitchVariation(ECharacterType::Guardian);
 	GuardianCharacterIcon->PlayHoverAnim();
 	GuardianCharacterIcon->SetEventsEnabled(false);
 	GuardianCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
@@ -84,25 +84,29 @@ void UVariationsUI::SetSelectedVariation(const EVariation InVariation)
 	}
 }
 
-void UVariationsUI::SwitchVariation(const int32 InIndex)
+void UVariationsUI::SwitchVariation(const ECharacterType InCharacterName)
 {
 	if (CurrentlySelectedIcon) CurrentlySelectedIcon->SetEventsEnabled(true);
-	VariationsSwitcher->SetActiveWidgetIndex(InIndex);
-	switch (InIndex)
+	int32 ActiveWidgetIndex = 0; // Rework needed so that widget switcher would not be needed.
+	switch (InCharacterName)
 	{
-		case 0:
+		case ECharacterType::Guardian:
 			CurrentlySelectedIcon = GuardianCharacterIcon;
+			ActiveWidgetIndex = 0;
 			if (SaveSlot->GetIsVariationUnlocked(EVariation::GuardianVariationGold)) GuardianVariationGold->UnlockVariation();
 			break;
-		case 1:
+		case ECharacterType::Ranger:
 			CurrentlySelectedIcon = RangerCharacterIcon;
+			ActiveWidgetIndex = 1;
 			if (SaveSlot->GetIsVariationUnlocked(EVariation::RangerVariationBlue)) RangerVariationBlue->UnlockVariation();
 			break;
-		case 2:
+		case ECharacterType::Trickster:
 			CurrentlySelectedIcon = TricksterCharacterIcon;
+			ActiveWidgetIndex = 2;
 			if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
 		default: ;
 	}
+	VariationsSwitcher->SetActiveWidgetIndex(ActiveWidgetIndex);
 }
 
 void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVariationName, const FString& InVariationDetailsText, const FString& InUnlockDetailsText)

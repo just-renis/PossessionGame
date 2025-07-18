@@ -35,7 +35,7 @@ void UVariationCharacterIconUI::PlaySelectedAnim() { PlayAnimation(SelectAnim); 
 void UVariationCharacterIconUI::HandleClicked()
 {
 	if (!bEventsEnabled) return;
-	(void)OnVariationClicked.ExecuteIfBound(VariationIndex);
+	(void)OnVariationClicked.ExecuteIfBound(CharacterName);
 	PlayAnimation(SelectAnim);
 	SetEventsEnabled(false);
 }

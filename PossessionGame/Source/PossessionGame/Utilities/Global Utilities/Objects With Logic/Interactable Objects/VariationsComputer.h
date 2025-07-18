@@ -4,6 +4,8 @@
 #include "InteractableObject.h"
 #include "VariationsComputer.generated.h"
 
+enum class EWidget : uint8;
+
 UCLASS()
 class POSSESSIONGAME_API AVariationsComputer : public AInteractableObject
 {
@@ -11,6 +13,8 @@ class POSSESSIONGAME_API AVariationsComputer : public AInteractableObject
 
 	AVariationsComputer();
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	EWidget ComputerType;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 

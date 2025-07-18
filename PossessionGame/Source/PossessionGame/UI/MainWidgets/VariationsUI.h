@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "VariationsUI.generated.h"
 
+enum class ECharacterType : uint8;
 class UVariationCurrencyPanelUI;
 enum class EVariation : uint8;
 class USaveSlot;
@@ -63,7 +64,7 @@ private:
 	void Toggle(const bool bState);
 	void SetSelectedVariation(const EVariation InVariation);
 	UFUNCTION()
-	void SwitchVariation(const int32 InIndex);
+	void SwitchVariation(const ECharacterType InCharacterName);
 	UFUNCTION()
 	void ToggleDetailsPanel(const bool bState, const EVariation InVariationName, const FString& InVariationDetailsText, const FString& InUnlockDetailsText);
 	UFUNCTION()
