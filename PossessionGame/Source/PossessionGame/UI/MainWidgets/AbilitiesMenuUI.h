@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "PossessionGame/Enums/ECharacterType.h"
 #include "AbilitiesMenuUI.generated.h"
 
 class UAbilityResetButtonUI;
@@ -12,6 +13,33 @@ class UAbilityIconUI;
 class UCustomTextUI;
 class UConfirmationPopupUI;
 class UTextBlock;
+
+USTRUCT()
+struct FAbilitiesLayout
+{
+	GENERATED_BODY()
+
+	int32 FirstAbilityIndex = INDEX_NONE;
+	int32 SecondAbilityIndex = INDEX_NONE;
+};
+
+USTRUCT()
+struct FCurrentlySelectedCharacter
+{
+	GENERATED_BODY()
+
+	ECharacterType GetCharacterType() const { return Character; }
+	TObjectPtr<UVariationCharacterIconUI> GetIcon() { return Icon; }
+	void SetCurrentlySelectedCharacter(const ECharacterType InCharacter, const TObjectPtr<UVariationCharacterIconUI>& InIcon)
+	{
+		Character = InCharacter;
+		Icon = InIcon;
+	}
+private:
+	ECharacterType Character = ECharacterType::Random;
+	UPROPERTY()
+	TObjectPtr<UVariationCharacterIconUI> Icon;
+};
 
 USTRUCT()
 struct FAbilitiesContainerData
@@ -89,7 +117,7 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> Select2To2Anim;
 	UPROPERTY()
-	TObjectPtr<UVariationCharacterIconUI> CurrentlySelectedIcon;
+	FCurrentlySelectedCharacter CurrentlySelectedCharacter;
 	UPROPERTY()
 	TObjectPtr<UAbilityIconUI> FirstAbilitySlot;
 	UPROPERTY()
@@ -98,12 +126,18 @@ private:
 	FWidgetAnimationDynamicEvent FadeOutAnimEndDelegate;
 	UPROPERTY()
 	TArray<TObjectPtr<UAbilityIconUI>> Abilities;
+	UPROPERTY()
+	TMap<ECharacterType, FAbilitiesLayout> CharacterAbilitiesLayouts;
 
 	virtual void NativeConstruct() override;
 	void Toggle(const bool bState);
 	void SwitchCharacterAbilities(const ECharacterType InCharacterName);
 	void TriggerSwitchOnTheFirstOpen();
 	void SetupButtons();
+	void SaveTempAbilities();
+	void LoadAbilitiesLayout();
+	void SaveAbilitySlot(TObjectPtr<UAbilityIconUI>& InAbilitySlot,FAbilitiesLayout* InLayout, const TObjectPtr<UWidgetAnimation>& InFirstAnim, const TObjectPtr<UWidgetAnimation>& InSecondAnim, const bool bIsFirstSlot);
+	void LoadAbilityToSlot(TObjectPtr<UAbilityIconUI>& InAbilitySlot, const FAbilitiesLayout* InLayout, const int32 InFirstAbilityIndex, const int32 InSecondAbilityIndex, const TObjectPtr<UWidgetAnimation>& InFirstAnim, const TObjectPtr<UWidgetAnimation>& InSecondAnim, const bool bIsFirstSlot);
 	UFUNCTION()
 	void FadeOutAnimFinished();
 	UFUNCTION()
