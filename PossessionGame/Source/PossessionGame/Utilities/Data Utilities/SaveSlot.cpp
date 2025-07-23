@@ -11,6 +11,21 @@ bool USaveSlot::GetIsVariationUnlocked(const EVariation InVariationUnlockName) {
 
 bool USaveSlot::GetIsVariationTaskCompleted(const EVariation InVariationUnlockName) const { return VariationUnlockData.IsVariationTaskCompleted(InVariationUnlockName); }
 
+bool USaveSlot::GetIsAbilityUnlocked(const ECharacterType InCharacter, const int32 InAbilityIndex)
+{
+	if (const FCharacterAbilities* CharacterAbilities = CharacterUnlockedAbilities.Find(InCharacter)) return CharacterAbilities->Abilities.Contains(InAbilityIndex);
+	return false;
+}
+
+bool USaveSlot::UnlockAbility(const ECharacterType InCharacter, const int32 InAbilityIndex)
+{
+	if (GetSkillPoints() <= 0) return false;
+	FCharacterAbilities& CharacterAbilities = CharacterUnlockedAbilities.FindOrAdd(InCharacter);
+	if (!CharacterAbilities.Abilities.Contains(InAbilityIndex)) CharacterAbilities.Abilities.Add(InAbilityIndex);
+	SaveSlot();
+	return true;
+}
+
 int32 USaveSlot::GetCurrentLevelNeededXp() const { return PlayerLevelData->GetXpNeeded(CurrentLevel); }
 
 int32 USaveSlot::GetLevelDamageIncrease(const int32 InLevel) const { return PlayerLevelData->GetDamageIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
@@ -21,7 +36,21 @@ int32 USaveSlot::GetVariationUnlockProgress(const EVariation InVariationUnlockNa
 
 int32 USaveSlot::GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockRequirement(InVariationUnlockName); }
 
+int32 USaveSlot::GetSkillPoints() const { return GetPlayerLevel() - CharacterUnlockedAbilities.Num(); }
+
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
+
+FCharacterAbilities USaveSlot::GetCharacterChosenAbilities(const ECharacterType InCharacter)
+{
+	if (const FCharacterAbilities* CharacterAbilities = CharacterChosenAbilities.Find(InCharacter)) return *CharacterAbilities;
+	return FCharacterAbilities();
+}
+
+FCharacterAbilities USaveSlot::GetCharacterUnlockedAbilities(const ECharacterType InCharacter)
+{
+	if (const FCharacterAbilities* CharacterAbilities = CharacterUnlockedAbilities.Find(InCharacter)) return *CharacterAbilities;
+	return FCharacterAbilities();
+}
 
 void USaveSlot::AddCurrencyAmount(const int32 InCurrencyAmount)
 {
@@ -48,7 +77,7 @@ void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInsta
 	VersionMigration();
 }
 
-void USaveSlot::AddXp(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const int32 InXp)
+void USaveSlot::AddXp(const TObjectPtr<UGameInstance>& InGameInstance, const int32 InXp)
 {
 	CurrentXp += InXp;
 	while (CurrentXp >= GetCurrentLevelNeededXp())
@@ -70,6 +99,14 @@ void USaveSlot::SetLaunchedOnce()
 }
 
 void USaveSlot::UnlockVariation(const EVariation InVariationUnlockName) { VariationUnlockData.UnlockVariation(InVariationUnlockName); }
+
+void USaveSlot::AddChosenAbilities(const ECharacterType InCharacter, const int32 InFirstAbilityIndex, const int32 InSecondAbilityIndex)
+{
+	FCharacterAbilities& CharacterAbilities = CharacterChosenAbilities.FindOrAdd(InCharacter);
+	CharacterAbilities.Abilities.Empty();
+	CharacterAbilities.Abilities.Add(InFirstAbilityIndex);
+	CharacterAbilities.Abilities.Add(InSecondAbilityIndex);
+}
 
 void USaveSlot::UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation) { VariationUnlockData.UpdateSelectedVariation(InCharacter, InVariation); }
 

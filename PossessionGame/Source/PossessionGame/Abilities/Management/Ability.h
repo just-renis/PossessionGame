@@ -21,7 +21,7 @@ public:
 	bool GetIsMaxCharged() const { return CurrentChargesAmount >= MaxChargesAmount; }
 	int32 GetCurrentCooldownKill() const { return CurrentCooldownKill; }
 	int32 GetReqCooldownKill() const { return ReqCooldownKill; }
-	int32 GetAbilityIndex() const;
+	int32 GetAbilityIndex() const { return AbilityIndex; }
 	int32 GetCurrentCharges() const { return CurrentChargesAmount; }
 	float GetReqCooldownSecs() const { return ReqCooldownSecs; }
 	float GetCurrentCooldownSecs() const { return CurrentCooldownSecs; }
@@ -35,8 +35,8 @@ public:
 	virtual void Tick(const float InDeltaTime);
 	void ReduceKillCooldown() { CurrentCooldownKill++; }
 	void Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager);
-	void SetupAdditionalProperties(TObjectPtr<UAbility> InAbilityToRefresh);
 	virtual void SetupUpgradeAppliance(const bool bIsPlayer = true);
+	void SetAbilityIndex(const int32 InAbilityIndex) { AbilityIndex = InAbilityIndex; }
 protected:
 	bool bIsAbilityInDuration = false;
 	int32 CurrentChargesAmount = 0;
@@ -59,17 +59,12 @@ protected:
 	virtual void CooldownLogic(const float InDeltaTime);
 private:
 	bool bIsCooldownKill = false;
-	bool bIsRefreshingOtherAbility = false;
 	bool bIsDurational = false;
 	int32 CurrentCooldownKill;
 	int32 ReqCooldownKill;
-	float RefreshOtherAbilityAmount;
-	UPROPERTY()
-	TObjectPtr<UAbility> RefreshableAbility;
+	int32 AbilityIndex;
 
 	void ReduceCooldownTimer(const float InRefreshAmount) { CurrentCooldownSecs += InRefreshAmount; }
-	void RefreshOtherAbility() const;
-	void SetupRefreshOtherAbility(const float InRefreshAmount, TObjectPtr<UAbility> InAbilityToRefresh);
 	void ResetDuration();
 	void AbilityInDurationLogic(const float InDeltaTime);
 };

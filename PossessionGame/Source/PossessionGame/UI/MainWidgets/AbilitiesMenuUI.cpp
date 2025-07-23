@@ -2,14 +2,32 @@
 #include "PlayerHUD.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
+#include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
-#include "PossessionGame/UI/SecondaryWidgets/AbilityIconUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilityResetButtonUI.h"
+#include "PossessionGame/UI/SecondaryWidgets/CharacterAbilitiesUI.h"
+#include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CustomTextUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationCharacterIconUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
+
+TObjectPtr<UTexture2D> UAbilitiesMenuUI::GetAbilityIcon(const ECharacterType InCharacter, const int32 InAbilityIndex) const
+{
+	switch (InCharacter)
+	{
+		case ECharacterType::Guardian: return GuardianCharacterAbilities->GetAbilityIcon(InAbilityIndex);
+		case ECharacterType::Ranger: return RangerCharacterAbilities->GetAbilityIcon(InAbilityIndex);
+		case ECharacterType::Trickster: return TricksterCharacterAbilities->GetAbilityIcon(InAbilityIndex); 
+		default: ;
+	}
+	return nullptr;
+}
 
 void UAbilitiesMenuUI::ToggleDetailsPanel(const bool bState, const FText& InText) const
 {
@@ -20,25 +38,38 @@ void UAbilitiesMenuUI::ToggleDetailsPanel(const bool bState, const FText& InText
 
 void UAbilitiesMenuUI::OpenUI()
 {
+	UpdateSkillPointsText();
 	Toggle(true);
+	if (CurrentlySelectedCharacter.GetCharacterType() != ECharacterType::Random) SwitchCharacterAbilities(CurrentlySelectedCharacter.GetCharacterType());
+	if (!FirstTimeOpenInstance) return;
+	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	GuardianCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
+	RangerCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
+	TricksterCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
+	FirstTimeOpenInstance = false;
+	TriggerSwitchOnTheFirstOpen();
 }
 
 void UAbilitiesMenuUI::CloseUI()
 {
 	Toggle(false);
-	/*for (const TPair<ECharacterType, FAbilitiesLayout> Layout : CharacterAbilitiesLayouts)
-	{
-		
-	}*/
+	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	GuardianCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
+	RangerCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
+	TricksterCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
+	SaveSlot->SaveSlot();
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(ECharacterType::Guardian);
 }
 
 void UAbilitiesMenuUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	Abilities = { FirstAbility, SecondAbility, ThirdAbility, FourthAbility };
+	SetupUnlockAbilityPopup();
 	SetupButtons();
-	TriggerSwitchOnTheFirstOpen();
 	FadeOutAnimEndDelegate.BindDynamic(this, &UAbilitiesMenuUI::FadeOutAnimFinished);
+	GuardianCharacterAbilities->SetAbilitiesIconData();
+	RangerCharacterAbilities->SetAbilitiesIconData();
+	TricksterCharacterAbilities->SetAbilitiesIconData();
 	GuardianCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	RangerCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	TricksterCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
@@ -69,24 +100,24 @@ void UAbilitiesMenuUI::Toggle(const bool bState)
 
 void UAbilitiesMenuUI::SwitchCharacterAbilities(const ECharacterType InCharacterName)
 {
-	SaveTempAbilities();
+	int32 ActiveWidgetIndex = 0;
 	if (CurrentlySelectedCharacter.GetIcon()) CurrentlySelectedCharacter.GetIcon()->SetEventsEnabled(true);
-	if (const FAbilitiesContainer* Container = AbilitiesData.Find(InCharacterName))
-	{
-		for (int32 i = 0; i < Abilities.Num(); i++)
-		{
-			const FAbilitiesContainerData Data = Container->GetData(i);
-			if (Abilities[i]) Abilities[i]->SetAbilityData(Data.Icon ? Data.Icon : LockedTexture, Data.Details);
-		}
-	}
 	switch (InCharacterName)
 	{
-		case ECharacterType::Guardian: CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Guardian, GuardianCharacterIcon); break;
-		case ECharacterType::Ranger: CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Ranger, RangerCharacterIcon); break;
-		case ECharacterType::Trickster: CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Trickster, TricksterCharacterIcon);
+		case ECharacterType::Guardian:
+			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Guardian, GuardianCharacterIcon);
+			ActiveWidgetIndex = 0;
+			break;
+		case ECharacterType::Ranger:
+			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Ranger, RangerCharacterIcon);
+			ActiveWidgetIndex = 1;
+			break;
+		case ECharacterType::Trickster:
+			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Trickster, TricksterCharacterIcon);
+			ActiveWidgetIndex = 2;
 		default: ;
 	}
-	LoadAbilitiesLayout();
+	CharacterAbilitiesSwitcher->SetActiveWidgetIndex(ActiveWidgetIndex);
 }
 
 void UAbilitiesMenuUI::TriggerSwitchOnTheFirstOpen()
@@ -98,65 +129,37 @@ void UAbilitiesMenuUI::TriggerSwitchOnTheFirstOpen()
 
 void UAbilitiesMenuUI::SetupButtons()
 {
-	FirstAbility->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::FirstAbilitySelected);
-	SecondAbility->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::SecondAbilitySelected);
 	FirstAbilityResetButton->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::FirstSlotResetClicked);
 	SecondAbilityResetButton->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::SecondSlotResetClicked);
 }
 
-void UAbilitiesMenuUI::SaveTempAbilities()
+void UAbilitiesMenuUI::OpenUnlockAbilityPopup(const int32 InAbilityIndex)
 {
-	if (CurrentlySelectedCharacter.GetCharacterType() == ECharacterType::Random) return;
-	FAbilitiesLayout* Layout = &CharacterAbilitiesLayouts.FindOrAdd(CurrentlySelectedCharacter.GetCharacterType());
-	if (FirstAbilitySlot) SaveAbilitySlot(FirstAbilitySlot, Layout, Select1To1Anim, Select2To1Anim, true);
-	if (SecondAbilitySlot) SaveAbilitySlot(SecondAbilitySlot, Layout, Select1To2Anim, Select2To2Anim, false);
+	AbilityToUnlock = InAbilityIndex;
+	UnlockAbilityPopup->PlayPopupFadeInAnim(true);
 }
 
-void UAbilitiesMenuUI::LoadAbilitiesLayout()
+void UAbilitiesMenuUI::SetupUnlockAbilityPopup()
 {
-	const FAbilitiesLayout* Layout = CharacterAbilitiesLayouts.Find(CurrentlySelectedCharacter.GetCharacterType());
-	if (!Layout) return;
-	const int32 FirstAbilityIndex = Abilities.IndexOfByKey(FirstAbility);
-	const int32 SecondAbilityIndex = Abilities.IndexOfByKey(SecondAbility);
-	LoadAbilityToSlot(FirstAbilitySlot, Layout, FirstAbilityIndex, SecondAbilityIndex, Select1To1Anim, Select2To1Anim, true);
-	LoadAbilityToSlot(SecondAbilitySlot, Layout, FirstAbilityIndex, SecondAbilityIndex, Select1To2Anim, Select2To2Anim, false);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnOpenUnlockAbilityPopup.BindUObject(this, &UAbilitiesMenuUI::OpenUnlockAbilityPopup);
+	UnlockAbilityPopup->GetAcceptButton()->Get()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::UnlockAbility);
+	UnlockAbilityPopup->GetDeclineButton()->Get()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::FadeOutUnlockAbilityPopup);
 }
 
-void UAbilitiesMenuUI::SaveAbilitySlot(TObjectPtr<UAbilityIconUI>& InAbilitySlot, FAbilitiesLayout* InLayout, const TObjectPtr<UWidgetAnimation>& InFirstAnim, const TObjectPtr<UWidgetAnimation>& InSecondAnim, const bool bIsFirstSlot)
+void UAbilitiesMenuUI::UpdateSkillPointsText() const
 {
-	if (InAbilitySlot == FirstAbility)
-	{
-		PlayAnimation(InFirstAnim);
-		StopAnimation(InFirstAnim);
-		FirstAbility->SetIsInSlot(false);
-		if (bIsFirstSlot) InLayout->FirstAbilityIndex = 0;
-		else InLayout->SecondAbilityIndex = 0;
-	}
-	else if (InAbilitySlot == SecondAbility)
-	{
-		PlayAnimation(InSecondAnim);
-		StopAnimation(InSecondAnim);
-		SecondAbility->SetIsInSlot(false);
-		if (bIsFirstSlot) InLayout->FirstAbilityIndex = 1;
-		else InLayout->SecondAbilityIndex = 1;
-	}
-	InAbilitySlot = nullptr;
+	const int32 SkillPoints = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetSkillPoints();
+	SkillPointsText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "SkillPoints", "Skill Points: {0}"), SkillPoints));
 }
 
-void UAbilitiesMenuUI::LoadAbilityToSlot(TObjectPtr<UAbilityIconUI>& InAbilitySlot, const FAbilitiesLayout* InLayout, const int32 InFirstAbilityIndex, const int32 InSecondAbilityIndex, const TObjectPtr<UWidgetAnimation>& InFirstAnim, const TObjectPtr<UWidgetAnimation>& InSecondAnim, const bool bIsFirstSlot)
+void UAbilitiesMenuUI::UpdateAbilityIcon() const
 {
-	const int32 LayoutIndex = bIsFirstSlot ? InLayout->FirstAbilityIndex : InLayout->SecondAbilityIndex;
-	if (LayoutIndex == InFirstAbilityIndex)
+	switch (CurrentlySelectedCharacter.GetCharacterType())
 	{
-		PlayAnimation(InFirstAnim);
-		FirstAbility->SetIsInSlot(true);
-		InAbilitySlot = FirstAbility;
-	}
-	else if (LayoutIndex == InSecondAbilityIndex)
-	{
-		PlayAnimation(InSecondAnim);
-		SecondAbility->SetIsInSlot(true);
-		InAbilitySlot = SecondAbility;
+		case ECharacterType::Guardian: GuardianCharacterAbilities->SetAbilitiesIconData(); break;
+		case ECharacterType::Ranger: RangerCharacterAbilities->SetAbilitiesIconData(); break;
+		case ECharacterType::Trickster: TricksterCharacterAbilities->SetAbilitiesIconData(); 
+		default: ;
 	}
 }
 
@@ -166,56 +169,36 @@ void UAbilitiesMenuUI::FadeOutAnimFinished()
 	SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void UAbilitiesMenuUI::FirstAbilitySelected()
-{
-	if (FirstAbility->GetIsInSlot()) return;
-	FirstAbility->SetIsInSlot(true);
-	if (!FirstAbilitySlot)
-	{
-		FirstAbilitySlot = FirstAbility;
-		PlayAnimationForward(Select1To1Anim);
-	}
-	else if (!SecondAbilitySlot)
-	{
-		SecondAbilitySlot = FirstAbility;
-		PlayAnimationForward(Select1To2Anim);
-	}
-	else FirstAbility->PlayWobbleAnim();
-}
-
-void UAbilitiesMenuUI::SecondAbilitySelected()
-{
-	if (SecondAbility->GetIsInSlot()) return;
-	SecondAbility->SetIsInSlot(true);
-	if (!FirstAbilitySlot)
-	{
-		FirstAbilitySlot = SecondAbility;
-		PlayAnimationForward(Select2To1Anim);
-	}
-	else if (!SecondAbilitySlot)
-	{
-		SecondAbilitySlot = SecondAbility;
-		PlayAnimationForward(Select2To2Anim);
-	}
-	else SecondAbility->PlayWobbleAnim();
-}
-
 void UAbilitiesMenuUI::FirstSlotResetClicked()
 {
-	if (!FirstAbilitySlot) return;
-	if (FirstAbilitySlot == FirstAbility) PlayAnimationReverse(Select1To1Anim);
-	else if (FirstAbilitySlot == SecondAbility) PlayAnimationReverse(Select2To1Anim);
-	FirstAbilitySlot->SetIsInSlot(false);
-	FirstAbilitySlot = nullptr;
-	if (FAbilitiesLayout* Layout = CharacterAbilitiesLayouts.Find(CurrentlySelectedCharacter.GetCharacterType())) Layout->FirstAbilityIndex = INDEX_NONE;
+	switch (CurrentlySelectedCharacter.GetCharacterType())
+	{
+		case ECharacterType::Guardian: GuardianCharacterAbilities->ResetFirstAbilitySlot(); break;
+		case ECharacterType::Ranger: RangerCharacterAbilities->ResetFirstAbilitySlot(); break;
+		case ECharacterType::Trickster: TricksterCharacterAbilities->ResetFirstAbilitySlot();
+		default: ;
+	}
 }
 
 void UAbilitiesMenuUI::SecondSlotResetClicked()
 {
-	if (!SecondAbilitySlot) return;
-	if (SecondAbilitySlot == FirstAbility) PlayAnimationReverse(Select1To2Anim);
-	else if (SecondAbilitySlot == SecondAbility) PlayAnimationReverse(Select2To2Anim);
-	SecondAbilitySlot->SetIsInSlot(false);
-	SecondAbilitySlot = nullptr;
-	if (FAbilitiesLayout* Layout = CharacterAbilitiesLayouts.Find(CurrentlySelectedCharacter.GetCharacterType())) Layout->SecondAbilityIndex = INDEX_NONE;
+	switch (CurrentlySelectedCharacter.GetCharacterType())
+	{
+		case ECharacterType::Guardian: GuardianCharacterAbilities->ResetSecondAbilitySlot(); break;
+		case ECharacterType::Ranger: RangerCharacterAbilities->ResetSecondAbilitySlot(); break;
+		case ECharacterType::Trickster: TricksterCharacterAbilities->ResetSecondAbilitySlot();
+		default: ;
+	}
 }
+
+void UAbilitiesMenuUI::UnlockAbility()
+{
+	if (Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->UnlockAbility(CurrentlySelectedCharacter.GetCharacterType(), AbilityToUnlock))
+	{
+		UpdateSkillPointsText();
+		UpdateAbilityIcon();
+	}
+	FadeOutUnlockAbilityPopup();
+}
+
+void UAbilitiesMenuUI::FadeOutUnlockAbilityPopup() { UnlockAbilityPopup->PlayPopupFadeInAnim(false); }

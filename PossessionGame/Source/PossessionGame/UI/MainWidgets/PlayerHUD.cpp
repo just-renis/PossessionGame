@@ -197,6 +197,8 @@ void UPlayerHUD::ShowOutOfAmmo()
 	OutOfAmmoInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
+void UPlayerHUD::SetAbilityIcon(const int32 InAbilityIndex, const int32 InAbilityIconIndex) { GetAbilityPanel()->SetAbilityIcon(InAbilityIndex, InAbilityIconIndex); }
+
 TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
 {
 	switch (CharacterType)

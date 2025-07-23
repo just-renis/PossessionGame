@@ -44,6 +44,7 @@ public:
 	void ToggleInfoPanel(const bool bState) const;
 	void ShowHijackUnavailable();
 	void ShowOutOfAmmo();
+	void SetAbilityIcon(const int32 InAbilityIndex, const int32 InAbilityIconIndex);
 private:
 	bool bIsHidden = false;
 	float StepHpPercentage;

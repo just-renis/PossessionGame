@@ -199,7 +199,6 @@ protected:
 	virtual void SetAnimInstance();
 	void SetMaxWalkSpeed(const float Speed) const;
 	void SetInitialWalkSpeed(const bool bState) const;
-	void SetupAbilities(const TMap<EAbility, TSoftObjectPtr<UAbilityData>>& AbilityData);
 	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;

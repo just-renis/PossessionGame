@@ -1,10 +1,14 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "FCharacterAbilities.h"
 #include "FVariationUnlockData.h"
 #include "GameFramework/SaveGame.h"
+#include "PossessionGame/Enums/ECharacterType.h"
 #include "SaveSlot.generated.h"
 
+class UAbility;
+enum class EAbility : uint8;
 class UDelegateManager;
 class UPlayerLevelData;
 class UPossessionGameInstance;
@@ -18,6 +22,8 @@ public:
 	bool GetIsVariationUnlocked(const EVariation InVariationUnlockName);
 	bool GetIsVariationTaskCompleted(const EVariation InVariationUnlockName) const;
 	bool GetIsFirstLaunch() const { return bIsFirstLaunch; }
+	bool UnlockAbility(const ECharacterType InCharacter, const int32 InAbilityIndex);
+	bool GetIsAbilityUnlocked(const ECharacterType InCharacter, const int32 InAbilityIndex);
 	int32 GetXp() const { return CurrentXp; }
 	int32 GetPlayerLevel() const { return CurrentLevel; }
 	int32 GetCurrentLevelNeededXp() const;
@@ -26,16 +32,20 @@ public:
 	int32 GetVariationUnlockProgress(const EVariation InVariationUnlockName) const;
 	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
 	int32 GetCurrencyAmount() const { return CurrencyAmount; }
+	int32 GetSkillPoints() const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
+	FCharacterAbilities GetCharacterChosenAbilities(const ECharacterType InCharacter);
+	FCharacterAbilities GetCharacterUnlockedAbilities(const ECharacterType InCharacter);
 	
 	void AddCurrencyAmount(const int32 InCurrencyAmount);
 	void SetTutorialFinished();
 	void SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName);
-	void AddXp(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const int32 InXp);
+	void AddXp(const TObjectPtr<UGameInstance>& InGameInstance, const int32 InXp);
 	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);
 	void SaveSlot();
 	void SetLaunchedOnce();
 	void UnlockVariation(const EVariation InVariationUnlockName);
+	void AddChosenAbilities(const ECharacterType InCharacter, const int32 InFirstAbilityIndex, const int32 InSecondAbilityIndex);
 private:
 	UPROPERTY()
 	bool bIsFirstLaunch = true;
@@ -55,6 +65,10 @@ private:
 	TObjectPtr<UPlayerLevelData> PlayerLevelData;
 	UPROPERTY()
 	FVariationUnlockData VariationUnlockData;
+	UPROPERTY()
+	TMap<ECharacterType, FCharacterAbilities> CharacterChosenAbilities;
+	UPROPERTY()
+	TMap<ECharacterType, FCharacterAbilities> CharacterUnlockedAbilities;
 
 	void UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation);
 	void VersionMigration();

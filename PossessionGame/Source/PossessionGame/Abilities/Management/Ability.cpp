@@ -8,18 +8,17 @@
 
 EAbility UAbility::GetAbilityName() const { return Data->GetAbilityName(); }
 
-int32 UAbility::GetAbilityIndex() const { return Data->GetAbilityIndex(); }
-
 void UAbility::P_Execute()
 {
 	UseCharge();
-	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(GetAbilityIndex(), GetIsAbilityCharged(), !bIsAbilityInDuration);
+	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(AbilityIndex, GetIsAbilityCharged(), !bIsAbilityInDuration);
+	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(AbilityIndex, GetIsAbilityCharged(), !bIsAbilityInDuration);
 }
 
 void UAbility::P_StopAbility()
 {
 	ResetDuration();
-	(void)DelegateManager->OnAbilityEnd.ExecuteIfBound(GetAbilityIndex(), GetIsAbilityCharged());
+	(void)DelegateManager->OnAbilityEnd.ExecuteIfBound(AbilityIndex, GetIsAbilityCharged());
 }
 
 void UAbility::Tick(const float InDeltaTime)
@@ -43,7 +42,6 @@ void UAbility::UseCharge()
 {
 	if (bIsCooldownKill) CurrentCooldownKill = 0;
 	else CurrentChargesAmount--;
-	if (bIsRefreshingOtherAbility) RefreshOtherAbility();
 }
 
 void UAbility::CooldownLogic(const float InDeltaTime)
@@ -64,20 +62,6 @@ void UAbility::SetupUpgradeAppliance(const bool bIsPlayer)
 		DurationTime = Data->GetAbilityDuration() + Data->GetAbilityDuration() * GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityDuration) * 0.01f;
 		CurrentDuration = DurationTime;
 	}
-}
-
-void UAbility::SetupAdditionalProperties(TObjectPtr<UAbility> InAbilityToRefresh)
-{
-	if (Data->GetRefreshAmount() > 0.f) SetupRefreshOtherAbility(Data->GetRefreshAmount(), InAbilityToRefresh);
-}
-
-void UAbility::RefreshOtherAbility() const { if (!RefreshableAbility->GetIsAbilityInDuration()) RefreshableAbility->ReduceCooldownTimer(RefreshOtherAbilityAmount); }
-
-void UAbility::SetupRefreshOtherAbility(const float InRefreshAmount, TObjectPtr<UAbility> InAbilityToRefresh)
-{
-	bIsRefreshingOtherAbility = true;
-	RefreshOtherAbilityAmount = InRefreshAmount;
-	RefreshableAbility = InAbilityToRefresh;
 }
 
 void UAbility::ResetDuration()

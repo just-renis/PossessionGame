@@ -357,7 +357,20 @@ void AEnemy::EmpEffectEnded()
 	if (AI) AI->ResumeLogic();
 }
 
-void AEnemy::AI_SetupAbilities() { SetupAbilities(AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->AI_Abilities_Data); }
+void AEnemy::AI_SetupAbilities()
+{
+	const TMap<EAbility, TSoftObjectPtr<UAbilityData>> AbilitiesData = AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->AI_Abilities_Data;
+	const TObjectPtr<UAbilityManager> AbilityManager = GameInstance->GetSubsystem<UAbilityManager>();
+	for (const TPair<EAbility, TSoftObjectPtr<UAbilityData>> AbilityData : AbilitiesData)
+	{
+		const TObjectPtr<UAbilityData> LoadedAbilityData = AbilityData.Value.LoadSynchronous();
+		if (TObjectPtr<UAbility> Ability = AbilityManager->GetAbility(this, CharacterName, LoadedAbilityData->GetAbilityIndex()))
+		{
+			Ability->Setup(this, LoadedAbilityData, DelegateManager);
+			Abilities.Add(Ability);
+		}
+	}
+}
 
 void AEnemy::AI_Setup()
 {
@@ -409,7 +422,19 @@ void AEnemy::AI_PlayDeathSound() { PlaySound(ESound::MechanicalDeath); }
 void AEnemy::P_SetupAbilities()
 {
 	Abilities.Empty();
-	SetupAbilities(AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->P_Abilities_Data);
+	TArray<int32> ChosenAbilities = GameInstance->GetSaveSlot()->GetCharacterChosenAbilities(CharacterName).Abilities;
+	const TMap<EAbility, TSoftObjectPtr<UAbilityData>> AbilityData = AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->P_Abilities_Data;
+	const TObjectPtr<UAbilityManager> AbilityManager = GameInstance->GetSubsystem<UAbilityManager>();
+	for (int32 i = 0; i < ChosenAbilities.Num(); i++)
+	{
+		if (TObjectPtr<UAbility> Ability = AbilityManager->GetAbility(this, CharacterName, ChosenAbilities[i]))
+		{
+			if (P_HUD) P_HUD->SetAbilityIcon(i, ChosenAbilities[i]);
+			Ability->Setup(this, AbilityData[AbilityManager->GetAbilityName(CharacterName, ChosenAbilities[i])].LoadSynchronous(), DelegateManager);
+			Ability->SetAbilityIndex(i);
+			Abilities.Add(Ability);
+		}
+	}
 }
 
 void AEnemy::P_Setup()
@@ -440,8 +465,8 @@ void AEnemy::P_Setup()
 	Weapon->P_SetupTransfer();
 	GetMesh()->SetHiddenInGame(true);
 	P_InputManager = Cast<UEnhancedPlayerInput>(GetWorld()->GetFirstPlayerController()->PlayerInput);
-	P_SetupAbilities();
 	P_SetupUI();
+	P_SetupAbilities();
 	if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
 	(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
 	DelegateManager->OnEnemyDeath.BindUObject(this, &AEnemy::P_OnEnemyDeathEvents);
@@ -617,24 +642,6 @@ void AEnemy::SetMaxWalkSpeed(const float Speed) const
 }
 
 void AEnemy::SetInitialWalkSpeed(const bool bState) const { SetMaxWalkSpeed(bState ? P_Data->GetMaxWalkSpeed() : P_Data->GetMaxSlowedSpeed()); }
-
-void AEnemy::SetupAbilities(const TMap<EAbility, TSoftObjectPtr<UAbilityData>>& AbilityData)
-{
-	if (AbilityData.Num() > 0)
-	{
-		const TObjectPtr<UAbilityManager> AbilityManager = GameInstance->GetSubsystem<UAbilityManager>();
-		for (int32 i = 1; i <= AbilityData.Num(); i++)
-		{
-			if (TObjectPtr<UAbility> Ability = AbilityManager->GetAbility(AbilityManager->GetAbilityFromCharacterName(CharacterName, i), this))
-			{
-				Ability->Setup(this, AbilityData[AbilityManager->GetAbilityFromCharacterName(CharacterName, i)].LoadSynchronous(), DelegateManager);
-				const int32 RefreshableAbilityIndex = AbilityData[AbilityManager->GetAbilityFromCharacterName(CharacterName, i)]->GetRefreshableAbilityIndex();
-				Ability->SetupAdditionalProperties(RefreshableAbilityIndex != -1 ? Abilities[RefreshableAbilityIndex] : nullptr);
-				Abilities.Add(Ability);
-			}
-		}
-	}
-}
 
 void AEnemy::AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const
 {

@@ -87,7 +87,7 @@ void UVariationsUI::SetSelectedVariation(const EVariation InVariation)
 void UVariationsUI::SwitchVariation(const ECharacterType InCharacterName)
 {
 	if (CurrentlySelectedIcon) CurrentlySelectedIcon->SetEventsEnabled(true);
-	int32 ActiveWidgetIndex = 0; // Rework needed so that widget switcher would not be needed.
+	int32 ActiveWidgetIndex = 0;
 	switch (InCharacterName)
 	{
 		case ECharacterType::Guardian:

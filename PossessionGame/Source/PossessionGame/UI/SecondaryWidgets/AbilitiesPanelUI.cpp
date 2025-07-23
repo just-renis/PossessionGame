@@ -1,7 +1,6 @@
 ﻿#include "AbilitiesPanelUI.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/Image.h"
-#include "Components/Overlay.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -11,7 +10,6 @@ void UAbilitiesPanelUI::SetOverlaysVisibility(const bool bState) const
 {
 	if (FirstAbilityOverlay) FirstAbilityOverlay->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	if (SecondAbilityOverlay) SecondAbilityOverlay->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	//if (ThirdAbilityOverlay) ThirdAbilityOverlay->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
 void UAbilitiesPanelUI::CollapseAbilityIcon(const int32 Index) const
@@ -21,7 +19,6 @@ void UAbilitiesPanelUI::CollapseAbilityIcon(const int32 Index) const
 		case 0: if (FirstAbilityImage) FirstAbilityImage->SetVisibility(ESlateVisibility::Collapsed); break;
 		case 1: if (SecondAbilityImage) SecondAbilityImage->SetVisibility(ESlateVisibility::Collapsed); break;
 		default: ;
-	//	default: if (ThirdAbilityImage) ThirdAbilityImage->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 
@@ -68,23 +65,6 @@ void UAbilitiesPanelUI::UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility)
 			SecondChargesText->SetText(FText::AsNumber(InAbility->GetCurrentCharges()));
 			break;
 		default: ;
-	/*		if (!ThirdAbilityImage || !ThirdChargesText || !MI_ThirdAbilityRadial) return;
-			if (InAbility->GetIsMaxCharged())
-			{
-				if (!bThirdAbilityFullyCharged)
-				{
-					bThirdAbilityFullyCharged = true;
-					MI_ThirdAbilityRadial->SetScalarParameterValue("Opacity", 0.f);
-					if (ThirdAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-					ThirdChargesText->SetText(FText::AsNumber(InAbility->GetCurrentCharges()));
-				}
-				return;
-			}
-			if (InAbility->GetCurrentCharges() > 0 && ThirdAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) ThirdAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			bThirdAbilityFullyCharged = false;
-			MI_ThirdAbilityRadial->SetScalarParameterValue("Opacity", 1.f);
-			MI_ThirdAbilityRadial->SetScalarParameterValue("Progress", InAbility->GetCurrentCooldownSecs() / InAbility->GetReqCooldownSecs());
-			ThirdChargesText->SetText(FText::AsNumber(InAbility->GetCurrentCharges()));*/
 	}
 }
 
@@ -96,31 +76,32 @@ void UAbilitiesPanelUI::SetAsCurrent()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.AddUObject(this, &UAbilitiesPanelUI::UpdateAbilityKeyBindText);
 }
 
+void UAbilitiesPanelUI::SetAbilityIcon(const int32 InAbilityIndex, const int32 InAbilityIconIndex) const
+{
+	if (InAbilityIndex == 0) FirstAbilityImage->SetBrushFromAtlasInterface(*AbilitiesIcons.Find(InAbilityIconIndex));
+	else SecondAbilityImage->SetBrushFromAtlasInterface(*AbilitiesIcons.Find(InAbilityIconIndex));
+}
+
 void UAbilitiesPanelUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-	SetAbilitySlot(0, AbilityIcon1, FirstAbilityImage, FirstAbilityOverlay);
-	SetAbilitySlot(1, AbilityIcon2, SecondAbilityImage, SecondAbilityOverlay);
-	//SetAbilitySlot(2, AbilityIcon3, ThirdAbilityImage, ThirdAbilityOverlay);
+	SetAbilitySlot(0);
+	SetAbilitySlot(1);
 }
 
 void UAbilitiesPanelUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (!FirstAbilityProgressBar || !SecondAbilityProgressBar/*|| !ThirdAbilityProgressBar*/ || !MI_RadialProgress) return;
+	if (!FirstAbilityProgressBar || !SecondAbilityProgressBar || !MI_RadialProgress) return;
 	MI_FirstAbilityRadial = UMaterialInstanceDynamic::Create(MI_RadialProgress, this);
 	FirstAbilityProgressBar->SetBrushFromMaterial(MI_FirstAbilityRadial);
 	MI_SecondAbilityRadial = UMaterialInstanceDynamic::Create(MI_RadialProgress, this);
 	SecondAbilityProgressBar->SetBrushFromMaterial(MI_SecondAbilityRadial);
-	/*MI_ThirdAbilityRadial = UMaterialInstanceDynamic::Create(MI_RadialProgress, this);
-	ThirdAbilityProgressBar->SetBrushFromMaterial(MI_ThirdAbilityRadial);*/
 }
 
-void UAbilitiesPanelUI::SetAbilitySlot(const int32 InAbilityIndex, const TObjectPtr<UTexture2D>& InIcon, const TObjectPtr<UImage>& InImage, const TObjectPtr<UOverlay>& InOverlay) const
+void UAbilitiesPanelUI::SetAbilitySlot(const int32 InAbilityIndex) const
 {
-	if (InIcon && InImage) InImage->SetBrushFromAtlasInterface(InIcon);
-	else InOverlay->SetRenderOpacity(0.8f);
-	const FName KeyBindName = InAbilityIndex == 0 ? "FirstAbility" : "SecondAbility"/*InAbilityIndex == 1 ? "SecondAbility" : "ThirdAbility"*/;
+	const FName KeyBindName = InAbilityIndex == 0 ? "FirstAbility" : "SecondAbility";
 	if (GetGameInstance()) UpdateAbilityKeyBindText(KeyBindName, GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText(KeyBindName));
 }
 
@@ -134,7 +115,6 @@ void UAbilitiesPanelUI::PlayAbilityUseAnim(const int32 InAbilityIndex, const boo
 	{
 		case 0: GetWorld()->GetTimerManager().SetTimer(FirstAbilityHandle, TimerDel, Ability1UseAnim->GetEndTime(), false); break;
 		case 1: GetWorld()->GetTimerManager().SetTimer(SecondAbilityHandle, TimerDel, Ability2UseAnim->GetEndTime(), false); break;
-	//	case 2: GetWorld()->GetTimerManager().SetTimer(ThirdAbilityHandle, TimerDel, Ability3UseAnim->GetEndTime(), false);
 		default: ;
 	}
 }
@@ -145,7 +125,6 @@ void UAbilitiesPanelUI::PlayAbilityAnim(const int32 InAbilityIndex, const bool b
 	{
 		case 0: PlayAnimation(Ability1UseAnim, 0.f, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse); break;
 		case 1: PlayAnimation(Ability2UseAnim, 0.f, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse); break;
-	//	case 2: PlayAnimation(Ability3UseAnim, 0.f, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 		default: ;
 	}
 }
@@ -154,7 +133,6 @@ void UAbilitiesPanelUI::UpdateAbilityKeyBindText(const FName& InKeyBindName, con
 {
 	if (FirstKeyBindText && InKeyBindName.IsEqual("FirstAbility")) FirstKeyBindText->SetText(InKeyName);
 	else if (SecondKeyBindText && InKeyBindName.IsEqual("SecondAbility")) SecondKeyBindText->SetText(InKeyName);
-//	else if (ThirdKeyBindText && InKeyBindName.IsEqual("ThirdAbility")) ThirdKeyBindText->SetText(InKeyName);
 }
 
 void UAbilitiesPanelUI::PlayAbilityEndAnim(const int32 InAbilityIndex, const bool bIsCharged)
@@ -165,7 +143,6 @@ void UAbilitiesPanelUI::PlayAbilityEndAnim(const int32 InAbilityIndex, const boo
 	{
 		case 0: GetWorld()->GetTimerManager().ClearTimer(FirstAbilityHandle); break;
 		case 1: GetWorld()->GetTimerManager().ClearTimer(SecondAbilityHandle); break;
-	//	case 2: GetWorld()->GetTimerManager().ClearTimer(ThirdAbilityHandle);
 		default: ;
 	}
 }

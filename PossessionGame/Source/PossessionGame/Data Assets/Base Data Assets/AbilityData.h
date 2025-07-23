@@ -12,7 +12,6 @@ class POSSESSIONGAME_API UAbilityData : public UDataAsset
 	GENERATED_BODY()
 public:
 	bool GetIsAbilityWithDuration() const { return bHasDuration; }
-	int32 GetRefreshableAbilityIndex() const { return RefreshableAbilityIndex; }
 	int32 GetCurrentCooldownKill() const { return CurrentCooldownKill; }
 	int32 GetAbilityIndex() const { return AbilityIndex; }
 	int32 GetChargesAmount() const { return ChargesAmount; }
@@ -29,8 +28,6 @@ private:
 	float AbilityDuration;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 CurrentCooldownKill;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	int32 RefreshableAbilityIndex = -1;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 AbilityIndex;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

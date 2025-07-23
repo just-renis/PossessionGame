@@ -37,6 +37,7 @@ DECLARE_DELEGATE_OneParam(FChangeMusicPlayerState, const bool);
 DECLARE_DELEGATE_OneParam(FOnCoinCollected, const int32);
 DECLARE_DELEGATE_OneParam(FOnXpReceived, const int32);
 DECLARE_DELEGATE_OneParam(FApplySecretBoostHealth, const int32);
+DECLARE_DELEGATE_OneParam(FOnOpenUnlockAbilityPopup, const int32);
 DECLARE_DELEGATE_TwoParams(FStartTutorialDroneMoveToLocation, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
@@ -102,6 +103,7 @@ public:
 	FOnCoinCollected OnCoinCollected;
 	FOnXpReceived OnXpReceived;
 	FApplySecretBoostHealth ApplySecretBoostHealth;
+	FOnOpenUnlockAbilityPopup OnOpenUnlockAbilityPopup;
 	FStartTutorialDroneMoveToLocation StartTutorialDroneMoveToLocation;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnAbilityUse OnAbilityUse;
