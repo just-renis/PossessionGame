@@ -25,7 +25,16 @@ void USecretBoostCardUI::NativeConstruct()
 	BoostButton->OnHovered.AddDynamic(this, &USecretBoostCardUI::OnHovered);
 	BoostButton->OnUnhovered.AddDynamic(this, &USecretBoostCardUI::OnUnHovered);
 	BoostButton->OnClicked.AddDynamic(this, &USecretBoostCardUI::SaveChosenBoost);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSecretBoostSelected.AddUObject(this, &USecretBoostCardUI::PlayNotSelectedAnim);
 }
+
+void USecretBoostCardUI::NativeDestruct()
+{
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSecretBoostSelected.RemoveAll(this);
+	Super::NativeDestruct();
+}
+
+void USecretBoostCardUI::PlayNotSelectedAnim() { if (!bChosen) PlayAnimationForward(NotSelectAnim); }
 
 void USecretBoostCardUI::OnHovered()
 {
@@ -52,6 +61,8 @@ void USecretBoostCardUI::SaveChosenBoost()
 	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
 	if (!GameInstance) return;
 	PlayAnimation(SelectAnim);
+	bChosen = true;
+	GameInstance->GetSubsystem<UDelegateManager>()->OnSecretBoostSelected.Broadcast();
 	if (BoostType == EVariation::SecretCrateRewardXp)
 	{
 		(void)GameInstance->GetSubsystem<UDelegateManager>()->OnXpReceived.ExecuteIfBound(BoostValue);

@@ -98,6 +98,7 @@ void UAbilitiesMenuUI::Toggle(const bool bState)
 
 void UAbilitiesMenuUI::SwitchCharacterAbilities(const ECharacterType InCharacterName)
 {
+	PlayAnimationForward(CharacterTransitionAnim);
 	int32 ActiveWidgetIndex = 0;
 	if (CurrentlySelectedCharacter.GetIcon()) CurrentlySelectedCharacter.GetIcon()->SetEventsEnabled(true);
 	switch (InCharacterName)

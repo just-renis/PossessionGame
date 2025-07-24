@@ -73,6 +73,8 @@ private:
 	TObjectPtr<UCustomTextUI> DetailsPanel;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> CharacterTransitionAnim;
 	UPROPERTY()
 	FCurrentlySelectedCharacter CurrentlySelectedCharacter;
 	UPROPERTY()

@@ -20,6 +20,7 @@ public:
 	
 	void DisableButton() const;
 private:
+	bool bChosen = false;
 	UPROPERTY(EditAnywhere, Category = "Boost", meta = (AllowPrivateAccess = true))
 	FText BoostText;
 	UPROPERTY(EditAnywhere, Category = "Boost", meta = (AllowPrivateAccess = true))
@@ -40,9 +41,13 @@ private:
 	TObjectPtr<UWidgetAnimation> UnHoverAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> SelectAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> NotSelectAnim;
 
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+	void PlayNotSelectedAnim();
 	UFUNCTION()
 	void OnHovered();
 	UFUNCTION()
