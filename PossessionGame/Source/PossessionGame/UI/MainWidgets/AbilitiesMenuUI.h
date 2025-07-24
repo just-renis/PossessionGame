@@ -71,8 +71,6 @@ private:
 	TObjectPtr<UAbilityResetButtonUI> SecondAbilityResetButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCustomTextUI> DetailsPanel;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UMainMenuButtonUI> ConfirmButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY()

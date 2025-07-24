@@ -83,7 +83,6 @@ void UAbilitiesMenuUI::Toggle(const bool bState)
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::AbilitiesMenuUI : EWidget::None);
-	if (ConfirmButton) ConfirmButton->SetButtonVisibility(bState);
 	if (bState)
 	{
 		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
