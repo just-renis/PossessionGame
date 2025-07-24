@@ -25,4 +25,6 @@ private:
 	void OnHovered();
 	UFUNCTION()
 	void OnUnHovered();
+	UFUNCTION()
+	void OnSelect();
 };
