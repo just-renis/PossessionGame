@@ -456,6 +456,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_NotSelectable", ESound::NotSelectable);
 	SoundMap.Add("PA_OutOfAmmo", ESound::OutOfAmmo);
 	SoundMap.Add("PA_FinishOffEnemies", ESound::FinishOffEnemies);
+	SoundMap.Add("PA_AbilityReset", ESound::AbilityReset);
+	SoundMap.Add("PA_AbilitySelect", ESound::AbilitySelect);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

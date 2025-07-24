@@ -19,6 +19,7 @@ public:
 	void UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility);
 	void SetAsCurrent();
 	void SetAbilityIcon(const int32 InAbilityIndex, const int32 InAbilityIconIndex) const;
+	void UnbindOnKeyBindChangeDelegate() const;
 private:
 	bool bFirstAbilityFullyCharged = false;
 	bool bSecondAbilityFullyCharged = false;

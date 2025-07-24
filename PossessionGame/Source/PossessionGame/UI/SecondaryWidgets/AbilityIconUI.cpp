@@ -5,6 +5,7 @@
 #include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UAbilityIconUI::SetIsInSlot(const bool bState)
@@ -33,6 +34,7 @@ void UAbilityIconUI::NativeConstruct()
 
 void UAbilityIconUI::OnHovered()
 {
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayAnimationForward(HoverAnim);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI, 1)->ToggleDetailsPanel(true, DetailsText);
 }

@@ -212,6 +212,7 @@ void AEnemy::PossessedBy(AController* NewController)
 		Super::PossessedBy(NewController);
 		if (Cast<APlayerController>(NewController))
 		{
+			Abilities.Empty();
 			DisableHijackViableVfx();
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			bIsActionInMotion = false;
@@ -421,7 +422,6 @@ void AEnemy::AI_PlayDeathSound() { PlaySound(ESound::MechanicalDeath); }
 
 void AEnemy::P_SetupAbilities()
 {
-	Abilities.Empty();
 	TArray<int32> ChosenAbilities = GameInstance->GetSaveSlot()->GetCharacterChosenAbilities(CharacterName).Abilities;
 	const TMap<EAbility, TSoftObjectPtr<UAbilityData>> AbilityData = AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->P_Abilities_Data;
 	const TObjectPtr<UAbilityManager> AbilityManager = GameInstance->GetSubsystem<UAbilityManager>();
@@ -435,6 +435,7 @@ void AEnemy::P_SetupAbilities()
 			Abilities.Add(Ability);
 		}
 	}
+	if (ChosenAbilities.IsEmpty()) P_AddDefaultAbility(AbilityManager, AbilityData[AbilityManager->GetAbilityName(CharacterName, 0)].LoadSynchronous());
 }
 
 void AEnemy::P_Setup()
@@ -1168,6 +1169,17 @@ void AEnemy::P_ApplySecretBoostHp(const int32 InPercentage)
 	MaxHp += MaxHpIncrease;
 	CurrentHp += MaxHpIncrease;
 	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
+}
+
+void AEnemy::P_AddDefaultAbility(const TObjectPtr<UAbilityManager>& InAbilityManager, const TObjectPtr<UAbilityData>& InAbilityData)
+{
+	if (const TObjectPtr<UAbility> Ability = InAbilityManager->GetAbility(this, CharacterName, 0))
+	{
+		if (P_HUD) P_HUD->SetAbilityIcon(0, 0);
+		Ability->Setup(this, InAbilityData, DelegateManager);
+		Ability->SetAbilityIndex(0);
+		Abilities.Add(Ability);
+	}
 }
 
 void AEnemy::TickAbilities(const float InDeltaTime)

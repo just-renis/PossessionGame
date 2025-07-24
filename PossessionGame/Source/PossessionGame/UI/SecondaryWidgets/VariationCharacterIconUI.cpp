@@ -1,6 +1,7 @@
 ﻿#include "VariationCharacterIconUI.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UVariationCharacterIconUI::SetEventsEnabled(const bool bState)
 {
@@ -10,7 +11,11 @@ void UVariationCharacterIconUI::SetEventsEnabled(const bool bState)
 
 void UVariationCharacterIconUI::PlayHoverAnim()
 {
-	if (bEventsEnabled) PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward);
+	if (bEventsEnabled)
+	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+		PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward);
+	}
 }
 
 void UVariationCharacterIconUI::NativePreConstruct()
@@ -36,6 +41,7 @@ void UVariationCharacterIconUI::NativeConstruct()
 void UVariationCharacterIconUI::HandleClicked()
 {
 	if (!bEventsEnabled) return;
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::PanelFadeIn);
 	(void)OnVariationClicked.ExecuteIfBound(CharacterName);
 	PlayAnimation(SelectAnim);
 	SetEventsEnabled(false);
