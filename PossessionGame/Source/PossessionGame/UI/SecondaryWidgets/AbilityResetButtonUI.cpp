@@ -1,5 +1,6 @@
 ﻿#include "AbilityResetButtonUI.h"
 #include "Components/Button.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UAbilityResetButtonUI::NativeConstruct()
 {
@@ -10,8 +11,16 @@ void UAbilityResetButtonUI::NativeConstruct()
 	AbilityResetButton->OnUnhovered.AddDynamic(this, &UAbilityResetButtonUI::OnUnHovered);
 }
 
-void UAbilityResetButtonUI::OnHovered() { PlayAnimationForward(HoverAnim); }
+void UAbilityResetButtonUI::OnHovered()
+{
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	PlayAnimationForward(HoverAnim);
+}
 
 void UAbilityResetButtonUI::OnUnHovered() { PlayAnimationReverse(HoverAnim); }
 
-void UAbilityResetButtonUI::OnSelect() { PlayAnimationForward(SelectAnim); }
+void UAbilityResetButtonUI::OnSelect()
+{
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilityReset);
+	PlayAnimationForward(SelectAnim);
+}

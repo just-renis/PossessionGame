@@ -82,6 +82,8 @@ void UAbilitiesPanelUI::SetAbilityIcon(const int32 InAbilityIndex, const int32 I
 	else SecondAbilityImage->SetBrushFromAtlasInterface(*AbilitiesIcons.Find(InAbilityIconIndex));
 }
 
+void UAbilitiesPanelUI::UnbindOnKeyBindChangeDelegate() const { GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.RemoveAll(this); }
+
 void UAbilitiesPanelUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();

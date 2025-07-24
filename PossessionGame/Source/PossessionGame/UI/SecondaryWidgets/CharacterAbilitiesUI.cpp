@@ -4,6 +4,7 @@
 #include "Components/Button.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 TObjectPtr<UTexture2D> UCharacterAbilitiesUI::GetAbilityIcon(const int32 InAbilityIndex)
 {
@@ -108,6 +109,7 @@ void UCharacterAbilitiesUI::AddAbility(const int32 InAbilityIndex)
 void UCharacterAbilitiesUI::FirstAbilitySelected()
 {
 	if (FirstAbility->GetIsInSlot()) return;
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
 	FirstAbility->SetIsInSlot(true);
 	if (!FirstAbilitySlot)
 	{
@@ -130,6 +132,7 @@ void UCharacterAbilitiesUI::SecondAbilitySelected()
 		return;
 	}
 	if (SecondAbility->GetIsInSlot()) return;
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
 	SecondAbility->SetIsInSlot(true);
 	if (!FirstAbilitySlot)
 	{

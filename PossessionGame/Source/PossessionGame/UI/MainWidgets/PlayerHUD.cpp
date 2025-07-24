@@ -113,7 +113,6 @@ void UPlayerHUD::ConfigureUIs()
 	if (!GetAbilityPanel()) return;
 	GetAbilityPanel()->CollapseAbilityIcon(0);
 	GetAbilityPanel()->CollapseAbilityIcon(1);
-	GetAbilityPanel()->CollapseAbilityIcon(2);
 }
 
 void UPlayerHUD::PlayFadeOutAnim(const bool bState)
@@ -132,6 +131,9 @@ void UPlayerHUD::UpdateReceiveDamageInv()
 void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
 {
 	CharacterType = InCharacterType;
+	RangerAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
+	TricksterAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
+	GuardianAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
 	switch (InCharacterType)
 	{
 		case ECharacterType::Ranger:

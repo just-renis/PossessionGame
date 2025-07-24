@@ -10,6 +10,7 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "Enemy.generated.h"
 
+class UAbilityManager;
 enum class EWidget : uint8;
 class UGlobalSettingsManager;
 class AAIHpBar;
@@ -376,6 +377,7 @@ private:
 	void P_Crouch();
 	void P_AddXp(const int32 InXp) const;
 	void P_ApplySecretBoostHp(const int32 InPercentage);
+	void P_AddDefaultAbility(const TObjectPtr<UAbilityManager>& InAbilityManager, const TObjectPtr<UAbilityData>& InAbilityData);
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	void TickAbilities(const float InDeltaTime);

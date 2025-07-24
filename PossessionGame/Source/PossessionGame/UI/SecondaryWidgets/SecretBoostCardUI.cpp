@@ -7,6 +7,7 @@
 #include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void USecretBoostCardUI::DisableButton() const { if (BoostButton) BoostButton->SetIsEnabled(false); }
@@ -40,6 +41,7 @@ void USecretBoostCardUI::OnHovered()
 {
 	StopAnimation(UnHoverAnim);
 	PlayAnimation(HoverAnim);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	switch (BoostType)
 	{
 		case EVariation::SecretCrateRewardHealth: (void)ShowDetailsPanelContents.ExecuteIfBound(true, FText::Format(NSLOCTEXT("ST_Localization", "SecretHpBoost", "Grants {0}% Increased Max HP This Run"), FText::AsNumber(BoostValue))); return;
@@ -62,6 +64,7 @@ void USecretBoostCardUI::SaveChosenBoost()
 	if (!GameInstance) return;
 	PlayAnimation(SelectAnim);
 	bChosen = true;
+	GameInstance->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
 	GameInstance->GetSubsystem<UDelegateManager>()->OnSecretBoostSelected.Broadcast();
 	if (BoostType == EVariation::SecretCrateRewardXp)
 	{
