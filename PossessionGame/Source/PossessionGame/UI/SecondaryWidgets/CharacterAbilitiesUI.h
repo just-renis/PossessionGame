@@ -77,7 +77,7 @@ private:
 
 	virtual void NativeConstruct() override;
 	void SetupAbilitySlot(const int32 InAbilityIndex, const bool bIsFirstSlot, TObjectPtr<UAbilityIconUI>& InAbilitySlot);
-	void AutoAddAbility(const int32 InAbilityIndex);
+	void AddAbility(const int32 InAbilityIndex);
 	UFUNCTION()
 	void FirstAbilitySelected();
 	UFUNCTION()

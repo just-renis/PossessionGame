@@ -37,7 +37,6 @@ private:
 
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
-	void PlaySelectedAnim();
 	UFUNCTION()
 	void HandleClicked();
 	UFUNCTION()

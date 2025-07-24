@@ -46,9 +46,9 @@ void UCharacterAbilitiesUI::LoadAbilitiesLayout(const TObjectPtr<USaveSlot>& InS
 void UCharacterAbilitiesUI::SaveAbilitiesLayout(const TObjectPtr<USaveSlot>& InSaveSlot)
 {
 	const int32 FirstAbilityIndex = FirstAbilitySlot ? FirstAbilitySlot->GetAbilityIndex() : GetAvailableAbilityIndex(InSaveSlot);
-	AutoAddAbility(FirstAbilityIndex);
+	AddAbility(FirstAbilityIndex);
 	const int32 SecondAbilityIndex = SecondAbilitySlot ? SecondAbilitySlot->GetAbilityIndex() : GetAvailableAbilityIndex(InSaveSlot);
-	AutoAddAbility(SecondAbilityIndex);
+	AddAbility(SecondAbilityIndex);
 	InSaveSlot->AddChosenAbilities(Character, FirstAbilityIndex, SecondAbilityIndex);
 }
 
@@ -95,7 +95,7 @@ void UCharacterAbilitiesUI::SetupAbilitySlot(const int32 InAbilityIndex, const b
 	InAbilitySlot->SetIsInSlot(true);
 }
 
-void UCharacterAbilitiesUI::AutoAddAbility(const int32 InAbilityIndex)
+void UCharacterAbilitiesUI::AddAbility(const int32 InAbilityIndex)
 {
 	switch (InAbilityIndex)
 	{

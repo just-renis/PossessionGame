@@ -1,5 +1,6 @@
 ﻿#include "AbilityIconUI.h"
 #include "Components/Button.h"
+#include "Components/ButtonSlot.h"
 #include "Components/Image.h"
 #include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
@@ -17,7 +18,9 @@ void UAbilityIconUI::SetData(const ECharacterType InCharacter, const FAbilityIco
 	DetailsText = InData.Details;
 	AbilityIndex = InData.AbilityIndex;
 	if (AbilityIndex == 0 || Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsAbilityUnlocked(InCharacter, AbilityIndex)) bIsLocked = false;
-	if (AbilityIcon) AbilityIcon->SetBrushFromAtlasInterface(bIsLocked ? LockedTexture : InData.AbilityIcon);
+	if (!AbilityIcon) return;
+	if (const TObjectPtr<UButtonSlot> ButtonSlot = Cast<UButtonSlot>(AbilityIcon->Slot)) ButtonSlot->SetPadding(bIsLocked ? FMargin(0.f) : FMargin(15.f));
+	AbilityIcon->SetBrushFromAtlasInterface(bIsLocked ? LockedTexture : InData.AbilityIcon);
 }
 
 void UAbilityIconUI::NativeConstruct()

@@ -1033,11 +1033,11 @@ void AEnemy::P_SetupNavArea()
 	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
-void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
+void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType, const EWidget InWidgetName)
 {
 	if (CharacterName != InCharacterType) return;
 	P_HijackLogic(AssetsManager->SpawnVariationReplacement(InCharacterType));
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI, 1)->CloseUI();
+	if (InWidgetName == EWidget::VariationsUI) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI, 1)->CloseUI();
 }
 
 void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName); }

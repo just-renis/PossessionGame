@@ -3,6 +3,7 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -40,7 +41,7 @@ void UVariationOptionUI::SelectVariation()
 	PlayAnimation(SelectAnim);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.Broadcast(CharacterType, Variation);
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(CharacterType);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(CharacterType, EWidget::VariationsUI);
 	SetSelected(true);
 }
 

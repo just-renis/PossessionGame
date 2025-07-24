@@ -40,7 +40,6 @@ void UAbilitiesMenuUI::OpenUI()
 {
 	UpdateSkillPointsText();
 	Toggle(true);
-	if (CurrentlySelectedCharacter.GetCharacterType() != ECharacterType::Random) SwitchCharacterAbilities(CurrentlySelectedCharacter.GetCharacterType());
 	if (!FirstTimeOpenInstance) return;
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	GuardianCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
@@ -58,7 +57,7 @@ void UAbilitiesMenuUI::CloseUI()
 	RangerCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	TricksterCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	SaveSlot->SaveSlot();
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(ECharacterType::Guardian);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(ECharacterType::Guardian, EWidget::AbilitiesMenuUI);
 }
 
 void UAbilitiesMenuUI::NativeConstruct()

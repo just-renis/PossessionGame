@@ -10,6 +10,7 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "Enemy.generated.h"
 
+enum class EWidget : uint8;
 class UGlobalSettingsManager;
 class AAIHpBar;
 enum class EVariation : uint8;
@@ -359,7 +360,7 @@ private:
 	void P_QuickMeleeAttack();
 	void P_ProcessMeleeAttack();
 	void P_SetupNavArea();
-	void P_OnVariationSelection(const ECharacterType InCharacterType);
+	void P_OnVariationSelection(const ECharacterType InCharacterType, const EWidget InWidgetName);
 	void P_ReceiveCurrentlySelectedVariation();
 	void P_Jump();
 	void P_Stomp();
