@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "SecretBoostCardUI.generated.h"
 
+class UTextBlock;
 DECLARE_DELEGATE_TwoParams(FShowDetailsPanelContents, const bool, const FText&);
 
 enum class EVariation : uint8;
@@ -20,6 +21,8 @@ public:
 	void DisableButton() const;
 private:
 	UPROPERTY(EditAnywhere, Category = "Boost", meta = (AllowPrivateAccess = true))
+	FText BoostText;
+	UPROPERTY(EditAnywhere, Category = "Boost", meta = (AllowPrivateAccess = true))
 	int32 BoostValue;
 	UPROPERTY(EditAnywhere, Category = "Boost", meta = (AllowPrivateAccess = true))
 	EVariation BoostType;
@@ -29,6 +32,8 @@ private:
 	TObjectPtr<UImage> CardIcon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> BoostButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> SecretBoostText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> HoverAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))

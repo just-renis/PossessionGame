@@ -1,4 +1,5 @@
 ﻿#include "CustomTextUI.h"
+#include "Components/Border.h"
 #include "Components/TextBlock.h"
 
 void UCustomTextUI::SetText(const FText& InText) const { if (CustomText) CustomText->SetText(InText); }
@@ -6,4 +7,13 @@ void UCustomTextUI::SetText(const FText& InText) const { if (CustomText) CustomT
 void UCustomTextUI::PlayFadeInAnim(const bool bState)
 {
 	PlayAnimation(FadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
+}
+
+void UCustomTextUI::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+	if (!BackgroundTexture || !ImageBorder) return;
+	FSlateBrush Brush;
+	Brush.SetResourceObject(BackgroundTexture);
+	ImageBorder->SetBrush(Brush);
 }

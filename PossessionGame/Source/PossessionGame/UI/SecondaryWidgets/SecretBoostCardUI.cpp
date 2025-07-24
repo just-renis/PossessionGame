@@ -1,6 +1,7 @@
 ﻿#include "SecretBoostCardUI.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/UI/MainWidgets/SecretRoomUI.h"
 #include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
@@ -14,6 +15,7 @@ void USecretBoostCardUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 	if (BoostTexture && CardIcon) CardIcon->SetBrushFromTexture(BoostTexture);
+	if (SecretBoostText) SecretBoostText->SetText(BoostText);
 }
 
 void USecretBoostCardUI::NativeConstruct()
