@@ -181,7 +181,8 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Move);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Started, this, &AEnemy::P_Jump);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Rotate);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Dash);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleRun);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &AEnemy::P_ToggleRun);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &AEnemy::P_HijackEnemy);
 		P_SetupLeftClickInput(EnhancedInputComponent);
 		if (bCanReload) EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(9).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Reload);
@@ -547,22 +548,6 @@ void AEnemy::P_Move(const FInputActionValue& Value)
 	}
 }
 
-void AEnemy::P_InitiateDash()
-{
-	bCanDash = false;
-	if (P_HUD) P_HUD->UpdateDashIndicator(false);
-	AssetsManager->PlaySound2D(ESound::Dash);
-	CurrentDashCooldown = 0.f;
-	FVector DashDirection = FVector(GetVelocity().X, GetVelocity().Y, 0.f).GetSafeNormal();
-	if (DashDirection.IsNearlyZero()) DashDirection = GetActorForwardVector();
-	DashDirection.Z = 0.f;
-	GetCharacterMovement()->StopMovementImmediately();
-	LaunchCharacter(DashDirection * P_Data->GetDashStrength(), true, true);
-	GetWorldTimerManager().SetTimer(P_StopDashHandle, this, &AEnemy::P_StopDash, 0.2f, false);
-	if (GameInstance->GetSaveSlot()->GetIsTutorialFinished()) return;
-	if (GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI, 0)->GetCurrentHintIndex() == 3) (void)DelegateManager->OnShowHint.ExecuteIfBound(4);
-}
-
 void AEnemy::P_InitiateJump()
 {
 	Jump();
@@ -622,7 +607,6 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorldTimerManager().ClearTimer(AI_DamageTakenEffectHandle);
 	GetWorldTimerManager().ClearTimer(P_ContinuousFovChangeHandle);
 	GetWorldTimerManager().ClearTimer(P_ControlLogicHandle);
-	GetWorldTimerManager().ClearTimer(P_StopDashHandle);
 	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
 	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
 	GetWorldTimerManager().ClearTimer(P_DeathHandle);
@@ -864,10 +848,12 @@ void AEnemy::P_Reload()
 	if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload && !P_InputManager->IsPressed(FKey("LeftMouseButton")) && Weapon->P_CanReload()) Weapon->P_Reload();
 }
 
-void AEnemy::P_Dash()
+void AEnemy::P_ToggleRun()
 {
-	if (bIsInputLocked || bIsCrouched) return;
-	if (bCanDash) P_InitiateDash();
+	if (bIsInputLocked || bIsCrouched || !bCanRun) return;
+	bIsRunning = !bIsRunning;
+	SetMaxWalkSpeed(bIsRunning ? P_Data->GetMaxRunSpeed() : P_Data->GetMaxWalkSpeed());
+	if (P_HUD) P_HUD->UpdateRunIndicator(bIsRunning);
 }
 
 void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue)
@@ -1088,8 +1074,6 @@ void AEnemy::P_ControlLogic()
 	Weapon->P_SetWalkSpread(GetCharacterMovement()->Velocity.Size() >= P_Data->GetMaxWalkSpeed() - 0.1f);
 	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size());
 	if (!bCanHijackOtherEnemy && !bInUpgradeSelection) P_HijackBarLogic();
-	if (bCanDash) return;
-	P_DashCooldownLogic();
 }
 
 void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
@@ -1136,18 +1120,6 @@ void AEnemy::P_ContinuousFovChange()
 	{
 		Camera->SetFieldOfView(TargetFov);
 		GetWorldTimerManager().ClearTimer(P_ContinuousFovChangeHandle);
-	}
-}
-
-void AEnemy::P_StopDash() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
-
-void AEnemy::P_DashCooldownLogic()
-{
-	CurrentDashCooldown += 0.05f;
-	if (CurrentDashCooldown >= P_Data->GetDashCooldown())
-	{
-		bCanDash = true;
-		if (P_HUD) P_HUD->UpdateDashIndicator(true);
 	}
 }
 

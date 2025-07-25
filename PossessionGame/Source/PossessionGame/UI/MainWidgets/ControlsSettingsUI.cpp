@@ -30,7 +30,7 @@ void UControlsSettingsUI::SetupKeyBinds()
 		FName("MoveLeft"),
 		FName("MoveRight"),
 		FName("Jump"),
-		FName("Dash"),
+		FName("Run"),
 		FName("Crouch"),
 		FName("Shoot"),
 		FName("SecondaryShoot"),

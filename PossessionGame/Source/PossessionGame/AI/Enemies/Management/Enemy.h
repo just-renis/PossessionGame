@@ -190,7 +190,6 @@ protected:
 	void P_SetupCharacterMovement();
 	virtual void P_SetupColorsForUI() {}
 	virtual void P_Move(const FInputActionValue& Value);
-	virtual void P_InitiateDash();
 	virtual void P_InitiateJump();
 	virtual void P_InitiateStomp();
 
@@ -219,14 +218,14 @@ private:
 	bool bIsMutant = false;
 	bool bIsStomping = false;
 	bool bCanStomp = false;
-	bool bCanDash = true;
+	bool bCanRun = true;
+	bool bIsRunning = false;
 	bool bHijackOutlineState = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
 	float FovChangeTick;
 	float TargetFov;
-	float CurrentDashCooldown;
 	float DamageReduction = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Destroy After Seconds", meta = (AllowPrivateAccess = true))
 	float DestroyAfter = 5.f;
@@ -309,8 +308,6 @@ private:
 	UPROPERTY()
 	FTimerHandle P_ControlLogicHandle;
 	UPROPERTY()
-	FTimerHandle P_StopDashHandle;
-	UPROPERTY()
 	FTimerHandle DestroyHandle;
 	UPROPERTY()
 	FTimerHandle CheckIfFallOutOfWorldHandle;
@@ -341,7 +338,7 @@ private:
 	void P_HijackBarLogic();
 	void P_Rotate(const FInputActionValue& InValue);
 	void P_Reload();
-	void P_Dash();
+	void P_ToggleRun();
 	void P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue);
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
@@ -372,8 +369,6 @@ private:
 	void P_DetectIfPlayerPointingAtOutlineObjects();
 	void P_TriggerCriticalDamageIndicator() const;
 	void P_ContinuousFovChange();
-	void P_StopDash() const;
-	void P_DashCooldownLogic();
 	void P_Crouch();
 	void P_AddXp(const int32 InXp) const;
 	void P_ApplySecretBoostHp(const int32 InPercentage);

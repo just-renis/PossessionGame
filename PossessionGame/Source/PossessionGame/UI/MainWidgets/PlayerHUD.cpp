@@ -97,7 +97,7 @@ void UPlayerHUD::UpdateHijackIndicator(const bool bState, const FText& InKeyName
 	else if (PressKeyBindSizeBox) PressKeyBindSizeBox->SetRenderOpacity(0.f);
 }
 
-void UPlayerHUD::UpdateDashIndicator(const bool bState) const { if (DashIndicator) DashIndicator->SetOpacity(bState ? 1.f : 0.3f); }
+void UPlayerHUD::UpdateRunIndicator(const bool bState) const { if (RunIndicator) RunIndicator->SetOpacity(bState ? 1.f : 0.3f); }
 
 void UPlayerHUD::ToggleCriticalDamageIndicator() const
 {

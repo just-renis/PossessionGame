@@ -34,7 +34,7 @@ public:
 	void Reset();
 	void SetColors(const FLinearColor InColor) const;
 	void UpdateHijackIndicator(const bool bState, const FText& InKeyName = FText());
-	void UpdateDashIndicator(const bool bState) const;
+	void UpdateRunIndicator(const bool bState) const;
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs();
 	void PlayFadeOutAnim(const bool bState);
@@ -97,7 +97,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FpsText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> DashIndicator;
+	TObjectPtr<UImage> RunIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
 	UPROPERTY(meta = (BindWidget))

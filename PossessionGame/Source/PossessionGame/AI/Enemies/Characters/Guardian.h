@@ -40,7 +40,6 @@ private:
 	void P_CancelShootingHold();
 	virtual void P_InitiateJump() override;
 	virtual void P_InitiateStomp() override;
-	virtual void P_InitiateDash() override;
 	virtual void P_Move(const FInputActionValue& Value) override;
 	void P_UpdateShieldMaterial(const bool bState);
 	

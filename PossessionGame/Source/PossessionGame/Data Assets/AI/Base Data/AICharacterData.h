@@ -12,7 +12,6 @@ public:
 	bool GetIsPossessable() const { return bIsPossessable; }
 	float GetShootPause() const { return ShootPause; }
 	float GetPossessionTimeValue() const { return PossessionTimeValue; }
-	float GetMaxRunSpeed() const { return MaxRunSpeed; }
 	float GetMutantHpIncreasePercentage() const { return MutantHpIncreasePercentage; }
 	float GetMutantDamageIncreasePercentage() const { return MutantDamageIncreasePercentage; }
 	float GetMutationChance() const { return MutationChance; }
@@ -25,8 +24,6 @@ private:
 	float ShootPause = 0.2f;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	float PossessionTimeValue = 11.25f;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	float MaxRunSpeed;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	float MutationChance;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

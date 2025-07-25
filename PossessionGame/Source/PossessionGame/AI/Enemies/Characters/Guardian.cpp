@@ -106,12 +106,6 @@ void AGuardian::P_InitiateStomp()
 	if (Variation == EVariation::GuardianVariationGold) P_ResetShootHoldDuration();
 }
 
-void AGuardian::P_InitiateDash()
-{
-	Super::P_InitiateDash();
-	if (Variation == EVariation::GuardianVariationGold) P_ResetShootHoldDuration();
-}
-
 void AGuardian::P_Move(const FInputActionValue& Value)
 {
 	Super::P_Move(Value);
