@@ -21,13 +21,11 @@ private:
 	virtual void AI_Reload() override;
 
 	virtual void P_Reload(int32 OtherAmmoSource) override;
-	void P_SetupOnShootState();
 	void P_PlayOverChargeVfx();
 	
 	virtual void BeginPlay() override;
 	virtual void SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh) override;
 	virtual void SetMeshes(const EWeapon InPrimaryDataAssetName) override;
 	virtual void PlayShootMontage() override;
-	virtual void PostProprietorSetup() override;
 	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bFromFirstWeapon) override;
 };

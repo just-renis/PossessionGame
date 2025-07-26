@@ -15,11 +15,11 @@ void ATankWeapon::AI_Shoot()
 
 void ATankWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(CurrentAmmo); }
 
-void ATankWeapon::P_Shoot(bool bIsFirstWeapon)
+void ATankWeapon::P_Shoot()
 {
 	if (AnimInstance->IsPlaying(EWeaponAnimState::Shoot))
 	{
-		Super::P_Shoot(bIsFirstWeapon);
+		Super::P_Shoot();
 		if (CurrentAmmo <= 0) (void)OnAmmoEnded.ExecuteIfBound();
 	}
 }

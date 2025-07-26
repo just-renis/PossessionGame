@@ -43,7 +43,7 @@ bool AWeapon::P_CanReload(const int32 InOtherAmmoSource)
 	return !HandsAnimInstance->GetIsReloading() && (InOtherAmmoSource != -1 ? InOtherAmmoSource > 0 : TotalAmmo > 0 && CurrentAmmo != MagazineCap);
 }
 
-bool AWeapon::P_CanShoot(const bool bIsFirstWeapon) { return ShootTimer >= ShootCooldown && CurrentAmmo > 0 && !HandsAnimInstance->GetIsReloading(); }
+bool AWeapon::P_CanShoot() { return ShootTimer >= ShootCooldown && CurrentAmmo > 0 && !HandsAnimInstance->GetIsReloading(); }
 
 void AWeapon::P_SetWalkingSpeed(const float InSpeed) const { if (HandsAnimInstance) HandsAnimInstance->SetSpeed(InSpeed); }
 
@@ -63,7 +63,7 @@ void AWeapon::P_Reload(const int32 InOtherAmmoSource)
 	}
 }
 
-void AWeapon::P_Shoot(const bool bIsFirstWeapon)
+void AWeapon::P_Shoot()
 {
 	MuzzleFlashLogic();
 	MakeShootingCameraShake();

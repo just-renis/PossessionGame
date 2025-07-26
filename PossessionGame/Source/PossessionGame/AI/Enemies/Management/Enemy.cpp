@@ -181,8 +181,8 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Move);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Started, this, &AEnemy::P_Jump);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Rotate);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleRun);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &AEnemy::P_ToggleRun);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleRun, true);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &AEnemy::P_ToggleRun, false);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &AEnemy::P_HijackEnemy);
 		P_SetupLeftClickInput(EnhancedInputComponent);
 		if (bCanReload) EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(9).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Reload);
@@ -192,7 +192,6 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(11).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 0);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(12).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 1);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(13).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 2);
-		P_SetupRightClickInput(EnhancedInputComponent);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &AEnemy::P_HandleEscapeClick);
 		#if WITH_EDITOR
 			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &AEnemy::P_StopTime);
@@ -474,10 +473,14 @@ void AEnemy::P_Setup()
 	DelegateManager->OnEnemyDeath.BindUObject(this, &AEnemy::P_OnEnemyDeathEvents);
 }
 
-void AEnemy::P_Shoot(const bool bFirstWeapon)
+void AEnemy::P_Shoot()
 {
-	if (bIsInputLocked || bIsActionInMotion || !bCanShoot) return;
-	if (Weapon->P_CanShoot(bFirstWeapon)) Weapon->P_Shoot(bFirstWeapon);
+	if (bIsInputLocked || bIsActionInMotion || !bCanShoot || bIsSliding) return;
+	if (Weapon->P_CanShoot())
+	{
+		if (bIsRunning) P_ToggleRun(false);
+		Weapon->P_Shoot();
+	}
 	else if (Weapon->P_CanReload() && Weapon->GetCurrentAmmoAmount() <= 0) Weapon->P_Reload();
 }
 
@@ -490,14 +493,7 @@ void AEnemy::P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> Lef
 
 void AEnemy::P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
 {
-	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Shoot, true);
-}
-
-void AEnemy::P_SetupRightClickInput(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
-{
-	P_SetupRightClickInputStartedState(RightClickInputComponent);
-	P_SetupRightClickInputTriggeredState(RightClickInputComponent);
-	P_SetupRightClickInputCompletedState(RightClickInputComponent);
+	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Shoot);
 }
 
 void AEnemy::P_Destroy()
@@ -539,7 +535,7 @@ void AEnemy::P_SetupCharacterMovement()
 
 void AEnemy::P_Move(const FInputActionValue& Value)
 {
-	if (bIsInputLocked) return;
+	if (bIsInputLocked || bIsSliding) return;
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 	if (Controller)
 	{
@@ -550,6 +546,7 @@ void AEnemy::P_Move(const FInputActionValue& Value)
 
 void AEnemy::P_InitiateJump()
 {
+	P_SetupSuperJump();
 	Jump();
 	Weapon->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Jump);
 	const bool bIsDoubleJump = GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 1;
@@ -848,10 +845,16 @@ void AEnemy::P_Reload()
 	if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload && !P_InputManager->IsPressed(FKey("LeftMouseButton")) && Weapon->P_CanReload()) Weapon->P_Reload();
 }
 
-void AEnemy::P_ToggleRun()
+void AEnemy::P_ToggleRun(const bool bState)
 {
-	if (bIsInputLocked || bIsCrouched || !bCanRun) return;
-	bIsRunning = !bIsRunning;
+	if (bIsInputLocked || !bCanRun) return;
+	if (bIsCrouched)
+	{
+		UnCrouch();
+		P_InitiateSlide();
+		return;
+	}
+	bIsRunning = bState;
 	SetMaxWalkSpeed(bIsRunning ? P_Data->GetMaxRunSpeed() : P_Data->GetMaxWalkSpeed());
 	if (P_HUD) P_HUD->UpdateRunIndicator(bIsRunning);
 }
@@ -1125,6 +1128,12 @@ void AEnemy::P_ContinuousFovChange()
 
 void AEnemy::P_Crouch()
 {
+	if (bIsSliding) return;
+	if (bIsRunning && bCanSlide)
+	{
+		P_InitiateSlide();
+		return;
+	}
 	if (CanCrouch()) Crouch(false);
 	else UnCrouch(false);
 }
@@ -1152,6 +1161,30 @@ void AEnemy::P_AddDefaultAbility(const TObjectPtr<UAbilityManager>& InAbilityMan
 		Ability->SetAbilityIndex(0);
 		Abilities.Add(Ability);
 	}
+}
+
+void AEnemy::P_InitiateSlide()
+{
+	bIsSliding = true;
+	GetCharacterMovement()->GroundFriction = SlideGroundFriction;
+	GetCharacterMovement()->BrakingFrictionFactor = SlideBrakingFrictionFactor;
+	LaunchCharacter(GetActorForwardVector() * SlideStrength, true, false);
+	GetWorld()->GetTimerManager().SetTimer(P_SlideEndHandle, this, &AEnemy::P_EndSlide, 1.f, false);
+//	if (SlideMontage) PlayAnimMontage(SlideMontage);
+}
+
+void AEnemy::P_EndSlide()
+{
+	bIsSliding = false;
+	GetCharacterMovement()->GroundFriction = GroundFriction;
+	GetCharacterMovement()->BrakingFrictionFactor = BrakingFrictionFactor;
+}
+
+void AEnemy::P_SetupSuperJump()
+{
+	GetCharacterMovement()->JumpZVelocity = bIsSliding ? JumpVelocity * 2.f : JumpVelocity;
+	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
+	P_EndSlide();
 }
 
 void AEnemy::TickAbilities(const float InDeltaTime)
@@ -1187,6 +1220,8 @@ void AEnemy::ClearTimers()
 	GetWorldTimerManager().ClearTimer(P_ControlLogicHandle);
 	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
 	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
+	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
+	
 }
 
 void AEnemy::ProcessSpawnEffects()
@@ -1259,9 +1294,9 @@ void AEnemy::DestroyCondenseMaterialsProcess()
 	}
 }
 
-void AEnemy::OpenInfoPanel() { if (P_HUD) P_HUD->ToggleInfoPanel(true); }
+void AEnemy::OpenInfoPanel() { /*if (P_HUD) P_HUD->ToggleInfoPanel(true);*/ }
 
-void AEnemy::CloseInfoPanel() { if (P_HUD) P_HUD->ToggleInfoPanel(false); }
+void AEnemy::CloseInfoPanel() { /*if (P_HUD) P_HUD->ToggleInfoPanel(false);*/ }
 
 void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 {

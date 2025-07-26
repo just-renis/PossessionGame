@@ -34,16 +34,16 @@ void ASpy::P_Setup()
 	Super::P_Setup();
 }
 
-void ASpy::P_Shoot(bool bFirstWeapon)
+void ASpy::P_Shoot()
 {
 	StopConcealingAbility();
-	Super::P_Shoot(bFirstWeapon);
+	Super::P_Shoot();
 }
 
 void ASpy::P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
 {
 	Super::P_SetupLeftClickInputStartedState(LeftClickInputComponent);
-	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &ASpy::P_Shoot, true);
+	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &ASpy::P_Shoot);
 }
 
 void ASpy::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.20392f, 0.58431f, 0.31373f)); }

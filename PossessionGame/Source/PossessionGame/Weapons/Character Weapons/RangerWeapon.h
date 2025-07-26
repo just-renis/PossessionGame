@@ -14,7 +14,7 @@ private:
 	virtual void AI_Reload() override;
 	virtual void AI_Shoot() override;
 	
-	virtual void P_Shoot(bool bIsFirstWeapon) override;
+	virtual void P_Shoot() override;
 	virtual void P_Reload(int32 OtherAmmoSource) override;
 
 	virtual void BeginPlay() override;

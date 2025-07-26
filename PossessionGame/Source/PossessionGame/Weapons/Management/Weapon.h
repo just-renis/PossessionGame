@@ -55,11 +55,11 @@ public:
 	virtual void AI_Reload() {}
 	
 	virtual bool P_CanReload(const int32 InOtherAmmoSource = -1);
-	virtual bool P_CanShoot(const bool bIsFirstWeapon = true);
+	virtual bool P_CanShoot();
 	
 	void P_SetWalkingSpeed(const float InSpeed) const;
 	virtual void P_Reload(const int32 InOtherAmmoSource = -1);
-	virtual void P_Shoot(const bool bIsFirstWeapon = true);
+	virtual void P_Shoot();
 	void P_InitialSetupTransfer();
 	virtual void P_SetupTransfer(const bool bSetToFirstHand = true);
 	virtual void P_UpdateAmmoTextHUD();

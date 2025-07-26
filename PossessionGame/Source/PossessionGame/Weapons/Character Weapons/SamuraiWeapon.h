@@ -23,7 +23,7 @@ public:
 private:
 	EBowState BowState = EBowState::StretchRelease;
 
-	virtual void P_Shoot(bool bIsFirstWeapon) override;
+	virtual void P_Shoot() override;
 	virtual void P_UpdateAmmoTextHUD() override;
 	void P_PlayBowMontage();
 

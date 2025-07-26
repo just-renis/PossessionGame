@@ -6,10 +6,10 @@
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
-void ASamuraiWeapon::P_Shoot(bool bIsFirstWeapon)
+void ASamuraiWeapon::P_Shoot()
 {
 	PlayHandsAndWeaponMontage(EHandsAnimState::Shoot, EWeaponAnimState::Shoot);
-	Super::P_Shoot(bIsFirstWeapon);
+	Super::P_Shoot();
 }
 
 void ASamuraiWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(CurrentAmmo); }
@@ -24,7 +24,7 @@ void ASamuraiWeapon::P_SetStretchingState(EPlayerInputState bState)
 			else if (BowState == EBowState::StretchHold)
 			{
 				BowState = EBowState::Shoot;
-				P_Shoot(true);
+				P_Shoot();
 			}
 			else return;
 			break;

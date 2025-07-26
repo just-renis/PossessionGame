@@ -21,11 +21,11 @@ void AGuardianWeapon::ToggleHandsMeshAbilityState(const bool bState) const
 	MI_Hands->SetScalarParameterValue("Width", bState ? 0.2f : 0.f);
 }
 
-bool AGuardianWeapon::P_CanShoot(const bool InbIsFirstWeapon) { return !HandsAnimInstance->IsPlaying(EHandsAnimState::Shoot); }
+bool AGuardianWeapon::P_CanShoot() { return !HandsAnimInstance->IsPlaying(EHandsAnimState::Shoot); }
 
 void AGuardianWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(-1); }
 
-void AGuardianWeapon::P_Shoot(const bool bIsFirstWeapon)
+void AGuardianWeapon::P_Shoot()
 {
 	if (ShootTimer >= ShootCooldown)
 	{
@@ -33,7 +33,6 @@ void AGuardianWeapon::P_Shoot(const bool bIsFirstWeapon)
 		FirstWeapon->P_Shoot();
 		GetWorldTimerManager().SetTimer(SecondWeaponShotHandle, this, &AGuardianWeapon::ShootSecondWeaponShot, 0.2f / CustomTimeDilation);
 		ShootTimer = 0.f;
-		DelegateManager->OnWeaponAmmoChangeThreeParams.Broadcast(FirstWeapon->GetCurrentAmmoAmount(), SecondWeapon->GetCurrentAmmoAmount(), TotalAmmo);
 	}
 }
 

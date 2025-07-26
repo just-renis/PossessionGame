@@ -16,7 +16,7 @@ public:
 	virtual void AI_Shoot() override;
 
 	virtual void P_UpdateAmmoTextHUD() override;
-	virtual void P_Shoot(bool bIsFirstWeapon = true) override;
+	virtual void P_Shoot() override;
 	virtual void P_Reload(int32 OtherAmmoSource) override;
 	virtual void P_SetupTransfer(bool bSetToFirstHand) override;
 private:

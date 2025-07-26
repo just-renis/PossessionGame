@@ -176,15 +176,11 @@ protected:
 
 	virtual void P_SetupAbilities();
 	virtual void P_Setup();
-	virtual void P_Shoot(const bool bFirstWeapon);
+	virtual void P_Shoot();
 	virtual void P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent);
 	virtual void P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) {}
 	virtual void P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent);
 	virtual void P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) {}
-	virtual void P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent);
-	virtual void P_SetupRightClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) {}
-	virtual void P_SetupRightClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) {}
-	virtual void P_SetupRightClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) {}
 	virtual void P_Destroy();
 	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
 	void P_SetupCharacterMovement();
@@ -221,6 +217,7 @@ private:
 	bool bCanRun = true;
 	bool bIsRunning = false;
 	bool bHijackOutlineState = false;
+	bool bIsSliding = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -246,6 +243,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	float BrakingFrictionFactor = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	float GroundFriction = 8.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	int32 MaxJumpAmount = 2;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Crouch", meta = (AllowPrivateAccess = true))
 	bool bCanCrouch = true;
@@ -253,6 +252,14 @@ private:
 	float CrouchHalfHeight = 65.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Crouch", meta = (EditConditionHides = "bCanCrouch", AllowPrivateAccess = true))
 	float MaxWalkSpeedCrouched = 350.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (AllowPrivateAccess = true))
+	bool bCanSlide = true;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
+	float SlideBrakingFrictionFactor = 0.1f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
+	float SlideGroundFriction = 0.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
+	float SlideStrength = 3000.f;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -308,6 +315,8 @@ private:
 	UPROPERTY()
 	FTimerHandle P_ControlLogicHandle;
 	UPROPERTY()
+	FTimerHandle P_SlideEndHandle;
+	UPROPERTY()
 	FTimerHandle DestroyHandle;
 	UPROPERTY()
 	FTimerHandle CheckIfFallOutOfWorldHandle;
@@ -338,7 +347,7 @@ private:
 	void P_HijackBarLogic();
 	void P_Rotate(const FInputActionValue& InValue);
 	void P_Reload();
-	void P_ToggleRun();
+	void P_ToggleRun(const bool bState);
 	void P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue);
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
@@ -373,6 +382,9 @@ private:
 	void P_AddXp(const int32 InXp) const;
 	void P_ApplySecretBoostHp(const int32 InPercentage);
 	void P_AddDefaultAbility(const TObjectPtr<UAbilityManager>& InAbilityManager, const TObjectPtr<UAbilityData>& InAbilityData);
+	void P_InitiateSlide();
+	void P_EndSlide();
+	void P_SetupSuperJump();
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	void TickAbilities(const float InDeltaTime);

@@ -26,10 +26,10 @@ private:
 	UPROPERTY()
 	FTimerHandle ShootingHoldDurationHandle;
 	
-	virtual bool P_CanShoot(const bool InbIsFirstWeapon) override;
+	virtual bool P_CanShoot() override;
 	
 	virtual void P_UpdateAmmoTextHUD() override;
-	virtual void P_Shoot(const bool bIsFirstWeapon) override;
+	virtual void P_Shoot() override;
 	void P_UpdateShootingHoldDuration();
 
 	virtual void BeginPlay() override;

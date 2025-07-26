@@ -16,42 +16,28 @@ void ADualWieldingWeapon::AI_Setup()
 
 void ADualWieldingWeapon::AI_Shoot() { CyclingState.bIsCycling ? CyclingModeLogic() : NonCyclingModeLogic(); }
 
-bool ADualWieldingWeapon::P_CanShoot(bool bIsFirstWeapon)
+bool ADualWieldingWeapon::P_CanShoot()
 {
-	return !HandsAnimInstance->GetIsReloading() && (bIsFirstWeapon ? FirstWeapon->GetCurrentAmmoAmount() > 0 : SecondWeapon->GetCurrentAmmoAmount() > 0);
+	return !HandsAnimInstance->GetIsReloading() && GetCurrentAmmoAmount() > 0;
 }
 
 bool ADualWieldingWeapon::P_CanReload(int32 OtherAmmoSource)
 {
-	if (TotalAmmo == 0 && FirstWeapon->GetCurrentAmmoAmount() == 0 && SecondWeapon->GetCurrentAmmoAmount() == 0) (void)DelegateManager->OnOutOfAmmo.ExecuteIfBound();
-	return TotalAmmo > 0 && !HandsAnimInstance->GetIsReloading() && (FirstWeapon->P_CanReload(TotalAmmo) || SecondWeapon->P_CanReload(TotalAmmo));
+	if (TotalAmmo == 0 && GetCurrentAmmoAmount() == 0) (void)DelegateManager->OnOutOfAmmo.ExecuteIfBound();
+	return TotalAmmo > 0 && !HandsAnimInstance->GetIsReloading();
 }
 
-void ADualWieldingWeapon::P_Shoot(bool bIsFirstWeapon)
+void ADualWieldingWeapon::P_Shoot()
 {
-	bIsFirstWeapon ? FirstWeapon->P_Shoot() : SecondWeapon->P_Shoot();
 	if (ShootTimer >= ShootCooldown)
 	{
+		FirstWeapon->P_Shoot();
+		SecondWeapon->P_Shoot();
+		CurrentAmmo -= 2;
 		PlayShootMontage();
 		ShootTimer = 0.f;
-		DelegateManager->OnWeaponAmmoChangeThreeParams.Broadcast(FirstWeapon->GetCurrentAmmoAmount(), SecondWeapon->GetCurrentAmmoAmount(), TotalAmmo);
+		DelegateManager->OnWeaponAmmoChangeTwoParams.Broadcast(GetCurrentAmmoAmount(), TotalAmmo);
 	}
-}
-
-void ADualWieldingWeapon::P_Reload(int32 OtherAmmoSource)
-{
-	const int32 FirstWeaponAmmoNeeded = FirstWeapon->GetAmmoNeeded();
-	const int32 SecondWeaponAmmoNeeded = SecondWeapon->GetAmmoNeeded();
-	FirstWeapon->P_Reload(TotalAmmo);
-	TotalAmmo -= FirstWeaponAmmoNeeded;
-	if (TotalAmmo < 0)
-	{
-		TotalAmmo = 0;
-		return;
-	}
-	SecondWeapon->P_Reload(TotalAmmo);
-	TotalAmmo -= SecondWeaponAmmoNeeded;
-	if (TotalAmmo < 0) TotalAmmo = 0;
 }
 
 void ADualWieldingWeapon::P_SetupTransfer(bool bSetToFirstHand)
@@ -65,7 +51,7 @@ void ADualWieldingWeapon::P_SetupTransfer(bool bSetToFirstHand)
 
 void ADualWieldingWeapon::P_UpdateAmmoTextHUD()
 {
-	if (!HandsAnimInstance->GetIsReloading()) DelegateManager->OnWeaponAmmoChangeThreeParams.Broadcast(FirstWeapon->GetCurrentAmmoAmount(), SecondWeapon->GetCurrentAmmoAmount(), TotalAmmo);
+	if (!HandsAnimInstance->GetIsReloading()) DelegateManager->OnWeaponAmmoChangeTwoParams.Broadcast(GetCurrentAmmoAmount(), TotalAmmo);
 }
 
 void ADualWieldingWeapon::P_SetShootMontage(const bool bFirstWeapon, const bool bState)

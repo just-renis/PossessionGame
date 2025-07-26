@@ -67,7 +67,6 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32)
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType, const EVariation);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&, bool);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText&);
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnWeaponAmmoChangeThreeParams, int32, int32, int32);
 
 UCLASS()
 class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
@@ -131,5 +130,4 @@ public:
 	FOnVariationSelection OnVariationSelection;
 	FOnTargetChange OnTargetChange;
 	FOnKeyBindChange OnKeyBindChange;
-	FOnWeaponAmmoChangeThreeParams OnWeaponAmmoChangeThreeParams;
 };

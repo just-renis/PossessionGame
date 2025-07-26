@@ -2,7 +2,7 @@
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 
-void ASpyWeapon::P_Shoot(bool bIsFirstWeapon)
+void ASpyWeapon::P_Shoot()
 {
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
 //	PlaySound(ESound::TricksterShoot);

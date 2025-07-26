@@ -17,7 +17,7 @@ void AGuardianSingularWeapon::AI_Shoot()
 	ShootProjectile(EPoolObject::GuardianProjectile);
 }
 
-void AGuardianSingularWeapon::P_Shoot(const bool bIsFirstWeapon)
+void AGuardianSingularWeapon::P_Shoot()
 {
 	if (ShootTimer >= ShootCooldown)
 	{

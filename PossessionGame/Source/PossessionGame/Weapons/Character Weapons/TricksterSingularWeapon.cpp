@@ -29,14 +29,13 @@ float ATricksterSingularWeapon::P_ReceiveHitScanDamage()
 	return Super::P_ReceiveHitScanDamage() + DefaultHitScanDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetPoisonAreaStackBoost();
 }
 
-void ATricksterSingularWeapon::P_Shoot(bool bIsFirstWeapon)
+void ATricksterSingularWeapon::P_Shoot()
 {
 	if (ShootTimer >= ShootCooldown)
 	{
 		AssetsManager->PlaySound2D(ESound::TricksterShoot);
 		MuzzleFlashLogic();
 		MakeShootingCameraShake();
-		CurrentAmmo--;
 		ShootTimer = 0.f;
 		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::TricksterProjectile);
 	}

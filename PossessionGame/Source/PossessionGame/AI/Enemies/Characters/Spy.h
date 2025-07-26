@@ -23,7 +23,7 @@ private:
 	virtual void AI_SetController() override;
 
 	virtual void P_Setup() override;
-	virtual void P_Shoot(bool bFirstWeapon) override;
+	virtual void P_Shoot() override;
 	virtual void P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
 	virtual void P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override {}
 	virtual void P_SetupColorsForUI() override;

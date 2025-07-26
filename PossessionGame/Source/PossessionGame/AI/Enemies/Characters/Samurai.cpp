@@ -38,10 +38,10 @@ void ASamurai::P_SetupLeftClickInputCompletedState(TObjectPtr<UEnhancedInputComp
 	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Completed, this, &ASamurai::P_SetBowStretchingState, EPlayerInputState::LeftClickRelease);
 }
 
-void ASamurai::P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
+/*void ASamurai::P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
 {
 	RightClickInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &ASamurai::P_SetBowStretchingState, EPlayerInputState::RightClickStart);
-}
+}*/
 
 void ASamurai::P_SetBowStretchingState(EPlayerInputState bState) { Cast<ASamuraiWeapon>(Weapon)->P_SetStretchingState(bState); }
 

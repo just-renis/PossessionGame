@@ -34,11 +34,10 @@ public:
     virtual void AI_Setup() override;
     virtual void AI_Shoot() override;
 
-    virtual bool P_CanShoot(bool bIsFirstWeapon) override;
+    virtual bool P_CanShoot() override;
     virtual bool P_CanReload(int32 OtherAmmoSource) override;
     
-    virtual void P_Shoot(bool bIsFirstWeapon) override;
-    virtual void P_Reload(int32 OtherAmmoSource) override;
+    virtual void P_Shoot() override;
     virtual void P_SetupTransfer(bool bSetToFirstHand) override;
     virtual void P_UpdateAmmoTextHUD() override;
     void P_SetShootMontage(const bool bFirstWeapon, const bool bState);

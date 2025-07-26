@@ -25,11 +25,6 @@ void ATricksterWeapon::P_Reload(int32 OtherAmmoSource)
 	Super::P_Reload(OtherAmmoSource);
 }
 
-void ATricksterWeapon::P_SetupOnShootState()
-{
-	Cast<ATrickster>(Proprietor)->GetOnWeaponShootStateChangeDelegate().BindUObject(this, &ADualWieldingWeapon::P_SetShootMontage);
-}
-
 void ATricksterWeapon::P_PlayOverChargeVfx()
 {
 	if (FirstWeaponOverChargeComponent) FirstWeaponOverChargeComponent->Activate();
@@ -70,12 +65,6 @@ void ATricksterWeapon::PlayShootMontage()
 	if (ShootMontageHandler.bIsFirstWeaponShooting && ShootMontageHandler.bIsSecondWeaponShooting) HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
 	else if (ShootMontageHandler.bIsFirstWeaponShooting) HandsAnimInstance->PlayMontage(EHandsAnimState::ShootLeft);
 	else HandsAnimInstance->PlayMontage(EHandsAnimState::ShootRight);
-}
-
-void ATricksterWeapon::PostProprietorSetup()
-{
-	P_SetupOnShootState();
-	Super::PostProprietorSetup();
 }
 
 void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bFromFirstWeapon)

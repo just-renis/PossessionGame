@@ -97,7 +97,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FpsText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> RunIndicator;
+	TObjectPtr<UInvalidationBox> RunIndicatorInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
 	UPROPERTY(meta = (BindWidget))

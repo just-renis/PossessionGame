@@ -9,7 +9,7 @@ class POSSESSIONGAME_API ATank : public AEnemy
 {
 	GENERATED_BODY()
 public:
-	virtual void P_Shoot(bool bFirstWeapon) override;
+	virtual void P_Shoot() override;
 private:
 	virtual void AI_ReloadLogic() override;
 	virtual void AI_SetCanShoot(const bool bState) override;
@@ -21,8 +21,6 @@ private:
 	virtual void P_Setup() override;
 	virtual void P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
 	virtual void P_SetupLeftClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
-	virtual void P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) override;
-	virtual void P_SetupRightClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) override;
 	virtual void P_Destroy() override;
 	void P_ToggleChargeMinigun(bool bState);
 	void P_StopChargingMinigun();

@@ -9,7 +9,7 @@
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
-void ATank::P_Shoot(bool bFirstWeapon)
+void ATank::P_Shoot()
 {
 	if (bIsInputLocked || !Weapon->P_CanShoot()) return;
 	Weapon->P_Shoot();
@@ -55,16 +55,6 @@ void ATank::P_SetupLeftClickInputCompletedState(TObjectPtr<UEnhancedInputCompone
 {
 	Super::P_SetupLeftClickInputCompletedState(LeftClickInputComponent);
 	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Completed, this, &ATank::P_ToggleChargeMinigun, false);
-}
-
-void ATank::P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
-{
-	RightClickInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &ATank::P_ToggleChargeMinigun, true);
-}
-
-void ATank::P_SetupRightClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
-{
-	RightClickInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Completed, this, &ATank::P_ToggleChargeMinigun, false);
 }
 
 void ATank::P_Destroy()
