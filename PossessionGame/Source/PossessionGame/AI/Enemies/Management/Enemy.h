@@ -261,11 +261,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
 	float SlideGroundFriction = 0.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
-	float SlideStrength = 3000.f;
+	float SlideStrength = 2500.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
-	float SlideDuration = 0.5f;
+	float SlideDuration = 0.25f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
-	float SlideHeight = 59.5f;
+	float SlideHeight = 32.5f;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))

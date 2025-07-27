@@ -198,7 +198,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		#endif
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &AEnemy::P_TryInteracting);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack);
-	//	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(19).Action, ETriggerEvent::Started, this, &AEnemy::P_Stomp);
+	//	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(19).Action, ETriggerEvent::Started, this, &AEnemy::P_Stomp); - 19 reserved was stomp, -14 right click reserved.
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::OpenInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_Crouch);
@@ -1171,7 +1171,7 @@ void AEnemy::P_AddDefaultAbility(const TObjectPtr<UAbilityManager>& InAbilityMan
 void AEnemy::P_InitiateSlide()
 {
 	bIsSliding = true;
-	GetCapsuleComponent()->SetCapsuleHalfHeight(SlideHeight, true);
+	GetCapsuleComponent()->SetCapsuleHalfHeight(SlideHeight);
 	GetCharacterMovement()->GroundFriction = SlideGroundFriction;
 	GetCharacterMovement()->BrakingFrictionFactor = SlideBrakingFrictionFactor;
 	LaunchCharacter(GetActorForwardVector() * SlideStrength, true, false);
@@ -1182,7 +1182,8 @@ void AEnemy::P_InitiateSlide()
 void AEnemy::P_EndSlide()
 {
 	bIsSliding = false;
-	GetCapsuleComponent()->SetCapsuleHalfHeight(GetDefaultHalfHeight(), true);
+	AddActorWorldOffset(FVector(0.f, 0.f, GetDefaultHalfHeight() - SlideHeight));
+	GetCapsuleComponent()->SetCapsuleHalfHeight(GetDefaultHalfHeight());
 	GetCharacterMovement()->GroundFriction = GroundFriction;
 	GetCharacterMovement()->BrakingFrictionFactor = BrakingFrictionFactor;
 }
