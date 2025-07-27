@@ -39,6 +39,17 @@ void UHandsAnimInstance::PlayMontage(EHandsAnimState State, float StartPosition)
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontage"), *UEnum::GetValueAsString(WeaponName), *UEnum::GetValueAsString(State));
 }
 
+void UHandsAnimInstance::PlayMontageWithHold(const EHandsAnimState InState, const float InHoldTime)
+{
+    if (IsMontageExisting(InState))
+    {
+        LoadMontageIfNotLoaded(InState);
+        PlayMontage(InState);
+        GetWorld()->GetTimerManager().SetTimer(MontageWithHoldHandle, this, &UHandsAnimInstance::MontageWithHoldEnd, InHoldTime, false);
+    }
+    else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontageWithHold"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
+}
+
 void UHandsAnimInstance::StopMontage(EHandsAnimState State, float BlendOut)
 {
     if (IsMontageExisting(State))
@@ -91,3 +102,5 @@ void UHandsAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     Super::NativeUpdateAnimation(DeltaSeconds);
     if (Proprietor) DirectionalAngle = UKismetAnimationLibrary::CalculateDirection(Proprietor->GetVelocity(), Proprietor->GetActorRotation());
 }
+
+void UHandsAnimInstance::MontageWithHoldEnd() { StopAllMontages(0.1f); }

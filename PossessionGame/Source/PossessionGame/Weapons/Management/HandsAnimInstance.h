@@ -27,6 +27,7 @@ public:
 	void SetSpeed(float Value) { Speed = Value; }
 	void KeepPlayingMontage(EHandsAnimState State) { if (!IsPlaying(State)) PlayMontage(State); }
 	void PlayMontage(EHandsAnimState State, float StartPosition = 0.f);
+	void PlayMontageWithHold(const EHandsAnimState InState, const float InHoldTime);
 	void StopMontage(EHandsAnimState State, float BlendOut);
 	void SetWeaponName(EWeapon Name) { WeaponName = Name; }
 	void SetIsZoomedIn(bool bState) { bIsZoomedIn = bState; }
@@ -56,10 +57,13 @@ private:
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Proprietor;
+	UPROPERTY()
+	FTimerHandle MontageWithHoldHandle;
 
 	bool IsMontageExisting(EHandsAnimState State);
 	
 	void LoadMontageIfNotLoaded(EHandsAnimState State);
 	virtual void BeginDestroy() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	void MontageWithHoldEnd();
 };

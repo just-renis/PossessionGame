@@ -54,12 +54,6 @@ void ADualWieldingWeapon::P_UpdateAmmoTextHUD()
 	if (!HandsAnimInstance->GetIsReloading()) DelegateManager->OnWeaponAmmoChangeTwoParams.Broadcast(GetCurrentAmmoAmount(), TotalAmmo);
 }
 
-void ADualWieldingWeapon::P_SetShootMontage(const bool bFirstWeapon, const bool bState)
-{
-	if (bFirstWeapon) ShootMontageHandler.bIsFirstWeaponShooting = bState;
-	else ShootMontageHandler.bIsSecondWeaponShooting = bState;
-}
-
 void ADualWieldingWeapon::P_ChangeVfxVariation()
 {
 	FirstWeapon->P_ChangeVfxVariation();

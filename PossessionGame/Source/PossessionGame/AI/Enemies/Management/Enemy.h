@@ -213,11 +213,11 @@ private:
 	bool bPlayerDied = false;
 	bool bIsMutant = false;
 	bool bIsStomping = false;
-	bool bCanStomp = false;
 	bool bCanRun = true;
 	bool bIsRunning = false;
 	bool bHijackOutlineState = false;
 	bool bIsSliding = false;
+	bool bSuperJumpOccured = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -232,6 +232,8 @@ private:
 	float QuickMeleeAttackDamage = 20.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Mutant", meta = (AllowPrivateAccess = true))
 	float MutantExplosionDamage = 50.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	bool bCanStomp = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	float GravityScale = 3.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
@@ -260,6 +262,10 @@ private:
 	float SlideGroundFriction = 0.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
 	float SlideStrength = 3000.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
+	float SlideDuration = 0.5f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
+	float SlideHeight = 59.5f;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))

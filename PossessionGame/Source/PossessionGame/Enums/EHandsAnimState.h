@@ -6,8 +6,6 @@ enum class EHandsAnimState : uint8
 	None,
 	Reload,
 	Shoot,
-	ShootLeft,
-	ShootRight,
 	StretchHold,
 	StretchStart,
 	StretchRelease,
@@ -16,5 +14,6 @@ enum class EHandsAnimState : uint8
 	SecondaryGrenadeLaunch,
 	OverCharge,
 	QuickMelee,
-	Jump
+	Jump,
+	Slide
 };

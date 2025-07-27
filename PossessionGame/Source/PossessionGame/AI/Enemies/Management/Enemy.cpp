@@ -198,7 +198,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		#endif
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &AEnemy::P_TryInteracting);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(19).Action, ETriggerEvent::Started, this, &AEnemy::P_Stomp);
+	//	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(19).Action, ETriggerEvent::Started, this, &AEnemy::P_Stomp);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::OpenInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_Crouch);
@@ -546,13 +546,13 @@ void AEnemy::P_Move(const FInputActionValue& Value)
 
 void AEnemy::P_InitiateJump()
 {
-	P_SetupSuperJump();
+	if (bIsSliding) P_SetupSuperJump();
+	else GetCharacterMovement()->JumpZVelocity = JumpVelocity;
 	Jump();
 	Weapon->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Jump);
 	const bool bIsDoubleJump = GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 1;
 	AssetsManager->PlaySound2D(bIsDoubleJump ? ESound::DoubleJump : ESound::Jump);
 	if (!bIsDoubleJump) return;
-	bCanStomp = true;
 	if (GameInstance->GetSaveSlot()->GetIsTutorialFinished()) return;
 	if (GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI, 0)->GetCurrentHintIndex() == 4) (void)DelegateManager->OnShowHint.ExecuteIfBound(5);
 }
@@ -1128,6 +1128,11 @@ void AEnemy::P_ContinuousFovChange()
 
 void AEnemy::P_Crouch()
 {
+	if (bSuperJumpOccured)
+	{
+		P_Stomp();
+		return;
+	}
 	if (bIsSliding) return;
 	if (bIsRunning && bCanSlide)
 	{
@@ -1166,25 +1171,28 @@ void AEnemy::P_AddDefaultAbility(const TObjectPtr<UAbilityManager>& InAbilityMan
 void AEnemy::P_InitiateSlide()
 {
 	bIsSliding = true;
+	GetCapsuleComponent()->SetCapsuleHalfHeight(SlideHeight, true);
 	GetCharacterMovement()->GroundFriction = SlideGroundFriction;
 	GetCharacterMovement()->BrakingFrictionFactor = SlideBrakingFrictionFactor;
 	LaunchCharacter(GetActorForwardVector() * SlideStrength, true, false);
-	GetWorld()->GetTimerManager().SetTimer(P_SlideEndHandle, this, &AEnemy::P_EndSlide, 1.f, false);
-//	if (SlideMontage) PlayAnimMontage(SlideMontage);
+	GetWorld()->GetTimerManager().SetTimer(P_SlideEndHandle, this, &AEnemy::P_EndSlide, SlideDuration, false);
+	Weapon->GetHandsAnimInstance()->PlayMontageWithHold(EHandsAnimState::Slide, SlideDuration);
 }
 
 void AEnemy::P_EndSlide()
 {
 	bIsSliding = false;
+	GetCapsuleComponent()->SetCapsuleHalfHeight(GetDefaultHalfHeight(), true);
 	GetCharacterMovement()->GroundFriction = GroundFriction;
 	GetCharacterMovement()->BrakingFrictionFactor = BrakingFrictionFactor;
 }
 
 void AEnemy::P_SetupSuperJump()
 {
-	GetCharacterMovement()->JumpZVelocity = bIsSliding ? JumpVelocity * 2.f : JumpVelocity;
 	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
 	P_EndSlide();
+	bSuperJumpOccured = true;
+	GetCharacterMovement()->JumpZVelocity = JumpVelocity * 2.f;
 }
 
 void AEnemy::TickAbilities(const float InDeltaTime)
@@ -1258,7 +1266,7 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 void AEnemy::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
-	bCanStomp = false;
+	bSuperJumpOccured = false;
 	if (bIsStomping)
 	{
 		bIsStomping = false;
