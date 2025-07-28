@@ -8,6 +8,7 @@
 void ATutorialModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
 	InitAfterPSOPrecache();
 }
 

@@ -22,7 +22,6 @@ public:
 private:
 	bool bPressKeyEnabled = false;
 	bool bTutorialModeEnabled = false;
-	bool bInputLocked = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
@@ -38,10 +37,7 @@ private:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void Move(const FInputActionValue& InValue);
 	void Rotate(const FInputActionValue& InValue);
-	void StartRunning();
-	void StopRunning();
 	void PossessEnemy();
 	void RestartLevel() const;
 	void HandleEscapeClick();

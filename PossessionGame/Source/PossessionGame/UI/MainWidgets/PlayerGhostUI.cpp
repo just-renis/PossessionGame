@@ -32,10 +32,10 @@ void UPlayerGhostUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	DelegateManager->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
-	DelegateManager->StopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
-	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &UPlayerGhostUI::ShowPressKey);
-	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerGhostUI::UpdateKeyBindText);
+	//DelegateManager->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
+	//DelegateManager->StopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
+	//DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &UPlayerGhostUI::ShowPressKey);
+	//DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerGhostUI::UpdateKeyBindText);
 }
 
 void UPlayerGhostUI::ShowHint(const int32 InIndex)

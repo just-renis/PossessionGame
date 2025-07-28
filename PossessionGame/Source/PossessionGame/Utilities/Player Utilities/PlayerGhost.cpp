@@ -2,7 +2,6 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "InputMappingContext.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
@@ -36,7 +35,6 @@ void APlayerGhost::BeginPlay()
 		if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
 		{
 			bTutorialModeEnabled = true;
-			bInputLocked = true;
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &APlayerGhost::SetPressKeyState);
 			PlayerController->SetInputMode(FInputModeUIOnly());
@@ -60,11 +58,7 @@ void APlayerGhost::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	}
 	if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &APlayerGhost::Move);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Triggered, this, &APlayerGhost::Jump);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &APlayerGhost::Rotate);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &APlayerGhost::StartRunning);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &APlayerGhost::StopRunning);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &APlayerGhost::PossessEnemy);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &APlayerGhost::HandleEscapeClick);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &APlayerGhost::PressKeyToContinue);
@@ -78,14 +72,6 @@ void APlayerGhost::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void APlayerGhost::Move(const FInputActionValue& InValue)
-{
-	if (!Controller || bInputLocked) return;
-	const FVector2D MovementVector = InValue.Get<FVector2D>();
-	AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-	AddMovementInput(GetActorRightVector(), MovementVector.X);
-}
-
 void APlayerGhost::Rotate(const FInputActionValue& InValue)
 {
 	if (!Controller) return;
@@ -96,10 +82,6 @@ void APlayerGhost::Rotate(const FInputActionValue& InValue)
 	NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + RotationVector.Y * MouseSensitivity.Y, -89.f, 89.f);
 	Camera->SetWorldRotation(NewRotation);
 }
-
-void APlayerGhost::StartRunning() {  GetCharacterMovement()->MaxWalkSpeed = 900; }
-
-void APlayerGhost::StopRunning() {  GetCharacterMovement()->MaxWalkSpeed = 600; }
 
 void APlayerGhost::PossessEnemy()
 {
