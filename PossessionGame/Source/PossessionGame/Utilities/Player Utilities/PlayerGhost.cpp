@@ -36,6 +36,7 @@ void APlayerGhost::BeginPlay()
 		if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
 		{
 			bTutorialModeEnabled = true;
+			bInputLocked = true;
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &APlayerGhost::SetPressKeyState);
 			PlayerController->SetInputMode(FInputModeUIOnly());
@@ -79,7 +80,7 @@ void APlayerGhost::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void APlayerGhost::Move(const FInputActionValue& InValue)
 {
-	if (!Controller) return;
+	if (!Controller || bInputLocked) return;
 	const FVector2D MovementVector = InValue.Get<FVector2D>();
 	AddMovementInput(GetActorForwardVector(), MovementVector.Y);
 	AddMovementInput(GetActorRightVector(), MovementVector.X);

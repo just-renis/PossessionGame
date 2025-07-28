@@ -22,6 +22,7 @@ public:
 private:
 	bool bPressKeyEnabled = false;
 	bool bTutorialModeEnabled = false;
+	bool bInputLocked = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
