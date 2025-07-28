@@ -16,7 +16,8 @@ int32 UPlayerLevelData::GetHpIncrease(const int32 InLevel)
 
 int32 UPlayerLevelData::GetXpNeeded(const int32 InLevel)
 {
-	if (InLevel >= LevelXpNeeded.Num()) return *LevelXpNeeded.Find(LevelXpNeeded.Num());
 	if (const int32* FoundXpIncrease = LevelXpNeeded.Find(InLevel)) return *FoundXpIncrease;
-	return 1;
+	const int32 MaxStaticXpNeededLevel = LevelXpNeeded.Num() - 1;
+	const int32 MaxNeededXp = *LevelXpNeeded.Find(MaxStaticXpNeededLevel);
+	return MaxNeededXp + (InLevel - MaxStaticXpNeededLevel) * 50.f;
 }

@@ -576,6 +576,7 @@ void AEnemy::BeginPlay()
 	DelegateManager = GameInstance->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 	GlobalSettingsManager = GameInstance->GetSubsystem<UGlobalSettingsManager>();
+	DefaultCameraZ = Camera->GetRelativeLocation().Z;
 	AI_SetupHpBar();
 	AssetsManager = GameInstance->GetSubsystem<UPrimaryDataAssetsManager>();
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
@@ -1170,6 +1171,7 @@ void AEnemy::P_AddDefaultAbility(const TObjectPtr<UAbilityManager>& InAbilityMan
 
 void AEnemy::P_InitiateSlide()
 {
+	Camera->SetRelativeLocation(FVector(0.f, 0.f, SlideCameraZ));
 	bIsSliding = true;
 	GetCapsuleComponent()->SetCapsuleHalfHeight(SlideHeight);
 	GetCharacterMovement()->GroundFriction = SlideGroundFriction;
@@ -1181,6 +1183,7 @@ void AEnemy::P_InitiateSlide()
 
 void AEnemy::P_EndSlide()
 {
+	Camera->SetRelativeLocation(FVector(0.f, 0.f, DefaultCameraZ));
 	bIsSliding = false;
 	AddActorWorldOffset(FVector(0.f, 0.f, GetDefaultHalfHeight() - SlideHeight));
 	GetCapsuleComponent()->SetCapsuleHalfHeight(GetDefaultHalfHeight());
