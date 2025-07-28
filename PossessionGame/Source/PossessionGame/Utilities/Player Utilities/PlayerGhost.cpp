@@ -39,7 +39,7 @@ void APlayerGhost::BeginPlay()
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &APlayerGhost::SetPressKeyState);
 			PlayerController->SetInputMode(FInputModeUIOnly());
-			const TObjectPtr<UPlayerGhostUI> TutorialUI = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI, 0);
+			const TObjectPtr<UPlayerGhostUI> TutorialUI = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI);
 			TutorialUI->PlayStartupAnimation();
 			GetWorld()->GetTimerManager().SetTimer(EnableInputHandle, this, &APlayerGhost::EnablePlayerInput, TutorialUI->GetStartupAnimationLength(), false);
 		}
@@ -131,9 +131,9 @@ void APlayerGhost::HandleEscapeClick()
 {
 	switch (GetWorld()->GetSubsystem<UWidgetManager>()->GetCurrentStateOfUI())
 	{
-		case EWidget::PauseMenuUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI, 2)->CloseUI(); break;
-		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI, 2)->CloseUI(); break;
-		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI, 2)->OpenUI();
+		case EWidget::PauseMenuUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->CloseUI(); break;
+		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->CloseUI(); break;
+		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 	}
 }
 

@@ -76,7 +76,7 @@ void UAbilitiesMenuUI::NativeConstruct()
 
 void UAbilitiesMenuUI::Toggle(const bool bState)
 {
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD, 0)->PlayFadeOutAnim(bState);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();

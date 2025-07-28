@@ -71,12 +71,15 @@ void UMainMenuUI::ToggleMenuButtons(const bool bState) const
 	if (QuitButton) QuitButton->SetButtonVisibility(bState);
 }
 
-void UMainMenuUI::Play() { UGameplayStatics::OpenLevel(GetWorld(), "Level_1"); }
+void UMainMenuUI::Play()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished() ? "Level_1" : "TutorialLevel");
+}
 
 void UMainMenuUI::OpenSettings()
 {
 	TriggerMainMenuFadeOutAnim();
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI, 2)->OpenUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->OpenUI();
 }
 
 void UMainMenuUI::QuitGame() { UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false); }

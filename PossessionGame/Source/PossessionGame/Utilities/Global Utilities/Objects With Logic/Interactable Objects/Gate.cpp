@@ -93,7 +93,7 @@ void AGate::Interact()
 	if (InteractableUI) InteractableUI->PlayFadeInAnim(false);
 	GetWorldTimerManager().SetTimer(FadeOutAnimHandle, this, &AGate::FadeOutAnimFinished, InteractableUI->GetFadeInAnimLength(), false);
 	OpenGate(EGameMode::None);
-	if (bIsDemoGate) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UDemoEndUI>(EWidget::DemoEndUI, 3);
+	if (bIsDemoGate) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UDemoEndUI>(EWidget::DemoEndUI);
 }
 
 void AGate::ChangeOutlineState(const bool bState)

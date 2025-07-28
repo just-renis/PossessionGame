@@ -43,7 +43,7 @@ void ASecretCrate::GiveReward()
 {
 	PlaySound(ESound::SecretCrateReceivePowerUp);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::SecretRewardPopUp, nullptr, GetActorLocation() + FVector(0.f, 0.f, 30.f));
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USecretRoomUI>(EWidget::SecretRoomUI, 1)->OpenUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USecretRoomUI>(EWidget::SecretRoomUI)->OpenUI();
 }
 
 void ASecretCrate::PlaySound(const ESound InSoundName)

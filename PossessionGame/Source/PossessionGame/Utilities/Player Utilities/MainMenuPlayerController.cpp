@@ -21,7 +21,7 @@ void AMainMenuPlayerController::HandleEscapeClick()
 {
 	switch (GetWorld()->GetSubsystem<UWidgetManager>()->GetCurrentStateOfUI())
 	{
-		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI, 2)->CloseUI(); break;
+		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->CloseUI(); break;
 		default: ;
 	}
 }

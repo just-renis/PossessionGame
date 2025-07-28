@@ -45,7 +45,7 @@ void UPauseMenuUI::Toggle(const bool bState)
 	if (ReturnToMenuButton) ReturnToMenuButton->SetButtonVisibility(bState);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>(); 
-	if (WidgetManager->ContainsWidget(EWidget::PlayerHUD)) WidgetManager->GetWidget<UPlayerHUD>(EWidget::PlayerHUD, 0)->PlayFadeOutAnim(bState);
+	if (WidgetManager->ContainsWidget(EWidget::PlayerHUD)) WidgetManager->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
 	if (bState) PlayAnimation(FadeInAnim);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
@@ -76,7 +76,7 @@ void UPauseMenuUI::ReturnToMainMenu() { UGameplayStatics::OpenLevel(GetWorld(), 
 void UPauseMenuUI::OpenSettings()
 {
 	SetVisibility(ESlateVisibility::Collapsed);
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI, 2)->OpenUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->OpenUI();
 }
 
 void UPauseMenuUI::TriggerReturnToMainMenuPopupFadeIn()

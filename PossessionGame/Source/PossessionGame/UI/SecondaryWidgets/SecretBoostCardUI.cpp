@@ -75,5 +75,5 @@ void USecretBoostCardUI::SaveChosenBoost()
 		GameInstance->GetRunSaveSlot()->AddSecretCrateBoost(BoostType, BoostValue);
 		if (BoostType == EVariation::SecretCrateRewardHealth) (void)GameInstance->GetSubsystem<UDelegateManager>()->ApplySecretBoostHealth.ExecuteIfBound(BoostValue);
 	}
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USecretRoomUI>(EWidget::SecretRoomUI, 1)->CloseUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USecretRoomUI>(EWidget::SecretRoomUI)->CloseUI();
 }

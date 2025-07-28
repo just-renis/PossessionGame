@@ -36,7 +36,7 @@ void AMainMenuBase::InitAfterPSOPrecache() const
 {
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ChangeMusicPlayerState.ExecuteIfBound(true);
 	LoadSettingsData();
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI, 0)->OpenUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();
 }
 
 void AMainMenuBase::ShowLoadingScreen()
@@ -44,7 +44,7 @@ void AMainMenuBase::ShowLoadingScreen()
 	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0)
 	{
 		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ChangeMusicPlayerState.ExecuteIfBound(false);
-		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI, 3)->Init([this]{ ShowGameLaunchUI(); });
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init([this]{ ShowGameLaunchUI(); });
 	}
 	else ShowGameLaunchUI();
 }
@@ -55,7 +55,7 @@ void AMainMenuBase::ShowGameLaunchUI()
 	if (!GameInstance->GetIsMainMenuLaunchedOnce())
 	{
 		GameInstance->SetMainMenuLaunchedOnce();
-		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UGameLaunchUI>(EWidget::GameLaunchUI, 3);
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UGameLaunchUI>(EWidget::GameLaunchUI);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameLaunchFinished.BindUObject(this, &AMainMenuBase::InitAfterPSOPrecache);
 	}
 	else InitAfterPSOPrecache();

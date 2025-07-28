@@ -36,11 +36,11 @@ void UAbilityIconUI::OnHovered()
 {
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayAnimationForward(HoverAnim);
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI, 1)->ToggleDetailsPanel(true, DetailsText);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI)->ToggleDetailsPanel(true, DetailsText);
 }
 
 void UAbilityIconUI::OnUnHovered()
 {
 	PlayAnimationReverse(HoverAnim);
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI, 1)->ToggleDetailsPanel(false, DetailsText);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI)->ToggleDetailsPanel(false, DetailsText);
 }

@@ -36,7 +36,7 @@ void USecretRoomUI::ToggleUI(const bool bState) const
 	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>(); 
-	WidgetManager->GetWidget<UPlayerHUD>(EWidget::PlayerHUD, 0)->PlayFadeOutAnim(bState);
+	WidgetManager->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
 	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());

@@ -14,7 +14,7 @@ public:
 	bool ContainsWidget(const EWidget InWidgetName) const { return Widgets.Contains(InWidgetName); }
 	EWidget GetCurrentStateOfUI() const { return CurrentState; }
 	template<typename T>
-	TObjectPtr<T> GetWidget(const EWidget InWidgetName, const int32 InZOrder);
+	TObjectPtr<T> GetWidget(const EWidget InWidgetName);
 
 	void SetCurrentStateOfUI(const EWidget InState) { CurrentState = InState; }
 	void Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses);
@@ -25,13 +25,15 @@ private:
 	TMap<EWidget, TSubclassOf<UUserWidget>> WidgetClasses;
 	UPROPERTY()
 	TMap<EWidget, TObjectPtr<UUserWidget>> Widgets;
+
+	int32 GetWidgetZOrder(const EWidget InWidgetName);
 };
 
 template <typename T>
-TObjectPtr<T> UWidgetManager::GetWidget(const EWidget InWidgetName, const int32 InZOrder)
+TObjectPtr<T> UWidgetManager::GetWidget(const EWidget InWidgetName)
 {
 	if (Widgets.Contains(InWidgetName)) return Cast<T>(Widgets[InWidgetName]);
 	Widgets.Add(InWidgetName, CreateWidget<T>(GetWorld(), WidgetClasses[InWidgetName]));
-	Widgets[InWidgetName]->AddToViewport(InZOrder);
+	Widgets[InWidgetName]->AddToViewport(GetWidgetZOrder(InWidgetName));
 	return Cast<T>(Widgets[InWidgetName]);
 }
