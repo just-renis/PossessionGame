@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "TutorialDialogue.generated.h"
 
-class UTutorialDialogueUI;
+class UDialogueUI;
 class UWidgetComponent;
 
 UCLASS()
@@ -19,7 +19,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UWidgetComponent> DialogueWidgetComponent;
 	UPROPERTY()
-	TObjectPtr<UTutorialDialogueUI> Dialogue;
+	TObjectPtr<UDialogueUI> Dialogue;
 
 	virtual void BeginPlay() override;
 	void StopShowingDialogue() const;

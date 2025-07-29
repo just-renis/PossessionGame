@@ -68,10 +68,12 @@ void ATutorialBot::SetupDialogue()
 {
 	Dialogue = GetWorld()->SpawnActor<ATutorialDialogue>(DialogueClass);
 	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "DialogueSocket");
+	Dialogue->SetVisibilityState(false);
 }
 
 void ATutorialBot::FirstAnimFinished()
 {
+	Dialogue->SetVisibilityState(true);
 	Mesh->PlayAnimation(GetAnimation(ETutorialBotAnimState::Tutorial2), false);
 	Dialogue->StartDialogue(TutorialDialogueIndex++);
 }
