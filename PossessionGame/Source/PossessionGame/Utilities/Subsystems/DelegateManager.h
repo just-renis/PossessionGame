@@ -68,6 +68,8 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&, bool);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText&);
 
+//----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
+
 UCLASS()
 class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
 {
@@ -130,4 +132,7 @@ public:
 	FOnVariationSelection OnVariationSelection;
 	FOnTargetChange OnTargetChange;
 	FOnKeyBindChange OnKeyBindChange;
+
+	//----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
+
 };

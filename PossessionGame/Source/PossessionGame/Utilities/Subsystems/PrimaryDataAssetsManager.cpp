@@ -458,6 +458,9 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_FinishOffEnemies", ESound::FinishOffEnemies);
 	SoundMap.Add("PA_AbilityReset", ESound::AbilityReset);
 	SoundMap.Add("PA_AbilitySelect", ESound::AbilitySelect);
+	SoundMap.Add("PA_BotHitVent", ESound::BotHitVent);
+	SoundMap.Add("PA_BotBreakVent", ESound::BotBreakVent);
+	SoundMap.Add("PA_BotLandOnHead", ESound::BotLandOnHead);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

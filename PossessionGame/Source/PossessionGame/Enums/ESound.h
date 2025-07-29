@@ -90,5 +90,8 @@ enum class ESound : uint16
 	OutOfAmmo,
 	FinishOffEnemies,
 	AbilityReset,
-	AbilitySelect
+	AbilitySelect,
+	BotHitVent,
+	BotBreakVent,
+	BotLandOnHead
 };
