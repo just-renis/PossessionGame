@@ -1,6 +1,7 @@
 ﻿#include "TutorialBot.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Utilities/Global Utilities/UI Actors/TutorialDialogue.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 ATutorialBot::ATutorialBot()
@@ -27,12 +28,8 @@ TObjectPtr<UAnimationAsset> ATutorialBot::GetAnimation(const ETutorialBotAnimSta
 void ATutorialBot::BeginPlay()
 {
 	Super::BeginPlay();
-	Mesh->PlayAnimation(GetAnimation(ETutorialBotAnimState::Tutorial1), false);
-	GetWorld()->GetTimerManager().SetTimer(HitVent1Handle, [this] { PlaySound(ESound::BotHitVent); }, 8.62f, false);
-	GetWorld()->GetTimerManager().SetTimer(HitVent2Handle, [this] { PlaySound(ESound::BotHitVent); }, 9.59f, false);
-	GetWorld()->GetTimerManager().SetTimer(HitVent3Handle, [this] { PlaySound(ESound::BotHitVent); }, 10.42f, false);
-	GetWorld()->GetTimerManager().SetTimer(BreakVentHandle, [this]{ PlaySound(ESound::BotBreakVent); }, 11.69f, false);
-	GetWorld()->GetTimerManager().SetTimer(LandOnHeadHandle, [this] { PlaySound(ESound::BotLandOnHead); }, 11.85f, false);
+	SetupDialogue();
+	PlayFirstAnim();
 }
 
 void ATutorialBot::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -46,6 +43,18 @@ void ATutorialBot::PlaySound(const ESound InSoundName)
 	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], nullptr, InSoundName);
 }
 
+void ATutorialBot::PlayFirstAnim()
+{
+	const TObjectPtr<UAnimationAsset> Animation = GetAnimation(ETutorialBotAnimState::Tutorial1);
+	GetWorld()->GetTimerManager().SetTimer(FirstAnimFinishedHandle, this, &ATutorialBot::FirstAnimFinished, Animation->GetPlayLength(), false);
+	Mesh->PlayAnimation(Animation, false);
+	GetWorld()->GetTimerManager().SetTimer(HitVent1Handle, [this] { PlaySound(ESound::BotHitVent); }, 8.62f, false);
+	GetWorld()->GetTimerManager().SetTimer(HitVent2Handle, [this] { PlaySound(ESound::BotHitVent); }, 9.59f, false);
+	GetWorld()->GetTimerManager().SetTimer(HitVent3Handle, [this] { PlaySound(ESound::BotHitVent); }, 10.42f, false);
+	GetWorld()->GetTimerManager().SetTimer(BreakVentHandle, [this]{ PlaySound(ESound::BotBreakVent); }, 11.69f, false);
+	GetWorld()->GetTimerManager().SetTimer(LandOnHeadHandle, [this] { PlaySound(ESound::BotLandOnHead); }, 11.85f, false);
+}
+
 void ATutorialBot::ClearTimers()
 {
 	GetWorld()->GetTimerManager().ClearTimer(HitVent1Handle);
@@ -53,4 +62,16 @@ void ATutorialBot::ClearTimers()
 	GetWorld()->GetTimerManager().ClearTimer(HitVent3Handle);
 	GetWorld()->GetTimerManager().ClearTimer(BreakVentHandle);
 	GetWorld()->GetTimerManager().ClearTimer(LandOnHeadHandle);
+}
+
+void ATutorialBot::SetupDialogue()
+{
+	Dialogue = GetWorld()->SpawnActor<ATutorialDialogue>(DialogueClass);
+	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "DialogueSocket");
+}
+
+void ATutorialBot::FirstAnimFinished()
+{
+	Mesh->PlayAnimation(GetAnimation(ETutorialBotAnimState::Tutorial2), false);
+	Dialogue->StartDialogue(TutorialDialogueIndex++);
 }

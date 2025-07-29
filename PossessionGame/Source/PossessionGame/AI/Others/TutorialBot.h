@@ -1,9 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Animation/WidgetAnimationEvents.h"
 #include "GameFramework/Actor.h"
 #include "TutorialBot.generated.h"
 
+class ATutorialDialogue;
 enum class ESound : uint16;
 
 UENUM()
@@ -26,6 +28,9 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 
 	ATutorialBot();
 
+	int32 TutorialDialogueIndex = 0;
+	UPROPERTY(EditDefaultsOnly, Category = "Dialogue", meta = (AllowPrivateAccess = true))
+	TSubclassOf<ATutorialDialogue> DialogueClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Skeleton", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, Category = "Animations", meta = (AllowPrivateAccess = true))
@@ -41,6 +46,10 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	UPROPERTY()
 	FTimerHandle LandOnHeadHandle;
 	UPROPERTY()
+	FTimerHandle FirstAnimFinishedHandle;
+	UPROPERTY()
+	TObjectPtr<ATutorialDialogue> Dialogue;
+	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	TObjectPtr<UAnimationAsset> GetAnimation(const ETutorialBotAnimState InAnimState);
@@ -48,5 +57,9 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void PlaySound(const ESound InSoundName);
+	void PlayFirstAnim();
 	void ClearTimers();
+	void SetupDialogue();
+	UFUNCTION()
+	void FirstAnimFinished();
 };

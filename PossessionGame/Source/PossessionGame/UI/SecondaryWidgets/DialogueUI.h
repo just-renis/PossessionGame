@@ -16,6 +16,10 @@ public:
 	void StartDialogue(const int32 InIndex, const float InSpeed = 0.025f);
 protected:
 	int32 DialogueTextIndex = -1;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TArray<FString> DialogueTexts;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TArray<FString> TipTexts;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DialogueText;
 	UPROPERTY()
@@ -29,10 +33,6 @@ private:
 	float TypeSpeed = 0.05f;
 	FString TargetText;
 	FString CurrentText;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TArray<FString> DialogueTexts;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TArray<FString> TipTexts;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 
