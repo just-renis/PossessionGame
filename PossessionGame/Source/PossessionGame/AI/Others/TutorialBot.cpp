@@ -46,7 +46,7 @@ void ATutorialBot::PlaySound(const ESound InSoundName)
 void ATutorialBot::PlayFirstAnim()
 {
 	const TObjectPtr<UAnimationAsset> Animation = GetAnimation(ETutorialBotAnimState::Tutorial1);
-	GetWorld()->GetTimerManager().SetTimer(FirstAnimFinishedHandle, this, &ATutorialBot::FirstAnimFinished, Animation->GetPlayLength(), false);
+	GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, &ATutorialBot::FirstAnimFinished, Animation->GetPlayLength(), false);
 	Mesh->PlayAnimation(Animation, false);
 	GetWorld()->GetTimerManager().SetTimer(HitVent1Handle, [this] { PlaySound(ESound::BotHitVent); }, 8.62f, false);
 	GetWorld()->GetTimerManager().SetTimer(HitVent2Handle, [this] { PlaySound(ESound::BotHitVent); }, 9.59f, false);
@@ -74,6 +74,25 @@ void ATutorialBot::SetupDialogue()
 void ATutorialBot::FirstAnimFinished()
 {
 	Dialogue->SetVisibilityState(true);
-	Mesh->PlayAnimation(GetAnimation(ETutorialBotAnimState::Tutorial2), false);
 	Dialogue->StartDialogue(TutorialDialogueIndex++);
+	const TObjectPtr<UAnimationAsset> Animation = GetAnimation(ETutorialBotAnimState::Tutorial2);
+	GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, &ATutorialBot::SecondAnimFinished, Animation->GetPlayLength(), false);
+	Mesh->PlayAnimation(Animation, false);
+}
+
+void ATutorialBot::SecondAnimFinished()
+{
+	Dialogue->SetVisibilityState(false);
+	const TObjectPtr<UAnimationAsset> Animation = GetAnimation(ETutorialBotAnimState::Tutorial3);
+	GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, &ATutorialBot::ThirdAnimationFinished, Animation->GetPlayLength(), false);
+	Mesh->PlayAnimation(Animation, false);
+}
+
+void ATutorialBot::ThirdAnimationFinished()
+{
+	Dialogue->SetVisibilityState(true);
+	Dialogue->StartDialogue(TutorialDialogueIndex++);
+	const TObjectPtr<UAnimationAsset> Animation = GetAnimation(ETutorialBotAnimState::Tutorial4);
+	//GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, &ATutorialBot::ThirdAnimationFinished, Animation->GetPlayLength(), false);
+	Mesh->PlayAnimation(Animation, false);
 }

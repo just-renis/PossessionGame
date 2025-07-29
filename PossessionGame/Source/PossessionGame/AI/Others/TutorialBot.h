@@ -46,7 +46,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	UPROPERTY()
 	FTimerHandle LandOnHeadHandle;
 	UPROPERTY()
-	FTimerHandle FirstAnimFinishedHandle;
+	FTimerHandle AnimFinishedHandle;
 	UPROPERTY()
 	TObjectPtr<ATutorialDialogue> Dialogue;
 	UPROPERTY()
@@ -60,6 +60,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void PlayFirstAnim();
 	void ClearTimers();
 	void SetupDialogue();
-	UFUNCTION()
 	void FirstAnimFinished();
+	void SecondAnimFinished();
+	void ThirdAnimationFinished();
 };
