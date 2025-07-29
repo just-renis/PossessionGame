@@ -67,7 +67,7 @@ void ATutorialBot::ClearTimers()
 void ATutorialBot::SetupDialogue()
 {
 	Dialogue = GetWorld()->SpawnActor<ATutorialDialogue>(DialogueClass);
-	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "DialogueSocket");
+	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "BehindHeadSocket");
 	Dialogue->SetVisibilityState(false);
 }
 
@@ -83,6 +83,7 @@ void ATutorialBot::FirstAnimFinished()
 void ATutorialBot::SecondAnimFinished()
 {
 	Dialogue->SetVisibilityState(false);
+	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "OverHeadSocket");
 	const TObjectPtr<UAnimationAsset> Animation = GetAnimation(ETutorialBotAnimState::Tutorial3);
 	GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, &ATutorialBot::ThirdAnimationFinished, Animation->GetPlayLength(), false);
 	Mesh->PlayAnimation(Animation, false);
