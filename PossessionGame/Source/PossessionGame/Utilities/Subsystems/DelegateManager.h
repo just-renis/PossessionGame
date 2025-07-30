@@ -40,7 +40,6 @@ DECLARE_DELEGATE_OneParam(FApplySecretBoostHealth, const int32);
 DECLARE_DELEGATE_OneParam(FOnOpenUnlockAbilityPopup, const int32);
 DECLARE_DELEGATE_TwoParams(FStartTutorialDroneMoveToLocation, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
-DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
 DECLARE_DELEGATE_TwoParams(FOnVariationSelectionEnd, const ECharacterType, const EWidget);
@@ -60,7 +59,6 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeaponAmmoChangeOneParam, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeInitiator, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTerminalHackFinish, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeFinished, const EGameMode);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FDestroyTutorialForceField, const int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnVariationUnlocked, const EVariation);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
@@ -69,6 +67,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&,
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText&);
 
 //----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
+DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
 
 UCLASS()
 class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
@@ -90,7 +89,6 @@ public:
 	FOnOutOfAmmo OnOutOfAmmo;
 	FOnGameLaunchFinished OnGameLaunchFinished;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
-	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnBossDamaged OnBossDamaged;
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
@@ -125,7 +123,6 @@ public:
 	FOnGameModeInitiator OnGameModeInitiator;
 	FOnTerminalHackFinish OnTerminalHackFinish;
 	FOnGameModeFinished OnGameModeFinished;
-	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
 	FDestroyTutorialForceField DestroyTutorialForceField;
 	FOnVariationUnlocked OnVariationUnlocked;
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
@@ -134,5 +131,5 @@ public:
 	FOnKeyBindChange OnKeyBindChange;
 
 	//----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
-
+	FSpawnTutorialEnemy SpawnTutorialEnemy;
 };

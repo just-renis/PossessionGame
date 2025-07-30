@@ -442,7 +442,7 @@ void AEnemy::P_Setup()
 {
 	DelegateManager->ApplyUpgradeOnSelection.BindUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
-	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
+	//DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
 	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
 	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_SetupLevelUpAppliance);
@@ -988,7 +988,7 @@ void AEnemy::P_TryInteracting()
 void AEnemy::P_TutorialPressKeyToContinueLogic()
 {
 	bPressKeyEnabled = false;
-	DelegateManager->OnShowPressKeyToContinue.Broadcast(false);
+	//DelegateManager->OnShowPressKeyToContinue.Broadcast(false);
 }
 
 void AEnemy::P_QuickMeleeAttack()

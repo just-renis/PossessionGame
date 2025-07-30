@@ -36,7 +36,7 @@ void APlayerGhost::BeginPlay()
 		{
 			bTutorialModeEnabled = true;
 			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
-			DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &APlayerGhost::SetPressKeyState);
+		//	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &APlayerGhost::SetPressKeyState);
 			PlayerController->SetInputMode(FInputModeUIOnly());
 			const TObjectPtr<UPlayerGhostUI> TutorialUI = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI);
 			TutorialUI->PlayStartupAnimation();
@@ -124,7 +124,7 @@ void APlayerGhost::PressKeyToContinue()
 {
 	if (!bPressKeyEnabled) return;
 	SetPressKeyState(false);
-	DelegateManager->OnShowPressKeyToContinue.Broadcast(false);
+	//DelegateManager->OnShowPressKeyToContinue.Broadcast(false);
 }
 
 void APlayerGhost::CheckIfPlayerFallOutOfWorld()

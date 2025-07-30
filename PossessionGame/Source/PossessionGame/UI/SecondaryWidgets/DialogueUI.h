@@ -29,18 +29,15 @@ protected:
 	UPROPERTY()
 	FTimerHandle TypeHandle;
 	
-	virtual void FinishedTypingDialogue();
+	void FinishedTypingDialogue();
 private:
 	int32 CurrentIndex = 0;
 	float TypeSpeed = 0.05f;
 	FString TargetText;
 	FString CurrentText;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	ECharacterType SpawnWhat;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 
 	virtual void NativeConstruct() override;
 	void TypeNextLetter();
-	void StartGuardianSpawn() const;
 };

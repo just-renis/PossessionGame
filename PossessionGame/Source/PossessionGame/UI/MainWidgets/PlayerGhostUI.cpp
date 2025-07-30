@@ -98,7 +98,7 @@ void UPlayerGhostUI::ShowPressKey(const bool bState)
 		case 4:
 			(void)DelegateManager->OnShowHint.ExecuteIfBound(3);
 			DelegateManager->OnMainTutorialEnd.Broadcast();
-			DelegateManager->OnShowPressKeyToContinue.RemoveAll(this);
+		//	DelegateManager->OnShowPressKeyToContinue.RemoveAll(this);
 		default: ;
 	}
 }

@@ -74,6 +74,8 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void FourthAnimationFinished();
 	void FifthAnimationFinished();
 	void SixthAnimationFinished();
+	void SeventhAnimationFinished();
+	void EighthAnimationFinished();
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

@@ -1,6 +1,5 @@
 ﻿#include "DialogueUI.h"
 #include "Components/TextBlock.h"
-#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -27,22 +26,7 @@ void UDialogueUI::NativeConstruct()
     if (DialogueText) DialogueText->SetText(FText::FromString(""));
 }
 
-void UDialogueUI::FinishedTypingDialogue()
-{
-	GetWorld()->GetTimerManager().ClearTimer(TypeHandle);
-	switch (DialogueTextIndex)
-	{
-		case 0: DelegateManager->OnShowPressKeyToContinue.Broadcast(true); break;
-		case 1:
-			StartGuardianSpawn();
-			DelegateManager->OnShowPressKeyToContinue.Broadcast(true);
-			break;
-		case 3: DelegateManager->OnShowPressKeyToContinue.Broadcast(true); break;
-		case 5: DelegateManager->OnShowPressKeyToContinue.Broadcast(true); break;
-		case 6: DelegateManager->OnShowPressKeyToContinue.Broadcast(true); break;
-		default: ;
-	}
-}
+void UDialogueUI::FinishedTypingDialogue() { GetWorld()->GetTimerManager().ClearTimer(TypeHandle); }
 
 void UDialogueUI::TypeNextLetter()
 {
@@ -54,5 +38,3 @@ void UDialogueUI::TypeNextLetter()
 	}
 	else FinishedTypingDialogue();
 }
-
-void UDialogueUI::StartGuardianSpawn() const { (void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(SpawnWhat, EGameMode::TutorialMode1); }

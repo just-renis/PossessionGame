@@ -1,14 +1,21 @@
 ﻿#include "TutorialModeBase.h"
+
+#include "PossessionGameInstance.h"
 #include "SettingsSave.h"
 #include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
+#include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+#include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
+#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
+#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
+#include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void ATutorialModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
 	InitAfterPSOPrecache();
 }
 
@@ -27,7 +34,19 @@ void ATutorialModeBase::LoadSettingsData() const
 	}
 }
 
-void ATutorialModeBase::InitAfterPSOPrecache() const
+void ATutorialModeBase::InitAfterPSOPrecache()
 {
-	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init(nullptr);
+	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	LoadSettingsData();
+	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
+	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
+	WidgetManager->Init(WidgetClasses);
+	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0) WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init(nullptr);
+	Cast<UPossessionGameInstance>(GetGameInstance())->InitGameInstanceManagers();
+	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
+	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);
+	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
+	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);
+	GetWorld()->GetSubsystem<UPostProcessManager>()->Init(PostProcessMaterials);
 }

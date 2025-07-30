@@ -1,7 +1,9 @@
 ﻿#include "TutorialBot.h"
 #include "Components/AudioComponent.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/TutorialDialogue.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 ATutorialBot::ATutorialBot()
@@ -115,5 +117,17 @@ void ATutorialBot::FifthAnimationFinished()
 
 void ATutorialBot::SixthAnimationFinished()
 {
-	
+	Dialogue->SetVisibilityState(false);
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial7, &ATutorialBot::SeventhAnimationFinished);
+}
+
+void ATutorialBot::SeventhAnimationFinished()
+{
+	StartNextDialogue();
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial8, &ATutorialBot::EighthAnimationFinished);
+}
+
+void ATutorialBot::EighthAnimationFinished()
+{
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Guardian, EGameMode::TutorialMode1);
 }
