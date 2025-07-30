@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Animation/WidgetAnimationEvents.h"
 #include "GameFramework/Actor.h"
 #include "TutorialBot.generated.h"
 
@@ -18,7 +17,14 @@ enum class ETutorialBotAnimState
 	Tutorial2,
 	Tutorial3,
 	Tutorial4,
-	Tutorial5
+	Tutorial5,
+	Tutorial6,
+	Tutorial7,
+	Tutorial8,
+	Tutorial9,
+	Tutorial10,
+	Tutorial11,
+	Tutorial12,
 };
 
 UCLASS()
@@ -60,7 +66,14 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void PlayFirstAnim();
 	void ClearTimers();
 	void SetupDialogue();
-	void FirstAnimFinished();
-	void SecondAnimFinished();
+	void StartNextDialogue();
+	void SetupAndPlayNextAnimation(const ETutorialBotAnimState InAnimState, void (ATutorialBot::*InCallback)());
+	void FirstAnimationFinished();
+	void SecondAnimationFinished();
 	void ThirdAnimationFinished();
+	void FourthAnimationFinished();
+	void FifthAnimationFinished();
+	void SixthAnimationFinished();
 };
+
+using FAnimCallback = void (ATutorialBot::*)();

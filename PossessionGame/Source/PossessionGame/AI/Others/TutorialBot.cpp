@@ -45,9 +45,7 @@ void ATutorialBot::PlaySound(const ESound InSoundName)
 
 void ATutorialBot::PlayFirstAnim()
 {
-	const TObjectPtr<UAnimationAsset> Animation = GetAnimation(ETutorialBotAnimState::Tutorial1);
-	GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, &ATutorialBot::FirstAnimFinished, Animation->GetPlayLength(), false);
-	Mesh->PlayAnimation(Animation, false);
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial1, &ATutorialBot::FirstAnimationFinished);
 	GetWorld()->GetTimerManager().SetTimer(HitVent1Handle, [this] { PlaySound(ESound::BotHitVent); }, 8.62f, false);
 	GetWorld()->GetTimerManager().SetTimer(HitVent2Handle, [this] { PlaySound(ESound::BotHitVent); }, 9.59f, false);
 	GetWorld()->GetTimerManager().SetTimer(HitVent3Handle, [this] { PlaySound(ESound::BotHitVent); }, 10.42f, false);
@@ -71,29 +69,51 @@ void ATutorialBot::SetupDialogue()
 	Dialogue->SetVisibilityState(false);
 }
 
-void ATutorialBot::FirstAnimFinished()
+void ATutorialBot::StartNextDialogue()
 {
 	Dialogue->SetVisibilityState(true);
 	Dialogue->StartDialogue(TutorialDialogueIndex++);
-	const TObjectPtr<UAnimationAsset> Animation = GetAnimation(ETutorialBotAnimState::Tutorial2);
-	GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, &ATutorialBot::SecondAnimFinished, Animation->GetPlayLength(), false);
+}
+
+void ATutorialBot::SetupAndPlayNextAnimation(const ETutorialBotAnimState InAnimState, const FAnimCallback InCallback)
+{
+	const TObjectPtr<UAnimationAsset> Animation = GetAnimation(InAnimState);
+	GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, InCallback, Animation->GetPlayLength(), false);
 	Mesh->PlayAnimation(Animation, false);
 }
 
-void ATutorialBot::SecondAnimFinished()
+void ATutorialBot::FirstAnimationFinished()
+{
+	StartNextDialogue();
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial2, &ATutorialBot::SecondAnimationFinished);
+}
+
+void ATutorialBot::SecondAnimationFinished()
 {
 	Dialogue->SetVisibilityState(false);
 	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "OverHeadSocket");
-	const TObjectPtr<UAnimationAsset> Animation = GetAnimation(ETutorialBotAnimState::Tutorial3);
-	GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, &ATutorialBot::ThirdAnimationFinished, Animation->GetPlayLength(), false);
-	Mesh->PlayAnimation(Animation, false);
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial3, &ATutorialBot::ThirdAnimationFinished);
 }
 
 void ATutorialBot::ThirdAnimationFinished()
 {
-	Dialogue->SetVisibilityState(true);
-	Dialogue->StartDialogue(TutorialDialogueIndex++);
-	const TObjectPtr<UAnimationAsset> Animation = GetAnimation(ETutorialBotAnimState::Tutorial4);
-	//GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, &ATutorialBot::ThirdAnimationFinished, Animation->GetPlayLength(), false);
-	Mesh->PlayAnimation(Animation, false);
+	StartNextDialogue();
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial4, &ATutorialBot::FourthAnimationFinished);
+}
+
+void ATutorialBot::FourthAnimationFinished()
+{
+	Dialogue->SetVisibilityState(false);
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial5, &ATutorialBot::FifthAnimationFinished);
+}
+
+void ATutorialBot::FifthAnimationFinished()
+{
+	StartNextDialogue();
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial6, &ATutorialBot::SixthAnimationFinished);
+}
+
+void ATutorialBot::SixthAnimationFinished()
+{
+	
 }
