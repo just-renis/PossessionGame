@@ -145,7 +145,6 @@ void APlayerGhost::EnablePlayerInput() const
 	if (const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
 	{
 		PlayerController->SetInputMode(FInputModeGameOnly());
-		(void)DelegateManager->OnShowHint.ExecuteIfBound(0);
 		(void)DelegateManager->OnCheckDistanceToTutorialDrone.ExecuteIfBound(0);
 	}
 }

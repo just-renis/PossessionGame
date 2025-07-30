@@ -10,6 +10,7 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "Enemy.generated.h"
 
+class UTutorialMonitorComponent;
 class UAbilityManager;
 enum class EWidget : uint8;
 class UGlobalSettingsManager;
@@ -236,7 +237,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	bool bCanStomp = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
-	float GravityScale = 3.5f;
+	float GravityScale = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	float JumpVelocity = 1150.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
@@ -279,6 +280,8 @@ private:
 	TObjectPtr<UMaterialInterface> HijackOutlineMaterial;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> UnHijackOutlineMaterial;
+	UPROPERTY()
+	TObjectPtr<UTutorialMonitorComponent> TutorialMonitor;
 	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
@@ -413,4 +416,6 @@ private:
 	void PlayEmpAffectedVfx(const float InEffectDuration);
 	void RestartLevel() const;
 	void DisableHijackViableVfx() const;
+	void SetupTutorialMonitor();
+	void DestroyTutorialMonitorComponent();
 };

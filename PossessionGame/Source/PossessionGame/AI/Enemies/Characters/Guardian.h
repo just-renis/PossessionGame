@@ -11,9 +11,9 @@ class POSSESSIONGAME_API AGuardian : public AEnemy
 public:
 	void SetCustomTimeDilation(const float InDilation);
 	void TriggerShield(const bool bState);
-private:
+protected:
 	AGuardian();
-
+private:
 	float ShieldColorDensity = 5.f;
 	float ShieldRadialRadius = 1.f;
 	float Radius = 3.f;

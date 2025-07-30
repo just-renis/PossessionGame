@@ -14,7 +14,6 @@ DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
 DECLARE_DELEGATE(FOnUpgradeSelectionOpened);
 DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
-DECLARE_DELEGATE(FStopShowingHint);
 DECLARE_DELEGATE(FOnChargeTerminalModeCompletion);
 DECLARE_DELEGATE(FOnUsbCollected);
 DECLARE_DELEGATE(FOnUsbInserted);
@@ -27,7 +26,6 @@ DECLARE_DELEGATE(FOnGameLaunchFinished);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FSendTargetToTutorialDrone, const TObjectPtr<AActor>&);
 DECLARE_DELEGATE_OneParam(FOnCheckDistanceToTutorialDrone, const int32);
-DECLARE_DELEGATE_OneParam(FOnShowHint, const int32);
 DECLARE_DELEGATE_OneParam(FOnShowDialogue, const int32);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const TObjectPtr<UUpgradeData>&);
@@ -67,7 +65,10 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&,
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText&);
 
 //----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
+DECLARE_DELEGATE(FStopShowingHint);
+DECLARE_DELEGATE_OneParam(FOnShowHint, const int32);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
 
 UCLASS()
 class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
@@ -78,7 +79,6 @@ public:
 	FOnGraphicsSettingChange OnGraphicsSettingChange;
 	FOnUpgradeSelectionOpened OnUpgradeSelectionOpened;
 	FOnUpgradeSelectionFinished OnUpgradeSelectionFinished;
-	FStopShowingHint StopShowingHint;
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
 	FOnUsbCollected OnUsbCollected;
 	FOnUsbInserted OnUsbInserted;
@@ -94,7 +94,6 @@ public:
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
 	FSendTargetToTutorialDrone SendTargetToTutorialDrone;
 	FOnCheckDistanceToTutorialDrone OnCheckDistanceToTutorialDrone;
-	FOnShowHint OnShowHint;
 	FOnShowDialogue OnShowDialogue;
 	FOnMinionBossStomp OnMinionBossStomp;
 	FOnUpgradeCardSelected OnUpgradeCardSelected;
@@ -131,5 +130,8 @@ public:
 	FOnKeyBindChange OnKeyBindChange;
 
 	//----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
+	FStopShowingHint StopShowingHint;
+	FOnShowHint OnShowHint;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
+	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
 };

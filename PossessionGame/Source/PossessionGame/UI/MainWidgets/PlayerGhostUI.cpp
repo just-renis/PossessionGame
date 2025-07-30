@@ -32,10 +32,9 @@ void UPlayerGhostUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	//DelegateManager->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
-	//DelegateManager->StopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
-	//DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &UPlayerGhostUI::ShowPressKey);
-	//DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerGhostUI::UpdateKeyBindText);
+	DelegateManager->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
+	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &UPlayerGhostUI::ShowPressKey);
+	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerGhostUI::UpdateKeyBindText);
 }
 
 void UPlayerGhostUI::ShowHint(const int32 InIndex)
@@ -84,23 +83,7 @@ void UPlayerGhostUI::ShowPressKey(const bool bState)
 {
 	if (PressKeyToContinueInv) PressKeyToContinueInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	if (PressKeyToContinueText) PressKeyToContinueText->SetText(FText::Format(FText::FromString("Press [{0}] Key To Continue"), GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Interact")));
-	if (bState)
-	{
-		PlayAnimation(PressKeyAppearAnim);
-		return;
-	}
-	switch (CurrentTutorialStep++)
-	{
-		case 0: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(1); break;
-		case 1: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(2); (void)DelegateManager->OnShowHint.ExecuteIfBound(1); break;
-		case 2: (void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(0, false); break;
-		case 3: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(6); break;
-		case 4:
-			(void)DelegateManager->OnShowHint.ExecuteIfBound(3);
-			DelegateManager->OnMainTutorialEnd.Broadcast();
-		//	DelegateManager->OnShowPressKeyToContinue.RemoveAll(this);
-		default: ;
-	}
+	if (bState) PlayAnimation(PressKeyAppearAnim);
 }
 
 void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText) const

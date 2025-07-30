@@ -18,6 +18,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
+#include "PossessionGame/Actor Components/TutorialMonitorComponent.h"
 #include "PossessionGame/AI/Navigation/NavAreaModifier.h"
 #include "PossessionGame/Data Assets/AI/Base Data/AICharacterData.h"
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerCharacterData.h"
@@ -34,7 +35,6 @@
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
-#include "PossessionGame/UI/MainWidgets/PlayerGhostUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
@@ -552,9 +552,6 @@ void AEnemy::P_InitiateJump()
 	Weapon->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Jump);
 	const bool bIsDoubleJump = GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 1;
 	AssetsManager->PlaySound2D(bIsDoubleJump ? ESound::DoubleJump : ESound::Jump);
-	if (!bIsDoubleJump) return;
-	if (GameInstance->GetSaveSlot()->GetIsTutorialFinished()) return;
-	if (GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI)->GetCurrentHintIndex() == 4) (void)DelegateManager->OnShowHint.ExecuteIfBound(5);
 }
 
 void AEnemy::P_InitiateStomp()
@@ -565,8 +562,6 @@ void AEnemy::P_InitiateStomp()
 	FVector Velocity = GetCharacterMovement()->Velocity;
 	Velocity.Z = 0.f;
 	GetCharacterMovement()->Velocity = Velocity + FVector(0.f, 0.f, -3000.f);
-	if (GameInstance->GetSaveSlot()->GetIsTutorialFinished()) return;
-	(void)DelegateManager->StopShowingHint.ExecuteIfBound();
 }
 
 void AEnemy::BeginPlay()
@@ -592,6 +587,7 @@ void AEnemy::BeginPlay()
 	DelegateManager->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
 	AI_Setup();
 	SetInputState(false);
+	if (!GameInstance->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialMonitor();
 }
 
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -680,6 +676,7 @@ void AEnemy::DestroyThis()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	if (Weapon) Weapon->DestroyThis();
 	GetWorldTimerManager().SetTimer(DestroyCondenseMaterialsProcessHandle, this, &AEnemy::DestroyCondenseMaterialsProcess, 0.05f, true);
+	if (TutorialMonitor) DestroyTutorialMonitorComponent();
 }
 
 void AEnemy::AI_SetupData()
@@ -1329,4 +1326,18 @@ void AEnemy::DisableHijackViableVfx() const
 {
 	if (!HijackViable) return;
 	HijackViable->DeactivateImmediate();
+}
+
+void AEnemy::SetupTutorialMonitor()
+{
+	TutorialMonitor = NewObject<UTutorialMonitorComponent>(this);
+	TutorialMonitor->RegisterComponent();
+	TutorialMonitor->Init(this);
+}
+
+void AEnemy::DestroyTutorialMonitorComponent()
+{
+	TutorialMonitor->UnregisterComponent();
+	TutorialMonitor->DestroyComponent();
+	TutorialMonitor = nullptr;
 }

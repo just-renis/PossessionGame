@@ -159,16 +159,10 @@ void ATutorialDrone::CheckDistanceToTarget()
 		switch (DistanceToTargetIndex)
 		{
 			case 0:
-				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(0);
-				(void)DelegateManager->StopShowingHint.ExecuteIfBound();
 				break;
 			case 1:
-				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(4);
-				(void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Minion, EGameMode::TutorialMode2);
-				(void)DelegateManager->OnShowHint.ExecuteIfBound(2);
 				DelegateManager->DestroyTutorialForceField.Broadcast(2);
 				break;
-			case 2: (void)DelegateManager->OnShowDialogue.ExecuteIfBound(5); break;
 			default: ShowRandomTip();
 		}
 		GetWorldTimerManager().ClearTimer(CheckDistanceToTargetHandle);
