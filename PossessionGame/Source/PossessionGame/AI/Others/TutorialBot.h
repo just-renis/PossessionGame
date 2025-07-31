@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
 #include "TutorialBot.generated.h"
 
 class UTutorialBotAnimationInstance;
@@ -29,7 +28,7 @@ enum class ETutorialBotAnimState
 };
 
 UCLASS()
-class POSSESSIONGAME_API ATutorialBot : public ACharacter
+class POSSESSIONGAME_API ATutorialBot : public AActor
 {
 	GENERATED_BODY()
 
@@ -39,6 +38,8 @@ class POSSESSIONGAME_API ATutorialBot : public ACharacter
 	int32 CurrentTutorialAnimation = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Dialogue", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ATutorialDialogue> DialogueClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Skeleton", meta = (AllowPrivateAccess = true))
+	TObjectPtr<USkeletalMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, Category = "Animations", meta = (AllowPrivateAccess = true))
 	TMap<ETutorialBotAnimState, TObjectPtr<UAnimMontage>> Animations;
 	UPROPERTY()

@@ -1,5 +1,4 @@
 ﻿#include "TutorialBot.h"
-
 #include "TutorialBotAnimationInstance.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/EGameMode.h"
@@ -11,15 +10,17 @@
 
 ATutorialBot::ATutorialBot()
 {
+	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+	RootComponent = Mesh;
 	Sounds.Add(ESound::BotHitVent, CreateDefaultSubobject<UAudioComponent>(TEXT("botHitVentSound")));
 	Sounds[ESound::BotHitVent]->SetAutoActivate(false);
-	Sounds[ESound::BotHitVent]->SetupAttachment(GetMesh());
+	Sounds[ESound::BotHitVent]->SetupAttachment(Mesh);
 	Sounds.Add(ESound::BotBreakVent, CreateDefaultSubobject<UAudioComponent>(TEXT("botBreakVentSound")));
 	Sounds[ESound::BotBreakVent]->SetAutoActivate(false);
-	Sounds[ESound::BotBreakVent]->SetupAttachment(GetMesh());
+	Sounds[ESound::BotBreakVent]->SetupAttachment(Mesh);
 	Sounds.Add(ESound::BotLandOnHead, CreateDefaultSubobject<UAudioComponent>(TEXT("botLandOnHeadSound")));
 	Sounds[ESound::BotLandOnHead]->SetAutoActivate(false);
-	Sounds[ESound::BotLandOnHead]->SetupAttachment(GetMesh());
+	Sounds[ESound::BotLandOnHead]->SetupAttachment(Mesh);
 }
 
 TObjectPtr<UAnimMontage> ATutorialBot::GetAnimation(const ETutorialBotAnimState InAnimState)
@@ -31,7 +32,7 @@ TObjectPtr<UAnimMontage> ATutorialBot::GetAnimation(const ETutorialBotAnimState 
 void ATutorialBot::BeginPlay()
 {
 	Super::BeginPlay();
-	AnimInstance = Cast<UTutorialBotAnimationInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
 	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StartTutorialBotAnimation.BindUObject(this, &ATutorialBot::PlayNextAnimation);
 	SetupDialogue();
 	PlayFirstAnim();
@@ -70,7 +71,7 @@ void ATutorialBot::ClearTimers()
 void ATutorialBot::SetupDialogue()
 {
 	Dialogue = GetWorld()->SpawnActor<ATutorialDialogue>(DialogueClass);
-	Dialogue->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "BehindHeadSocket");
+	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "BehindHeadSocket");
 	Dialogue->SetVisibilityState(false);
 }
 
@@ -97,7 +98,7 @@ void ATutorialBot::FirstAnimationFinished()
 void ATutorialBot::SecondAnimationFinished()
 {
 	Dialogue->SetVisibilityState(false);
-	Dialogue->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "OverHeadSocket");
+	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "OverHeadSocket");
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial3, &ATutorialBot::ThirdAnimationFinished);
 }
 
@@ -168,15 +169,12 @@ void ATutorialBot::EleventhAnimationFinished()
 
 void ATutorialBot::UpdateTargetLocation() const
 {
-	UE_LOG(LogTemp, Error, TEXT("TARGET LOCATION: %s"), *GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetTargetLocation().ToString());
 	if (AnimInstance) AnimInstance->SetLookAtLocation(GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetTargetLocation());
 }
 
 void ATutorialBot::SetControlRigState(const bool bState)
 {
-	UE_LOG(LogTemp, Error, TEXT("SetControlRigState %s"), *GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetTargetLocation().ToString());
 	if (!AnimInstance) return;
-	UE_LOG(LogTemp, Error, TEXT("SetControlRigState PASSED %s"), *GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetTargetLocation().ToString());
 	AnimInstance->SetIsControlRigEnabled(bState);
 	if (bState) GetWorld()->GetTimerManager().SetTimer(TargetLocationUpdateHandle, this, &ATutorialBot::UpdateTargetLocation, 0.02f, true);
 	else GetWorld()->GetTimerManager().ClearTimer(TargetLocationUpdateHandle);
