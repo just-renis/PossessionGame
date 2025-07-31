@@ -18,7 +18,6 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
-#include "PossessionGame/Actor Components/TutorialMonitorComponent.h"
 #include "PossessionGame/AI/Navigation/NavAreaModifier.h"
 #include "PossessionGame/Data Assets/AI/Base Data/AICharacterData.h"
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerCharacterData.h"
@@ -52,6 +51,7 @@
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
@@ -214,7 +214,6 @@ void AEnemy::PossessedBy(AController* NewController)
 		{
 			Abilities.Empty();
 			DisableHijackViableVfx();
-			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
 			bIsActionInMotion = false;
 			P_TriggerGlitchingEffect();
 			P_ToggleCriticallyDamagedEffects(0.f);
@@ -225,6 +224,7 @@ void AEnemy::PossessedBy(AController* NewController)
 			P_Setup();
 			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Hijacked"));
 			SetInputState(false);
+			if (!GameInstance->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialManager();
 		}
 	}
 }
@@ -587,7 +587,6 @@ void AEnemy::BeginPlay()
 	DelegateManager->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
 	AI_Setup();
 	SetInputState(false);
-	if (!GameInstance->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialMonitor();
 }
 
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -676,7 +675,6 @@ void AEnemy::DestroyThis()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	if (Weapon) Weapon->DestroyThis();
 	GetWorldTimerManager().SetTimer(DestroyCondenseMaterialsProcessHandle, this, &AEnemy::DestroyCondenseMaterialsProcess, 0.05f, true);
-	if (TutorialMonitor) DestroyTutorialMonitorComponent();
 }
 
 void AEnemy::AI_SetupData()
@@ -1328,16 +1326,9 @@ void AEnemy::DisableHijackViableVfx() const
 	HijackViable->DeactivateImmediate();
 }
 
-void AEnemy::SetupTutorialMonitor()
+void AEnemy::SetupTutorialManager()
 {
-	TutorialMonitor = NewObject<UTutorialMonitorComponent>(this);
-	TutorialMonitor->RegisterComponent();
-	TutorialMonitor->Init(this);
-}
-
-void AEnemy::DestroyTutorialMonitorComponent()
-{
-	TutorialMonitor->UnregisterComponent();
-	TutorialMonitor->DestroyComponent();
-	TutorialMonitor = nullptr;
+	const TObjectPtr<UTutorialManager> TutorialManager = GetWorld()->GetSubsystem<UTutorialManager>();
+	if (!TutorialManager->GetIsInitialized()) TutorialManager->Init();
+	TutorialManager->SetPlayerRef(this);
 }

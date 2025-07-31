@@ -13,7 +13,6 @@
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 
@@ -27,21 +26,11 @@ APlayerGhost::APlayerGhost()
 void APlayerGhost::BeginPlay()
 {
 	Super::BeginPlay();
-	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	Tags.Add("PlayerGhost");
 	GetWorld()->GetTimerManager().SetTimer(CheckHandle, this, &APlayerGhost::CheckIfPlayerFallOutOfWorld, 2.f, true);
-	if (const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
+	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
 	{
-		if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
-		{
-			bTutorialModeEnabled = true;
-			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(this);
-		//	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &APlayerGhost::SetPressKeyState);
-			PlayerController->SetInputMode(FInputModeUIOnly());
-			const TObjectPtr<UPlayerGhostUI> TutorialUI = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI);
-			TutorialUI->PlayStartupAnimation();
-			GetWorld()->GetTimerManager().SetTimer(EnableInputHandle, this, &APlayerGhost::EnablePlayerInput, TutorialUI->GetStartupAnimationLength(), false);
-		}
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI)->PlayStartupAnimation();
 	}
 }
 
@@ -61,14 +50,12 @@ void APlayerGhost::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &APlayerGhost::Rotate);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &APlayerGhost::PossessEnemy);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &APlayerGhost::HandleEscapeClick);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &APlayerGhost::PressKeyToContinue);
 	}
 }
 
 void APlayerGhost::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorld()->GetTimerManager().ClearTimer(CheckHandle);
-	GetWorld()->GetTimerManager().ClearTimer(EnableInputHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -85,7 +72,6 @@ void APlayerGhost::Rotate(const FInputActionValue& InValue)
 
 void APlayerGhost::PossessEnemy()
 {
-	if (bPressKeyEnabled) return;
 	FHitResult HitResult;
 	FCollisionQueryParams QueryParams;
 	const FVector StartLocation = Camera->GetComponentLocation();
@@ -95,13 +81,6 @@ void APlayerGhost::PossessEnemy()
 		const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
 		if (Enemy && Enemy->GetIsHijackAble() && !Enemy->GetIsMutant())
 		{
-			if (bTutorialModeEnabled)
-			{
-				(void)DelegateManager->OnShowDialogue.ExecuteIfBound(3);
-				(void)DelegateManager->StopShowingHint.ExecuteIfBound();
-			}
-			else DelegateManager->DestroyTutorialForceField.Broadcast(1);
-			(void)DelegateManager->SendTargetToTutorialDrone.ExecuteIfBound(Enemy);
 			Controller->Possess(Enemy);
 			Destroy();
 		}
@@ -120,13 +99,6 @@ void APlayerGhost::HandleEscapeClick()
 	}
 }
 
-void APlayerGhost::PressKeyToContinue()
-{
-	if (!bPressKeyEnabled) return;
-	SetPressKeyState(false);
-	//DelegateManager->OnShowPressKeyToContinue.Broadcast(false);
-}
-
 void APlayerGhost::CheckIfPlayerFallOutOfWorld()
 {
 	if (GetActorLocation().Z <= -1000.f)
@@ -136,16 +108,6 @@ void APlayerGhost::CheckIfPlayerFallOutOfWorld()
 			GetWorld()->GetTimerManager().ClearTimer(CheckHandle);
 			RestartLevel();
 		}
-	}
-}
-
-void APlayerGhost::EnablePlayerInput() const
-{
-	if (!Controller) return;
-	if (const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
-	{
-		PlayerController->SetInputMode(FInputModeGameOnly());
-		(void)DelegateManager->OnCheckDistanceToTutorialDrone.ExecuteIfBound(0);
 	}
 }
 

@@ -33,25 +33,19 @@ void UPlayerGhostUI::NativeConstruct()
 	Super::NativeConstruct();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
+	DelegateManager->StopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
 	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &UPlayerGhostUI::ShowPressKey);
 	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerGhostUI::UpdateKeyBindText);
 }
 
-void UPlayerGhostUI::ShowHint(const int32 InIndex)
+void UPlayerGhostUI::ShowHint()
 {
-	GetWorld()->GetTimerManager().ClearTimer(HintLifeSpanHandle);
-	if (HintTexts.IsValidIndex(InIndex))
-	{
-		PlayAnimation(HintAppearAnim);
-		CurrentHintIndex = InIndex;
-		SetHintText(InIndex);
-		if (InIndex > 2) GetWorld()->GetTimerManager().SetTimer(HintLifeSpanHandle, this, &UPlayerGhostUI::HintLifeSpanEnd, 5.f, false);
-	}
-	if (InIndex == 0 && PopupInv && HintImage)
-	{
-		PopupInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		PlayAnimation(PopupAppearAnim);
-	}
+	if (!HintTexts.IsValidIndex(CurrentHintIndex)) return;
+	PlayAnimation(HintAppearAnim);
+	SetHintText(CurrentHintIndex++);
+	if (CurrentHintIndex != 1 || !PopupInv || !HintImage) return;
+	PopupInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	PlayAnimation(PopupAppearAnim);
 }
 
 void UPlayerGhostUI::SetHintText(const int32 InIndex) const
@@ -101,15 +95,8 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 	}
 }
 
-void UPlayerGhostUI::HintLifeSpanEnd()
-{
-	ShowHint(++CurrentHintIndex);
-	if (CurrentHintIndex > 5) DestroyThis();
-}
-
 void UPlayerGhostUI::DestroyThis()
 {
-	GetWorld()->GetTimerManager().ClearTimer(HintLifeSpanHandle);
 	DelegateManager->OnKeyBindChange.RemoveAll(this);
 	GetWorld()->GetSubsystem<UWidgetManager>()->DestroyWidget(EWidget::TutorialUI);
 }

@@ -1,18 +1,16 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "TutorialBot.generated.h"
 
+class UTutorialBotAnimationInstance;
 class ATutorialDialogue;
 enum class ESound : uint16;
 
 UENUM()
 enum class ETutorialBotAnimState
 {
-	Idle,
-	ThumbsUp,
-	Wave,
 	Tutorial1,
 	Tutorial2,
 	Tutorial3,
@@ -25,22 +23,26 @@ enum class ETutorialBotAnimState
 	Tutorial10,
 	Tutorial11,
 	Tutorial12,
+	Idle,
+	ThumbsUp,
+	Wave
 };
 
 UCLASS()
-class POSSESSIONGAME_API ATutorialBot : public AActor
+class POSSESSIONGAME_API ATutorialBot : public ACharacter
 {
 	GENERATED_BODY()
 
 	ATutorialBot();
 
 	int32 TutorialDialogueIndex = 0;
+	int32 CurrentTutorialAnimation = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Dialogue", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ATutorialDialogue> DialogueClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Skeleton", meta = (AllowPrivateAccess = true))
-	TObjectPtr<USkeletalMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, Category = "Animations", meta = (AllowPrivateAccess = true))
-	TMap<ETutorialBotAnimState, TObjectPtr<UAnimationAsset>> Animations;
+	TMap<ETutorialBotAnimState, TObjectPtr<UAnimMontage>> Animations;
+	UPROPERTY()
+	TObjectPtr<UTutorialBotAnimationInstance> AnimInstance;
 	UPROPERTY()
 	FTimerHandle HitVent1Handle;
 	UPROPERTY()
@@ -54,11 +56,13 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	UPROPERTY()
 	FTimerHandle AnimFinishedHandle;
 	UPROPERTY()
+	FTimerHandle TargetLocationUpdateHandle;
+	UPROPERTY()
 	TObjectPtr<ATutorialDialogue> Dialogue;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
-	TObjectPtr<UAnimationAsset> GetAnimation(const ETutorialBotAnimState InAnimState);
+	TObjectPtr<UAnimMontage> GetAnimation(const ETutorialBotAnimState InAnimState);
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -67,7 +71,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void ClearTimers();
 	void SetupDialogue();
 	void StartNextDialogue();
-	void SetupAndPlayNextAnimation(const ETutorialBotAnimState InAnimState, void (ATutorialBot::*InCallback)());
+	void SetupAndPlayNextAnimation(const ETutorialBotAnimState InAnimState, void (ATutorialBot::*InCallback)(), const float InTimer = 0.f);
 	void FirstAnimationFinished();
 	void SecondAnimationFinished();
 	void ThirdAnimationFinished();
@@ -76,6 +80,12 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void SixthAnimationFinished();
 	void SeventhAnimationFinished();
 	void EighthAnimationFinished();
+	void PlayNextAnimation();
+	void NinthAnimationFinished();
+	void TenthAnimationFinished();
+	void EleventhAnimationFinished();
+	void UpdateTargetLocation() const;
+	void SetControlRigState(const bool bState);
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

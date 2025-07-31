@@ -24,7 +24,6 @@ DECLARE_DELEGATE(FOnBossSpawn);
 DECLARE_DELEGATE(FOnOutOfAmmo);
 DECLARE_DELEGATE(FOnGameLaunchFinished);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
-DECLARE_DELEGATE_OneParam(FSendTargetToTutorialDrone, const TObjectPtr<AActor>&);
 DECLARE_DELEGATE_OneParam(FOnCheckDistanceToTutorialDrone, const int32);
 DECLARE_DELEGATE_OneParam(FOnShowDialogue, const int32);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
@@ -66,7 +65,8 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText
 
 //----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
 DECLARE_DELEGATE(FStopShowingHint);
-DECLARE_DELEGATE_OneParam(FOnShowHint, const int32);
+DECLARE_DELEGATE(FOnShowHint);
+DECLARE_DELEGATE(FStartTutorialBotAnimation);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
 
@@ -92,7 +92,6 @@ public:
 	FOnEnemyDeath OnEnemyDeath;
 	FOnBossDamaged OnBossDamaged;
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
-	FSendTargetToTutorialDrone SendTargetToTutorialDrone;
 	FOnCheckDistanceToTutorialDrone OnCheckDistanceToTutorialDrone;
 	FOnShowDialogue OnShowDialogue;
 	FOnMinionBossStomp OnMinionBossStomp;
@@ -132,6 +131,7 @@ public:
 	//----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
 	FStopShowingHint StopShowingHint;
 	FOnShowHint OnShowHint;
+	FStartTutorialBotAnimation StartTutorialBotAnimation;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
 };

@@ -281,8 +281,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> UnHijackOutlineMaterial;
 	UPROPERTY()
-	TObjectPtr<UTutorialMonitorComponent> TutorialMonitor;
-	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
 	TObjectPtr<UAIPerceptionStimuliSourceComponent> StimuliSource;
@@ -416,6 +414,5 @@ private:
 	void PlayEmpAffectedVfx(const float InEffectDuration);
 	void RestartLevel() const;
 	void DisableHijackViableVfx() const;
-	void SetupTutorialMonitor();
-	void DestroyTutorialMonitorComponent();
+	void SetupTutorialManager();
 };

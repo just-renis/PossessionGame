@@ -20,7 +20,6 @@ public:
 	
 	void PlayStartupAnimation();
 private:
-	int32 CurrentTutorialStep = 0;
 	int32 CurrentHintIndex = 0;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> PopupInv;
@@ -46,17 +45,14 @@ private:
 	TObjectPtr<UWidgetAnimation> PressKeyAppearAnim;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
-	UPROPERTY()
-	FTimerHandle HintLifeSpanHandle;
 
 	FText GetKeyBindText(const int32 InIndex) const;
 
 	virtual void NativeConstruct() override;
-	void ShowHint(const int32 InIndex);
+	void ShowHint();
 	void SetHintText(const int32 InIndex) const;
 	void StopShowingHint();
 	void ShowPressKey(const bool bState);
 	void UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText) const;
-	void HintLifeSpanEnd();
 	void DestroyThis();
 };

@@ -2,7 +2,6 @@
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Navigation/DroneWaypoint.h"
-#include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
@@ -93,14 +92,6 @@ void ATutorialDrone::SetupAttachments()
 void ATutorialDrone::SetupDelegates()
 {
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
-	{
-		DelegateManager->OnCheckDistanceToTutorialDrone.BindUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
-	}
-	else SetDroneMoveLocation(2, true);
-	DelegateManager->StartTutorialDroneMoveToLocation.BindUObject(this, &ATutorialDrone::SetDroneMoveLocation);
-	DelegateManager->SendTargetToTutorialDrone.BindUObject(this, &ATutorialDrone::SetDroneLookAtLocation);
-	DelegateManager->OnGameModeFinished.AddUObject(this, &ATutorialDrone::EnableCheckDistanceToTarget);
 }
 
 void ATutorialDrone::ShowRandomTip() const { (void)DelegateManager->OnShowDialogue.ExecuteIfBound(-1); }
