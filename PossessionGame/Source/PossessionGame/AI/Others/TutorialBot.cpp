@@ -1,6 +1,8 @@
 ﻿#include "TutorialBot.h"
 #include "TutorialBotAnimationInstance.h"
 #include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "PossessionGame/AI/Navigation/DroneWaypoint.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/TutorialDialogue.h"
@@ -32,6 +34,7 @@ TObjectPtr<UAnimMontage> ATutorialBot::GetAnimation(const ETutorialBotAnimState 
 void ATutorialBot::BeginPlay()
 {
 	Super::BeginPlay();
+	RetrieveWaypoints();
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
 	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StartTutorialBotAnimation.BindUObject(this, &ATutorialBot::PlayNextAnimation);
 	SetupDialogue();
@@ -159,12 +162,14 @@ void ATutorialBot::TenthAnimationFinished()
 {
 	SetControlRigState(true);
 	StartNextDialogue();
-	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial10, &ATutorialBot::EleventhAnimationFinished);
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial11, &ATutorialBot::EleventhAnimationFinished);
 }
 
 void ATutorialBot::EleventhAnimationFinished()
 {
-	//AnimInstance->SetIsControlRigEnabled(false);
+	AnimInstance->SetIsControlRigEnabled(false);
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial12, &ATutorialBot::TwelfthAnimationFinished);
+	SetupAndMoveToNextLocation();
 }
 
 void ATutorialBot::UpdateTargetLocation() const
@@ -178,4 +183,48 @@ void ATutorialBot::SetControlRigState(const bool bState)
 	AnimInstance->SetIsControlRigEnabled(bState);
 	if (bState) GetWorld()->GetTimerManager().SetTimer(TargetLocationUpdateHandle, this, &ATutorialBot::UpdateTargetLocation, 0.02f, true);
 	else GetWorld()->GetTimerManager().ClearTimer(TargetLocationUpdateHandle);
+}
+
+void ATutorialBot::RetrieveWaypoints()
+{
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADroneWaypoint::StaticClass(), Actors);
+	for (TObjectPtr<AActor> Actor : Actors) Waypoints.Add(Cast<ADroneWaypoint>(Actor));
+}
+
+void ATutorialBot::SetupAndMoveToNextLocation(const bool bInstantMove)
+{
+	Dialogue->SetVisibilityState(false);
+	for (int32 i = 0; i < Waypoints.Num(); i++) if (Waypoints[i]->GetOrder() == CurrentWaypointIndex) WaypointLocation = Waypoints[i]->GetActorLocation();
+	CurrentWaypointIndex++;
+	if (bInstantMove)
+	{
+		SetActorLocation(WaypointLocation);
+		return;
+	}
+	bIsMoving = true;
+	GetWorldTimerManager().SetTimer(MoveToLocationHandle, this, &ATutorialBot::MoveToLocation, 0.015f, true);
+}
+
+void ATutorialBot::MoveToLocation()
+{
+	FVector Direction = (WaypointLocation - GetActorLocation()).GetSafeNormal();
+	Direction.Z = 0;
+	const FVector NewLocation = GetActorLocation() + Direction * MovementSpeed;
+	SetActorLocation(NewLocation);
+	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(10.f))
+	{
+		bIsMoving = false;
+		GetWorldTimerManager().ClearTimer(MoveToLocationHandle);
+		switch (CurrentWaypointIndex)
+		{
+			case 0: SetupAndMoveToNextLocation(); break;
+			default: ;
+		}
+	}
+}
+
+void ATutorialBot::TwelfthAnimationFinished()
+{
+	AnimInstance->SetIsControlRigEnabled(true);
 }

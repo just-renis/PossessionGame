@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "TutorialBot.generated.h"
 
+class ADroneWaypoint;
 class UTutorialBotAnimationInstance;
 class ATutorialDialogue;
 enum class ESound : uint16;
@@ -34,8 +35,13 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 
 	ATutorialBot();
 
+	bool bIsMoving = false;
 	int32 TutorialDialogueIndex = 0;
 	int32 CurrentTutorialAnimation = 0;
+	int32 CurrentWaypointIndex = 0;
+	FVector WaypointLocation = FVector::ZeroVector;
+	UPROPERTY(EditDefaultsOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
+	float MovementSpeed = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Dialogue", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ATutorialDialogue> DialogueClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Skeleton", meta = (AllowPrivateAccess = true))
@@ -59,7 +65,11 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	UPROPERTY()
 	FTimerHandle TargetLocationUpdateHandle;
 	UPROPERTY()
+	FTimerHandle MoveToLocationHandle;
+	UPROPERTY()
 	TObjectPtr<ATutorialDialogue> Dialogue;
+	UPROPERTY()
+	TArray<TObjectPtr<ADroneWaypoint>> Waypoints;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
@@ -87,6 +97,10 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void EleventhAnimationFinished();
 	void UpdateTargetLocation() const;
 	void SetControlRigState(const bool bState);
+	void RetrieveWaypoints();
+	void SetupAndMoveToNextLocation(const bool bInstantMove = false);
+	void MoveToLocation();
+	void TwelfthAnimationFinished();
 };
 
 using FAnimCallback = void (ATutorialBot::*)();
