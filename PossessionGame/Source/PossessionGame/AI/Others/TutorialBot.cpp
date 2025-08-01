@@ -25,6 +25,12 @@ ATutorialBot::ATutorialBot()
 	Sounds[ESound::BotLandOnHead]->SetupAttachment(Mesh);
 }
 
+FVector ATutorialBot::GetSocketLocation(const FName& InName) const
+{
+	if (!Mesh) return FVector::ZeroVector;
+	return Mesh->GetSocketLocation(InName);
+}
+
 TObjectPtr<UAnimMontage> ATutorialBot::GetAnimation(const ETutorialBotAnimState InAnimState)
 {
 	if (const TObjectPtr<UAnimMontage> Animation = *Animations.Find(InAnimState)) return Animation;
@@ -55,11 +61,31 @@ void ATutorialBot::PlaySound(const ESound InSoundName)
 void ATutorialBot::PlayFirstAnim()
 {
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial1, &ATutorialBot::FirstAnimationFinished);
-	GetWorld()->GetTimerManager().SetTimer(HitVent1Handle, [this] { PlaySound(ESound::BotHitVent); }, 8.62f, false);
-	GetWorld()->GetTimerManager().SetTimer(HitVent2Handle, [this] { PlaySound(ESound::BotHitVent); }, 9.59f, false);
-	GetWorld()->GetTimerManager().SetTimer(HitVent3Handle, [this] { PlaySound(ESound::BotHitVent); }, 10.42f, false);
-	GetWorld()->GetTimerManager().SetTimer(BreakVentHandle, [this]{ PlaySound(ESound::BotBreakVent); }, 11.69f, false);
-	GetWorld()->GetTimerManager().SetTimer(LandOnHeadHandle, [this] { PlaySound(ESound::BotLandOnHead); }, 11.85f, false);
+	GetWorld()->GetTimerManager().SetTimer(HitVent1Handle, [this]
+	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::HitVent, nullptr, GetSocketLocation("HeadSocket"));
+		PlaySound(ESound::BotHitVent);
+	}, 8.62f, false);
+	GetWorld()->GetTimerManager().SetTimer(HitVent2Handle, [this]
+	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::HitVent, nullptr, GetSocketLocation("HeadSocket"));
+		PlaySound(ESound::BotHitVent);
+	}, 9.59f, false);
+	GetWorld()->GetTimerManager().SetTimer(HitVent3Handle, [this]
+	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::HitVent, nullptr, GetSocketLocation("HeadSocket"));
+		PlaySound(ESound::BotHitVent);
+	}, 10.42f, false);
+	GetWorld()->GetTimerManager().SetTimer(BreakVentHandle, [this]
+	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::CrashVent, nullptr, GetSocketLocation("HeadSocket"));
+		PlaySound(ESound::BotBreakVent);
+	}, 11.69f, false);
+	GetWorld()->GetTimerManager().SetTimer(LandOnHeadHandle, [this]
+	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::TutorialBotLandOnHead, nullptr, GetSocketLocation("HeadSocket"));
+		PlaySound(ESound::BotLandOnHead);
+	}, 11.85f, false);
 }
 
 void ATutorialBot::ClearTimers()
@@ -160,6 +186,7 @@ void ATutorialBot::NinthAnimationFinished()
 
 void ATutorialBot::TenthAnimationFinished()
 {
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound();
 	SetControlRigState(true);
 	StartNextDialogue();
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial11, &ATutorialBot::EleventhAnimationFinished);
@@ -208,17 +235,16 @@ void ATutorialBot::SetupAndMoveToNextLocation(const bool bInstantMove)
 
 void ATutorialBot::MoveToLocation()
 {
-	FVector Direction = (WaypointLocation - GetActorLocation()).GetSafeNormal();
-	Direction.Z = 0;
+	const FVector Direction = (WaypointLocation - GetActorLocation()).GetSafeNormal();
 	const FVector NewLocation = GetActorLocation() + Direction * MovementSpeed;
 	SetActorLocation(NewLocation);
-	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(10.f))
+	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(2.f))
 	{
 		bIsMoving = false;
 		GetWorldTimerManager().ClearTimer(MoveToLocationHandle);
 		switch (CurrentWaypointIndex)
 		{
-			case 0: SetupAndMoveToNextLocation(); break;
+			case 1: SetupAndMoveToNextLocation(); break;
 			default: ;
 		}
 	}
@@ -226,5 +252,4 @@ void ATutorialBot::MoveToLocation()
 
 void ATutorialBot::TwelfthAnimationFinished()
 {
-	AnimInstance->SetIsControlRigEnabled(true);
 }

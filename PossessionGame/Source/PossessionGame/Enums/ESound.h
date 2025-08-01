@@ -57,6 +57,7 @@ enum class ESound : uint16
 	DialogueStart,
 	RestSoundtrack,
 	BattleModeSoundtrack,
+	TutorialIntroSoundtrack,
 	UpgradePanelFadeIn,
 	UpgradePanelFadeOut,
 	UpgradeChoicesFadeIn,

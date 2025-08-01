@@ -26,6 +26,7 @@ void ATerminal::Interact()
 	if (Marker) Marker->DestroyThis();
 	DelegateManager->OnTerminalInteraction.RemoveAll(this);
 	DelegateManager->OnTerminalHackFinish.RemoveAll(this);
+	DelegateManager->OnGameModeInitiator.RemoveAll(this);
 	DisableTerminal();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTerminalInteraction.Broadcast();
 }

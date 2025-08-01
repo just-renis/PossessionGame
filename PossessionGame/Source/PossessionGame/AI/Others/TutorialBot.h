@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "TutorialBot.generated.h"
 
+class UNiagaraComponent;
 class ADroneWaypoint;
 class UTutorialBotAnimationInstance;
 class ATutorialDialogue;
@@ -73,6 +74,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
+	FVector GetSocketLocation(const FName& InName) const;
 	TObjectPtr<UAnimMontage> GetAnimation(const ETutorialBotAnimState InAnimState);
 
 	virtual void BeginPlay() override;

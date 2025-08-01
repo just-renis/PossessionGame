@@ -23,6 +23,7 @@ DECLARE_DELEGATE(FUpdateGameModeEnemiesAmount);
 DECLARE_DELEGATE(FOnBossSpawn);
 DECLARE_DELEGATE(FOnOutOfAmmo);
 DECLARE_DELEGATE(FOnGameLaunchFinished);
+DECLARE_DELEGATE(FOnMusicSoundtrackChangeRequired);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FOnCheckDistanceToTutorialDrone, const int32);
 DECLARE_DELEGATE_OneParam(FOnShowDialogue, const int32);
@@ -88,6 +89,7 @@ public:
 	FOnBossSpawn OnBossSpawn;
 	FOnOutOfAmmo OnOutOfAmmo;
 	FOnGameLaunchFinished OnGameLaunchFinished;
+	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnBossDamaged OnBossDamaged;

@@ -61,5 +61,8 @@ enum class EVfx : uint8
 	PlayerStomp,
 	SecretRewardPopUp,
 	EmpAffected,
-	HijackViable
+	HijackViable,
+	TutorialBotLandOnHead,
+	HitVent,
+	CrashVent
 };

@@ -1,10 +1,10 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/Enums/ESound.h"
 #include "Sound/AmbientSound.h"
 #include "MusicPlayer.generated.h"
 
+enum class ESound : uint16;
 class UPrimaryDataAssetsManager;
 enum class EGameMode : uint8;
 
@@ -13,7 +13,7 @@ class POSSESSIONGAME_API AMusicPlayer : public AAmbientSound
 {
 	GENERATED_BODY()
 
-	ESound CurrentSoundtrack = ESound::RestSoundtrack;
+	ESound CurrentSoundtrack;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	UPROPERTY()
@@ -21,7 +21,7 @@ class POSSESSIONGAME_API AMusicPlayer : public AAmbientSound
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void ChangeSoundTrack(const EGameMode InGameMode);
-	void OnFadeOutFinished() const;
+	void ChangeSoundtrack();
+	void PlayCurrentSoundtrack() const;
 	void ChangeState(const bool bState) const;
 };
