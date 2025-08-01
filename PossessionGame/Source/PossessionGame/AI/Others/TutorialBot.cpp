@@ -63,17 +63,17 @@ void ATutorialBot::PlayFirstAnim()
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial1, &ATutorialBot::FirstAnimationFinished);
 	GetWorld()->GetTimerManager().SetTimer(HitVent1Handle, [this]
 	{
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::HitVent, nullptr, GetSocketLocation("HeadSocket"));
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::HitVent, nullptr, GetSocketLocation("HeadSocket"), HitVentRotation);
 		PlaySound(ESound::BotHitVent);
 	}, 8.62f, false);
 	GetWorld()->GetTimerManager().SetTimer(HitVent2Handle, [this]
 	{
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::HitVent, nullptr, GetSocketLocation("HeadSocket"));
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::HitVent, nullptr, GetSocketLocation("HeadSocket"), HitVentRotation);
 		PlaySound(ESound::BotHitVent);
 	}, 9.59f, false);
 	GetWorld()->GetTimerManager().SetTimer(HitVent3Handle, [this]
 	{
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::HitVent, nullptr, GetSocketLocation("HeadSocket"));
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::HitVent, nullptr, GetSocketLocation("HeadSocket"), HitVentRotation);
 		PlaySound(ESound::BotHitVent);
 	}, 10.42f, false);
 	GetWorld()->GetTimerManager().SetTimer(BreakVentHandle, [this]
@@ -83,9 +83,9 @@ void ATutorialBot::PlayFirstAnim()
 	}, 11.69f, false);
 	GetWorld()->GetTimerManager().SetTimer(LandOnHeadHandle, [this]
 	{
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::TutorialBotLandOnHead, nullptr, GetSocketLocation("HeadSocket"));
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::TutorialBotLandOnHead, nullptr, GetSocketLocation("HeadSocket") + HitHeadLocationFromSocket);
 		PlaySound(ESound::BotLandOnHead);
-	}, 11.85f, false);
+	}, 12.02f, false);
 }
 
 void ATutorialBot::ClearTimers()
