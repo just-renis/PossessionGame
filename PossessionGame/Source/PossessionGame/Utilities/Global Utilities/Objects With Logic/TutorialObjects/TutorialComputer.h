@@ -11,8 +11,12 @@ class POSSESSIONGAME_API ATutorialComputer : public AActor // TUTORIAL DEVICES(C
 
 	ATutorialComputer();
 
+	UPROPERTY(EditAnywhere, Category = "Sound", meta = (AllowPrivateAccess = true))
+	bool AlertBeepingEnabled = false;
 	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
+	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAudioComponent> BeepingSound;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

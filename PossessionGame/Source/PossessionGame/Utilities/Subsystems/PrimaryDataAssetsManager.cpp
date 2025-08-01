@@ -440,7 +440,6 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_UsbInsert", ESound::UsbInsert);
 	SoundMap.Add("PA_GatesOpen", ESound::GatesOpen);
 	SoundMap.Add("PA_ForceFieldDissolve", ESound::ForceFieldDissolve);
-	SoundMap.Add("PA_Dash", ESound::Dash);
 	SoundMap.Add("PA_QuickMelee", ESound::QuickMelee);
 	SoundMap.Add("PA_SecretCrateOpen", ESound::SecretCrateOpen);
 	SoundMap.Add("PA_SecretCratePassive", ESound::SecretCratePassive);
@@ -462,6 +461,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_BotHitVent", ESound::BotHitVent);
 	SoundMap.Add("PA_BotBreakVent", ESound::BotBreakVent);
 	SoundMap.Add("PA_BotLandOnHead", ESound::BotLandOnHead);
+	SoundMap.Add("PA_ErrorChaos", ESound::ErrorChaos);
+	SoundMap.Add("PA_AlertSignalization", ESound::AlertSignalization);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -546,6 +547,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TutorialBotLandOnHead", EVfx::TutorialBotLandOnHead);
 	VfxsMap.Add("PA_HitVent", EVfx::HitVent);
 	VfxsMap.Add("PA_CrashVent", EVfx::CrashVent);
+	VfxsMap.Add("PA_ComputerElectrification", EVfx::ComputerElectrification);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

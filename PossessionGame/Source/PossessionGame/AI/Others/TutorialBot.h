@@ -110,6 +110,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void MoveToLocation();
 	void TwelfthAnimationFinished();
 	void PlayCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
+	void AlertTriggered() const;
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

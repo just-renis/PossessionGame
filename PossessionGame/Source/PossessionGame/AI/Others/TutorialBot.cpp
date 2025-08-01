@@ -181,6 +181,7 @@ void ATutorialBot::PlayNextAnimation()
 
 void ATutorialBot::NinthAnimationFinished()
 {
+	AlertTriggered();
 	Dialogue->SetVisibilityState(false);
 	SetControlRigState(false);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial10, &ATutorialBot::TenthAnimationFinished);
@@ -188,9 +189,6 @@ void ATutorialBot::NinthAnimationFinished()
 
 void ATutorialBot::TenthAnimationFinished()
 {
-	PlayCameraShake(AlertCameraShake);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAlertStart.Broadcast();
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound();
 	SetControlRigState(true);
 	StartNextDialogue();
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial11, &ATutorialBot::EleventhAnimationFinished);
@@ -261,4 +259,13 @@ void ATutorialBot::TwelfthAnimationFinished()
 void ATutorialBot::PlayCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
 {
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(InCameraShake);
+}
+
+void ATutorialBot::AlertTriggered() const
+{
+	PlayCameraShake(AlertCameraShake);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ErrorChaos);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AlertSignalization);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAlertStart.Broadcast();
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound();
 }

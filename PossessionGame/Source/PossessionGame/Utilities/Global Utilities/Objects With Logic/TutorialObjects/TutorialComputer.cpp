@@ -1,10 +1,16 @@
 ﻿#include "TutorialComputer.h"
+
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 ATutorialComputer::ATutorialComputer()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = Mesh;
+	BeepingSound = CreateDefaultSubobject<UAudioComponent>("beepingSound");
+	BeepingSound->SetAutoActivate(false);
+	BeepingSound->SetupAttachment(Mesh);
 }
 
 void ATutorialComputer::BeginPlay()
@@ -36,4 +42,7 @@ void ATutorialComputer::ChangeToAlertedMode() const
 			}
 		}
 	}
+	if (!AlertBeepingEnabled) return;
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::ComputerElectrification, nullptr, GetActorLocation());
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(BeepingSound, nullptr, ESound::CriticalDamageBeep);
 }

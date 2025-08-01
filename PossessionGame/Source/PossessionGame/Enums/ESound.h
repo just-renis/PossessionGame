@@ -73,7 +73,6 @@ enum class ESound : uint16
 	UsbCollect,
 	ForceFieldDissolve,
 	GatesOpen,
-	Dash,
 	QuickMelee,
 	SecretCrateOpen,
 	SecretCratePassive,
@@ -94,5 +93,7 @@ enum class ESound : uint16
 	AbilitySelect,
 	BotHitVent,
 	BotBreakVent,
-	BotLandOnHead
+	BotLandOnHead,
+	AlertSignalization,
+	ErrorChaos
 };
