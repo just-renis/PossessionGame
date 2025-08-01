@@ -42,13 +42,15 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	int32 CurrentWaypointIndex = 0;
 	FVector WaypointLocation = FVector::ZeroVector;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
-	FVector HitHeadLocationFromSocket;
-	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	FRotator HitVentRotation;
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
 	float MovementSpeed = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Dialogue", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ATutorialDialogue> DialogueClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> CrashVentCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> AlertCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Skeleton", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, Category = "Animations", meta = (AllowPrivateAccess = true))
@@ -107,6 +109,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void SetupAndMoveToNextLocation(const bool bInstantMove = false);
 	void MoveToLocation();
 	void TwelfthAnimationFinished();
+	void PlayCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

@@ -78,12 +78,13 @@ void ATutorialBot::PlayFirstAnim()
 	}, 10.42f, false);
 	GetWorld()->GetTimerManager().SetTimer(BreakVentHandle, [this]
 	{
+		PlayCameraShake(CrashVentCameraShake);
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::CrashVent, nullptr, GetSocketLocation("HeadSocket"));
 		PlaySound(ESound::BotBreakVent);
 	}, 11.69f, false);
 	GetWorld()->GetTimerManager().SetTimer(LandOnHeadHandle, [this]
 	{
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::TutorialBotLandOnHead, nullptr, GetSocketLocation("HeadSocket") + HitHeadLocationFromSocket);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::TutorialBotLandOnHead, nullptr, GetSocketLocation("HeadSocket"));
 		PlaySound(ESound::BotLandOnHead);
 	}, 12.02f, false);
 }
@@ -180,12 +181,14 @@ void ATutorialBot::PlayNextAnimation()
 
 void ATutorialBot::NinthAnimationFinished()
 {
+	Dialogue->SetVisibilityState(false);
 	SetControlRigState(false);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial10, &ATutorialBot::TenthAnimationFinished);
 }
 
 void ATutorialBot::TenthAnimationFinished()
 {
+	PlayCameraShake(AlertCameraShake);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound();
 	SetControlRigState(true);
 	StartNextDialogue();
@@ -252,4 +255,9 @@ void ATutorialBot::MoveToLocation()
 
 void ATutorialBot::TwelfthAnimationFinished()
 {
+}
+
+void ATutorialBot::PlayCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
+{
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(InCameraShake);
 }
