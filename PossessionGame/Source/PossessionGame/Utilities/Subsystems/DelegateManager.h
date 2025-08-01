@@ -69,6 +69,7 @@ DECLARE_DELEGATE(FStopShowingHint);
 DECLARE_DELEGATE(FOnShowHint);
 DECLARE_DELEGATE(FStartTutorialBotAnimation);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
+DECLARE_MULTICAST_DELEGATE(FOnAlertStart);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
 
 UCLASS()
@@ -135,5 +136,6 @@ public:
 	FOnShowHint OnShowHint;
 	FStartTutorialBotAnimation StartTutorialBotAnimation;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
+	FOnAlertStart OnAlertStart;
 	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
 };

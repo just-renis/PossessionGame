@@ -189,6 +189,7 @@ void ATutorialBot::NinthAnimationFinished()
 void ATutorialBot::TenthAnimationFinished()
 {
 	PlayCameraShake(AlertCameraShake);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAlertStart.Broadcast();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound();
 	SetControlRigState(true);
 	StartNextDialogue();
