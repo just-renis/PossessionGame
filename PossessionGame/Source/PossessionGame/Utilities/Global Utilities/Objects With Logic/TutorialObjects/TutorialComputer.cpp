@@ -1,5 +1,4 @@
 ﻿#include "TutorialComputer.h"
-
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -28,13 +27,13 @@ void ATutorialComputer::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ATutorialComputer::ChangeToAlertedMode() const
 {
 	const int32 NumMaterials = Mesh->GetNumMaterials();
-	for (int32 Index = 0; Index < NumMaterials; Index++)
+	for (int32 i = 0; i < NumMaterials; i++)
 	{
-		if (const TObjectPtr<UMaterialInterface> Material = Mesh->GetMaterial(Index))
+		if (const TObjectPtr<UMaterialInterface> Material = Mesh->GetMaterial(i))
 		{
 			if (Material->GetName().Contains("MI_ScreenTV"))
 			{
-				if (const TObjectPtr<UMaterialInstanceDynamic> MID = Mesh->CreateAndSetMaterialInstanceDynamic(Index))
+				if (const TObjectPtr<UMaterialInstanceDynamic> MID = Mesh->CreateAndSetMaterialInstanceDynamic(i))
 				{
 					MID->SetScalarParameterValue("ScreenSwitchToError", 1.f);
 					MID->SetScalarParameterValue("KeyboardColor", 0.365f);
