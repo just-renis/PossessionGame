@@ -18,7 +18,7 @@ FText UPlayerGhostUI::GetKeyBindText(const int32 InIndex) const
 {
 	switch (InIndex)
 	{
-		case 1: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Hijack");
+		case 0: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Hijack");
 		case 2: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Shoot");
 		case 3: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Dash");
 		case 4: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Jump");
@@ -43,7 +43,8 @@ void UPlayerGhostUI::ShowHint()
 	if (!HintTexts.IsValidIndex(CurrentHintIndex)) return;
 	PlayAnimation(HintAppearAnim);
 	SetHintText(CurrentHintIndex++);
-	if (CurrentHintIndex != 1 || !PopupInv || !HintImage) return;
+	if (CurrentHintIndex != 2 || !PopupInv || !HintImage) return;
+	HintImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	PopupInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	PlayAnimation(PopupAppearAnim);
 }
@@ -55,8 +56,8 @@ void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 	const FText KeyBindText = GetKeyBindText(InIndex);
 	switch (InIndex)
 	{
-		case 0: HintText->SetText(FText::FromString("Move")); break;
-		case 1: HintText->SetText(FText::Format(FText::FromString("[{0}] to Hijack Robots"), KeyBindText)); break;
+		case 0: HintText->SetText(FText::Format(FText::FromString("[{0}] to Hijack Robots"), KeyBindText)); break;
+		case 1: HintText->SetText(FText::FromString("Move")); break;
 		case 2: HintText->SetText(FText::Format(FText::FromString("[{0}] to Shoot"), KeyBindText)); break;
 		case 3: HintText->SetText(FText::Format(FText::FromString("[{0}] to Dash"), KeyBindText)); break;
 		case 4: HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] to Double Jump"), KeyBindText)); break;

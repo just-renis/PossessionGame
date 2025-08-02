@@ -25,7 +25,7 @@ void ATutorialLight::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ATutorialLight::SetupBlinking()
 {
 	RectLight->SetLightFColor(FColor(101.f, 19.f, 0.f));
-	GetWorldTimerManager().SetTimer(BlinkingHandle, this, &ATutorialLight::Blinking, 1.f, true);
+	GetWorldTimerManager().SetTimer(BlinkingHandle, this, &ATutorialLight::Blinking, 0.5f, true);
 }
 
 void ATutorialLight::Blinking()

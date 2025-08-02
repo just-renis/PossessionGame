@@ -29,17 +29,12 @@ void ATutorialComputer::ChangeToAlertedMode() const
 	const int32 NumMaterials = Mesh->GetNumMaterials();
 	for (int32 i = 0; i < NumMaterials; i++)
 	{
-		if (const TObjectPtr<UMaterialInterface> Material = Mesh->GetMaterial(i))
-		{
-			if (Material->GetName().Contains("MI_ScreenTV"))
-			{
-				if (const TObjectPtr<UMaterialInstanceDynamic> MID = Mesh->CreateAndSetMaterialInstanceDynamic(i))
-				{
-					MID->SetScalarParameterValue("ScreenSwitchToError", 1.f);
-					MID->SetScalarParameterValue("KeyboardColor", 0.365f);
-				}
-			}
-		}
+		const TObjectPtr<UMaterialInterface> Material = Mesh->GetMaterial(i);
+		if (!Material) continue;
+		const TObjectPtr<UMaterialInstanceDynamic> MID = Mesh->CreateAndSetMaterialInstanceDynamic(i);
+		if (!MID) continue;
+		if (Material->GetName().Contains("MI_ScreenTV")) MID->SetScalarParameterValue("ScreenSwitchToError", 1.f);
+		else MID->SetScalarParameterValue("KeyboardColor", 0.365f);
 	}
 	if (!AlertBeepingEnabled) return;
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::ComputerElectrification, nullptr, GetActorLocation());

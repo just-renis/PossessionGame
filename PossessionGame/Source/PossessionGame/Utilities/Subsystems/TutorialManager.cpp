@@ -22,12 +22,12 @@ void UTutorialManager::CheckMovement()
 	if (!Player) return;
 	if (!Player->GetActorLocation().Equals(LastPlayerLocation, 0.1f))
 	{
-		GetWorld()->GetTimerManager().SetTimer(MoveTutorialDisappearHandle, this, &UTutorialManager::StopShowingHint, 4.f);
+		GetWorld()->GetTimerManager().SetTimer(MoveTutorialDisappearHandle, this, &UTutorialManager::StopShowingHint, 2.f);
 		GetWorld()->GetTimerManager().ClearTimer(TutorialHandle);
 	}
 }
 
-void UTutorialManager::StopShowingHint()
+void UTutorialManager::StopShowingHint() const
 {
 	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StopShowingHint.ExecuteIfBound();
 }

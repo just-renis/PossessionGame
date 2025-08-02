@@ -27,5 +27,5 @@ private:
 
 	void CheckHijacked();
 	void CheckMovement();
-	void StopShowingHint();
+	void StopShowingHint() const;
 };
