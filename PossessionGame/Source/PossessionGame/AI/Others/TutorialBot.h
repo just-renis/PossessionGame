@@ -24,6 +24,8 @@ enum class ETutorialBotAnimState
 	Tutorial10,
 	Tutorial11,
 	Tutorial12,
+	Tutorial13,
+	Tutorial14,
 	Idle,
 	ThumbsUp,
 	Wave
@@ -40,6 +42,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	int32 TutorialDialogueIndex = 0;
 	int32 CurrentTutorialAnimation = 0;
 	int32 CurrentWaypointIndex = 0;
+	int32 PressKeyIndex = 0;
 	FVector WaypointLocation = FVector::ZeroVector;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	FRotator HitVentRotation;
@@ -89,7 +92,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void PlayFirstAnim();
 	void ClearTimers();
 	void SetupDialogue();
-	void StartNextDialogue();
+	void StartNextDialogue(const bool bShowPressAnyKeyToContinue = false);
 	void SetupAndPlayNextAnimation(const ETutorialBotAnimState InAnimState, void (ATutorialBot::*InCallback)(), const float InTimer = 0.f);
 	void FirstAnimationFinished();
 	void SecondAnimationFinished();
@@ -111,6 +114,9 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void TwelfthAnimationFinished();
 	void PlayCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
 	void AlertTriggered() const;
+	void ThirteenthAnimationFinished();
+	void FourteenthAnimationFinished();
+	void PressAnyKeyPressed(const bool bState);
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

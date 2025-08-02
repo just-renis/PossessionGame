@@ -1,12 +1,26 @@
 ﻿#include "TutorialManager.h"
 #include "DelegateManager.h"
+#include "InputMappingContext.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 
 void UTutorialManager::Init()
 {
 	bIsInitialized = true;
 	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StartTutorialBotAnimation.ExecuteIfBound();
+	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.AddUObject(this, &UTutorialManager::SetPressKeyState);
 	GetWorld()->GetTimerManager().SetTimer(TutorialHandle, this, &UTutorialManager::CheckHijacked, 0.05f, true);
+}
+
+void UTutorialManager::SetPlayerRef(const TObjectPtr<AEnemy>& InPlayer)
+{
+	Player = InPlayer;
+	if (Player->InputComponent)
+	{
+		if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = Cast<UEnhancedInputComponent>(Player->InputComponent))
+		{
+			EnhancedInputComponent->BindAction(Player->GetMappingContext()->GetMapping(17).Action, ETriggerEvent::Started, this, &UTutorialManager::PressKeyToContinue);
+		}
+	}
 }
 
 void UTutorialManager::CheckHijacked()
@@ -30,4 +44,11 @@ void UTutorialManager::CheckMovement()
 void UTutorialManager::StopShowingHint() const
 {
 	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StopShowingHint.ExecuteIfBound();
+}
+
+void UTutorialManager::PressKeyToContinue()
+{
+	if (!bPressKeyEnabled) return;
+	bPressKeyEnabled = false;
+	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.Broadcast(false);
 }

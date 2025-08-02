@@ -203,6 +203,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_Crouch);
 	}
+	if (!GameInstance->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialManager();
 }
 
 void AEnemy::PossessedBy(AController* NewController)
@@ -224,7 +225,6 @@ void AEnemy::PossessedBy(AController* NewController)
 			P_Setup();
 			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Hijacked"));
 			SetInputState(false);
-			if (!GameInstance->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialManager();
 		}
 	}
 }
@@ -972,18 +972,7 @@ void AEnemy::P_InUpgradeSelection()
 void AEnemy::P_TryInteracting()
 {
 	if (bIsInputLocked) return;
-	if (bPressKeyEnabled)
-	{
-		P_TutorialPressKeyToContinueLogic();
-		return;
-	}
 	DelegateManager->OnInteractionTry.Broadcast();
-}
-
-void AEnemy::P_TutorialPressKeyToContinueLogic()
-{
-	bPressKeyEnabled = false;
-	//DelegateManager->OnShowPressKeyToContinue.Broadcast(false);
 }
 
 void AEnemy::P_QuickMeleeAttack()

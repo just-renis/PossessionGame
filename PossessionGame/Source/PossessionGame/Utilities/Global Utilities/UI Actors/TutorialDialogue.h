@@ -12,7 +12,7 @@ class POSSESSIONGAME_API ATutorialDialogue : public AActor
 	GENERATED_BODY()
 public:
 	void SetVisibilityState(const bool bState) const;
-	void StartDialogue(const int32 InIndex) const;
+	void StartDialogue(const int32 InIndex, const bool bShowPressAnyKeyToContinue) const;
 private:
 	ATutorialDialogue();
 	

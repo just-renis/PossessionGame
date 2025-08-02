@@ -71,6 +71,7 @@ public:
 	TObjectPtr<UCameraComponent> GetCamera() { return Camera; }
 	TObjectPtr<UEnemyAnimationInstance>& GetAnimInstance() { return AnimInstance; }
 	TObjectPtr<UPossessionGameInstance>& GetGameInstance() { return GameInstance; }
+	TObjectPtr<UInputMappingContext>& GetMappingContext() { return PlayerMappingContext; }
 
 	virtual void AI_InitiateShooting();
 	virtual void AI_ShootLogic();
@@ -204,7 +205,6 @@ protected:
 	virtual void DestroyAI();
 	virtual void DestroyThis();
 private:
-	bool bPressKeyEnabled = false;
 	bool bInUpgradeSelection = false;
 	bool bCanHijackOtherEnemy = false;
 	bool bIsAlive = true;
@@ -373,7 +373,6 @@ private:
 	void P_ConfigurePostProcessEffectsAfterDeath() const;
 	void P_InUpgradeSelection();
 	void P_TryInteracting();
-	void P_TutorialPressKeyToContinueLogic();
 	void P_QuickMeleeAttack();
 	void P_ProcessMeleeAttack();
 	void P_SetupNavArea();
@@ -396,7 +395,6 @@ private:
 	void P_EndSlide();
 	void P_SetupSuperJump();
 
-	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	void TickAbilities(const float InDeltaTime);
 	void SetupStimuliSource();
 	void ChangeXRayState(const bool bState) const;

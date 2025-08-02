@@ -65,7 +65,6 @@ class POSSESSIONGAME_API ATutorialDrone : public AActor
 	void PlaySound(const ESound InSoundName);
 	void SetupAttachments();
 	void SetupDelegates();
-	void ShowRandomTip() const;
 	void MoveToLocation();
 	void LookAtTarget();
 	void CheckDistanceToTarget();

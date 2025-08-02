@@ -39,4 +39,5 @@ void ATutorialComputer::ChangeToAlertedMode() const
 	if (!AlertBeepingEnabled) return;
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::ComputerElectrification, nullptr, GetActorLocation());
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(BeepingSound, nullptr, ESound::CriticalDamageBeep);
+	if (BeepingSound) BeepingSound->SetFloatParameter("Volume", 0.5f);
 }

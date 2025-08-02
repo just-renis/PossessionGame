@@ -14,9 +14,10 @@ public:
 	bool GetIsInitialized() const { return bIsInitialized; }
 	
 	void Init();
-	void SetPlayerRef(const TObjectPtr<AEnemy>& InPlayer) { Player = InPlayer; }
+	void SetPlayerRef(const TObjectPtr<AEnemy>& InPlayer);
 private:
 	bool bIsInitialized = false;
+	bool bPressKeyEnabled = false;
 	FVector LastPlayerLocation;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
@@ -28,4 +29,6 @@ private:
 	void CheckHijacked();
 	void CheckMovement();
 	void StopShowingHint() const;
+	void PressKeyToContinue();
+	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 };

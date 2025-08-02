@@ -94,8 +94,6 @@ void ATutorialDrone::SetupDelegates()
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 }
 
-void ATutorialDrone::ShowRandomTip() const { (void)DelegateManager->OnShowDialogue.ExecuteIfBound(-1); }
-
 void ATutorialDrone::MoveToLocation()
 {
 	if (bIsRotating) return;
@@ -154,7 +152,6 @@ void ATutorialDrone::CheckDistanceToTarget()
 			case 1:
 				DelegateManager->DestroyTutorialForceField.Broadcast(2);
 				break;
-			default: ShowRandomTip();
 		}
 		GetWorldTimerManager().ClearTimer(CheckDistanceToTargetHandle);
 	}

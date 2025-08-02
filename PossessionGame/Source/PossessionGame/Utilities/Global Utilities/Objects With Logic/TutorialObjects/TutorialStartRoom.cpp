@@ -29,7 +29,7 @@ void ATutorialStartRoom::ChangeToAlertState() const
 		if (Material->GetName().Contains("MI_Lamp"))
 		{
 			const TObjectPtr<UMaterialInstanceDynamic> MID = Mesh->CreateAndSetMaterialInstanceDynamic(i);
-			MID->SetScalarParameterValue("Desaturation", 10.f);
+			MID->SetScalarParameterValue("Desaturation", -10.f);
 			MID->SetScalarParameterValue("HueChange", 0.45f);
 		}
 	}

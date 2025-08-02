@@ -43,6 +43,7 @@ void ATutorialBot::BeginPlay()
 	RetrieveWaypoints();
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
 	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StartTutorialBotAnimation.BindUObject(this, &ATutorialBot::PlayNextAnimation);
+	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.AddUObject(this, &ATutorialBot::PressAnyKeyPressed);
 	SetupDialogue();
 	PlayFirstAnim();
 }
@@ -105,10 +106,10 @@ void ATutorialBot::SetupDialogue()
 	Dialogue->SetVisibilityState(false);
 }
 
-void ATutorialBot::StartNextDialogue()
+void ATutorialBot::StartNextDialogue(const bool bShowPressAnyKeyToContinue)
 {
 	Dialogue->SetVisibilityState(true);
-	Dialogue->StartDialogue(TutorialDialogueIndex++);
+	Dialogue->StartDialogue(TutorialDialogueIndex++, bShowPressAnyKeyToContinue);
 }
 
 void ATutorialBot::SetupAndPlayNextAnimation(const ETutorialBotAnimState InAnimState, const FAnimCallback InCallback, const float InTimer)
@@ -199,7 +200,6 @@ void ATutorialBot::EleventhAnimationFinished()
 {
 	AnimInstance->SetIsControlRigEnabled(false);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial12, &ATutorialBot::TwelfthAnimationFinished);
-	SetupAndMoveToNextLocation();
 }
 
 void ATutorialBot::UpdateTargetLocation() const
@@ -248,14 +248,16 @@ void ATutorialBot::MoveToLocation()
 		switch (CurrentWaypointIndex)
 		{
 			case 1: SetupAndMoveToNextLocation(); break;
+			case 2:
+				SetControlRigState(false);
+				SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial13, &ATutorialBot::ThirteenthAnimationFinished);
+				break;
 			default: ;
 		}
 	}
 }
 
-void ATutorialBot::TwelfthAnimationFinished()
-{
-}
+void ATutorialBot::TwelfthAnimationFinished() { SetupAndMoveToNextLocation(); }
 
 void ATutorialBot::PlayCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
 {
@@ -269,4 +271,27 @@ void ATutorialBot::AlertTriggered() const
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AlertSignalization);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAlertStart.Broadcast();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound();
+}
+
+void ATutorialBot::ThirteenthAnimationFinished()
+{
+	StartNextDialogue();
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial14, &ATutorialBot::FourteenthAnimationFinished);
+}
+
+void ATutorialBot::FourteenthAnimationFinished()
+{
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.Broadcast(true);
+}
+
+void ATutorialBot::PressAnyKeyPressed(const bool bState)
+{
+	if (bState) return;
+	switch (PressKeyIndex)
+	{
+		case 0: case 1: case 2: StartNextDialogue(true); break;
+		case 3: (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowHint.ExecuteIfBound(); break;
+		default: ;
+	}
+	PressKeyIndex++;
 }

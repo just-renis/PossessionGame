@@ -1,7 +1,6 @@
 ﻿#include "PlayerGhostUI.h"
 #include "Animation/WidgetAnimation.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "Components/Image.h"
 #include "Components/InvalidationBox.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -19,7 +18,7 @@ FText UPlayerGhostUI::GetKeyBindText(const int32 InIndex) const
 	switch (InIndex)
 	{
 		case 0: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Hijack");
-		case 2: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Shoot");
+		case 2: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Melee");
 		case 3: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Dash");
 		case 4: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Jump");
 		case 5: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Stomp");
@@ -43,10 +42,8 @@ void UPlayerGhostUI::ShowHint()
 	if (!HintTexts.IsValidIndex(CurrentHintIndex)) return;
 	PlayAnimation(HintAppearAnim);
 	SetHintText(CurrentHintIndex++);
-	if (CurrentHintIndex != 2 || !PopupInv || !HintImage) return;
-	HintImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	PopupInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	PlayAnimation(PopupAppearAnim);
+	if (CurrentHintIndex != 2 || !MovementHintBox) return;
+	MovementHintBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UPlayerGhostUI::SetHintText(const int32 InIndex) const
@@ -58,7 +55,7 @@ void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 	{
 		case 0: HintText->SetText(FText::Format(FText::FromString("[{0}] to Hijack Robots"), KeyBindText)); break;
 		case 1: HintText->SetText(FText::FromString("Move")); break;
-		case 2: HintText->SetText(FText::Format(FText::FromString("[{0}] to Shoot"), KeyBindText)); break;
+		case 2: HintText->SetText(FText::Format(FText::FromString("[{0}] to Melee"), KeyBindText)); break;
 		case 3: HintText->SetText(FText::Format(FText::FromString("[{0}] to Dash"), KeyBindText)); break;
 		case 4: HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] to Double Jump"), KeyBindText)); break;
 		case 5: HintText->SetText(FText::Format(FText::FromString("Double Jump then Press [{0}] to Stomp"), KeyBindText));
@@ -66,18 +63,18 @@ void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 	}
 }
 
-void UPlayerGhostUI::StopShowingHint()
+void UPlayerGhostUI::StopShowingHint() const
 {
 	if (HintInv) HintInv->SetVisibility(ESlateVisibility::Collapsed);
-	if (PopupInv) PopupInv->SetVisibility(ESlateVisibility::Collapsed);
-	if (HintImage) HintImage->SetVisibility(ESlateVisibility::Collapsed);
+	if (MovementHintBox) MovementHintBox->SetVisibility(ESlateVisibility::Collapsed);
 	if (CurrentHintIndex >= 5) DestroyThis();
 }
 
 void UPlayerGhostUI::ShowPressKey(const bool bState)
 {
-	if (PressKeyToContinueInv) PressKeyToContinueInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	if (PressKeyToContinueText) PressKeyToContinueText->SetText(FText::Format(FText::FromString("Press [{0}] Key To Continue"), GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Interact")));
+	if (!PressKeyToContinueInv || !PressKeyToContinueText) return;
+	PressKeyToContinueInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	PressKeyToContinueText->SetText(FText::Format(FText::FromString("Press [{0}] Key To Continue"), GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Interact")));
 	if (bState) PlayAnimation(PressKeyAppearAnim);
 }
 
@@ -88,16 +85,19 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 	switch (CurrentHintIndex)
 	{
 		case 1: if (InKeyBindName.IsEqual("Hijack")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Hijack Robots"), InKeyBindText)); break;
-		case 2: if (InKeyBindName.IsEqual("Shoot")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Shoot"), InKeyBindText)); break;
-		case 3: if (InKeyBindName.IsEqual("Dash")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Dash"), InKeyBindText)); break;
-		case 4: if (InKeyBindName.IsEqual("Jump")) HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] to Double Jump"), InKeyBindText)); break;
-		case 5: if (InKeyBindName.IsEqual("Stomp")) HintText->SetText(FText::Format(FText::FromString("Double Jump then Press [{0}] to Stomp"), InKeyBindText));
+		case 3: if (InKeyBindName.IsEqual("Melee")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Melee"), InKeyBindText)); break;
+		case 4: if (InKeyBindName.IsEqual("Dash")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Dash"), InKeyBindText)); break;
+		case 5: if (InKeyBindName.IsEqual("Jump")) HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] to Double Jump"), InKeyBindText)); break;
+		case 6: if (InKeyBindName.IsEqual("Stomp")) HintText->SetText(FText::Format(FText::FromString("Double Jump then Press [{0}] to Stomp"), InKeyBindText));
 		default: ;
 	}
 }
 
-void UPlayerGhostUI::DestroyThis()
+void UPlayerGhostUI::DestroyThis() const
 {
+	DelegateManager->OnShowHint.Unbind();
+	DelegateManager->StopShowingHint.Unbind();
+	DelegateManager->OnShowPressKeyToContinue.RemoveAll(this);
 	DelegateManager->OnKeyBindChange.RemoveAll(this);
 	GetWorld()->GetSubsystem<UWidgetManager>()->DestroyWidget(EWidget::TutorialUI);
 }

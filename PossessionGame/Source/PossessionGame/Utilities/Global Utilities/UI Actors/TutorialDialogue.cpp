@@ -19,15 +19,14 @@ void ATutorialDialogue::BeginPlay()
 {
 	Super::BeginPlay();
 	Dialogue = Cast<UDialogueUI>(DialogueWidgetComponent->GetWidget());
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowDialogue.BindUObject(this, &ATutorialDialogue::StartDialogue);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMainTutorialEnd.AddUObject(this, &ATutorialDialogue::StopShowingDialogue);
 }
 
-void ATutorialDialogue::StartDialogue(const int32 InIndex) const
+void ATutorialDialogue::StartDialogue(const int32 InIndex, const bool bShowPressAnyKeyToContinue) const
 {
 	if (!Dialogue) return;
 	SetVisibilityState(true);
-	Dialogue->StartDialogue(InIndex);
+	Dialogue->StartDialogue(InIndex, bShowPressAnyKeyToContinue);
 }
 
 void ATutorialDialogue::StopShowingDialogue() const

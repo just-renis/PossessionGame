@@ -26,7 +26,6 @@ DECLARE_DELEGATE(FOnGameLaunchFinished);
 DECLARE_DELEGATE(FOnMusicSoundtrackChangeRequired);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FOnCheckDistanceToTutorialDrone, const int32);
-DECLARE_DELEGATE_OneParam(FOnShowDialogue, const int32);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const TObjectPtr<UUpgradeData>&);
 DECLARE_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
@@ -96,7 +95,6 @@ public:
 	FOnBossDamaged OnBossDamaged;
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
 	FOnCheckDistanceToTutorialDrone OnCheckDistanceToTutorialDrone;
-	FOnShowDialogue OnShowDialogue;
 	FOnMinionBossStomp OnMinionBossStomp;
 	FOnUpgradeCardSelected OnUpgradeCardSelected;
 	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
