@@ -11,10 +11,16 @@ class POSSESSIONGAME_API ATutorialStartRoom : public AActor
 
 	ATutorialStartRoom();
 
+	bool bIsLampsOn = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Lamp;
+	UPROPERTY()
+	FTimerHandle BlinkingHandle;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void ChangeToAlertState() const;
+	void ChangeToAlertState();
+	void Blink();
 };

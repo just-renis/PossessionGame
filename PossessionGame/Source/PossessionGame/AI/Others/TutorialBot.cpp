@@ -87,7 +87,7 @@ void ATutorialBot::PlayFirstAnim()
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::TutorialBotLandOnHead, nullptr, GetSocketLocation("HeadSocket"));
 		PlaySound(ESound::BotLandOnHead);
-	}, 12.02f, false);
+	}, 11.92f, false);
 }
 
 void ATutorialBot::ClearTimers()
