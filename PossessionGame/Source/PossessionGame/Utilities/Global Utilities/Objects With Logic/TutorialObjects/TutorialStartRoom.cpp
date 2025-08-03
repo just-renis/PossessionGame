@@ -16,7 +16,6 @@ void ATutorialStartRoom::BeginPlay()
 void ATutorialStartRoom::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAlertStart.RemoveAll(this);
-	GetWorldTimerManager().ClearTimer(BlinkingHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -29,17 +28,10 @@ void ATutorialStartRoom::ChangeToAlertState()
 		if (!Material) continue;
 		if (Material->GetName().Contains("MI_Lamp"))
 		{
-			MID_Lamp = Mesh->CreateAndSetMaterialInstanceDynamic(i);
+			const TObjectPtr<UMaterialInstanceDynamic> MID_Lamp = Mesh->CreateAndSetMaterialInstanceDynamic(i);
 			MID_Lamp->SetScalarParameterValue("Desaturation", -10.f);
 			MID_Lamp->SetScalarParameterValue("HueChange", 0.45f);
+			MID_Lamp->SetScalarParameterValue("PulseOnOff", 1.f);
 		}
 	}
-	GetWorldTimerManager().SetTimer(BlinkingHandle, this, &ATutorialStartRoom::Blink, 0.5f, true);
-}
-
-void ATutorialStartRoom::Blink()
-{
-	if (!MID_Lamp) return;
-	bIsLampsOn = !bIsLampsOn;
-	MID_Lamp->SetScalarParameterValue("PulsingOn", bIsLampsOn ? 1.f : 0.f);
 }

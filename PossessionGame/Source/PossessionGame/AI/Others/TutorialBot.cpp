@@ -290,7 +290,10 @@ void ATutorialBot::PressAnyKeyPressed(const bool bState)
 	switch (PressKeyIndex)
 	{
 		case 0: case 1: case 2: StartNextDialogue(true); break;
-		case 3: (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowHint.ExecuteIfBound(); break;
+		case 3:
+			(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowHint.ExecuteIfBound();
+			(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->EnableMeleeChecking.ExecuteIfBound();
+			break;
 		default: ;
 	}
 	PressKeyIndex++;

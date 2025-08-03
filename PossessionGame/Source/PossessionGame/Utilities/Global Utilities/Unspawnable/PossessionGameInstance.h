@@ -29,7 +29,7 @@ public:
 	bool IsDemo() const { return bIsDemo; }
 	bool IsPlayerTakenDamageEffectsEnabled() const { return bPlayerTakenDamageEffectsEnabled; }
 	bool GetIsMainMenuLaunchedOnce() const { return bMainMenuLaunchedOnce; }
-	float GetTimeDilation() const { return GlobalTimeDilation; }
+	float GetStoppedTimeDilation() const { return GlobalTimeDilation; }
 	int32 GetPlayerLevel() const { return PlayerLevel; }
 	TObjectPtr<UPlayerLevelData> GetPlayerLevelData() const { return PlayerLevelData; }
 	TObjectPtr<USaveSlot> GetSaveSlot() const { return PlayerSaveSlot; }
@@ -54,6 +54,8 @@ private:
 	TObjectPtr<UPlayerLevelData> PlayerLevelData;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	float GlobalTimeDilation = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
+	float StoppedTimeGlobalTimeDilation = 0.1f;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	int32 PlayerLevel = 0;
 	UPROPERTY(EditAnywhere, Category = "Marker", meta = (AllowPrivateAccess = true))

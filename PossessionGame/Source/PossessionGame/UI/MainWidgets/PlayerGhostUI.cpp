@@ -55,7 +55,7 @@ void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 	{
 		case 0: HintText->SetText(FText::Format(FText::FromString("[{0}] to Hijack Robots"), KeyBindText)); break;
 		case 1: HintText->SetText(FText::FromString("Move")); break;
-		case 2: HintText->SetText(FText::Format(FText::FromString("[{0}] to Melee"), KeyBindText)); break;
+		case 2: HintText->SetText(FText::Format(FText::FromString("Press [{0}] to Break Door"), KeyBindText)); break;
 		case 3: HintText->SetText(FText::Format(FText::FromString("[{0}] to Dash"), KeyBindText)); break;
 		case 4: HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] to Double Jump"), KeyBindText)); break;
 		case 5: HintText->SetText(FText::Format(FText::FromString("Double Jump then Press [{0}] to Stomp"), KeyBindText));
@@ -85,7 +85,7 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 	switch (CurrentHintIndex)
 	{
 		case 1: if (InKeyBindName.IsEqual("Hijack")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Hijack Robots"), InKeyBindText)); break;
-		case 3: if (InKeyBindName.IsEqual("Melee")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Melee"), InKeyBindText)); break;
+		case 3: if (InKeyBindName.IsEqual("Melee")) HintText->SetText(FText::Format(FText::FromString("Press [{0}] to Break Door"), InKeyBindText)); break;
 		case 4: if (InKeyBindName.IsEqual("Dash")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Dash"), InKeyBindText)); break;
 		case 5: if (InKeyBindName.IsEqual("Jump")) HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] to Double Jump"), InKeyBindText)); break;
 		case 6: if (InKeyBindName.IsEqual("Stomp")) HintText->SetText(FText::Format(FText::FromString("Double Jump then Press [{0}] to Stomp"), InKeyBindText));

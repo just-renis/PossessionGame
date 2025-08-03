@@ -26,9 +26,9 @@ private:
 	UPROPERTY()
 	FTimerHandle MoveTutorialDisappearHandle;
 
+	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	void CheckHijacked();
 	void CheckMovement();
 	void StopShowingHint() const;
 	void PressKeyToContinue();
-	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 };

@@ -58,6 +58,9 @@ void UPossessionGameInstance::InitGameInstanceManagers()
 void UPossessionGameInstance::Init()
 {
 	Super::Init();
+	#if WITH_EDITOR
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), GlobalTimeDilation);
+	#endif
 	LoadPlayerSaveSlot();
 	LoadPlayerRunSaveSlot();
 	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());

@@ -134,7 +134,7 @@ void AEnemy::P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeap
 
 void AEnemy::P_StopTime()
 {
-	if (FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), 1.f, 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), GameInstance->GetTimeDilation());
+	if (FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), 1.f, 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), GameInstance->GetStoppedTimeDilation());
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
@@ -987,18 +987,18 @@ void AEnemy::P_QuickMeleeAttack()
 
 void AEnemy::P_ProcessMeleeAttack()
 {
+	(void)DelegateManager->MeleeAttackOccured.ExecuteIfBound();
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	TArray<FOverlapResult> Overlaps;
 	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(QuickMeleeAttackRadiusInMeters * 100.f), Params);
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
-		if (TObjectPtr<AActor> HitActor = Overlap.GetActor(); HitActor && HitActor != this && HitActor->ActorHasTag("AliveEnemy"))
-		{
-			AssetsManager->PlaySound2D(ESound::DamageTick);
-			(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
-			UGameplayStatics::ApplyDamage(HitActor, QuickMeleeAttackDamage, GetController(), this, UDamageType::StaticClass());
-		}
+		TObjectPtr<AActor> HitActor = Overlap.GetActor();
+		if (!HitActor || HitActor == this || !HitActor->ActorHasTag("AliveEnemy")) continue;
+		AssetsManager->PlaySound2D(ESound::DamageTick);
+		(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
+		UGameplayStatics::ApplyDamage(HitActor, QuickMeleeAttackDamage, GetController(), this, UDamageType::StaticClass());
 	}
 }
 

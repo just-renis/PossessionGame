@@ -24,6 +24,7 @@ DECLARE_DELEGATE(FOnBossSpawn);
 DECLARE_DELEGATE(FOnOutOfAmmo);
 DECLARE_DELEGATE(FOnGameLaunchFinished);
 DECLARE_DELEGATE(FOnMusicSoundtrackChangeRequired);
+DECLARE_DELEGATE(FMeleeAttackOccured);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FOnCheckDistanceToTutorialDrone, const int32);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
@@ -67,6 +68,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText
 DECLARE_DELEGATE(FStopShowingHint);
 DECLARE_DELEGATE(FOnShowHint);
 DECLARE_DELEGATE(FStartTutorialBotAnimation);
+DECLARE_DELEGATE(FEnableMeleeChecking);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
 DECLARE_MULTICAST_DELEGATE(FOnAlertStart);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
@@ -90,6 +92,7 @@ public:
 	FOnOutOfAmmo OnOutOfAmmo;
 	FOnGameLaunchFinished OnGameLaunchFinished;
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;
+	FMeleeAttackOccured MeleeAttackOccured;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnBossDamaged OnBossDamaged;
@@ -133,6 +136,7 @@ public:
 	FStopShowingHint StopShowingHint;
 	FOnShowHint OnShowHint;
 	FStartTutorialBotAnimation StartTutorialBotAnimation;
+	FEnableMeleeChecking EnableMeleeChecking;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FOnAlertStart OnAlertStart;
 	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
