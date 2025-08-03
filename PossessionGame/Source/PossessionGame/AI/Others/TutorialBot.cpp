@@ -199,7 +199,7 @@ void ATutorialBot::TenthAnimationFinished()
 void ATutorialBot::EleventhAnimationFinished()
 {
 	AnimInstance->SetIsControlRigEnabled(false);
-	SetupAndMoveToNextLocation();
+	//SetupAndMoveToNextLocation();
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial12, &ATutorialBot::TwelfthAnimationFinished);
 }
 
