@@ -199,6 +199,7 @@ void ATutorialBot::TenthAnimationFinished()
 void ATutorialBot::EleventhAnimationFinished()
 {
 	AnimInstance->SetIsControlRigEnabled(false);
+	SetupAndMoveToNextLocation();
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial12, &ATutorialBot::TwelfthAnimationFinished);
 }
 
@@ -257,7 +258,7 @@ void ATutorialBot::MoveToLocation()
 	}
 }
 
-void ATutorialBot::TwelfthAnimationFinished() { SetupAndMoveToNextLocation(); }
+void ATutorialBot::TwelfthAnimationFinished() { }
 
 void ATutorialBot::PlayCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
 {

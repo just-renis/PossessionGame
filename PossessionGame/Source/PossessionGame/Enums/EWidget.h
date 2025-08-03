@@ -16,5 +16,6 @@ enum class EWidget : uint8
     GameLaunchUI,
     DemoEndUI,
     SecretRoomUI,
-    AbilitiesMenuUI
+    AbilitiesMenuUI,
+    ExplanationUI
 };

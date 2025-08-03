@@ -67,7 +67,6 @@ void ABreakableDoor::CheckIfStoppedPhysics()
 {
 	if (Mesh->GetPhysicsLinearVelocity().Size() < 5.f)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Door has stopped. Disabling physics."));
 		Mesh->SetSimulatePhysics(false);
 		GetWorldTimerManager().ClearTimer(PhysicsStopCheckHandle);
 	}

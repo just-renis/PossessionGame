@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "DelegateManager.generated.h"
 
+enum class EExplanation : uint8;
 enum class EGameMode : uint8;
 enum class EUpgrade : uint8;
 enum class ECharacterType : uint8;
@@ -69,6 +70,7 @@ DECLARE_DELEGATE(FStopShowingHint);
 DECLARE_DELEGATE(FOnShowHint);
 DECLARE_DELEGATE(FStartTutorialBotAnimation);
 DECLARE_DELEGATE(FEnableMeleeChecking);
+DECLARE_DELEGATE_OneParam(FShowExplanation, const EExplanation);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
 DECLARE_MULTICAST_DELEGATE(FOnAlertStart);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
@@ -137,6 +139,7 @@ public:
 	FOnShowHint OnShowHint;
 	FStartTutorialBotAnimation StartTutorialBotAnimation;
 	FEnableMeleeChecking EnableMeleeChecking;
+	FShowExplanation ShowExplanation;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FOnAlertStart OnAlertStart;
 	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
