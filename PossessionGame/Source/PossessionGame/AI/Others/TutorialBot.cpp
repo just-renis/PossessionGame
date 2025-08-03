@@ -194,14 +194,10 @@ void ATutorialBot::TenthAnimationFinished()
 	SetControlRigState(true);
 	StartNextDialogue();
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial11, &ATutorialBot::EleventhAnimationFinished);
+	GetWorld()->GetTimerManager().SetTimer(ResetControlRigStateHandle, [this] { SetControlRigState(false); }, 1.66f, false);
 }
 
-void ATutorialBot::EleventhAnimationFinished()
-{
-	AnimInstance->SetIsControlRigEnabled(false);
-	//SetupAndMoveToNextLocation();
-	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial12, &ATutorialBot::TwelfthAnimationFinished);
-}
+void ATutorialBot::EleventhAnimationFinished() { SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial12, &ATutorialBot::TwelfthAnimationFinished); }
 
 void ATutorialBot::UpdateTargetLocation() const
 {
@@ -258,7 +254,10 @@ void ATutorialBot::MoveToLocation()
 	}
 }
 
-void ATutorialBot::TwelfthAnimationFinished() { }
+void ATutorialBot::TwelfthAnimationFinished()
+{
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial13, &ATutorialBot::ThirteenthAnimationFinished);
+}
 
 void ATutorialBot::PlayCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
 {

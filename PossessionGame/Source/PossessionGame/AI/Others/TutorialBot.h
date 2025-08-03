@@ -77,6 +77,8 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	UPROPERTY()
 	FTimerHandle MoveToLocationHandle;
 	UPROPERTY()
+	FTimerHandle ResetControlRigStateHandle;
+	UPROPERTY()
 	TObjectPtr<ATutorialDialogue> Dialogue;
 	UPROPERTY()
 	TArray<TObjectPtr<ADroneWaypoint>> Waypoints;
