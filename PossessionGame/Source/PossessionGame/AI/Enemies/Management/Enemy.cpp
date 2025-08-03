@@ -1155,6 +1155,8 @@ void AEnemy::P_AddDefaultAbility(const TObjectPtr<UAbilityManager>& InAbilityMan
 
 void AEnemy::P_InitiateSlide()
 {
+	AssetsManager->PlaySound2D(ESound::SlideEnter);
+	AssetsManager->PlaySound2D(ESound::Slide);
 	Camera->SetRelativeLocation(FVector(0.f, 0.f, SlideCameraZ));
 	bIsSliding = true;
 	GetCapsuleComponent()->SetCapsuleHalfHeight(SlideHeight);
@@ -1167,6 +1169,7 @@ void AEnemy::P_InitiateSlide()
 
 void AEnemy::P_EndSlide()
 {
+	AssetsManager->PlaySound2D(ESound::SlideExit);
 	Camera->SetRelativeLocation(FVector(0.f, 0.f, DefaultCameraZ));
 	bIsSliding = false;
 	AddActorWorldOffset(FVector(0.f, 0.f, GetDefaultHalfHeight() - SlideHeight));
