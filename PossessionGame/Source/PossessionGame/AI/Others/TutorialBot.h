@@ -54,8 +54,10 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	TSubclassOf<UCameraShakeBase> CrashVentCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> AlertCameraShake;
-	UPROPERTY(EditDefaultsOnly, Category = "Skeleton", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> TabletMesh;
 	UPROPERTY(EditDefaultsOnly, Category = "Animations", meta = (AllowPrivateAccess = true))
 	TMap<ETutorialBotAnimState, TObjectPtr<UAnimMontage>> Animations;
 	UPROPERTY()
@@ -78,6 +80,8 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	FTimerHandle MoveToLocationHandle;
 	UPROPERTY()
 	FTimerHandle ResetControlRigStateHandle;
+	UPROPERTY()
+	FTimerHandle TabletVisibilityHandle;
 	UPROPERTY()
 	TObjectPtr<ATutorialDialogue> Dialogue;
 	UPROPERTY()
@@ -119,6 +123,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void ThirteenthAnimationFinished();
 	void FourteenthAnimationFinished();
 	void PressAnyKeyPressed(const bool bState);
+	void SetTabletVisibility(const bool bState) const;
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

@@ -14,6 +14,8 @@ ATutorialBot::ATutorialBot()
 {
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
+	TabletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TabletMesh"));
+	TabletMesh->SetVisibility(false);
 	Sounds.Add(ESound::BotHitVent, CreateDefaultSubobject<UAudioComponent>(TEXT("botHitVentSound")));
 	Sounds[ESound::BotHitVent]->SetAutoActivate(false);
 	Sounds[ESound::BotHitVent]->SetupAttachment(Mesh);
@@ -40,6 +42,7 @@ TObjectPtr<UAnimMontage> ATutorialBot::GetAnimation(const ETutorialBotAnimState 
 void ATutorialBot::BeginPlay()
 {
 	Super::BeginPlay();
+	TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "TutorialTabletSocket");
 	RetrieveWaypoints();
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
 	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StartTutorialBotAnimation.BindUObject(this, &ATutorialBot::PlayNextAnimation);
@@ -155,12 +158,14 @@ void ATutorialBot::SixthAnimationFinished()
 {
 	Dialogue->SetVisibilityState(false);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial7, &ATutorialBot::SeventhAnimationFinished);
+	GetWorld()->GetTimerManager().SetTimer(TabletVisibilityHandle, [this] { SetTabletVisibility(true); }, 0.5f, false);
 }
 
 void ATutorialBot::SeventhAnimationFinished()
 {
 	StartNextDialogue();
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial8, &ATutorialBot::EighthAnimationFinished);
+	GetWorld()->GetTimerManager().SetTimer(TabletVisibilityHandle, [this] { SetTabletVisibility(false); }, 0.5f, false);
 }
 
 void ATutorialBot::EighthAnimationFinished()
@@ -298,3 +303,5 @@ void ATutorialBot::PressAnyKeyPressed(const bool bState)
 	}
 	PressKeyIndex++;
 }
+
+void ATutorialBot::SetTabletVisibility(const bool bState) const { if (TabletMesh) TabletMesh->SetVisibility(bState); }
