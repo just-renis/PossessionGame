@@ -31,6 +31,19 @@ enum class ETutorialBotAnimState
 	Wave
 };
 
+UENUM()
+enum class ETutorialBotExpression
+{
+	HappyWink,
+	NeutralWink,
+	Blink,
+	Thinking,
+	Sad,
+	Happy,
+	Grumpy,
+	NeutralFace
+};
+
 UCLASS()
 class POSSESSIONGAME_API ATutorialBot : public AActor
 {
@@ -44,10 +57,15 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	int32 CurrentWaypointIndex = 0;
 	int32 PressKeyIndex = 0;
 	FVector WaypointLocation = FVector::ZeroVector;
-	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
-	FRotator HitVentRotation;
+	ETutorialBotExpression CurrentExpression;
+	UPROPERTY(EditDefaultsOnly, Category = "Expression | Random Blink", meta = (AllowPrivateAccess = true))
+	float MinRange = 0.5f;
+	UPROPERTY(EditDefaultsOnly, Category = "Expression | Random Blink", meta = (AllowPrivateAccess = true))
+	float MaxRange = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
 	float MovementSpeed = 2.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	FRotator HitVentRotation;
 	UPROPERTY(EditDefaultsOnly, Category = "Dialogue", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ATutorialDialogue> DialogueClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -62,6 +80,8 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	TMap<ETutorialBotAnimState, TObjectPtr<UAnimMontage>> Animations;
 	UPROPERTY()
 	TObjectPtr<UTutorialBotAnimationInstance> AnimInstance;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_FaceExpression;
 	UPROPERTY()
 	FTimerHandle HitVent1Handle;
 	UPROPERTY()
@@ -82,6 +102,10 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	FTimerHandle ResetControlRigStateHandle;
 	UPROPERTY()
 	FTimerHandle TabletVisibilityHandle;
+	UPROPERTY()
+	FTimerHandle RandomBlinkHandle;
+	UPROPERTY()
+	FTimerHandle EndBlinkHandle;
 	UPROPERTY()
 	TObjectPtr<ATutorialDialogue> Dialogue;
 	UPROPERTY()
@@ -124,6 +148,9 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void FourteenthAnimationFinished();
 	void PressAnyKeyPressed(const bool bState);
 	void SetTabletVisibility(const bool bState) const;
+	void SetExpression(const ETutorialBotExpression InExpressionName);
+	void SetupNextRandomBlink();
+	void TriggerBlink();
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

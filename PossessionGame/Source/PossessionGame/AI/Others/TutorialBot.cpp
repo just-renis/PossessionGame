@@ -42,6 +42,8 @@ TObjectPtr<UAnimMontage> ATutorialBot::GetAnimation(const ETutorialBotAnimState 
 void ATutorialBot::BeginPlay()
 {
 	Super::BeginPlay();
+	MID_FaceExpression = Mesh->CreateAndSetMaterialInstanceDynamic(1);
+	SetupNextRandomBlink();
 	TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "TutorialTabletSocket");
 	RetrieveWaypoints();
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
@@ -100,6 +102,14 @@ void ATutorialBot::ClearTimers()
 	GetWorld()->GetTimerManager().ClearTimer(HitVent3Handle);
 	GetWorld()->GetTimerManager().ClearTimer(BreakVentHandle);
 	GetWorld()->GetTimerManager().ClearTimer(LandOnHeadHandle);
+	GetWorld()->GetTimerManager().ClearTimer(AnimFinishedHandle);
+	GetWorld()->GetTimerManager().ClearTimer(TargetLocationUpdateHandle);
+	GetWorld()->GetTimerManager().ClearTimer(MoveToLocationHandle);
+	GetWorld()->GetTimerManager().ClearTimer(ResetControlRigStateHandle);
+	GetWorld()->GetTimerManager().ClearTimer(TabletVisibilityHandle);
+	GetWorld()->GetTimerManager().ClearTimer(RandomBlinkHandle);
+	GetWorld()->GetTimerManager().ClearTimer(EndBlinkHandle);
+	
 }
 
 void ATutorialBot::SetupDialogue()
@@ -133,12 +143,14 @@ void ATutorialBot::SecondAnimationFinished()
 {
 	Dialogue->SetVisibilityState(false);
 	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "BodySocket");
+	SetExpression(ETutorialBotExpression::Happy);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial3, &ATutorialBot::ThirdAnimationFinished);
 }
 
 void ATutorialBot::ThirdAnimationFinished()
 {
 	StartNextDialogue();
+	SetExpression(ETutorialBotExpression::NeutralFace);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial4, &ATutorialBot::FourthAnimationFinished);
 }
 
@@ -171,6 +183,7 @@ void ATutorialBot::SeventhAnimationFinished()
 void ATutorialBot::EighthAnimationFinished()
 {
 	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowHint.ExecuteIfBound();
+	SetExpression(ETutorialBotExpression::Happy);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Guardian, EGameMode::TutorialMode1);
 }
 
@@ -191,6 +204,7 @@ void ATutorialBot::NinthAnimationFinished()
 	AlertTriggered();
 	Dialogue->SetVisibilityState(false);
 	SetControlRigState(false);
+	SetExpression(ETutorialBotExpression::Sad);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial10, &ATutorialBot::TenthAnimationFinished);
 }
 
@@ -202,7 +216,11 @@ void ATutorialBot::TenthAnimationFinished()
 	GetWorld()->GetTimerManager().SetTimer(ResetControlRigStateHandle, [this] { SetControlRigState(false); }, 1.66f, false);
 }
 
-void ATutorialBot::EleventhAnimationFinished() { SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial12, &ATutorialBot::TwelfthAnimationFinished); }
+void ATutorialBot::EleventhAnimationFinished()
+{
+	SetExpression(ETutorialBotExpression::NeutralFace);
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial12, &ATutorialBot::TwelfthAnimationFinished);
+}
 
 void ATutorialBot::UpdateTargetLocation() const
 {
@@ -305,3 +323,32 @@ void ATutorialBot::PressAnyKeyPressed(const bool bState)
 }
 
 void ATutorialBot::SetTabletVisibility(const bool bState) const { if (TabletMesh) TabletMesh->SetVisibility(bState); }
+
+void ATutorialBot::SetExpression(const ETutorialBotExpression InExpressionName)
+{
+	if (!MID_FaceExpression) return;
+	if (InExpressionName != ETutorialBotExpression::Blink) CurrentExpression = InExpressionName;
+	switch (InExpressionName)
+	{
+		case ETutorialBotExpression::HappyWink: MID_FaceExpression->SetScalarParameterValue("Expression", 0.f); break;
+		case ETutorialBotExpression::NeutralWink: MID_FaceExpression->SetScalarParameterValue("Expression", 0.2f); break;
+		case ETutorialBotExpression::Blink: MID_FaceExpression->SetScalarParameterValue("Expression", 0.3f); break;
+		case ETutorialBotExpression::Thinking: MID_FaceExpression->SetScalarParameterValue("Expression", 0.4f); break;
+		case ETutorialBotExpression::Sad: MID_FaceExpression->SetScalarParameterValue("Expression", 0.5f); break;
+		case ETutorialBotExpression::Happy: MID_FaceExpression->SetScalarParameterValue("Expression", 0.7f); break;
+		case ETutorialBotExpression::Grumpy: MID_FaceExpression->SetScalarParameterValue("Expression", 0.8f); break;
+		case ETutorialBotExpression::NeutralFace: MID_FaceExpression->SetScalarParameterValue("Expression", 0.9f);
+	}
+}
+
+void ATutorialBot::SetupNextRandomBlink()
+{
+	SetExpression(CurrentExpression);
+	GetWorldTimerManager().SetTimer(RandomBlinkHandle, this, &ATutorialBot::TriggerBlink, FMath::FRandRange(MinRange, MaxRange), false);
+}
+
+void ATutorialBot::TriggerBlink()
+{
+	SetExpression(ETutorialBotExpression::Blink);
+	GetWorldTimerManager().SetTimer(EndBlinkHandle, this, &ATutorialBot::SetupNextRandomBlink, 0.15f, false);
+}
