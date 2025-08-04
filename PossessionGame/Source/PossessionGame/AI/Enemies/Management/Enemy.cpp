@@ -1266,6 +1266,7 @@ void AEnemy::Landed(const FHitResult& Hit)
 		GetCharacterMovement()->AirControl = 1.f;
 		P_StompImpact(GetSocketLocation("StompSocket"));
 		P_MakeCameraShake(StompCameraShake);
+		
 	}
 }
 

@@ -143,20 +143,20 @@ void ATutorialBot::SecondAnimationFinished()
 {
 	Dialogue->SetVisibilityState(false);
 	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "BodySocket");
-	SetExpression(ETutorialBotExpression::Happy);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial3, &ATutorialBot::ThirdAnimationFinished);
 }
 
 void ATutorialBot::ThirdAnimationFinished()
 {
 	StartNextDialogue();
-	SetExpression(ETutorialBotExpression::NeutralFace);
+	SetExpression(ETutorialBotExpression::Happy);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial4, &ATutorialBot::FourthAnimationFinished);
 }
 
 void ATutorialBot::FourthAnimationFinished()
 {
 	Dialogue->SetVisibilityState(false);
+	SetExpression(ETutorialBotExpression::NeutralFace);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial5, &ATutorialBot::FifthAnimationFinished);
 }
 
@@ -183,7 +183,6 @@ void ATutorialBot::SeventhAnimationFinished()
 void ATutorialBot::EighthAnimationFinished()
 {
 	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowHint.ExecuteIfBound();
-	SetExpression(ETutorialBotExpression::Happy);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Guardian, EGameMode::TutorialMode1);
 }
 
@@ -194,6 +193,7 @@ void ATutorialBot::PlayNextAnimation()
 		case 8:
 			SetControlRigState(true);
 			StartNextDialogue();
+			SetExpression(ETutorialBotExpression::Happy);
 			SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial9, &ATutorialBot::NinthAnimationFinished, 2.5f);
 		default: ;
 	}

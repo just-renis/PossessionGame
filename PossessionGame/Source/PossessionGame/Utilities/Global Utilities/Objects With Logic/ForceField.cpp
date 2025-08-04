@@ -48,6 +48,6 @@ void AForceField::StartDissolveForceField()
 void AForceField::DissolveForceField()
 {
 	MaterialOpacity -= 0.025f;
-	if (MI_Material) MI_Material->SetScalarParameterValue(FName("DeploymentPercent"), MaterialOpacity);
+	if (MI_Material) MI_Material->SetScalarParameterValue("DeploymentPercent", MaterialOpacity);
 	if (MaterialOpacity <= 0.4f) DestroyThis();
 }

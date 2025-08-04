@@ -59,6 +59,7 @@ public:
 	bool CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
 	bool GetIsMutant() const { return bIsMutant; }
 	bool GetIsAbilityInAction() const { return bIsAbilityInAction; }
+	bool GetIsStomping() const { return bIsStomping; }
 	float GetSkeletalMeshHeight() const;
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
