@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "PossessionGame/Enums/EExplanation.h"
 #include "ExplanationUI.generated.h"
 
 enum class EExplanation : uint8;
@@ -16,7 +17,7 @@ struct FExplanationData
 	int32 GetPageAmount() const { return ExplanationTexts.Num(); }
 	FText GetExplanationText(const int32 InIndex) const { return ExplanationTexts.IsValidIndex(InIndex) ? ExplanationTexts[InIndex] : FText(); }
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (MultiLine))
 	TArray<FText> ExplanationTexts;
 };
 
@@ -25,10 +26,12 @@ class POSSESSIONGAME_API UExplanationUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void OpenUI();
+	void OpenUI(const EExplanation InExplanationName);
 	void CloseUI();
 private:
 	int32 CurrentPage = 0;
+	UPROPERTY(EditDefaultsOnly, Category = "Explanations", meta = (AllowPrivateAccess = true))
+	TMap<EExplanation, FExplanationData> Explanations;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> BackButton;
 	UPROPERTY(meta = (BindWidget))
@@ -39,8 +42,8 @@ private:
 	TObjectPtr<UTextBlock> ExplanationText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> PageText;
-	UPROPERTY(EditDefaultsOnly, Category = "Explanations", meta = (AllowPrivateAccess = true))
-	TMap<EExplanation, FExplanationData> Explanations;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY()
 	FExplanationData CurrentExplanationData;
 

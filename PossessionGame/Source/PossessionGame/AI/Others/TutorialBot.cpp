@@ -129,7 +129,7 @@ void ATutorialBot::FirstAnimationFinished()
 void ATutorialBot::SecondAnimationFinished()
 {
 	Dialogue->SetVisibilityState(false);
-	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "OverHeadSocket");
+	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "BodySocket");
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial3, &ATutorialBot::ThirdAnimationFinished);
 }
 

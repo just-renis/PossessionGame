@@ -1,6 +1,12 @@
 ﻿#include "WidgetManager.h"
+#include "DelegateManager.h"
+#include "PossessionGame/UI/MainWidgets/ExplanationUI.h"
 
-void UWidgetManager::Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses) { WidgetClasses = InWidgetClasses; }
+void UWidgetManager::Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses, const TObjectPtr<UDelegateManager>& InDelegateManager)
+{
+	WidgetClasses = InWidgetClasses;
+	InDelegateManager->ShowExplanation.BindUObject(this, &UWidgetManager::ShowExplanation);
+}
 
 void UWidgetManager::DestroyWidget(const EWidget InWidget)
 {
@@ -32,6 +38,12 @@ int32 UWidgetManager::GetWidgetZOrder(const EWidget InWidgetName)
 		case EWidget::DemoEndUI: return 3;
 		case EWidget::SecretRoomUI: return 1;
 		case EWidget::AbilitiesMenuUI: return 1;
+		case EWidget::ExplanationUI: return 0;
 		default: return 4;
 	}
+}
+
+void UWidgetManager::ShowExplanation(const EExplanation InExplanationName)
+{
+	GetWidget<UExplanationUI>(EWidget::ExplanationUI)->OpenUI(InExplanationName);
 }

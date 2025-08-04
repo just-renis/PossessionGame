@@ -6,6 +6,9 @@
 #include "PossessionGame/Enums/EWidget.h"
 #include "WidgetManager.generated.h"
 
+class UDelegateManager;
+enum class EExplanation : uint8;
+
 UCLASS()
 class POSSESSIONGAME_API UWidgetManager : public UWorldSubsystem
 {
@@ -17,7 +20,7 @@ public:
 	TObjectPtr<T> GetWidget(const EWidget InWidgetName);
 
 	void SetCurrentStateOfUI(const EWidget InState) { CurrentState = InState; }
-	void Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses);
+	void Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses, const TObjectPtr<UDelegateManager>& InDelegateManager);
 	void DestroyWidget(const EWidget InWidget);
 private:
 	EWidget CurrentState = EWidget::None;
@@ -27,6 +30,7 @@ private:
 	TMap<EWidget, TObjectPtr<UUserWidget>> Widgets;
 
 	int32 GetWidgetZOrder(const EWidget InWidgetName);
+	void ShowExplanation(const EExplanation InExplanationName);
 };
 
 template <typename T>

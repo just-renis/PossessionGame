@@ -13,7 +13,7 @@
 void AMainMenuBase::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
+	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses, GetGameInstance()->GetSubsystem<UDelegateManager>());
 	ShowLoadingScreen();
 }
 

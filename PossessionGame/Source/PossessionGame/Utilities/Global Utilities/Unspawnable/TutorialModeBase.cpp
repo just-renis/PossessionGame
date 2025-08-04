@@ -41,7 +41,7 @@ void ATutorialModeBase::InitAfterPSOPrecache()
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
-	WidgetManager->Init(WidgetClasses);
+	WidgetManager->Init(WidgetClasses, DelegateManager);
 	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0) WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init(nullptr);
 	Cast<UPossessionGameInstance>(GetGameInstance())->InitGameInstanceManagers();
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);

@@ -55,11 +55,10 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	//DelegateManager->OnGameModeInitiator.AddUObject(this, &APossessionGameGameModeBase::PlayCutscene);
-	//GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->Init(DelegateManager);
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
-	WidgetManager->Init(WidgetClasses);
+	WidgetManager->Init(WidgetClasses, DelegateManager);
 	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0) WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init(nullptr);
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
 	Cast<UPossessionGameInstance>(GetGameInstance())->InitGameInstanceManagers();

@@ -18,12 +18,10 @@ void AGameModeInitiator::BeginPlay()
 
 void AGameModeInitiator::Initiate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->ActorHasTag("Player"))
-	{
-		if (GameMode == EGameMode::ChargeTerminalMode) GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(true);
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
-		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound();
-		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		Destroy();
-	}
+	if (!OtherActor->ActorHasTag("Player")) return;
+	if (GameMode == EGameMode::ChargeTerminalMode) GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(true);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound();
+	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Destroy();
 }

@@ -4,13 +4,13 @@
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
-void UExplanationUI::OpenUI()
+void UExplanationUI::OpenUI(const EExplanation InExplanationName)
 {
 	Toggle(true);
+	SetCurrentExplanation(InExplanationName);
 }
 
 void UExplanationUI::CloseUI()
@@ -24,7 +24,6 @@ void UExplanationUI::NativeConstruct()
 	NextPageButton->Get()->OnClicked.AddDynamic(this, &UExplanationUI::NextPage);
 	BackButton->Get()->OnClicked.AddDynamic(this, &UExplanationUI::BackPage);
 	FinishButton->Get()->OnClicked.AddDynamic(this, &UExplanationUI::Finish);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowExplanation.BindUObject(this, &UExplanationUI::SetCurrentExplanation);
 }
 
 void UExplanationUI::Toggle(const bool bState)
@@ -37,7 +36,7 @@ void UExplanationUI::Toggle(const bool bState)
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>(); 
 	if (WidgetManager->ContainsWidget(EWidget::PlayerHUD)) WidgetManager->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
-//	if (bState) PlayAnimation(FadeInAnim);
+	if (bState) PlayAnimation(FadeInAnim);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
 	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
@@ -59,11 +58,12 @@ void UExplanationUI::SetCurrentExplanation(const EExplanation InExplanationName)
 {
 	if (const FExplanationData* ExplanationData = Explanations.Find(InExplanationName)) CurrentExplanationData = *ExplanationData;
 	else CurrentExplanationData = FExplanationData();
+	ShowExplanation();
 }
 
 void UExplanationUI::NextPage()
 {
-	if (CurrentPage + 1 > CurrentExplanationData.GetPageAmount()) return;
+	if (CurrentPage + 1 >= CurrentExplanationData.GetPageAmount()) return;
 	CurrentPage++;
 	ShowExplanation();
 }
