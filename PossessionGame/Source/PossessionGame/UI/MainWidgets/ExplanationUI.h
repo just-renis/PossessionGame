@@ -16,7 +16,9 @@ struct FExplanationData
 
 	int32 GetPageAmount() const { return ExplanationTexts.Num(); }
 	FText GetExplanationText(const int32 InIndex) const { return ExplanationTexts.IsValidIndex(InIndex) ? ExplanationTexts[InIndex] : FText(); }
-	
+
+	UPROPERTY(EditAnywhere)
+	EExplanation ExplanationName;
 	UPROPERTY(EditAnywhere, meta = (MultiLine))
 	TArray<FText> ExplanationTexts;
 };

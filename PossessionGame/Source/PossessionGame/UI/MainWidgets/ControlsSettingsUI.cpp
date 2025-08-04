@@ -31,7 +31,7 @@ void UControlsSettingsUI::SetupKeyBinds()
 		FName("MoveRight"),
 		FName("Jump"),
 		FName("Run"),
-		FName("Crouch / Stomp"),
+		FName("Crouch / Slide / Stomp"),
 		FName("Shoot"),
 		FName("Melee"),
 		FName("FirstAbility"),

@@ -30,8 +30,6 @@ private:
 	TObjectPtr<UTextBlock> PressKeyToContinueText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidget> MovementHintBox;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TArray<FString> HintTexts;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> StartupAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))

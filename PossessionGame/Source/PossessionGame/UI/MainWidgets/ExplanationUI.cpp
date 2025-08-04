@@ -4,6 +4,7 @@
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -16,6 +17,7 @@ void UExplanationUI::OpenUI(const EExplanation InExplanationName)
 void UExplanationUI::CloseUI()
 {
 	Toggle(false);
+	if (CurrentExplanationData.ExplanationName == EExplanation::FpsUI) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowHint.ExecuteIfBound();
 }
 
 void UExplanationUI::NativeConstruct()
