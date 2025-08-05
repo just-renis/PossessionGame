@@ -8,8 +8,9 @@
 void AMusicPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	bIsTutorialFinished = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished();
 	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
-	CurrentSoundtrack = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished() ? ESound::RestSoundtrack : ESound::TutorialIntroSoundtrack;
+	CurrentSoundtrack = bIsTutorialFinished ? ESound::RestSoundTrack : ESound::TutorialIntroSoundTrack;
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnMusicSoundtrackChangeRequired.BindUObject(this, &AMusicPlayer::ChangeSoundtrack);
 	DelegateManager->ChangeMusicPlayerState.BindUObject(this, &AMusicPlayer::ChangeState);
@@ -24,8 +25,9 @@ void AMusicPlayer::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AMusicPlayer::ChangeSoundtrack()
 {
-	if (CurrentSoundtrack == ESound::BattleModeSoundtrack) return;
-	CurrentSoundtrack = ESound::BattleModeSoundtrack;
+	if (CurrentSoundtrack == ESound::BattleModeSoundTrack) return;
+	if (CurrentSoundtrack == ESound::TutorialIntroSoundTrack) CurrentSoundtrack = ESound::TutorialChaosSoundTrack;
+	else CurrentSoundtrack = ESound::BattleModeSoundTrack;
 	GetAudioComponent()->FadeOut(0.5f, 0.f);
 	GetWorldTimerManager().SetTimer(FadeInHandle, this, &AMusicPlayer::PlayCurrentSoundtrack, 0.5f, false);
 }

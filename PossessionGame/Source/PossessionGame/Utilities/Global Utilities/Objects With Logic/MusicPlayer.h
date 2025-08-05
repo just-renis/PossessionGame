@@ -13,6 +13,7 @@ class POSSESSIONGAME_API AMusicPlayer : public AAmbientSound
 {
 	GENERATED_BODY()
 
+	bool bIsTutorialFinished = false;
 	ESound CurrentSoundtrack;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;

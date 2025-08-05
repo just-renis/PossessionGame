@@ -219,6 +219,7 @@ private:
 	bool bIsRunning = false;
 	bool bHijackOutlineState = false;
 	bool bIsSliding = false;
+	bool bIsDoubleJumpOccured = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -350,6 +351,8 @@ private:
 	void AI_SetCharacterMovementSpeed();
 	void AI_DisableDamageTakenRedFlash() const;
 
+	virtual bool CanJumpInternal_Implementation() const override;
+	
 	void P_SetupData();
 	void P_SetupUI();
 	void P_HijackEnemy();

@@ -442,7 +442,6 @@ void AEnemy::P_Setup()
 {
 	DelegateManager->ApplyUpgradeOnSelection.BindUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
-	//DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &AEnemy::SetPressKeyState);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
 	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
 	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_SetupLevelUpAppliance);
@@ -550,8 +549,8 @@ void AEnemy::P_InitiateJump()
 	else GetCharacterMovement()->JumpZVelocity = JumpVelocity;
 	Jump();
 	Weapon->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Jump);
-	const bool bIsDoubleJump = GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 1;
-	AssetsManager->PlaySound2D(bIsDoubleJump ? ESound::DoubleJump : ESound::Jump);
+	bIsDoubleJumpOccured = GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 1;
+	AssetsManager->PlaySound2D(bIsDoubleJumpOccured ? ESound::DoubleJump : ESound::Jump);
 }
 
 void AEnemy::P_InitiateStomp()
@@ -753,6 +752,16 @@ void AEnemy::AI_ClearShootPause()
 void AEnemy::AI_SetCharacterMovementSpeed() { AnimInstance->SetSpeed(GetCharacterMovement()->Velocity.Size()); }
 
 void AEnemy::AI_DisableDamageTakenRedFlash() const { if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 0.f); }
+
+bool AEnemy::CanJumpInternal_Implementation() const
+{
+	if (!Super::CanJumpInternal_Implementation())
+	{
+		if (!GetCharacterMovement()->IsFalling() && bIsCrouched) return true;
+		return false;
+	}
+	return true;
+}
 
 void AEnemy::P_SetupData()
 {
@@ -1020,7 +1029,11 @@ void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->Get
 void AEnemy::P_Jump()
 {
 	if (bIsInputLocked) return;
-	if (CanJump()) P_InitiateJump();
+	if (CanJumpInternal_Implementation())
+	{
+		if (bIsCrouched) UnCrouch();
+		P_InitiateJump();
+	}
 }
 
 void AEnemy::P_Stomp()
@@ -1113,6 +1126,11 @@ void AEnemy::P_ContinuousFovChange()
 
 void AEnemy::P_Crouch()
 {
+	if (bIsDoubleJumpOccured)
+	{
+		P_Stomp();
+		return;
+	}
 	if (bIsSliding) return;
 	if (bIsRunning && bCanSlide)
 	{
@@ -1251,6 +1269,7 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 void AEnemy::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
+	bIsDoubleJumpOccured = false;
 	if (bIsStomping)
 	{
 		bIsStomping = false;
@@ -1259,7 +1278,6 @@ void AEnemy::Landed(const FHitResult& Hit)
 		GetCharacterMovement()->AirControl = 1.f;
 		P_StompImpact(GetSocketLocation("StompSocket"));
 		P_MakeCameraShake(StompCameraShake);
-		
 	}
 }
 
