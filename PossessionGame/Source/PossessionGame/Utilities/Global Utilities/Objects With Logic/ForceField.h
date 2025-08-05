@@ -10,13 +10,14 @@ class POSSESSIONGAME_API AForceField : public AActor
 
 	AForceField();
 
-	float MaterialOpacity = 1.f;
+	float PatternMaxOpacity = 0.25f;
+	float PatternOpacityDivisor = 2.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	int32 TutorialForceFieldIndex = 0;
+	int32 ForceFieldIndex = -1;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> ForceField;
 	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> MI_Material;
+	TObjectPtr<UMaterialInstanceDynamic> MID_Material;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DissolveSfx;
 	UPROPERTY()
@@ -25,7 +26,6 @@ class POSSESSIONGAME_API AForceField : public AActor
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyThis();
-	void StartDissolveTutorialForceField(const int32 InIndex);
-	void StartDissolveForceField();
-	void DissolveForceField();
+	void StartDissolveForceField(const int32 InIndex);
+	void ProcessDissolveForceField();
 };

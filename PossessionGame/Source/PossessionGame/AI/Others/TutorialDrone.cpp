@@ -112,7 +112,6 @@ void ATutorialDrone::MoveToLocation()
 		{
 			case 0: SetDroneMoveLocation(1, false); break;
 			case 1:
-				DelegateManager->DestroyTutorialForceField.Broadcast(1);
 				EnableCheckDistanceToTarget(1);
 				break;
 			case 2:
@@ -150,7 +149,6 @@ void ATutorialDrone::CheckDistanceToTarget()
 			case 0:
 				break;
 			case 1:
-				DelegateManager->DestroyTutorialForceField.Broadcast(2);
 				break;
 		}
 		GetWorldTimerManager().ClearTimer(CheckDistanceToTargetHandle);

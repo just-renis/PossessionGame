@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "TutorialButton.generated.h"
 
 class USphereComponent;
@@ -13,7 +14,8 @@ class POSSESSIONGAME_API ATutorialButton : public AActor
 	
 	ATutorialButton();
 
-	int32 PatternOpacityIterationIndex = 0;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	int32 ButtonIndex;
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes", meta = (AllowPrivateAccess = true))
@@ -21,15 +23,16 @@ class POSSESSIONGAME_API ATutorialButton : public AActor
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> Collision;
 	UPROPERTY()
-	FTimerHandle ProcessAffectedObjectHandle;
+	TObjectPtr<AEnemy> OverlappedPlayer;
 	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> MID_AffectedObject;
+	FTimerHandle CheckIfStompedHandle;
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void ButtonClicked();
-	void SetupAffectedObjectLogic();
-	void ProcessAffectedObjectLogic();
+	void StompCheck();
 	UFUNCTION()
 	void OverlapOccured(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OverlapEnded(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };

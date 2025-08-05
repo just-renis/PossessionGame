@@ -27,7 +27,7 @@ void UChargeTerminalModeLogic::Finalize()
 		WaveManagerHUD->UpdateObjectiveProgress(UsbAmountProgress, Data->GetUsbAmountRequired(), true);
 		WaveManagerHUD->ToggleFinishOffEnemiesText(false);
 	}
-	(void)WaveManager->GetDelegateManager()->OnChargeTerminalModeCompletion.ExecuteIfBound();
+	WaveManager->GetDelegateManager()->StartForceFieldDissolve.Broadcast(0);
 	ResetTaskProgress();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	WaveManager->GetDelegateManager()->OnUsbInserted.Unbind();

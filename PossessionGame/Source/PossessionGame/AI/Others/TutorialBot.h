@@ -151,6 +151,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void SetExpression(const ETutorialBotExpression InExpressionName);
 	void SetupNextRandomBlink();
 	void TriggerBlink();
+	void SetupExpression();
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

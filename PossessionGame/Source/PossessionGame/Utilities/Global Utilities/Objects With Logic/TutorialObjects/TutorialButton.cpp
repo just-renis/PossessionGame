@@ -1,6 +1,7 @@
 ﻿#include "TutorialButton.h"
 #include "Components/SphereComponent.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 ATutorialButton::ATutorialButton()
 {
@@ -17,40 +18,42 @@ void ATutorialButton::BeginPlay()
 {
 	Super::BeginPlay();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATutorialButton::OverlapOccured);
+	Collision->OnComponentEndOverlap.AddDynamic(this, &ATutorialButton::OverlapEnded);
 }
 
 void ATutorialButton::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	GetWorldTimerManager().ClearTimer(ProcessAffectedObjectHandle);
+	GetWorldTimerManager().ClearTimer(CheckIfStompedHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
 void ATutorialButton::ButtonClicked()
 {
+	GetWorldTimerManager().ClearTimer(CheckIfStompedHandle);
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SetActorLocation(GetActorLocation() - FVector(0.f, 0.f, 40.f));
-	SetupAffectedObjectLogic();
+	Mesh->SetRelativeLocation(Mesh->GetRelativeLocation() - FVector(0.f, 0.f, 20.f));
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->StartForceFieldDissolve.Broadcast(ButtonIndex);
 }
 
-void ATutorialButton::SetupAffectedObjectLogic()
+void ATutorialButton::StompCheck()
 {
-	
-//	if (!AffectedObject) return;
-	//MID_AffectedObject = AffectedObject->CreateAndSetMaterialInstanceDynamic(AffectedObjectMaterialIndex);
-	GetWorldTimerManager().SetTimer(ProcessAffectedObjectHandle, this, &ATutorialButton::ProcessAffectedObjectLogic, 0.025f, true);
-}
-
-void ATutorialButton::ProcessAffectedObjectLogic()
-{
-	if (!MID_AffectedObject) return;
-	PatternOpacityIterationIndex++;
-	MID_AffectedObject->SetScalarParameterValue("PatternMaxOpacity", 0.25f - 0.0125f * PatternOpacityIterationIndex); 
-	MID_AffectedObject->SetScalarParameterValue("PatternOpacityDivisor", 2.f - 0.1f * PatternOpacityIterationIndex);
-	if (PatternOpacityIterationIndex >= 20) GetWorldTimerManager().ClearTimer(ProcessAffectedObjectHandle);
+	if (!OverlappedPlayer) return;
+	if (OverlappedPlayer->GetIsStomping()) ButtonClicked();
 }
 
 void ATutorialButton::OverlapOccured(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag("Player")) return;
-	if (const TObjectPtr<AEnemy> Player = Cast<AEnemy>(OtherActor)) if (Player->GetIsStomping()) ButtonClicked();
+	if (const TObjectPtr<AEnemy> Player = Cast<AEnemy>(OtherActor))
+	{
+		OverlappedPlayer = Player;
+		GetWorldTimerManager().SetTimer(CheckIfStompedHandle, this, &ATutorialButton::StompCheck, 0.01f, true);
+	}
+}
+
+void ATutorialButton::OverlapEnded(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (!OtherActor->ActorHasTag("Player")) return;
+	OverlappedPlayer = nullptr;
+	GetWorldTimerManager().ClearTimer(CheckIfStompedHandle);
 }

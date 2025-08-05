@@ -42,8 +42,7 @@ TObjectPtr<UAnimMontage> ATutorialBot::GetAnimation(const ETutorialBotAnimState 
 void ATutorialBot::BeginPlay()
 {
 	Super::BeginPlay();
-	MID_FaceExpression = Mesh->CreateAndSetMaterialInstanceDynamic(1);
-	SetupNextRandomBlink();
+	SetupExpression();
 	TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "TutorialTabletSocket");
 	RetrieveWaypoints();
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
@@ -218,6 +217,7 @@ void ATutorialBot::TenthAnimationFinished()
 
 void ATutorialBot::EleventhAnimationFinished()
 {
+	Dialogue->SetVisibilityState(false);
 	SetExpression(ETutorialBotExpression::NeutralFace);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial12, &ATutorialBot::TwelfthAnimationFinished);
 }
@@ -351,4 +351,11 @@ void ATutorialBot::TriggerBlink()
 {
 	SetExpression(ETutorialBotExpression::Blink);
 	GetWorldTimerManager().SetTimer(EndBlinkHandle, this, &ATutorialBot::SetupNextRandomBlink, 0.15f, false);
+}
+
+void ATutorialBot::SetupExpression()
+{
+	MID_FaceExpression = Mesh->CreateAndSetMaterialInstanceDynamic(1);
+	SetExpression(ETutorialBotExpression::NeutralFace);
+	SetupNextRandomBlink();
 }

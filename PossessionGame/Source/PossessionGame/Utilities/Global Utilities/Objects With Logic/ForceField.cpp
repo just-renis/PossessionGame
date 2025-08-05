@@ -15,9 +15,8 @@ AForceField::AForceField()
 void AForceField::BeginPlay()
 {
 	Super::BeginPlay();
-	MI_Material = ForceField->CreateAndSetMaterialInstanceDynamic(0);
-	if (TutorialForceFieldIndex != 0) GetGameInstance()->GetSubsystem<UDelegateManager>()->DestroyTutorialForceField.AddUObject(this, &AForceField::StartDissolveTutorialForceField);
-	else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnChargeTerminalModeCompletion.BindUObject(this, &AForceField::StartDissolveForceField);
+	MID_Material = ForceField->CreateAndSetMaterialInstanceDynamic(0);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->StartForceFieldDissolve.AddUObject(this, &AForceField::StartDissolveForceField);
 }
 
 void AForceField::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -32,22 +31,21 @@ void AForceField::DestroyThis()
 	Destroy();
 }
 
-void AForceField::StartDissolveTutorialForceField(const int32 InIndex)
+void AForceField::StartDissolveForceField(const int32 InIndex)
 {
-	if (TutorialForceFieldIndex != InIndex) return;
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->DestroyTutorialForceField.RemoveAll(this);
-	StartDissolveForceField();
-}
-
-void AForceField::StartDissolveForceField()
-{
+	if (ForceFieldIndex != InIndex) return;
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->StartForceFieldDissolve.RemoveAll(this);
 	DissolveSfx->Sound ? DissolveSfx->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(DissolveSfx, nullptr, ESound::ForceFieldDissolve);
-	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AForceField::DissolveForceField, 0.025f, true);
+	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AForceField::ProcessDissolveForceField, 0.025f, true);
 }
 
-void AForceField::DissolveForceField()
+void AForceField::ProcessDissolveForceField()
 {
-	MaterialOpacity -= 0.025f;
-	if (MI_Material) MI_Material->SetScalarParameterValue("DeploymentPercent", MaterialOpacity);
-	if (MaterialOpacity <= 0.4f) DestroyThis();
+	if (!MID_Material) return;
+	PatternMaxOpacity -= 0.0125f;
+	PatternOpacityDivisor -= 0.1f;
+	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
+	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
+	if (PatternOpacityDivisor > 0.f) return;
+	DestroyThis();
 }

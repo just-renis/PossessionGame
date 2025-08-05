@@ -50,7 +50,6 @@ void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 	if (!HintInv || !HintText) return;
 	HintInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	const FText KeyBindText = GetKeyBindText(InIndex);
-	UE_LOG(LogTemp, Error, TEXT("HINT TEXT: %s"), *KeyBindText.ToString());
 	switch (InIndex)
 	{
 		case 0: HintText->SetText(FText::Format(FText::FromString("[{0}] to Hijack Robots"), KeyBindText)); break;
@@ -59,7 +58,8 @@ void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 		case 3: HintText->SetText(FText::Format(FText::FromString("[{0}] to Run"), KeyBindText)); break;
 		case 4: HintText->SetText(FText::Format(FText::FromString("Press [{0}] to Jump"), KeyBindText)); break;
 		case 5: HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] to Double Jump"), KeyBindText)); break;
-		case 6: HintText->SetText(FText::Format(FText::FromString("Press [{0}] + [{1}] to Slide"), GetKeyBindText(3), KeyBindText));
+		case 6: HintText->SetText(FText::Format(FText::FromString("Press [{0}] + [{1}] to Slide"), GetKeyBindText(3), KeyBindText)); break;
+		case 7: HintText->SetText(FText::Format(FText::FromString("Press [{0}] + [{1}] + [{2}] + [{1}] to Stomp"), GetKeyBindText(3), GetKeyBindText(6), GetKeyBindText(4)));
 		default: ;
 	}
 }
@@ -68,7 +68,7 @@ void UPlayerGhostUI::StopShowingHint() const
 {
 	if (HintInv) HintInv->SetVisibility(ESlateVisibility::Collapsed);
 	if (MovementHintBox) MovementHintBox->SetVisibility(ESlateVisibility::Collapsed);
-	if (CurrentHintIndex >= 7) DestroyThis();
+	if (CurrentHintIndex >= 8) DestroyThis();
 }
 
 void UPlayerGhostUI::ShowPressKey(const bool bState)
@@ -83,6 +83,7 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 {
 	if (PressKeyToContinueText && InKeyBindName.IsEqual("Interact")) PressKeyToContinueText->SetText(FText::Format(FText::FromString("Press [{0}] Key To Continue"), InKeyBindText));
 	if (!HintText) return;
+	const TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager = GetGameInstance()->GetSubsystem<UGlobalSettingsManager>();
 	switch (CurrentHintIndex)
 	{
 		case 1: if (InKeyBindName.IsEqual("Hijack")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Hijack Robots"), InKeyBindText)); break;
@@ -90,8 +91,8 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 		case 4: if (InKeyBindName.IsEqual("Run")) HintText->SetText(FText::Format(FText::FromString("[{0}] to Run"), InKeyBindText)); break;
 		case 5: if (InKeyBindName.IsEqual("Jump")) HintText->SetText(FText::Format(FText::FromString("Press [{0}] to Jump"), InKeyBindText)); break;
 		case 6: if (InKeyBindName.IsEqual("Jump")) HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] to Double Jump"), InKeyBindText)); break;
-		case 7: if (InKeyBindName.IsEqual("Crouch / Slide / Stomp")) HintText->SetText(FText::Format(FText::FromString("Press [{0}] + [{1}] to Slide"),
-			GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Run"), InKeyBindText));
+		case 7: if (InKeyBindName.IsEqual("Crouch / Slide / Stomp")) HintText->SetText(FText::Format(FText::FromString("Press [{0}] + [{1}] to Slide"), GlobalSettingsManager->GetKeyBindText("Run"), InKeyBindText)); break;
+		case 8: HintText->SetText(FText::Format(FText::FromString("Press [{0}] + [{1}] + [{2}] + [{1}] to Stomp"), GlobalSettingsManager->GetKeyBindText("Run"), GlobalSettingsManager->GetKeyBindText("Crouch / Slide / Stomp"), GlobalSettingsManager->GetKeyBindText("Jump")));
 		default: ;
 	}
 }
