@@ -59,7 +59,7 @@ void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 		case 4: HintText->SetText(FText::Format(FText::FromString("Press [{0}] to Jump"), KeyBindText)); break;
 		case 5: HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] to Double Jump"), KeyBindText)); break;
 		case 6: HintText->SetText(FText::Format(FText::FromString("Press [{0}] + [{1}] to Slide"), GetKeyBindText(3), KeyBindText)); break;
-		case 7: HintText->SetText(FText::Format(FText::FromString("Press [{0}] + [{1}] + [{2}] + [{1}] to Stomp"), GetKeyBindText(3), GetKeyBindText(6), GetKeyBindText(4)));
+		case 7: HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] and then [{1}] to Stomp"), GetKeyBindText(4), GetKeyBindText(6)));
 		default: ;
 	}
 }
@@ -92,7 +92,7 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 		case 5: if (InKeyBindName.IsEqual("Jump")) HintText->SetText(FText::Format(FText::FromString("Press [{0}] to Jump"), InKeyBindText)); break;
 		case 6: if (InKeyBindName.IsEqual("Jump")) HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] to Double Jump"), InKeyBindText)); break;
 		case 7: if (InKeyBindName.IsEqual("Crouch / Slide / Stomp")) HintText->SetText(FText::Format(FText::FromString("Press [{0}] + [{1}] to Slide"), GlobalSettingsManager->GetKeyBindText("Run"), InKeyBindText)); break;
-		case 8: HintText->SetText(FText::Format(FText::FromString("Press [{0}] + [{1}] + [{2}] + [{1}] to Stomp"), GlobalSettingsManager->GetKeyBindText("Run"), GlobalSettingsManager->GetKeyBindText("Crouch / Slide / Stomp"), GlobalSettingsManager->GetKeyBindText("Jump")));
+		case 8: HintText->SetText(FText::Format(FText::FromString("Double Press [{0}] and then [{1}] to Stomp"), GlobalSettingsManager->GetKeyBindText("Jump"), GlobalSettingsManager->GetKeyBindText("Crouch / Slide / Stomp")));
 		default: ;
 	}
 }

@@ -3,8 +3,8 @@
 #include "CoreMinimal.h"
 #include "GameModeInitiator.generated.h"
 
+class UBoxComponent;
 enum class EGameMode : uint8;
-class USphereComponent;
 
 UCLASS()
 class POSSESSIONGAME_API AGameModeInitiator : public AActor
@@ -16,7 +16,7 @@ class POSSESSIONGAME_API AGameModeInitiator : public AActor
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EGameMode GameMode;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<USphereComponent> Collision;
+	TObjectPtr<UBoxComponent> Collision;
 	
 	virtual void BeginPlay() override;
 	UFUNCTION()

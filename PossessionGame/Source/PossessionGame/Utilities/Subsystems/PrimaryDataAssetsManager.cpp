@@ -422,9 +422,10 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_MinionBossTakeDamage", ESound::MinionBossTakeDamage);
 	SoundMap.Add("PA_DroneBuzz", ESound::DroneBuzz);
 	SoundMap.Add("PA_DialogueStart", ESound::DialogueStart);
-	SoundMap.Add("PA_RestSoundtrack", ESound::RestSoundtrack);
-	SoundMap.Add("PA_BattleModeSoundtrack", ESound::BattleModeSoundtrack);
-	SoundMap.Add("PA_TutorialIntroSoundtrack", ESound::TutorialIntroSoundtrack);
+	SoundMap.Add("PA_RestSoundTrack", ESound::RestSoundTrack);
+	SoundMap.Add("PA_BattleModeSoundTrack", ESound::BattleModeSoundTrack);
+	SoundMap.Add("PA_TutorialIntroSoundTrack", ESound::TutorialIntroSoundTrack);
+	SoundMap.Add("PA_TutorialChaosSoundTrack", ESound::TutorialChaosSoundTrack);
 	SoundMap.Add("PA_ButtonHover", ESound::ButtonHover);
 	SoundMap.Add("PA_ButtonSelect", ESound::ButtonSelect);
 	SoundMap.Add("PA_UpgradeCardSelect", ESound::UpgradeCardSelect);
@@ -466,6 +467,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_DoorBreak", ESound::DoorBreak);
 	SoundMap.Add("PA_SlideEnter", ESound::SlideEnter);
 	SoundMap.Add("PA_Slide", ESound::Slide);
+	SoundMap.Add("PA_SlideExit", ESound::SlideExit);
 	SoundMap.Add("PA_SlideExit", ESound::SlideExit);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();

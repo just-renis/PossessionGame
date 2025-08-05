@@ -1,12 +1,13 @@
 ﻿#include "GameModeInitiator.h"
-#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 
 AGameModeInitiator::AGameModeInitiator()
 {
-	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("collision"));
+	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("collision"));
+	Collision->SetCollisionProfileName("TriggerPlayer");
 	RootComponent = Collision;
 }
 

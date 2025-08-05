@@ -304,6 +304,7 @@ void ATutorialBot::ThirteenthAnimationFinished()
 
 void ATutorialBot::FourteenthAnimationFinished()
 {
+	SetControlRigState(true);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.Broadcast(true);
 }
 

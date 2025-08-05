@@ -1113,11 +1113,6 @@ void AEnemy::P_ContinuousFovChange()
 
 void AEnemy::P_Crouch()
 {
-	if (bSuperJumpOccured)
-	{
-		P_Stomp();
-		return;
-	}
 	if (bIsSliding) return;
 	if (bIsRunning && bCanSlide)
 	{
@@ -1182,7 +1177,6 @@ void AEnemy::P_SetupSuperJump()
 {
 	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
 	P_EndSlide();
-	bSuperJumpOccured = true;
 	GetCharacterMovement()->JumpZVelocity = JumpVelocity * 2.f;
 }
 
@@ -1257,7 +1251,6 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 void AEnemy::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
-	bSuperJumpOccured = false;
 	if (bIsStomping)
 	{
 		bIsStomping = false;
