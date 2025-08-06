@@ -202,7 +202,13 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubc
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
 	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	else AddSpawnableEnemiesToThePool();
-	if (!bTutorialIsFinished) InDelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
+	if (!bTutorialIsFinished)
+	{
+		InDelegateManager->SpawnTutorialEnemy.BindLambda([this](const ECharacterType InCharacter, const EGameMode InGameMode, const TFunction<void()>& Callback)
+		{
+			SpawnTutorialEnemy(InCharacter, InGameMode, Callback);
+		});
+	}
 }
 
 void UPrimaryDataAssetsManager::SetupSpawnLocations()
@@ -215,7 +221,6 @@ void UPrimaryDataAssetsManager::SetupSpawnLocations()
 		if (!SpawnLocations.Contains(SpawnLocation->GetGameMode())) SpawnLocations.Add(SpawnLocation->GetGameMode());
 		SpawnLocations[SpawnLocation->GetGameMode()].SpawnLocations.Add(SpawnLocation);
 	}
-	if (bTutorialIsFinished) SpawnTutorialEnemy(ToSpawnAfterTutorial, EGameMode::TutorialMode1);
 }
 
 void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes)
@@ -551,6 +556,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_HitVent", EVfx::HitVent);
 	VfxsMap.Add("PA_CrashVent", EVfx::CrashVent);
 	VfxsMap.Add("PA_ComputerElectrification", EVfx::ComputerElectrification);
+	VfxsMap.Add("PA_DoorBreak", EVfx::DoorBreak);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
@@ -652,15 +658,15 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 			{
 				if (bCanEvolve) Enemy->AI_TryEvolving();
 				else Enemy->AI_SetupUpgradesAppliance();
-				if (InCallBack) InCallBack();
 				bIsSpawnInProcess = false;
+				if (InCallBack) InCallBack();
 				break;
 			}
 		}
 	}
 }
 
-void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode) { RequestSpawnEnemy(InCharacter, InGameMode, false, nullptr); }
+void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const TFunction<void()>& InCallBack) { RequestSpawnEnemy(InCharacter, InGameMode, false, InCallBack); }
 
 void UPrimaryDataAssetsManager::AddSpawnableEnemiesToThePool()
 {

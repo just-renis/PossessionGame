@@ -182,7 +182,7 @@ void ATutorialBot::SeventhAnimationFinished()
 void ATutorialBot::EighthAnimationFinished()
 {
 	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowHint.ExecuteIfBound();
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Guardian, EGameMode::TutorialMode1);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Guardian, EGameMode::TutorialMode1, nullptr);
 }
 
 void ATutorialBot::PlayNextAnimation()

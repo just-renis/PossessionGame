@@ -11,6 +11,7 @@
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 AGate::AGate()
@@ -39,8 +40,10 @@ void AGate::BeginPlay()
 	bNeededArtifact = bNeedsArtifact;
 	if (bIsUnlockableByInteraction) SetupInteractability();
 	if (!bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGateAndShowMarker);
-	else if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished()) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMainTutorialEnd.AddUObject(this, &AGate::OpenAsTutorialEndGate);
-	else OpenAsTutorialEndGate();
+	else if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
+	{
+		GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathsCompleted.BindUObject(this, &AGate::OpenAsTutorialEndGate);
+	}
 	if (bNeedsArtifact) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.BindUObject(this, &AGate::SetArtifactCollected);
 }
 
@@ -69,7 +72,11 @@ void AGate::OpenGateAndShowMarker(const EGameMode InGameMode)
 	ShowMarker(InGameMode);
 }
 
-void AGate::OpenAsTutorialEndGate() { OpenGate(EGameMode::TutorialMode2); }
+void AGate::OpenAsTutorialEndGate()
+{
+	OpenGate(EGameMode::TutorialMode1);
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathsCompleted.Unbind();
+}
 
 void AGate::CloseGate(const EGameMode InGameMode)
 {

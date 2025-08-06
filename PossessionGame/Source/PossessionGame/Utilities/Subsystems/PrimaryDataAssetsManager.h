@@ -251,7 +251,7 @@ private:
 	void AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
 	void SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
-	void SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode);
+	void SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const TFunction<void()>& InCallBack);
 	void AddSpawnableEnemiesToThePool();
 	void ClearBeforeInit();
 	void LoadVfx(FVfxContainer& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);

@@ -37,7 +37,6 @@ DECLARE_DELEGATE_OneParam(FOnXpReceived, const int32);
 DECLARE_DELEGATE_OneParam(FApplySecretBoostHealth, const int32);
 DECLARE_DELEGATE_OneParam(FOnOpenUnlockAbilityPopup, const int32);
 DECLARE_DELEGATE_OneParam(FOnChargeTerminalModeCompletion, const int32);
-DECLARE_DELEGATE_TwoParams(FStartTutorialDroneMoveToLocation, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
@@ -70,8 +69,9 @@ DECLARE_DELEGATE(FStopShowingHint);
 DECLARE_DELEGATE(FOnShowHint);
 DECLARE_DELEGATE(FStartTutorialBotAnimation);
 DECLARE_DELEGATE(FEnableMeleeChecking);
+DECLARE_DELEGATE(FOnTutorialMinionDeath);
 DECLARE_DELEGATE_OneParam(FShowExplanation, const EExplanation);
-DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
+DECLARE_DELEGATE_ThreeParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode, TFunction<void()>);
 DECLARE_MULTICAST_DELEGATE(FOnAlertStart);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
 
@@ -109,7 +109,6 @@ public:
 	FApplySecretBoostHealth ApplySecretBoostHealth;
 	FOnOpenUnlockAbilityPopup OnOpenUnlockAbilityPopup;
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
-	FStartTutorialDroneMoveToLocation StartTutorialDroneMoveToLocation;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnAbilityUse OnAbilityUse;
 	FOnTerminalInteraction OnTerminalInteraction;
@@ -139,6 +138,7 @@ public:
 	FOnShowHint OnShowHint;
 	FStartTutorialBotAnimation StartTutorialBotAnimation;
 	FEnableMeleeChecking EnableMeleeChecking;
+	FOnTutorialMinionDeath OnTutorialMinionDeath;
 	FShowExplanation ShowExplanation;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FOnAlertStart OnAlertStart;

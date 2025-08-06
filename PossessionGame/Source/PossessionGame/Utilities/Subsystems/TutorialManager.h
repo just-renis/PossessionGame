@@ -6,11 +6,15 @@
 
 class AEnemy;
 
+DECLARE_DELEGATE(FOnMinionDeathsCompleted);
+
 UCLASS()
 class POSSESSIONGAME_API UTutorialManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
+	FOnMinionDeathsCompleted OnMinionDeathsCompleted; 
+	
 	bool GetIsInitialized() const { return bIsInitialized; }
 	
 	void Init();
@@ -18,6 +22,7 @@ public:
 private:
 	bool bIsInitialized = false;
 	bool bPressKeyEnabled = false;
+	int32 MinionDeathsRequired = 2;
 	FVector LastPlayerLocation;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
@@ -31,4 +36,5 @@ private:
 	void CheckMovement();
 	void StopShowingHint() const;
 	void PressKeyToContinue();
+	void MinionDeathOccured();
 };

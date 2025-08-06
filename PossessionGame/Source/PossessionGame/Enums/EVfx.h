@@ -65,5 +65,6 @@ enum class EVfx : uint8
 	TutorialBotLandOnHead,
 	HitVent,
 	CrashVent,
-	ComputerElectrification
+	ComputerElectrification,
+	DoorBreak
 };

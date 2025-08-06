@@ -3,8 +3,6 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EWeapon.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
@@ -47,9 +45,5 @@ void AMinion::BeginPlay()
 void AMinion::DestroyAI()
 {
 	Super::DestroyAI();
-	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
-	{
-		(void)DelegateManager->StartTutorialDroneMoveToLocation.ExecuteIfBound(2, false);
-		(void)DelegateManager->StopShowingHint.ExecuteIfBound();
-	}
+	(void)DelegateManager->OnTutorialMinionDeath.ExecuteIfBound();
 }

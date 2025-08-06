@@ -42,7 +42,7 @@ void ABreakableDoor::TryBreakingDoor()
 {
 	if (!bIsBreakable) return;
 	PlayBreakSound();
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::DoorBreak);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::DoorBreak, nullptr, GetActorLocation() + GetActorForwardVector() * 20.f);
 	GetWorldTimerManager().SetTimer(PhysicsStopCheckHandle, this, &ABreakableDoor::CheckIfStoppedPhysics, 0.1f, true);
 	MID = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 	GetWorldTimerManager().SetTimer(DespawnProgressHandle, this, &ABreakableDoor::SetupDespawnProgress, 5.f, false);

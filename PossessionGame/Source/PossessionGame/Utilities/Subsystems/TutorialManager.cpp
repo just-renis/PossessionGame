@@ -8,6 +8,7 @@ void UTutorialManager::Init()
 	bIsInitialized = true;
 	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StartTutorialBotAnimation.ExecuteIfBound();
 	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.AddUObject(this, &UTutorialManager::SetPressKeyState);
+	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialMinionDeath.BindUObject(this, &UTutorialManager::MinionDeathOccured);
 	GetWorld()->GetTimerManager().SetTimer(TutorialHandle, this, &UTutorialManager::CheckHijacked, 0.05f, true);
 }
 
@@ -51,4 +52,14 @@ void UTutorialManager::PressKeyToContinue()
 	if (!bPressKeyEnabled) return;
 	bPressKeyEnabled = false;
 	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.Broadcast(false);
+}
+
+void UTutorialManager::MinionDeathOccured()
+{
+	if (--MinionDeathsRequired <= 0)
+	{
+		(void)OnMinionDeathsCompleted.ExecuteIfBound();
+		(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StopShowingHint.ExecuteIfBound();
+		GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialMinionDeath.Unbind();
+	}
 }
