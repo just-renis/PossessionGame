@@ -98,7 +98,5 @@ enum class ESound : uint16
 	AlertSignalization,
 	ErrorChaos,
 	DoorBreak,
-	SlideEnter,
-	Slide,
-	SlideExit
+	Slide
 };

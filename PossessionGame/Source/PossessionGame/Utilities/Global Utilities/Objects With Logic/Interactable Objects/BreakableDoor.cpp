@@ -1,4 +1,6 @@
 ﻿#include "BreakableDoor.h"
+
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -8,9 +10,12 @@ ABreakableDoor::ABreakableDoor()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	Collision = CreateDefaultSubobject<USphereComponent>("Collision");
+	BreakSound = CreateDefaultSubobject<UAudioComponent>("BreakSound");
+	BreakSound->SetAutoActivate(false);
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	RootComponent = Mesh;
 	Collision->SetupAttachment(Mesh);
+	BreakSound->SetupAttachment(Mesh);
 }
 
 void ABreakableDoor::BeginPlay()
@@ -36,6 +41,7 @@ void ABreakableDoor::EnableCollision() const { Collision->SetCollisionEnabled(EC
 void ABreakableDoor::TryBreakingDoor()
 {
 	if (!bIsBreakable) return;
+	PlayBreakSound();
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::DoorBreak);
 	GetWorldTimerManager().SetTimer(PhysicsStopCheckHandle, this, &ABreakableDoor::CheckIfStoppedPhysics, 0.1f, true);
 	MID = Mesh->CreateAndSetMaterialInstanceDynamic(0);
@@ -70,6 +76,11 @@ void ABreakableDoor::CheckIfStoppedPhysics()
 		Mesh->SetSimulatePhysics(false);
 		GetWorldTimerManager().ClearTimer(PhysicsStopCheckHandle);
 	}
+}
+
+void ABreakableDoor::PlayBreakSound() const
+{
+	BreakSound->Sound ? BreakSound->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(BreakSound, TFunction<bool()>(), ESound::DoorBreak);
 }
 
 void ABreakableDoor::EnableBreakable(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

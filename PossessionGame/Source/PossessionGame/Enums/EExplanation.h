@@ -3,5 +3,9 @@
 UENUM()
 enum class EExplanation : uint8
 {
-    FpsUI
+    FpsUI,
+    AbilitiesUI,
+    SecretUI,
+    VariationUI,
+    UpgradeUI
 };

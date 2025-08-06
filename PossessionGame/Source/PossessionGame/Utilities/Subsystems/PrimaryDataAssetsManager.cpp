@@ -465,10 +465,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_ErrorChaos", ESound::ErrorChaos);
 	SoundMap.Add("PA_AlertSignalization", ESound::AlertSignalization);
 	SoundMap.Add("PA_DoorBreak", ESound::DoorBreak);
-	SoundMap.Add("PA_SlideEnter", ESound::SlideEnter);
 	SoundMap.Add("PA_Slide", ESound::Slide);
-	SoundMap.Add("PA_SlideExit", ESound::SlideExit);
-	SoundMap.Add("PA_SlideExit", ESound::SlideExit);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
