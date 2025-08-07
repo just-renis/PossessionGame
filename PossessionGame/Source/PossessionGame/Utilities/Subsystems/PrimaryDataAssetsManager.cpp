@@ -202,13 +202,7 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubc
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
 	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	else AddSpawnableEnemiesToThePool();
-	if (!bTutorialIsFinished)
-	{
-		InDelegateManager->SpawnTutorialEnemy.BindLambda([this](const ECharacterType InCharacter, const EGameMode InGameMode, const TFunction<void()>& Callback)
-		{
-			SpawnTutorialEnemy(InCharacter, InGameMode, Callback);
-		});
-	}
+	if (!bTutorialIsFinished) InDelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
 }
 
 void UPrimaryDataAssetsManager::SetupSpawnLocations()
@@ -666,7 +660,7 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 	}
 }
 
-void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const TFunction<void()>& InCallBack) { RequestSpawnEnemy(InCharacter, InGameMode, false, InCallBack); }
+void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode) { RequestSpawnEnemy(InCharacter, InGameMode, false, nullptr); }
 
 void UPrimaryDataAssetsManager::AddSpawnableEnemiesToThePool()
 {

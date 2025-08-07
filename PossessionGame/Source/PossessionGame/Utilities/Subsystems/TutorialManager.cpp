@@ -56,10 +56,7 @@ void UTutorialManager::PressKeyToContinue()
 
 void UTutorialManager::MinionDeathOccured()
 {
-	if (--MinionDeathsRequired <= 0)
-	{
-		(void)OnMinionDeathsCompleted.ExecuteIfBound();
-		(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StopShowingHint.ExecuteIfBound();
-		GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialMinionDeath.Unbind();
-	}
+	(void)OnMinionDeathCompleted.ExecuteIfBound();
+	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StopShowingHint.ExecuteIfBound();
+	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialMinionDeath.Unbind();
 }

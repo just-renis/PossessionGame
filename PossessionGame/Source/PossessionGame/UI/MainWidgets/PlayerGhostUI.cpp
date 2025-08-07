@@ -47,10 +47,7 @@ void UPlayerGhostUI::ShowHint()
 	if (CurrentHintIndex == 2 && MovementHintBox) MovementHintBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	else if (CurrentHintIndex == 9)
 	{
-		(void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Minion, EGameMode::TutorialMode2, [this]
-		{
-			(void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Minion, EGameMode::TutorialMode3, nullptr);
-		});
+		(void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Minion, EGameMode::TutorialMode2);
 	}
 }
 

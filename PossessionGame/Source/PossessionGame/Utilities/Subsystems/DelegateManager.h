@@ -71,7 +71,7 @@ DECLARE_DELEGATE(FStartTutorialBotAnimation);
 DECLARE_DELEGATE(FEnableMeleeChecking);
 DECLARE_DELEGATE(FOnTutorialMinionDeath);
 DECLARE_DELEGATE_OneParam(FShowExplanation, const EExplanation);
-DECLARE_DELEGATE_ThreeParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode, TFunction<void()>);
+DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
 DECLARE_MULTICAST_DELEGATE(FOnAlertStart);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
 
