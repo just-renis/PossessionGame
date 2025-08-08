@@ -293,6 +293,11 @@ void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageRea
 	}
 	if (bIsAlive && CurrentHp <= 0)
 	{
+		if (bIsImmortal)
+		{
+			CurrentHp = 10;
+			return;
+		}
 		if (bIsHijacked) P_Death();
 		else ProcessKillDamageReason(InDamageReason);
 		InitiateDeath();
@@ -864,7 +869,7 @@ void AEnemy::P_ToggleRun(const bool bState)
 
 void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue)
 {
-	HijackBarTimer += InHijackTimeValue;
+	HijackBarTimer += InHijackTimeValue * (GameInstance->GetSaveSlot()->GetIsTutorialFinished() ? 1.f : 2.f);
 	P_AddXp(InXp);
 	for (int32 i = 0; i < Abilities.Num(); i++)
 	{
@@ -1331,4 +1336,5 @@ void AEnemy::SetupTutorialManager()
 	const TObjectPtr<UTutorialManager> TutorialManager = GetWorld()->GetSubsystem<UTutorialManager>();
 	if (!TutorialManager->GetIsInitialized()) TutorialManager->Init();
 	TutorialManager->SetPlayerRef(this);
+	bIsImmortal = true;
 }

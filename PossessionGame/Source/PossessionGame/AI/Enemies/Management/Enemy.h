@@ -219,6 +219,7 @@ private:
 	bool bHijackOutlineState = false;
 	bool bIsSliding = false;
 	bool bIsDoubleJumpOccured = false;
+	bool bIsImmortal = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
