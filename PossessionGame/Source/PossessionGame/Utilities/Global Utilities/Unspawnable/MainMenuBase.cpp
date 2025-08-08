@@ -7,13 +7,14 @@
 #include "PossessionGame/UI/MainWidgets/GameLaunchUI.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
 #include "PossessionGame/UI/MainWidgets/MainMenuUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void AMainMenuBase::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses, GetGameInstance()->GetSubsystem<UDelegateManager>());
+	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses, Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished());
 	ShowLoadingScreen();
 }
 

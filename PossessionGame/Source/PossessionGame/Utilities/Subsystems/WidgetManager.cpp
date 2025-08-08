@@ -1,11 +1,11 @@
 ﻿#include "WidgetManager.h"
-#include "DelegateManager.h"
+#include "TutorialManager.h"
 #include "PossessionGame/UI/MainWidgets/ExplanationUI.h"
 
-void UWidgetManager::Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses, const TObjectPtr<UDelegateManager>& InDelegateManager)
+void UWidgetManager::Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses, const bool bIsTutorialFinished)
 {
 	WidgetClasses = InWidgetClasses;
-	InDelegateManager->ShowExplanation.BindUObject(this, &UWidgetManager::ShowExplanation);
+	if (!bIsTutorialFinished) GetWorld()->GetSubsystem<UTutorialManager>()->ShowExplanation.AddUObject(this, &UWidgetManager::ShowExplanation);
 }
 
 void UWidgetManager::DestroyWidget(const EWidget InWidget)

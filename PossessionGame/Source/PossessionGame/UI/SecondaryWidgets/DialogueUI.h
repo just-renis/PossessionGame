@@ -16,6 +16,7 @@ class POSSESSIONGAME_API UDialogueUI : public UUserWidget
 public:
 	void ClearDialogueText() const;
 	void StartDialogue(const int32 InIndex, const bool bShowPressAnyKeyToContinue, const float InSpeed = 0.025f);
+	void StartTipDialogue(const float InSpeed = 0.025f);
 protected:
 	bool bShowPressAnyKeyToContinueOnDialogueEnd = false;
 	int32 DialogueTextIndex = -1;

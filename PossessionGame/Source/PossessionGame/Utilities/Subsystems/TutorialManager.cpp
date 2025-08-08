@@ -6,8 +6,8 @@
 void UTutorialManager::Init()
 {
 	bIsInitialized = true;
-	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StartTutorialBotAnimation.ExecuteIfBound();
-	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.AddUObject(this, &UTutorialManager::SetPressKeyState);
+	(void)StartTutorialBotAnimation.ExecuteIfBound();
+	(void)OnShowPressKeyToContinue.AddUObject(this, &UTutorialManager::SetPressKeyState);
 	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialMinionDeath.BindUObject(this, &UTutorialManager::MinionDeathOccured);
 	GetWorld()->GetTimerManager().SetTimer(TutorialHandle, this, &UTutorialManager::CheckHijacked, 0.05f, true);
 }
@@ -27,7 +27,7 @@ void UTutorialManager::SetPlayerRef(const TObjectPtr<AEnemy>& InPlayer)
 void UTutorialManager::CheckHijacked()
 {
 	if (!Player || !Player->GetIsHijacked()) return;
-	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowHint.ExecuteIfBound();
+	(void)OnShowHint.ExecuteIfBound();
 	LastPlayerLocation = Player->GetActorLocation();
 	GetWorld()->GetTimerManager().SetTimer(TutorialHandle, this, &UTutorialManager::CheckMovement, 0.05f, true);
 }
@@ -44,19 +44,19 @@ void UTutorialManager::CheckMovement()
 
 void UTutorialManager::StopShowingHint() const
 {
-	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StopShowingHint.ExecuteIfBound();
+	(void)OnStopShowingHint.ExecuteIfBound();
 }
 
 void UTutorialManager::PressKeyToContinue()
 {
 	if (!bPressKeyEnabled) return;
 	bPressKeyEnabled = false;
-	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.Broadcast(false);
+	OnShowPressKeyToContinue.Broadcast(false);
 }
 
-void UTutorialManager::MinionDeathOccured()
+void UTutorialManager::MinionDeathOccured() const
 {
-	(void)OnMinionDeathCompleted.ExecuteIfBound();
-	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StopShowingHint.ExecuteIfBound();
+	OnMinionDeathCompleted.Broadcast();
+	(void)OnStopShowingHint.ExecuteIfBound();
 	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialMinionDeath.Unbind();
 }

@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 
 ABreakableDoor::ABreakableDoor()
 {
@@ -21,8 +22,8 @@ ABreakableDoor::ABreakableDoor()
 void ABreakableDoor::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->MeleeAttackOccured.BindUObject(this, &ABreakableDoor::TryBreakingDoor);
-	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->EnableMeleeChecking.BindUObject(this, &ABreakableDoor::EnableCollision);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->MeleeAttackOccured.BindUObject(this, &ABreakableDoor::TryBreakingDoor);
+	GetWorld()->GetSubsystem<UTutorialManager>()->EnableMeleeChecking.BindUObject(this, &ABreakableDoor::EnableCollision);
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ABreakableDoor::EnableBreakable);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ABreakableDoor::DisableBreakable);
 }
@@ -31,8 +32,8 @@ void ABreakableDoor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorldTimerManager().ClearTimer(PhysicsStopCheckHandle);
 	GetWorldTimerManager().ClearTimer(DespawnProgressHandle);
-	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->MeleeAttackOccured.Unbind();
-	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->EnableMeleeChecking.Unbind();
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->MeleeAttackOccured.Unbind();
+	GetWorld()->GetSubsystem<UTutorialManager>()->EnableMeleeChecking.Unbind();
 	Super::EndPlay(EndPlayReason);
 }
 

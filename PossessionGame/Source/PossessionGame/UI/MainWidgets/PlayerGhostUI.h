@@ -36,8 +36,6 @@ private:
 	TObjectPtr<UWidgetAnimation> HintAppearAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> PressKeyAppearAnim;
-	UPROPERTY()
-	TObjectPtr<UDelegateManager> DelegateManager;
 
 	FText GetKeyBindText(const int32 InIndex) const;
 

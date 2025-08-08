@@ -4,8 +4,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/ExplanationHighlight.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UExplanationUI::OpenUI(const EExplanation InExplanationName)
@@ -76,7 +76,7 @@ void UExplanationUI::CloseExplanationLogic()
 	{
 		case EExplanation::FpsUI:
 			PlayAnimation(FpsFadeOutAnim);
-			(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowHint.ExecuteIfBound();
+			(void)GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.ExecuteIfBound();
 			BindToAnimationFinished(FpsFadeOutAnim, FinishedFadeOutDelegate);
 			break;
 		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI:

@@ -13,6 +13,7 @@ class POSSESSIONGAME_API ATutorialDialogue : public AActor
 public:
 	void SetVisibilityState(const bool bState) const;
 	void StartDialogue(const int32 InIndex, const bool bShowPressAnyKeyToContinue) const;
+	void StartTipDialogue() const;
 private:
 	ATutorialDialogue();
 	

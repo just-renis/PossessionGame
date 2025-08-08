@@ -20,7 +20,7 @@ public:
 	TObjectPtr<T> GetWidget(const EWidget InWidgetName);
 
 	void SetCurrentStateOfUI(const EWidget InState) { CurrentState = InState; }
-	void Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses, const TObjectPtr<UDelegateManager>& InDelegateManager);
+	void Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses, const bool bIsTutorialFinished);
 	void DestroyWidget(const EWidget InWidget);
 private:
 	EWidget CurrentState = EWidget::None;

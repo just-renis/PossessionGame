@@ -65,15 +65,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&,
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText&);
 
 //----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
-DECLARE_DELEGATE(FStopShowingHint);
-DECLARE_DELEGATE(FOnShowHint);
-DECLARE_DELEGATE(FStartTutorialBotAnimation);
-DECLARE_DELEGATE(FEnableMeleeChecking);
 DECLARE_DELEGATE(FOnTutorialMinionDeath);
-DECLARE_DELEGATE_OneParam(FShowExplanation, const EExplanation);
-DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
-DECLARE_MULTICAST_DELEGATE(FOnAlertStart);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
 
 UCLASS()
 class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
@@ -134,13 +126,5 @@ public:
 	FOnKeyBindChange OnKeyBindChange;
 
 	//----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
-	FStopShowingHint StopShowingHint;
-	FOnShowHint OnShowHint;
-	FStartTutorialBotAnimation StartTutorialBotAnimation;
-	FEnableMeleeChecking EnableMeleeChecking;
 	FOnTutorialMinionDeath OnTutorialMinionDeath;
-	FShowExplanation ShowExplanation;
-	FSpawnTutorialEnemy SpawnTutorialEnemy;
-	FOnAlertStart OnAlertStart;
-	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
 };

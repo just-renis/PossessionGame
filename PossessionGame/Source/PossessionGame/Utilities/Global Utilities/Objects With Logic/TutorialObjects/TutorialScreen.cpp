@@ -1,5 +1,5 @@
 ﻿#include "TutorialScreen.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 
 ATutorialScreen::ATutorialScreen()
 {
@@ -10,12 +10,12 @@ ATutorialScreen::ATutorialScreen()
 void ATutorialScreen::BeginPlay()
 {
 	Super::BeginPlay();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAlertStart.AddUObject(this, &ATutorialScreen::ChangeToAlertedMode);
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnAlertStart.AddUObject(this, &ATutorialScreen::ChangeToAlertedMode);
 }
 
 void ATutorialScreen::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAlertStart.RemoveAll(this);
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnAlertStart.RemoveAll(this);
 	Super::EndPlay(EndPlayReason);
 }
 

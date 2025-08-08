@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "TutorialBot.generated.h"
 
+enum class EExplanation : uint8;
 class UNiagaraComponent;
 class ADroneWaypoint;
 class UTutorialBotAnimationInstance;
@@ -51,7 +52,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 
 	ATutorialBot();
 
-	bool bIsMoving = false;
+	bool bIsTutorialFinished = false;
 	int32 TutorialDialogueIndex = 0;
 	int32 CurrentTutorialAnimation = 0;
 	int32 CurrentWaypointIndex = 0;
@@ -62,8 +63,6 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	float MinRange = 0.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Expression | Random Blink", meta = (AllowPrivateAccess = true))
 	float MaxRange = 2.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
-	float MovementSpeed = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	FRotator HitVentRotation;
 	UPROPERTY(EditDefaultsOnly, Category = "Dialogue", meta = (AllowPrivateAccess = true))
@@ -97,8 +96,6 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	UPROPERTY()
 	FTimerHandle TargetLocationUpdateHandle;
 	UPROPERTY()
-	FTimerHandle MoveToLocationHandle;
-	UPROPERTY()
 	FTimerHandle ResetControlRigStateHandle;
 	UPROPERTY()
 	FTimerHandle TabletVisibilityHandle;
@@ -107,7 +104,11 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	UPROPERTY()
 	FTimerHandle EndBlinkHandle;
 	UPROPERTY()
+	FTimerHandle CheckDistanceToTargetHandle;
+	UPROPERTY()
 	TObjectPtr<ATutorialDialogue> Dialogue;
+	UPROPERTY()
+	TObjectPtr<AActor> Player;
 	UPROPERTY()
 	TArray<TObjectPtr<ADroneWaypoint>> Waypoints;
 	UPROPERTY()
@@ -123,7 +124,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void ClearTimers();
 	void SetupDialogue();
 	void StartNextDialogue(const bool bShowPressAnyKeyToContinue = false);
-	void SetupAndPlayNextAnimation(const ETutorialBotAnimState InAnimState, void (ATutorialBot::*InCallback)(), const float InTimer = 0.f);
+	void SetupAndPlayNextAnimation(const ETutorialBotAnimState InAnimState, void (ATutorialBot::*InCallback)() = nullptr, const float InTimer = 0.f);
 	void FirstAnimationFinished();
 	void SecondAnimationFinished();
 	void ThirdAnimationFinished();
@@ -139,8 +140,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void UpdateTargetLocation() const;
 	void SetControlRigState(const bool bState);
 	void RetrieveWaypoints();
-	void SetupAndMoveToNextLocation(const bool bInstantMove = false);
-	void MoveToLocation();
+	void MoveToNextLocation();
 	void TwelfthAnimationFinished();
 	void PlayCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
 	void AlertTriggered() const;
@@ -152,6 +152,12 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void SetupNextRandomBlink();
 	void TriggerBlink();
 	void SetupExpression();
+	void TutorialMoveTo(const EExplanation InExplanationName);
+	void EnableCheckDistanceToTarget();
+	void CheckDistanceToTarget();
+	void StartTipDialogue() const;
+	void PlayNextToGateAnimation();
+	void WaveAnimationFinished();
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

@@ -1,7 +1,7 @@
 ﻿#include "TutorialLight.h"
 #include "Components/LightComponent.h"
 #include "Components/RectLightComponent.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 
 ATutorialLight::ATutorialLight()
 {
@@ -12,12 +12,12 @@ ATutorialLight::ATutorialLight()
 void ATutorialLight::BeginPlay()
 {
 	Super::BeginPlay();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAlertStart.AddUObject(this, &ATutorialLight::SetupBlinking);
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnAlertStart.AddUObject(this, &ATutorialLight::SetupBlinking);
 }
 
 void ATutorialLight::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAlertStart.RemoveAll(this);
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnAlertStart.RemoveAll(this);
 	GetWorldTimerManager().ClearTimer(BlinkingHandle);
 	Super::EndPlay(EndPlayReason);
 }

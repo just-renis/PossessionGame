@@ -7,6 +7,7 @@
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
+#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 bool UPlayerGhostUI::IsPressKeyShown() const { return PressKeyToContinueInv->GetVisibility() == ESlateVisibility::SelfHitTestInvisible; }
@@ -33,11 +34,10 @@ FText UPlayerGhostUI::GetKeyBindText(const int32 InIndex) const
 void UPlayerGhostUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	DelegateManager->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
-	DelegateManager->StopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
-	DelegateManager->OnShowPressKeyToContinue.AddUObject(this, &UPlayerGhostUI::ShowPressKey);
-	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerGhostUI::UpdateKeyBindText);
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnStopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.AddUObject(this, &UPlayerGhostUI::ShowPressKey);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.AddUObject(this, &UPlayerGhostUI::UpdateKeyBindText);
 }
 
 void UPlayerGhostUI::ShowHint()
@@ -47,7 +47,7 @@ void UPlayerGhostUI::ShowHint()
 	if (CurrentHintIndex == 2 && MovementHintBox) MovementHintBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	else if (CurrentHintIndex == 9)
 	{
-		(void)DelegateManager->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Minion, EGameMode::TutorialMode2);
+		(void)GetWorld()->GetSubsystem<UTutorialManager>()->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Minion, EGameMode::TutorialMode2);
 	}
 }
 
@@ -107,9 +107,9 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 
 void UPlayerGhostUI::DestroyThis() const
 {
-	DelegateManager->OnShowHint.Unbind();
-	DelegateManager->StopShowingHint.Unbind();
-	DelegateManager->OnShowPressKeyToContinue.RemoveAll(this);
-	DelegateManager->OnKeyBindChange.RemoveAll(this);
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.Unbind();
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnStopShowingHint.Unbind();
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.RemoveAll(this);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.RemoveAll(this);
 	GetWorld()->GetSubsystem<UWidgetManager>()->DestroyWidget(EWidget::TutorialUI);
 }

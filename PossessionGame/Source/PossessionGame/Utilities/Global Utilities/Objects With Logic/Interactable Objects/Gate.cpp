@@ -42,7 +42,7 @@ void AGate::BeginPlay()
 	if (!bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGateAndShowMarker);
 	else if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
 	{
-		GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.BindUObject(this, &AGate::OpenAsTutorialEndGate);
+		GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.AddUObject(this, &AGate::OpenAsTutorialEndGate);
 	}
 	if (bNeedsArtifact) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.BindUObject(this, &AGate::SetArtifactCollected);
 }
@@ -75,7 +75,7 @@ void AGate::OpenGateAndShowMarker(const EGameMode InGameMode)
 void AGate::OpenAsTutorialEndGate()
 {
 	OpenGate(EGameMode::TutorialMode1);
-	GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.Unbind();
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.RemoveAll(this);
 }
 
 void AGate::CloseGate(const EGameMode InGameMode)

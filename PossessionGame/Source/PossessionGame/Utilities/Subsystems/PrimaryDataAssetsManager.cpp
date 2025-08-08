@@ -3,6 +3,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
+#include "TutorialManager.h"
 #include "WeaponManager.h"
 #include "Components/AudioComponent.h"
 #include "Engine/AssetManager.h"
@@ -202,7 +203,7 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubc
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
 	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	else AddSpawnableEnemiesToThePool();
-	if (!bTutorialIsFinished) InDelegateManager->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
+	if (!bTutorialIsFinished) GetWorld()->GetSubsystem<UTutorialManager>()->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
 }
 
 void UPrimaryDataAssetsManager::SetupSpawnLocations()

@@ -2,6 +2,7 @@
 #include "Components/TextBlock.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 
 void UDialogueUI::ClearDialogueText() const { if (DialogueText) DialogueText->SetText(FText::FromString("")); }
 
@@ -13,6 +14,17 @@ void UDialogueUI::StartDialogue(const int32 InIndex, const bool bShowPressAnyKey
 	AssetsManager->PlaySound2D(ESound::DialogueStart);
 	DialogueTextIndex = InIndex;
 	TargetText = DialogueTextIndex == -1 ? TipTexts[FMath::RandRange(0, TipTexts.Num() - 1)] : DialogueTexts[InIndex];
+	CurrentText = "";
+	CurrentIndex = 0;
+	TypeSpeed = InSpeed;
+	GetWorld()->GetTimerManager().SetTimer(TypeHandle, this, &UDialogueUI::TypeNextLetter, TypeSpeed, true);
+}
+
+void UDialogueUI::StartTipDialogue(const float InSpeed)
+{
+	if (GetVisibility() == ESlateVisibility::Collapsed) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	AssetsManager->PlaySound2D(ESound::DialogueStart);
+	TargetText = TipTexts[FMath::RandRange(0, TipTexts.Num() - 1)];
 	CurrentText = "";
 	CurrentIndex = 0;
 	TypeSpeed = InSpeed;
@@ -32,7 +44,7 @@ void UDialogueUI::FinishedTypingDialogue()
 	GetWorld()->GetTimerManager().ClearTimer(TypeHandle);
 	if (bShowPressAnyKeyToContinueOnDialogueEnd)
 	{
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.Broadcast(true);
+		GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.Broadcast(true);
 		bShowPressAnyKeyToContinueOnDialogueEnd = false;
 	}
 }

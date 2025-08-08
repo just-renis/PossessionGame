@@ -29,6 +29,13 @@ void ATutorialDialogue::StartDialogue(const int32 InIndex, const bool bShowPress
 	Dialogue->StartDialogue(InIndex, bShowPressAnyKeyToContinue);
 }
 
+void ATutorialDialogue::StartTipDialogue() const
+{
+	if (!Dialogue) return;
+	SetVisibilityState(true);
+	Dialogue->StartTipDialogue();
+}
+
 void ATutorialDialogue::StopShowingDialogue() const
 {
 	if (!Dialogue) return;

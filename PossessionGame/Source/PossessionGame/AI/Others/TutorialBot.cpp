@@ -5,10 +5,13 @@
 #include "PossessionGame/AI/Navigation/DroneWaypoint.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/TutorialDialogue.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 
 ATutorialBot::ATutorialBot()
 {
@@ -46,10 +49,16 @@ void ATutorialBot::BeginPlay()
 	TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "TutorialTabletSocket");
 	RetrieveWaypoints();
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
-	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->StartTutorialBotAnimation.BindUObject(this, &ATutorialBot::PlayNextAnimation);
-	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.AddUObject(this, &ATutorialBot::PressAnyKeyPressed);
-	SetupDialogue();
-	PlayFirstAnim();
+	bIsTutorialFinished = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished();
+	if (!bIsTutorialFinished)
+	{
+		GetWorld()->GetSubsystem<UTutorialManager>()->StartTutorialBotAnimation.BindUObject(this, &ATutorialBot::PlayNextAnimation);
+		GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.AddUObject(this, &ATutorialBot::PressAnyKeyPressed);
+		GetWorld()->GetSubsystem<UTutorialManager>()->ShowExplanation.AddUObject(this, &ATutorialBot::TutorialMoveTo);
+		GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.AddUObject(this, &ATutorialBot::PlayNextToGateAnimation);
+		SetupDialogue();
+		PlayFirstAnim();
+	}
 }
 
 void ATutorialBot::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -103,11 +112,11 @@ void ATutorialBot::ClearTimers()
 	GetWorld()->GetTimerManager().ClearTimer(LandOnHeadHandle);
 	GetWorld()->GetTimerManager().ClearTimer(AnimFinishedHandle);
 	GetWorld()->GetTimerManager().ClearTimer(TargetLocationUpdateHandle);
-	GetWorld()->GetTimerManager().ClearTimer(MoveToLocationHandle);
 	GetWorld()->GetTimerManager().ClearTimer(ResetControlRigStateHandle);
 	GetWorld()->GetTimerManager().ClearTimer(TabletVisibilityHandle);
 	GetWorld()->GetTimerManager().ClearTimer(RandomBlinkHandle);
 	GetWorld()->GetTimerManager().ClearTimer(EndBlinkHandle);
+	GetWorld()->GetTimerManager().ClearTimer(CheckDistanceToTargetHandle);
 	
 }
 
@@ -128,7 +137,7 @@ void ATutorialBot::SetupAndPlayNextAnimation(const ETutorialBotAnimState InAnimS
 {
 	CurrentTutorialAnimation++;
 	const TObjectPtr<UAnimMontage> Animation = GetAnimation(InAnimState);
-	GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, InCallback, InTimer > 0.f ? InTimer : Animation->GetPlayLength());
+	if (InCallback) GetWorld()->GetTimerManager().SetTimer(AnimFinishedHandle, this, InCallback, InTimer > 0.f ? InTimer : Animation->GetPlayLength());
 	AnimInstance->Montage_Play(Animation);
 }
 
@@ -181,8 +190,8 @@ void ATutorialBot::SeventhAnimationFinished()
 
 void ATutorialBot::EighthAnimationFinished()
 {
-	(void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowHint.ExecuteIfBound();
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Guardian, EGameMode::TutorialMode1);
+	(void)GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.ExecuteIfBound();
+	(void)GetWorld()->GetSubsystem<UTutorialManager>()->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Guardian, EGameMode::TutorialMode1);
 }
 
 void ATutorialBot::PlayNextAnimation()
@@ -242,39 +251,17 @@ void ATutorialBot::RetrieveWaypoints()
 	for (TObjectPtr<AActor> Actor : Actors) Waypoints.Add(Cast<ADroneWaypoint>(Actor));
 }
 
-void ATutorialBot::SetupAndMoveToNextLocation(const bool bInstantMove)
+void ATutorialBot::MoveToNextLocation()
 {
+	EnableCheckDistanceToTarget();
 	Dialogue->SetVisibilityState(false);
-	for (int32 i = 0; i < Waypoints.Num(); i++) if (Waypoints[i]->GetOrder() == CurrentWaypointIndex) WaypointLocation = Waypoints[i]->GetActorLocation();
+	for (int32 i = 0; i < Waypoints.Num(); i++)
+	{
+		if (Waypoints[i]->GetOrder() != CurrentWaypointIndex) continue;
+		SetActorLocationAndRotation(Waypoints[i]->GetActorLocation(), Waypoints[i]->GetActorRotation());
+		break;
+	}
 	CurrentWaypointIndex++;
-	if (bInstantMove)
-	{
-		SetActorLocation(WaypointLocation);
-		return;
-	}
-	bIsMoving = true;
-	GetWorldTimerManager().SetTimer(MoveToLocationHandle, this, &ATutorialBot::MoveToLocation, 0.015f, true);
-}
-
-void ATutorialBot::MoveToLocation()
-{
-	const FVector Direction = (WaypointLocation - GetActorLocation()).GetSafeNormal();
-	const FVector NewLocation = GetActorLocation() + Direction * MovementSpeed;
-	SetActorLocation(NewLocation);
-	if (FVector::DistSquared(GetActorLocation(), WaypointLocation) < FMath::Square(2.f))
-	{
-		bIsMoving = false;
-		GetWorldTimerManager().ClearTimer(MoveToLocationHandle);
-		switch (CurrentWaypointIndex)
-		{
-			case 1: SetupAndMoveToNextLocation(); break;
-			case 2:
-				SetControlRigState(false);
-				SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial13, &ATutorialBot::ThirteenthAnimationFinished);
-				break;
-			default: ;
-		}
-	}
 }
 
 void ATutorialBot::TwelfthAnimationFinished()
@@ -292,7 +279,7 @@ void ATutorialBot::AlertTriggered() const
 	PlayCameraShake(AlertCameraShake);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ErrorChaos);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AlertSignalization);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAlertStart.Broadcast();
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnAlertStart.Broadcast();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound();
 }
 
@@ -305,7 +292,7 @@ void ATutorialBot::ThirteenthAnimationFinished()
 void ATutorialBot::FourteenthAnimationFinished()
 {
 	SetControlRigState(true);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowPressKeyToContinue.Broadcast(true);
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.Broadcast(true);
 }
 
 void ATutorialBot::PressAnyKeyPressed(const bool bState)
@@ -316,8 +303,8 @@ void ATutorialBot::PressAnyKeyPressed(const bool bState)
 		case 0: case 1: StartNextDialogue(true); break;
 		case 2:
 			StartNextDialogue();
-			(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnShowHint.ExecuteIfBound();
-			(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->EnableMeleeChecking.ExecuteIfBound();
+			(void)GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.ExecuteIfBound();
+			(void)GetWorld()->GetSubsystem<UTutorialManager>()->EnableMeleeChecking.ExecuteIfBound();
 		default: ;
 	}
 	PressKeyIndex++;
@@ -359,4 +346,46 @@ void ATutorialBot::SetupExpression()
 	MID_FaceExpression = Mesh->CreateAndSetMaterialInstanceDynamic(1);
 	SetExpression(ETutorialBotExpression::NeutralFace);
 	SetupNextRandomBlink();
+}
+
+void ATutorialBot::TutorialMoveTo(const EExplanation InExplanationName)
+{
+	if (InExplanationName == EExplanation::FpsUI) MoveToNextLocation();
+}
+
+void ATutorialBot::EnableCheckDistanceToTarget()
+{
+	if (const TObjectPtr<APlayerController> PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+	{
+		if (const TObjectPtr<APawn> Pawn = PC->GetPawn()) Player = Pawn;
+	}
+	GetWorldTimerManager().SetTimer(CheckDistanceToTargetHandle, this, &ATutorialBot::CheckDistanceToTarget, 0.1f, true);
+}
+
+void ATutorialBot::CheckDistanceToTarget()
+{
+	if (!Player) return;
+	if (FVector::DistSquared(GetActorLocation(), Player->GetActorLocation()) < 60000.f)
+	{
+		if (!bIsTutorialFinished) StartNextDialogue();
+		else StartTipDialogue();
+		GetWorldTimerManager().ClearTimer(CheckDistanceToTargetHandle);
+	}
+}
+
+void ATutorialBot::StartTipDialogue() const
+{
+	Dialogue->SetVisibilityState(true);
+	Dialogue->StartTipDialogue();
+}
+
+void ATutorialBot::PlayNextToGateAnimation()
+{
+	SetExpression(ETutorialBotExpression::Happy);
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Wave, &ATutorialBot::WaveAnimationFinished);
+}
+
+void ATutorialBot::WaveAnimationFinished()
+{
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Idle);
 }

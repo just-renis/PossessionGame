@@ -5,6 +5,7 @@
 #include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
@@ -36,14 +37,15 @@ void ATutorialModeBase::LoadSettingsData() const
 
 void ATutorialModeBase::InitAfterPSOPrecache()
 {
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSaveSlot();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
-	WidgetManager->Init(WidgetClasses, DelegateManager);
+	WidgetManager->Init(WidgetClasses, SaveSlot->GetIsTutorialFinished());
 	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0) WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init(nullptr);
-	Cast<UPossessionGameInstance>(GetGameInstance())->InitGameInstanceManagers();
+	GameInstance->InitGameInstanceManagers();
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
 	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
