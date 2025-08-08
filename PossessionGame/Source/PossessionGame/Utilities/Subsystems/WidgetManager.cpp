@@ -1,11 +1,10 @@
 ﻿#include "WidgetManager.h"
-#include "TutorialManager.h"
 #include "PossessionGame/UI/MainWidgets/ExplanationUI.h"
 
 void UWidgetManager::Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses, const bool bIsTutorialFinished)
 {
 	WidgetClasses = InWidgetClasses;
-	if (!bIsTutorialFinished) GetWorld()->GetSubsystem<UTutorialManager>()->ShowExplanation.AddUObject(this, &UWidgetManager::ShowExplanation);
+	if (!bIsTutorialFinished) OnShowExplanation.AddUObject(this, &UWidgetManager::ShowExplanation);
 }
 
 void UWidgetManager::DestroyWidget(const EWidget InWidget)
@@ -28,18 +27,18 @@ int32 UWidgetManager::GetWidgetZOrder(const EWidget InWidgetName)
 		case EWidget::WaveManagerHUD: return 0;
 		case EWidget::PlayerHUD: return 0;
 		case EWidget::MainMenuUI: return 0;
-		case EWidget::SettingsUI: return 2;
-		case EWidget::PauseMenuUI: return 2;
+		case EWidget::SettingsUI: return 3;
+		case EWidget::PauseMenuUI: return 3;
 		case EWidget::UpgradeSelectionUI: return 1;
 		case EWidget::TutorialUI: return 0;
 		case EWidget::VariationsUI: return 1;
-		case EWidget::LoadingScreenUI: return 3;
-		case EWidget::GameLaunchUI: return 3;
-		case EWidget::DemoEndUI: return 3;
+		case EWidget::LoadingScreenUI: return 4;
+		case EWidget::GameLaunchUI: return 4;
+		case EWidget::DemoEndUI: return 4;
 		case EWidget::SecretRoomUI: return 1;
 		case EWidget::AbilitiesMenuUI: return 1;
-		case EWidget::ExplanationUI: return 0;
-		default: return 4;
+		case EWidget::ExplanationUI: return 2;
+		default: return 5;
 	}
 }
 

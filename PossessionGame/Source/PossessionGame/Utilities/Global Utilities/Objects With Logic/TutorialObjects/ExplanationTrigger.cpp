@@ -1,6 +1,6 @@
 ﻿#include "ExplanationTrigger.h"
 #include "Components/SphereComponent.h"
-#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
+#include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 AExplanationTrigger::AExplanationTrigger()
 {
@@ -17,7 +17,7 @@ void AExplanationTrigger::BeginPlay()
 void AExplanationTrigger::Initiate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag("Player")) return;
-	GetWorld()->GetSubsystem<UTutorialManager>()->ShowExplanation.Broadcast(Explanation);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().Broadcast(Explanation);
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Destroy();
 }

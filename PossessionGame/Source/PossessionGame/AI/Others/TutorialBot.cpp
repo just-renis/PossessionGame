@@ -3,6 +3,7 @@
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Navigation/DroneWaypoint.h"
+#include "PossessionGame/Enums/EExplanation.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
@@ -12,6 +13,7 @@
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
+#include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 ATutorialBot::ATutorialBot()
 {
@@ -54,7 +56,7 @@ void ATutorialBot::BeginPlay()
 	{
 		GetWorld()->GetSubsystem<UTutorialManager>()->StartTutorialBotAnimation.BindUObject(this, &ATutorialBot::PlayNextAnimation);
 		GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.AddUObject(this, &ATutorialBot::PressAnyKeyPressed);
-		GetWorld()->GetSubsystem<UTutorialManager>()->ShowExplanation.AddUObject(this, &ATutorialBot::TutorialMoveTo);
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().AddUObject(this, &ATutorialBot::TutorialMoveTo);
 		GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.AddUObject(this, &ATutorialBot::PlayNextToGateAnimation);
 		SetupDialogue();
 		PlayFirstAnim();

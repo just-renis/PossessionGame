@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/Enums/EExplanation.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "Subsystems/WorldSubsystem.h"
@@ -16,7 +15,6 @@ DECLARE_DELEGATE(FOnStopShowingHint);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
 DECLARE_MULTICAST_DELEGATE(FOnAlertStart);
 DECLARE_MULTICAST_DELEGATE(FOnMinionDeathCompleted);
-DECLARE_MULTICAST_DELEGATE_OneParam(FShowExplanation, const EExplanation);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
 
 UCLASS()
@@ -31,7 +29,6 @@ public:
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FOnAlertStart OnAlertStart;
 	FOnMinionDeathCompleted OnMinionDeathCompleted;
-	FShowExplanation ShowExplanation;
 	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
 	
 	bool GetIsInitialized() const { return bIsInitialized; }

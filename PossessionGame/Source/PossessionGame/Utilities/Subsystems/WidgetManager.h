@@ -9,6 +9,8 @@
 class UDelegateManager;
 enum class EExplanation : uint8;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowExplanation, const EExplanation);
+
 UCLASS()
 class POSSESSIONGAME_API UWidgetManager : public UWorldSubsystem
 {
@@ -16,6 +18,7 @@ class POSSESSIONGAME_API UWidgetManager : public UWorldSubsystem
 public:
 	bool ContainsWidget(const EWidget InWidgetName) const { return Widgets.Contains(InWidgetName); }
 	EWidget GetCurrentStateOfUI() const { return CurrentState; }
+	FOnShowExplanation GetOnShowExplanationDelegate() const { return OnShowExplanation; }
 	template<typename T>
 	TObjectPtr<T> GetWidget(const EWidget InWidgetName);
 
@@ -24,6 +27,7 @@ public:
 	void DestroyWidget(const EWidget InWidget);
 private:
 	EWidget CurrentState = EWidget::None;
+	FOnShowExplanation OnShowExplanation;
 	UPROPERTY()
 	TMap<EWidget, TSubclassOf<UUserWidget>> WidgetClasses;
 	UPROPERTY()

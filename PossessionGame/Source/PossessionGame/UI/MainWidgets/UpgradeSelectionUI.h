@@ -7,13 +7,10 @@
 enum class ECharacterType : uint8;
 class UMainMenuButtonUI;
 class UVerticalBox;
-struct FUpgradeAttributes;
 enum class EUpgrade : uint8;
-enum class EUpgradeAttribute : uint8;
 class UUpgradeData;
 class UUpgradeDetailsPanelUI;
 class UDelegateManager;
-class UPossessionGameInstance;
 class UUpgradeCardUI;
 
 UCLASS()

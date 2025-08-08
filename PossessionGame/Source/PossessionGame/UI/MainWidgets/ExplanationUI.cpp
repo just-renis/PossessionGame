@@ -55,6 +55,8 @@ void UExplanationUI::SetCurrentExplanation(const EExplanation InExplanationName)
 {
 	if (const FExplanationData* ExplanationData = Explanations.Find(InExplanationName)) CurrentExplanationData = *ExplanationData;
 	else CurrentExplanationData = FExplanationData();
+	PreviousPage = -1;
+	CurrentPage = 0;
 	ShowExplanation();
 	PlayExplanationAnim(InExplanationName);
 }

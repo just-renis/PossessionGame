@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "DelegateManager.generated.h"
 
-enum class EExplanation : uint8;
 enum class EGameMode : uint8;
 enum class EUpgrade : uint8;
 enum class ECharacterType : uint8;

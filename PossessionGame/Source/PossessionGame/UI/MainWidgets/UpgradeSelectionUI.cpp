@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EExplanation.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeCardUI.h"
@@ -45,6 +46,7 @@ void UUpgradeSelectionUI::OpenUI()
 		}
 		if (EnemyCardOption2) EnemyCardOption2->SetupCard(false, EnemyCardBackgroundTexture, UpgradesData[1], EnemyIconTexture);
 	}
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().Broadcast(EExplanation::UpgradeUI);
 }
 
 void UUpgradeSelectionUI::CloseUI()

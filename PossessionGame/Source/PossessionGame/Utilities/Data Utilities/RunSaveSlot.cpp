@@ -3,6 +3,12 @@
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
+bool URunSaveSlot::GetIsExplanationShown(const EExplanation InExplanationName)
+{
+	if (const bool* bIsExplanationBeenShown = ShownExplanations.Find(InExplanationName)) return *bIsExplanationBeenShown;
+	return false;
+}
+
 int32 URunSaveSlot::GetLevelOfChoice(const EUpgrade InUpgrade, const int32 InChoice)
 {
 	if (const FUpgradeChoicesAmountByLevel* ChoicesAmountByLevel = UnlockedUpgrades.Find(InUpgrade)) return ChoicesAmountByLevel->GetLevelOfChoice(InChoice);

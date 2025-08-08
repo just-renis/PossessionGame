@@ -44,10 +44,7 @@ void UWaveModeLogic::HandleSpawning()
 	{
 		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), true, [this] { AfterSpawnEnemyCallback(); });
 	}
-	else if (!bWaveNotStarted && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0)
-	{
-		WaveCompleted();
-	}
+	else if (!bWaveNotStarted && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) WaveCompleted();
 }
 
 void UWaveModeLogic::FadeInObjectivePanel() const
