@@ -17,6 +17,8 @@ bool USaveSlot::GetIsAbilityUnlocked(const ECharacterType InCharacter, const int
 	return false;
 }
 
+bool USaveSlot::GetIsExplanationShown(const EExplanation InExplanationName) const { return ShownExplanations.Contains(InExplanationName); }
+
 bool USaveSlot::UnlockAbility(const ECharacterType InCharacter, const int32 InAbilityIndex)
 {
 	if (GetSkillPoints() <= 0) return false;
@@ -106,6 +108,12 @@ void USaveSlot::AddChosenAbilities(const ECharacterType InCharacter, const int32
 	CharacterAbilities.Abilities.Empty();
 	CharacterAbilities.Abilities.Add(InFirstAbilityIndex);
 	CharacterAbilities.Abilities.Add(InSecondAbilityIndex);
+}
+
+void USaveSlot::AddShownExplanation(const EExplanation InExplanationName)
+{
+	ShownExplanations.Add(InExplanationName);
+	if (bTutorialFinished) SaveSlot();
 }
 
 void USaveSlot::UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation) { VariationUnlockData.UpdateSelectedVariation(InCharacter, InVariation); }

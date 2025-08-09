@@ -24,21 +24,31 @@ void UExplanationUI::NativeConstruct()
 
 void UExplanationUI::Toggle(const bool bState)
 {
-	UGameplayStatics::SetGamePaused(GetWorld(), bState);
 	BackButton->SetButtonVisibility(bState);
 	FinishButton->SetButtonVisibility(bState);
 	NextPageButton->SetButtonVisibility(bState);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
-	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>(); 
+	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
+	WidgetManager->SetExplanationState(bState);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->bShowMouseCursor = bState;
-	if (bState)
+	switch (WidgetManager->GetCurrentStateOfUI())
 	{
-		PlayerController->SetInputMode(FInputModeGameAndUI());
-		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		case EWidget::UpgradeSelectionUI: case EWidget::VariationsUI: case EWidget::SecretRoomUI: case EWidget::AbilitiesMenuUI:
+			if (!bState) return;
+			if (Highlight) Highlight->PlayFadeAnim(true);
+			SetVisibility(ESlateVisibility::Visible);
+			break;
+		default:
+			UGameplayStatics::SetGamePaused(GetWorld(), bState);
+			PlayerController->bShowMouseCursor = bState;
+			if (bState)
+			{
+				PlayerController->SetInputMode(FInputModeGameAndUI());
+				SetVisibility(ESlateVisibility::Visible);
+				if (Highlight) Highlight->PlayFadeAnim(true);
+			}
+			else PlayerController->SetInputMode(FInputModeGameOnly());
 	}
-	else PlayerController->SetInputMode(FInputModeGameOnly());
-	WidgetManager->SetCurrentStateOfUI(bState ? EWidget::ExplanationUI : EWidget::None);
 }
 
 void UExplanationUI::ShowExplanation()
@@ -57,6 +67,7 @@ void UExplanationUI::SetCurrentExplanation(const EExplanation InExplanationName)
 	else CurrentExplanationData = FExplanationData();
 	PreviousPage = -1;
 	CurrentPage = 0;
+	ChangeButtonsStates(CurrentExplanationData.GetPageAmount() > 1);
 	ShowExplanation();
 	PlayExplanationAnim(InExplanationName);
 }
@@ -66,13 +77,14 @@ void UExplanationUI::PlayExplanationAnim(const EExplanation InExplanationName)
 	switch (InExplanationName)
 	{
 		case EExplanation::FpsUI: PlayAnimation(FpsFadeInAnim); break;
-		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI: PlayAnimation(AbilitiesUpgradeVariationFadeInAnim); break;
+		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI: case EExplanation::UpgradeChoiceUI: PlayAnimation(AbilitiesUpgradeVariationFadeInAnim); break;
 		case EExplanation::VariationUI: PlayAnimation(VariationSlideRightAnim);
 	}
 }
 
 void UExplanationUI::CloseExplanationLogic()
 {
+	if (Highlight) Highlight->PlayFadeAnim(false);
 	FinishedFadeOutDelegate.BindDynamic(this, &UExplanationUI::FinishedFadeOutAnim);
 	switch (CurrentExplanationData.GetExplanationName())
 	{
@@ -81,7 +93,7 @@ void UExplanationUI::CloseExplanationLogic()
 			(void)GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.ExecuteIfBound();
 			BindToAnimationFinished(FpsFadeOutAnim, FinishedFadeOutDelegate);
 			break;
-		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI:
+		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI: case EExplanation::UpgradeChoiceUI:
 			PlayAnimation(AbilitiesUpgradeVariationFadeOutAnim);
 			BindToAnimationFinished(AbilitiesUpgradeVariationFadeOutAnim, FinishedFadeOutDelegate);
 			break;
@@ -91,12 +103,19 @@ void UExplanationUI::CloseExplanationLogic()
 	}
 }
 
+void UExplanationUI::ChangeButtonsStates(const bool bState) const
+{
+	BackButton->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
+	NextPageButton->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
+	if (bState) FinishButton->SetVisibility(ESlateVisibility::Hidden);
+}
+
 void UExplanationUI::NextPage()
 {
 	if (CurrentPage + 1 >= CurrentExplanationData.GetPageAmount()) return;
 	PreviousPage = CurrentPage;
 	PlayAnimation(BackNextTextAnim);
-	CurrentPage++;
+	if (++CurrentPage + 1 == CurrentExplanationData.GetPageAmount()) FinishButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	ShowExplanation();
 }
 

@@ -2,11 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "PossessionGame/Enums/EExplanation.h"
 #include "PossessionGame/Enums/EVariation.h"
 #include "RunSaveSlot.generated.h"
 
-enum class EExplanation : uint8;
 enum class EVariation : uint8;
 class UPossessionGameInstance;
 enum class EUpgrade : uint8;
@@ -47,7 +45,6 @@ class POSSESSIONGAME_API URunSaveSlot : public USaveGame
 {
 	GENERATED_BODY()
 public:
-	bool GetIsExplanationShown(const EExplanation InExplanationName);
 	int32 GetLevelOfChoice(const EUpgrade InUpgrade, const int32 InChoice);
 	int32 GetLevelOfAnUpgrade(const EUpgrade InUpgrade);
 	int32 GetSecretBoost(const EVariation InVariation);
@@ -62,8 +59,6 @@ private:
 	int32 SaveVersion = 1;
 	UPROPERTY()
 	FString SlotName;
-	UPROPERTY()
-	TMap<EExplanation, bool> ShownExplanations;
 	UPROPERTY()
 	TMap<EUpgrade, FUpgradeChoicesAmountByLevel> UnlockedUpgrades;
 	UPROPERTY()

@@ -11,6 +11,8 @@
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeCardUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeDetailsPanelUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
@@ -46,7 +48,11 @@ void UUpgradeSelectionUI::OpenUI()
 		}
 		if (EnemyCardOption2) EnemyCardOption2->SetupCard(false, EnemyCardBackgroundTexture, UpgradesData[1], EnemyIconTexture);
 	}
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().Broadcast(EExplanation::UpgradeUI);
+	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+	if (!GameInstance->GetSaveSlot()->GetIsExplanationShown(EExplanation::UpgradeUI))
+	{
+		(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::UpgradeUI, GameInstance);
+	}
 }
 
 void UUpgradeSelectionUI::CloseUI()
@@ -163,6 +169,11 @@ void UUpgradeSelectionUI::NativeConstruct()
 void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData)
 {
 	if (!UpgradeChoicesPanel) return;
+	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+	if (!GameInstance->GetSaveSlot()->GetIsExplanationShown(EExplanation::UpgradeChoiceUI))
+	{
+		(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::UpgradeChoiceUI, GameInstance);
+	}
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeChoicesFadeIn);
 	bChoicesOpen = true;
 	if (BackButton) BackButton->SetButtonVisibility(true);

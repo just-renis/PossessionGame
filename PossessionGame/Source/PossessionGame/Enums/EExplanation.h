@@ -7,5 +7,6 @@ enum class EExplanation : uint8
     AbilitiesUI,
     SecretUI,
     VariationUI,
-    UpgradeUI
+    UpgradeUI,
+    UpgradeChoiceUI
 };

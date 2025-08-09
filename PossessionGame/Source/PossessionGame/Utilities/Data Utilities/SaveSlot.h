@@ -5,8 +5,10 @@
 #include "FVariationUnlockData.h"
 #include "GameFramework/SaveGame.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EExplanation.h"
 #include "SaveSlot.generated.h"
 
+enum class EExplanation : uint8;
 class UAbility;
 enum class EAbility : uint8;
 class UDelegateManager;
@@ -24,6 +26,7 @@ public:
 	bool GetIsFirstLaunch() const { return bIsFirstLaunch; }
 	bool UnlockAbility(const ECharacterType InCharacter, const int32 InAbilityIndex);
 	bool GetIsAbilityUnlocked(const ECharacterType InCharacter, const int32 InAbilityIndex);
+	bool GetIsExplanationShown(const EExplanation InExplanationName) const;
 	int32 GetXp() const { return CurrentXp; }
 	int32 GetPlayerLevel() const { return CurrentLevel; }
 	int32 GetCurrentLevelNeededXp() const;
@@ -46,6 +49,7 @@ public:
 	void SetLaunchedOnce();
 	void UnlockVariation(const EVariation InVariationUnlockName);
 	void AddChosenAbilities(const ECharacterType InCharacter, const int32 InFirstAbilityIndex, const int32 InSecondAbilityIndex);
+	void AddShownExplanation(const EExplanation InExplanationName);
 private:
 	UPROPERTY()
 	bool bIsFirstLaunch = true;
@@ -65,6 +69,8 @@ private:
 	TObjectPtr<UPlayerLevelData> PlayerLevelData;
 	UPROPERTY()
 	FVariationUnlockData VariationUnlockData;
+	UPROPERTY()
+	TSet<EExplanation> ShownExplanations;
 	UPROPERTY()
 	TMap<ECharacterType, FCharacterAbilities> CharacterChosenAbilities;
 	UPROPERTY()

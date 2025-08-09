@@ -38,19 +38,22 @@ void UPauseMenuUI::NativeConstruct()
 
 void UPauseMenuUI::Toggle(const bool bState)
 {
-	UGameplayStatics::SetGamePaused(GetWorld(), bState);
-	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	if (ContinueButton) ContinueButton->SetButtonVisibility(bState);
-	if (SettingsButton) SettingsButton->SetButtonVisibility(bState);
-	if (ReturnToMenuButton) ReturnToMenuButton->SetButtonVisibility(bState);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>(); 
+	if (!WidgetManager->GetIsExplanationOpened())
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), bState);
+		const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
+		PlayerController->bShowMouseCursor = bState;
+		if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
+		else PlayerController->SetInputMode(FInputModeGameOnly());
+	}
+	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	ContinueButton->SetButtonVisibility(bState);
+	SettingsButton->SetButtonVisibility(bState);
+	ReturnToMenuButton->SetButtonVisibility(bState);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	if (WidgetManager->ContainsWidget(EWidget::PlayerHUD)) WidgetManager->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
 	if (bState) PlayAnimation(FadeInAnim);
-	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->bShowMouseCursor = bState;
-	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
-	else PlayerController->SetInputMode(FInputModeGameOnly());
 	WidgetManager->SetCurrentStateOfUI(bState ? EWidget::PauseMenuUI : EWidget::None);
 }
 

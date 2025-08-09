@@ -130,12 +130,6 @@ void AEnemy::P_UpdateAmmoHUD(const int32 WeaponAmmo, const int32 MaxAmmo) const 
 
 void AEnemy::P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeaponAmmo, const int32 MaxAmmo) const { if (P_HUD) P_HUD->UpdateAmmoText(FirstWeaponAmmo, SecondWeaponAmmo, MaxAmmo); }
 
-void AEnemy::P_StopTime()
-{
-	if (FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), 1.f, 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), GameInstance->GetStoppedTimeDilation());
-	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
-}
-
 void AEnemy::P_SetFov(const float InFov)
 {
 	TargetFov = InFov;
@@ -190,13 +184,14 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(11).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 0);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(12).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 1);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(13).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 2);
+	//			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &AEnemy::P_Stomp); //- 19 reserved was stomp, -14 right click reserved.
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &AEnemy::P_HandleEscapeClick);
 		#if WITH_EDITOR
-			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &AEnemy::P_StopTime);
+			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &AEnemy::ToggleTimeDilation);
 		#endif
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &AEnemy::P_TryInteracting);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack);
-	//	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(19).Action, ETriggerEvent::Started, this, &AEnemy::P_Stomp); - 19 reserved was stomp, -14 right click reserved.
+		
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::OpenInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_Crouch);
@@ -218,7 +213,7 @@ void AEnemy::PossessedBy(AController* NewController)
 			P_ToggleCriticallyDamagedEffects(0.f);
 			AssetsManager->PlaySound2D(ESound::OnHijack);
 			AssetsManager->RemoveStoredSound(ESound::GuardianSlowMotion);
-			AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
+			AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeepFps);
 			GetWorldTimerManager().SetTimer(AI_TriggerDeathVoiceLineHandle, this, &AEnemy::AI_TriggerDeathVoiceLine, 1.f, false);
 			P_Setup();
 			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Hijacked"));
@@ -943,7 +938,7 @@ void AEnemy::P_EnableCriticalDamage()
 	P_ToggleCriticallyDamagedEffects(1.f);
 	P_HUD->ToggleCriticalDamageIndicator();
 	AssetsManager->PlaySound2D(ESound::CriticalHealthEnter);
-	AssetsManager->PlaySound2D(ESound::CriticalDamageBeep, true);
+	AssetsManager->PlaySound2D(ESound::CriticalDamageBeepFps, true);
 }
 
 void AEnemy::P_ToggleCriticallyDamagedEffects(const float InValue) const
@@ -958,7 +953,7 @@ void AEnemy::P_InitiateDeathEvents()
 	GetWorldTimerManager().ClearTimer(P_DeathHandle);
 	P_ConfigurePostProcessEffectsAfterDeath();
 	AssetsManager->RemoveStoredSound(ESound::GuardianSlowMotion);
-	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeep);
+	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeepFps);
 	DelegateManager->OnPlayerDeath.Broadcast();
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor::Black, false, true);
 	GetWorldTimerManager().SetTimer(RestartLevelHandle, this, &AEnemy::RestartLevel, 3.f, false);
@@ -1337,4 +1332,10 @@ void AEnemy::SetupTutorialManager()
 	if (!TutorialManager->GetIsInitialized()) TutorialManager->Init();
 	TutorialManager->SetPlayerRef(this);
 	bIsImmortal = true;
+}
+
+void AEnemy::ToggleTimeDilation()
+{
+	if (!FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), GameInstance->GetStoppedTimeDilation(), 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), GameInstance->GetStoppedTimeDilation());
+	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }

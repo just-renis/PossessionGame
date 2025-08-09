@@ -29,7 +29,7 @@ public:
 	bool IsDemo() const { return bIsDemo; }
 	bool IsPlayerTakenDamageEffectsEnabled() const { return bPlayerTakenDamageEffectsEnabled; }
 	bool GetIsMainMenuLaunchedOnce() const { return bMainMenuLaunchedOnce; }
-	float GetStoppedTimeDilation() const { return GlobalTimeDilation; }
+	float GetStoppedTimeDilation() const { return StoppedTimeGlobalTimeDilation; }
 	int32 GetPlayerLevel() const { return PlayerLevel; }
 	TObjectPtr<UPlayerLevelData> GetPlayerLevelData() const { return PlayerLevelData; }
 	TObjectPtr<USaveSlot> GetSaveSlot() const { return PlayerSaveSlot; }

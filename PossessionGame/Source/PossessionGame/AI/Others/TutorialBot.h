@@ -3,8 +3,6 @@
 #include "CoreMinimal.h"
 #include "TutorialBot.generated.h"
 
-enum class EExplanation : uint8;
-class UNiagaraComponent;
 class ADroneWaypoint;
 class UTutorialBotAnimationInstance;
 class ATutorialDialogue;
@@ -152,7 +150,6 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void SetupNextRandomBlink();
 	void TriggerBlink();
 	void SetupExpression();
-	void TutorialMoveTo(const EExplanation InExplanationName);
 	void EnableCheckDistanceToTarget();
 	void CheckDistanceToTarget();
 	void StartTipDialogue() const;
