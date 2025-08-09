@@ -40,7 +40,6 @@ public:
 private:
 	bool bIsInitialized = false;
 	bool bPressKeyEnabled = false;
-	bool bHijackActionViableState = false;
 	FVector LastPlayerLocation;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
@@ -54,7 +53,5 @@ private:
 	void CheckMovement();
 	void StopShowingHint() const;
 	void PressKeyToContinue();
-	void MinionDeathOccured();
-	void SetupHijackHintTimer();
-	void CheckHijackProgress();
+	void MinionDeathOccured() const;
 };

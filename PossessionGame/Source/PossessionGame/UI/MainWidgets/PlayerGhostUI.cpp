@@ -67,7 +67,7 @@ void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 		case 6: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "SlideHint", "Press [{0}] + [{1}] to Slide"), GetKeyBindText(3), KeyBindText)); break;
 		case 7: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "StompHint", "Double Press [{0}] and then [{1}] to Stomp"), GetKeyBindText(4), GetKeyBindText(6))); break;
 		case 8: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "ShootHint", "Press [{0}] to Shoot"), KeyBindText));
-		default: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HijackRobotHint", "Press [{0}] to Hijack a New Robot"), GetKeyBindText(0)));
+		default: ;
 	}
 }
 
@@ -75,6 +75,7 @@ void UPlayerGhostUI::StopShowingHint() const
 {
 	if (HintInv) HintInv->SetVisibility(ESlateVisibility::Collapsed);
 	if (MovementHintBox) MovementHintBox->SetVisibility(ESlateVisibility::Collapsed);
+	if (CurrentHintIndex >= 9) DestroyThis();
 }
 
 void UPlayerGhostUI::ShowPressKey(const bool bState)
@@ -100,6 +101,15 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 		case 7: if (InKeyBindName.IsEqual("Crouch / Slide / Stomp")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "SlideHint", "Press [{0}] + [{1}] to Slide"), GlobalSettingsManager->GetKeyBindText("Run"), InKeyBindText)); break;
 		case 8: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "StompHint", "Double Press [{0}] and then [{1}] to Stomp"), GlobalSettingsManager->GetKeyBindText("Jump"), GlobalSettingsManager->GetKeyBindText("Crouch / Slide / Stomp")));
 		case 9: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "ShootHint", "Press [{0}] to Shoot"), InKeyBindText));
-		default: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HijackRobotHint", "Press [{0}] to Hijack a New Robot"), GetKeyBindText(0)));
+		default: ;
 	}
+}
+
+void UPlayerGhostUI::DestroyThis() const
+{
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.Unbind();
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnStopShowingHint.Unbind();
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.RemoveAll(this);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.RemoveAll(this);
+	GetWorld()->GetSubsystem<UWidgetManager>()->DestroyWidget(EWidget::TutorialUI);
 }

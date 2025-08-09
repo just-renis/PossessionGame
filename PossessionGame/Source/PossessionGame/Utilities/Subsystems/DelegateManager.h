@@ -24,7 +24,6 @@ DECLARE_DELEGATE(FOnOutOfAmmo);
 DECLARE_DELEGATE(FOnGameLaunchFinished);
 DECLARE_DELEGATE(FOnMusicSoundtrackChangeRequired);
 DECLARE_DELEGATE(FMeleeAttackOccured);
-DECLARE_DELEGATE(FOnGateClosed);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FOnCheckDistanceToTutorialDrone, const int32);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
@@ -86,7 +85,6 @@ public:
 	FOnGameLaunchFinished OnGameLaunchFinished;
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;
 	FMeleeAttackOccured MeleeAttackOccured;
-	FOnGateClosed OnGateClosed;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnBossDamaged OnBossDamaged;

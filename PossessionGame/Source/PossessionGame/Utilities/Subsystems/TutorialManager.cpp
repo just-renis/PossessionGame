@@ -54,30 +54,9 @@ void UTutorialManager::PressKeyToContinue()
 	OnShowPressKeyToContinue.Broadcast(false);
 }
 
-void UTutorialManager::MinionDeathOccured()
+void UTutorialManager::MinionDeathOccured() const
 {
 	OnMinionDeathCompleted.Broadcast();
 	(void)OnStopShowingHint.ExecuteIfBound();
 	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialMinionDeath.Unbind();
-	SetupHijackHintTimer();
-}
-
-void UTutorialManager::SetupHijackHintTimer()
-{
-	GetWorld()->GetTimerManager().SetTimer(TutorialHandle, this, &UTutorialManager::CheckHijackProgress, 0.1f, true);
-}
-
-void UTutorialManager::CheckHijackProgress()
-{
-	if (!Player) return;
-	if (!bHijackActionViableState && Player->GetIsHijackActionViable())
-	{
-		(void)OnShowHint.ExecuteIfBound();
-		bHijackActionViableState = true;
-	}
-	else if (bHijackActionViableState && !Player->GetIsHijackActionViable())
-	{
-		(void)OnStopShowingHint.ExecuteIfBound();
-		bHijackActionViableState = false;
-	}
 }
