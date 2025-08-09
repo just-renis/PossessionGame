@@ -6,7 +6,11 @@
 
 void UMainMenuButtonUI::SetText(const FText& InText) const { if (ButtonText) ButtonText->SetText(InText); }
 
-void UMainMenuButtonUI::SetButtonVisibility(const bool bState) const { if (Button) Button->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }
+void UMainMenuButtonUI::SetButtonVisibility(const bool bState) const
+{
+	if (!Button) return;
+	Button->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+}
 
 void UMainMenuButtonUI::NativePreConstruct()
 {
@@ -38,7 +42,7 @@ void UMainMenuButtonUI::SetupButtonEvents()
 
 void UMainMenuButtonUI::TriggerClickAnim()
 {
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bStrongButtonSelect ? ESound::ButtonSelect : ESound::ClickArrow);
 	PlayAnimation(ButtonClickAnim);
 }
 

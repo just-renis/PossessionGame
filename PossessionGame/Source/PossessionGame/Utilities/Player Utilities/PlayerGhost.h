@@ -36,4 +36,5 @@ private:
 	void HandleEscapeClick();
 	void CheckIfPlayerFallOutOfWorld();
 	void SetupUserSettings() const;
+	void ToggleTimeDilation();
 };

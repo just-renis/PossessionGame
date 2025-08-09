@@ -83,6 +83,7 @@ private:
 	void SetCurrentExplanation(const EExplanation InExplanationName);
 	void PlayExplanationAnim(const EExplanation InExplanationName);
 	void CloseExplanationLogic();
+	void ChangeButtonsStates(const bool bState) const;
 	UFUNCTION()
 	void NextPage();
 	UFUNCTION()

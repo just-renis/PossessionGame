@@ -91,7 +91,6 @@ public:
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo) const;
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo, const int32 MaxAmmo) const;
 	void P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeaponAmmo, const int32 MaxAmmo) const;
-	void P_StopTime(); // NOT USED ANYWHERE YET.
 	void P_SetFov(const float InFov);
 	void P_IncreaseMovementSpeed(const float InPercentage) const;
 	void P_ResetMovementSpeed() const;
@@ -416,4 +415,5 @@ private:
 	void RestartLevel() const;
 	void DisableHijackViableVfx() const;
 	void SetupTutorialManager();
+	void ToggleTimeDilation();
 };

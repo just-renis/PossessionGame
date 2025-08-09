@@ -14,7 +14,7 @@
 void AMainMenuBase::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses, Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished());
+	GetWorld()->GetSubsystem<UWidgetManager>()->Init(WidgetClasses);
 	ShowLoadingScreen();
 }
 

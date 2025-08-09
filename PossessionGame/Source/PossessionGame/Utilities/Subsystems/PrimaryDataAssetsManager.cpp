@@ -141,9 +141,9 @@ void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool
 
 void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
 {
-	if (StoredSounds.Contains(InSoundName))
+	if (const TObjectPtr<UAudioComponent>* AudioComponentRef = StoredSounds.Find(InSoundName))
 	{
-		StoredSounds[InSoundName]->Stop();
+		if (IsValid(AudioComponentRef->Get())) AudioComponentRef->Get()->Stop();
 		StoredSounds.Remove(InSoundName);
 	}
 }
@@ -238,7 +238,10 @@ void UPrimaryDataAssetsManager::SetupSound2D(const FSoundContainer& InSoundData,
 {
 	float VolumeMultiplier = 1.f;
 	if (InSoundData.GetSoundContainer()->bIsCharacterTypeDependant) VolumeMultiplier = bIsPlayer ? InSoundData.GetSoundContainer()->PlayerVolume : InSoundData.GetSoundContainer()->EnemyVolume;
-	if (bStoreSoundRef) StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), VolumeMultiplier));
+	if (bStoreSoundRef)
+	{
+		StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), VolumeMultiplier));
+	}
 	else UGameplayStatics::PlaySound2D(GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), VolumeMultiplier);
 }
 
@@ -380,7 +383,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_ReadyToPossess", ESound::ReadyToHijack);
 	SoundMap.Add("PA_TakeDamageLayer1", ESound::TakeDamageLayer1);
 	SoundMap.Add("PA_TakeDamageLayer2", ESound::TakeDamageLayer2);
-	SoundMap.Add("PA_CriticalDamageBeep", ESound::CriticalDamageBeep);
+	SoundMap.Add("PA_CriticalDamageBeepFps", ESound::CriticalDamageBeepFps);
+	SoundMap.Add("PA_CriticalDamageBeepComputer", ESound::CriticalDamageBeepComputer);
 	SoundMap.Add("PA_CriticalHealthEnter", ESound::CriticalHealthEnter);
 	SoundMap.Add("PA_PlayerDeath", ESound::PlayerDeath);
 	SoundMap.Add("PA_RangerOnPossession", ESound::RangerOnHijack);

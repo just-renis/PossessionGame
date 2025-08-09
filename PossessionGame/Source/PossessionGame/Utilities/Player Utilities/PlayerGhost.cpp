@@ -50,6 +50,9 @@ void APlayerGhost::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &APlayerGhost::Rotate);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &APlayerGhost::PossessEnemy);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &APlayerGhost::HandleEscapeClick);
+		#if WITH_EDITOR
+			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &APlayerGhost::ToggleTimeDilation);
+		#endif
 	}
 }
 
@@ -116,4 +119,10 @@ void APlayerGhost::SetupUserSettings() const
 	const TObjectPtr<UEnhancedInputUserSettings> UserSettings = GetWorld()->GetFirstPlayerController()->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()->GetUserSettings();
 	if (!UserSettings) return;
 	if (!UserSettings->IsMappingContextRegistered(PlayerMappingContext)) UserSettings->RegisterInputMappingContext(PlayerMappingContext);
+}
+
+void APlayerGhost::ToggleTimeDilation()
+{
+	if (!FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), Cast<UPossessionGameInstance>(GetGameInstance())->GetStoppedTimeDilation(), 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Cast<UPossessionGameInstance>(GetGameInstance())->GetStoppedTimeDilation());
+	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }

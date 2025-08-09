@@ -3,7 +3,6 @@
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Navigation/DroneWaypoint.h"
-#include "PossessionGame/Enums/EExplanation.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
@@ -13,7 +12,6 @@
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
-#include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 ATutorialBot::ATutorialBot()
 {
@@ -56,7 +54,7 @@ void ATutorialBot::BeginPlay()
 	{
 		GetWorld()->GetSubsystem<UTutorialManager>()->StartTutorialBotAnimation.BindUObject(this, &ATutorialBot::PlayNextAnimation);
 		GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.AddUObject(this, &ATutorialBot::PressAnyKeyPressed);
-		GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().AddUObject(this, &ATutorialBot::TutorialMoveTo);
+		GetWorld()->GetSubsystem<UTutorialManager>()->OnFpsExplanationTriggered.BindUObject(this, &ATutorialBot::MoveToNextLocation);
 		GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.AddUObject(this, &ATutorialBot::PlayNextToGateAnimation);
 		SetupDialogue();
 		PlayFirstAnim();
@@ -350,11 +348,6 @@ void ATutorialBot::SetupExpression()
 	SetupNextRandomBlink();
 }
 
-void ATutorialBot::TutorialMoveTo(const EExplanation InExplanationName)
-{
-	if (InExplanationName == EExplanation::FpsUI) MoveToNextLocation();
-}
-
 void ATutorialBot::EnableCheckDistanceToTarget()
 {
 	if (const TObjectPtr<APlayerController> PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
@@ -367,7 +360,7 @@ void ATutorialBot::EnableCheckDistanceToTarget()
 void ATutorialBot::CheckDistanceToTarget()
 {
 	if (!Player) return;
-	if (FVector::DistSquared(GetActorLocation(), Player->GetActorLocation()) < 60000.f)
+	if (FVector::DistSquared(GetActorLocation(), Player->GetActorLocation()) < 90000.f)
 	{
 		if (!bIsTutorialFinished) StartNextDialogue();
 		else StartTipDialogue();
