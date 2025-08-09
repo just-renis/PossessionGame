@@ -45,5 +45,4 @@ private:
 	void StopShowingHint() const;
 	void ShowPressKey(const bool bState);
 	void UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText) const;
-	void DestroyThis() const;
 };
