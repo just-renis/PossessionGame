@@ -54,11 +54,13 @@ void ATutorialBot::BeginPlay()
 	{
 		GetWorld()->GetSubsystem<UTutorialManager>()->StartTutorialBotAnimation.BindUObject(this, &ATutorialBot::PlayNextAnimation);
 		GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.AddUObject(this, &ATutorialBot::PressAnyKeyPressed);
-		GetWorld()->GetSubsystem<UTutorialManager>()->OnFpsExplanationTriggered.BindUObject(this, &ATutorialBot::MoveToNextLocation);
+		GetWorld()->GetSubsystem<UTutorialManager>()->OnFpsExplanationTriggered.BindUObject(this, &ATutorialBot::TutorialMoveToNextLocation);
 		GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.AddUObject(this, &ATutorialBot::PlayNextToGateAnimation);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateClosed.BindUObject(this, &ATutorialBot::TutorialMoveToNextLocation);
 		SetupDialogue();
 		PlayFirstAnim();
 	}
+	else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateClosed.BindUObject(this, &ATutorialBot::MoveToNextLocation);
 }
 
 void ATutorialBot::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -251,6 +253,12 @@ void ATutorialBot::RetrieveWaypoints()
 	for (TObjectPtr<AActor> Actor : Actors) Waypoints.Add(Cast<ADroneWaypoint>(Actor));
 }
 
+void ATutorialBot::TutorialMoveToNextLocation()
+{
+	if (CurrentWaypointIndex != 0) bIsTutorialPressKeyToContinueNeeded = true;
+	MoveToNextLocation();
+}
+
 void ATutorialBot::MoveToNextLocation()
 {
 	EnableCheckDistanceToTarget();
@@ -300,11 +308,12 @@ void ATutorialBot::PressAnyKeyPressed(const bool bState)
 	if (bState) return;
 	switch (PressKeyIndex)
 	{
-		case 0: case 1: StartNextDialogue(true); break;
+		case 0: case 1: case 3: StartNextDialogue(true); break;
 		case 2:
 			StartNextDialogue();
 			(void)GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.ExecuteIfBound();
 			(void)GetWorld()->GetSubsystem<UTutorialManager>()->EnableMeleeChecking.ExecuteIfBound();
+		case 4: UE_LOG(LogTemp, Error, TEXT("NIGGA HEIL HITLER"));
 		default: ;
 	}
 	PressKeyIndex++;
@@ -350,6 +359,7 @@ void ATutorialBot::SetupExpression()
 
 void ATutorialBot::EnableCheckDistanceToTarget()
 {
+	UE_LOG(LogTemp, Error, TEXT("EnableCheckDistanceToTarget"));
 	if (const TObjectPtr<APlayerController> PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
 	{
 		if (const TObjectPtr<APawn> Pawn = PC->GetPawn()) Player = Pawn;
@@ -362,7 +372,7 @@ void ATutorialBot::CheckDistanceToTarget()
 	if (!Player) return;
 	if (FVector::DistSquared(GetActorLocation(), Player->GetActorLocation()) < 90000.f)
 	{
-		if (!bIsTutorialFinished) StartNextDialogue();
+		if (!bIsTutorialFinished) StartNextDialogue(bIsTutorialPressKeyToContinueNeeded);
 		else StartTipDialogue();
 		GetWorldTimerManager().ClearTimer(CheckDistanceToTargetHandle);
 	}

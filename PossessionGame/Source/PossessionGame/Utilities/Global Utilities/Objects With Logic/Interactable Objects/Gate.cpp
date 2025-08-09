@@ -42,7 +42,7 @@ void AGate::BeginPlay()
 	if (!bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGateAndShowMarker);
 	else if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
 	{
-		GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.AddUObject(this, &AGate::OpenAsTutorialEndGate);
+		GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.AddUObject(this, &AGate::OpenAsTutorialGate);
 	}
 	if (bNeedsArtifact) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.BindUObject(this, &AGate::SetArtifactCollected);
 }
@@ -64,6 +64,7 @@ void AGate::OpenGate(const EGameMode InGameMode)
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AGate::CloseGate);
 		GetWorldTimerManager().SetTimer(OpenGatesHandle, this, &AGate::OpenGateSides, 0.025f, true);
 	}
+	else if (bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AGate::CloseGate); // THIS IS THE PROBLEM.
 }
 
 void AGate::OpenGateAndShowMarker(const EGameMode InGameMode)
@@ -72,7 +73,7 @@ void AGate::OpenGateAndShowMarker(const EGameMode InGameMode)
 	ShowMarker(InGameMode);
 }
 
-void AGate::OpenAsTutorialEndGate()
+void AGate::OpenAsTutorialGate()
 {
 	OpenGate(EGameMode::TutorialMode1);
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.RemoveAll(this);
@@ -139,7 +140,11 @@ void AGate::CloseGateSides()
 	FirstGateSide->SetRelativeLocation(FirstGateSide->GetRelativeLocation() - FVector(0.f, 9.f, 0.f));
 	SecondGateSide->SetRelativeLocation(SecondGateSide->GetRelativeLocation() + FVector(0.f, 9.f, 0.f));
 	TimePassed += 0.025f;
-	if (TimePassed >= 1.f) GetWorldTimerManager().ClearTimer(CloseGatesHandle);
+	if (TimePassed >= 1.f)
+	{
+		if (bIsTutorialBotChangeLocationGate) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateClosed.ExecuteIfBound();
+		GetWorldTimerManager().ClearTimer(CloseGatesHandle);
+	}
 }
 
 void AGate::SetupInteractability()

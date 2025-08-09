@@ -51,6 +51,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	ATutorialBot();
 
 	bool bIsTutorialFinished = false;
+	bool bIsTutorialPressKeyToContinueNeeded = false;
 	int32 TutorialDialogueIndex = 0;
 	int32 CurrentTutorialAnimation = 0;
 	int32 CurrentWaypointIndex = 0;
@@ -138,6 +139,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void UpdateTargetLocation() const;
 	void SetControlRigState(const bool bState);
 	void RetrieveWaypoints();
+	void TutorialMoveToNextLocation();
 	void MoveToNextLocation();
 	void TwelfthAnimationFinished();
 	void PlayCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;

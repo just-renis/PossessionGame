@@ -288,11 +288,6 @@ void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageRea
 	}
 	if (bIsAlive && CurrentHp <= 0)
 	{
-		if (bIsImmortal)
-		{
-			CurrentHp = 10;
-			return;
-		}
 		if (bIsHijacked) P_Death();
 		else ProcessKillDamageReason(InDamageReason);
 		InitiateDeath();
@@ -911,6 +906,7 @@ void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShak
 
 void AEnemy::P_HandlingDamageTaken()
 {
+	if (bIsImmortal && CurrentHp <= 10) CurrentHp = 10;
 	if (GameInstance->IsPlayerTakenDamageEffectsEnabled())
 	{
 		P_TriggerTakeDamageEffects();
