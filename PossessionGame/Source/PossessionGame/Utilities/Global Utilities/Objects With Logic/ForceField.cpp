@@ -47,14 +47,17 @@ void AForceField::ProcessDissolveForceField()
 	if (!MID_Material) return;
 	PatternMaxOpacity -= 0.0125f;
 	PatternOpacityDivisor -= 0.1f;
+	DeploymentPercent -= 0.05f;
 	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
 	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
+	MID_Material->SetScalarParameterValue("DeploymentPercent", DeploymentPercent);
 	if (PatternOpacityDivisor > 0.f) return;
 	DestroyThis();
 }
 
 void AForceField::StartDeploymentOfForceField()
 {
+	if (++HintIndex < 5) return;
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.RemoveAll(this);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySoundAtLocation(ESound::RangerDeployShield, GetActorLocation());
 	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AForceField::ProcessDeploymentOfForceField, 0.025f, true);
@@ -65,7 +68,9 @@ void AForceField::ProcessDeploymentOfForceField()
 	if (!MID_Material) return;
 	PatternMaxOpacity += 0.0125f;
 	PatternOpacityDivisor += 0.1f;
+	DeploymentPercent += 0.05f;
 	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
 	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
+	MID_Material->SetScalarParameterValue("DeploymentPercent", DeploymentPercent);
 	if (PatternOpacityDivisor >= 2.f) GetWorldTimerManager().ClearTimer(DissolveHandle);
 }

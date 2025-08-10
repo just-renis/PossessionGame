@@ -359,7 +359,6 @@ void ATutorialBot::SetupExpression()
 
 void ATutorialBot::EnableCheckDistanceToTarget()
 {
-	UE_LOG(LogTemp, Error, TEXT("EnableCheckDistanceToTarget"));
 	if (const TObjectPtr<APlayerController> PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
 	{
 		if (const TObjectPtr<APawn> Pawn = PC->GetPawn()) Player = Pawn;

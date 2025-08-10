@@ -10,8 +10,10 @@ class POSSESSIONGAME_API AForceField : public AActor
 
 	AForceField();
 
+	int32 HintIndex = 0;
 	float PatternMaxOpacity = 0.f;
 	float PatternOpacityDivisor = 0.f;
+	float DeploymentPercent = 0.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ForceFieldIndex = -1;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
