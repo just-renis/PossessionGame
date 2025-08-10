@@ -488,6 +488,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_BotHitVent", ESound::BotHitVent);
 	SoundMap.Add("PA_BotBreakVent", ESound::BotBreakVent);
 	SoundMap.Add("PA_BotLandOnHead", ESound::BotLandOnHead);
+	SoundMap.Add("PA_BotFootStep", ESound::BotFootStep);
+	SoundMap.Add("PA_BotPressTablet", ESound::BotPressTablet);
 	SoundMap.Add("PA_ErrorChaos", ESound::ErrorChaos);
 	SoundMap.Add("PA_AlertSignalization", ESound::AlertSignalization);
 	SoundMap.Add("PA_DoorBreak", ESound::DoorBreak);

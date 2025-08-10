@@ -105,20 +105,20 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	UPROPERTY()
 	FTimerHandle CheckDistanceToTargetHandle;
 	UPROPERTY()
+	FTimerHandle PressTabletHandle;
+	UPROPERTY()
 	TObjectPtr<ATutorialDialogue> Dialogue;
 	UPROPERTY()
 	TObjectPtr<AActor> Player;
 	UPROPERTY()
 	TArray<TObjectPtr<ADroneWaypoint>> Waypoints;
-	UPROPERTY()
-	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	FVector GetSocketLocation(const FName& InName) const;
 	TObjectPtr<UAnimMontage> GetAnimation(const ETutorialBotAnimState InAnimState);
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void PlaySound(const ESound InSoundName);
+	void PlaySound(const ESound InSoundName) const;
 	void PlayFirstAnim();
 	void ClearTimers();
 	void SetupDialogue();

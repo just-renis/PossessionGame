@@ -325,10 +325,7 @@ void AEnemy::SetHijackOutline(const bool bState)
 	bHijackOutlineState = bState;
 	if (bState)
 	{
-		if (!HijackViable)
-		{
-			AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && bHijackOutlineState; }, &HijackViable, GetMesh(), FName("RootSocket"));
-		}
+		if (!HijackViable) AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && bHijackOutlineState; }, &HijackViable, GetMesh(), FName("RootSocket"));
 		else
 		{
 			if (HijackViable->IsActive()) HijackViable->Deactivate();

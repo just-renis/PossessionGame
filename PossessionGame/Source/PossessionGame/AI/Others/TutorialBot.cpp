@@ -1,6 +1,5 @@
 ﻿#include "TutorialBot.h"
 #include "TutorialBotAnimationInstance.h"
-#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Navigation/DroneWaypoint.h"
 #include "PossessionGame/Enums/EGameMode.h"
@@ -19,15 +18,6 @@ ATutorialBot::ATutorialBot()
 	RootComponent = Mesh;
 	TabletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TabletMesh"));
 	TabletMesh->SetVisibility(false);
-	Sounds.Add(ESound::BotHitVent, CreateDefaultSubobject<UAudioComponent>(TEXT("botHitVentSound")));
-	Sounds[ESound::BotHitVent]->SetAutoActivate(false);
-	Sounds[ESound::BotHitVent]->SetupAttachment(Mesh);
-	Sounds.Add(ESound::BotBreakVent, CreateDefaultSubobject<UAudioComponent>(TEXT("botBreakVentSound")));
-	Sounds[ESound::BotBreakVent]->SetAutoActivate(false);
-	Sounds[ESound::BotBreakVent]->SetupAttachment(Mesh);
-	Sounds.Add(ESound::BotLandOnHead, CreateDefaultSubobject<UAudioComponent>(TEXT("botLandOnHeadSound")));
-	Sounds[ESound::BotLandOnHead]->SetAutoActivate(false);
-	Sounds[ESound::BotLandOnHead]->SetupAttachment(Mesh);
 }
 
 FVector ATutorialBot::GetSocketLocation(const FName& InName) const
@@ -69,9 +59,9 @@ void ATutorialBot::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void ATutorialBot::PlaySound(const ESound InSoundName)
+void ATutorialBot::PlaySound(const ESound InSoundName) const
 {
-	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], nullptr, InSoundName);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySoundAtLocation(InSoundName, GetActorLocation());
 }
 
 void ATutorialBot::PlayFirstAnim()
@@ -119,6 +109,7 @@ void ATutorialBot::ClearTimers()
 	GetWorld()->GetTimerManager().ClearTimer(RandomBlinkHandle);
 	GetWorld()->GetTimerManager().ClearTimer(EndBlinkHandle);
 	GetWorld()->GetTimerManager().ClearTimer(CheckDistanceToTargetHandle);
+	GetWorld()->GetTimerManager().ClearTimer(PressTabletHandle);
 	
 }
 
@@ -180,6 +171,7 @@ void ATutorialBot::SixthAnimationFinished()
 {
 	Dialogue->SetVisibilityState(false);
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Tutorial7, &ATutorialBot::SeventhAnimationFinished);
+	GetWorld()->GetTimerManager().SetTimer(PressTabletHandle, [this] { PlaySound(ESound::BotPressTablet); }, 1.4f, false);
 	GetWorld()->GetTimerManager().SetTimer(TabletVisibilityHandle, [this] { SetTabletVisibility(true); }, 0.5f, false);
 }
 

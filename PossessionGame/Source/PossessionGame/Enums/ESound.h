@@ -96,6 +96,8 @@ enum class ESound : uint16
 	BotHitVent,
 	BotBreakVent,
 	BotLandOnHead,
+	BotPressTablet,
+	BotFootStep,
 	AlertSignalization,
 	ErrorChaos,
 	DoorBreak,
