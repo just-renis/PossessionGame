@@ -90,7 +90,7 @@ void UExplanationUI::CloseExplanationLogic()
 	{
 		case EExplanation::FpsUI:
 			PlayAnimation(FpsFadeOutAnim);
-			(void)GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.ExecuteIfBound();
+			GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.Broadcast();
 			BindToAnimationFinished(FpsFadeOutAnim, FinishedFadeOutDelegate);
 			break;
 		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI: case EExplanation::UpgradeChoiceUI:

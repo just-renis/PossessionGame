@@ -1,21 +1,24 @@
 ﻿#include "ForceField.h"
-#include "Components/AudioComponent.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 
 AForceField::AForceField()
 {
 	ForceField = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("forceField"));
 	RootComponent = ForceField;
-	DissolveSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("dissolveSfx"));
-	DissolveSfx->SetAutoActivate(false);
-	DissolveSfx->SetupAttachment(ForceField);
 }
 
 void AForceField::BeginPlay()
 {
 	Super::BeginPlay();
 	MID_Material = ForceField->CreateAndSetMaterialInstanceDynamic(0);
+	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
+	{
+		GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.AddUObject(this, &AForceField::StartDeploymentOfForceField);
+	}
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->StartForceFieldDissolve.AddUObject(this, &AForceField::StartDissolveForceField);
 }
 
@@ -35,7 +38,7 @@ void AForceField::StartDissolveForceField(const int32 InIndex)
 {
 	if (ForceFieldIndex != InIndex) return;
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->StartForceFieldDissolve.RemoveAll(this);
-	DissolveSfx->Sound ? DissolveSfx->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(DissolveSfx, nullptr, ESound::ForceFieldDissolve);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySoundAtLocation(ESound::ForceFieldDissolve, GetActorLocation());
 	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AForceField::ProcessDissolveForceField, 0.025f, true);
 }
 
@@ -48,4 +51,21 @@ void AForceField::ProcessDissolveForceField()
 	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
 	if (PatternOpacityDivisor > 0.f) return;
 	DestroyThis();
+}
+
+void AForceField::StartDeploymentOfForceField()
+{
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.RemoveAll(this);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySoundAtLocation(ESound::RangerDeployShield, GetActorLocation());
+	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AForceField::ProcessDeploymentOfForceField, 0.025f, true);
+}
+
+void AForceField::ProcessDeploymentOfForceField()
+{
+	if (!MID_Material) return;
+	PatternMaxOpacity += 0.0125f;
+	PatternOpacityDivisor += 0.1f;
+	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
+	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
+	if (PatternOpacityDivisor >= 2.f) GetWorldTimerManager().ClearTimer(DissolveHandle);
 }

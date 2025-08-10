@@ -192,7 +192,7 @@ void ATutorialBot::SeventhAnimationFinished()
 
 void ATutorialBot::EighthAnimationFinished()
 {
-	(void)GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.ExecuteIfBound();
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.Broadcast();
 	(void)GetWorld()->GetSubsystem<UTutorialManager>()->SpawnTutorialEnemy.ExecuteIfBound(ECharacterType::Guardian, EGameMode::TutorialMode1);
 }
 
@@ -311,7 +311,7 @@ void ATutorialBot::PressAnyKeyPressed(const bool bState)
 		case 0: case 1: case 3: StartNextDialogue(true); break;
 		case 2:
 			StartNextDialogue();
-			(void)GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.ExecuteIfBound();
+			GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.Broadcast();
 			(void)GetWorld()->GetSubsystem<UTutorialManager>()->EnableMeleeChecking.ExecuteIfBound();
 		case 4: UE_LOG(LogTemp, Error, TEXT("NIGGA HEIL HITLER"));
 		default: ;

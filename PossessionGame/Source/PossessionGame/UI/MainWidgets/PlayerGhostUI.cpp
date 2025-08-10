@@ -34,7 +34,7 @@ FText UPlayerGhostUI::GetKeyBindText(const int32 InIndex) const
 void UPlayerGhostUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.BindUObject(this, &UPlayerGhostUI::ShowHint);
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.AddUObject(this, &UPlayerGhostUI::ShowHint);
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnStopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.AddUObject(this, &UPlayerGhostUI::ShowPressKey);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.AddUObject(this, &UPlayerGhostUI::UpdateKeyBindText);

@@ -10,12 +10,12 @@ class AEnemy;
 
 DECLARE_DELEGATE(FStartTutorialBotAnimation);
 DECLARE_DELEGATE(FEnableMeleeChecking);
-DECLARE_DELEGATE(FOnShowHint);
 DECLARE_DELEGATE(FOnStopShowingHint);
 DECLARE_DELEGATE(FOnFpsExplanationTriggered);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
 DECLARE_MULTICAST_DELEGATE(FOnAlertStart);
 DECLARE_MULTICAST_DELEGATE(FOnMinionDeathCompleted);
+DECLARE_MULTICAST_DELEGATE(FOnShowHint);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPressKeyToContinue, const bool);
 
 UCLASS()
@@ -25,12 +25,12 @@ class POSSESSIONGAME_API UTutorialManager : public UWorldSubsystem
 public:
 	FStartTutorialBotAnimation StartTutorialBotAnimation;
 	FEnableMeleeChecking EnableMeleeChecking;
-	FOnShowHint OnShowHint;
 	FOnStopShowingHint OnStopShowingHint;
 	FOnFpsExplanationTriggered OnFpsExplanationTriggered;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FOnAlertStart OnAlertStart;
 	FOnMinionDeathCompleted OnMinionDeathCompleted;
+	FOnShowHint OnShowHint;
 	FOnShowPressKeyToContinue OnShowPressKeyToContinue;
 	
 	bool GetIsInitialized() const { return bIsInitialized; }

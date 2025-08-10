@@ -27,7 +27,7 @@ void UTutorialManager::SetPlayerRef(const TObjectPtr<AEnemy>& InPlayer)
 void UTutorialManager::CheckHijacked()
 {
 	if (!Player || !Player->GetIsHijacked()) return;
-	(void)OnShowHint.ExecuteIfBound();
+	OnShowHint.Broadcast();
 	LastPlayerLocation = Player->GetActorLocation();
 	GetWorld()->GetTimerManager().SetTimer(TutorialHandle, this, &UTutorialManager::CheckMovement, 0.05f, true);
 }
@@ -72,7 +72,7 @@ void UTutorialManager::CheckHijackProgress()
 	if (!Player) return;
 	if (!bHijackActionViableState && Player->GetIsHijackActionViable())
 	{
-		(void)OnShowHint.ExecuteIfBound();
+		OnShowHint.Broadcast();
 		bHijackActionViableState = true;
 	}
 	else if (bHijackActionViableState && !Player->GetIsHijackActionViable())
