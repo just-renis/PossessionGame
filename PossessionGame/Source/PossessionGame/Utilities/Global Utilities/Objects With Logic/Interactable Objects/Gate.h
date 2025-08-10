@@ -6,7 +6,6 @@
 #include "Gate.generated.h"
 
 class UInteractableUI;
-class AMarker;
 class UWidgetComponent;
 class UBoxComponent;
 
@@ -51,8 +50,6 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> OpenGatesSfx;
 	UPROPERTY()
-	TObjectPtr<AMarker> Marker;
-	UPROPERTY()
 	FTimerHandle FadeOutAnimHandle;
 	UPROPERTY()
 	FTimerHandle OpenGatesHandle;
@@ -72,7 +69,7 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	virtual void Interact() override;
 	virtual void ChangeOutlineState(const bool bState) override;
 	void SetArtifactCollected() { bNeedsArtifact = false; }
-	void ShowMarker(const EGameMode InGameMode);
+	void ShowMarker(const EGameMode InGameMode) const;
 	void FadeOutAnimFinished() const;
 	void OpenGateSides();
 	void CloseGateSides();

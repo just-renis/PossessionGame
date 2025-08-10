@@ -7,9 +7,9 @@
 #include "PossessionGame/UI/MainWidgets/DemoEndUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/InteractableUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
@@ -111,11 +111,10 @@ void AGate::ChangeOutlineState(const bool bState)
 	if (bState) GetWorldTimerManager().SetTimer(DisableOutlineHandle, this, &AGate::DisableOutline, 0.0245f, false);
 }
 
-void AGate::ShowMarker(const EGameMode InGameMode)
+void AGate::ShowMarker(const EGameMode InGameMode) const
 {
 	if (GameModeToFinish != InGameMode) return;
-	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 100.f), FRotator::ZeroRotator);
-	Marker->Toggle(true);
+	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 100.f);
 }
 
 void AGate::FadeOutAnimFinished() const { if (InteractableWidget) InteractableWidget->SetVisibility(false); }
@@ -136,7 +135,6 @@ void AGate::OpenGateSides()
 
 void AGate::CloseGateSides()
 {
-	if (Marker) Marker->DestroyThis();
 	FirstGateSide->SetRelativeLocation(FirstGateSide->GetRelativeLocation() - FVector(0.f, 9.f, 0.f));
 	SecondGateSide->SetRelativeLocation(SecondGateSide->GetRelativeLocation() + FVector(0.f, 9.f, 0.f));
 	TimePassed += 0.025f;

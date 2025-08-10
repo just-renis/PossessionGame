@@ -1,17 +1,12 @@
 ﻿#include "Marker.h"
 #include "Components/WidgetComponent.h"
 #include "PossessionGame/UI/SecondaryWidgets/ObjectiveMarker.h"
-
-void AMarker::Toggle(const bool bState)
-{
-	if (bState) GetWorld()->GetTimerManager().SetTimer(MarkerUpdateHandle, this, &AMarker::UpdateMarkerText, 0.05f, true);
-	else GetWorld()->GetTimerManager().ClearTimer(MarkerUpdateHandle);
-	SetActorHiddenInGame(!bState);
-}
+#include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 
 void AMarker::DestroyThis()
 {
-	Toggle(false);
+	GetWorld()->GetSubsystem<UMarkerManager>()->GetTriggerDestroyMarkersDelegate().RemoveAll(this);
+	GetWorld()->GetTimerManager().ClearTimer(MarkerUpdateHandle);
 	Destroy();
 }
 
@@ -24,6 +19,7 @@ AMarker::AMarker()
 void AMarker::BeginPlay()
 {
 	Super::BeginPlay();
+	GetWorld()->GetSubsystem<UMarkerManager>()->GetTriggerDestroyMarkersDelegate().AddUObject(this, &AMarker::DestroyThis);
 	Marker = Cast<UObjectiveMarker>(MarkerWidgetComponent->GetWidget());
 	PlayerController = GetWorld()->GetFirstPlayerController();
 	GetWorld()->GetTimerManager().SetTimer(MarkerUpdateHandle, this, &AMarker::UpdateMarkerText, 0.05f, true);

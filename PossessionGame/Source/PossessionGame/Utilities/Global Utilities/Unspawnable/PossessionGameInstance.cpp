@@ -52,7 +52,7 @@ void UPossessionGameInstance::ResetRunSaveSlot()
 void UPossessionGameInstance::InitGameInstanceManagers()
 {
 	GetTimerManager().SetTimer(TickHandle, this, &UPossessionGameInstance::Tick, 0.1f, true);
-	GetSubsystem<UPrimaryDataAssetsManager>()->Init(PlayerSaveSlot->GetIsTutorialFinished(), MarkerClass, GetSubsystem<UDelegateManager>(), SpawnableEnemiesByTotalAmount, ToSpawnAfterTutorial);
+	GetSubsystem<UPrimaryDataAssetsManager>()->Init(PlayerSaveSlot->GetIsTutorialFinished(), GetSubsystem<UDelegateManager>(), SpawnableEnemiesByTotalAmount, ToSpawnAfterTutorial);
 }
 
 void UPossessionGameInstance::Init()

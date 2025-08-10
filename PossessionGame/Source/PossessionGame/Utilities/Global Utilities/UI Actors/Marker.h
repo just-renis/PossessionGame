@@ -11,7 +11,6 @@ class POSSESSIONGAME_API AMarker : public AActor
 {
 	GENERATED_BODY()
 public:
-	void Toggle(const bool bState);
 	void DestroyThis();
 private:
 	AMarker();

@@ -191,7 +191,7 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 	}
 }
 
-void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount, const ECharacterType InToSpawnAfterTutorial)
+void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount, const ECharacterType InToSpawnAfterTutorial)
 {
 	bTutorialIsFinished = bIsTutorialFinished;
 	ToSpawnAfterTutorial = InToSpawnAfterTutorial;
@@ -199,7 +199,6 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TSubc
 	SetupSpawnLocations();
 	if (bIsInitialized) return;
 	bIsInitialized = true;
-	MarkerClass = InMarkerClass;
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
 	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	else AddSpawnableEnemiesToThePool();

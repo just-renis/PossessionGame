@@ -1,9 +1,8 @@
 ﻿#include "Terminal.h"
 #include "Components/SphereComponent.h"
 #include "PossessionGame/Enums/EGameMode.h"
-#include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
-#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 
 ATerminal::ATerminal()
 {
@@ -23,7 +22,7 @@ void ATerminal::BeginPlay()
 void ATerminal::Interact()
 {
 	if (!GetIsInteractable()) return;
-	if (Marker) Marker->DestroyThis();
+	GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
 	DelegateManager->OnTerminalInteraction.RemoveAll(this);
 	DelegateManager->OnTerminalHackFinish.RemoveAll(this);
 	DelegateManager->OnGameModeInitiator.RemoveAll(this);
@@ -31,11 +30,7 @@ void ATerminal::Interact()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTerminalInteraction.Broadcast();
 }
 
-void ATerminal::ShowMarker()
-{
-	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 140.f), FRotator::ZeroRotator);
-	Marker->Toggle(true);
-}
+void ATerminal::ShowMarker() const { GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 140.f); }
 
 void ATerminal::EnableTerminal(const EGameMode InGameMode)
 {
@@ -58,7 +53,7 @@ void ATerminal::ToggleInteractableWidget(const bool bState)
 	else
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (Marker) Marker->Toggle(false);
+	//	GetWorld()->GetSubsystem<UMarkerManager>()->DeleteMarkers();
 		FadeOutInteractableUI();
 	}
 }

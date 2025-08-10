@@ -30,8 +30,6 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public ICollectable
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> Aura;
 	UPROPERTY()
-	TObjectPtr<AMarker> Marker;
-	UPROPERTY()
 	TObjectPtr<UPoolingManager> PoolingManager;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Border;
@@ -48,7 +46,6 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public ICollectable
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Init(bool bInIsPlayerObject) override;
 	virtual void Collect() override;
-	void ShowMarker();
 	void ToggleCollectible(const bool bState, const bool bMarkerIncluded = false);
 	void Float();
 	void Spin();

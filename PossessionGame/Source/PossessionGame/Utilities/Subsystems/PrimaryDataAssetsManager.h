@@ -11,7 +11,6 @@
 #include "PossessionGame/Utilities/Data Utilities/FTFunctionCallback.h"
 #include "PrimaryDataAssetsManager.generated.h"
 
-class AMarker;
 struct FSpawnableEnemyByTotalAmount;
 class UDelegateManager;
 enum class EGameMode : uint8;
@@ -183,7 +182,6 @@ public:
 	FSoundContainer& GetSoundData(const ESound InSoundName);
 	FCharacterContainer& GetCharacterData(const ECharacterType InCharacterName);
 	FVfxContainer& GetVfxData(const EVfx InVfxName);
-	TSubclassOf<AMarker>& GetMarkerClass() { return MarkerClass; }
 	TObjectPtr<AEnemy> SpawnVariationReplacement(const ECharacterType InCharacter);
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -196,7 +194,7 @@ public:
 	void SpawnVfx(EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EVariation InVariationName = EVariation::Default, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
 	void ChangeVfxVariation(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName);
 	void RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
-	void Init(const bool bIsTutorialFinished, const TSubclassOf<AMarker>& InMarkerClass, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount, const ECharacterType InToSpawnAfterTutorial);
+	void Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount, const ECharacterType InToSpawnAfterTutorial);
 	void SetupSpawnLocations();
 private:
 	bool bIsInitialized = false;
@@ -206,8 +204,6 @@ private:
 	int32 TotalSpawnedEnemies = 0;
 	int32 NextSpawnableEnemyIndex = 0;
 	ECharacterType ToSpawnAfterTutorial;
-	UPROPERTY()
-	TSubclassOf<AMarker> MarkerClass; // To not put tons of references everywhere where i need it and also it doesn't work with pooling FUCK 3D UI WIDGETS.
 	UPROPERTY()
 	TMap<EWeapon, TObjectPtr<UPA_WeaponContainer>> WeaponContainers;
 	UPROPERTY()

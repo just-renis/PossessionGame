@@ -1,8 +1,8 @@
 ﻿#include "UsbTerminal.h"
 #include "Components/SphereComponent.h"
-#include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
+#include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AUsbTerminal::AUsbTerminal()
@@ -40,16 +40,11 @@ void AUsbTerminal::Interact()
 		UsbMeshes[CurrentUsbIndex]->SetVisibility(true);
 		(void)DelegateManager->OnUsbInserted.ExecuteIfBound();
 		if (++CurrentUsbIndex < 5) GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(true);
-		else if (Marker) Marker->DestroyThis();
 	}
 	DisableInteraction();
 }
 
-void AUsbTerminal::ShowMarker()
-{
-	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 140.f), FRotator::ZeroRotator);
-	Marker->Toggle(true);
-}
+void AUsbTerminal::ShowMarker() const { GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 140.f); }
 
 void AUsbTerminal::EnableInteraction()
 {
@@ -73,7 +68,7 @@ void AUsbTerminal::ToggleInteractableWidget(const bool bState)
 	else
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (Marker) Marker->Toggle(false);
+		GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
 		FadeOutInteractableUI();
 	}
 }

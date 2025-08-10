@@ -4,7 +4,6 @@
 #include "InteractableObject.h"
 #include "Terminal.generated.h"
 
-class AMarker;
 enum class EGameMode : uint8;
 class APoolObject;
 
@@ -17,14 +16,12 @@ class POSSESSIONGAME_API ATerminal : public AInteractableObject
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
-	UPROPERTY()
-	TObjectPtr<AMarker> Marker;
 
 	virtual TObjectPtr<UStaticMeshComponent> GetMesh() override { return Mesh; }
 	
 	virtual void BeginPlay() override;
 	virtual void Interact() override;
-	void ShowMarker();
+	void ShowMarker() const;
 	void EnableTerminal(const EGameMode InGameMode);
 	void DisableTerminal();
 	void ToggleInteractableWidget(const bool bState);

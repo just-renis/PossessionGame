@@ -4,7 +4,6 @@
 #include "InteractableObject.h"
 #include "UsbTerminal.generated.h"
 
-class AMarker;
 class ACollectible;
 
 UCLASS()
@@ -20,15 +19,13 @@ class POSSESSIONGAME_API AUsbTerminal : public AInteractableObject
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY()
-	TObjectPtr<AMarker> Marker;
-	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> UsbMeshes[5];
 
 	virtual TObjectPtr<UStaticMeshComponent> GetMesh() override { return Mesh; }
 
 	virtual void BeginPlay() override;
 	virtual void Interact() override;
-	void ShowMarker();
+	void ShowMarker() const;
 	void EnableInteraction();
 	void DisableInteraction();
 	void ToggleInteractableWidget(const bool bState);

@@ -5,7 +5,6 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGameInstance.generated.h"
 
-class AMarker;
 class URunSaveSlot;
 class UPlayerLevelData;
 class USaveSlot;
@@ -58,8 +57,6 @@ private:
 	float StoppedTimeGlobalTimeDilation = 0.1f;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	int32 PlayerLevel = 0;
-	UPROPERTY(EditAnywhere, Category = "Marker", meta = (AllowPrivateAccess = true))
-	TSubclassOf<AMarker> MarkerClass;
 	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
 	TArray<FSpawnableEnemyByTotalAmount> SpawnableEnemiesByTotalAmount;
 	UPROPERTY()

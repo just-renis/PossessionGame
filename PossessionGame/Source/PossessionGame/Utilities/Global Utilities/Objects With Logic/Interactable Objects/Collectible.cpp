@@ -3,8 +3,8 @@
 #include "Components/SphereComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/CollectibleData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
-#include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -75,24 +75,17 @@ void ACollectible::Collect()
 	}
 }
 
-void ACollectible::ShowMarker()
-{
-	if (!Marker) Marker = GetWorld()->SpawnActor<AMarker>(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetMarkerClass(), GetActorLocation() + FVector(0.f, 0.f, 50.f), FRotator::ZeroRotator);
-	Marker->Toggle(true);
-	Marker->SetActorLocation(GetActorLocation() + FVector(0.f, 0.f, 50.f));
-}
-
 void ACollectible::ToggleCollectible(const bool bState, const bool bMarkerIncluded)
 {
 	if (bState)
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		if (bMarkerIncluded && Data->GetIsMarkerEnabled()) ShowMarker();
+		if (bMarkerIncluded && Data->GetIsMarkerEnabled()) GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 50.f);
 	}
 	else
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (bMarkerIncluded && Marker && Data->GetIsMarkerEnabled()) Marker->Toggle(false);
+		if (bMarkerIncluded && Data->GetIsMarkerEnabled()) GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
 	}
 }
 

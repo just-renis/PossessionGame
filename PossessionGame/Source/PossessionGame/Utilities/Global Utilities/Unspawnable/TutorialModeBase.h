@@ -4,6 +4,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "TutorialModeBase.generated.h"
 
+class AMarker;
 class UEnvQuery;
 enum class EGameMode : uint8;
 class UGameModeData;
@@ -22,6 +23,8 @@ class POSSESSIONGAME_API ATutorialModeBase : public AGameModeBase
 
 	UPROPERTY(EditAnywhere, Category = "Save Data", meta = (AllowPrivateAccess = true))
 	TSubclassOf<USettingsSave> SettingsSaveClass;
+	UPROPERTY(EditAnywhere, Category = "Classes", meta = (AllowPrivateAccess = true))
+	TSubclassOf<AMarker> MarkerClass;
 	UPROPERTY(EditAnywhere, Category = "EQS", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UEnvQuery> TargetEQS;
 	UPROPERTY(EditAnywhere, Category = "Widget Manager", meta = (AllowPrivateAccess = true))
