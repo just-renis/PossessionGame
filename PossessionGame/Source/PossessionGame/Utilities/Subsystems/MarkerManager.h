@@ -7,28 +7,23 @@
 class AMarkerTrigger;
 class AMarker;
 
-DECLARE_DELEGATE_OneParam(FOnMarkerTriggered, const int32);
 DECLARE_MULTICAST_DELEGATE(FTriggerDestroyMarkers);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnMarkerTriggered, const int32);
 
 UCLASS()
 class POSSESSIONGAME_API UMarkerManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-	FOnMarkerTriggered& GetOnMarkerTriggeredDelegate() { return OnMarkerTriggered; }
 	FTriggerDestroyMarkers& GetTriggerDestroyMarkersDelegate() { return TriggerDestroyMarkers; }
+	FOnMarkerTriggered& GetOnMarkerTriggeredDelegate() { return OnMarkerTriggered; }
 	
 	void Init(const TSubclassOf<AMarker>& InMarkerClass);
 	void SpawnMarkerAtLocation(const FVector& InLocation) const;
-	void SpawnMarkerAtMarkerTrigger(const int32 InIndex);
 	void DestroyMarkers();
 private:
-	FOnMarkerTriggered OnMarkerTriggered;
 	FTriggerDestroyMarkers TriggerDestroyMarkers;
+	FOnMarkerTriggered OnMarkerTriggered;
 	UPROPERTY()
 	TSubclassOf<AMarker> MarkerClass;
-	UPROPERTY()
-	TArray<TObjectPtr<AMarkerTrigger>> MarkerTriggers;
-
-	void OnMarkerTriggerPassed(const int32 InNextMarkerToTrigger);
 };

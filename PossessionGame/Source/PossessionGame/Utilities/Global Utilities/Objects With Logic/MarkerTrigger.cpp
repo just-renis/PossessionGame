@@ -11,13 +11,21 @@ AMarkerTrigger::AMarkerTrigger()
 void AMarkerTrigger::BeginPlay()
 {
 	Super::BeginPlay();
+	GetWorld()->GetSubsystem<UMarkerManager>()->GetOnMarkerTriggeredDelegate().AddUObject(this, &AMarkerTrigger::OnOtherMarkerTriggerPassed);
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AMarkerTrigger::Initiate);
+}
+
+void AMarkerTrigger::OnOtherMarkerTriggerPassed(const int32 InNextMarkerToTrigger) const
+{
+	if (InNextMarkerToTrigger == MarkerTriggerIndex) GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation());
 }
 
 void AMarkerTrigger::Initiate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag("Player")) return;
-	if (NextMarkerToTrigger != -1) (void)GetWorld()->GetSubsystem<UMarkerManager>()->GetOnMarkerTriggeredDelegate().ExecuteIfBound(NextMarkerToTrigger);
+	GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
+	GetWorld()->GetSubsystem<UMarkerManager>()->GetOnMarkerTriggeredDelegate().RemoveAll(this);
+	if (NextMarkerToTrigger != -1) GetWorld()->GetSubsystem<UMarkerManager>()->GetOnMarkerTriggeredDelegate().Broadcast(NextMarkerToTrigger);
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Destroy();
 }

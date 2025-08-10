@@ -125,7 +125,7 @@ void UPrimaryDataAssetsManager::DeleteLoadedHandles()
 
 void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
 {
-	if (!GetCanAsyncLoadHappen()) return;
+	if (!GetCanAsyncLoadHappen() || !InAudioComp) return;
 	FSoundContainer& SoundData = GetSoundData(InSoundName);
 	if (SoundData.GetSoundContainer()->Sound.IsValid()) SetAndPlaySoundCallback(SoundData, InAudioComp, InCallback, InSoundName, bIsPlayer);
 	else LoadSound3D(SoundData, InAudioComp, InCallback, InSoundName, bIsPlayer);
@@ -217,6 +217,14 @@ void UPrimaryDataAssetsManager::SetupSpawnLocations()
 	}
 }
 
+void UPrimaryDataAssetsManager::PlaySoundAtLocation(const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer, const bool bStoreSoundRef)
+{
+	if (!GetCanAsyncLoadHappen()) return;
+	FSoundContainer& SoundData = GetSoundData(InSoundName);
+	if (SoundData.GetSoundContainer()->Sound.IsValid()) SetupSoundAtLocationAndPlay(SoundData, InSoundName, InLocation, bIsPlayer, bStoreSoundRef);
+	else LoadSoundAtLocation(SoundData, InSoundName, InLocation, bIsPlayer, bStoreSoundRef);
+}
+
 void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (!InVfxComponent) return;
@@ -275,6 +283,21 @@ void UPrimaryDataAssetsManager::RequestSoundLoad(FSoundContainer& InSoundData)
 			AddAsyncHandle(Handle);
 		}
 	}
+}
+
+void UPrimaryDataAssetsManager::LoadSoundAtLocation(FSoundContainer& InSoundData, const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer, const bool bStoreSoundRef)
+{
+	InSoundData.AddSoundLoadedCallback([this, InSoundData, InSoundName, InLocation, bIsPlayer, bStoreSoundRef] { SetupSoundAtLocationAndPlay(InSoundData, InSoundName, InLocation, bIsPlayer, bStoreSoundRef); });
+	RequestSoundLoad(InSoundData);
+}
+
+void UPrimaryDataAssetsManager::SetupSoundAtLocationAndPlay(const FSoundContainer& InSoundData, const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer, const bool bStoreSoundRef)
+{
+	float VolumeMultiplier = 1.f;
+	if (InSoundData.GetSoundContainer()->bIsCharacterTypeDependant) VolumeMultiplier = bIsPlayer ? InSoundData.GetSoundContainer()->PlayerVolume : InSoundData.GetSoundContainer()->EnemyVolume;
+	const TObjectPtr<UAudioComponent> AudioComponent = UGameplayStatics::SpawnSoundAtLocation(GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), InLocation, FRotator::ZeroRotator, VolumeMultiplier);
+	if (bStoreSoundRef) StoredSounds.Add(InSoundName, AudioComponent);
+	AudioComponent->Play();
 }
 
 bool UPrimaryDataAssetsManager::IsAsyncAssetWorldValid(const TWeakObjectPtr<UWorld>& InWorld)

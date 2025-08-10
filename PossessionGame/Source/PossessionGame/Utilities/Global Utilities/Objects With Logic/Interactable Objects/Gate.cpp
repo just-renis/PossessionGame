@@ -1,32 +1,32 @@
 ﻿#include "Gate.h"
-#include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/UI/MainWidgets/DemoEndUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/InteractableUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
-#include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 AGate::AGate()
 {
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("collision"));
+	CloseTriggerCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CloseTriggerCollision"));
 	FirstGateSide = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("firstGateSide"));
 	SecondGateSide = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("secondGateSide"));
 	InteractableWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("interactableWidgetComponent"));
 	RootComponent = Collision;
+	CloseTriggerCollision->SetupAttachment(RootComponent);
+	CloseTriggerCollision->SetBoxExtent(FVector(10.f, 450.f, 175.f));
+	CloseTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CloseTriggerCollision->SetRelativeLocation(FVector(-150.f, 0.f, 0.f));
+	CloseTriggerCollision->SetCollisionProfileName("TriggerPlayer");
+	CloseTriggerCollision->CanCharacterStepUpOn = ECB_No;
 	FirstGateSide->SetupAttachment(RootComponent);
 	SecondGateSide->SetupAttachment(RootComponent);
 	InteractableWidget->SetupAttachment(RootComponent);
-	OpenGatesSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("openGatesSfx"));
-	OpenGatesSfx->SetAutoActivate(false);
-	OpenGatesSfx->SetupAttachment(RootComponent);
 	InteractableWidget->SetVisibility(false);
 }
 
@@ -36,14 +36,16 @@ void AGate::BeginPlay()
 {
 	Super::BeginPlay();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnInteractionTry.AddUObject(this, &AGate::Interact);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGateAndShowMarker);
 	InteractableUI = Cast<UInteractableUI>(InteractableWidget->GetWidget());
 	bNeededArtifact = bNeedsArtifact;
 	if (bIsUnlockableByInteraction) SetupInteractability();
-	if (!bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGateAndShowMarker);
-	else if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
+	if (bIsGateClosedByTrigger)
 	{
-		GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.AddUObject(this, &AGate::OpenAsTutorialGate);
+		CloseTriggerCollision->OnComponentBeginOverlap.AddDynamic(this, &AGate::CloseTriggerPassed);
+		CloseTriggerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGateAndShowMarker);
 	if (bNeedsArtifact) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.BindUObject(this, &AGate::SetArtifactCollected);
 }
 
@@ -58,13 +60,8 @@ void AGate::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AGate::OpenGate(const EGameMode InGameMode)
 {
-	if (GameModeToFinish == InGameMode)
-	{
-		OpenGatesSfx->Sound ? OpenGatesSfx->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(OpenGatesSfx, nullptr, ESound::GatesOpen);
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AGate::CloseGate);
-		GetWorldTimerManager().SetTimer(OpenGatesHandle, this, &AGate::OpenGateSides, 0.025f, true);
-	}
-	else if (bIsTutorialGate) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AGate::CloseGate); // THIS IS THE PROBLEM.
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySoundAtLocation(ESound::GatesOpen, GetActorLocation());
+	if (GameModeToFinish == InGameMode) GetWorldTimerManager().SetTimer(OpenGatesHandle, this, &AGate::OpenGateSides, 0.025f, true);
 }
 
 void AGate::OpenGateAndShowMarker(const EGameMode InGameMode)
@@ -73,19 +70,13 @@ void AGate::OpenGateAndShowMarker(const EGameMode InGameMode)
 	ShowMarker(InGameMode);
 }
 
-void AGate::OpenAsTutorialGate()
-{
-	OpenGate(EGameMode::TutorialMode1);
-	GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.RemoveAll(this);
-}
-
 void AGate::CloseGate(const EGameMode InGameMode)
 {
 	bEventToCloseGateHappened = true;
 	if (bIsGateOpened)
 	{
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.RemoveAll(this);
 		if (bIsUnlockableByInteraction) Collision->SetBoxExtent(FVector(1.f, 450.f, 175.f));
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.RemoveAll(this);
 		Collision->SetCollisionResponseToAllChannels(ECR_Block);
 		GetWorldTimerManager().SetTimer(CloseGatesHandle, this, &AGate::CloseGateSides, 0.025f, true);
 	}
@@ -166,4 +157,11 @@ void AGate::DisableInteractionWidget(UPrimitiveComponent* OverlappedComponent, A
 	if (InteractableUI) InteractableUI->PlayFadeInAnim(false);
 	GetWorldTimerManager().SetTimer(FadeOutAnimHandle, this, &AGate::FadeOutAnimFinished, InteractableUI->GetFadeInAnimLength(), false);
 	SetIsInteractable(false);
+}
+
+void AGate::CloseTriggerPassed(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!OtherActor->ActorHasTag("Player")) return;
+	CloseGate();
+	CloseTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
