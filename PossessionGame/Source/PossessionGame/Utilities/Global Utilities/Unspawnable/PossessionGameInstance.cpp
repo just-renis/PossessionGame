@@ -3,7 +3,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -52,15 +51,12 @@ void UPossessionGameInstance::ResetRunSaveSlot()
 void UPossessionGameInstance::InitGameInstanceManagers()
 {
 	GetTimerManager().SetTimer(TickHandle, this, &UPossessionGameInstance::Tick, 0.1f, true);
-	GetSubsystem<UPrimaryDataAssetsManager>()->Init(PlayerSaveSlot->GetIsTutorialFinished(), GetSubsystem<UDelegateManager>(), SpawnableEnemiesByTotalAmount, ToSpawnAfterTutorial);
+	GetSubsystem<UPrimaryDataAssetsManager>()->Init(PlayerSaveSlot->GetIsTutorialFinished(), SpawnableEnemiesByTotalAmount);
 }
 
 void UPossessionGameInstance::Init()
 {
 	Super::Init();
-	#if WITH_EDITOR
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), GlobalTimeDilation);
-	#endif
 	LoadPlayerSaveSlot();
 	LoadPlayerRunSaveSlot();
 	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());

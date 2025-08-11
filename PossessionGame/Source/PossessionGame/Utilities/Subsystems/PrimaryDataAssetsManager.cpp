@@ -1,5 +1,4 @@
 ﻿#include "PrimaryDataAssetsManager.h"
-#include "DelegateManager.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
@@ -191,10 +190,9 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 	}
 }
 
-void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount, const ECharacterType InToSpawnAfterTutorial)
+void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount)
 {
 	bTutorialIsFinished = bIsTutorialFinished;
-	ToSpawnAfterTutorial = InToSpawnAfterTutorial;
 	ClearBeforeInit();
 	SetupSpawnLocations();
 	if (bIsInitialized) return;
@@ -446,7 +444,6 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_MinionBossDeath", ESound::MinionBossDeath);
 	SoundMap.Add("PA_MinionBossSpawn", ESound::MinionBossSpawn);
 	SoundMap.Add("PA_MinionBossTakeDamage", ESound::MinionBossTakeDamage);
-	SoundMap.Add("PA_DroneBuzz", ESound::DroneBuzz);
 	SoundMap.Add("PA_DialogueStart", ESound::DialogueStart);
 	SoundMap.Add("PA_RestSoundTrack", ESound::RestSoundTrack);
 	SoundMap.Add("PA_BattleModeSoundTrack", ESound::BattleModeSoundTrack);

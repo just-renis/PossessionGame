@@ -25,8 +25,8 @@ DECLARE_DELEGATE(FOnGameLaunchFinished);
 DECLARE_DELEGATE(FOnMusicSoundtrackChangeRequired);
 DECLARE_DELEGATE(FMeleeAttackOccured);
 DECLARE_DELEGATE(FOnGateClosed);
+DECLARE_DELEGATE(FOnTutorialMinionDeath);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
-DECLARE_DELEGATE_OneParam(FOnCheckDistanceToTutorialDrone, const int32);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const TObjectPtr<UUpgradeData>&);
 DECLARE_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
@@ -46,9 +46,9 @@ DECLARE_MULTICAST_DELEGATE(FOnTerminalInteraction);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_MULTICAST_DELEGATE(FOnHackModeStart);
 DECLARE_MULTICAST_DELEGATE(FOnBossDeath);
-DECLARE_MULTICAST_DELEGATE(FOnMainTutorialEnd);
 DECLARE_MULTICAST_DELEGATE(FOnInteractionTry);
 DECLARE_MULTICAST_DELEGATE(FOnSecretBoostSelected);
+DECLARE_MULTICAST_DELEGATE(FOnGameModeInitialized);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelUp, const int32);
@@ -63,9 +63,6 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32)
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType, const EVariation);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&, bool);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText&);
-
-//----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
-DECLARE_DELEGATE(FOnTutorialMinionDeath);
 
 UCLASS()
 class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
@@ -87,11 +84,11 @@ public:
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;
 	FMeleeAttackOccured MeleeAttackOccured;
 	FOnGateClosed OnGateClosed;
+	FOnTutorialMinionDeath OnTutorialMinionDeath;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnBossDamaged OnBossDamaged;
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
-	FOnCheckDistanceToTutorialDrone OnCheckDistanceToTutorialDrone;
 	FOnMinionBossStomp OnMinionBossStomp;
 	FOnUpgradeCardSelected OnUpgradeCardSelected;
 	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
@@ -108,9 +105,9 @@ public:
 	FOnPlayerDeath OnPlayerDeath;
 	FOnHackModeStart OnHackModeStart;
 	FOnBossDeath OnBossDeath;
-	FOnMainTutorialEnd OnMainTutorialEnd;
 	FOnInteractionTry OnInteractionTry;
 	FOnSecretBoostSelected OnSecretBoostSelected;
+	FOnGameModeInitialized OnGameModeInitialized;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnConcealAbilityChange OnConcealAbilityChange;
 	FOnLevelUp OnLevelUp;
@@ -125,7 +122,4 @@ public:
 	FOnVariationSelection OnVariationSelection;
 	FOnTargetChange OnTargetChange;
 	FOnKeyBindChange OnKeyBindChange;
-
-	//----------------------------------------------------TUTORIAL DELEGATES----------------------------------------------------
-	FOnTutorialMinionDeath OnTutorialMinionDeath;
 };

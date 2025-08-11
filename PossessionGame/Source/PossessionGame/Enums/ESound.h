@@ -54,7 +54,6 @@ enum class ESound : uint16
 	MinionBossDeath,
 	MinionBossSpawn,
 	MinionBossTakeDamage,
-	DroneBuzz,
 	DialogueStart,
 	RestSoundTrack,
 	BattleModeSoundTrack,

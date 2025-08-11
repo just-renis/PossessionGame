@@ -47,12 +47,10 @@ private:
 	bool bPlayerTakenDamageEffectsEnabled = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Demo", meta = (AllowPrivateAccess = true))
 	bool bIsDemo = true;
-	UPROPERTY(EditDefaultsOnly, Category = "Game", meta = (AllowPrivateAccess = true))
-	ECharacterType ToSpawnAfterTutorial;
 	UPROPERTY(EditDefaultsOnly, Category = "Game Data", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerLevelData> PlayerLevelData;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
-	float GlobalTimeDilation = 0.1f;
+	float GlobalTimeDilation = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	int32 PlayerLevel = 0;
 	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))

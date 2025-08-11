@@ -3,13 +3,16 @@
 #include "SettingsSave.h"
 #include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/ArtifactSpawnLocation.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
+#include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
@@ -55,6 +58,7 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
 	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSaveSlot();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	GetWorld()->GetSubsystem<UMarkerManager>()->Init(MarkerClass, MarkerTypes);
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
@@ -70,6 +74,8 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	PlayerController->bShowMouseCursor = false;
 	PlayerController->SetInputMode(FInputModeGameOnly());
 	SpawnArtifact();
+	DelegateManager->OnGameModeInitialized.Broadcast();
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(CharacterToSpawn, EGameMode::None, false, nullptr);
 }
 
 /*void APossessionGameGameModeBase::PlayCutscene(const EGameMode InGameMode)

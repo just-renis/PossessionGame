@@ -157,6 +157,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void StartTipDialogue() const;
 	void PlayNextToGateAnimation();
 	void WaveAnimationFinished();
+	void SpawnMarker() const;
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

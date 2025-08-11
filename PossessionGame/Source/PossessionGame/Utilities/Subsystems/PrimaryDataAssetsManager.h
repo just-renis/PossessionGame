@@ -194,7 +194,7 @@ public:
 	void SpawnVfx(EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EVariation InVariationName = EVariation::Default, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
 	void ChangeVfxVariation(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName);
 	void RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack);
-	void Init(const bool bIsTutorialFinished, const TObjectPtr<UDelegateManager>& InDelegateManager, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount, const ECharacterType InToSpawnAfterTutorial);
+	void Init(const bool bIsTutorialFinished, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount);
 	void SetupSpawnLocations();
 	void PlaySoundAtLocation(const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer = true, const bool bStoreSoundRef = false);
 private:
@@ -204,7 +204,6 @@ private:
 	bool bTutorialIsFinished = false;
 	int32 TotalSpawnedEnemies = 0;
 	int32 NextSpawnableEnemyIndex = 0;
-	ECharacterType ToSpawnAfterTutorial;
 	UPROPERTY()
 	TMap<EWeapon, TObjectPtr<UPA_WeaponContainer>> WeaponContainers;
 	UPROPERTY()

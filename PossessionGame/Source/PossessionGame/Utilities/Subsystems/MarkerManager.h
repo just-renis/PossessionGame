@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "PossessionGame/Enums/EMarkerType.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "MarkerManager.generated.h"
 
@@ -18,12 +19,14 @@ public:
 	FTriggerDestroyMarkers& GetTriggerDestroyMarkersDelegate() { return TriggerDestroyMarkers; }
 	FOnMarkerTriggered& GetOnMarkerTriggeredDelegate() { return OnMarkerTriggered; }
 	
-	void Init(const TSubclassOf<AMarker>& InMarkerClass);
-	void SpawnMarkerAtLocation(const FVector& InLocation) const;
+	void SpawnMarkerAtLocation(const FVector& InLocation, const EMarkerType InMarkerType = EMarkerType::Diamond) const;
+	void Init(const TSubclassOf<AMarker>& InMarkerClass, const TMap<EMarkerType, TObjectPtr<UTexture2D>>& InMarkersTypes = TMap<EMarkerType, TObjectPtr<UTexture2D>>());
 	void DestroyMarkers();
 private:
 	FTriggerDestroyMarkers TriggerDestroyMarkers;
 	FOnMarkerTriggered OnMarkerTriggered;
 	UPROPERTY()
 	TSubclassOf<AMarker> MarkerClass;
+	UPROPERTY()
+	TMap<EMarkerType, TObjectPtr<UTexture2D>> MarkerTypes;
 };

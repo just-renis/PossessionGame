@@ -9,6 +9,7 @@
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
+#include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 
@@ -50,7 +51,14 @@ void ATutorialBot::BeginPlay()
 		SetupDialogue();
 		PlayFirstAnim();
 	}
-	else GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateClosed.BindUObject(this, &ATutorialBot::MoveToNextLocation);
+	else
+	{
+		SetControlRigState(true);
+		SetTabletVisibility(true);
+		SetupAndPlayNextAnimation(ETutorialBotAnimState::Idle);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateClosed.BindUObject(this, &ATutorialBot::MoveToNextLocation);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitialized.AddUObject(this, &ATutorialBot::SpawnMarker);
+	}
 }
 
 void ATutorialBot::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -385,4 +393,9 @@ void ATutorialBot::PlayNextToGateAnimation()
 void ATutorialBot::WaveAnimationFinished()
 {
 	SetupAndPlayNextAnimation(ETutorialBotAnimState::Idle);
+}
+
+void ATutorialBot::SpawnMarker() const
+{
+	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 150.f, EMarkerType::Exclamation);
 }

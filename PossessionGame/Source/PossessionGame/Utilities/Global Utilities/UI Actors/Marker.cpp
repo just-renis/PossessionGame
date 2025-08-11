@@ -10,6 +10,8 @@ void AMarker::DestroyThis()
 	Destroy();
 }
 
+void AMarker::SetImage(const TObjectPtr<UTexture2D>& InMarkerTexture) const { if (Marker) Marker->SetMarkerImage(InMarkerTexture); }
+
 AMarker::AMarker()
 {
 	MarkerWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("markerWidgetComponent");
@@ -22,10 +24,10 @@ void AMarker::BeginPlay()
 	GetWorld()->GetSubsystem<UMarkerManager>()->GetTriggerDestroyMarkersDelegate().AddUObject(this, &AMarker::DestroyThis);
 	Marker = Cast<UObjectiveMarker>(MarkerWidgetComponent->GetWidget());
 	PlayerController = GetWorld()->GetFirstPlayerController();
-	GetWorld()->GetTimerManager().SetTimer(MarkerUpdateHandle, this, &AMarker::UpdateMarkerText, 0.05f, true);
+	GetWorld()->GetTimerManager().SetTimer(MarkerUpdateHandle, this, &AMarker::UpdateMarker, 0.05f, true);
 }
 
-void AMarker::UpdateMarkerText() const
+void AMarker::UpdateMarker() const
 {
 	if (!PlayerController) return;
 	Marker->UpdateMarkerText(FMath::Sqrt(FVector::DistSquared(GetActorLocation(), PlayerController->GetPawn()->GetActorLocation())) * 0.01f);

@@ -1,7 +1,6 @@
 ﻿#include "TutorialDialogue.h"
 #include "Components/WidgetComponent.h"
 #include "PossessionGame/UI/SecondaryWidgets/DialogueUI.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 void ATutorialDialogue::SetVisibilityState(const bool bState) const
 {
@@ -19,7 +18,6 @@ void ATutorialDialogue::BeginPlay()
 {
 	Super::BeginPlay();
 	Dialogue = Cast<UDialogueUI>(DialogueWidgetComponent->GetWidget());
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMainTutorialEnd.AddUObject(this, &ATutorialDialogue::StopShowingDialogue);
 }
 
 void ATutorialDialogue::StartDialogue(const int32 InIndex, const bool bShowPressAnyKeyToContinue) const

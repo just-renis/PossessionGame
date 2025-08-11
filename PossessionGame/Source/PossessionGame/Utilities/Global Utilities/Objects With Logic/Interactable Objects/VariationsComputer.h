@@ -13,6 +13,8 @@ class POSSESSIONGAME_API AVariationsComputer : public AInteractableObject
 
 	AVariationsComputer();
 
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	float MarkerUpwardsUnits = 200.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EWidget ComputerType;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -20,5 +22,7 @@ class POSSESSIONGAME_API AVariationsComputer : public AInteractableObject
 
 	virtual TObjectPtr<UStaticMeshComponent> GetMesh() override { return Mesh; }
 
+	virtual void BeginPlay() override;
 	virtual void Interact() override;
+	void SpawnMarker() const;
 };
