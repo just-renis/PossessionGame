@@ -11,6 +11,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FTFunctionCallback.h"
 #include "PrimaryDataAssetsManager.generated.h"
 
+enum class EWidget : uint8;
 struct FSpawnableEnemyByTotalAmount;
 class UDelegateManager;
 enum class EGameMode : uint8;
@@ -182,7 +183,7 @@ public:
 	FSoundContainer& GetSoundData(const ESound InSoundName);
 	FCharacterContainer& GetCharacterData(const ECharacterType InCharacterName);
 	FVfxContainer& GetVfxData(const EVfx InVfxName);
-	TObjectPtr<AEnemy> SpawnVariationReplacement(const ECharacterType InCharacter);
+	TObjectPtr<AEnemy> SpawnVariationReplacement(const ECharacterType InCharacter, const EWidget InWidgetName);
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	void AddAsyncHandle(TSharedPtr<FStreamableHandle>& Handle) { AsyncHandles.Add(FAsyncHandle(Handle)); }

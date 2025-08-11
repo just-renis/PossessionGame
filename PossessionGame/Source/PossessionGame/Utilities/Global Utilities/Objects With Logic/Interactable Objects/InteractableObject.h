@@ -32,6 +32,7 @@ protected:
 	virtual TObjectPtr<USkeletalMeshComponent> GetSkeletalMesh() { return nullptr; }
 	
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Interact() override {}
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -43,7 +44,6 @@ private:
 	UPROPERTY()
 	FTimerHandle DisableOutlineHandle;
 
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void ChangeOutlineState(const bool bState) override;
 	void FadeOutAnimFinished() const;
 	void DisableOutline() { ChangeOutlineState(false); }

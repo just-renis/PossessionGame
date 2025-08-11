@@ -15,8 +15,6 @@ class POSSESSIONGAME_API AVariationsComputer : public AInteractableObject
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	float MarkerUpwardsUnits = 200.f;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	EWidget ComputerType;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 

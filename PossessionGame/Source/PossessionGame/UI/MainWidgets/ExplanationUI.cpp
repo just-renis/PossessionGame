@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/ExplanationHighlight.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
@@ -77,8 +78,9 @@ void UExplanationUI::PlayExplanationAnim(const EExplanation InExplanationName)
 	switch (InExplanationName)
 	{
 		case EExplanation::FpsUI: PlayAnimation(FpsFadeInAnim); break;
-		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI: case EExplanation::UpgradeChoiceUI: PlayAnimation(AbilitiesUpgradeVariationFadeInAnim); break;
-		case EExplanation::VariationUI: PlayAnimation(VariationSlideRightAnim);
+		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI: case EExplanation::UpgradeChoiceUI: case EExplanation::VariationMainUI:
+			PlayAnimation(AbilitiesUpgradeVariationFadeInAnim); break;
+		case EExplanation::VariationDetailsUI: PlayAnimation(VariationSlideRightAnim);
 	}
 }
 
@@ -93,11 +95,11 @@ void UExplanationUI::CloseExplanationLogic()
 			GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.Broadcast();
 			BindToAnimationFinished(FpsFadeOutAnim, FinishedFadeOutDelegate);
 			break;
-		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI: case EExplanation::UpgradeChoiceUI:
+		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI: case EExplanation::UpgradeChoiceUI: case EExplanation::VariationMainUI:
 			PlayAnimation(AbilitiesUpgradeVariationFadeOutAnim);
 			BindToAnimationFinished(AbilitiesUpgradeVariationFadeOutAnim, FinishedFadeOutDelegate);
 			break;
-		case EExplanation::VariationUI:
+		case EExplanation::VariationDetailsUI:
 			PlayAnimation(VariationRightFadeOutAnim);
 			BindToAnimationFinished(VariationRightFadeOutAnim, FinishedFadeOutDelegate);
 	}

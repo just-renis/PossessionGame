@@ -6,6 +6,7 @@
 #include "InputMappingContext.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EWidget.h"
+#include "PossessionGame/UI/MainWidgets/ChapterLaunchUI.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
@@ -32,6 +33,7 @@ void APlayerGhost::BeginPlay()
 	{
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI)->PlayStartupAnimation();
 	}
+	else GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UChapterLaunchUI>(EWidget::ChapterLaunchUI);
 }
 
 void APlayerGhost::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

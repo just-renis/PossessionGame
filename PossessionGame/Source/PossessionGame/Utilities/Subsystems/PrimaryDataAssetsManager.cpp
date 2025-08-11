@@ -13,6 +13,7 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/EVfxType.h"
+#include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Projectiles/Projectile.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/SpawnLocation.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
@@ -58,9 +59,9 @@ FCharacterContainer& UPrimaryDataAssetsManager::GetCharacterData(const ECharacte
 
 FVfxContainer& UPrimaryDataAssetsManager::GetVfxData(const EVfx InVfxName) { return VfxContainers[InVfxName]; }
 
-TObjectPtr<AEnemy> UPrimaryDataAssetsManager::SpawnVariationReplacement(const ECharacterType InCharacter)
+TObjectPtr<AEnemy> UPrimaryDataAssetsManager::SpawnVariationReplacement(const ECharacterType InCharacter, const EWidget InWidgetName)
 {
-	return SpawnLocations[EGameMode::None].SpawnLocations[0]->SpawnEnemy(LoadedEnemies[InCharacter]);
+	return SpawnLocations[InWidgetName == EWidget::VariationsUI ? EGameMode::TutorialMode1 : EGameMode::TutorialMode2].SpawnLocations[0]->SpawnEnemy(LoadedEnemies[InCharacter]);
 }
 
 void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)

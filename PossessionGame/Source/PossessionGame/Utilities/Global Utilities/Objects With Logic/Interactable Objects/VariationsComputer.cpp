@@ -1,6 +1,7 @@
 ﻿#include "VariationsComputer.h"
-#include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
@@ -20,8 +21,12 @@ void AVariationsComputer::BeginPlay()
 void AVariationsComputer::Interact()
 {
 	if (!GetIsInteractable()) return;
-	if (ComputerType == EWidget::VariationsUI) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->OpenUI();
-	else GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI)->OpenUI();
+	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+	if (!GameInstance->GetSaveSlot()->GetIsExplanationShown(EExplanation::VariationMainUI))
+	{
+		(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::VariationMainUI, GameInstance);
+	}
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->OpenUI();
 }
 
 void AVariationsComputer::SpawnMarker() const

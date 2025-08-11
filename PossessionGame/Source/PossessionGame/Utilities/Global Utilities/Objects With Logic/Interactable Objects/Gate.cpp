@@ -140,7 +140,7 @@ void AGate::SetupInteractability()
 {
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &AGate::EnableInteractionWidget);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &AGate::DisableInteractionWidget);
-	Collision->SetBoxExtent(FVector(250.f, 450.f, 175.f));
+	Collision->SetBoxExtent(FVector(150.f, 450.f, 175.f));
 }
 
 void AGate::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

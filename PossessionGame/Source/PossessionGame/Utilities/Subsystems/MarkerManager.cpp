@@ -4,9 +4,9 @@
 
 void UMarkerManager::SpawnMarkerAtLocation(const FVector& InLocation, const EMarkerType InMarkerType) const
 {
-	if (const TObjectPtr<UTexture2D> MarkerTexture = *MarkerTypes.Find(InMarkerType))
+	if (const TObjectPtr<UTexture2D>* MarkerTexture = MarkerTypes.Find(InMarkerType))
 	{
-		GetWorld()->SpawnActor<AMarker>(MarkerClass, InLocation, FRotator::ZeroRotator)->SetImage(MarkerTexture);
+		GetWorld()->SpawnActor<AMarker>(MarkerClass, InLocation, FRotator::ZeroRotator)->SetImage(*MarkerTexture);
 	}
 	else GetWorld()->SpawnActor<AMarker>(MarkerClass, InLocation, FRotator::ZeroRotator);
 }

@@ -124,6 +124,11 @@ void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVar
 		else UnlockDetailsPanel->SetTaskCompleted(SaveSlot->GetIsVariationTaskCompleted(InVariationName));
 		UnlockDetailsPanel->PlayFadeInAnim();
 		VariationDetailsPanel->PlayFadeInAnim();
+		const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+		if (!GameInstance->GetSaveSlot()->GetIsExplanationShown(EExplanation::VariationDetailsUI))
+		{
+			(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::VariationDetailsUI, GameInstance);
+		}
 	}
 }
 

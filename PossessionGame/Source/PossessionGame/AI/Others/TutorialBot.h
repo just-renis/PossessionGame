@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/Interactable Objects/InteractableObject.h"
 #include "TutorialBot.generated.h"
 
 class ADroneWaypoint;
@@ -44,7 +45,7 @@ enum class ETutorialBotExpression
 };
 
 UCLASS()
-class POSSESSIONGAME_API ATutorialBot : public AActor
+class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 {
 	GENERATED_BODY()
 
@@ -121,7 +122,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void PlaySound(const ESound InSoundName) const;
 	void PlayFirstAnim();
 	void ClearTimers();
-	void SetupDialogue();
+	void SetupDialogue(const FName& InSocketName);
 	void StartNextDialogue(const bool bShowPressAnyKeyToContinue = false);
 	void SetupAndPlayNextAnimation(const ETutorialBotAnimState InAnimState, void (ATutorialBot::*InCallback)() = nullptr, const float InTimer = 0.f);
 	void FirstAnimationFinished();
@@ -158,6 +159,7 @@ class POSSESSIONGAME_API ATutorialBot : public AActor
 	void PlayNextToGateAnimation();
 	void WaveAnimationFinished();
 	void SpawnMarker() const;
+	virtual void Interact() override;
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

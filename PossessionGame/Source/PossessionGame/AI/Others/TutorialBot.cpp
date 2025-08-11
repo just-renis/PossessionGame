@@ -1,9 +1,11 @@
 ﻿#include "TutorialBot.h"
 #include "TutorialBotAnimationInstance.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Navigation/DroneWaypoint.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/TutorialDialogue.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
@@ -12,11 +14,12 @@
 #include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
+#include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 ATutorialBot::ATutorialBot()
 {
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
-	RootComponent = Mesh;
+	Mesh->SetupAttachment(RootComponent);
 	TabletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TabletMesh"));
 	TabletMesh->SetVisibility(false);
 }
@@ -43,16 +46,18 @@ void ATutorialBot::BeginPlay()
 	bIsTutorialFinished = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished();
 	if (!bIsTutorialFinished)
 	{
+		if (Collision) Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetWorld()->GetSubsystem<UTutorialManager>()->StartTutorialBotAnimation.BindUObject(this, &ATutorialBot::PlayNextAnimation);
 		GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.AddUObject(this, &ATutorialBot::PressAnyKeyPressed);
 		GetWorld()->GetSubsystem<UTutorialManager>()->OnFpsExplanationTriggered.BindUObject(this, &ATutorialBot::TutorialMoveToNextLocation);
 		GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.AddUObject(this, &ATutorialBot::PlayNextToGateAnimation);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateClosed.BindUObject(this, &ATutorialBot::TutorialMoveToNextLocation);
-		SetupDialogue();
+		SetupDialogue("BehindHeadSocket");
 		PlayFirstAnim();
 	}
 	else
 	{
+		SetupDialogue("BodySocket");
 		SetControlRigState(true);
 		SetTabletVisibility(true);
 		SetupAndPlayNextAnimation(ETutorialBotAnimState::Idle);
@@ -121,10 +126,10 @@ void ATutorialBot::ClearTimers()
 	
 }
 
-void ATutorialBot::SetupDialogue()
+void ATutorialBot::SetupDialogue(const FName& InSocketName)
 {
 	Dialogue = GetWorld()->SpawnActor<ATutorialDialogue>(DialogueClass);
-	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "BehindHeadSocket");
+	Dialogue->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, InSocketName);
 	Dialogue->SetVisibilityState(false);
 }
 
@@ -398,4 +403,10 @@ void ATutorialBot::WaveAnimationFinished()
 void ATutorialBot::SpawnMarker() const
 {
 	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 150.f, EMarkerType::Exclamation);
+}
+
+void ATutorialBot::Interact()
+{
+	if (!GetIsInteractable()) return;
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI)->OpenUI();
 }

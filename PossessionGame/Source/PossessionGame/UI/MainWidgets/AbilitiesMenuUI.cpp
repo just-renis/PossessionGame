@@ -41,7 +41,12 @@ void UAbilitiesMenuUI::OpenUI()
 	UpdateSkillPointsText();
 	Toggle(true);
 	if (!FirstTimeOpenInstance) return;
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSaveSlot();
+	if (!SaveSlot->GetIsExplanationShown(EExplanation::AbilitiesUI))
+	{
+		(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::AbilitiesUI, GameInstance);
+	}
 	GuardianCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	RangerCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	TricksterCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
