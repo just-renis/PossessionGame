@@ -36,6 +36,10 @@ private:
 	TObjectPtr<UWidgetAnimation> HintAppearAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> PressKeyAppearAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> FadeOutAnim;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent FadeOutAnimFinishedDelegate;
 
 	FText GetKeyBindText(const int32 InIndex) const;
 
@@ -45,4 +49,7 @@ private:
 	void StopShowingHint() const;
 	void ShowPressKey(const bool bState);
 	void UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText) const;
+	void PlayFadeOutAnim();
+	UFUNCTION()
+	void LoadNextLevel();
 };

@@ -12,6 +12,7 @@ DECLARE_DELEGATE(FStartTutorialBotAnimation);
 DECLARE_DELEGATE(FEnableMeleeChecking);
 DECLARE_DELEGATE(FOnStopShowingHint);
 DECLARE_DELEGATE(FOnFpsExplanationTriggered);
+DECLARE_DELEGATE(FTriggerTutorialEnd);
 DECLARE_DELEGATE_TwoParams(FSpawnTutorialEnemy, const ECharacterType, const EGameMode);
 DECLARE_MULTICAST_DELEGATE(FOnAlertStart);
 DECLARE_MULTICAST_DELEGATE(FOnMinionDeathCompleted);
@@ -27,6 +28,7 @@ public:
 	FEnableMeleeChecking EnableMeleeChecking;
 	FOnStopShowingHint OnStopShowingHint;
 	FOnFpsExplanationTriggered OnFpsExplanationTriggered;
+	FTriggerTutorialEnd TriggerTutorialEnd;
 	FSpawnTutorialEnemy SpawnTutorialEnemy;
 	FOnAlertStart OnAlertStart;
 	FOnMinionDeathCompleted OnMinionDeathCompleted;

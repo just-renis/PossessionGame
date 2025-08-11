@@ -123,6 +123,6 @@ void APlayerGhost::SetupUserSettings() const
 
 void APlayerGhost::ToggleTimeDilation()
 {
-	if (!FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), Cast<UPossessionGameInstance>(GetGameInstance())->GetStoppedTimeDilation(), 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Cast<UPossessionGameInstance>(GetGameInstance())->GetStoppedTimeDilation());
+	if (!FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), Cast<UPossessionGameInstance>(GetGameInstance())->GetGlobalTimeDilation(), 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Cast<UPossessionGameInstance>(GetGameInstance())->GetGlobalTimeDilation());
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }

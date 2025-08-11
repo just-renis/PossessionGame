@@ -305,7 +305,8 @@ void ATutorialBot::PressAnyKeyPressed(const bool bState)
 			StartNextDialogue();
 			GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.Broadcast();
 			(void)GetWorld()->GetSubsystem<UTutorialManager>()->EnableMeleeChecking.ExecuteIfBound();
-		case 4: UE_LOG(LogTemp, Error, TEXT("NIGGA HEIL HITLER"));
+			break;
+		case 4: (void)GetWorld()->GetSubsystem<UTutorialManager>()->TriggerTutorialEnd.ExecuteIfBound();
 		default: ;
 	}
 	PressKeyIndex++;

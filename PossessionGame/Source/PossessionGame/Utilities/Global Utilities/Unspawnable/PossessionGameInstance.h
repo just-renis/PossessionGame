@@ -28,7 +28,7 @@ public:
 	bool IsDemo() const { return bIsDemo; }
 	bool IsPlayerTakenDamageEffectsEnabled() const { return bPlayerTakenDamageEffectsEnabled; }
 	bool GetIsMainMenuLaunchedOnce() const { return bMainMenuLaunchedOnce; }
-	float GetStoppedTimeDilation() const { return StoppedTimeGlobalTimeDilation; }
+	float GetGlobalTimeDilation() const { return GlobalTimeDilation; }
 	int32 GetPlayerLevel() const { return PlayerLevel; }
 	TObjectPtr<UPlayerLevelData> GetPlayerLevelData() const { return PlayerLevelData; }
 	TObjectPtr<USaveSlot> GetSaveSlot() const { return PlayerSaveSlot; }
@@ -52,9 +52,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Game Data", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerLevelData> PlayerLevelData;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
-	float GlobalTimeDilation = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
-	float StoppedTimeGlobalTimeDilation = 0.1f;
+	float GlobalTimeDilation = 0.1f;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	int32 PlayerLevel = 0;
 	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))

@@ -1,10 +1,15 @@
 ﻿#include "PlayerGhostUI.h"
+
+#include "PlayerHUD.h"
 #include "Animation/WidgetAnimation.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/InvalidationBox.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EGameMode.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
@@ -37,6 +42,7 @@ void UPlayerGhostUI::NativeConstruct()
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.AddUObject(this, &UPlayerGhostUI::ShowHint);
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnStopShowingHint.BindUObject(this, &UPlayerGhostUI::StopShowingHint);
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.AddUObject(this, &UPlayerGhostUI::ShowPressKey);
+	GetWorld()->GetSubsystem<UTutorialManager>()->TriggerTutorialEnd.BindUObject(this, &UPlayerGhostUI::PlayFadeOutAnim);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.AddUObject(this, &UPlayerGhostUI::UpdateKeyBindText);
 }
 
@@ -102,4 +108,19 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 		case 9: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "ShootHint", "Press [{0}] to Shoot"), InKeyBindText)); break;
 		default: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HijackRobotHint", "Press [{0}] to Hijack a New Robot"), GetKeyBindText(0)));
 	}
+}
+
+void UPlayerGhostUI::PlayFadeOutAnim()
+{
+	Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->SetTutorialFinished();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(true);
+	FadeOutAnimFinishedDelegate.BindDynamic(this, &UPlayerGhostUI::LoadNextLevel);
+	BindToAnimationFinished(FadeOutAnim, FadeOutAnimFinishedDelegate);
+	PlayAnimation(FadeOutAnim);
+}
+
+void UPlayerGhostUI::LoadNextLevel()
+{
+	UnbindFromAnimationFinished(FadeOutAnim, FadeOutAnimFinishedDelegate);
+	UGameplayStatics::OpenLevel(this, "Level_1");
 }

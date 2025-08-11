@@ -1329,6 +1329,6 @@ void AEnemy::SetupTutorialManager()
 
 void AEnemy::ToggleTimeDilation()
 {
-	if (!FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), GameInstance->GetStoppedTimeDilation(), 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), GameInstance->GetStoppedTimeDilation());
+	if (!FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), GameInstance->GetGlobalTimeDilation(), 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), GameInstance->GetGlobalTimeDilation());
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
