@@ -44,6 +44,7 @@ void ATutorialBot::BeginPlay()
 	RetrieveWaypoints();
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
 	bIsTutorialFinished = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished();
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHijack.BindUObject(this, &ATutorialBot::SetPlayerRef);
 	if (!bIsTutorialFinished)
 	{
 		if (Collision) Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -266,6 +267,7 @@ void ATutorialBot::TutorialMoveToNextLocation()
 
 void ATutorialBot::MoveToNextLocation()
 {
+	if (Collision && Collision->GetCollisionEnabled() == ECollisionEnabled::QueryOnly) Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	EnableCheckDistanceToTarget();
 	Dialogue->SetVisibilityState(false);
 	for (int32 i = 0; i < Waypoints.Num(); i++)
@@ -365,10 +367,6 @@ void ATutorialBot::SetupExpression()
 
 void ATutorialBot::EnableCheckDistanceToTarget()
 {
-	if (const TObjectPtr<APlayerController> PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
-	{
-		if (const TObjectPtr<APawn> Pawn = PC->GetPawn()) Player = Pawn;
-	}
 	GetWorldTimerManager().SetTimer(CheckDistanceToTargetHandle, this, &ATutorialBot::CheckDistanceToTarget, 0.1f, true);
 }
 
@@ -383,11 +381,7 @@ void ATutorialBot::CheckDistanceToTarget()
 	}
 }
 
-void ATutorialBot::StartTipDialogue() const
-{
-	Dialogue->SetVisibilityState(true);
-	Dialogue->StartTipDialogue();
-}
+void ATutorialBot::StartTipDialogue() const { Dialogue->StartTipDialogue(); }
 
 void ATutorialBot::PlayNextToGateAnimation()
 {

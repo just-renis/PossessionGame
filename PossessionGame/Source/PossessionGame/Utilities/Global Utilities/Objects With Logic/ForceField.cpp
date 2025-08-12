@@ -15,11 +15,13 @@ void AForceField::BeginPlay()
 {
 	Super::BeginPlay();
 	MID_Material = ForceField->CreateAndSetMaterialInstanceDynamic(0);
-	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
-	{
-		GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.AddUObject(this, &AForceField::StartDeploymentOfForceField);
-	}
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->StartForceFieldDissolve.AddUObject(this, &AForceField::StartDissolveForceField);
+	if (Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished()) return;
+	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.AddUObject(this, &AForceField::StartDeploymentOfForceField);
+	if (!MID_Material) return;
+	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
+	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
+	MID_Material->SetScalarParameterValue("DeploymentPercent", DeploymentPercent);
 }
 
 void AForceField::EndPlay(const EEndPlayReason::Type EndPlayReason)

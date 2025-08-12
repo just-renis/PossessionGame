@@ -37,6 +37,7 @@ DECLARE_DELEGATE_OneParam(FOnXpReceived, const int32);
 DECLARE_DELEGATE_OneParam(FApplySecretBoostHealth, const int32);
 DECLARE_DELEGATE_OneParam(FOnOpenUnlockAbilityPopup, const int32);
 DECLARE_DELEGATE_OneParam(FOnChargeTerminalModeCompletion, const int32);
+DECLARE_DELEGATE_OneParam(FOnHijack, const TObjectPtr<AActor>&);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
@@ -99,6 +100,7 @@ public:
 	FApplySecretBoostHealth ApplySecretBoostHealth;
 	FOnOpenUnlockAbilityPopup OnOpenUnlockAbilityPopup;
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
+	FOnHijack OnHijack;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnAbilityUse OnAbilityUse;
 	FOnTerminalInteraction OnTerminalInteraction;

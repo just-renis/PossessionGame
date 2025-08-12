@@ -217,6 +217,7 @@ void AEnemy::PossessedBy(AController* NewController)
 			GetWorldTimerManager().SetTimer(AI_TriggerDeathVoiceLineHandle, this, &AEnemy::AI_TriggerDeathVoiceLine, 1.f, false);
 			P_Setup();
 			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Hijacked"));
+			(void)DelegateManager->OnHijack.ExecuteIfBound(this);
 			SetInputState(false);
 		}
 	}

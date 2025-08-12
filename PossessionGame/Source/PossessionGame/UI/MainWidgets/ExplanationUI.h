@@ -67,10 +67,6 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> AbilitiesUpgradeVariationFadeOutAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> VariationSlideRightAnim;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> VariationRightFadeOutAnim;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> BackNextTextAnim;
 	UPROPERTY()
 	FExplanationData CurrentExplanationData;

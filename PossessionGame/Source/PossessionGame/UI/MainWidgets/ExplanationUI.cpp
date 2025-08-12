@@ -77,10 +77,9 @@ void UExplanationUI::PlayExplanationAnim(const EExplanation InExplanationName)
 {
 	switch (InExplanationName)
 	{
-		case EExplanation::FpsUI: PlayAnimation(FpsFadeInAnim); break;
+		case EExplanation::FpsUI: case EExplanation::VariationDetailsUI: PlayAnimation(FpsFadeInAnim); break;
 		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI: case EExplanation::UpgradeChoiceUI: case EExplanation::VariationMainUI:
-			PlayAnimation(AbilitiesUpgradeVariationFadeInAnim); break;
-		case EExplanation::VariationDetailsUI: PlayAnimation(VariationSlideRightAnim);
+			PlayAnimation(AbilitiesUpgradeVariationFadeInAnim);
 	}
 }
 
@@ -90,7 +89,7 @@ void UExplanationUI::CloseExplanationLogic()
 	FinishedFadeOutDelegate.BindDynamic(this, &UExplanationUI::FinishedFadeOutAnim);
 	switch (CurrentExplanationData.GetExplanationName())
 	{
-		case EExplanation::FpsUI:
+		case EExplanation::FpsUI: case EExplanation::VariationDetailsUI:
 			PlayAnimation(FpsFadeOutAnim);
 			GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.Broadcast();
 			BindToAnimationFinished(FpsFadeOutAnim, FinishedFadeOutDelegate);
@@ -98,10 +97,6 @@ void UExplanationUI::CloseExplanationLogic()
 		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI: case EExplanation::UpgradeChoiceUI: case EExplanation::VariationMainUI:
 			PlayAnimation(AbilitiesUpgradeVariationFadeOutAnim);
 			BindToAnimationFinished(AbilitiesUpgradeVariationFadeOutAnim, FinishedFadeOutDelegate);
-			break;
-		case EExplanation::VariationDetailsUI:
-			PlayAnimation(VariationRightFadeOutAnim);
-			BindToAnimationFinished(VariationRightFadeOutAnim, FinishedFadeOutDelegate);
 	}
 }
 
@@ -141,5 +136,4 @@ void UExplanationUI::FinishedFadeOutAnim()
 	SetVisibility(ESlateVisibility::Collapsed);
 	UnbindAllFromAnimationFinished(FpsFadeOutAnim);
 	UnbindAllFromAnimationFinished(AbilitiesUpgradeVariationFadeOutAnim);
-	UnbindAllFromAnimationFinished(VariationRightFadeOutAnim);
 }

@@ -3,6 +3,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/CustomTextUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/SecretBoostCardUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -10,6 +12,11 @@ void USecretRoomUI::OpenUI()
 {
 	ToggleUI(true);
 	PlayAnimation(FadeInAnim);
+	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
+	if (!GameInstance->GetSaveSlot()->GetIsExplanationShown(EExplanation::SecretUI))
+	{
+		(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::SecretUI, GameInstance);
+	}
 }
 
 void USecretRoomUI::CloseUI()
