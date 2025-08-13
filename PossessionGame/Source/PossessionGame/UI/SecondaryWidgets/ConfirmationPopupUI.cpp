@@ -13,6 +13,8 @@ void UConfirmationPopupUI::PlayPopupFadeInAnim(const bool bState)
 	if (DeclineButton) DeclineButton->SetButtonVisibility(bState);
 }
 
+void UConfirmationPopupUI::SetTitleText(const FText& InText) const { if (ConfirmationTitle) ConfirmationTitle->SetText(InText); }
+
 void UConfirmationPopupUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();

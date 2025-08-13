@@ -7,10 +7,10 @@
 #include "PossessionGame/UI/SecondaryWidgets/AbilitiesPanelUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CrosshairUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/InfoPanelUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, const float InMax)
 {
@@ -226,7 +226,7 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->RequirePlayerAnnouncementInfo.BindUObject(this, &UPlayerHUD::PlayAnnouncement);
 	if (HijackProgressBar) MID_HijackProgress = HijackProgressBar->GetDynamicMaterial();
 	UpdateHijackIndicator(false);
-	SetLevelText(Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetPlayerLevel());
+	SetLevelText(GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevel());
 }
 
 void UPlayerHUD::ShowDamageTick(const bool bIsCritical)

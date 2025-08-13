@@ -99,7 +99,7 @@ void AGate::ChangeOutlineState(const bool bState)
 {
 	FirstGateSide->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
 	SecondGateSide->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
-	if (bState) GetWorldTimerManager().SetTimer(DisableOutlineHandle, this, &AGate::DisableOutline, 0.0245f, false);
+	if (bState) GetWorldTimerManager().SetTimer(DisableOutlineHandle, this, &AGate::DisableOutline, 0.245f, false);
 }
 
 void AGate::ShowMarker(const EGameMode InGameMode) const

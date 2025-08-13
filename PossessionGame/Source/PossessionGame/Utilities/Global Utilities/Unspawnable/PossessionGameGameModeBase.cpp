@@ -5,7 +5,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/ArtifactSpawnLocation.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
@@ -13,6 +12,7 @@
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
@@ -56,7 +56,7 @@ void APossessionGameGameModeBase::SpawnArtifact() const
 void APossessionGameGameModeBase::InitAfterPSOPrecache()
 {
 	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
-	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSaveSlot();
+	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	GetWorld()->GetSubsystem<UMarkerManager>()->Init(MarkerClass, MarkerTypes);
 	LoadSettingsData();

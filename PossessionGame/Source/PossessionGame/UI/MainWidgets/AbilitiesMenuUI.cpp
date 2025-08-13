@@ -5,16 +5,17 @@
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/Enums/EExplanation.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilityResetButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CharacterAbilitiesUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CustomTextUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationCharacterIconUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 TObjectPtr<UTexture2D> UAbilitiesMenuUI::GetAbilityIcon(const ECharacterType InCharacter, const int32 InAbilityIndex) const
@@ -41,11 +42,10 @@ void UAbilitiesMenuUI::OpenUI()
 	UpdateSkillPointsText();
 	Toggle(true);
 	if (!FirstTimeOpenInstance) return;
-	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
-	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSaveSlot();
+	const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 	if (!SaveSlot->GetIsExplanationShown(EExplanation::AbilitiesUI))
 	{
-		(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::AbilitiesUI, GameInstance);
+		(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::AbilitiesUI, GetGameInstance());
 	}
 	GuardianCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	RangerCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
@@ -57,7 +57,7 @@ void UAbilitiesMenuUI::OpenUI()
 void UAbilitiesMenuUI::CloseUI()
 {
 	Toggle(false);
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 	GuardianCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	RangerCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	TricksterCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
@@ -152,7 +152,7 @@ void UAbilitiesMenuUI::SetupUnlockAbilityPopup()
 
 void UAbilitiesMenuUI::UpdateSkillPointsText() const
 {
-	const int32 SkillPoints = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetSkillPoints();
+	const int32 SkillPoints = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetSkillPoints();
 	SkillPointsText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "SkillPoints", "Skill Points: {0}"), SkillPoints));
 }
 
@@ -197,7 +197,7 @@ void UAbilitiesMenuUI::SecondSlotResetClicked()
 
 void UAbilitiesMenuUI::UnlockAbility()
 {
-	if (Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->UnlockAbility(CurrentlySelectedCharacter.GetCharacterType(), AbilityToUnlock))
+	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->UnlockAbility(CurrentlySelectedCharacter.GetCharacterType(), AbilityToUnlock))
 	{
 		UpdateSkillPointsText();
 		UpdateAbilityIcon();

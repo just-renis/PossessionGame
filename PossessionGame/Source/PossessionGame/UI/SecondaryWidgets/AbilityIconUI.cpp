@@ -3,9 +3,9 @@
 #include "Components/ButtonSlot.h"
 #include "Components/Image.h"
 #include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UAbilityIconUI::SetIsInSlot(const bool bState)
@@ -18,7 +18,7 @@ void UAbilityIconUI::SetData(const ECharacterType InCharacter, const FAbilityIco
 {
 	DetailsText = InData.Details;
 	AbilityIndex = InData.AbilityIndex;
-	if (AbilityIndex == 0 || Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsAbilityUnlocked(InCharacter, AbilityIndex)) bIsLocked = false;
+	if (AbilityIndex == 0 || GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsAbilityUnlocked(InCharacter, AbilityIndex)) bIsLocked = false;
 	if (!AbilityIcon) return;
 	if (const TObjectPtr<UButtonSlot> ButtonSlot = Cast<UButtonSlot>(AbilityIcon->Slot)) ButtonSlot->SetPadding(bIsLocked ? FMargin(0.f) : FMargin(15.f));
 	AbilityIcon->SetBrushFromAtlasInterface(bIsLocked ? LockedTexture : InData.AbilityIcon);

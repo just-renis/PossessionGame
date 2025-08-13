@@ -14,8 +14,6 @@ class POSSESSIONGAME_API UMainMenuUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void OpenUI();
-	UFUNCTION()
-	void CloseUI();
 private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> PlayButton;

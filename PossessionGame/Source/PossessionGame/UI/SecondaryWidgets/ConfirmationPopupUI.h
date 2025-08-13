@@ -17,6 +17,7 @@ public:
 	TObjectPtr<UMainMenuButtonUI> GetDeclineButton() { return DeclineButton; }
 
 	void PlayPopupFadeInAnim(const bool bState);
+	void SetTitleText(const FText& InText) const;
 private:
 	UPROPERTY(EditAnywhere, Category = "Confirmation Settings", meta = (MultiLine, AllowPrivateAccess = true))
 	FText ConfirmationTitleText;

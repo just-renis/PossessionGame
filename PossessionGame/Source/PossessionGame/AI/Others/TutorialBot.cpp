@@ -6,13 +6,13 @@
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/TutorialDialogue.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -43,7 +43,7 @@ void ATutorialBot::BeginPlay()
 	TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "TutorialTabletSocket");
 	RetrieveWaypoints();
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
-	bIsTutorialFinished = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished();
+	bIsTutorialFinished = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHijack.BindUObject(this, &ATutorialBot::SetPlayerRef);
 	if (!bIsTutorialFinished)
 	{

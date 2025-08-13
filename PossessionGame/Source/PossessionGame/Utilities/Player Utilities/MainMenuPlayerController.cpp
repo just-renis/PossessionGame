@@ -2,6 +2,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "PossessionGame/UI/MainWidgets/SaveSlotMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
@@ -22,6 +23,7 @@ void AMainMenuPlayerController::HandleEscapeClick()
 	switch (GetWorld()->GetSubsystem<UWidgetManager>()->GetCurrentStateOfUI())
 	{
 		case EWidget::SettingsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USettingsUI>(EWidget::SettingsUI)->CloseUI(); break;
+		case EWidget::SaveSlotMenuUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USaveSlotMenuUI>(EWidget::SaveSlotMenuUI)->CloseUI();
 		default: ;
 	}
 }

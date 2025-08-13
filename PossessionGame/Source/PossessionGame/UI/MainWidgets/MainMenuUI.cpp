@@ -1,4 +1,5 @@
 ﻿#include "MainMenuUI.h"
+#include "SaveSlotMenuUI.h"
 #include "SettingsUI.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
@@ -7,17 +8,17 @@
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/MetaSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UMainMenuUI::OpenUI()
 {
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
-	if (SaveSlot->GetIsFirstLaunch())
+	const TObjectPtr<UMetaSaveSlot> MetaSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetMetaSaveSlot();
+	if (MetaSaveSlot->GetIsFirstLaunch())
 	{
-		SaveSlot->SetLaunchedOnce();
+		MetaSaveSlot->SetLaunchedOnce();
 		BindToAnimationFinished(FirstLaunchAnim, FirstLaunchAnimDelegate);
 		PlayAnimation(FirstLaunchAnim);
 	}
@@ -28,8 +29,6 @@ void UMainMenuUI::OpenUI()
 	}
 	Toggle(true);
 }
-
-void UMainMenuUI::CloseUI() { Toggle(false); }
 
 void UMainMenuUI::NativeConstruct()
 {
@@ -73,7 +72,7 @@ void UMainMenuUI::ToggleMenuButtons(const bool bState) const
 
 void UMainMenuUI::Play()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished() ? "Level_1" : "TutorialLevel");
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USaveSlotMenuUI>(EWidget::SaveSlotMenuUI)->OpenUI();
 }
 
 void UMainMenuUI::OpenSettings()

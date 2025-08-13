@@ -6,7 +6,6 @@
 
 enum class ESound : uint16;
 class UPrimaryDataAssetsManager;
-enum class EGameMode : uint8;
 
 UCLASS()
 class POSSESSIONGAME_API AMusicPlayer : public AAmbientSound
@@ -15,6 +14,8 @@ class POSSESSIONGAME_API AMusicPlayer : public AAmbientSound
 
 	bool bIsTutorialFinished = false;
 	ESound CurrentSoundtrack;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bMusicPlayerPlaysDefaultSoundTrack = false;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	UPROPERTY()

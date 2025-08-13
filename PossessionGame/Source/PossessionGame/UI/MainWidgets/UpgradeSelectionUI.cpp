@@ -11,10 +11,10 @@
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeCardUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeDetailsPanelUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -48,10 +48,9 @@ void UUpgradeSelectionUI::OpenUI()
 		}
 		if (EnemyCardOption2) EnemyCardOption2->SetupCard(false, EnemyCardBackgroundTexture, UpgradesData[1], EnemyIconTexture);
 	}
-	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
-	if (!GameInstance->GetSaveSlot()->GetIsExplanationShown(EExplanation::UpgradeUI))
+	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsExplanationShown(EExplanation::UpgradeUI))
 	{
-		(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::UpgradeUI, GameInstance);
+		(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::UpgradeUI, GetGameInstance());
 	}
 }
 
@@ -169,10 +168,9 @@ void UUpgradeSelectionUI::NativeConstruct()
 void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData)
 {
 	if (!UpgradeChoicesPanel) return;
-	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
-	if (!GameInstance->GetSaveSlot()->GetIsExplanationShown(EExplanation::UpgradeChoiceUI))
+	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsExplanationShown(EExplanation::UpgradeChoiceUI))
 	{
-		(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::UpgradeChoiceUI, GameInstance);
+		(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::UpgradeChoiceUI, GetGameInstance());
 	}
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeChoicesFadeIn);
 	bChoicesOpen = true;

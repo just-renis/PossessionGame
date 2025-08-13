@@ -3,8 +3,8 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UDemoEndUI::NativeConstruct()
@@ -40,6 +40,7 @@ void UDemoEndUI::FadeInFinished()
 
 void UDemoEndUI::ReturnToMainMenu()
 {
+	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->SaveSlot();
 	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
 	UGameplayStatics::OpenLevel(GetWorld(), "MainMenu");
 }
@@ -47,7 +48,7 @@ void UDemoEndUI::ReturnToMainMenu()
 void UDemoEndUI::Continue()
 {
 	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
-	Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->SaveSlot();
-	Cast<UPossessionGameInstance>(GetGameInstance())->ResetRunSaveSlot();
+	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->SaveSlot();
+	GetGameInstance()->GetSubsystem<USaveSlotManager>()->ResetRunSaveSlot();
 	UGameplayStatics::OpenLevel(GetWorld(), "Level_1");
 }

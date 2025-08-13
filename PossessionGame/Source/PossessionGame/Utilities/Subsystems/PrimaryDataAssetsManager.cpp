@@ -196,12 +196,12 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TArra
 	bTutorialIsFinished = bIsTutorialFinished;
 	ClearBeforeInit();
 	SetupSpawnLocations();
+	if (!bTutorialIsFinished) GetWorld()->GetSubsystem<UTutorialManager>()->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
 	if (bIsInitialized) return;
 	bIsInitialized = true;
 	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
 	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
 	else AddSpawnableEnemiesToThePool();
-	if (!bTutorialIsFinished) GetWorld()->GetSubsystem<UTutorialManager>()->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
 }
 
 void UPrimaryDataAssetsManager::SetupSpawnLocations()

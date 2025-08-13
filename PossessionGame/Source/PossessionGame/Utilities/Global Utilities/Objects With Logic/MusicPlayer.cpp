@@ -1,14 +1,15 @@
 ﻿#include "MusicPlayer.h"
 #include "Components/AudioComponent.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 void AMusicPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	bIsTutorialFinished = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished();
+	if (bMusicPlayerPlaysDefaultSoundTrack) return;
+	bIsTutorialFinished = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished();
 	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	CurrentSoundtrack = bIsTutorialFinished ? ESound::RestSoundTrack : ESound::TutorialIntroSoundTrack;
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();

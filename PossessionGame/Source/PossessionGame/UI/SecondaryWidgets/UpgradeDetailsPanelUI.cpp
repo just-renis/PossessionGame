@@ -6,9 +6,10 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
-#include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UUpgradeDetailsPanelUI::SetButtonVisibility(const bool bState) const
@@ -88,8 +89,7 @@ void UUpgradeDetailsPanelUI::SetUpgradeText()
 {
 	if (!UpgradeText) return;
 	FString UpgradeTextString = "";
-	const TObjectPtr<URunSaveSlot> RunSaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetRunSaveSlot();
-	const int32 NextLevel = RunSaveSlot->GetLevelOfChoice(UpgradeData->GetUpgradeName(), ChoiceIndex) + 1;
+	const int32 NextLevel = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetLevelOfChoice(UpgradeData->GetUpgradeName(), ChoiceIndex) + 1;
 	FUpgradeAttributes CurrentUpgradeData = UpgradeData->GetAttributesForLevel(true, NextLevel, ChoiceIndex);
 	if (NextLevel > 1)
 	{
@@ -106,8 +106,7 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
 	bHasBeenSelected = true;
 	PlayAnimation(PressAnim);
-	const TObjectPtr<URunSaveSlot> RunSaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetRunSaveSlot();
-	RunSaveSlot->AddUpgrade(Cast<UPossessionGameInstance>(GetGameInstance()), UpgradeData->GetUpgradeName(), ChoiceIndex);
+	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->AddUpgrade(Cast<UPossessionGameInstance>(GetGameInstance()), UpgradeData->GetUpgradeName(), ChoiceIndex);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->TriggerUpgradeMenuCloseAnimation();
 }
 

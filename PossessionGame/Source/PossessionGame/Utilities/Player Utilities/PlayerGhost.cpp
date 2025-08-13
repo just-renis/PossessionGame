@@ -12,9 +12,10 @@
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerGhostUI.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 
 APlayerGhost::APlayerGhost()
@@ -29,7 +30,7 @@ void APlayerGhost::BeginPlay()
 	Super::BeginPlay();
 	Tags.Add("PlayerGhost");
 	GetWorld()->GetTimerManager().SetTimer(CheckHandle, this, &APlayerGhost::CheckIfPlayerFallOutOfWorld, 2.f, true);
-	if (!Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished())
+	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished())
 	{
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI)->PlayStartupAnimation();
 	}

@@ -48,11 +48,12 @@ public:
 	int32 GetLevelOfChoice(const EUpgrade InUpgrade, const int32 InChoice);
 	int32 GetLevelOfAnUpgrade(const EUpgrade InUpgrade);
 	int32 GetSecretBoost(const EVariation InVariation);
+	FString GetSlotName() { return SlotName; }
 	const TMap<int32, int32>* GetUpgradeChoicesData(const EUpgrade InUpgrade);
 	
 	void AddUpgrade(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const EUpgrade InUpgrade, const int32 InChoice);
 	void SaveSlot();
-	void SetupSlot(const FString& InSlotName) { SlotName = InSlotName; }
+	void SetupSlot(const FString& InSlotName);
 	void AddSecretCrateBoost(const EVariation InVariation, const int32 InPercentage);
 private:
 	UPROPERTY()
@@ -63,4 +64,6 @@ private:
 	TMap<EUpgrade, FUpgradeChoicesAmountByLevel> UnlockedUpgrades;
 	UPROPERTY()
 	TMap<EVariation, int32> SecretCrateBoosts;
+
+	void VersionMigration();
 };

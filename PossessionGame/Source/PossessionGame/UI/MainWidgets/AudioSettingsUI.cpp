@@ -1,11 +1,9 @@
 ﻿#include "AudioSettingsUI.h"
-#include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ELanguageCode.h"
 #include "PossessionGame/UI/SecondaryWidgets/SettingsOptionUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/SliderUI.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameUserSettings.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/SettingsSave.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
@@ -87,13 +85,6 @@ FLanguageOption UAudioSettingsUI::GetLanguageOption(const ELanguageCode InLangua
 void UAudioSettingsUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	#if WITH_EDITOR
-		if (ResetSaveSlotButton)
-		{
-			ResetSaveSlotButton->OnClicked.AddDynamic(this, &UAudioSettingsUI::ResetSaveSlot);
-			ResetSaveSlotButton->SetVisibility(ESlateVisibility::Visible);
-		}
-	#endif
 	if (!LanguageOption) return;
 	const TObjectPtr<USettingsSave> SavedSettings = Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot("SettingsSlot", 0));
 	LanguageCode = GetLanguageCode(SavedSettings->GetCurrentLanguage());
@@ -155,8 +146,6 @@ void UAudioSettingsUI::ApplyFpsCapValue(const float InValue) const
 	if (FpsCapNumberText) FpsCapNumberText->SetText(FText::AsNumber(static_cast<int32>(GameUserSettings->GetFrameRateLimit())));
 	if (FpsCapSlider) FpsCapSlider->SetValue(InValue);
 }
-
-void UAudioSettingsUI::ResetSaveSlot() { if (GetGameInstance()) Cast<UPossessionGameInstance>(GetGameInstance())->ResetSaveSlot(); }
 
 void UAudioSettingsUI::LanguageSwitchLeft()
 {

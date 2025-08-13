@@ -96,7 +96,7 @@ void ATutorialGate::ChangeOutlineState(const bool bState)
 {
 	FirstGateSide->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
 	SecondGateSide->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
-	if (bState) GetWorldTimerManager().SetTimer(DisableOutlineHandle, this, &ATutorialGate::DisableOutline, 0.0245f, false);
+	if (bState) GetWorldTimerManager().SetTimer(DisableOutlineHandle, this, &ATutorialGate::DisableOutline, 0.245f, false);
 }
 
 void ATutorialGate::ShowMarker(const EGameMode InGameMode) const

@@ -5,9 +5,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGameInstance.generated.h"
 
-class URunSaveSlot;
 class UPlayerLevelData;
-class USaveSlot;
 
 USTRUCT()
 struct POSSESSIONGAME_API FSpawnableEnemyByTotalAmount
@@ -28,16 +26,11 @@ public:
 	bool IsDemo() const { return bIsDemo; }
 	bool IsPlayerTakenDamageEffectsEnabled() const { return bPlayerTakenDamageEffectsEnabled; }
 	bool GetIsMainMenuLaunchedOnce() const { return bMainMenuLaunchedOnce; }
+	bool GetUseCustomLevel() const { return bUseCustomLevel; }
 	float GetGlobalTimeDilation() const { return GlobalTimeDilation; }
 	int32 GetPlayerLevel() const { return PlayerLevel; }
 	TObjectPtr<UPlayerLevelData> GetPlayerLevelData() const { return PlayerLevelData; }
-	TObjectPtr<USaveSlot> GetSaveSlot() const { return PlayerSaveSlot; }
-	TObjectPtr<URunSaveSlot> GetRunSaveSlot() const { return PlayerRunSaveSlot; }
 	
-	void LoadPlayerSaveSlot();
-	void LoadPlayerRunSaveSlot();
-	void ResetSaveSlot();
-	void ResetRunSaveSlot();
 	void InitGameInstanceManagers();
 	void SetMainMenuLaunchedOnce() { bMainMenuLaunchedOnce = true;}
 private:
@@ -52,13 +45,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	float GlobalTimeDilation = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
+	bool bUseCustomLevel = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	int32 PlayerLevel = 0;
 	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
 	TArray<FSpawnableEnemyByTotalAmount> SpawnableEnemiesByTotalAmount;
-	UPROPERTY()
-	TObjectPtr<USaveSlot> PlayerSaveSlot;
-	UPROPERTY()
-	TObjectPtr<URunSaveSlot> PlayerRunSaveSlot;
 	UPROPERTY()
 	FTimerHandle TickHandle;
 

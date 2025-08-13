@@ -1,8 +1,9 @@
 ﻿#include "ForceField.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 
 AForceField::AForceField()
@@ -16,7 +17,7 @@ void AForceField::BeginPlay()
 	Super::BeginPlay();
 	MID_Material = ForceField->CreateAndSetMaterialInstanceDynamic(0);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->StartForceFieldDissolve.AddUObject(this, &AForceField::StartDissolveForceField);
-	if (Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->GetIsTutorialFinished()) return;
+	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished()) return;
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowHint.AddUObject(this, &AForceField::StartDeploymentOfForceField);
 	if (!MID_Material) return;
 	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 

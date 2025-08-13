@@ -1,11 +1,11 @@
 ﻿#include "UpgradeManager.h"
+#include "SaveSlotManager.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/EAbility.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
-#include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 
 float UUpgradeManager::AI_GetTotalUpgradeAttributeValue(const EUpgradeAttribute InUpgradeAttribute)
 {
@@ -101,7 +101,7 @@ void UUpgradeManager::Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpg
 		{EAbility::GuardianAbility1, EUpgrade::GuardianAbility1},
 		{EAbility::GuardianAbility2, EUpgrade::GuardianAbility2}
 	};
-	RunSaveSlot = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance())->GetRunSaveSlot();
+	RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 }
 
 void UUpgradeManager::AddRandomlyChosenUpgrade(TArray<EUpgrade>& UpgradeKeys, TArray<TObjectPtr<UUpgradeData>>& ChosenUpgrades)

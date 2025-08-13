@@ -1,17 +1,13 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "FCharacterAbilities.h"
-#include "FVariationUnlockData.h"
 #include "GameFramework/SaveGame.h"
-#include "PossessionGame/Enums/ECharacterType.h"
-#include "PossessionGame/Enums/EExplanation.h"
+#include "PossessionGame/Utilities/Data Utilities/FCharacterAbilities.h"
+#include "PossessionGame/Utilities/Data Utilities/FVariationUnlockData.h"
 #include "SaveSlot.generated.h"
 
 enum class EExplanation : uint8;
-class UAbility;
-enum class EAbility : uint8;
-class UDelegateManager;
+enum class EVariation : uint8;
 class UPlayerLevelData;
 class UPossessionGameInstance;
 
@@ -23,7 +19,6 @@ public:
 	bool GetIsTutorialFinished() const { return bTutorialFinished; }
 	bool GetIsVariationUnlocked(const EVariation InVariationUnlockName);
 	bool GetIsVariationTaskCompleted(const EVariation InVariationUnlockName) const;
-	bool GetIsFirstLaunch() const { return bIsFirstLaunch; }
 	bool UnlockAbility(const ECharacterType InCharacter, const int32 InAbilityIndex);
 	bool GetIsAbilityUnlocked(const ECharacterType InCharacter, const int32 InAbilityIndex);
 	bool GetIsExplanationShown(const EExplanation InExplanationName) const;
@@ -36,23 +31,22 @@ public:
 	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
 	int32 GetCurrencyAmount() const { return CurrencyAmount; }
 	int32 GetSkillPoints() const;
+	int32 GetCurrentChapter() const { return CurrentChapter; }
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	FCharacterAbilities GetCharacterChosenAbilities(const ECharacterType InCharacter);
 	FCharacterAbilities GetCharacterUnlockedAbilities(const ECharacterType InCharacter);
+	FString GetSlotName() { return SlotName; }
 	
 	void AddCurrencyAmount(const int32 InCurrencyAmount);
 	void SetTutorialFinished();
 	void SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName);
-	void AddXp(const TObjectPtr<UGameInstance>& InGameInstance, const int32 InXp);
+	void AddXp(const int32 InXp);
 	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);
 	void SaveSlot();
-	void SetLaunchedOnce();
 	void UnlockVariation(const EVariation InVariationUnlockName);
 	void AddChosenAbilities(const ECharacterType InCharacter, const int32 InFirstAbilityIndex, const int32 InSecondAbilityIndex);
 	void AddShownExplanation(const EExplanation InExplanationName);
 private:
-	UPROPERTY()
-	bool bIsFirstLaunch = true;
 	UPROPERTY()
 	bool bTutorialFinished = false;
 	UPROPERTY()
@@ -64,9 +58,13 @@ private:
 	UPROPERTY()
 	int32 SaveVersion = 1;
 	UPROPERTY()
+	int32 CurrentChapter = 1;
+	UPROPERTY()
 	FString SlotName;
 	UPROPERTY(Transient)
 	TObjectPtr<UPlayerLevelData> PlayerLevelData;
+	UPROPERTY(Transient)
+	TObjectPtr<UPossessionGameInstance> GameInstance;
 	UPROPERTY()
 	FVariationUnlockData VariationUnlockData;
 	UPROPERTY()

@@ -1,7 +1,7 @@
 ﻿#include "WidgetManager.h"
+#include "SaveSlotManager.h"
 #include "PossessionGame/UI/MainWidgets/ExplanationUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 
 void UWidgetManager::Init(const TMap<EWidget, TSubclassOf<UUserWidget>>& InWidgetClasses)
 {
@@ -44,8 +44,8 @@ int32 UWidgetManager::GetWidgetZOrder(const EWidget InWidgetName)
 	}
 }
 
-void UWidgetManager::ShowExplanation(const EExplanation InExplanationName, const TObjectPtr<UPossessionGameInstance>& InGameInstance)
+void UWidgetManager::ShowExplanation(const EExplanation InExplanationName, const TObjectPtr<UGameInstance>& InGameInstance)
 {
-	InGameInstance->GetSaveSlot()->AddShownExplanation(InExplanationName);
+	InGameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddShownExplanation(InExplanationName);
 	GetWidget<UExplanationUI>(EWidget::ExplanationUI)->OpenUI(InExplanationName);
 }

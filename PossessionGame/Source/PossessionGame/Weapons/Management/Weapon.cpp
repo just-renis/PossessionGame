@@ -10,13 +10,13 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfxType.h"
-#include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 
 AWeapon::AWeapon()
@@ -219,7 +219,7 @@ void AWeapon::P_Setup()
 	TotalAmmo = P_Data->GetTotalAmmo();
 	HitScanDamage = DefaultHitScanDamage = P_Data->GetHitScanDamage();
 	P_VariationHitScanDamageAppliance();
-	HitScanDamage += DefaultHitScanDamage * Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
+	HitScanDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
 	DelegateManager->OnLevelUp.AddUObject(this, &AWeapon::P_SetupLevelUpAppliance);
@@ -311,7 +311,7 @@ void AWeapon::DisableHandsMesh() const
 void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 {
 	const bool bIsCritical = InHitResult.BoneName == "head";
-	const float SecretBoostDamage = P_ReceiveHitScanDamage() + P_ReceiveHitScanDamage() * Proprietor->GetGameInstance()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
+	const float SecretBoostDamage = P_ReceiveHitScanDamage() + P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
 	const float Damage = SecretBoostDamage * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
 	if (FMath::IsNearlyEqual(Damage, 0.f, 0.01f)) return;
 	(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
@@ -322,6 +322,6 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 
 void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
 {
-	HitScanDamage -= DefaultHitScanDamage * Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
-	HitScanDamage += DefaultHitScanDamage * Proprietor->GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
+	HitScanDamage -= DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
+	HitScanDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
 }

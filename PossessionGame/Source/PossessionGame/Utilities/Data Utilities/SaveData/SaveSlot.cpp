@@ -1,11 +1,11 @@
 ﻿#include "SaveSlot.h"
+#include "MetaSaveSlot.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Base Data Assets/PlayerLevelData.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
-
-constexpr int32 CURRENT_SAVE_VERSION = 1;
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 bool USaveSlot::GetIsVariationUnlocked(const EVariation InVariationUnlockName) { return VariationUnlockData.IsVariationUnlocked(InVariationUnlockName); }
 
@@ -68,35 +68,35 @@ void USaveSlot::SetTutorialFinished()
 
 void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName)
 {
-	PlayerLevelData = InGameInstance->GetPlayerLevelData();
+	GameInstance = InGameInstance;
+	PlayerLevelData = GameInstance->GetPlayerLevelData();
 	SlotName = InSlotName;
-	InGameInstance->GetSubsystem<UDelegateManager>()->OnCoinCollected.BindUObject(this, &USaveSlot::AddCurrencyAmount);
-	InGameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
+	GameInstance->GetSubsystem<UDelegateManager>()->OnCoinCollected.BindUObject(this, &USaveSlot::AddCurrencyAmount);
+	GameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
 	#if WITH_EDITOR
-		CurrentLevel = InGameInstance->GetPlayerLevel();
+		if (GameInstance->GetUseCustomLevel()) CurrentLevel = GameInstance->GetPlayerLevel();
 	#endif
 	VersionMigration();
 }
 
-void USaveSlot::AddXp(const TObjectPtr<UGameInstance>& InGameInstance, const int32 InXp)
+void USaveSlot::AddXp(const int32 InXp)
 {
 	CurrentXp += InXp;
 	while (CurrentXp >= GetCurrentLevelNeededXp())
 	{
-		InGameInstance->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::LevelUp);
+		GameInstance->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::LevelUp);
 		CurrentXp -= GetCurrentLevelNeededXp();
-		InGameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast(++CurrentLevel);
+		GameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast(++CurrentLevel);
 	}
 }
 
 void USaveSlot::ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount) { VariationUnlockData.ProgressVariationUnlock(InVariationUnlockName, InAmount); }
 
-void USaveSlot::SaveSlot() { UGameplayStatics::SaveGameToSlot(this, SlotName, 0); }
-
-void USaveSlot::SetLaunchedOnce()
+void USaveSlot::SaveSlot()
 {
-	bIsFirstLaunch = false;
-	SaveSlot();
+	const FDateTime Now = FDateTime::Now();
+	GameInstance->GetSubsystem<USaveSlotManager>()->GetMetaSaveSlot()->UpdateSaveSlotMetaData(SlotName, FSaveSlotMetaData(CurrentLevel, SlotName, FDateTime(Now.GetYear(), Now.GetMonth(), Now.GetDay())));
+	UGameplayStatics::SaveGameToSlot(this, SlotName, 0);
 }
 
 void USaveSlot::UnlockVariation(const EVariation InVariationUnlockName) { VariationUnlockData.UnlockVariation(InVariationUnlockName); }
@@ -120,6 +120,17 @@ void USaveSlot::UpdateSelectedVariation(const ECharacterType InCharacter, const 
 void USaveSlot::VersionMigration()
 {
 	if (SaveVersion >= CURRENT_SAVE_VERSION) return;
-	SaveVersion = CURRENT_SAVE_VERSION;
+	while (SaveVersion < CURRENT_SAVE_VERSION)
+	{
+		switch (SaveVersion)
+		{
+			case 1:
+				if (UGameplayStatics::DoesSaveGameExist(TEXT("DemoPlayerSaveSlot"), 0)) UGameplayStatics::DeleteGameInSlot(TEXT("DemoPlayerSaveSlot"), 0);
+				SaveVersion = 2;
+				break;
+			default:
+				SaveVersion = CURRENT_SAVE_VERSION;
+		}
+	}
 	SaveSlot();
 }

@@ -1,8 +1,8 @@
 ﻿#include "VariationCurrencyPanelUI.h"
 #include "Components/TextBlock.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 void UVariationCurrencyPanelUI::UpdateCurrencyText() const
 {
@@ -12,7 +12,7 @@ void UVariationCurrencyPanelUI::UpdateCurrencyText() const
 void UVariationCurrencyPanelUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	PlayerSaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	PlayerSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 	UpdateCurrencyText();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationUnlocked.AddUObject(this, &UVariationCurrencyPanelUI::UpdateCurrencyText);
 }

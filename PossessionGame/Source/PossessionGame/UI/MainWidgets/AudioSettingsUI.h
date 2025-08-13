@@ -8,7 +8,6 @@
 class UTextBlock;
 enum class ELanguageCode : uint8;
 class USettingsOptionUI;
-class UButton;
 class USliderUI;
 
 USTRUCT()
@@ -50,8 +49,6 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USliderUI> FpsCapSlider;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> ResetSaveSlotButton;
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USettingsOptionUI> LanguageOption;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FpsCapNumberText;
@@ -72,8 +69,6 @@ private:
 	void ApplyHorizontalSensitivityValue(const float InValue);
 	void ApplyVerticalSensitivityValue(const float InValue);
 	void ApplyFpsCapValue(const float InValue) const;
-	UFUNCTION()
-	void ResetSaveSlot();
 	UFUNCTION()
 	void LanguageSwitchLeft();
 	UFUNCTION()

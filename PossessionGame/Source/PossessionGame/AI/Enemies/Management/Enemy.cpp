@@ -40,8 +40,8 @@
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/AIHpBarUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
-#include "PossessionGame/Utilities/Data Utilities/RunSaveSlot.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/AbilityManager.h"
@@ -51,6 +51,7 @@
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
@@ -196,7 +197,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_Crouch);
 	}
-	if (!GameInstance->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialManager();
+	if (!GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialManager();
 }
 
 void AEnemy::PossessedBy(AController* NewController)
@@ -257,6 +258,7 @@ void AEnemy::AI_SetupUpgradesAppliance()
 void AEnemy::InitiateDeath()
 {
 	DisableHijackViableVfx();
+	GetMesh()->SetOverlayMaterial(nullptr);
 	ClearTimers();
 	AI_DestroyHpBar();
 	bIsAlive = false;
@@ -413,7 +415,7 @@ void AEnemy::AI_PlayDeathSound() { PlaySound(ESound::MechanicalDeath); }
 
 void AEnemy::P_SetupAbilities()
 {
-	TArray<int32> ChosenAbilities = GameInstance->GetSaveSlot()->GetCharacterChosenAbilities(CharacterName).Abilities;
+	TArray<int32> ChosenAbilities = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCharacterChosenAbilities(CharacterName).Abilities;
 	const TMap<EAbility, TSoftObjectPtr<UAbilityData>> AbilityData = AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->P_Abilities_Data;
 	const TObjectPtr<UAbilityManager> AbilityManager = GameInstance->GetSubsystem<UAbilityManager>();
 	for (int32 i = 0; i < ChosenAbilities.Num(); i++)
@@ -496,8 +498,8 @@ void AEnemy::P_Destroy()
 	NavAreaModifier->Destroy();
 	if (bPlayerDied)
 	{
-		GameInstance->GetSaveSlot()->SaveSlot();
-		GameInstance->ResetRunSaveSlot();
+		GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->SaveSlot();
+		GameInstance->GetSubsystem<USaveSlotManager>()->ResetRunSaveSlot();
 		return;
 	}
 	P_HUD->Reset();
@@ -758,8 +760,8 @@ void AEnemy::P_SetupData()
 {
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
 	MaxHp = P_Data->GetMaxHp();
-	MaxHp += MaxHp * GetGameInstance()->GetSaveSlot()->GetLevelHpIncrease() * 0.01f;
-	MaxHp += MaxHp * GetGameInstance()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardHealth) * 0.01f;
+	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelHpIncrease() * 0.01f;
+	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardHealth) * 0.01f;
 	CurrentHp = MaxHp;
 	bIsHijacked = true;
 	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
@@ -774,7 +776,7 @@ void AEnemy::P_SetupUI()
 	P_HUD->SetPlayerRef(this);
 	P_HUD->UpdateProgressBar(EUIBar::Hijack, 0.f, P_Data->GetPossessionBarCooldown());
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
-	P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSaveSlot()->GetXp(), GameInstance->GetSaveSlot()->GetCurrentLevelNeededXp());
+	P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetXp(), GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCurrentLevelNeededXp());
 	P_HUD->ConfigureUIs();
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
@@ -857,7 +859,7 @@ void AEnemy::P_ToggleRun(const bool bState)
 
 void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue)
 {
-	HijackBarTimer += InHijackTimeValue * (GameInstance->GetSaveSlot()->GetIsTutorialFinished() ? 1.f : 2.f);
+	HijackBarTimer += InHijackTimeValue * (GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished() ? 1.f : 2.f);
 	P_AddXp(InXp);
 	for (int32 i = 0; i < Abilities.Num(); i++)
 	{
@@ -1036,8 +1038,8 @@ void AEnemy::P_Stomp()
 
 void AEnemy::P_SetupLevelUpAppliance(const int32 InLevel)
 {
-	MaxHp -= MaxHp * GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
-	MaxHp += MaxHp * GetGameInstance()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
+	MaxHp -= MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
+	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
 }
 
 void AEnemy::P_StompImpact(const FVector& InHitLocation)
@@ -1135,8 +1137,8 @@ void AEnemy::P_Crouch()
 
 void AEnemy::P_AddXp(const int32 InXp) const
 {
-	GameInstance->GetSaveSlot()->AddXp(GameInstance, InXp);
-	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSaveSlot()->GetXp(), GameInstance->GetSaveSlot()->GetCurrentLevelNeededXp());
+	GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddXp(InXp);
+	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetXp(), GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCurrentLevelNeededXp());
 }
 
 void AEnemy::P_ApplySecretBoostHp(const int32 InPercentage)
@@ -1241,7 +1243,7 @@ void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float
 {
 	switch (InDamageReason)
 	{
-		case EDamageReason::TricksterPoisonDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariation::TricksterVariationPurple, InDamage); break;
+		case EDamageReason::TricksterPoisonDamage: GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ProgressVariationUnlock(EVariation::TricksterVariationPurple, InDamage); break;
 		default: ;
 	}
 }
@@ -1250,8 +1252,8 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 {
 	switch (InDamageReason)
 	{
-		case EDamageReason::GuardianDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariation::GuardianVariationGold, 1); break;
-		case EDamageReason::RangerGrenadeDamage: GameInstance->GetSaveSlot()->ProgressVariationUnlock(EVariation::RangerVariationBlue, 1); break;
+		case EDamageReason::GuardianDamage: GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ProgressVariationUnlock(EVariation::GuardianVariationGold, 1); break;
+		case EDamageReason::RangerGrenadeDamage: GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ProgressVariationUnlock(EVariation::RangerVariationBlue, 1); break;
 		default: ;
 	}
 }

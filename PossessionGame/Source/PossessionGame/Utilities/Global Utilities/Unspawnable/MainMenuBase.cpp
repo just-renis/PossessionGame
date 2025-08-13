@@ -1,5 +1,4 @@
 ﻿#include "MainMenuBase.h"
-
 #include "PossessionGameInstance.h"
 #include "SettingsSave.h"
 #include "ShaderPipelineCache.h"
@@ -7,7 +6,6 @@
 #include "PossessionGame/UI/MainWidgets/GameLaunchUI.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
 #include "PossessionGame/UI/MainWidgets/MainMenuUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 

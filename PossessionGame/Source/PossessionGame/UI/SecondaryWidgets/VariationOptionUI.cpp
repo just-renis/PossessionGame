@@ -4,10 +4,10 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Enums/EWidget.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 void UVariationOptionUI::UpdateUnlockProgressText(const TObjectPtr<USaveSlot>& InSaveSlot) { UnlockProgressText = DefaultUnlockText + GetUnlockProgressString(InSaveSlot); }
 
@@ -89,7 +89,7 @@ void UVariationOptionUI::VariationOptionHovered()
 {
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	if (!VariationOptionBorder) return;
-	const TObjectPtr<USaveSlot> SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 	if (!SaveSlot->GetIsVariationUnlocked(Variation)) UpdateUnlockProgressText(SaveSlot);
 	(void)ShowDetailsPanel.ExecuteIfBound(true, Variation, VariationDetailsPanelText, UnlockProgressText);
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward);

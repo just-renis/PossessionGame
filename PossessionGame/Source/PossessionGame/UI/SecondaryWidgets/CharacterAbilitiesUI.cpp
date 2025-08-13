@@ -2,7 +2,8 @@
 #include "AbilityIconUI.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/Button.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/FCharacterAbilities.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 

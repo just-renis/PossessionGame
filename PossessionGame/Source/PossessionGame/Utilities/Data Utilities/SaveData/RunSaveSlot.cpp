@@ -2,6 +2,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 int32 URunSaveSlot::GetLevelOfChoice(const EUpgrade InUpgrade, const int32 InChoice)
 {
@@ -36,8 +37,32 @@ void URunSaveSlot::AddUpgrade(const TObjectPtr<UPossessionGameInstance>& InGameI
 
 void URunSaveSlot::SaveSlot() { UGameplayStatics::SaveGameToSlot(this, SlotName, 0); }
 
+void URunSaveSlot::SetupSlot(const FString& InSlotName)
+{
+	SlotName = InSlotName;
+	VersionMigration();
+}
+
 void URunSaveSlot::AddSecretCrateBoost(const EVariation InVariation, const int32 InPercentage)
 {
 	int32& BoostAmount = SecretCrateBoosts.FindOrAdd(InVariation);
 	BoostAmount += InPercentage;
+}
+
+void URunSaveSlot::VersionMigration()
+{
+	if (SaveVersion >= CURRENT_SAVE_VERSION) return;
+	while (SaveVersion < CURRENT_SAVE_VERSION)
+	{
+		switch (SaveVersion)
+		{
+			case 1:
+				if (UGameplayStatics::DoesSaveGameExist(TEXT("DemoPlayerRunSaveSlot"), 0)) UGameplayStatics::DeleteGameInSlot(TEXT("DemoPlayerRunSaveSlot"), 0);
+				SaveVersion = 2;
+				break;
+			default:
+				SaveVersion = CURRENT_SAVE_VERSION;
+		}
+	}
+	SaveSlot();
 }

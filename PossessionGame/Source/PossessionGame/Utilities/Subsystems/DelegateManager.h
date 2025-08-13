@@ -42,6 +42,7 @@ DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
 DECLARE_DELEGATE_TwoParams(FOnVariationSelectionEnd, const ECharacterType, const EWidget);
+DECLARE_DELEGATE_TwoParams(FOnSaveSlotClicked, const FString&, const FString&);
 DECLARE_DELEGATE_ThreeParams(FOnAbilityUse, const int32, const bool, const bool);
 DECLARE_MULTICAST_DELEGATE(FOnTerminalInteraction);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
@@ -102,6 +103,7 @@ public:
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
 	FOnHijack OnHijack;
 	FOnAbilityEnd OnAbilityEnd;
+	FOnSaveSlotClicked OnSaveSlotClicked;
 	FOnAbilityUse OnAbilityUse;
 	FOnTerminalInteraction OnTerminalInteraction;
 	FOnPlayerDeath OnPlayerDeath;

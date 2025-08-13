@@ -6,10 +6,9 @@
 #include "PossessionGame/Enums/EWidget.h"
 #include "WidgetManager.generated.h"
 
-class UPossessionGameInstance;
 enum class EExplanation : uint8;
 
-DECLARE_DELEGATE_TwoParams(FOnShowExplanation, const EExplanation, const TObjectPtr<UPossessionGameInstance>&);
+DECLARE_DELEGATE_TwoParams(FOnShowExplanation, const EExplanation, const TObjectPtr<UGameInstance>&);
 
 UCLASS()
 class POSSESSIONGAME_API UWidgetManager : public UWorldSubsystem
@@ -37,7 +36,7 @@ private:
 	TMap<EWidget, TObjectPtr<UUserWidget>> Widgets;
 
 	int32 GetWidgetZOrder(const EWidget InWidgetName);
-	void ShowExplanation(const EExplanation InExplanationName, const TObjectPtr<UPossessionGameInstance>& InGameInstance);
+	void ShowExplanation(const EExplanation InExplanationName, const TObjectPtr<UGameInstance>& InGameInstance);
 };
 
 template <typename T>

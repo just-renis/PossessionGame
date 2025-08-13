@@ -4,7 +4,7 @@
 #include "Components/CheckBox.h"
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 void UVariationUnlockDetailsUI::SetDetailsText(const FText& InText) const

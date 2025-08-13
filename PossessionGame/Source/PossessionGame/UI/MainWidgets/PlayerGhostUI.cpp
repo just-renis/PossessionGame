@@ -1,5 +1,4 @@
 ﻿#include "PlayerGhostUI.h"
-
 #include "PlayerHUD.h"
 #include "Animation/WidgetAnimation.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
@@ -8,10 +7,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EGameMode.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -112,7 +111,7 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 
 void UPlayerGhostUI::PlayFadeOutAnim()
 {
-	Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot()->SetTutorialFinished();
+	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->SetTutorialFinished();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(true);
 	FadeOutAnimFinishedDelegate.BindDynamic(this, &UPlayerGhostUI::LoadNextLevel);
 	BindToAnimationFinished(FadeOutAnim, FadeOutAnimFinishedDelegate);

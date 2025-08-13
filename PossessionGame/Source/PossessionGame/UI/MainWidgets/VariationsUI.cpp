@@ -5,14 +5,15 @@
 #include "PossessionGame/UI/SecondaryWidgets/VariationCharacterIconUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationOptionUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationUnlockDetailsUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EExplanation.h"
 #include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationCurrencyPanelUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 void UVariationsUI::OpenUI()
 {
@@ -31,7 +32,7 @@ void UVariationsUI::CloseUI() { Toggle(false); }
 void UVariationsUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	SaveSlot = Cast<UPossessionGameInstance>(GetGameInstance())->GetSaveSlot();
+	SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 	UnlockDetailsPanel->SetSaveSlot(SaveSlot);
 	SwitchVariation(ECharacterType::Guardian);
 	GuardianCharacterIcon->PlayHoverAnim();
@@ -124,10 +125,9 @@ void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVar
 		else UnlockDetailsPanel->SetTaskCompleted(SaveSlot->GetIsVariationTaskCompleted(InVariationName));
 		UnlockDetailsPanel->PlayFadeInAnim();
 		VariationDetailsPanel->PlayFadeInAnim();
-		const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
-		if (!GameInstance->GetSaveSlot()->GetIsExplanationShown(EExplanation::VariationDetailsUI))
+		if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsExplanationShown(EExplanation::VariationDetailsUI))
 		{
-			(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::VariationDetailsUI, GameInstance);
+			(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::VariationDetailsUI, GetGameInstance());
 		}
 	}
 }
