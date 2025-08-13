@@ -5,7 +5,6 @@
 #include "SaveSlotManager.generated.h"
 
 class UMetaSaveSlot;
-class UPossessionGameInstance;
 class URunSaveSlot;
 class USaveSlot;
 

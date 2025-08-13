@@ -10,7 +10,16 @@
 
 void USaveSlotMenuUI::OpenUI() { Toggle(true); }
 
-void USaveSlotMenuUI::CloseUI() { Toggle(false); }
+void USaveSlotMenuUI::CloseUI()
+{
+	if (bIsConfirmationPanelOpen)
+	{
+		bIsConfirmationPanelOpen = false;
+		GoBack();
+		return;
+	}
+	Toggle(false);
+}
 
 void USaveSlotMenuUI::NativeConstruct()
 {
@@ -26,13 +35,20 @@ void USaveSlotMenuUI::NativeDestruct()
 
 void USaveSlotMenuUI::Toggle(const bool bState)
 {
-	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (!bState)
+	{
+		FadeInAnimFinishedDelegate.BindDynamic(this, &USaveSlotMenuUI::FadeOutAnimFinished);
+		BindToAnimationFinished(FadeInAnim, FadeInAnimFinishedDelegate);
+	}
+	else SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	PlayAnimation(FadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::SaveSlotMenuUI : EWidget::None);
 }
 
 void USaveSlotMenuUI::OpenConfirmationPopup(const FString& InSlotName, const FString& InRunSlotName)
 {
 	if (!ConfirmationPopup) return;
+	bIsConfirmationPanelOpen = true;
 	SaveSlotName = InSlotName;
 	RunSaveSlotName = InRunSlotName;
 	ConfirmationPopup->PlayPopupFadeInAnim(true);
@@ -63,6 +79,12 @@ void USaveSlotMenuUI::ResetToDefaultPlayerInputMode() const
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = false;
 	PlayerController->SetInputMode(FInputModeGameOnly());
+}
+
+void USaveSlotMenuUI::FadeOutAnimFinished()
+{
+	UnbindFromAnimationFinished(FadeInAnim, FadeInAnimFinishedDelegate);
+	SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void USaveSlotMenuUI::OpenCurrentSaveLevel()

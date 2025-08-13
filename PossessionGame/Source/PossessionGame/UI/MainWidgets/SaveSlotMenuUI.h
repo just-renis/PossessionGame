@@ -14,10 +14,15 @@ public:
 	void OpenUI();
 	void CloseUI();
 private:
+	bool bIsConfirmationPanelOpen = false;
 	FString SaveSlotName;
 	FString RunSaveSlotName;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UConfirmationPopupUI> ConfirmationPopup;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> FadeInAnim;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent FadeInAnimFinishedDelegate;
 
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
@@ -32,4 +37,6 @@ private:
 	void LoadSaveAndOpenLevel();
 	UFUNCTION()
 	void GoBack();
+	UFUNCTION()
+	void FadeOutAnimFinished();
 };

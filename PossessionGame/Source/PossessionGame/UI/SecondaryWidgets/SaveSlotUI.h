@@ -20,9 +20,17 @@ class POSSESSIONGAME_API USaveSlotUI : public UUserWidget
 	TObjectPtr<UButton> SaveSlotButton;
 	UPROPERTY(meta = (BindWidget, MultiLine))
 	TObjectPtr<UTextBlock> SaveSlotText;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> HoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> SelectAnim;
 
 	virtual void NativeConstruct() override;
 	void SetText() const;
 	UFUNCTION()
 	void OnClicked();
+	UFUNCTION()
+	void OnHovered();
+	UFUNCTION()
+	void OnUnHovered();
 };

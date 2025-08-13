@@ -10,6 +10,9 @@ void USaveSlotUI::NativeConstruct()
 	Super::NativeConstruct();
 	if (SaveSlotText) SetText();
 	SaveSlotButton->OnClicked.AddDynamic(this, &USaveSlotUI::OnClicked);
+	SaveSlotButton->OnHovered.AddDynamic(this, &USaveSlotUI::OnHovered);
+	SaveSlotButton->OnUnhovered.AddDynamic(this, &USaveSlotUI::OnUnHovered);
+	
 }
 
 void USaveSlotUI::SetText() const
@@ -24,5 +27,10 @@ void USaveSlotUI::SetText() const
 
 void USaveSlotUI::OnClicked()
 {
+	PlayAnimation(SelectAnim);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSaveSlotClicked.ExecuteIfBound(SlotName, RunSlotName);
 }
+
+void USaveSlotUI::OnHovered() { PlayAnimationForward(HoverAnim); }
+
+void USaveSlotUI::OnUnHovered() { PlayAnimationReverse(HoverAnim); }
