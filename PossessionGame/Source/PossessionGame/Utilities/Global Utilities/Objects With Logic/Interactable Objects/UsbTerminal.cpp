@@ -33,7 +33,7 @@ void AUsbTerminal::BeginPlay()
 
 void AUsbTerminal::Interact()
 {
-	if (!GetIsInteractable()) return;
+	if (!GetIsInteractable() || !bIsUsbCollected) return;
 	if (CurrentUsbIndex < 5)
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbInsert);
@@ -48,14 +48,14 @@ void AUsbTerminal::ShowMarker() const { GetWorld()->GetSubsystem<UMarkerManager>
 
 void AUsbTerminal::EnableInteraction()
 {
-	ToggleInteractableWidget(true);
-	SetIsInteractable(true);
+	ShowMarker();
+	bIsUsbCollected = true;
 }
 
 void AUsbTerminal::DisableInteraction()
 {
-	ToggleInteractableWidget(false);
-	SetIsInteractable(false);
+	GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
+	bIsUsbCollected = false;
 }
 
 void AUsbTerminal::ToggleInteractableWidget(const bool bState)

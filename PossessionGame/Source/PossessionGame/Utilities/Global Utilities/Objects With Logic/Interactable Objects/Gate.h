@@ -32,9 +32,11 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsGateClosedByTrigger = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	EGameMode GameModeToFinish;
+	bool bIsGateAssociatedWithOtherGates = false;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bIsGateAssociatedWithOtherGates", AllowPrivateAccess = true))
+	int32 GateAssociationId = -1;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	EGameMode NextGameMode;
+	EGameMode GameModeToFinish;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBoxComponent> Collision;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -74,6 +76,7 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	void CloseGateSides();
 	void DisableOutline() { ChangeOutlineState(false); }
 	void SetupInteractability();
+	void DisableGate(const int32 InAssociationIndex);
 	UFUNCTION()
 	void EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

@@ -61,6 +61,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnTerminalHackFinish, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeFinished, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnVariationUnlocked, const EVariation);
 DECLARE_MULTICAST_DELEGATE_OneParam(FStartForceFieldDissolve, const int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateWithAssociationOpened, const int32);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType, const EVariation);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&, bool);
@@ -122,6 +123,7 @@ public:
 	FOnGameModeFinished OnGameModeFinished;
 	FOnVariationUnlocked OnVariationUnlocked;
 	FStartForceFieldDissolve StartForceFieldDissolve;
+	FOnGateWithAssociationOpened OnGateWithAssociationOpened;
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
 	FOnVariationSelection OnVariationSelection;
 	FOnTargetChange OnTargetChange;

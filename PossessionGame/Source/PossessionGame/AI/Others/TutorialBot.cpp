@@ -40,13 +40,13 @@ void ATutorialBot::BeginPlay()
 {
 	Super::BeginPlay();
 	SetupExpression();
-	TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "TutorialTabletSocket");
 	RetrieveWaypoints();
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
 	bIsTutorialFinished = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHijack.BindUObject(this, &ATutorialBot::SetPlayerRef);
 	if (!bIsTutorialFinished)
 	{
+		TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "TutorialTabletSocket");
 		if (Collision) Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetWorld()->GetSubsystem<UTutorialManager>()->StartTutorialBotAnimation.BindUObject(this, &ATutorialBot::PlayNextAnimation);
 		GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.AddUObject(this, &ATutorialBot::PressAnyKeyPressed);
@@ -58,10 +58,11 @@ void ATutorialBot::BeginPlay()
 	}
 	else
 	{
+		TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "AbilitiesTabletSocket");
 		SetupDialogue("BodySocket");
 		SetControlRigState(true);
 		SetTabletVisibility(true);
-		SetupAndPlayNextAnimation(ETutorialBotAnimState::Idle);
+		SetupAndPlayNextAnimation(ETutorialBotAnimState::TabletHolding);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateClosed.BindUObject(this, &ATutorialBot::MoveToNextLocation);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitialized.AddUObject(this, &ATutorialBot::SpawnMarker);
 	}

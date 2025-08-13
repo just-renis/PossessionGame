@@ -13,6 +13,7 @@ class POSSESSIONGAME_API AUsbTerminal : public AInteractableObject
 
 	AUsbTerminal();
 
+	bool bIsUsbCollected = false;
 	int32 CurrentUsbIndex = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Usb")
 	TObjectPtr<UStaticMesh> UsbMesh;

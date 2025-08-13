@@ -28,7 +28,8 @@ enum class ETutorialBotAnimState
 	Tutorial14,
 	Idle,
 	ThumbsUp,
-	Wave
+	Wave,
+	TabletHolding
 };
 
 UENUM()

@@ -38,7 +38,6 @@ void UGameModeBaseLogic::SetupWaveManagerUI()
 void UGameModeBaseLogic::Finalize()
 {
 	WaveManager->GetDelegateManager()->OnGameModeFinished.Broadcast(WaveManager->GetCurrentGameMode());
-	//(void)WaveManager->GetDelegateManager()->StartTutorialDroneMoveToLocation.ExecuteIfBound(ConvertGameModeToDroneLocation(), true);
 	FadeOutObjectivePanel();
 }
 
