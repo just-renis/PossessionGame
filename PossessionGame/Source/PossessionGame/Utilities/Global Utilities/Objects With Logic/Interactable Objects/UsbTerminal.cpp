@@ -1,5 +1,4 @@
 ﻿#include "UsbTerminal.h"
-#include "Components/SphereComponent.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
@@ -56,19 +55,4 @@ void AUsbTerminal::DisableInteraction()
 {
 	GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
 	bIsUsbCollected = false;
-}
-
-void AUsbTerminal::ToggleInteractableWidget(const bool bState)
-{
-	if (bState)
-	{
-		Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		ShowMarker();
-	}
-	else
-	{
-		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
-		FadeOutInteractableUI();
-	}
 }

@@ -22,12 +22,9 @@ class POSSESSIONGAME_API AUsbTerminal : public AInteractableObject
 	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> UsbMeshes[5];
 
-	virtual TObjectPtr<UStaticMeshComponent> GetMesh() override { return Mesh; }
-
 	virtual void BeginPlay() override;
 	virtual void Interact() override;
 	void ShowMarker() const;
 	void EnableInteraction();
 	void DisableInteraction();
-	void ToggleInteractableWidget(const bool bState);
 };
