@@ -30,6 +30,15 @@ void UMainMenuUI::OpenUI()
 	Toggle(true);
 }
 
+void UMainMenuUI::CloseUI() { if (bIsQuitPopupOpen) TriggerQuitPopupFadeOut(); }
+
+void UMainMenuUI::TriggerMainMenuFadeInAnim()
+{
+	UnbindFromAnimationFinished(FirstLaunchAnim, FirstLaunchAnimDelegate);
+	ToggleMenuButtons(true);
+	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim));
+}
+
 void UMainMenuUI::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -72,6 +81,7 @@ void UMainMenuUI::ToggleMenuButtons(const bool bState) const
 
 void UMainMenuUI::Play()
 {
+	ToggleMenuButtons(false);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USaveSlotMenuUI>(EWidget::SaveSlotMenuUI)->OpenUI();
 }
 
@@ -86,6 +96,7 @@ void UMainMenuUI::QuitGame() { UKismetSystemLibrary::QuitGame(GetWorld(), GetWor
 void UMainMenuUI::TriggerQuitPopupFadeIn()
 {
 	if (!QuitConfirmationPopup) return;
+	bIsQuitPopupOpen = true;
 	TriggerMainMenuFadeOutAnim();
 	QuitConfirmationPopup->PlayPopupFadeInAnim(true);
 }
@@ -93,13 +104,7 @@ void UMainMenuUI::TriggerQuitPopupFadeIn()
 void UMainMenuUI::TriggerQuitPopupFadeOut()
 {
 	if (!QuitConfirmationPopup) return;
+	bIsQuitPopupOpen = false;
 	TriggerMainMenuFadeInAnim();
 	QuitConfirmationPopup->PlayPopupFadeInAnim(false);
-}
-
-void UMainMenuUI::TriggerMainMenuFadeInAnim()
-{
-	UnbindFromAnimationFinished(FirstLaunchAnim, FirstLaunchAnimDelegate);
-	ToggleMenuButtons(true);
-	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim));
 }

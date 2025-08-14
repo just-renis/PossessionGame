@@ -10,7 +10,10 @@ void UAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequence
 	const TObjectPtr<AActor> Owner = MeshComp->GetOwner();
 	if (!Owner) return;
 	TObjectPtr<ACharacter> Character = nullptr;
-	if (bIsPlayer) if (const TObjectPtr<AWeapon> Weapon = Cast<AWeapon>(Owner)) Character = Weapon->GetProprietor();
+	if (bIsPlayer)
+	{
+		if (const TObjectPtr<AWeapon> Weapon = Cast<AWeapon>(Owner)) Character = Weapon->GetProprietor();
+	}
 	else Character = Cast<ACharacter>(Owner);
 	if (!Character || !Character->GetMovementComponent()) return;
 	if (Character->GetCharacterMovement()->IsMovingOnGround()) UGameplayStatics::PlaySoundAtLocation(Character, Sound, MeshComp->GetComponentLocation());

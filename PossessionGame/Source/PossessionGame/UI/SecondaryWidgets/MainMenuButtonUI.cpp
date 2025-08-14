@@ -6,9 +6,10 @@
 
 void UMainMenuButtonUI::SetText(const FText& InText) const { if (ButtonText) ButtonText->SetText(InText); }
 
-void UMainMenuButtonUI::SetButtonVisibility(const bool bState) const
+void UMainMenuButtonUI::SetButtonVisibility(const bool bState)
 {
 	if (!Button) return;
+	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
 	Button->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 }
 

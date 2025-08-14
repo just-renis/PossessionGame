@@ -1,4 +1,6 @@
 ﻿#include "SaveSlotMenuUI.h"
+
+#include "MainMenuUI.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
@@ -18,6 +20,7 @@ void USaveSlotMenuUI::CloseUI()
 		GoBack();
 		return;
 	}
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->TriggerMainMenuFadeInAnim();
 	Toggle(false);
 }
 
@@ -42,7 +45,7 @@ void USaveSlotMenuUI::Toggle(const bool bState)
 	}
 	else SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	PlayAnimation(FadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
-	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::SaveSlotMenuUI : EWidget::None);
+	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::SaveSlotMenuUI : EWidget::MainMenuUI);
 }
 
 void USaveSlotMenuUI::OpenConfirmationPopup(const FString& InSlotName, const FString& InRunSlotName)

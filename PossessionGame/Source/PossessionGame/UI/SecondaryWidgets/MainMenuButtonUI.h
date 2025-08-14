@@ -16,7 +16,7 @@ public:
 	TObjectPtr<UButton> Get() { return Button; }
 	
 	void SetText(const FText& InText) const;
-	void SetButtonVisibility(const bool bState) const;
+	void SetButtonVisibility(const bool bState);
 private:
 	UPROPERTY(EditAnywhere, Category = "Button Sfx", meta = (AllowPrivateAccess = true))
 	bool bStrongButtonSelect = true;

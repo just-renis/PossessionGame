@@ -14,7 +14,11 @@ class POSSESSIONGAME_API UMainMenuUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void OpenUI();
+	void CloseUI();
+	UFUNCTION()
+	void TriggerMainMenuFadeInAnim();
 private:
+	bool bIsQuitPopupOpen = false;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> PlayButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
@@ -49,6 +53,4 @@ private:
 	void TriggerQuitPopupFadeIn();
 	UFUNCTION()
 	void TriggerQuitPopupFadeOut();
-	UFUNCTION()
-	void TriggerMainMenuFadeInAnim();
 };
