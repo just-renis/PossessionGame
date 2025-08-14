@@ -3,6 +3,7 @@
 #include "Components/TextBlock.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/MetaSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 void USaveSlotUI::NativeConstruct()
@@ -27,10 +28,15 @@ void USaveSlotUI::SetText() const
 
 void USaveSlotUI::OnClicked()
 {
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
 	PlayAnimation(SelectAnim);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSaveSlotClicked.ExecuteIfBound(SlotName, RunSlotName);
 }
 
-void USaveSlotUI::OnHovered() { PlayAnimationForward(HoverAnim); }
+void USaveSlotUI::OnHovered()
+{
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	PlayAnimationForward(HoverAnim);
+}
 
 void USaveSlotUI::OnUnHovered() { PlayAnimationReverse(HoverAnim); }

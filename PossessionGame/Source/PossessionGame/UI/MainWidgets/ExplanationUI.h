@@ -47,6 +47,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Explanations", meta = (AllowPrivateAccess = true))
 	TMap<EExplanation, FExplanationData> Explanations;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidget> ExplanationBox;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidget> ExplanationOverlay;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> BackButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> FinishButton;

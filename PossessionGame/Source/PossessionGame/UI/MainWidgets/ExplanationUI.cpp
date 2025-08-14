@@ -132,6 +132,8 @@ void UExplanationUI::CloseUI()
 
 void UExplanationUI::FinishedFadeOutAnim()
 {
+	ExplanationBox->SetRenderTranslation(FVector2D(0.f, 0.f));
+	ExplanationOverlay->SetRenderTranslation(FVector2D(0.f, 0.f));
 	SetVisibility(ESlateVisibility::Collapsed);
 	UnbindAllFromAnimationFinished(FpsFadeOutAnim);
 	UnbindAllFromAnimationFinished(AbilitiesUpgradeVariationFadeOutAnim);
