@@ -82,4 +82,6 @@ private:
 	void FirstAbilitySelected();
 	UFUNCTION()
 	void SecondAbilitySelected();
+	UFUNCTION()
+	void ThirdAbilitySelected();
 };

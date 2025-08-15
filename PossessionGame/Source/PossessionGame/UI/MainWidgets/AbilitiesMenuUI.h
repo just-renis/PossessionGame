@@ -5,12 +5,9 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "AbilitiesMenuUI.generated.h"
 
-class UAbilityIconUI;
 class UWidgetSwitcher;
 class UCharacterAbilitiesUI;
 class UAbilityResetButtonUI;
-class UMainMenuButtonUI;
-enum class ECharacterType : uint8;
 class UVariationCharacterIconUI;
 class UCustomTextUI;
 class UConfirmationPopupUI;

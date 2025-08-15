@@ -75,6 +75,7 @@ void UCharacterAbilitiesUI::NativeConstruct()
 	Abilities = { FirstAbility, SecondAbility, ThirdAbility, FourthAbility };
 	FirstAbility->GetButton()->OnClicked.AddDynamic(this, &UCharacterAbilitiesUI::FirstAbilitySelected);
 	SecondAbility->GetButton()->OnClicked.AddDynamic(this, &UCharacterAbilitiesUI::SecondAbilitySelected);
+	ThirdAbility->GetButton()->OnClicked.AddDynamic(this, &UCharacterAbilitiesUI::ThirdAbilitySelected);
 }
 
 void UCharacterAbilitiesUI::SetupAbilitySlot(const int32 InAbilityIndex, const bool bIsFirstSlot, TObjectPtr<UAbilityIconUI>& InAbilitySlot)
@@ -146,4 +147,13 @@ void UCharacterAbilitiesUI::SecondAbilitySelected()
 		PlayAnimationForward(Select2To2Anim);
 	}
 	else SecondAbility->PlayWobbleAnim();
+}
+
+void UCharacterAbilitiesUI::ThirdAbilitySelected()
+{
+	if (ThirdAbility->GetIsLocked())
+	{
+		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnOpenUnlockAbilityPopup.ExecuteIfBound(2);
+		return;
+	}
 }

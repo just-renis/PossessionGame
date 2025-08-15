@@ -6,7 +6,6 @@
 #include "AbilityIconUI.generated.h"
 
 enum class ECharacterType : uint8;
-enum class EAbility : uint8;
 class UButton;
 class UImage;
 
