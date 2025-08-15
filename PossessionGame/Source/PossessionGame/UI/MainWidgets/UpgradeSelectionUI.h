@@ -25,7 +25,7 @@ public:
 	void GoBack();
 private:
 	bool bChoicesOpen = false;
-	bool bFirstOptionSelected = false;
+	int32 OptionSelected = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> PlayerCardBackgroundTexture;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
@@ -64,6 +64,10 @@ private:
 	TObjectPtr<UWidgetAnimation> UpgradeSelectFirstAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> UpgradeSelectSecondAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> UpgradeSelectThirdAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> UpgradeSelectFourthAnim;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
@@ -81,18 +85,15 @@ private:
 	void Toggle(const bool bState);
 	virtual void NativeConstruct() override;
 	void OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData);
-	UFUNCTION()
-	void TriggerHoverAnimForFirstOption();
-	UFUNCTION()
-	void TriggerUnHoverAnimForFirstOption();
-	UFUNCTION()
-	void TriggerHoverAnimForSecondOption();
-	UFUNCTION()
-	void TriggerUnHoverAnimForSecondOption();
+	void PlayAnimByOptionSelected(const bool bIncludeBindToFinish);
 	UFUNCTION()
 	void TriggerSelectAnimForFirstOption();
 	UFUNCTION()
 	void TriggerSelectAnimForSecondOption();
+	UFUNCTION()
+	void TriggerSelectAnimForThirdOption();
+	UFUNCTION()
+	void TriggerSelectAnimForFourthOption();
 	UFUNCTION()
 	void UpgradeSelectionPanelFadeOutFinished();
 	UFUNCTION()

@@ -20,6 +20,7 @@
 
 void UUpgradeSelectionUI::OpenUI()
 {
+	BackButton->SetButtonVisibility(false);
 	UpgradesData = GetWorld()->GetSubsystem<UUpgradeManager>()->GetRandomUpgrades();
 	if (UpgradesData.IsEmpty())
 	{
@@ -54,15 +55,14 @@ void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()
 	UpgradeChoice2->PlayDisappearAnim();
 	UpgradeChoice3->PlayDisappearAnim();
 	PlayAnimation(UpgradeMenuCloseAnim);
-	PlayAnimation(bFirstOptionSelected ? UpgradeSelectFirstAnim : UpgradeSelectSecondAnim, 0, 1, EUMGSequencePlayMode::Reverse);
 	BindToAnimationFinished(UpgradeMenuCloseAnim, UpgradeSelectionFadeOutDelegate);
+	PlayAnimByOptionSelected(false);
 }
 
 void UUpgradeSelectionUI::GoBack()
 {
 	if (!bChoicesOpen) return;
-	BindToAnimationFinished(bFirstOptionSelected ? UpgradeSelectFirstAnim : UpgradeSelectSecondAnim, GoBackAnimFinishedDelegate);
-	PlayAnimation(bFirstOptionSelected ? UpgradeSelectFirstAnim : UpgradeSelectSecondAnim, 0, 1, EUMGSequencePlayMode::Reverse);
+	PlayAnimByOptionSelected(true);
 	bChoicesOpen = false;
 	UpgradeChoice1->SetButtonVisibility(false);
 	UpgradeChoice2->SetButtonVisibility(false);
@@ -117,20 +117,11 @@ void UUpgradeSelectionUI::NativeConstruct()
 	UpgradeSelectionFadeOutDelegate.BindDynamic(this, &UUpgradeSelectionUI::UpgradeSelectionPanelFadeOutFinished);
 	GoBackAnimFinishedDelegate.BindDynamic(this, &UUpgradeSelectionUI::GoBackAnimFinished);
 	CardOptions = { CardOption1, CardOption2, CardOption3, CardOption4 };
-	CardOption1->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
-	CardOption1->GetUpgradeButton()->OnUnhovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerUnHoverAnimForFirstOption);
 	CardOption1->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForFirstOption);
-	CardOption2->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForSecondOption);
-	CardOption2->GetUpgradeButton()->OnUnhovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerUnHoverAnimForSecondOption);
 	CardOption2->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForSecondOption);
-	CardOption3->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForFirstOption);
-	CardOption3->GetUpgradeButton()->OnUnhovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerUnHoverAnimForFirstOption);
-	CardOption3->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForFirstOption);
-	CardOption4->GetUpgradeButton()->OnHovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerHoverAnimForSecondOption);
-	CardOption4->GetUpgradeButton()->OnUnhovered.AddDynamic(this, &UUpgradeSelectionUI::TriggerUnHoverAnimForSecondOption);
-	CardOption4->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForSecondOption);
+	CardOption3->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForThirdOption);
+	CardOption4->GetUpgradeButton()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::TriggerSelectAnimForFourthOption);
 	BackButton->Get()->OnClicked.AddDynamic(this, &UUpgradeSelectionUI::GoBack);
-	BackButton->SetButtonVisibility(false);
 }
 
 void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData)
@@ -150,50 +141,56 @@ void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>
 	UpgradeChoicesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
-void UUpgradeSelectionUI::TriggerHoverAnimForFirstOption()
+void UUpgradeSelectionUI::PlayAnimByOptionSelected(const bool bIncludeBindToFinish)
 {
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
-	CardOption1->StopUnHoverAnim();
-	CardOption1->PlayHoverAnim();
-}
-
-void UUpgradeSelectionUI::TriggerUnHoverAnimForFirstOption()
-{
-	CardOption1->StopHoverAnim();
-	CardOption1->PlayUnHoverAnim();
-}
-
-void UUpgradeSelectionUI::TriggerHoverAnimForSecondOption()
-{
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
-	CardOption2->StopUnHoverAnim();
-	CardOption2->PlayHoverAnim();
-}
-
-void UUpgradeSelectionUI::TriggerUnHoverAnimForSecondOption()
-{
-	CardOption2->StopHoverAnim();
-	CardOption2->PlayUnHoverAnim();
+	switch (OptionSelected)
+	{
+		case 0:
+			PlayAnimationReverse(UpgradeSelectFirstAnim); 
+			if (bIncludeBindToFinish) BindToAnimationFinished(UpgradeSelectFirstAnim, GoBackAnimFinishedDelegate);
+			break;
+		case 1:
+			PlayAnimationReverse(UpgradeSelectSecondAnim);
+			if (bIncludeBindToFinish) BindToAnimationFinished(UpgradeSelectSecondAnim, GoBackAnimFinishedDelegate);
+			break;
+		case 2:
+			PlayAnimationReverse(UpgradeSelectThirdAnim);
+			if (bIncludeBindToFinish) BindToAnimationFinished(UpgradeSelectThirdAnim, GoBackAnimFinishedDelegate);
+			break;
+		case 3:
+			PlayAnimationReverse(UpgradeSelectFourthAnim);
+			if (bIncludeBindToFinish) BindToAnimationFinished(UpgradeSelectFourthAnim, GoBackAnimFinishedDelegate);
+		default: ;
+	}
 }
 
 void UUpgradeSelectionUI::TriggerSelectAnimForFirstOption()
 {
-	bFirstOptionSelected = true;
-	CardOption1->PlaySelectAnim();
-	CardOption1->PlayBlinkAnim();
+	OptionSelected = 0;
 	PlayAnimation(UpgradeSelectFirstAnim);
 }
 
 void UUpgradeSelectionUI::TriggerSelectAnimForSecondOption()
 {
-	bFirstOptionSelected = false;
-	CardOption2->PlaySelectAnim();
-	CardOption2->PlayBlinkAnim();
+	OptionSelected = 1;
 	PlayAnimation(UpgradeSelectSecondAnim);
+}
+
+void UUpgradeSelectionUI::TriggerSelectAnimForThirdOption()
+{
+	OptionSelected = 2;
+	PlayAnimation(UpgradeSelectThirdAnim);
+}
+
+void UUpgradeSelectionUI::TriggerSelectAnimForFourthOption()
+{
+	OptionSelected = 3;
+	PlayAnimation(UpgradeSelectFourthAnim);
 }
 
 void UUpgradeSelectionUI::UpgradeSelectionPanelFadeOutFinished()
 {
+	OptionSelected = -1;
 	UnbindAllFromAnimationFinished(UpgradeMenuCloseAnim);
 	CloseUI();
 	(void)DelegateManager->OnUpgradeSelectionFinished.ExecuteIfBound();
@@ -201,6 +198,14 @@ void UUpgradeSelectionUI::UpgradeSelectionPanelFadeOutFinished()
 
 void UUpgradeSelectionUI::GoBackAnimFinished()
 {
-	UnbindFromAnimationFinished(bFirstOptionSelected ? UpgradeSelectFirstAnim : UpgradeSelectSecondAnim, GoBackAnimFinishedDelegate);
+	switch (OptionSelected)
+	{
+		case 0: UnbindFromAnimationFinished(UpgradeSelectFirstAnim, GoBackAnimFinishedDelegate); break;
+		case 1: UnbindFromAnimationFinished(UpgradeSelectSecondAnim, GoBackAnimFinishedDelegate); break;
+		case 2: UnbindFromAnimationFinished(UpgradeSelectThirdAnim, GoBackAnimFinishedDelegate); break;
+		case 3: UnbindFromAnimationFinished(UpgradeSelectFourthAnim, GoBackAnimFinishedDelegate);
+		default: ;
+	}
+	OptionSelected = -1;
 	for (int32 i = 0; i < UpgradesData.Num(); i++) CardOptions[i]->GetUpgradeButton()->SetIsEnabled(true);
 }

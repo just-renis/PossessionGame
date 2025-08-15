@@ -31,7 +31,10 @@ void UUpgradeCardUI::SetUpgradeText(const FText& InText) const
 void UUpgradeCardUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	if (UpgradeButton) UpgradeButton->OnClicked.AddDynamic(this, &UUpgradeCardUI::SelectUpgrade);
+	if (!UpgradeButton) return;
+	UpgradeButton->OnClicked.AddDynamic(this, &UUpgradeCardUI::SelectUpgrade);
+	UpgradeButton->OnHovered.AddDynamic(this, &UUpgradeCardUI::PlayHoverAnim);
+	UpgradeButton->OnUnhovered.AddDynamic(this, &UUpgradeCardUI::PlayUnHoverAnim);
 }
 
 void UUpgradeCardUI::SetCardBackgroundBorderImage(const TObjectPtr<UTexture2D>& InImage) const { if (CardBackgroundBorder && InImage) CardBackgroundBorder->SetBrushFromTexture(InImage); }
@@ -43,6 +46,21 @@ void UUpgradeCardUI::SetCardIcon(const TObjectPtr<UTexture2D>& InImage) const { 
 void UUpgradeCardUI::SelectUpgrade()
 {
 	if (!UpgradeButton) return;
+	PlaySelectAnim();
+	PlayBlinkAnim();
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUpgradeCardSelected.ExecuteIfBound(Data);
+}
+
+void UUpgradeCardUI::PlayHoverAnim()
+{
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
+	StopAnimation(UnHoverAnim);
+	PlayAnimation(HoverAnim);
+}
+
+void UUpgradeCardUI::PlayUnHoverAnim()
+{
+	StopAnimation(HoverAnim);
+	PlayAnimation(UnHoverAnim);
 }
