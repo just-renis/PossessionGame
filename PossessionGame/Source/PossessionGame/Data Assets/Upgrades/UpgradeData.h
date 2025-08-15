@@ -47,7 +47,6 @@ class POSSESSIONGAME_API UUpgradeData : public UDataAsset
 public:
 	int32 GetMaxLevel() const { return Upgrades.GetMaxLevel(); }
 	TObjectPtr<UTexture2D> GetPlayerCardIcon() { return PlayerCardIcon; }
-	TObjectPtr<UTexture2D> GetEnemyCardIcon() { return EnemyCardIcon; }
 	EUpgrade GetUpgradeName() const { return UpgradeName; }
 	ECharacterType GetCharacter() const { return Character; }
 	FUpgradeAttributes GetAttributesForLevel(const bool bIsPlayer, const int32 InLevel, const int32 InChoice) const;
@@ -56,8 +55,6 @@ private:
 	EUpgrade UpgradeName;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> PlayerCardIcon;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UTexture2D> EnemyCardIcon;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	ECharacterType Character;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

@@ -38,16 +38,14 @@ private:
 	TObjectPtr<UTexture2D> TricksterIconTexture;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> GuardianIconTexture;
-	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UTexture2D> EnemyCardBackgroundTexture;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UUpgradeCardUI> PlayerCardOption1;
+	TObjectPtr<UUpgradeCardUI> CardOption1;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UUpgradeCardUI> PlayerCardOption2;
+	TObjectPtr<UUpgradeCardUI> CardOption2;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UUpgradeCardUI> EnemyCardOption1;
+	TObjectPtr<UUpgradeCardUI> CardOption3;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UUpgradeCardUI> EnemyCardOption2;
+	TObjectPtr<UUpgradeCardUI> CardOption4;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UUpgradeDetailsPanelUI> UpgradeChoice1;
 	UPROPERTY(meta = (BindWidget))
@@ -74,6 +72,8 @@ private:
 	FWidgetAnimationDynamicEvent GoBackAnimFinishedDelegate;
 	UPROPERTY()
 	TArray<TObjectPtr<UUpgradeData>> UpgradesData;
+	UPROPERTY()
+	TArray<TObjectPtr<UUpgradeCardUI>> CardOptions;
 
 	FText GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade);
 	TObjectPtr<UTexture2D>& GetCharacterUpgradeIcon(const ECharacterType InCharacter);

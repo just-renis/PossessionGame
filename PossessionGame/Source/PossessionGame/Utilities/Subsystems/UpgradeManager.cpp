@@ -86,7 +86,7 @@ TArray<TObjectPtr<UUpgradeData>> UUpgradeManager::GetRandomUpgrades()
 	for (const EUpgrade& UpgradeKey : UpgradeKeys) ChoosableUpgrades.Remove(UpgradeKey);
 	UpgradeKeys.Empty();
 	ChoosableUpgrades.GetKeys(UpgradeKeys);
-	while (!UpgradeKeys.IsEmpty() && ChosenUpgrades.Num() < 2) AddRandomlyChosenUpgrade(UpgradeKeys, ChosenUpgrades);
+	while (!UpgradeKeys.IsEmpty() && ChosenUpgrades.Num() < 4) AddRandomlyChosenUpgrade(UpgradeKeys, ChosenUpgrades);
 	return ChosenUpgrades;
 }
 

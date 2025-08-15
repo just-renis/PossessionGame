@@ -23,9 +23,7 @@ void UUpgradeDetailsPanelUI::Setup(const TObjectPtr<UUpgradeData>& InUpgradeData
 {
 	UpgradeData = InUpgradeData;
 	bHasBeenSelected = false;
-	if (UpgradeDetailsPanelOverlay) UpgradeDetailsPanelOverlay->SetRenderScale(FVector2D(1.f, 1.f));
-	if (UpgradeChoiceLogo) UpgradeChoiceLogo->SetBrushFromAtlasInterface(UpgradeData->GetPlayerCardIcon());
-	if (UpgradeChoiceIndexText) UpgradeChoiceIndexText->SetText(FText::AsNumber(ChoiceIndex + 1));
+	UpgradeDetailsPanelOverlay->SetRenderScale(FVector2D(1.f, 1.f));
 	SetUpgradeText();
 	SetButtonVisibility(true);
 }

@@ -5,7 +5,6 @@
 #include "UpgradeDetailsPanelUI.generated.h"
 
 class UOverlay;
-class UImage;
 enum class EUpgradeAttribute : uint8;
 struct FUpgradeAttributes;
 class UUpgradeData;
@@ -29,10 +28,6 @@ private:
 	TObjectPtr<UTextBlock> UpgradeText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> UpgradeChoiceButton;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> UpgradeChoiceLogo;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> UpgradeChoiceIndexText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UOverlay> UpgradeDetailsPanelOverlay;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
