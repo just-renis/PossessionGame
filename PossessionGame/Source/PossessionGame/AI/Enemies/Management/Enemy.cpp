@@ -907,12 +907,10 @@ void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShak
 void AEnemy::P_HandlingDamageTaken()
 {
 	if (bIsImmortal && CurrentHp <= 10) CurrentHp = 10;
-	if (GameInstance->IsPlayerTakenDamageEffectsEnabled())
-	{
-		P_TriggerTakeDamageEffects();
-		P_HUD->UpdateReceiveDamageInv();
-	}
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
+	if (!GameInstance->IsPlayerTakenDamageEffectsEnabled()) return;
+	P_TriggerTakeDamageEffects();
+	P_HUD->UpdateReceiveDamageInv();
 	if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamage();
 }
 
