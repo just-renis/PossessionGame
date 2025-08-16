@@ -24,7 +24,8 @@ void UUpgradeDetailsPanelUI::Setup(const TObjectPtr<UUpgradeData>& InUpgradeData
 	UpgradeData = InUpgradeData;
 	bHasBeenSelected = false;
 	UpgradeDetailsPanelOverlay->SetRenderScale(FVector2D(1.f, 1.f));
-	SetUpgradeText();
+	SetUpgradeText(true);
+	SetUpgradeText(false);
 	SetButtonVisibility(true);
 }
 
@@ -83,20 +84,21 @@ void UUpgradeDetailsPanelUI::ProcessCurrentUpgradeData(FUpgradeAttributes& Previ
 	for (const EUpgradeAttribute Key : KeysToRemove) CurrentUpgradeData.Upgrades.Remove(Key);
 }
 
-void UUpgradeDetailsPanelUI::SetUpgradeText()
+void UUpgradeDetailsPanelUI::SetUpgradeText(const bool bIsPlayerUpgrade)
 {
-	if (!UpgradeText) return;
 	FString UpgradeTextString = "";
 	const int32 NextLevel = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetLevelOfChoice(UpgradeData->GetUpgradeName(), ChoiceIndex) + 1;
-	FUpgradeAttributes CurrentUpgradeData = UpgradeData->GetAttributesForLevel(true, NextLevel, ChoiceIndex);
+	if (const TObjectPtr<UTexture2D>* Texture = LevelsTextures.Find(NextLevel - 1)) UpgradeChoiceBackground->SetBrushFromAtlasInterface(*Texture);
+	FUpgradeAttributes CurrentUpgradeData = UpgradeData->GetAttributesForLevel(bIsPlayerUpgrade, NextLevel, ChoiceIndex);
 	if (NextLevel > 1)
 	{
-		FUpgradeAttributes PreviousUpgradeData = UpgradeData->GetAttributesForLevel(true, NextLevel - 1, ChoiceIndex);
+		FUpgradeAttributes PreviousUpgradeData = UpgradeData->GetAttributesForLevel(bIsPlayerUpgrade, NextLevel - 1, ChoiceIndex);
 		ProcessCurrentUpgradeData(PreviousUpgradeData, CurrentUpgradeData);
 	}
 	for (const TPair<EUpgradeAttribute, float> Attribute : CurrentUpgradeData.Upgrades) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute);
 	UpgradeTextString.RemoveFromEnd(TEXT("\n"));
-	UpgradeText->SetText(FText::FromString(UpgradeTextString));
+	if (bIsPlayerUpgrade) PlayerUpgradeText->SetText(FText::FromString(UpgradeTextString));
+	else EnemyUpgradeText->SetText(FText::FromString(UpgradeTextString));
 }
 
 void UUpgradeDetailsPanelUI::SelectUpgrade()

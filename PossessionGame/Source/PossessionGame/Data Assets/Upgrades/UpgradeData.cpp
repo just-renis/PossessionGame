@@ -9,6 +9,9 @@ FUpgradeAttributes UUpgradeData::GetAttributesForLevel(const bool bIsPlayer, con
 			if (const FUpgradeAttributes* FoundAttributes = LevelData->UpgradeChoices.Find(InChoice)) return *FoundAttributes;
 		}
 	}
-	else if (const FUpgradeAttributes* FoundAttributes = Upgrades.AIUpgrades.Find(InLevel)) return *FoundAttributes;
+	else if (const FUpgradeChoices* LevelData = Upgrades.AIUpgrades.Find(InLevel))
+	{
+		if (const FUpgradeAttributes* FoundAttributes = LevelData->UpgradeChoices.Find(InChoice)) return *FoundAttributes;
+	}
 	return {};
 }
