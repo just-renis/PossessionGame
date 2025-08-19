@@ -1,17 +1,15 @@
 ﻿#include "UpgradeData.h"
 
-FUpgradeAttributes UUpgradeData::GetAttributesForLevel(const bool bIsPlayer, const int32 InLevel, const int32 InChoice) const
+int32 UUpgradeData::GetMaxRarityChoicesCount(const EUpgradeChoice InUpgradeChoice)
 {
-	if (bIsPlayer)
-	{
-		if (const FUpgradeChoices* LevelData = Upgrades.PlayerUpgrades.Find(InLevel))
-		{
-			if (const FUpgradeAttributes* FoundAttributes = LevelData->UpgradeChoices.Find(InChoice)) return *FoundAttributes;
-		}
-	}
-	else if (const FUpgradeChoices* LevelData = Upgrades.AIUpgrades.Find(InLevel))
-	{
-		if (const FUpgradeAttributes* FoundAttributes = LevelData->UpgradeChoices.Find(InChoice)) return *FoundAttributes;
-	}
-	return {};
+	if (const FUpgradeChoices* UpgradeChoices = Upgrades.UpgradesChoices.Find(InUpgradeChoice)) return UpgradeChoices->UpgradeChoicesPairs.Num();
+	return 0;
+}
+
+FUpgradeChoicePair UUpgradeData::GetRandomUpgradeChoice(const EUpgradeChoice InUpgradeChoice, const TArray<FUpgradeChoicePair>& OccupiedUpgradeChoices) { return Upgrades.GetRandomUpgradeChoice(InUpgradeChoice, OccupiedUpgradeChoices); }
+
+FUpgradeChoices* UUpgradeData::GetUpgradeChoices(const EUpgradeChoice InUpgradeChoice)
+{
+	if (FUpgradeChoices* UpgradeChoices = Upgrades.UpgradesChoices.Find(InUpgradeChoice)) return UpgradeChoices;
+	return nullptr;
 }

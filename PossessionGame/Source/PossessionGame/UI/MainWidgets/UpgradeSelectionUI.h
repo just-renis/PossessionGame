@@ -4,6 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "UpgradeSelectionUI.generated.h"
 
+struct FUpgradeChoicePair;
+enum class EUpgradeChoice : uint8;
 enum class ECharacterType : uint8;
 class UMainMenuButtonUI;
 class UVerticalBox;
@@ -86,6 +88,9 @@ private:
 	virtual void NativeConstruct() override;
 	void OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData);
 	void PlayAnimByOptionSelected(const bool bIncludeBindToFinish);
+	void AdjustNeededCounts(int32& InNeededCommon, int32& InNeededRare, int32& InNeededLegendary, const TObjectPtr<UUpgradeData>& InUpgradeData);
+	void FillUpgrades(const TObjectPtr<UUpgradeData>& InUpgradeData, TArray<FUpgradeChoicePair>& OutChosen, const EUpgradeChoice InRarity, const int32 InCount);
+	void SetupUpgradeChoices(const TObjectPtr<UUpgradeData>& InUpgradeData);
 	UFUNCTION()
 	void TriggerSelectAnimForFirstOption();
 	UFUNCTION()

@@ -26,11 +26,11 @@ void APoisonGrenade::PlayImpactSound()
 
 void APoisonGrenade::SpawnSecondProjectileImpactVfx(const FHitResult& Hit)
 {
-	const float EffectDurationIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::EffectDuration);
+	const float EffectDurationIncrease = 0.f;//GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::EffectDuration);
 	ModifiedOvertimeAreaLifeSpan = ProjectileData.OvertimeAreaLifeSpan;
 	ModifiedOvertimeAreaSize = DefaultOvertimeAreaSize = ProjectileData.OvertimeAreaSize;
 	ModifiedOvertimeAreaLifeSpan += ProjectileData.OvertimeAreaLifeSpan * EffectDurationIncrease * 0.01f;
-	const float SizeIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::Size);
+	const float SizeIncrease = 0.f; //GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::Size);
 	ModifiedOvertimeAreaSize += DefaultOvertimeAreaSize * SizeIncrease * 0.01f;
 	Attributes.Add("Loop Duration", FNiagaraAttribute(true, ModifiedOvertimeAreaLifeSpan));
 	Attributes.Add("Uniform Sprite Size Max", FNiagaraAttribute(false, ModifiedOvertimeAreaSize));

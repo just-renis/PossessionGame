@@ -18,10 +18,6 @@ class POSSESSIONGAME_API UUpgradeManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-	float AI_GetTotalUpgradeAttributeValue(const EUpgradeAttribute InUpgradeAttribute);
-	
-	float GetUpgradeAttributeValue(const bool bIsPlayer, const EPoolObject InProjectileName, const EUpgradeAttribute InUpgradeAttribute);
-	float GetUpgradeAttributeValue(const bool bIsPlayer, const EAbility InAbilityName, const EUpgradeAttribute InUpgradeAttribute);
 	TObjectPtr<UUpgradeData> GetProjectileUpgradeData(const EPoolObject InProjectileName);
 	TObjectPtr<UUpgradeData> GetAbilityUpgradeData(const EAbility InAbilityName);
 	TArray<TObjectPtr<UUpgradeData>> GetRandomUpgrades();

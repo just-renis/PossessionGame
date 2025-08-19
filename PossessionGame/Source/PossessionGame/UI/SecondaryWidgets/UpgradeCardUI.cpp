@@ -18,7 +18,7 @@ void UUpgradeCardUI::SetupCard(const TObjectPtr<UTexture2D>& InCardBackgroundIma
 
 void UUpgradeCardUI::ToggleCardVisibility(const bool bState)
 {
-	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
 	if (bState && UpgradeButton) UpgradeButton->SetIsEnabled(bState);
 }
 

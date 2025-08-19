@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "UpgradeDetailsPanelUI.generated.h"
 
 class UImage;
-class UOverlay;
 enum class EUpgradeAttribute : uint8;
 struct FUpgradeAttributes;
 class UUpgradeData;
@@ -18,7 +18,7 @@ class POSSESSIONGAME_API UUpgradeDetailsPanelUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void SetButtonVisibility(const bool bState) const;
-	void Setup(const TObjectPtr<UUpgradeData>& InUpgradeData);
+	void Setup(const EUpgrade InUpgradeName, const FUpgradeChoicePair& InUpgradeChoicePair = FUpgradeChoicePair());
 	UFUNCTION()
 	void PlayDisappearAnim();
 private:
@@ -32,7 +32,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> UpgradeChoiceButton;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UOverlay> UpgradeDetailsPanelOverlay;
+	TObjectPtr<UWidget> UpgradeDetailsPanelOverlay;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> UpgradeChoiceBackground;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -44,15 +44,14 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DisappearAnim;
 	UPROPERTY()
-	TObjectPtr<UUpgradeData> UpgradeData;
-	UPROPERTY(EditDefaultsOnly, Category = "Textures", meta = (AllowPrivateAccess = true))
-	TMap<int32, TObjectPtr<UTexture2D>> LevelsTextures;
+	EUpgrade UpgradeName;
+	UPROPERTY()
+	FUpgradeChoicePair UpgradeChoice;
 
 	FString ConvertUpgradeAttributeValueToString(const float InValue);
 	FString GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute);
 
 	virtual void NativeConstruct() override;
-	void ProcessCurrentUpgradeData(FUpgradeAttributes& PreviousUpgradeData, FUpgradeAttributes& CurrentUpgradeData);
 	void SetUpgradeText(const bool bIsPlayerUpgrade);
 	UFUNCTION()
 	void SelectUpgrade();

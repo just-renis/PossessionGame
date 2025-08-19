@@ -1,7 +1,6 @@
 ﻿#include "UpgradeDetailsPanelUI.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
-#include "Components/Overlay.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
@@ -19,14 +18,14 @@ void UUpgradeDetailsPanelUI::SetButtonVisibility(const bool bState) const
 	UpgradeChoiceButton->SetIsEnabled(bState);
 }
 
-void UUpgradeDetailsPanelUI::Setup(const TObjectPtr<UUpgradeData>& InUpgradeData)
+void UUpgradeDetailsPanelUI::Setup(const EUpgrade InUpgradeName, const FUpgradeChoicePair& InUpgradeChoicePair)
 {
-	UpgradeData = InUpgradeData;
+	UpgradeName = InUpgradeName;
+	UpgradeChoice = InUpgradeChoicePair;
 	bHasBeenSelected = false;
 	UpgradeDetailsPanelOverlay->SetRenderScale(FVector2D(1.f, 1.f));
 	SetUpgradeText(true);
 	SetUpgradeText(false);
-	SetButtonVisibility(true);
 }
 
 void UUpgradeDetailsPanelUI::PlayDisappearAnim()
@@ -57,6 +56,9 @@ FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const T
 		case EUpgradeAttribute::AbilityDuration: return "INCREASED " + AttributeValue + "% ABILITY DURATION\n";
 		case EUpgradeAttribute::EffectDuration: return "INCREASED " + AttributeValue + "% EFFECT DURATION\n";
 		case EUpgradeAttribute::ReduceDamageTaken: return "REDUCED " + AttributeValue + "% DAMAGE TAKEN\n";
+		case EUpgradeAttribute::Special1: return "NIGGA1";
+		case EUpgradeAttribute::Special2: return "NIGGA1";
+		case EUpgradeAttribute::Special3: return "NIGGA1";
 	}
 	return "";
 }
@@ -70,32 +72,18 @@ void UUpgradeDetailsPanelUI::NativeConstruct()
 	UpgradeChoiceButton->OnUnhovered.AddDynamic(this, &UUpgradeDetailsPanelUI::PlayUnHoverAnim);
 }
 
-void UUpgradeDetailsPanelUI::ProcessCurrentUpgradeData(FUpgradeAttributes& PreviousUpgradeData, FUpgradeAttributes& CurrentUpgradeData)
-{
-	TArray<EUpgradeAttribute> KeysToRemove;
-	for (TPair<EUpgradeAttribute, float>& CurrPair : CurrentUpgradeData.Upgrades)
-	{
-		if (const float* PrevValue = PreviousUpgradeData.Upgrades.Find(CurrPair.Key))
-		{
-			CurrPair.Value -= *PrevValue;
-			if (FMath::IsNearlyEqual(CurrPair.Value, 0.f, 0.001f)) KeysToRemove.Add(CurrPair.Key);
-		}
-	}
-	for (const EUpgradeAttribute Key : KeysToRemove) CurrentUpgradeData.Upgrades.Remove(Key);
-}
-
 void UUpgradeDetailsPanelUI::SetUpgradeText(const bool bIsPlayerUpgrade)
 {
-	FString UpgradeTextString = "";
-	const int32 NextLevel = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetLevelOfChoice(UpgradeData->GetUpgradeName(), ChoiceIndex) + 1;
-	if (const TObjectPtr<UTexture2D>* Texture = LevelsTextures.Find(NextLevel - 1)) UpgradeChoiceBackground->SetBrushFromAtlasInterface(*Texture);
-	FUpgradeAttributes CurrentUpgradeData = UpgradeData->GetAttributesForLevel(bIsPlayerUpgrade, NextLevel, ChoiceIndex);
-	if (NextLevel > 1)
+	if (UpgradeChoice.IsEmpty())
 	{
-		FUpgradeAttributes PreviousUpgradeData = UpgradeData->GetAttributesForLevel(bIsPlayerUpgrade, NextLevel - 1, ChoiceIndex);
-		ProcessCurrentUpgradeData(PreviousUpgradeData, CurrentUpgradeData);
+		UpgradeChoiceButton->SetIsEnabled(false);
+		if (bIsPlayerUpgrade) PlayerUpgradeText->SetText(FText::FromString("No available choice"));
+		else EnemyUpgradeText->SetText(FText::FromString("No available choice"));
+		return;
 	}
-	for (const TPair<EUpgradeAttribute, float> Attribute : CurrentUpgradeData.Upgrades) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute);
+	FString UpgradeTextString = "";
+	FUpgradeAttributes UpgradeAttributesData = bIsPlayerUpgrade ? UpgradeChoice.PlayerAttributes : UpgradeChoice.EnemyAttributes;
+	for (const TPair<EUpgradeAttribute, float> Attribute : UpgradeAttributesData.UpgradeAttributes) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute);
 	UpgradeTextString.RemoveFromEnd(TEXT("\n"));
 	if (bIsPlayerUpgrade) PlayerUpgradeText->SetText(FText::FromString(UpgradeTextString));
 	else EnemyUpgradeText->SetText(FText::FromString(UpgradeTextString));
@@ -106,7 +94,7 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
 	bHasBeenSelected = true;
 	PlayAnimation(PressAnim);
-	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->AddUpgrade(Cast<UPossessionGameInstance>(GetGameInstance()), UpgradeData->GetUpgradeName(), ChoiceIndex);
+	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->AddUpgrade(Cast<UPossessionGameInstance>(GetGameInstance()), UpgradeName, UpgradeChoice);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->TriggerUpgradeMenuCloseAnimation();
 }
 

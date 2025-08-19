@@ -1,5 +1,4 @@
 ﻿#include "SaveSlotMenuUI.h"
-
 #include "MainMenuUI.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
@@ -17,6 +16,7 @@ void USaveSlotMenuUI::CloseUI()
 	if (bIsConfirmationPanelOpen)
 	{
 		bIsConfirmationPanelOpen = false;
+		ToggleSaveSlots(true);
 		GoBack();
 		return;
 	}
@@ -51,6 +51,7 @@ void USaveSlotMenuUI::Toggle(const bool bState)
 void USaveSlotMenuUI::OpenConfirmationPopup(const FString& InSlotName, const FString& InRunSlotName)
 {
 	if (!ConfirmationPopup) return;
+	ToggleSaveSlots(false);
 	bIsConfirmationPanelOpen = true;
 	SaveSlotName = InSlotName;
 	RunSaveSlotName = InRunSlotName;
@@ -82,6 +83,14 @@ void USaveSlotMenuUI::ResetToDefaultPlayerInputMode() const
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = false;
 	PlayerController->SetInputMode(FInputModeGameOnly());
+}
+
+void USaveSlotMenuUI::ToggleSaveSlots(const bool bState) const
+{
+	SaveSlot1->SetIsEnabled(bState);
+	SaveSlot2->SetIsEnabled(bState);
+	SaveSlot3->SetIsEnabled(bState);
+	SaveSlot4->SetIsEnabled(bState);
 }
 
 void USaveSlotMenuUI::FadeOutAnimFinished()

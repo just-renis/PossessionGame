@@ -108,7 +108,7 @@ void AEnemy::AI_SetShootPause()
 	GetWorldTimerManager().SetTimer(AI_ClearShootPauseHandle, this, &AEnemy::AI_ClearShootPause, AI_Data->GetShootPause(), false);
 }
 
-void AEnemy::P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) // For future upgrades to increase dash charges, stomping damage and so on.
+void AEnemy::P_ApplyUpgradeOnSelection(const ECharacterType InCharacterName) // For future upgrades to increase dash charges, stomping damage and so on.
 {
 	bInUpgradeSelection = false;
 	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->SetupUpgradeAppliance();
@@ -251,7 +251,7 @@ void AEnemy::AI_TryEvolving()
 
 void AEnemy::AI_SetupUpgradesAppliance()
 {
-	MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->AI_GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatHealth);
+	//MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->AI_GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatHealth);
 	CurrentHp = MaxHp;
 }
 

@@ -28,7 +28,7 @@ void AEMPGrenade::OnImpact(const FHitResult& Hit)
 void AEMPGrenade::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich)
 {
 	Super::Init(InProjectileData, Rotation, Scale, InWhich);
-	const float EffectDurationIncrease = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterEmpProjectile, EUpgradeAttribute::EffectDuration);
+	const float EffectDurationIncrease = 0.f; //GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterEmpProjectile, EUpgradeAttribute::EffectDuration);
 	EffectDuration = ProjectileData.EffectDuration + ProjectileData.EffectDuration * EffectDurationIncrease * 0.01f;
 }
 

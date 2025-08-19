@@ -19,6 +19,14 @@ private:
 	FString RunSaveSlotName;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UConfirmationPopupUI> ConfirmationPopup;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidget> SaveSlot1;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidget> SaveSlot2;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidget> SaveSlot3;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidget> SaveSlot4;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY()
@@ -29,6 +37,7 @@ private:
 	void Toggle(const bool bState);
 	void OpenConfirmationPopup(const FString& InSlotName, const FString& InRunSlotName);
 	void ResetToDefaultPlayerInputMode() const;
+	void ToggleSaveSlots(const bool bState) const;
 	UFUNCTION()
 	void OpenCurrentSaveLevel();
 	UFUNCTION()

@@ -4,55 +4,8 @@
 #include "PossessionGame/Enums/EAbility.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
-#include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Enums/EUpgradeChoice.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
-
-float UUpgradeManager::AI_GetTotalUpgradeAttributeValue(const EUpgradeAttribute InUpgradeAttribute)
-{
-	float Value = 0.f;
-	for (const TPair<EUpgrade, TObjectPtr<UUpgradeData>> Upgrade : Upgrades)
-	{
-		if (InUpgradeAttribute == EUpgradeAttribute::FlatHealth) Value += 5.f * RunSaveSlot->GetLevelOfAnUpgrade(Upgrade.Key);
-		else if (InUpgradeAttribute == EUpgradeAttribute::FlatDamage) Value += 1.f * RunSaveSlot->GetLevelOfAnUpgrade(Upgrade.Key);
-	}
-	return Value;
-}
-
-float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EPoolObject InProjectileName, const EUpgradeAttribute InUpgradeAttribute)
-{
-	if (const TObjectPtr<UUpgradeData> UpgradeData = GetProjectileUpgradeData(InProjectileName))
-	{
-		float AttributeValue = 0.f;
-		if (const TMap<int32, int32>* UpgradeChoicesData = RunSaveSlot->GetUpgradeChoicesData(UpgradeData->GetUpgradeName()))
-		{
-			for (const TPair<int32, int32>& ChoicePair : *UpgradeChoicesData)
-			{
-				const TMap<EUpgradeAttribute, float>& UpgradeAttributes = UpgradeData->GetAttributesForLevel(bIsPlayer, ChoicePair.Value, ChoicePair.Key).Upgrades;
-				if (const float* Value = UpgradeAttributes.Find(InUpgradeAttribute)) AttributeValue += *Value;
-			}
-		}
-		return AttributeValue;
-	}
-	return 0.f;
-}
-
-float UUpgradeManager::GetUpgradeAttributeValue(const bool bIsPlayer, const EAbility InAbilityName, const EUpgradeAttribute InUpgradeAttribute)
-{
-	if (const TObjectPtr<UUpgradeData> UpgradeData = GetAbilityUpgradeData(InAbilityName))
-	{
-		float AttributeValue = 0.f;
-		if (const TMap<int32, int32>* UpgradeChoicesData = RunSaveSlot->GetUpgradeChoicesData(UpgradeData->GetUpgradeName()))
-		{
-			for (const TPair<int32, int32>& ChoicePair : *UpgradeChoicesData)
-			{
-				const TMap<EUpgradeAttribute, float>& UpgradeAttributes = UpgradeData->GetAttributesForLevel(bIsPlayer, ChoicePair.Value, ChoicePair.Key).Upgrades;
-				if (const float* Value = UpgradeAttributes.Find(InUpgradeAttribute)) AttributeValue += *Value;
-			}
-		}
-		return AttributeValue;
-	}
-	return 0.f;
-}
 
 TObjectPtr<UUpgradeData> UUpgradeManager::GetProjectileUpgradeData(const EPoolObject InProjectileName)
 {
@@ -81,7 +34,8 @@ TArray<TObjectPtr<UUpgradeData>> UUpgradeManager::GetRandomUpgrades()
 	TMap<EUpgrade, TObjectPtr<UUpgradeData>> ChoosableUpgrades = Upgrades;
 	for (const TPair<EUpgrade, TObjectPtr<UUpgradeData>> UpgradeData : ChoosableUpgrades)
 	{
-		if (UpgradeData.Value->GetMaxLevel() <= RunSaveSlot->GetLevelOfAnUpgrade(UpgradeData.Key)) UpgradeKeys.Add(UpgradeData.Key);
+		UE_LOG(LogTemp, Error, TEXT("UPGRADE DATA LEVEL: %s %i %i"), *UEnum::GetValueAsString(UpgradeData.Key), UpgradeData.Value->GetMaxLevel(), RunSaveSlot->GetCurrentLevel(UpgradeData.Key));
+		if (UpgradeData.Value->GetMaxLevel() <= RunSaveSlot->GetCurrentLevel(UpgradeData.Key)) UpgradeKeys.Add(UpgradeData.Key);
 	}
 	for (const EUpgrade& UpgradeKey : UpgradeKeys) ChoosableUpgrades.Remove(UpgradeKey);
 	UpgradeKeys.Empty();
@@ -107,6 +61,20 @@ void UUpgradeManager::Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpg
 void UUpgradeManager::AddRandomlyChosenUpgrade(TArray<EUpgrade>& UpgradeKeys, TArray<TObjectPtr<UUpgradeData>>& ChosenUpgrades)
 {
 	const int32 RandomIndex = FMath::RandRange(0, UpgradeKeys.Num() - 1);
-	ChosenUpgrades.Add(Upgrades[UpgradeKeys[RandomIndex]]);
+	const TObjectPtr<UUpgradeData>& UpgradeData = Upgrades[UpgradeKeys[RandomIndex]];
+	const TSet<int32> UsedIds = RunSaveSlot->GetUpgradeChoicesIds(UpgradeData->GetUpgradeName());
+	for (const EUpgradeChoice Choice : { EUpgradeChoice::Common, EUpgradeChoice::Rare, EUpgradeChoice::Legendary })
+	{
+		if (FUpgradeChoices* UpgradeChoices = UpgradeData->GetUpgradeChoices(Choice))
+		{
+			UpgradeChoices->UpgradeChoicesPairs.RemoveAll([&](const FUpgradeChoicePair& Pair)
+			{
+				UE_LOG(LogTemp, Error, TEXT("IDS: %i"), Pair.Id);
+				return UsedIds.Contains(Pair.Id);
+			});
+		}
+	}
+	UE_LOG(LogTemp, Error, TEXT("Used Ids size: %i"), UsedIds.Num());
+	ChosenUpgrades.Add(UpgradeData);
 	UpgradeKeys.RemoveAt(RandomIndex);
 }

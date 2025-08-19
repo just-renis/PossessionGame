@@ -47,7 +47,7 @@ void UUpgradeSelectionUI::CloseUI()
 	for (int32 i = 0; i < UpgradesData.Num(); i++) CardOptions[i]->ToggleCardVisibility(false);
 	UpgradeChoicesPanel->SetVisibility(ESlateVisibility::Collapsed);
 	Toggle(false);
-	//GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
 }
 
 void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()
@@ -136,9 +136,10 @@ void UUpgradeSelectionUI::OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>
 	bChoicesOpen = true;
 	BackButton->SetButtonVisibility(true);
 	for (int32 i = 0; i < UpgradesData.Num(); i++) CardOptions[i]->GetUpgradeButton()->SetIsEnabled(false);
-	UpgradeChoice1->Setup(InUpgradeData);
-	UpgradeChoice2->Setup(InUpgradeData);
-	UpgradeChoice3->Setup(InUpgradeData);
+	SetupUpgradeChoices(InUpgradeData);
+	UpgradeChoice1->SetButtonVisibility(true);
+	UpgradeChoice2->SetButtonVisibility(true);
+	UpgradeChoice3->SetButtonVisibility(true);
 	UpgradeChoicesPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
@@ -163,6 +164,56 @@ void UUpgradeSelectionUI::PlayAnimByOptionSelected(const bool bIncludeBindToFini
 			if (bIncludeBindToFinish) BindToAnimationFinished(UpgradeSelectFourthAnim, GoBackAnimFinishedDelegate);
 		default: ;
 	}
+}
+
+void UUpgradeSelectionUI::AdjustNeededCounts(int32& InNeededCommon, int32& InNeededRare, int32& InNeededLegendary, const TObjectPtr<UUpgradeData>& InUpgradeData)
+{
+	const int32 CommonCap = InUpgradeData->GetMaxRarityChoicesCount(EUpgradeChoice::Common);
+	const int32 RareCap = InUpgradeData->GetMaxRarityChoicesCount(EUpgradeChoice::Rare);
+	const int32 LegendaryCap = InUpgradeData->GetMaxRarityChoicesCount(EUpgradeChoice::Legendary);
+	InNeededCommon = FMath::Min(1, CommonCap);
+	InNeededRare = FMath::Min(1, RareCap);
+	InNeededLegendary = FMath::Min(1, LegendaryCap);
+	int32 Available = 3 - (InNeededCommon + InNeededRare + InNeededLegendary);
+	if (Available <= 0) return;
+	while (Available > 0 && InNeededRare < RareCap) { ++InNeededRare; --Available; }
+	while (Available > 0 && InNeededCommon < CommonCap) { ++InNeededCommon; --Available; }
+	while (Available > 0 && InNeededLegendary < LegendaryCap) { ++InNeededLegendary; --Available; }
+}
+
+void UUpgradeSelectionUI::FillUpgrades(const TObjectPtr<UUpgradeData>& InUpgradeData, TArray<FUpgradeChoicePair>& OutChosen, const EUpgradeChoice InRarity, const int32 InCount)
+{
+	TArray<FUpgradeChoicePair> LocalChosen;
+	for (int32 i = 0; i < InCount; i++)
+	{
+		FUpgradeChoicePair Pair = InUpgradeData->GetRandomUpgradeChoice(InRarity, LocalChosen);
+		if (!Pair.IsEmpty())
+		{
+			OutChosen.Add(Pair);
+			LocalChosen.Add(Pair);
+		}
+		else break;
+	}
+}
+
+void UUpgradeSelectionUI::SetupUpgradeChoices(const TObjectPtr<UUpgradeData>& InUpgradeData)
+{
+	int32 NeededCommon = 1;
+	int32 NeededRare = 1;
+	int32 NeededLegend = 1;
+	AdjustNeededCounts(NeededCommon, NeededRare, NeededLegend, InUpgradeData);
+	UE_LOG(LogTemp, Error, TEXT("NeededCommon %i, NeededRare %i, NeededLegend %i"), NeededCommon, NeededRare, NeededLegend);
+	TArray<FUpgradeChoicePair> Chosen;
+	FillUpgrades(InUpgradeData, Chosen, EUpgradeChoice::Legendary, NeededLegend);
+	FillUpgrades(InUpgradeData, Chosen, EUpgradeChoice::Rare, NeededRare);
+	FillUpgrades(InUpgradeData, Chosen, EUpgradeChoice::Common, NeededCommon);
+	UE_LOG(LogTemp, Error, TEXT("Chosen.Num() %i"), Chosen.Num());
+	if (Chosen.Num() > 0) UpgradeChoice1->Setup(InUpgradeData->GetUpgradeName(), Chosen[0]);
+	else UpgradeChoice1->Setup(InUpgradeData->GetUpgradeName());
+	if (Chosen.Num() > 1) UpgradeChoice2->Setup(InUpgradeData->GetUpgradeName(), Chosen[1]);
+	else UpgradeChoice2->Setup(InUpgradeData->GetUpgradeName());
+	if (Chosen.Num() > 2) UpgradeChoice3->Setup(InUpgradeData->GetUpgradeName(), Chosen[2]);
+	else UpgradeChoice3->Setup(InUpgradeData->GetUpgradeName());
 }
 
 void UUpgradeSelectionUI::TriggerSelectAnimForFirstOption()

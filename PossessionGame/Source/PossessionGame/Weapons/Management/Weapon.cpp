@@ -172,9 +172,9 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bFromFirs
 {
 	FProjectileData* ProjectileData = GetProjectileData(InProjectileName);
 	if (!ProjectileData) return;
-	const int32 ProjectilesAmount = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPossessed, InProjectileName, EUpgradeAttribute::ProjectilesAmount);
+	//const int32 ProjectilesAmount = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPossessed, InProjectileName, EUpgradeAttribute::ProjectilesAmount);
 	ProjectileData->SetProprietor(Proprietor);
-	ProjectileData->SetAmount(ProjectilesAmount + 1);
+	ProjectileData->SetAmount(/*ProjectilesAmount + */1);
 	const FName& ProjectileSocketName = ProjectileData->ProjectileSocketName;
 	const FRotator BaseRotation = GetSocketRotation(ProjectileSocketName);
 	if (ProjectileData->Amount > 1)

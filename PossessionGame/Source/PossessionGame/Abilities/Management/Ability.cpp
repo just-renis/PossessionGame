@@ -54,12 +54,12 @@ void UAbility::CooldownLogic(const float InDeltaTime)
 
 void UAbility::SetupUpgradeAppliance(const bool bIsPlayer)
 {
-	const float CooldownReduction = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityCooldownReduction);
+	const float CooldownReduction = 0.f; //GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityCooldownReduction);
 	ReqCooldownSecs = Data->GetCooldownSecs() / (1.f + CooldownReduction * 0.01f);
-	MaxChargesAmount = Data->GetChargesAmount() + GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityChargesAmount);
+	MaxChargesAmount = Data->GetChargesAmount(); //+ GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityChargesAmount);
 	if (Data->GetIsAbilityWithDuration())
 	{
-		DurationTime = Data->GetAbilityDuration() + Data->GetAbilityDuration() * GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityDuration) * 0.01f;
+		DurationTime = Data->GetAbilityDuration() + Data->GetAbilityDuration(); // * GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityDuration) * 0.01f;
 		CurrentDuration = DurationTime;
 	}
 }

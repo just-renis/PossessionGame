@@ -29,7 +29,7 @@ DECLARE_DELEGATE(FOnTutorialMinionDeath);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const TObjectPtr<UUpgradeData>&);
-DECLARE_DELEGATE_OneParam(FApplyUpgradeOnSelection, const EUpgrade);
+DECLARE_DELEGATE_OneParam(FApplyUpgradeOnSelection, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FRequirePlayerAnnouncementInfo, const FText&);
 DECLARE_DELEGATE_OneParam(FChangeMusicPlayerState, const bool);
 DECLARE_DELEGATE_OneParam(FOnCoinCollected, const int32);
