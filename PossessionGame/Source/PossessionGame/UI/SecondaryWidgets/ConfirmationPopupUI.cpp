@@ -24,6 +24,8 @@ void UConfirmationPopupUI::NativePreConstruct()
 void UConfirmationPopupUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+	AcceptButton->SetFontSize(ButtonsFontSize);
+	DeclineButton->SetFontSize(ButtonsFontSize);
 	FadeOutDelegate.BindDynamic(this, &UConfirmationPopupUI::FadeOutAnimFinished);
 }
 

@@ -8,7 +8,7 @@ enum class EUpgrade : uint8;
 enum class ECharacterType : uint8;
 enum class EVariation : uint8;
 enum class EWidget : uint8;
-class UUpgradeData;
+struct FRuntimeUpgradeData;
 
 DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
@@ -28,7 +28,7 @@ DECLARE_DELEGATE(FOnGateClosed);
 DECLARE_DELEGATE(FOnTutorialMinionDeath);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
-DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const TObjectPtr<UUpgradeData>&);
+DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const FRuntimeUpgradeData&);
 DECLARE_DELEGATE_OneParam(FApplyUpgradeOnSelection, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FRequirePlayerAnnouncementInfo, const FText&);
 DECLARE_DELEGATE_OneParam(FChangeMusicPlayerState, const bool);

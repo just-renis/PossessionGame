@@ -17,6 +17,7 @@ public:
 	
 	void SetText(const FText& InText) const;
 	void SetButtonVisibility(const bool bState);
+	void SetFontSize(const int32 InFontSize) const;
 private:
 	UPROPERTY(EditAnywhere, Category = "Button Sfx", meta = (AllowPrivateAccess = true))
 	bool bStrongButtonSelect = true;

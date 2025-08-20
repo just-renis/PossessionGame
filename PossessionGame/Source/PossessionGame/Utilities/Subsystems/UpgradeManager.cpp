@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeChoice.h"
+#include "PossessionGame/Utilities/Data Utilities/FRuntimeUpgradeData.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 
 TObjectPtr<UUpgradeData> UUpgradeManager::GetProjectileUpgradeData(const EPoolObject InProjectileName)
@@ -27,14 +28,13 @@ TObjectPtr<UUpgradeData> UUpgradeManager::GetAbilityUpgradeData(const EAbility I
 	return nullptr;
 }
 
-TArray<TObjectPtr<UUpgradeData>> UUpgradeManager::GetRandomUpgrades()
+TArray<FRuntimeUpgradeData> UUpgradeManager::GetRandomUpgrades()
 {
-	TArray<TObjectPtr<UUpgradeData>> ChosenUpgrades;
+	TArray<FRuntimeUpgradeData> ChosenUpgrades;
 	TArray<EUpgrade> UpgradeKeys;
 	TMap<EUpgrade, TObjectPtr<UUpgradeData>> ChoosableUpgrades = Upgrades;
 	for (const TPair<EUpgrade, TObjectPtr<UUpgradeData>> UpgradeData : ChoosableUpgrades)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UPGRADE DATA LEVEL: %s %i %i"), *UEnum::GetValueAsString(UpgradeData.Key), UpgradeData.Value->GetMaxLevel(), RunSaveSlot->GetCurrentLevel(UpgradeData.Key));
 		if (UpgradeData.Value->GetMaxLevel() <= RunSaveSlot->GetCurrentLevel(UpgradeData.Key)) UpgradeKeys.Add(UpgradeData.Key);
 	}
 	for (const EUpgrade& UpgradeKey : UpgradeKeys) ChoosableUpgrades.Remove(UpgradeKey);
@@ -58,23 +58,18 @@ void UUpgradeManager::Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpg
 	RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 }
 
-void UUpgradeManager::AddRandomlyChosenUpgrade(TArray<EUpgrade>& UpgradeKeys, TArray<TObjectPtr<UUpgradeData>>& ChosenUpgrades)
+void UUpgradeManager::AddRandomlyChosenUpgrade(TArray<EUpgrade>& UpgradeKeys, TArray<FRuntimeUpgradeData>& ChosenUpgrades)
 {
 	const int32 RandomIndex = FMath::RandRange(0, UpgradeKeys.Num() - 1);
-	const TObjectPtr<UUpgradeData>& UpgradeData = Upgrades[UpgradeKeys[RandomIndex]];
-	const TSet<int32> UsedIds = RunSaveSlot->GetUpgradeChoicesIds(UpgradeData->GetUpgradeName());
+	FRuntimeUpgradeData UpgradeData = FRuntimeUpgradeData(Upgrades[UpgradeKeys[RandomIndex]]);
+	const TSet<int32> UsedIds = RunSaveSlot->GetUpgradeChoicesIds(UpgradeData.GetUpgradeName());
 	for (const EUpgradeChoice Choice : { EUpgradeChoice::Common, EUpgradeChoice::Rare, EUpgradeChoice::Legendary })
 	{
-		if (FUpgradeChoices* UpgradeChoices = UpgradeData->GetUpgradeChoices(Choice))
+		if (FUpgradeChoices* UpgradeChoicesData = UpgradeData.GetUpgradeChoices()->Find(Choice))
 		{
-			UpgradeChoices->UpgradeChoicesPairs.RemoveAll([&](const FUpgradeChoicePair& Pair)
-			{
-				UE_LOG(LogTemp, Error, TEXT("IDS: %i"), Pair.Id);
-				return UsedIds.Contains(Pair.Id);
-			});
+			UpgradeChoicesData->UpgradeChoicesPairs.RemoveAll([&](const FUpgradeChoicePair& Pair) { return UsedIds.Contains(Pair.Id); });
 		}
 	}
-	UE_LOG(LogTemp, Error, TEXT("Used Ids size: %i"), UsedIds.Num());
 	ChosenUpgrades.Add(UpgradeData);
 	UpgradeKeys.RemoveAt(RandomIndex);
 }

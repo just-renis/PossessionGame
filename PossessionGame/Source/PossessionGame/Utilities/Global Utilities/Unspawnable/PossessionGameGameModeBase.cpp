@@ -29,7 +29,7 @@ void APossessionGameGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 	InitAfterPSOPrecache();
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+	//GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
 }
 
 void APossessionGameGameModeBase::LoadSettingsData()

@@ -1,15 +1,13 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/Enums/EUpgrade.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "UpgradeManager.generated.h"
 
+struct FRuntimeUpgradeData;
 class URunSaveSlot;
 enum class EPoolObject : uint8;
 enum class EAbility : uint8;
-enum class EUpgradeAttribute : uint8;
-enum class ECharacterType : uint8;
 class UUpgradeData;
 enum class EUpgrade : uint8;
 
@@ -20,7 +18,7 @@ class POSSESSIONGAME_API UUpgradeManager : public UWorldSubsystem
 public:
 	TObjectPtr<UUpgradeData> GetProjectileUpgradeData(const EPoolObject InProjectileName);
 	TObjectPtr<UUpgradeData> GetAbilityUpgradeData(const EAbility InAbilityName);
-	TArray<TObjectPtr<UUpgradeData>> GetRandomUpgrades();
+	TArray<FRuntimeUpgradeData> GetRandomUpgrades();
 	
 	void Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpgrades);
 private:
@@ -31,5 +29,5 @@ private:
 	UPROPERTY()
 	TMap<EUpgrade, TObjectPtr<UUpgradeData>> Upgrades;
 
-	void AddRandomlyChosenUpgrade(TArray<EUpgrade>& UpgradeKeys, TArray<TObjectPtr<UUpgradeData>>& ChosenUpgrades);
+	void AddRandomlyChosenUpgrade(TArray<EUpgrade>& UpgradeKeys, TArray<FRuntimeUpgradeData>& ChosenUpgrades);
 };

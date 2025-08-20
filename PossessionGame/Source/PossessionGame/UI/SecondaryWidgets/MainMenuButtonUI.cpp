@@ -13,6 +13,13 @@ void UMainMenuButtonUI::SetButtonVisibility(const bool bState)
 	Button->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 }
 
+void UMainMenuButtonUI::SetFontSize(const int32 InFontSize) const
+{
+	FSlateFontInfo FontInfo = ButtonText->GetFont();
+	FontInfo.Size = InFontSize;
+	ButtonText->SetFont(FontInfo);
+}
+
 void UMainMenuButtonUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();

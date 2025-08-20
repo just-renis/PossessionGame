@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "UpgradeSelectionUI.generated.h"
 
+struct FRuntimeUpgradeData;
 struct FUpgradeChoicePair;
 enum class EUpgradeChoice : uint8;
 enum class ECharacterType : uint8;
@@ -14,6 +15,18 @@ class UUpgradeData;
 class UUpgradeDetailsPanelUI;
 class UDelegateManager;
 class UUpgradeCardUI;
+
+USTRUCT()
+struct FCachedPairs
+{
+	GENERATED_BODY()
+	
+	UPROPERTY()
+	TArray<FUpgradeChoicePair> Pairs;
+
+	bool IsValidIndex(const int32 InIndex) const { return Pairs.IsValidIndex(InIndex); }
+	int32 Num() const { return Pairs.Num(); }
+};
 
 UCLASS()
 class POSSESSIONGAME_API UUpgradeSelectionUI : public UUserWidget
@@ -77,20 +90,22 @@ private:
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent GoBackAnimFinishedDelegate;
 	UPROPERTY()
-	TArray<TObjectPtr<UUpgradeData>> UpgradesData;
+	TArray<FRuntimeUpgradeData> UpgradesData;
 	UPROPERTY()
 	TArray<TObjectPtr<UUpgradeCardUI>> CardOptions;
+	UPROPERTY()
+	TMap<EUpgrade, FCachedPairs> CachedPairs;
 
 	FText GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade);
 	TObjectPtr<UTexture2D>& GetCharacterUpgradeIcon(const ECharacterType InCharacter);
 	
 	void Toggle(const bool bState);
 	virtual void NativeConstruct() override;
-	void OpenUpgradeChoicesPanel(const TObjectPtr<UUpgradeData>& InUpgradeData);
+	void OpenUpgradeChoicesPanel(const FRuntimeUpgradeData& InUpgradeData);
 	void PlayAnimByOptionSelected(const bool bIncludeBindToFinish);
-	void AdjustNeededCounts(int32& InNeededCommon, int32& InNeededRare, int32& InNeededLegendary, const TObjectPtr<UUpgradeData>& InUpgradeData);
-	void FillUpgrades(const TObjectPtr<UUpgradeData>& InUpgradeData, TArray<FUpgradeChoicePair>& OutChosen, const EUpgradeChoice InRarity, const int32 InCount);
-	void SetupUpgradeChoices(const TObjectPtr<UUpgradeData>& InUpgradeData);
+	void AdjustNeededCounts(int32& InNeededCommon, int32& InNeededRare, int32& InNeededLegendary, const FRuntimeUpgradeData& InUpgradeData);
+	void FillUpgrades(const FRuntimeUpgradeData& InUpgradeData, TArray<FUpgradeChoicePair>& OutChosen, const EUpgradeChoice InRarity, const int32 InCount);
+	void SetupUpgradeChoices(const FRuntimeUpgradeData& InUpgradeData);
 	UFUNCTION()
 	void TriggerSelectAnimForFirstOption();
 	UFUNCTION()

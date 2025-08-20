@@ -19,17 +19,19 @@ public:
 	void PlayPopupFadeInAnim(const bool bState);
 	void SetTitleText(const FText& InText) const;
 private:
+	UPROPERTY(EditAnywhere, Category = "Confirmation Settings", meta = (AllowPrivateAccess = true))
+	int32 ButtonsFontSize = 24;
 	UPROPERTY(EditAnywhere, Category = "Confirmation Settings", meta = (MultiLine, AllowPrivateAccess = true))
 	FText ConfirmationTitleText;
 	UPROPERTY(EditAnywhere, Category = "Confirmation Settings", meta = (AllowPrivateAccess = true))
 	FText AcceptText;
 	UPROPERTY(EditAnywhere, Category = "Confirmation Settings", meta = (AllowPrivateAccess = true))
 	FText DeclineText;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ConfirmationTitle;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> AcceptButton;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> DeclineButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> PopupFadeIn;

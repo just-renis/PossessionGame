@@ -54,7 +54,7 @@ struct POSSESSIONGAME_API FUpgrades
 	int32 MaxLevel = 3;
 
 	int32 GetMaxLevel() const { return MaxLevel; }
-	FUpgradeChoicePair GetRandomUpgradeChoice(const EUpgradeChoice InUpgradeChoice, const TArray<FUpgradeChoicePair>& OccupiedUpgradeChoices)
+	FUpgradeChoicePair GetRandomUpgradeChoice(const EUpgradeChoice InUpgradeChoice, const TArray<FUpgradeChoicePair>& OccupiedUpgradeChoices) const
 	{
 		const FUpgradeChoices* UpgradeChoicesData = UpgradesChoices.Find(InUpgradeChoice);
 		if (!UpgradeChoicesData) return FUpgradeChoicePair();
@@ -70,13 +70,11 @@ class POSSESSIONGAME_API UUpgradeData : public UDataAsset
 {
 	GENERATED_BODY()
 public:
-	int32 GetMaxRarityChoicesCount(const EUpgradeChoice InUpgradeChoice);
 	int32 GetMaxLevel() const { return Upgrades.GetMaxLevel(); }
 	TObjectPtr<UTexture2D> GetPlayerCardIcon() { return PlayerCardIcon; }
 	EUpgrade GetUpgradeName() const { return UpgradeName; }
 	ECharacterType GetCharacter() const { return Character; }
-	FUpgradeChoicePair GetRandomUpgradeChoice(const EUpgradeChoice InUpgradeChoice, const TArray<FUpgradeChoicePair>& OccupiedUpgradeChoices);
-	FUpgradeChoices* GetUpgradeChoices(const EUpgradeChoice InUpgradeChoice);
+	FUpgrades GetUpgrades() const { return Upgrades; }
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	EUpgrade UpgradeName;

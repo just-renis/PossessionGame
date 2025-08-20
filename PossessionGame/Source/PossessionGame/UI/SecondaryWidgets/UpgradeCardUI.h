@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "PossessionGame/Utilities/Data Utilities/FRuntimeUpgradeData.h"
 #include "UpgradeCardUI.generated.h"
 
 enum class EUpgrade : uint8;
@@ -18,7 +19,7 @@ class POSSESSIONGAME_API UUpgradeCardUI : public UUserWidget
 public:
 	TObjectPtr<UButton> GetUpgradeButton() const { return UpgradeButton; }
 	
-	void SetupCard(const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon);
+	void SetupCard(const TObjectPtr<UTexture2D>& InCardBackgroundImage, const FRuntimeUpgradeData& InData, const TObjectPtr<UTexture2D>& InCharacterIcon);
 	void ToggleCardVisibility(const bool bState);
 	void SetUpgradeText(const FText& InText) const;
 private:
@@ -41,7 +42,7 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> SelectAnim;
 	UPROPERTY()
-	TObjectPtr<UUpgradeData> Data;
+	FRuntimeUpgradeData Data;
 
 	virtual void NativeConstruct() override;
 	void SetCardBackgroundBorderImage(const TObjectPtr<UTexture2D>& InImage) const;

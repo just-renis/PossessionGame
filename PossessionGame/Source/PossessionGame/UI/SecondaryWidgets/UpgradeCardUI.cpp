@@ -3,17 +3,17 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
+#include "PossessionGame/Utilities/Data Utilities/FRuntimeUpgradeData.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
-void UUpgradeCardUI::SetupCard(const TObjectPtr<UTexture2D>& InCardBackgroundImage, const TObjectPtr<UUpgradeData>& InData, const TObjectPtr<UTexture2D>& InCharacterIcon)
+void UUpgradeCardUI::SetupCard(const TObjectPtr<UTexture2D>& InCardBackgroundImage, const FRuntimeUpgradeData& InData, const TObjectPtr<UTexture2D>& InCharacterIcon)
 {
 	Data = InData;
 	ToggleCardVisibility(true);
 	SetCardBackgroundBorderImage(InCardBackgroundImage);
 	SetCharacterIcon(InCharacterIcon);
-	SetCardIcon(Data->GetPlayerCardIcon());
+	SetCardIcon(Data.GetPlayerCardIcon());
 }
 
 void UUpgradeCardUI::ToggleCardVisibility(const bool bState)
