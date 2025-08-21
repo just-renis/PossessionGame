@@ -12,6 +12,24 @@ class UUpgradeData;
 class UTextBlock;
 class UButton;
 
+USTRUCT()
+struct FUpgradeChoiceMaterialsData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	TMap<EUpgradeChoice, float> SaturationValues;
+};
+
+USTRUCT()
+struct FUpgradeChoiceLevelData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	TMap<int32, FUpgradeChoiceMaterialsData> Data;
+};
+
 UCLASS()
 class POSSESSIONGAME_API UUpgradeDetailsPanelUI : public UUserWidget
 {
@@ -25,6 +43,10 @@ private:
 	bool bHasBeenSelected = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ChoiceIndex;
+	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))
+	FUpgradeChoiceLevelData UpgradeChoiceLevelData;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TArray<TObjectPtr<UMaterialInterface>> Materials;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> PlayerUpgradeText;
 	UPROPERTY(meta = (BindWidget))
@@ -47,12 +69,15 @@ private:
 	EUpgrade UpgradeName;
 	UPROPERTY()
 	FUpgradeChoicePair UpgradeChoice;
+	UPROPERTY()
+	TArray<TObjectPtr<UMaterialInstanceDynamic>> DynamicMaterials;
 
 	FString ConvertUpgradeAttributeValueToString(const float InValue);
 	FString GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute);
 
 	virtual void NativeConstruct() override;
 	void SetUpgradeText(const bool bIsPlayerUpgrade);
+	void SetUpgradeChoiceBackground();
 	UFUNCTION()
 	void SelectUpgrade();
 	UFUNCTION()

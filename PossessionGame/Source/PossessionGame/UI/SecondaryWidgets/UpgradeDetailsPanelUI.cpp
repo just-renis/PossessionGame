@@ -23,6 +23,7 @@ void UUpgradeDetailsPanelUI::Setup(const EUpgrade InUpgradeName, const FUpgradeC
 	UpgradeChoice = InUpgradeChoicePair;
 	bHasBeenSelected = false;
 	UpgradeDetailsPanelOverlay->SetRenderScale(FVector2D(1.f, 1.f));
+	SetUpgradeChoiceBackground();
 	SetUpgradeText(true);
 	SetUpgradeText(false);
 }
@@ -56,8 +57,8 @@ FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const T
 		case EUpgradeAttribute::EffectDuration: return "INCREASED " + AttributeValue + "% EFFECT DURATION\n";
 		case EUpgradeAttribute::ReduceDamageTaken: return "REDUCED " + AttributeValue + "% DAMAGE TAKEN\n";
 		case EUpgradeAttribute::Special1: return "NIGGA1";
-		case EUpgradeAttribute::Special2: return "NIGGA1";
-		case EUpgradeAttribute::Special3: return "NIGGA1";
+		case EUpgradeAttribute::Special2: return "NIGGA2";
+		case EUpgradeAttribute::Special3: return "NIGGA3";
 	}
 	return "";
 }
@@ -66,6 +67,7 @@ void UUpgradeDetailsPanelUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	if (!UpgradeChoiceButton) return;
+	for (int32 i = 0; i < Materials.Num(); i++) DynamicMaterials.Add(UMaterialInstanceDynamic::Create(Materials[i], this));
 	UpgradeChoiceButton->OnClicked.AddDynamic(this, &UUpgradeDetailsPanelUI::SelectUpgrade);
 	UpgradeChoiceButton->OnHovered.AddDynamic(this, &UUpgradeDetailsPanelUI::PlayHoverAnim);
 	UpgradeChoiceButton->OnUnhovered.AddDynamic(this, &UUpgradeDetailsPanelUI::PlayUnHoverAnim);
@@ -86,6 +88,17 @@ void UUpgradeDetailsPanelUI::SetUpgradeText(const bool bIsPlayerUpgrade)
 	UpgradeTextString.RemoveFromEnd(TEXT("\n"));
 	if (bIsPlayerUpgrade) PlayerUpgradeText->SetText(FText::FromString(UpgradeTextString));
 	else EnemyUpgradeText->SetText(FText::FromString(UpgradeTextString));
+}
+
+void UUpgradeDetailsPanelUI::SetUpgradeChoiceBackground()
+{
+	const int32 CurrentUpgradeLevel = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentLevel(UpgradeName);
+	if (const FUpgradeChoiceMaterialsData* UpgradeChoiceMaterialsData = UpgradeChoiceLevelData.Data.Find(CurrentUpgradeLevel))
+	{
+		const TObjectPtr<UMaterialInstanceDynamic> MID = DynamicMaterials[CurrentUpgradeLevel];
+		MID->SetScalarParameterValue("Saturation", UpgradeChoiceMaterialsData->SaturationValues[UpgradeChoice.Rarity]);
+		UpgradeChoiceBackground->SetBrushFromMaterial(MID);
+	}
 }
 
 void UUpgradeDetailsPanelUI::SelectUpgrade()

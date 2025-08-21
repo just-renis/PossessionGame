@@ -34,7 +34,7 @@ void UUpgradeSelectionUI::OpenUI()
 	Toggle(true);
 	for (int32 i = 0; i < UpgradesData.Num(); i++)
 	{
-		CardOptions[i]->SetupCard(PlayerCardBackgroundTexture, UpgradesData[i], GetCharacterUpgradeIcon(UpgradesData[i].GetCharacter()));
+		CardOptions[i]->SetupCard(UpgradesData[i], GetCharacterUpgradeIcon(UpgradesData[i].GetCharacter()));
 		CardOptions[i]->SetUpgradeText(GetUpgradeTextFromUpgrade(UpgradesData[i].GetUpgradeName()));
 	}
 	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsExplanationShown(EExplanation::UpgradeUI))
@@ -213,12 +213,10 @@ void UUpgradeSelectionUI::SetupUpgradeChoices(const FRuntimeUpgradeData& InUpgra
 	int32 NeededRare = 1;
 	int32 NeededLegend = 1;
 	AdjustNeededCounts(NeededCommon, NeededRare, NeededLegend, InUpgradeData);
-	UE_LOG(LogTemp, Error, TEXT("NeededCommon %i, NeededRare %i, NeededLegend %i"), NeededCommon, NeededRare, NeededLegend);
 	TArray<FUpgradeChoicePair> Chosen;
 	FillUpgrades(InUpgradeData, Chosen, EUpgradeChoice::Legendary, NeededLegend);
 	FillUpgrades(InUpgradeData, Chosen, EUpgradeChoice::Rare, NeededRare);
 	FillUpgrades(InUpgradeData, Chosen, EUpgradeChoice::Common, NeededCommon);
-	UE_LOG(LogTemp, Error, TEXT("Chosen.Num() %i"), Chosen.Num());
 	CachedPairs.Add(InUpgradeData.GetUpgradeName(), FCachedPairs(Chosen));
 	if (Chosen.IsValidIndex(0)) UpgradeChoice1->Setup(InUpgradeData.GetUpgradeName(), Chosen[0]);
 	else UpgradeChoice1->Setup(InUpgradeData.GetUpgradeName());

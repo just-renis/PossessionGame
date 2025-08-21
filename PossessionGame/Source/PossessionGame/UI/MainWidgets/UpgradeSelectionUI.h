@@ -42,8 +42,6 @@ private:
 	bool bChoicesOpen = false;
 	int32 OptionSelected = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UTexture2D> PlayerCardBackgroundTexture;
-	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> PlayerIconTexture;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> EnemyIconTexture;

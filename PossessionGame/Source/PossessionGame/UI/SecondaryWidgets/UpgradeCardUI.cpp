@@ -4,14 +4,16 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Utilities/Data Utilities/FRuntimeUpgradeData.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
-void UUpgradeCardUI::SetupCard(const TObjectPtr<UTexture2D>& InCardBackgroundImage, const FRuntimeUpgradeData& InData, const TObjectPtr<UTexture2D>& InCharacterIcon)
+void UUpgradeCardUI::SetupCard(const FRuntimeUpgradeData& InData, const TObjectPtr<UTexture2D>& InCharacterIcon)
 {
 	Data = InData;
+	SetCardBackgroundBorderImage(GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentLevel(InData.GetUpgradeName()));
 	ToggleCardVisibility(true);
-	SetCardBackgroundBorderImage(InCardBackgroundImage);
 	SetCharacterIcon(InCharacterIcon);
 	SetCardIcon(Data.GetPlayerCardIcon());
 }
@@ -37,7 +39,11 @@ void UUpgradeCardUI::NativeConstruct()
 	UpgradeButton->OnUnhovered.AddDynamic(this, &UUpgradeCardUI::PlayUnHoverAnim);
 }
 
-void UUpgradeCardUI::SetCardBackgroundBorderImage(const TObjectPtr<UTexture2D>& InImage) const { if (CardBackgroundBorder && InImage) CardBackgroundBorder->SetBrushFromTexture(InImage); }
+void UUpgradeCardUI::SetCardBackgroundBorderImage(const int32 InLevel) const
+{
+	if (!CardBackgroundBorder) return;
+	CardBackgroundBorder->SetBrushFromTexture(InLevel > 2 ? LevelTextures.Last() : LevelTextures[InLevel]);
+}
 
 void UUpgradeCardUI::SetCharacterIcon(const TObjectPtr<UTexture2D>& InImage) const { if (CharacterIcon && InImage) CharacterIcon->SetBrushFromTexture(InImage); }
 

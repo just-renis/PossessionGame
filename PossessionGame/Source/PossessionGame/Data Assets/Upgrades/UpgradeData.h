@@ -26,6 +26,8 @@ struct POSSESSIONGAME_API FUpgradeChoicePair
 	UPROPERTY(EditDefaultsOnly)
 	int32 Id = -1;
 	UPROPERTY(EditDefaultsOnly)
+	EUpgradeChoice Rarity = EUpgradeChoice::Common;
+	UPROPERTY(EditDefaultsOnly)
 	FUpgradeAttributes PlayerAttributes;
 	UPROPERTY(EditDefaultsOnly)
 	FUpgradeAttributes EnemyAttributes;
