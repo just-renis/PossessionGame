@@ -25,7 +25,7 @@ void UVariationUnlockDetailsUI::SetUnlockedVariation(const bool bState) const
 {
 	ChangeVisibilityOfUnlockElements(!bState);
 	if (!DetailsText) return;
-	if (bState) DetailsText->SetText(FText::FromString("UNLOCKED"));
+	if (bState) DetailsText->SetText(NSLOCTEXT("ST_Localization", "Unlocked", "UNLOCKED"));
 	DetailsText->SetJustification(bState ? ETextJustify::Center : ETextJustify::Left);
 	FSlateFontInfo FontInfo = DetailsText->GetFont();
 	FontInfo.Size = bState ? 40 : 18;

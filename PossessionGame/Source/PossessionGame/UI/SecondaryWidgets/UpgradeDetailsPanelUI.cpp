@@ -1,7 +1,7 @@
 ﻿#include "UpgradeDetailsPanelUI.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
-#include "Components/TextBlock.h"
+#include "Components/RichTextBlock.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
@@ -41,21 +41,21 @@ FString UUpgradeDetailsPanelUI::ConvertUpgradeAttributeValueToString(const float
 	return FloatValueString;
 }
 
-FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute)
+FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute, const bool bForEnemy)
 {
 	const FString AttributeValue = ConvertUpgradeAttributeValueToString(InAttribute.Value);
 	switch (InAttribute.Key)
 	{
-		case EUpgradeAttribute::FlatDamage: return "+" + AttributeValue + " DAMAGE\n";
-		case EUpgradeAttribute::FlatHealth: return "+" + AttributeValue + " HEALTH\n";
-		case EUpgradeAttribute::DamagePercentage: return "INCREASED " + AttributeValue + "% DAMAGE\n";
-		case EUpgradeAttribute::ProjectilesAmount: return "+" + AttributeValue + " PROJECTILES\n";
-		case EUpgradeAttribute::AbilityCooldownReduction: return "REDUCED " + AttributeValue + "% ABILITY COOLDOWN\n";
-		case EUpgradeAttribute::AbilityChargesAmount: return "+" + AttributeValue + " ABILITY CHARGES\n";
-		case EUpgradeAttribute::Size: return "INCREASED " + AttributeValue + "% AREA\n";
-		case EUpgradeAttribute::AbilityDuration: return "INCREASED " + AttributeValue + "% ABILITY DURATION\n";
-		case EUpgradeAttribute::EffectDuration: return "INCREASED " + AttributeValue + "% EFFECT DURATION\n";
-		case EUpgradeAttribute::ReduceDamageTaken: return "REDUCED " + AttributeValue + "% DAMAGE TAKEN\n";
+		case EUpgradeAttribute::FlatDamage: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Damage", "DAMAGE").ToString() + "</>\n";
+		case EUpgradeAttribute::FlatHealth: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "FlatHealth", "HEALTH").ToString() + "</>\n";
+		case EUpgradeAttribute::DamagePercentage: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Damage", "DAMAGE").ToString() + "</>\n";
+		case EUpgradeAttribute::ProjectilesAmount: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Projectiles", "PROJECTILES").ToString() + "</>\n";
+		case EUpgradeAttribute::AbilityCooldownReduction: return GetRichTextTag(bForEnemy) + "-" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityCooldown", "ABILITY COOLDOWN").ToString() + "</>\n";
+		case EUpgradeAttribute::AbilityChargesAmount: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityCharges", "ABILITY CHARGES").ToString() + "</>\n";
+		case EUpgradeAttribute::Size: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Area", "AREA").ToString() + "</>\n";
+		case EUpgradeAttribute::AbilityDuration: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityDuration", "ABILITY DURATION").ToString() + "</>\n";
+		case EUpgradeAttribute::EffectDuration: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "EffectDuration", "EFFECT DURATION").ToString() + "</>\n";
+		case EUpgradeAttribute::ReduceDamageTaken: return GetRichTextTag(bForEnemy) + "-" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "DamageTaken", "DAMAGE TAKEN").ToString() + "</>\n";
 		case EUpgradeAttribute::Special1: return "NIGGA1";
 		case EUpgradeAttribute::Special2: return "NIGGA2";
 		case EUpgradeAttribute::Special3: return "NIGGA3";
@@ -63,11 +63,22 @@ FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const T
 	return "";
 }
 
+FString UUpgradeDetailsPanelUI::GetRichTextTag(const bool bForEnemy) const
+{
+	if (bForEnemy) return FString("<UpgradeAttributeNumberRed>");
+	switch (UpgradeChoice.Rarity)
+	{
+		case EUpgradeChoice::Common: return FString("<UpgradeAttributeNumberBlue>");
+		case EUpgradeChoice::Rare: return FString("<UpgradeAttributeNumberGreen>");
+		case EUpgradeChoice::Legendary: return FString("<UpgradeAttributeNumberYellow>");
+	}
+	return {};
+}
+
 void UUpgradeDetailsPanelUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	if (!UpgradeChoiceButton) return;
-	for (int32 i = 0; i < Materials.Num(); i++) DynamicMaterials.Add(UMaterialInstanceDynamic::Create(Materials[i], this));
 	UpgradeChoiceButton->OnClicked.AddDynamic(this, &UUpgradeDetailsPanelUI::SelectUpgrade);
 	UpgradeChoiceButton->OnHovered.AddDynamic(this, &UUpgradeDetailsPanelUI::PlayHoverAnim);
 	UpgradeChoiceButton->OnUnhovered.AddDynamic(this, &UUpgradeDetailsPanelUI::PlayUnHoverAnim);
@@ -84,22 +95,13 @@ void UUpgradeDetailsPanelUI::SetUpgradeText(const bool bIsPlayerUpgrade)
 	}
 	FString UpgradeTextString = "";
 	FUpgradeAttributes UpgradeAttributesData = bIsPlayerUpgrade ? UpgradeChoice.PlayerAttributes : UpgradeChoice.EnemyAttributes;
-	for (const TPair<EUpgradeAttribute, float> Attribute : UpgradeAttributesData.UpgradeAttributes) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute);
+	for (const TPair<EUpgradeAttribute, float> Attribute : UpgradeAttributesData.UpgradeAttributes) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute, !bIsPlayerUpgrade);
 	UpgradeTextString.RemoveFromEnd(TEXT("\n"));
 	if (bIsPlayerUpgrade) PlayerUpgradeText->SetText(FText::FromString(UpgradeTextString));
 	else EnemyUpgradeText->SetText(FText::FromString(UpgradeTextString));
 }
 
-void UUpgradeDetailsPanelUI::SetUpgradeChoiceBackground()
-{
-	const int32 CurrentUpgradeLevel = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentLevel(UpgradeName);
-	if (const FUpgradeChoiceMaterialsData* UpgradeChoiceMaterialsData = UpgradeChoiceLevelData.Data.Find(CurrentUpgradeLevel))
-	{
-		const TObjectPtr<UMaterialInstanceDynamic> MID = DynamicMaterials[CurrentUpgradeLevel];
-		MID->SetScalarParameterValue("Saturation", UpgradeChoiceMaterialsData->SaturationValues[UpgradeChoice.Rarity]);
-		UpgradeChoiceBackground->SetBrushFromMaterial(MID);
-	}
-}
+void UUpgradeDetailsPanelUI::SetUpgradeChoiceBackground() { UpgradeChoiceBackground->SetBrushFromAtlasInterface(Textures[static_cast<uint8>(UpgradeChoice.Rarity)]); }
 
 void UUpgradeDetailsPanelUI::SelectUpgrade()
 {

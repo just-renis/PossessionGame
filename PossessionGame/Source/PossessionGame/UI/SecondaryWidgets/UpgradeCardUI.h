@@ -7,8 +7,6 @@
 
 enum class EUpgrade : uint8;
 class UButton;
-class UUpgradeData;
-class UBorder;
 class UTextBlock;
 class UImage;
 
@@ -23,10 +21,6 @@ public:
 	void ToggleCardVisibility(const bool bState);
 	void SetUpgradeText(const FText& InText) const;
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Textures", meta = (AllowPrivateAccess = true))
-	TArray<TObjectPtr<UTexture2D>> LevelTextures;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UBorder> CardBackgroundBorder;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> UpgradeButton;
 	UPROPERTY(meta = (BindWidget))
@@ -47,7 +41,6 @@ private:
 	FRuntimeUpgradeData Data;
 
 	virtual void NativeConstruct() override;
-	void SetCardBackgroundBorderImage(const int32 InLevel) const;
 	void SetCharacterIcon(const TObjectPtr<UTexture2D>& InImage) const;
 	void SetCardIcon(const TObjectPtr<UTexture2D>& InImage) const;
 	void PlayBlinkAnim() { PlayAnimation(BlinkAnim); }

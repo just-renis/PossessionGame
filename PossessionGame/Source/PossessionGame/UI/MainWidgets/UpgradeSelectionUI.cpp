@@ -48,7 +48,6 @@ void UUpgradeSelectionUI::CloseUI()
 	for (int32 i = 0; i < UpgradesData.Num(); i++) CardOptions[i]->ToggleCardVisibility(false);
 	UpgradeChoicesPanel->SetVisibility(ESlateVisibility::Collapsed);
 	Toggle(false);
-	//GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
 }
 
 void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()
@@ -82,6 +81,7 @@ FText UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 		case EUpgrade::TricksterAbility2: return NSLOCTEXT("ST_Localization", "EmpUpgrade", " EMP");
 		case EUpgrade::GuardianAbility1: return NSLOCTEXT("ST_Localization", "ShieldUpgrade", " SHIELD");
 		case EUpgrade::GuardianAbility2: return NSLOCTEXT("ST_Localization", "TimeStopUpgrade", " TIME STOP");
+		default: ;
 	}
 	return FText::GetEmpty();
 }

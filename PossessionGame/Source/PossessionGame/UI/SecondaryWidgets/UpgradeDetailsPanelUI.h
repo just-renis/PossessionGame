@@ -5,30 +5,10 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "UpgradeDetailsPanelUI.generated.h"
 
+class URichTextBlock;
 class UImage;
 enum class EUpgradeAttribute : uint8;
-struct FUpgradeAttributes;
-class UUpgradeData;
-class UTextBlock;
 class UButton;
-
-USTRUCT()
-struct FUpgradeChoiceMaterialsData
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly)
-	TMap<EUpgradeChoice, float> SaturationValues;
-};
-
-USTRUCT()
-struct FUpgradeChoiceLevelData
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly)
-	TMap<int32, FUpgradeChoiceMaterialsData> Data;
-};
 
 UCLASS()
 class POSSESSIONGAME_API UUpgradeDetailsPanelUI : public UUserWidget
@@ -43,14 +23,12 @@ private:
 	bool bHasBeenSelected = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ChoiceIndex;
-	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))
-	FUpgradeChoiceLevelData UpgradeChoiceLevelData;
-	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
-	TArray<TObjectPtr<UMaterialInterface>> Materials;
+	UPROPERTY(EditDefaultsOnly, Category = "Textures", meta = (AllowPrivateAccess = true))
+	TArray<TObjectPtr<UTexture2D>> Textures;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> PlayerUpgradeText;
+	TObjectPtr<URichTextBlock> PlayerUpgradeText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> EnemyUpgradeText;
+	TObjectPtr<URichTextBlock> EnemyUpgradeText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> UpgradeChoiceButton;
 	UPROPERTY(meta = (BindWidget))
@@ -69,11 +47,10 @@ private:
 	EUpgrade UpgradeName;
 	UPROPERTY()
 	FUpgradeChoicePair UpgradeChoice;
-	UPROPERTY()
-	TArray<TObjectPtr<UMaterialInstanceDynamic>> DynamicMaterials;
 
 	FString ConvertUpgradeAttributeValueToString(const float InValue);
-	FString GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute, const bool bForEnemy);
+	FString GetRichTextTag(const bool bForEnemy) const;
 
 	virtual void NativeConstruct() override;
 	void SetUpgradeText(const bool bIsPlayerUpgrade);
