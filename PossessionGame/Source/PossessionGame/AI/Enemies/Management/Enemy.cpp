@@ -28,7 +28,6 @@
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EUIBar.h"
-#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Interfaces/Interactable.h"
@@ -53,7 +52,6 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
-#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
@@ -108,7 +106,7 @@ void AEnemy::AI_SetShootPause()
 	GetWorldTimerManager().SetTimer(AI_ClearShootPauseHandle, this, &AEnemy::AI_ClearShootPause, AI_Data->GetShootPause(), false);
 }
 
-void AEnemy::P_ApplyUpgradeOnSelection(const ECharacterType InCharacterName) // For future upgrades to increase dash charges, stomping damage and so on.
+void AEnemy::P_ApplyUpgradeOnSelection()
 {
 	bInUpgradeSelection = false;
 	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->SetupUpgradeAppliance();
@@ -119,7 +117,7 @@ void AEnemy::P_UseAbility(const int32 AbilityIndex)
 	if (bIsInputLocked) return;
 	if (!bIsActionInMotion && AbilityIndex < Abilities.Num() && Abilities[AbilityIndex]->CanExecute())
 	{
-		Abilities[AbilityIndex]->P_Execute();
+		Abilities[AbilityIndex]->P_InitiateExecute();
 		if (!P_HUD) return;
 		if (Abilities[AbilityIndex]->GetIsCooldownKill()) P_HUD->UpdateAbilityUI(Abilities[AbilityIndex]);
 	}
@@ -251,7 +249,7 @@ void AEnemy::AI_TryEvolving()
 
 void AEnemy::AI_SetupUpgradesAppliance()
 {
-	//MaxHp += GetWorld()->GetSubsystem<UUpgradeManager>()->AI_GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatHealth);
+	MaxHp += GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
 	CurrentHp = MaxHp;
 }
 
@@ -879,7 +877,7 @@ void AEnemy::P_ToggleGodMode()
 	CurrentHp = MaxHp;
 }
 
-void AEnemy::P_UpdateAbilitiesUI() { for (int32 i = 0; i < Abilities.Num(); i++) if (bIsHijacked && !Abilities[i]->GetIsCooldownKill() && !Abilities[i]->GetIsAbilityInDuration()) P_HUD->UpdateAbilityUI(Abilities[i]); }
+void AEnemy::P_UpdateAbilitiesUI() { for (int32 i = 0; i < Abilities.Num(); i++) if (bIsHijacked && !Abilities[i]->GetIsCooldownKill()) P_HUD->UpdateAbilityUI(Abilities[i]); }
 
 void AEnemy::P_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->P_StopAbility(); }
 

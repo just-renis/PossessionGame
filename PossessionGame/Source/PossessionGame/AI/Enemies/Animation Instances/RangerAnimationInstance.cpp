@@ -3,7 +3,10 @@
 #include "Kismet/GameplayStaticsTypes.h"
 #include "PossessionGame/AI/Enemies/Characters/Ranger.h"
 #include "PossessionGame/AI/Enemies/Controllers/RangerAIController.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
 void URangerAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState)
@@ -39,21 +42,28 @@ void URangerAnimationInstance::TriggerGrenadeProjection() const
 {
 	FProjectileData* ProjectileData = Proprietor->GetWeapon()->GetProjectileData(EPoolObject::RangerGrenadeLauncherProjectile);
 	if (!ProjectileData) return;
-	FPredictProjectilePathParams PathParams;
-	PathParams.StartLocation = Proprietor->GetWeapon()->GetSocketLocation(ProjectileData->ProjectileSocketName);
-	PathParams.LaunchVelocity = Proprietor->GetWeapon()->GetSocketRotation(ProjectileData->ProjectileSocketName).Vector() * ProjectileData->GetMultiProjectileData(1).Data[0].MaxSpeed;
-	PathParams.bTraceWithCollision = true;
-	PathParams.ProjectileRadius = 1.f;
-	PathParams.MaxSimTime = 8.f;
-	PathParams.SimFrequency = 30.f;
-	PathParams.OverrideGravityZ = GetWorld()->GetGravityZ() * ProjectileData->GetMultiProjectileData(1).Data[0].GravityScale;
-	PathParams.TraceChannel = ECC_GameTraceChannel6;
-	FPredictProjectilePathResult PathResult;
-	if (UGameplayStatics::PredictProjectilePath(GetWorld(), PathParams, PathResult))
+	const int32 ProjectileAmount = 1 + GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EPoolObject::RangerGrenadeLauncherProjectile, EUpgradeAttribute::ProjectilesAmount, false, true);
+	const FAdditionalProjectiles AdditionalProjectilesData = ProjectileData->GetMultiProjectileData(ProjectileAmount);
+	for (int32 i = 0; i < ProjectileAmount; i++)
 	{
-		FRotator MarkerRotation = PathResult.HitResult.ImpactNormal.Rotation();
-		MarkerRotation.Pitch -= 90.f; 
-		AssetsManager->SpawnVfx(EVfx::RangerGrenadeLauncherMarker, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, PathResult.HitResult.Location, MarkerRotation);
+		FPredictProjectilePathParams PathParams;
+		PathParams.StartLocation = Proprietor->GetWeapon()->GetSocketLocation(ProjectileData->ProjectileSocketName);
+		const FRotator BaseRotation = Proprietor->GetWeapon()->GetSocketRotation(ProjectileData->ProjectileSocketName);
+		const FVector FinalDirection = BaseRotation.RotateVector(AdditionalProjectilesData.Data[i].Direction);
+		PathParams.LaunchVelocity = FinalDirection.GetSafeNormal() * AdditionalProjectilesData.Data[i].MaxSpeed;
+		PathParams.bTraceWithCollision = true;
+		PathParams.ProjectileRadius = 1.f;
+		PathParams.MaxSimTime = 8.f;
+		PathParams.SimFrequency = 30.f;
+		PathParams.OverrideGravityZ = GetWorld()->GetGravityZ() * AdditionalProjectilesData.Data[i].GravityScale;
+		PathParams.TraceChannel = ECC_GameTraceChannel6;
+		FPredictProjectilePathResult PathResult;
+		if (UGameplayStatics::PredictProjectilePath(GetWorld(), PathParams, PathResult))
+		{
+			FRotator MarkerRotation = PathResult.HitResult.ImpactNormal.Rotation();
+			MarkerRotation.Pitch -= 90.f; 
+			AssetsManager->SpawnVfx(EVfx::RangerGrenadeLauncherMarker, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, PathResult.HitResult.Location, MarkerRotation);
+		}
 	}
 }
 

@@ -10,10 +10,11 @@ class POSSESSIONGAME_API AGuardian : public AEnemy
 	GENERATED_BODY()
 public:
 	void SetCustomTimeDilation(const float InDilation);
-	void TriggerShield(const bool bState);
+	void ToggleShield(const bool bState);
 protected:
 	AGuardian();
 private:
+	bool bIsDisappearing = false;
 	float ShieldColorDensity = 5.f;
 	float ShieldRadialRadius = 1.f;
 	float Radius = 3.f;
@@ -41,7 +42,10 @@ private:
 	virtual void P_InitiateJump() override;
 	virtual void P_InitiateStomp() override;
 	virtual void P_Move(const FInputActionValue& Value) override;
+	void P_UpdateShieldMaterialAppear();
+	void P_UpdateShieldMaterialDisappear();
 	void P_UpdateShieldMaterial(const bool bState);
+	void P_ResetShieldValues();
 	
 	virtual void BeginPlay() override;
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) override;

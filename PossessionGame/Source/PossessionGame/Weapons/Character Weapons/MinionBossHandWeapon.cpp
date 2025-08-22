@@ -13,7 +13,7 @@ void AMinionBossHandWeapon::AI_Shoot()
 {
 	PlaySound(ESound::MinionBossShoot, true);
 	Super::AI_Shoot();
-	ShootProjectile(EPoolObject::MinionBossProjectile);
+	ShootProjectile(EPoolObject::MinionBossProjectile, false);
 }
 
 void AMinionBossHandWeapon::BeginPlay()

@@ -1,18 +1,17 @@
 #include "Ability.h"
-
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/AbilityData.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
-#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 EAbility UAbility::GetAbilityName() const { return Data->GetAbilityName(); }
 
-void UAbility::P_Execute()
+void UAbility::P_InitiateExecute()
 {
-	UseCharge();
-	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(AbilityIndex, GetIsAbilityCharged(), !bIsAbilityInDuration);
-	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(AbilityIndex, GetIsAbilityCharged(), !bIsAbilityInDuration);
+	if (bIsAbilityInDuration) P_StopAbility();
+	P_Execute();
 }
 
 void UAbility::P_StopAbility()
@@ -24,7 +23,7 @@ void UAbility::P_StopAbility()
 void UAbility::Tick(const float InDeltaTime)
 {
 	if (bIsAbilityInDuration) AbilityInDurationLogic(InDeltaTime);
-	else if (!bIsCooldownKill && CurrentChargesAmount < MaxChargesAmount) CooldownLogic(InDeltaTime);
+	if (!bIsCooldownKill && CurrentChargesAmount < MaxChargesAmount) CooldownLogic(InDeltaTime);
 }
 
 void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
@@ -36,6 +35,12 @@ void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbility
 	SetProprietor(InAbilityProprietor);
 	SetupUpgradeAppliance(IsProprietorPossessed());
 	if (InAbilityProprietor->GetIsHijacked()) P_ApplyVariation();
+}
+
+void UAbility::P_Execute()
+{
+	UseCharge();
+	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(AbilityIndex, GetIsAbilityCharged(), !bIsAbilityInDuration);
 }
 
 void UAbility::UseCharge()
@@ -54,12 +59,13 @@ void UAbility::CooldownLogic(const float InDeltaTime)
 
 void UAbility::SetupUpgradeAppliance(const bool bIsPlayer)
 {
-	const float CooldownReduction = 0.f; //GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityCooldownReduction);
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	const float CooldownReduction = RunSaveSlot->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::AbilityCooldownReduction, bIsPlayer);
 	ReqCooldownSecs = Data->GetCooldownSecs() / (1.f + CooldownReduction * 0.01f);
-	MaxChargesAmount = Data->GetChargesAmount(); //+ GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityChargesAmount);
+	MaxChargesAmount = Data->GetChargesAmount() + RunSaveSlot->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::AbilityChargesAmount, bIsPlayer);
 	if (Data->GetIsAbilityWithDuration())
 	{
-		DurationTime = Data->GetAbilityDuration() + Data->GetAbilityDuration(); // * GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayer, Data->GetAbilityName(), EUpgradeAttribute::AbilityDuration) * 0.01f;
+		DurationTime = Data->GetAbilityDuration() + Data->GetAbilityDuration() * RunSaveSlot->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::AbilityDuration, bIsPlayer) * 0.01f;
 		CurrentDuration = DurationTime;
 	}
 }

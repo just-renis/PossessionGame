@@ -37,7 +37,7 @@ void ATricksterSingularWeapon::P_Shoot()
 		MuzzleFlashLogic();
 		MakeShootingCameraShake();
 		ShootTimer = 0.f;
-		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::TricksterProjectile);
+		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::TricksterProjectile, false);
 	}
 }
 

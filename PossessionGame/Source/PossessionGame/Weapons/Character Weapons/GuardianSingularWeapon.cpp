@@ -14,7 +14,7 @@ void AGuardianSingularWeapon::AI_Shoot()
 {
 	PlaySound(ESound::GuardianShoot, true);
 	Super::AI_Shoot();
-	ShootProjectile(EPoolObject::GuardianProjectile);
+	ShootProjectile(EPoolObject::GuardianProjectile, false);
 }
 
 void AGuardianSingularWeapon::P_Shoot()
@@ -25,7 +25,7 @@ void AGuardianSingularWeapon::P_Shoot()
 		MuzzleFlashLogic();
 		MakeShootingCameraShake();
 		ShootTimer = 0.f;
-		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::GuardianProjectile);
+		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::GuardianProjectile, false);
 	}
 }
 

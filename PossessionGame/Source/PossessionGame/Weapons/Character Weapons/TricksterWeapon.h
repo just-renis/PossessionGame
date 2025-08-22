@@ -26,5 +26,5 @@ private:
 	virtual void BeginPlay() override;
 	virtual void SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh) override;
 	virtual void SetMeshes(const EWeapon InPrimaryDataAssetName) override;
-	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bFromFirstWeapon) override;
+	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const bool bFromFirstWeapon) override;
 };

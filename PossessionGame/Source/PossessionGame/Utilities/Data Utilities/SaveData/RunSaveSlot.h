@@ -5,6 +5,8 @@
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "RunSaveSlot.generated.h"
 
+enum class EPoolObject : uint8;
+enum class EAbility : uint8;
 enum class EUpgrade : uint8;
 enum class ECharacterType : uint8;
 enum class EUpgradeAttribute : uint8;
@@ -46,6 +48,9 @@ class POSSESSIONGAME_API URunSaveSlot : public USaveGame
 	GENERATED_BODY()
 public:
 	float GetUpgradeAttributeValues(const EUpgrade InUpgradeName, const EUpgradeAttribute InUpgradeAttribute, const bool bIsPlayer);
+	float GetUpgradeAttributeValues(const EAbility InAbilityName, const EUpgradeAttribute InUpgradeAttribute, const bool bIsPlayer);
+	float GetUpgradeAttributeValues(const EPoolObject InPoolObject, const EUpgradeAttribute InUpgradeAttribute, const bool bIsPlayer, const bool bForAbilityOnly = false);
+	float GetHpUpgradesForEnemy(const ECharacterType InCharacterType);
 	int32 GetSecretBoost(const EVariation InVariation);
 	int32 GetCurrentLevel(const EUpgrade InUpgradeName);
 	FString GetSlotName() { return SlotName; }
@@ -67,7 +72,11 @@ private:
 	UPROPERTY()
 	TMap<EVariation, int32> SecretCrateBoosts;
 
-	ECharacterType GetCharacterNameByUpgrade(const EUpgrade InUpgradeName);
+	float GetUpgradeAttributeValuesForEnemy(const EPoolObject InPoolObject, const EUpgradeAttribute InUpgradeAttribute, const bool bForAbilityOnly);
+	EUpgrade GetUpgradeByAbilityName(const EAbility InAbilityName);
+	EUpgrade GetUpgradeByPoolObjectName(const EPoolObject InPoolObjectName);
+	TArray<EUpgrade> GetUpgradesByPoolObjectName(const EPoolObject InPoolObjectName, const bool bForAbilityOnly);
+	TArray<EUpgrade> GetHpUpgradesByCharacterName(const ECharacterType InCharacterName);
 	
 	void VersionMigration();
 };

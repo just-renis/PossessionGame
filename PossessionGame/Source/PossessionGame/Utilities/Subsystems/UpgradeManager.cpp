@@ -2,31 +2,10 @@
 #include "SaveSlotManager.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "PossessionGame/Enums/EAbility.h"
-#include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeChoice.h"
 #include "PossessionGame/Utilities/Data Utilities/FRuntimeUpgradeData.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
-
-TObjectPtr<UUpgradeData> UUpgradeManager::GetProjectileUpgradeData(const EPoolObject InProjectileName)
-{
-	switch (InProjectileName)
-	{
-		case EPoolObject::RangerGrenadeLauncherProjectile: return Upgrades.Contains(EUpgrade::RangerAbility1) ? Upgrades[EUpgrade::RangerAbility1] : nullptr;
-		case EPoolObject::TricksterPoisonProjectile: return Upgrades.Contains(EUpgrade::TricksterAbility1) ? Upgrades[EUpgrade::TricksterAbility1] : nullptr;
-		case EPoolObject::TricksterEmpProjectile: return Upgrades.Contains(EUpgrade::TricksterAbility2) ? Upgrades[EUpgrade::TricksterAbility2] : nullptr;
-		default: return nullptr;
-	}
-}
-
-TObjectPtr<UUpgradeData> UUpgradeManager::GetAbilityUpgradeData(const EAbility InAbilityName)
-{
-	if (const EUpgrade* FoundUpgrade = AbilityToUpgradeMap.Find(InAbilityName))
-	{
-		if (TObjectPtr<UUpgradeData>* FoundData = Upgrades.Find(*FoundUpgrade)) return *FoundData;
-	}
-	return nullptr;
-}
 
 TArray<FRuntimeUpgradeData> UUpgradeManager::GetRandomUpgrades()
 {

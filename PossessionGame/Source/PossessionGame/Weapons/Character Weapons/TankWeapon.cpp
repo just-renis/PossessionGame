@@ -7,7 +7,7 @@
 void ATankWeapon::AI_Shoot()
 {
 	if (!AnimInstance->IsPlaying(EWeaponAnimState::Shoot)) AnimInstance->PlayMontage(EWeaponAnimState::Shoot);
-	ShootProjectile(EPoolObject::TankProjectile);
+	ShootProjectile(EPoolObject::TankProjectile, false);
 	SubtractShootCycleUntilReload();
 	GetShootCyclesUntilReload() <= 0 ? Proprietor->AI_ReloadLogic() : Proprietor->AI_SetShootPause();
 	Super::AI_Shoot();

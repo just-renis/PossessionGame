@@ -29,7 +29,7 @@ public:
 	virtual void AI_Execute() { UseCharge(); }
 	virtual void AI_StopAbility() { ResetDuration(); }
 
-	virtual void P_Execute();
+	void P_InitiateExecute();
 	virtual void P_StopAbility();
 
 	virtual void Tick(const float InDeltaTime);
@@ -51,6 +51,7 @@ protected:
 	TObjectPtr<UDelegateManager> DelegateManager;
 	
 	virtual void P_ApplyVariation() {}
+	virtual void P_Execute();
 
 	virtual bool IsProprietorPossessed() { return false; }
 	

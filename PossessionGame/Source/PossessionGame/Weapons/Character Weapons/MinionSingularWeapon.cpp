@@ -14,7 +14,7 @@ void AMinionSingularWeapon::AI_Shoot()
 {
 	PlaySound(ESound::MinionShoot, true);
 	Super::AI_Shoot();
-	ShootProjectile(EPoolObject::MinionProjectile);
+	ShootProjectile(EPoolObject::MinionProjectile, false);
 }
 
 void AMinionSingularWeapon::BeginPlay()

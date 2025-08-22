@@ -16,8 +16,6 @@ class POSSESSIONGAME_API UUpgradeManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-	TObjectPtr<UUpgradeData> GetProjectileUpgradeData(const EPoolObject InProjectileName);
-	TObjectPtr<UUpgradeData> GetAbilityUpgradeData(const EAbility InAbilityName);
 	TArray<FRuntimeUpgradeData> GetRandomUpgrades();
 	
 	void Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpgrades);

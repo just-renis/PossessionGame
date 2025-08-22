@@ -21,7 +21,7 @@ void ARangerWeapon::AI_Shoot()
 {
 	PlaySound(ESound::RangerShoot, true);
 	Super::AI_Shoot();
-	ShootProjectile(EPoolObject::RangerProjectile);
+	ShootProjectile(EPoolObject::RangerProjectile, false);
 }
 
 void ARangerWeapon::P_Shoot()

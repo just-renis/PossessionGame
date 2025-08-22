@@ -48,7 +48,7 @@ void UUpgradeSelectionUI::CloseUI()
 	for (int32 i = 0; i < UpgradesData.Num(); i++) CardOptions[i]->ToggleCardVisibility(false);
 	UpgradeChoicesPanel->SetVisibility(ESlateVisibility::Collapsed);
 	Toggle(false);
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+	//GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
 }
 
 void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()

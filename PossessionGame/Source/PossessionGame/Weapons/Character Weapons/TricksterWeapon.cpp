@@ -60,8 +60,8 @@ void ATricksterWeapon::SetMeshes(const EWeapon InPrimaryDataAssetName)
 	if (!HandsMesh->GetSkeletalMeshAsset()) HandsMesh->SetSkeletalMesh(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(InPrimaryDataAssetName)->HandsMesh.Get());
 }
 
-void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bFromFirstWeapon)
+void ATricksterWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const bool bFromFirstWeapon)
 {
-	if (bFromFirstWeapon) FirstWeapon->ShootProjectile(InProjectileName);
-	else SecondWeapon->ShootProjectile(InProjectileName);
+	if (bFromFirstWeapon) FirstWeapon->ShootProjectile(InProjectileName, bIsFromAbility);
+	else SecondWeapon->ShootProjectile(InProjectileName, bIsFromAbility);
 }

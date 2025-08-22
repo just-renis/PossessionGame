@@ -28,12 +28,18 @@ void AGuardian::SetCustomTimeDilation(const float InDilation)
 	GetWeapon()->SetCustomDilation(InDilation);
 }
 
-void AGuardian::TriggerShield(const bool bState)
+void AGuardian::ToggleShield(const bool bState)
 {
-	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::GuardianShield, MID_Shield, 1.f);
-	FTimerDelegate TimerDel;
-	TimerDel.BindLambda([this, bState] { P_UpdateShieldMaterial(bState); });
-	GetWorld()->GetTimerManager().SetTimer(ShieldUpdateHandle, TimerDel, 0.025f, true);
+	if (bState)
+	{
+		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::GuardianShield, MID_Shield, 1.f);
+		GetWorldTimerManager().SetTimer(ShieldUpdateHandle, this, &AGuardian::P_UpdateShieldMaterialAppear, 0.025f, true);
+	}
+	else
+	{
+		bIsDisappearing = true;
+		GetWorldTimerManager().SetTimer(ShieldUpdateHandle, this, &AGuardian::P_UpdateShieldMaterialDisappear, 0.025f, true);
+	}
 }
 
 AGuardian::AGuardian()
@@ -112,6 +118,23 @@ void AGuardian::P_Move(const FInputActionValue& Value)
 	if (Variation == EVariation::GuardianVariationGold) P_ResetShootHoldDuration();
 }
 
+void AGuardian::P_UpdateShieldMaterialAppear()
+{
+	if (bIsDisappearing) P_ResetShieldValues();
+	P_UpdateShieldMaterial(true);
+	if (ShieldColorDensity <= 2.5f) GetWorldTimerManager().ClearTimer(ShieldUpdateHandle);
+}
+
+void AGuardian::P_UpdateShieldMaterialDisappear()
+{
+	P_UpdateShieldMaterial(false);
+	if (ShieldColorDensity >= 5.f)
+	{
+		bIsDisappearing = false;
+		GetWorldTimerManager().ClearTimer(ShieldUpdateHandle);
+	}
+}
+
 void AGuardian::P_UpdateShieldMaterial(const bool bState)
 {
 	ShieldColorDensity += bState ? -0.25f : 0.25f;
@@ -120,7 +143,17 @@ void AGuardian::P_UpdateShieldMaterial(const bool bState)
 	MID_Shield->SetScalarParameterValue("ColorDensity", ShieldColorDensity);
 	MID_Shield->SetScalarParameterValue("RadialRadius", ShieldRadialRadius);
 	MID_Shield->SetScalarParameterValue("Radius", Radius);
-	if ((bState && ShieldColorDensity <= 2.5f) || (!bState && ShieldColorDensity >= 5.f)) GetWorldTimerManager().ClearTimer(ShieldUpdateHandle);
+}
+
+void AGuardian::P_ResetShieldValues()
+{
+	ShieldColorDensity = 5.f;
+	ShieldRadialRadius = 1.f;
+	Radius = 3.f;
+	MID_Shield->SetScalarParameterValue("ColorDensity", ShieldColorDensity);
+	MID_Shield->SetScalarParameterValue("RadialRadius", ShieldRadialRadius);
+	MID_Shield->SetScalarParameterValue("Radius", Radius);
+	bIsDisappearing = false;
 }
 
 void AGuardian::BeginPlay()

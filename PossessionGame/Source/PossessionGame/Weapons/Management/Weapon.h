@@ -81,7 +81,7 @@ public:
 	void SubtractShootCycleUntilReload() { ShootCyclesUntilReload--; }
 	void SetCastShadow(const bool bState) const { if (Mesh) Mesh->SetCastShadow(bState); }
 	void AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh) const;
-	virtual void ShootProjectile(const EPoolObject InProjectileName, bool bFromFirstWeapon = true);
+	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon = true);
 	virtual void PostProprietorSetup();
 	virtual void SetCustomDilation(const float InDilation) { CustomTimeDilation = InDilation; }
 protected:

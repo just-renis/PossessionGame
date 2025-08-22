@@ -2,8 +2,10 @@
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
-#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 AEMPGrenade::AEMPGrenade()
 {
@@ -28,7 +30,7 @@ void AEMPGrenade::OnImpact(const FHitResult& Hit)
 void AEMPGrenade::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich)
 {
 	Super::Init(InProjectileData, Rotation, Scale, InWhich);
-	const float EffectDurationIncrease = 0.f; //GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterEmpProjectile, EUpgradeAttribute::EffectDuration);
+	const float EffectDurationIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TricksterAbility2, EUpgradeAttribute::EffectDuration, ProjectileData.bIsPlayerProjectile);
 	EffectDuration = ProjectileData.EffectDuration + ProjectileData.EffectDuration * EffectDurationIncrease * 0.01f;
 }
 

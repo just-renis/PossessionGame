@@ -3,6 +3,7 @@
 UENUM()
 enum class EUpgrade : uint8
 {
+	None,
     RangerAbility1,
 	RangerAbility2,
 	TricksterAbility1,

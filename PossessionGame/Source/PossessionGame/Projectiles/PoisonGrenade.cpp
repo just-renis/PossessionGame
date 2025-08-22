@@ -2,11 +2,13 @@
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamagers/OvertimeDamager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
-#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 APoisonGrenade::APoisonGrenade()
 {
@@ -26,11 +28,11 @@ void APoisonGrenade::PlayImpactSound()
 
 void APoisonGrenade::SpawnSecondProjectileImpactVfx(const FHitResult& Hit)
 {
-	const float EffectDurationIncrease = 0.f;//GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::EffectDuration);
+	const float EffectDurationIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TricksterAbility1, EUpgradeAttribute::EffectDuration, ProjectileData.bIsPlayerProjectile);
 	ModifiedOvertimeAreaLifeSpan = ProjectileData.OvertimeAreaLifeSpan;
 	ModifiedOvertimeAreaSize = DefaultOvertimeAreaSize = ProjectileData.OvertimeAreaSize;
 	ModifiedOvertimeAreaLifeSpan += ProjectileData.OvertimeAreaLifeSpan * EffectDurationIncrease * 0.01f;
-	const float SizeIncrease = 0.f; //GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(ProjectileData.bIsPlayerProjectile, EPoolObject::TricksterPoisonProjectile, EUpgradeAttribute::Size);
+	const float SizeIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TricksterAbility1, EUpgradeAttribute::Size, ProjectileData.bIsPlayerProjectile);
 	ModifiedOvertimeAreaSize += DefaultOvertimeAreaSize * SizeIncrease * 0.01f;
 	Attributes.Add("Loop Duration", FNiagaraAttribute(true, ModifiedOvertimeAreaLifeSpan));
 	Attributes.Add("Uniform Sprite Size Max", FNiagaraAttribute(false, ModifiedOvertimeAreaSize));

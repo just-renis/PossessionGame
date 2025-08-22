@@ -1,11 +1,12 @@
 ﻿#include "RangerShield.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DestructibleData.h"
-#include "PossessionGame/Enums/EAbility.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
-#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 ARangerShield::ARangerShield()
 {
@@ -36,7 +37,7 @@ void ARangerShield::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ARangerShield::Init(bool bInIsPlayerObject)
 {
 	ShieldMaterialValueChanger = 0;
-	const float SizeIncrease = 0.f; //GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bInIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::Size);
+	const float SizeIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility2, EUpgradeAttribute::Size, bInIsPlayerObject);
 	SetActorScale3D(FVector(GetActorScale3D().X + GetActorScale3D().X * SizeIncrease * 0.01f, GetActorScale3D().Y, GetActorScale3D().Z + GetActorScale3D().Z * SizeIncrease * 0.01f));
 	if (bInIsPlayerObject) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::RangerDeployShield);
 	else PlaySound(ESound::RangerDeployShield);
@@ -84,14 +85,15 @@ void ARangerShield::DissolveShield()
 
 void ARangerShield::SetThisLifeSpan()
 {
-	const float EffectDurationIncrease = 0.f; //GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::EffectDuration);
+	const float EffectDurationIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility2, EUpgradeAttribute::EffectDuration, bIsPlayerObject);
 	LifeSpan = Data->GetLifeSpan() + Data->GetLifeSpan() * EffectDurationIncrease * 0.01f;
 	Super::SetThisLifeSpan();
 }
 
 void ARangerShield::SetUpgradesApplication()
 {
-	Hp = Data->GetHp();// + GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::FlatHealth);
-	const float ReductionIncrease = 0.f;//GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPlayerObject, EAbility::RangerAbility2, EUpgradeAttribute::ReduceDamageTaken);
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	Hp = Data->GetHp() + RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::RangerAbility2, EUpgradeAttribute::FlatHealth, bIsPlayerObject);
+	const float ReductionIncrease = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::RangerAbility2, EUpgradeAttribute::ReduceDamageTaken, bIsPlayerObject);
 	DamageReduction = 1.f / (1.f + ReductionIncrease * 0.01f);
 }

@@ -117,9 +117,10 @@ EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.Damag
 
 void AProjectile::AI_SetupUpgradesAppliance()
 {
-	//Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->AI_GetTotalUpgradeAttributeValue(EUpgradeAttribute::FlatDamage);
-	const float DamagePercentage = 0.f; //UpgradeManager->GetUpgradeAttributeValue(false, ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage);
-	if (DamagePercentage > 0.f) Damage += DefaultDamage * DamagePercentage * 0.01f;
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, false);
+	const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage, false);
+	Damage += DefaultDamage * DamagePercentage * 0.01f;
 }
 
 void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)
@@ -130,9 +131,10 @@ void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)
 
 void AProjectile::P_SetupUpgradesAppliance()
 {
-//	Damage += GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(true, ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage);
-	const float DamagePercentage = 0.f; //UpgradeManager->GetUpgradeAttributeValue(true, ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage);
-	if (DamagePercentage > 0.f) Damage += DefaultDamage * DamagePercentage * 0.01f;
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, true);
+	const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage, true);
+	Damage += DefaultDamage * DamagePercentage * 0.01f;
 }
 
 void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)

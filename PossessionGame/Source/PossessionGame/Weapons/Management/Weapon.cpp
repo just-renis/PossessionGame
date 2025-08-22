@@ -17,7 +17,6 @@
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
-#include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 
 AWeapon::AWeapon()
 {
@@ -69,7 +68,7 @@ void AWeapon::P_Shoot()
 	MakeShootingCameraShake();
 	CurrentAmmo--;
 	ShootTimer = 0.f;
-	bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::RangerProjectile);
+	bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::RangerProjectile, false);
 	P_UpdateAmmoTextHUD();
 }
 
@@ -158,23 +157,23 @@ void AWeapon::DeactivateWeapon()
 	DetachWeapon();
 }
 
-void AWeapon::SetProprietor(const TObjectPtr<AEnemy> InProprietor)
-{
-	Proprietor = InProprietor;
-}
+void AWeapon::SetProprietor(const TObjectPtr<AEnemy> InProprietor) { Proprietor = InProprietor; }
 
 void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh) const
 {
 	Mesh->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket1"));
 }
 
-void AWeapon::ShootProjectile(const EPoolObject InProjectileName, bool bFromFirstWeapon)
+void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon)
 {
 	FProjectileData* ProjectileData = GetProjectileData(InProjectileName);
 	if (!ProjectileData) return;
-	//const int32 ProjectilesAmount = GetWorld()->GetSubsystem<UUpgradeManager>()->GetUpgradeAttributeValue(bIsPossessed, InProjectileName, EUpgradeAttribute::ProjectilesAmount);
+	if (bIsFromAbility)
+	{
+		const int32 ProjectilesAmount = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(InProjectileName, EUpgradeAttribute::ProjectilesAmount, bIsPossessed, true);
+		ProjectileData->SetAmount(ProjectilesAmount + 1);
+	}
 	ProjectileData->SetProprietor(Proprietor);
-	ProjectileData->SetAmount(/*ProjectilesAmount + */1);
 	const FName& ProjectileSocketName = ProjectileData->ProjectileSocketName;
 	const FRotator BaseRotation = GetSocketRotation(ProjectileSocketName);
 	if (ProjectileData->Amount > 1)
