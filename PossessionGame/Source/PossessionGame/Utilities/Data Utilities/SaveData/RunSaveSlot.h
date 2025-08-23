@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
+#include "PossessionGame/Utilities/Data Utilities/FSpecialUpgradesContainer.h"
 #include "RunSaveSlot.generated.h"
 
 enum class EPoolObject : uint8;
@@ -47,6 +48,7 @@ class POSSESSIONGAME_API URunSaveSlot : public USaveGame
 {
 	GENERATED_BODY()
 public:
+	bool IsSpecialUpgradeAvailable(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttribute);
 	float GetUpgradeAttributeValues(const EUpgrade InUpgradeName, const EUpgradeAttribute InUpgradeAttribute, const bool bIsPlayer);
 	float GetUpgradeAttributeValues(const EAbility InAbilityName, const EUpgradeAttribute InUpgradeAttribute, const bool bIsPlayer);
 	float GetUpgradeAttributeValues(const EPoolObject InPoolObject, const EUpgradeAttribute InUpgradeAttribute, const bool bIsPlayer, const bool bForAbilityOnly = false);
@@ -56,7 +58,7 @@ public:
 	FString GetSlotName() { return SlotName; }
 	TSet<int32> GetUpgradeChoicesIds(const EUpgrade InUpgradeName);
 	
-	void AddUpgrade(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const EUpgrade InUpgrade, const FUpgradeChoicePair& InUpgradeChoicePair);
+	void AddUpgrade(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const EUpgrade InUpgrade, const FUpgradeChoicePair& InUpgradeChoicePair, const EUpgradeAttribute InSpecialAttribute);
 	void SaveSlot();
 	void SetupSlot(const FString& InSlotName);
 	void AddSecretCrateBoost(const EVariation InVariation, const int32 InPercentage);
@@ -69,6 +71,8 @@ private:
 	TMap<EUpgrade, FUpgradeChoicesIds> ChosenUpgradeChoices;
 	UPROPERTY()
 	TMap<EUpgrade, FUpgradeAttributeValues> UnlockedUpgrades;
+	UPROPERTY()
+	TMap<EUpgrade, FSpecialUpgradesContainer> SpecialUpgrades;
 	UPROPERTY()
 	TMap<EVariation, int32> SecretCrateBoosts;
 

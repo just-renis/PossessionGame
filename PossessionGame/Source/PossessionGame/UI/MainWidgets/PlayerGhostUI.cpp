@@ -4,9 +4,9 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/InvalidationBox.h"
 #include "Components/TextBlock.h"
-#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EGameMode.h"
+#include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
@@ -121,5 +121,5 @@ void UPlayerGhostUI::PlayFadeOutAnim()
 void UPlayerGhostUI::LoadNextLevel()
 {
 	UnbindFromAnimationFinished(FadeOutAnim, FadeOutAnimFinishedDelegate);
-	UGameplayStatics::OpenLevel(this, "Level_1");
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, FName("Level_1")));
 }

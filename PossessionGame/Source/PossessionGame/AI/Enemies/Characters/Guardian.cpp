@@ -14,8 +14,13 @@
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
+#include "PossessionGame/Enums/EUpgrade.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 void AGuardian::SetCustomTimeDilation(const float InDilation)
 {
@@ -37,7 +42,7 @@ void AGuardian::ToggleShield(const bool bState)
 	}
 	else
 	{
-		bIsDisappearing = true;
+		bIsShieldDisappearing = true;
 		GetWorldTimerManager().SetTimer(ShieldUpdateHandle, this, &AGuardian::P_UpdateShieldMaterialDisappear, 0.025f, true);
 	}
 }
@@ -73,6 +78,7 @@ void AGuardian::AI_PlayDeathElectrification()
 
 void AGuardian::P_Setup()
 {
+	bImmuneToFirstHit = false;
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	MID_Shield = UMaterialInstanceDynamic::Create(MI_Shield, this);
@@ -120,7 +126,7 @@ void AGuardian::P_Move(const FInputActionValue& Value)
 
 void AGuardian::P_UpdateShieldMaterialAppear()
 {
-	if (bIsDisappearing) P_ResetShieldValues();
+	if (bIsShieldDisappearing) P_ResetShieldValues();
 	P_UpdateShieldMaterial(true);
 	if (ShieldColorDensity <= 2.5f) GetWorldTimerManager().ClearTimer(ShieldUpdateHandle);
 }
@@ -130,7 +136,7 @@ void AGuardian::P_UpdateShieldMaterialDisappear()
 	P_UpdateShieldMaterial(false);
 	if (ShieldColorDensity >= 5.f)
 	{
-		bIsDisappearing = false;
+		bIsShieldDisappearing = false;
 		GetWorldTimerManager().ClearTimer(ShieldUpdateHandle);
 	}
 }
@@ -153,7 +159,18 @@ void AGuardian::P_ResetShieldValues()
 	MID_Shield->SetScalarParameterValue("ColorDensity", ShieldColorDensity);
 	MID_Shield->SetScalarParameterValue("RadialRadius", ShieldRadialRadius);
 	MID_Shield->SetScalarParameterValue("Radius", Radius);
-	bIsDisappearing = false;
+	bIsShieldDisappearing = false;
+}
+
+float AGuardian::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (bImmuneToFirstHit)
+	{
+		bImmuneToFirstHit = false;
+		return 0.f;
+	}
+	if (EventInstigator && bReflectDamageEnabled) UGameplayStatics::ApplyDamage(EventInstigator->GetPawn(), DamageAmount * 0.5f, nullptr, this, UDamageType::StaticClass());
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void AGuardian::BeginPlay()
@@ -161,6 +178,7 @@ void AGuardian::BeginPlay()
 	CharacterName = ECharacterType::Guardian;
 	bCanReload = false;
 	Super::BeginPlay();
+	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::GuardianAbility1, EUpgradeAttribute::Special1)) bImmuneToFirstHit = true;
 }
 
 void AGuardian::SetMesh(const ECharacterType PrimaryDataAssetName)

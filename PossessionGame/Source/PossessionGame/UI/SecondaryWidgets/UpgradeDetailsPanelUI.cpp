@@ -2,6 +2,7 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/RichTextBlock.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
@@ -43,6 +44,7 @@ FString UUpgradeDetailsPanelUI::ConvertUpgradeAttributeValueToString(const float
 
 FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute, const bool bForEnemy)
 {
+	if (InAttribute.Key == EUpgradeAttribute::None) return FString();
 	const FString AttributeValue = ConvertUpgradeAttributeValueToString(InAttribute.Value);
 	switch (InAttribute.Key)
 	{
@@ -56,11 +58,8 @@ FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const T
 		case EUpgradeAttribute::AbilityDuration: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityDuration", "ABILITY DURATION").ToString() + "</>\n";
 		case EUpgradeAttribute::EffectDuration: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "EffectDuration", "EFFECT DURATION").ToString() + "</>\n";
 		case EUpgradeAttribute::ReduceDamageTaken: return GetRichTextTag(bForEnemy) + "-" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "DamageTaken", "DAMAGE TAKEN").ToString() + "</>\n";
-		case EUpgradeAttribute::Special1: return "NIGGA1";
-		case EUpgradeAttribute::Special2: return "NIGGA2";
-		case EUpgradeAttribute::Special3: return "NIGGA3";
+		default: return GetSpecialUpgradeText(InAttribute.Key, bForEnemy);
 	}
-	return "";
 }
 
 FString UUpgradeDetailsPanelUI::GetRichTextTag(const bool bForEnemy) const
@@ -73,6 +72,34 @@ FString UUpgradeDetailsPanelUI::GetRichTextTag(const bool bForEnemy) const
 		case EUpgradeChoice::Legendary: return FString("<UpgradeAttributeNumberYellow>");
 	}
 	return {};
+}
+
+FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUpgradeAttribute, const bool bForEnemy)
+{
+	SpecialAttribute = InUpgradeAttribute;
+	switch (UpgradeName)
+	{
+		case EUpgrade::GuardianAbility1:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy) return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.1", "WHILE ACTIVE, ENEMIES TAKE BACK </>").ToString() + GetRichTextTag(false) + "50%</>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.2", "<UpgradeAttributeText> OF THE DAMAGE THEY DEAL TO YOU.</>").ToString();
+					return "<UpgradeAttributeText>GUARDIAN TAKES NO DAMAGE ON FIRST HIT</>";
+				default: break;
+			}
+		case EUpgrade::GuardianAbility2:
+			break;
+		case EUpgrade::RangerAbility1:
+			break;
+		case EUpgrade::RangerAbility2:
+			break;
+		case EUpgrade::TricksterAbility1:
+			break;
+		case EUpgrade::TricksterAbility2:
+			break;
+		default: ;
+	}
+	return "";
 }
 
 void UUpgradeDetailsPanelUI::NativeConstruct()
@@ -108,7 +135,8 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
 	bHasBeenSelected = true;
 	PlayAnimation(PressAnim);
-	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->AddUpgrade(Cast<UPossessionGameInstance>(GetGameInstance()), UpgradeName, UpgradeChoice);
+	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->AddUpgrade(Cast<UPossessionGameInstance>(GetGameInstance()), UpgradeName, UpgradeChoice, SpecialAttribute);
+	SpecialAttribute = EUpgradeAttribute::None;
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->TriggerUpgradeMenuCloseAnimation();
 }
 

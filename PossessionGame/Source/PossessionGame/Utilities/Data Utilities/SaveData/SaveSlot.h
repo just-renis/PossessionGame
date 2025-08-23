@@ -38,7 +38,7 @@ public:
 	FString GetSlotName() { return SlotName; }
 	
 	void AddCurrencyAmount(const int32 InCurrencyAmount);
-	void SetTutorialFinished();
+	void SetTutorialFinished() { bTutorialFinished = true; }
 	void SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName);
 	void AddXp(const int32 InXp);
 	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);

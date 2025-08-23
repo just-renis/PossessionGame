@@ -11,10 +11,13 @@ class POSSESSIONGAME_API AGuardian : public AEnemy
 public:
 	void SetCustomTimeDilation(const float InDilation);
 	void ToggleShield(const bool bState);
+	void SetReflectDamageState(const bool bState) { bReflectDamageEnabled = bState; }
 protected:
 	AGuardian();
 private:
-	bool bIsDisappearing = false;
+	bool bReflectDamageEnabled = false;
+	bool bIsShieldDisappearing = false;
+	bool bImmuneToFirstHit = false;
 	float ShieldColorDensity = 5.f;
 	float ShieldRadialRadius = 1.f;
 	float Radius = 3.f;
@@ -46,6 +49,8 @@ private:
 	void P_UpdateShieldMaterialDisappear();
 	void P_UpdateShieldMaterial(const bool bState);
 	void P_ResetShieldValues();
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 	virtual void BeginPlay() override;
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) override;

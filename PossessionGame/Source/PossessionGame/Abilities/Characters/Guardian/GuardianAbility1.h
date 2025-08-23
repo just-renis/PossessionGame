@@ -14,6 +14,7 @@ public:
 	virtual void P_Execute() override;
 	virtual void P_StopAbility() override;
 private:
+	bool bReflectDamageEnabled = false;
 	float BaseDamageReduction = 0.8f;
 	float TotalDamageReduction;
 	UPROPERTY()
@@ -22,4 +23,5 @@ private:
 	virtual bool IsProprietorPossessed() override;
 	
 	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) override;
+	virtual void SetupUpgradeAppliance(const bool bIsPlayer) override;
 };

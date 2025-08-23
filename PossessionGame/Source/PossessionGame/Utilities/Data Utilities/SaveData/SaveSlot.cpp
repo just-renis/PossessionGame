@@ -60,12 +60,6 @@ void USaveSlot::AddCurrencyAmount(const int32 InCurrencyAmount)
 	SaveSlot();
 }
 
-void USaveSlot::SetTutorialFinished()
-{
-	bTutorialFinished = true;
-	SaveSlot();
-}
-
 void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName)
 {
 	GameInstance = InGameInstance;

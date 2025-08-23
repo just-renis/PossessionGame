@@ -3,6 +3,7 @@
 #include "PossessionGame/Data Assets/Base Data Assets/AbilityData.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -23,6 +24,7 @@ void UGuardianAbility1::P_Execute()
 	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianOverChargeStart);
 	Proprietor->ToggleShield(true);
 	bIsAbilityInDuration = true;
+	if (bReflectDamageEnabled) Proprietor->SetReflectDamageState(true);
 	Super::P_Execute();
 }
 
@@ -33,9 +35,16 @@ void UGuardianAbility1::P_StopAbility()
 	Proprietor->ToggleShield(false);
 	Cast<AGuardianWeapon>(Proprietor->GetWeapon())->ToggleHandsMeshAbilityState(false);
 	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianOverChargeEnd);
+	if (bReflectDamageEnabled) Proprietor->SetReflectDamageState(false);
 	Super::P_StopAbility();
 }
 
 bool UGuardianAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void UGuardianAbility1::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<AGuardian>(AbilityProprietor); }
+
+void UGuardianAbility1::SetupUpgradeAppliance(const bool bIsPlayer)
+{
+	if (GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::GuardianAbility1, EUpgradeAttribute::Special1)) bReflectDamageEnabled = true;
+	Super::SetupUpgradeAppliance(bIsPlayer);
+}

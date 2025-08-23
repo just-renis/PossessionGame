@@ -12,8 +12,10 @@
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerGhostUI.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
+#include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
@@ -93,7 +95,7 @@ void APlayerGhost::PossessEnemy()
 	}
 }
 
-void APlayerGhost::RestartLevel() const { UGameplayStatics::OpenLevel(GetWorld(), "Level_1"); }
+void APlayerGhost::RestartLevel() const { GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, FName("Level_1"))); }
 
 void APlayerGhost::HandleEscapeClick()
 {

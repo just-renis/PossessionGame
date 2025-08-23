@@ -7,6 +7,8 @@
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
+#include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -74,7 +76,10 @@ void UPauseMenuUI::SetButtonsState(const bool bState) const
 	if (SettingsButton) SettingsButton->Get()->SetIsEnabled(bState);
 }
 
-void UPauseMenuUI::ReturnToMainMenu() { UGameplayStatics::OpenLevel(GetWorld(), "MainMenu"); }
+void UPauseMenuUI::ReturnToMainMenu()
+{
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, false, FName("MainMenu")));
+}
 
 void UPauseMenuUI::OpenSettings()
 {

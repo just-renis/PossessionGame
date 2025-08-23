@@ -4,9 +4,19 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/FSpecialUpgradesContainer.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
+
+bool URunSaveSlot::IsSpecialUpgradeAvailable(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttribute)
+{
+	if (const FSpecialUpgradesContainer* SpecialUpgradesContainerData = SpecialUpgrades.Find(InUpgradeName))
+	{
+		if (SpecialUpgradesContainerData->Contains(InSpecialUpgradeAttribute)) return true;
+	}
+	return false;
+}
 
 float URunSaveSlot::GetUpgradeAttributeValues(const EUpgrade InUpgradeName, const EUpgradeAttribute InUpgradeAttribute, const bool bIsPlayer)
 {
@@ -72,12 +82,17 @@ TSet<int32> URunSaveSlot::GetUpgradeChoicesIds(const EUpgrade InUpgradeName)
 	return TSet<int32>();
 }
 
-void URunSaveSlot::AddUpgrade(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const EUpgrade InUpgrade, const FUpgradeChoicePair& InUpgradeChoicePair)
+void URunSaveSlot::AddUpgrade(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const EUpgrade InUpgrade, const FUpgradeChoicePair& InUpgradeChoicePair, const EUpgradeAttribute InSpecialAttribute)
 {
 	FUpgradeAttributeValues& UpgradeAttributeValues = UnlockedUpgrades.FindOrAdd(InUpgrade);
 	UpgradeAttributeValues.AddUpgrade(InUpgradeChoicePair);
 	FUpgradeChoicesIds& UpgradeChoicesIds = ChosenUpgradeChoices.FindOrAdd(InUpgrade);
 	UpgradeChoicesIds.Ids.Add(InUpgradeChoicePair.Id);
+	if (InSpecialAttribute != EUpgradeAttribute::None)
+	{
+		FSpecialUpgradesContainer& SpecialUpgradesContainer = SpecialUpgrades.FindOrAdd(InUpgrade);
+		SpecialUpgradesContainer.Add(InSpecialAttribute);
+	}
 	(void)InGameInstance->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.ExecuteIfBound();
 }
 

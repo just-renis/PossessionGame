@@ -4,6 +4,9 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "PlayerDataManager.generated.h"
 
+enum class EUpgradeAttribute : uint8;
+enum class EUpgrade : uint8;
+
 USTRUCT()
 struct FTricksterPurpleVariationData
 {

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "DelegateManager.generated.h"
 
+struct FLoadLevelData;
 enum class EGameMode : uint8;
 enum class EUpgrade : uint8;
 enum class ECharacterType : uint8;
@@ -38,6 +39,7 @@ DECLARE_DELEGATE_OneParam(FApplySecretBoostHealth, const int32);
 DECLARE_DELEGATE_OneParam(FOnOpenUnlockAbilityPopup, const int32);
 DECLARE_DELEGATE_OneParam(FOnChargeTerminalModeCompletion, const int32);
 DECLARE_DELEGATE_OneParam(FOnHijack, const TObjectPtr<AActor>&);
+DECLARE_DELEGATE_OneParam(FLoadLevel, const FLoadLevelData);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
@@ -103,6 +105,7 @@ public:
 	FOnOpenUnlockAbilityPopup OnOpenUnlockAbilityPopup;
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
 	FOnHijack OnHijack;
+	FLoadLevel LoadLevel;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;
 	FOnAbilityUse OnAbilityUse;

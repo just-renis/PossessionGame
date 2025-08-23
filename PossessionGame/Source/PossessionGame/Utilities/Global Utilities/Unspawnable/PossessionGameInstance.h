@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGameInstance.generated.h"
 
+struct FLoadLevelData;
 class UPlayerLevelData;
 
 USTRUCT()
@@ -56,4 +57,5 @@ private:
 	virtual void Init() override;
 	void Tick() const;
 	virtual void Shutdown() override;
+	void OpenLevel(const FLoadLevelData InLoadLevelData) const;
 };

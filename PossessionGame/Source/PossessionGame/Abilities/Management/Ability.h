@@ -34,7 +34,7 @@ public:
 
 	virtual void Tick(const float InDeltaTime);
 	void ReduceKillCooldown() { CurrentCooldownKill++; }
-	void Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager);
+	virtual void Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager);
 	virtual void SetupUpgradeAppliance(const bool bIsPlayer = true);
 	void SetAbilityIndex(const int32 InAbilityIndex) { AbilityIndex = InAbilityIndex; }
 protected:

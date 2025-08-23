@@ -3,8 +3,8 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
-#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
+#include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UDemoEndUI::NativeConstruct()
@@ -40,15 +40,12 @@ void UDemoEndUI::FadeInFinished()
 
 void UDemoEndUI::ReturnToMainMenu()
 {
-	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->SaveSlot();
 	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
-	UGameplayStatics::OpenLevel(GetWorld(), "MainMenu");
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, true, true, FName("MainMenu")));
 }
 
 void UDemoEndUI::Continue()
 {
 	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
-	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->SaveSlot();
-	GetGameInstance()->GetSubsystem<USaveSlotManager>()->ResetRunSaveSlot();
-	UGameplayStatics::OpenLevel(GetWorld(), "Level_1");
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, true, true, FName("Level_1")));
 }

@@ -1,9 +1,9 @@
 ﻿#include "SaveSlotMenuUI.h"
 #include "MainMenuUI.h"
 #include "Components/Button.h"
-#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
+#include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -104,12 +104,12 @@ void USaveSlotMenuUI::OpenCurrentSaveLevel()
 	ResetToDefaultPlayerInputMode();
 	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished())
 	{
-		UGameplayStatics::OpenLevel(GetWorld(), "TutorialLevel");
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, true, false, FName("TutorialLevel")));
 		return;
 	}
 	switch (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCurrentChapter())
 	{
-		case 1: UGameplayStatics::OpenLevel(GetWorld(), "Level_1");
+		case 1: GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, false, FName("Level_1")));
 		default: ;
 	}
 }
@@ -117,9 +117,7 @@ void USaveSlotMenuUI::OpenCurrentSaveLevel()
 void USaveSlotMenuUI::OverwriteSaveAndOpenLevel()
 {
 	ResetToDefaultPlayerInputMode();
-	GetGameInstance()->GetSubsystem<USaveSlotManager>()->ResetSaveSlot();
-	GetGameInstance()->GetSubsystem<USaveSlotManager>()->ResetRunSaveSlot();
-	UGameplayStatics::OpenLevel(GetWorld(), "TutorialLevel");
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, true, true, FName("TutorialLevel")));
 }
 
 void USaveSlotMenuUI::LoadSaveAndOpenLevel()
@@ -127,7 +125,7 @@ void USaveSlotMenuUI::LoadSaveAndOpenLevel()
 	ResetToDefaultPlayerInputMode();
 	GetGameInstance()->GetSubsystem<USaveSlotManager>()->LoadSaveSlot(SaveSlotName);
 	GetGameInstance()->GetSubsystem<USaveSlotManager>()->LoadRunSaveSlot(RunSaveSlotName);
-	UGameplayStatics::OpenLevel(GetWorld(), "TutorialLevel");
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, false, FName("TutorialLevel")));
 }
 
 void USaveSlotMenuUI::GoBack() { ConfirmationPopup->PlayPopupFadeInAnim(false); }

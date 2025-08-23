@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "UpgradeDetailsPanelUI.generated.h"
 
 class URichTextBlock;
@@ -46,11 +47,14 @@ private:
 	UPROPERTY()
 	EUpgrade UpgradeName;
 	UPROPERTY()
+	EUpgradeAttribute SpecialAttribute = EUpgradeAttribute::None;
+	UPROPERTY()
 	FUpgradeChoicePair UpgradeChoice;
 
 	FString ConvertUpgradeAttributeValueToString(const float InValue);
 	FString GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute, const bool bForEnemy);
 	FString GetRichTextTag(const bool bForEnemy) const;
+	FString GetSpecialUpgradeText(const EUpgradeAttribute InUpgradeAttribute, const bool bForEnemy);
 
 	virtual void NativeConstruct() override;
 	void SetUpgradeText(const bool bIsPlayerUpgrade);

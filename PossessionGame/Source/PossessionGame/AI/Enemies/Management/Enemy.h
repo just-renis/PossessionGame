@@ -191,6 +191,8 @@ protected:
 	virtual void P_InitiateJump();
 	virtual void P_InitiateStomp();
 
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	void SetCurrentHp(const float NewCurrentHp) { CurrentHp = NewCurrentHp; }
 	void SetMaxHp(const float NewMaxHp) { MaxHp = NewMaxHp; }
 	virtual void BeginPlay() override;
@@ -200,7 +202,6 @@ protected:
 	void SetInitialWalkSpeed(const bool bState) const;
 	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
 	virtual void DestroyAI();
 	virtual void DestroyThis();

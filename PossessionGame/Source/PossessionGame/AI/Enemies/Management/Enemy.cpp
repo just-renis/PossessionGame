@@ -38,6 +38,7 @@
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/AIHpBarUI.h"
+#include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
@@ -489,6 +490,7 @@ void AEnemy::P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputCompon
 void AEnemy::P_Destroy()
 {
 	DelegateManager->OnMinionBossStomp.Unbind();
+	DelegateManager->ApplyUpgradeOnSelection.Unbind();
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();
 	Weapon->SetToOriginalSettings();
@@ -552,6 +554,22 @@ void AEnemy::P_InitiateStomp()
 	FVector Velocity = GetCharacterMovement()->Velocity;
 	Velocity.Z = 0.f;
 	GetCharacterMovement()->Velocity = Velocity + FVector(0.f, 0.f, -3000.f);
+}
+
+float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	const FRadialDamageEvent* RadialDamageEvent = nullptr;
+	const FPointDamageEvent* PointDamageEvent = nullptr;
+	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
+	else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
+	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None);
+	if (GetMesh()->IsSimulatingPhysics())
+	{
+		if (RadialDamageEvent) GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
+		else if (PointDamageEvent) GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
+	}
+	return Damage;
 }
 
 void AEnemy::BeginPlay()
@@ -623,22 +641,6 @@ void AEnemy::HandleDeactivation()
 	if (AnimInstance) AnimInstance->ClearTimers();
 	GetMesh()->SetAnimInstanceClass(nullptr);
 	GetMesh()->SetSimulatePhysics(true);
-}
-
-float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	const FRadialDamageEvent* RadialDamageEvent = nullptr;
-	const FPointDamageEvent* PointDamageEvent = nullptr;
-	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
-	else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
-	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None);
-	if (GetMesh()->IsSimulatingPhysics())
-	{
-		if (RadialDamageEvent) GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
-		else if (PointDamageEvent) GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
-	}
-	return Damage;
 }
 
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->CharacterMesh.Get()); }
@@ -1310,7 +1312,7 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 	}
 }
 
-void AEnemy::RestartLevel() const { UGameplayStatics::OpenLevel(this, "MainMenu"); }
+void AEnemy::RestartLevel() const { GameInstance->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, FName("MainMenu"))); }
 
 void AEnemy::DisableHijackViableVfx() const
 {
