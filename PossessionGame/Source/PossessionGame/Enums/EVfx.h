@@ -8,6 +8,7 @@ enum class EVfx : uint8
 	RangerBulletTrail,
 	RangerBulletImpact,
 	RangerFpsBulletTrail,
+	RangerGrenadeLaunchSpecial,
 	RangerSpawn,
 	StopTimeAbility,
 	StopTimeAbilityReverse,

@@ -1,6 +1,12 @@
 ﻿#include "RangerWeapon.h"
+
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Enums/EUpgrade.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
@@ -39,10 +45,44 @@ void ARangerWeapon::P_Reload(int32 OtherAmmoSource)
 	Super::P_Reload(OtherAmmoSource);
 }
 
+void ARangerWeapon::P_Setup()
+{
+	if (DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::RangerAbility1, EUpgradeAttribute::Special1)) AttachGrenadeLaunchSpecialVfx();
+	else DelegateManager->OnSpecialUpgradeAdded.AddUObject(this, &ARangerWeapon::AddSpecialUpgradeLogic);
+	Super::P_Setup();
+}
+
+float ARangerWeapon::P_UpgradeDamageAppliance()
+{
+	return P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerGrenadeSpecialBoost();
+}
+
 void ARangerWeapon::BeginPlay()
 {
 	Name = EWeapon::RangerWeapon;
 	Super::BeginPlay();
 	AnimInstance = Cast<UWeaponAnimInstance>(Mesh->GetAnimInstance());
 	AnimInstance->SetWeaponName(Name);
+}
+
+void ARangerWeapon::AddSpecialUpgradeLogic(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialAttributeName)
+{
+	if (InUpgradeName != EUpgrade::RangerAbility1 || InSpecialAttributeName != EUpgradeAttribute::Special1) return;
+	DelegateManager->OnSpecialUpgradeAdded.RemoveAll(this);
+	AttachGrenadeLaunchSpecialVfx();
+}
+
+void ARangerWeapon::AttachGrenadeLaunchSpecialVfx()
+{
+	UE_LOG(LogTemp, Error, TEXT("ATTACHED"));
+	GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetOnRangerAbilityStackStatusChangedDelegate().BindUObject(this, &ARangerWeapon::ChangeGrenadeLaunchSpecialComponentState);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerGrenadeLaunchSpecial, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); },
+	&GrenadeLaunchSpecialComponent, GetMesh(), FName("MuzzleSocket"), true);
+}
+
+void ARangerWeapon::ChangeGrenadeLaunchSpecialComponentState(const bool bState) const
+{
+	if (!GrenadeLaunchSpecialComponent) return;
+	if (bState) GrenadeLaunchSpecialComponent->Activate(true);
+	else GrenadeLaunchSpecialComponent->Deactivate();
 }

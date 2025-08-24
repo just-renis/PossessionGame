@@ -26,7 +26,7 @@ void USaveSlotManager::LoadRunSaveSlot(const FString& InSaveSlotName)
 		PlayerRunSaveSlot = Cast<URunSaveSlot>(UGameplayStatics::CreateSaveGameObject(URunSaveSlot::StaticClass()));
 		UGameplayStatics::SaveGameToSlot(PlayerRunSaveSlot, InSaveSlotName, 0);
 	}
-	PlayerRunSaveSlot->SetupSlot(InSaveSlotName);
+	PlayerRunSaveSlot->SetupSlot(GetGameInstance(), InSaveSlotName);
 }
 
 void USaveSlotManager::LoadMetaSaveSlot(const FString& InSaveSlotName)

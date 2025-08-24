@@ -311,7 +311,8 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 {
 	const bool bIsCritical = InHitResult.BoneName == "head";
 	const float SecretBoostDamage = P_ReceiveHitScanDamage() + P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
-	const float Damage = SecretBoostDamage * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
+	const float AfterUpgradeApplianceDamage = SecretBoostDamage + P_UpgradeDamageAppliance();
+	const float Damage = AfterUpgradeApplianceDamage * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
 	if (FMath::IsNearlyEqual(Damage, 0.f, 0.01f)) return;
 	(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 	AssetsManager->PlaySound2D(bIsCritical ? ESound::CriticalDamageTick : ESound::DamageTick);

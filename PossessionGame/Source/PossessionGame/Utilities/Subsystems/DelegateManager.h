@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "DelegateManager.generated.h"
 
+enum class EUpgradeAttribute : uint8;
 struct FLoadLevelData;
 enum class EGameMode : uint8;
 enum class EUpgrade : uint8;
@@ -45,6 +46,7 @@ DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
 DECLARE_DELEGATE_TwoParams(FOnVariationSelectionEnd, const ECharacterType, const EWidget);
 DECLARE_DELEGATE_TwoParams(FOnSaveSlotClicked, const FString&, const FString&);
+DECLARE_DELEGATE_RetVal_TwoParams(bool, FRequestSpecialUpgradeAvailability, const EUpgrade, const EUpgradeAttribute);
 DECLARE_DELEGATE_ThreeParams(FOnAbilityUse, const int32, const bool, const bool);
 DECLARE_MULTICAST_DELEGATE(FOnTerminalInteraction);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
@@ -68,6 +70,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32)
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType, const EVariation);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&, bool);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText&);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSpecialUpgradeAdded, const EUpgrade, const EUpgradeAttribute);
 
 UCLASS()
 class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
@@ -108,6 +111,7 @@ public:
 	FLoadLevel LoadLevel;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;
+	FRequestSpecialUpgradeAvailability RequestSpecialUpgradeAvailability;
 	FOnAbilityUse OnAbilityUse;
 	FOnTerminalInteraction OnTerminalInteraction;
 	FOnPlayerDeath OnPlayerDeath;
@@ -131,4 +135,5 @@ public:
 	FOnVariationSelection OnVariationSelection;
 	FOnTargetChange OnTargetChange;
 	FOnKeyBindChange OnKeyBindChange;
+	FOnSpecialUpgradeAdded OnSpecialUpgradeAdded;
 };

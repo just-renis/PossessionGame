@@ -37,6 +37,16 @@ void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbility
 	if (InAbilityProprietor->GetIsHijacked()) P_ApplyVariation();
 }
 
+float UAbility::AI_GetCooldownReduction()
+{
+	return GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::AbilityCooldownReduction, false);
+}
+
+float UAbility::P_GetCooldownReduction()
+{
+	return GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::AbilityCooldownReduction, true);
+}
+
 void UAbility::P_Execute()
 {
 	UseCharge();
@@ -60,7 +70,7 @@ void UAbility::CooldownLogic(const float InDeltaTime)
 void UAbility::SetupUpgradeAppliance(const bool bIsPlayer)
 {
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
-	const float CooldownReduction = RunSaveSlot->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::AbilityCooldownReduction, bIsPlayer);
+	const float CooldownReduction = bIsPlayer ? P_GetCooldownReduction() : AI_GetCooldownReduction();
 	ReqCooldownSecs = Data->GetCooldownSecs() / (1.f + CooldownReduction * 0.01f);
 	MaxChargesAmount = Data->GetChargesAmount() + RunSaveSlot->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::AbilityChargesAmount, bIsPlayer);
 	if (Data->GetIsAbilityWithDuration())

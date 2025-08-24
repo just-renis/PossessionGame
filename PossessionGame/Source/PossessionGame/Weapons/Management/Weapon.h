@@ -56,6 +56,7 @@ public:
 	
 	virtual bool P_CanReload(const int32 InOtherAmmoSource = -1);
 	virtual bool P_CanShoot();
+	virtual float P_UpgradeDamageAppliance() { return 0.f; }
 	
 	void P_SetWalkingSpeed(const float InSpeed) const;
 	virtual void P_Reload(const int32 InOtherAmmoSource = -1);
@@ -68,7 +69,6 @@ public:
 	void P_SetWalkSpread(const bool bState);
 	virtual void P_SetVariationMaterial();
 	virtual void P_ChangeVfxVariation();
-	virtual void P_ApplyUpgradeOnSelection(const EUpgrade InUpgradeName) {}
 	void P_ReduceShootCooldown(const float InPercentage);
 	void P_ResetShootCooldown();
 	

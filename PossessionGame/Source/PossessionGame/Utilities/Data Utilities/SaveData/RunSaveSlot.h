@@ -55,12 +55,13 @@ public:
 	float GetHpUpgradesForEnemy(const ECharacterType InCharacterType);
 	int32 GetSecretBoost(const EVariation InVariation);
 	int32 GetCurrentLevel(const EUpgrade InUpgradeName);
+	int32 GetCurrentLevelSumOfCharacterAbilities(const ECharacterType InCharacterName);
 	FString GetSlotName() { return SlotName; }
 	TSet<int32> GetUpgradeChoicesIds(const EUpgrade InUpgradeName);
 	
-	void AddUpgrade(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const EUpgrade InUpgrade, const FUpgradeChoicePair& InUpgradeChoicePair, const EUpgradeAttribute InSpecialAttribute);
+	void AddUpgrade(const TObjectPtr<UGameInstance>& InGameInstance, const EUpgrade InUpgrade, const FUpgradeChoicePair& InUpgradeChoicePair, const EUpgradeAttribute InSpecialAttribute);
 	void SaveSlot();
-	void SetupSlot(const FString& InSlotName);
+	void SetupSlot(const TObjectPtr<UGameInstance>& InGameInstance, const FString& InSlotName);
 	void AddSecretCrateBoost(const EVariation InVariation, const int32 InPercentage);
 private:
 	UPROPERTY()

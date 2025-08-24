@@ -523,6 +523,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_RangerGrenadeLauncherMarker", EVfx::RangerGrenadeLauncherMarker);
 	VfxsMap.Add("PA_RangerDeathElectrification", EVfx::RangerDeathElectrification);
 	VfxsMap.Add("PA_RangerGrenadeTrail", EVfx::RangerGrenadeTrail);
+	VfxsMap.Add("PA_RangerGrenadeLaunchSpecial", EVfx::RangerGrenadeLaunchSpecial);
 	VfxsMap.Add("PA_RangerSpawn", EVfx::RangerSpawn);
 	VfxsMap.Add("PA_StopTimeAbility", EVfx::StopTimeAbility);
 	VfxsMap.Add("PA_StopTimeAbilityReverse", EVfx::StopTimeAbilityReverse);

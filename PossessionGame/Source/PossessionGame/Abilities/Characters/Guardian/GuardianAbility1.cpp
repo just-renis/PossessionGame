@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Weapons/Character Weapons/GuardianWeapon.h"
@@ -45,6 +46,6 @@ void UGuardianAbility1::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Pr
 
 void UGuardianAbility1::SetupUpgradeAppliance(const bool bIsPlayer)
 {
-	if (GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::GuardianAbility1, EUpgradeAttribute::Special1)) bReflectDamageEnabled = true;
+	bReflectDamageEnabled = DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::GuardianAbility1, EUpgradeAttribute::Special1);
 	Super::SetupUpgradeAppliance(bIsPlayer);
 }

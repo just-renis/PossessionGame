@@ -3,7 +3,12 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EVariation.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -21,7 +26,16 @@ void URangerAbility1::P_Execute()
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::GrenadeLaunch);
 	Proprietor->P_LaunchGrenade();
+	if (bFirstSpecialUpgradeEnabled) GetWorld()->GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddRangerGrenadeSpecialStack();
 	Super::P_Execute();
+}
+
+float URangerAbility1::AI_GetCooldownReduction()
+{
+	const float CooldownReduction = Super::AI_GetCooldownReduction();
+	if (!GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::RangerAbility1, EUpgradeAttribute::Special1)) return CooldownReduction;
+	const int32 AbilitiesUpgradesLevel = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentLevelSumOfCharacterAbilities(Proprietor->GetCharacterName());
+	return CooldownReduction + AbilitiesUpgradesLevel * 10.f;
 }
 
 void URangerAbility1::P_ApplyVariation()
@@ -41,4 +55,10 @@ void URangerAbility1::CooldownLogic(const float DeltaTime)
 {
 	Super::CooldownLogic(DeltaTime);
 	if (!Proprietor->GetIsHijacked() && CurrentChargesAmount > 0) Proprietor->AI_ToggleGrenadeLaunchTrigger(true);
+}
+
+void URangerAbility1::SetupUpgradeAppliance(const bool bIsPlayer)
+{
+	bFirstSpecialUpgradeEnabled = DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::RangerAbility1, EUpgradeAttribute::Special1);
+	Super::SetupUpgradeAppliance(bIsPlayer);
 }

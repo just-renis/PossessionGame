@@ -15,8 +15,11 @@ public:
 	
 	virtual void P_Execute() override;
 private:
+	bool bFirstSpecialUpgradeEnabled = false;
 	UPROPERTY()
 	TObjectPtr<ARanger> Proprietor;
+
+	virtual float AI_GetCooldownReduction() override;
 
 	virtual void P_ApplyVariation() override;
 
@@ -24,4 +27,5 @@ private:
 	
 	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) override;
 	virtual void CooldownLogic(const float DeltaTime) override;
+	virtual void SetupUpgradeAppliance(const bool bIsPlayer) override;
 };

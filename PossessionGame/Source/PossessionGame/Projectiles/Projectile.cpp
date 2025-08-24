@@ -121,6 +121,7 @@ void AProjectile::AI_SetupUpgradesAppliance()
 	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, false);
 	const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage, false);
 	Damage += DefaultDamage * DamagePercentage * 0.01f;
+	Damage += AI_UpgradeDamageAppliance();
 }
 
 void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)
@@ -135,6 +136,7 @@ void AProjectile::P_SetupUpgradesAppliance()
 	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, true);
 	const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage, true);
 	Damage += DefaultDamage * DamagePercentage * 0.01f;
+	Damage += P_UpgradeDamageAppliance();
 }
 
 void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -156,7 +158,7 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 		P_SetupUpgradesAppliance();
 		P_VariationDamageAppliance();
 		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
-		Damage += Damage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
+		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
 	else

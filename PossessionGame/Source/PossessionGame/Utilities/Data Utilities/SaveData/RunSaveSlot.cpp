@@ -76,13 +76,25 @@ int32 URunSaveSlot::GetCurrentLevel(const EUpgrade InUpgradeName)
 	return 0;
 }
 
+int32 URunSaveSlot::GetCurrentLevelSumOfCharacterAbilities(const ECharacterType InCharacterName)
+{
+	switch (InCharacterName)
+	{
+		case ECharacterType::Ranger: return GetCurrentLevel(EUpgrade::RangerAbility1) + GetCurrentLevel(EUpgrade::RangerAbility2);
+		case ECharacterType::Trickster: return GetCurrentLevel(EUpgrade::TricksterAbility1) + GetCurrentLevel(EUpgrade::TricksterAbility2);
+		case ECharacterType::Guardian: return GetCurrentLevel(EUpgrade::GuardianAbility1) + GetCurrentLevel(EUpgrade::GuardianAbility1);
+		default: ;
+	}
+	return 0;
+}
+
 TSet<int32> URunSaveSlot::GetUpgradeChoicesIds(const EUpgrade InUpgradeName)
 {
 	if (const FUpgradeChoicesIds* UpgradeChoicesIds = ChosenUpgradeChoices.Find(InUpgradeName)) return UpgradeChoicesIds->Ids;
 	return TSet<int32>();
 }
 
-void URunSaveSlot::AddUpgrade(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const EUpgrade InUpgrade, const FUpgradeChoicePair& InUpgradeChoicePair, const EUpgradeAttribute InSpecialAttribute)
+void URunSaveSlot::AddUpgrade(const TObjectPtr<UGameInstance>& InGameInstance, const EUpgrade InUpgrade, const FUpgradeChoicePair& InUpgradeChoicePair, const EUpgradeAttribute InSpecialAttribute)
 {
 	FUpgradeAttributeValues& UpgradeAttributeValues = UnlockedUpgrades.FindOrAdd(InUpgrade);
 	UpgradeAttributeValues.AddUpgrade(InUpgradeChoicePair);
@@ -92,14 +104,16 @@ void URunSaveSlot::AddUpgrade(const TObjectPtr<UPossessionGameInstance>& InGameI
 	{
 		FSpecialUpgradesContainer& SpecialUpgradesContainer = SpecialUpgrades.FindOrAdd(InUpgrade);
 		SpecialUpgradesContainer.Add(InSpecialAttribute);
+		InGameInstance->GetSubsystem<UDelegateManager>()->OnSpecialUpgradeAdded.Broadcast(InUpgrade, InSpecialAttribute);
 	}
 	(void)InGameInstance->GetSubsystem<UDelegateManager>()->ApplyUpgradeOnSelection.ExecuteIfBound();
 }
 
 void URunSaveSlot::SaveSlot() { UGameplayStatics::SaveGameToSlot(this, SlotName, 0); }
 
-void URunSaveSlot::SetupSlot(const FString& InSlotName)
+void URunSaveSlot::SetupSlot(const TObjectPtr<UGameInstance>& InGameInstance, const FString& InSlotName)
 {
+	InGameInstance->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.BindUObject(this, &URunSaveSlot::IsSpecialUpgradeAvailable);
 	SlotName = InSlotName;
 	VersionMigration();
 }

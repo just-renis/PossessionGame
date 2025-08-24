@@ -64,7 +64,11 @@ private:
 
 	virtual EDamageReason GetDamageReason() const override;
 	
+	virtual float AI_UpgradeDamageAppliance() { return 0.f; }
+	
 	void AI_SetupUpgradesAppliance();
+	
+	virtual float P_UpgradeDamageAppliance() { return 0.f; }
 
 	void P_SetupLevelUpAppliance(const int32 InLevel);
 	void P_SetupUpgradesAppliance();

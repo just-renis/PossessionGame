@@ -20,7 +20,6 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
-#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 void AGuardian::SetCustomTimeDilation(const float InDilation)
 {
@@ -178,7 +177,7 @@ void AGuardian::BeginPlay()
 	CharacterName = ECharacterType::Guardian;
 	bCanReload = false;
 	Super::BeginPlay();
-	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::GuardianAbility1, EUpgradeAttribute::Special1)) bImmuneToFirstHit = true;
+	if (GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::GuardianAbility1, EUpgradeAttribute::Special1)) bImmuneToFirstHit = true;
 }
 
 void AGuardian::SetMesh(const ECharacterType PrimaryDataAssetName)

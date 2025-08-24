@@ -6,7 +6,6 @@
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
@@ -83,13 +82,31 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 			switch (InUpgradeAttribute)
 			{
 				case EUpgradeAttribute::Special1:
-					if (!bForEnemy) return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.1", "WHILE ACTIVE, ENEMIES TAKE BACK </>").ToString() + GetRichTextTag(false) + "50%</>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.2", "<UpgradeAttributeText> OF THE DAMAGE THEY DEAL TO YOU.</>").ToString();
-					return "<UpgradeAttributeText>GUARDIAN TAKES NO DAMAGE ON FIRST HIT</>";
+					if (!bForEnemy)
+					{
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.1", "WHILE ACTIVE, YOU REFLECT </>").ToString() +
+						GetRichTextTag(false) + "50%</>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.2", "<UpgradeAttributeText> OF THE DAMAGE.</>").ToString();
+					}
+					return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.3", "<UpgradeAttributeText>GUARDIAN TAKES NO DAMAGE ON FIRST HIT.</>").ToString();
 				default: break;
 			}
 		case EUpgrade::GuardianAbility2:
 			break;
 		case EUpgrade::RangerAbility1:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.1", "AFTER USING GRENADE LAUNCHER </>").ToString() +
+						GetRichTextTag(false) + "+10%</>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.2", "<UpgradeAttributeText> DAMAGE FOR </>").ToString() +
+						GetRichTextTag(false) + "15</>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.3", "<UpgradeAttributeText> SECONDS.</>").ToString();
+					}
+					return NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.4", "<UpgradeAttributeText>EACH RANGER UPGRADE GIVES </>").ToString() +
+					GetRichTextTag(true) + "+10%</>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.5", "<UpgradeAttributeText> DAMAGE </>").ToString() +
+					GetRichTextTag(true) + "-10%</>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.6", "<UpgradeAttributeText> COOLDOWN.</>").ToString();
+				default: break;
+			}
 			break;
 		case EUpgrade::RangerAbility2:
 			break;
@@ -135,7 +152,7 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
 	bHasBeenSelected = true;
 	PlayAnimation(PressAnim);
-	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->AddUpgrade(Cast<UPossessionGameInstance>(GetGameInstance()), UpgradeName, UpgradeChoice, SpecialAttribute);
+	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->AddUpgrade(GetGameInstance(), UpgradeName, UpgradeChoice, SpecialAttribute);
 	SpecialAttribute = EUpgradeAttribute::None;
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->TriggerUpgradeMenuCloseAnimation();
 }

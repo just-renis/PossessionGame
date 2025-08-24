@@ -49,6 +49,10 @@ protected:
 	TObjectPtr<UAbilityData> Data;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
+
+	virtual float AI_GetCooldownReduction();
+
+	virtual float P_GetCooldownReduction();
 	
 	virtual void P_ApplyVariation() {}
 	virtual void P_Execute();
