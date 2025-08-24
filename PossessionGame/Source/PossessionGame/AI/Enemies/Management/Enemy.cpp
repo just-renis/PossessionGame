@@ -490,7 +490,6 @@ void AEnemy::P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputCompon
 void AEnemy::P_Destroy()
 {
 	DelegateManager->OnMinionBossStomp.Unbind();
-	DelegateManager->ApplyUpgradeOnSelection.Unbind();
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();
 	Weapon->SetToOriginalSettings();
@@ -879,7 +878,10 @@ void AEnemy::P_ToggleGodMode()
 	CurrentHp = MaxHp;
 }
 
-void AEnemy::P_UpdateAbilitiesUI() { for (int32 i = 0; i < Abilities.Num(); i++) if (bIsHijacked && !Abilities[i]->GetIsCooldownKill()) P_HUD->UpdateAbilityUI(Abilities[i]); }
+void AEnemy::P_UpdateAbilitiesUI()
+{
+	for (int32 i = 0; i < Abilities.Num(); i++) if (bIsHijacked && !Abilities[i]->GetIsCooldownKill()) P_HUD->UpdateAbilityUI(Abilities[i]);
+}
 
 void AEnemy::P_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->P_StopAbility(); }
 

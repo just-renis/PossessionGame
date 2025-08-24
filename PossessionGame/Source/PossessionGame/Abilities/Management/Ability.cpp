@@ -27,7 +27,7 @@ void UAbility::Tick(const float InDeltaTime)
 }
 
 void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
-{
+{			
 	Data = InAbilityData;
 	DelegateManager = InDelegateManager;
 	ReqCooldownKill = InAbilityData->GetCurrentCooldownKill();
