@@ -27,6 +27,7 @@ public:
 	void StopMontage(const EEnemyAnimState InState, const float InBlendOut = 0.f);
 	virtual void ClearTimers();
 	void ClearMontageWithHoldHandle();
+	void SetGlobalPlayRate(const float InRate);
 protected:
 	EEnemyAnimState MontageStateInHold;
 	UPROPERTY()
@@ -45,6 +46,7 @@ protected:
 	UFUNCTION()
 	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted);
 private:
+	float GlobalPlayRate = 1.f;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	bool bIsControlRigEnabled = false;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))

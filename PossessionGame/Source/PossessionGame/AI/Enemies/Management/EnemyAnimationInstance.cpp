@@ -73,6 +73,12 @@ void UEnemyAnimationInstance::ClearTimers()
 
 void UEnemyAnimationInstance::ClearMontageWithHoldHandle() { GetWorld()->GetTimerManager().ClearTimer(MontageWithHoldHandle); }
 
+void UEnemyAnimationInstance::SetGlobalPlayRate(const float InRate)
+{
+    GlobalPlayRate = InRate;
+    if (const TObjectPtr<UAnimMontage> CurrentMontage = GetCurrentActiveMontage()) Montage_SetPlayRate(CurrentMontage, GlobalPlayRate);
+}
+
 bool UEnemyAnimationInstance::IsMontageExisting(const EEnemyAnimState InState) const
 {
     return AssetsManager->GetCharacterData(Proprietor->GetCharacterName()).GetCharacterContainer()->Montages.Contains(InState);
@@ -96,7 +102,7 @@ void UEnemyAnimationInstance::AssignOnMontageEnd() { OnMontageBlendingOut.AddDyn
 
 void UEnemyAnimationInstance::SetProprietor() { Proprietor = Cast<AEnemy>(GetOwningActor()); }
 
-void UEnemyAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState) { Montage_Play(Montages.Find(InState)->Get()); }
+void UEnemyAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState) { Montage_Play(Montages.Find(InState)->Get(), GlobalPlayRate); }
 
 void UEnemyAnimationInstance::MontageWithHoldEnd() // If more such montages will be added then use switch to filter their end.
 {

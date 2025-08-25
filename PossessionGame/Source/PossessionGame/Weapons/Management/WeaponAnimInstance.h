@@ -22,6 +22,7 @@ public:
 	void PlayMontage(EWeaponAnimState State, float StartPosition = 0.f);
 	void StopMontage(EWeaponAnimState State, float BlendOut = 0.f);
 	void SetWeaponName(EWeapon Name) { WeaponName = Name; }
+	void SetGlobalPlayRate(const float InPlayRate);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Animation")
 	float Speed = 0.f;
@@ -33,6 +34,7 @@ protected:
 	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted);
 private:
 	bool bIsReloading = false;
+	float GlobalPlayRate = 1.f;
 	EWeapon WeaponName;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;

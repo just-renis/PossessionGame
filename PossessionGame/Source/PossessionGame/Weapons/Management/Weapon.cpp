@@ -27,6 +27,8 @@ AWeapon::AWeapon()
 	HandsMesh->SetHiddenInGame(true);
 }
 
+bool AWeapon::AI_CanShoot() const { return ShootTimer >= ShootCooldown * ReverseActionSpeed; }
+
 void AWeapon::AI_Shoot()
 {
 	MuzzleFlashLogic();
@@ -42,7 +44,7 @@ bool AWeapon::P_CanReload(const int32 InOtherAmmoSource)
 	return !HandsAnimInstance->GetIsReloading() && (InOtherAmmoSource != -1 ? InOtherAmmoSource > 0 : TotalAmmo > 0 && CurrentAmmo != MagazineCap);
 }
 
-bool AWeapon::P_CanShoot() { return ShootTimer >= ShootCooldown && CurrentAmmo > 0 && !HandsAnimInstance->GetIsReloading(); }
+bool AWeapon::P_CanShoot() { return ShootTimer >= GetShootCooldown() && CurrentAmmo > 0 && !HandsAnimInstance->GetIsReloading(); }
 
 void AWeapon::P_SetWalkingSpeed(const float InSpeed) const { if (HandsAnimInstance) HandsAnimInstance->SetSpeed(InSpeed); }
 
@@ -132,10 +134,6 @@ void AWeapon::P_ChangeVfxVariation()
 		AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle)), nullptr, MuzzleFlashComponent, false, Proprietor->GetVariation());
 	}
 }
-
-void AWeapon::P_ReduceShootCooldown(const float InPercentage) { ShootCooldown -= P_Data->GetShootCooldown() * InPercentage * 0.01f; }
-
-void AWeapon::P_ResetShootCooldown() { ShootCooldown = P_Data->GetShootCooldown(); }
 
 void AWeapon::DestroyThis()
 {

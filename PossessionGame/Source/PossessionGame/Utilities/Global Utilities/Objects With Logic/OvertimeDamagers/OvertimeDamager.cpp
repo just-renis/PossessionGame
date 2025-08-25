@@ -19,7 +19,7 @@ AOvertimeDamager::AOvertimeDamager()
 {
 	Radius = CreateDefaultSubobject<USphereComponent>("radius");
 	RootComponent = Radius;
-	Radius->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Radius->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Radius->OnComponentBeginOverlap.AddDynamic(this, &AOvertimeDamager::AddOverlappedTarget);
 	Radius->OnComponentEndOverlap.AddDynamic(this, &AOvertimeDamager::RemoveOverlappedTarget);
 }
@@ -27,8 +27,13 @@ AOvertimeDamager::AOvertimeDamager()
 void AOvertimeDamager::Init(const bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
+	Radius->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	bIsPlayer = bInIsPlayerObject;
 }
+
+void AOvertimeDamager::AddTarget(const TObjectPtr<AEnemy>& InTarget) { Targets.Add(InTarget); }
+
+void AOvertimeDamager::RemoveTarget(const TObjectPtr<AEnemy>& InTarget) { Targets.Remove(InTarget); }
 
 void AOvertimeDamager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
@@ -45,10 +50,10 @@ void AOvertimeDamager::DestroyThis()
 
 void AOvertimeDamager::AddOverlappedTarget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (const TObjectPtr<AEnemy> Target = Cast<AEnemy>(OtherActor)) Targets.Add(Target);
+	if (const TObjectPtr<AEnemy> Target = Cast<AEnemy>(OtherActor)) AddTarget(Target);
 }
 
 void AOvertimeDamager::RemoveOverlappedTarget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (const TObjectPtr<AEnemy> Target = Cast<AEnemy>(OtherActor)) Targets.Remove(Target);
+	if (const TObjectPtr<AEnemy> Target = Cast<AEnemy>(OtherActor)) RemoveTarget(Target);
 }

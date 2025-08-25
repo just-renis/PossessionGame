@@ -24,6 +24,9 @@ protected:
 	EDamageReason DamageReason;
 	UPROPERTY()
 	TArray<TObjectPtr<AEnemy>> Targets;
+	
+	virtual void AddTarget(const TObjectPtr<AEnemy>& InTarget);
+	virtual void RemoveTarget(const TObjectPtr<AEnemy>& InTarget);
 private:
 	bool bIsPlayer;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

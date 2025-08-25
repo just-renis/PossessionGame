@@ -573,6 +573,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
 	VfxsMap.Add("PA_SecretRewardPopUp", EVfx::SecretRewardPopUp);
 	VfxsMap.Add("PA_EmpAffected", EVfx::EmpAffected);
+	VfxsMap.Add("PA_PoisonSlowAffected", EVfx::PoisonSlowAffected);
 	VfxsMap.Add("PA_PossessionViable", EVfx::HijackViable);
 	VfxsMap.Add("PA_TutorialBotLandOnHead", EVfx::TutorialBotLandOnHead);
 	VfxsMap.Add("PA_HitVent", EVfx::HitVent);

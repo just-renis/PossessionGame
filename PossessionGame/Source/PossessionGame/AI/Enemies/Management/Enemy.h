@@ -61,6 +61,8 @@ public:
 	bool GetIsAbilityInAction() const { return bIsAbilityInAction; }
 	bool GetIsStomping() const { return bIsStomping; }
 	bool GetIsHijackActionViable() const { return bCanHijackOtherEnemy; }
+	bool GetIsActionSpeedModified() const { return bActionSpeedModified; }
+	float GetActionSpeed() const { return ActionSpeed; }
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
 	EVariation GetVariation() const { return Variation; }
@@ -111,6 +113,7 @@ public:
 	virtual void EmpEffectEnded();
 	void SetInputState(const bool bState) { bIsInputLocked = bState; }
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
+	void ChangeOverlappingPoisonAreasInState(const bool bState);
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -128,7 +131,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompRadiusInMeters = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
-	float StompDamage = 50.f;
+	float StompDamage = 40.f;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -199,7 +202,6 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void SetAnimInstance();
 	void SetMaxWalkSpeed(const float Speed) const;
-	void SetInitialWalkSpeed(const bool bState) const;
 	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
@@ -221,6 +223,7 @@ private:
 	bool bIsSliding = false;
 	bool bIsDoubleJumpOccured = false;
 	bool bIsImmortal = false;
+	bool bActionSpeedModified = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -228,6 +231,8 @@ private:
 	float TargetFov;
 	float DamageReduction = 1.f;
 	float DefaultCameraZ;
+	float ActionSpeed = 1.f;
+	int32 OverlappingPoisonAreas = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Destroy After Seconds", meta = (AllowPrivateAccess = true))
 	float DestroyAfter = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
@@ -298,6 +303,8 @@ private:
 	TObjectPtr<UNiagaraComponent> Aura;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> EmpAffected;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> PoisonSlowAffected;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> HijackViable;
 	UPROPERTY()
@@ -414,8 +421,10 @@ private:
 	void OpenInfoPanel();
 	void CloseInfoPanel();
 	void PlayEmpAffectedVfx(const float InEffectDuration);
+	void TogglePoisonSlowAffectedVfx(const bool bState);
 	void RestartLevel() const;
 	void DisableHijackViableVfx() const;
 	void SetupTutorialManager();
 	void ToggleTimeDilation();
+	void SetActionSpeed(const float InSpeed);
 };

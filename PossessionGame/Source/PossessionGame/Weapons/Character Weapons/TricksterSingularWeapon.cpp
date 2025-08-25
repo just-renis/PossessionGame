@@ -31,7 +31,7 @@ float ATricksterSingularWeapon::P_ReceiveHitScanDamage()
 
 void ATricksterSingularWeapon::P_Shoot()
 {
-	if (ShootTimer >= ShootCooldown)
+	if (ShootTimer >= GetShootCooldown())
 	{
 		AssetsManager->PlaySound2D(ESound::TricksterShoot);
 		MuzzleFlashLogic();

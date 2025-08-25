@@ -74,7 +74,6 @@ void ARangerWeapon::AddSpecialUpgradeLogic(const EUpgrade InUpgradeName, const E
 
 void ARangerWeapon::AttachGrenadeLaunchSpecialVfx()
 {
-	UE_LOG(LogTemp, Error, TEXT("ATTACHED"));
 	GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetOnRangerAbilityStackStatusChangedDelegate().BindUObject(this, &ARangerWeapon::ChangeGrenadeLaunchSpecialComponentState);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerGrenadeLaunchSpecial, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); },
 	&GrenadeLaunchSpecialComponent, GetMesh(), FName("MuzzleSocket"), true);

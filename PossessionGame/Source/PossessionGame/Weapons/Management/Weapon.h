@@ -50,6 +50,7 @@ public:
 	TObjectPtr<UNiagaraComponent>& GetMuzzleFlashComponent() { return MuzzleFlashComponent; }
 	TObjectPtr<AEnemy>& GetProprietor() { return Proprietor; }
 	
+	bool AI_CanShoot() const;
 	virtual void AI_Shoot();
 	void AI_ResetShootCycles();
 	virtual void AI_Reload() {}
@@ -69,8 +70,6 @@ public:
 	void P_SetWalkSpread(const bool bState);
 	virtual void P_SetVariationMaterial();
 	virtual void P_ChangeVfxVariation();
-	void P_ReduceShootCooldown(const float InPercentage);
-	void P_ResetShootCooldown();
 	
 	virtual void SetWeaponMeshScaleToOriginal() { Mesh->SetRelativeScale3D(OriginalScale); }
 	void SetFirstShotWasShot() { bFirstShotWasShot = true; }
@@ -84,6 +83,7 @@ public:
 	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon = true);
 	virtual void PostProprietorSetup();
 	virtual void SetCustomDilation(const float InDilation) { CustomTimeDilation = InDilation; }
+	virtual void SetReverseActionSpeed(const float InActionSpeed) { ReverseActionSpeed = InActionSpeed; }
 protected:
 	bool bIsPossessed = false;
 	bool bIsHitScanEnabled = false;
@@ -95,6 +95,7 @@ protected:
 	float HitScanDamage;
 	float ShootTimer = 0.f;
 	float DefaultHitScanDamage;
+	float ReverseActionSpeed = 1.f;
 	EWeapon Name;
 	FVector OriginalScale;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

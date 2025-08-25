@@ -350,6 +350,18 @@ void AEnemy::EmpEffectEnded()
 	if (AI) AI->ResumeLogic();
 }
 
+void AEnemy::ChangeOverlappingPoisonAreasInState(const bool bState)
+{
+	if (bState)
+	{
+		if (++OverlappingPoisonAreas == 1) SetActionSpeed(1.f / 3.f);
+	}
+	else
+	{
+		if (OverlappingPoisonAreas > 0 && --OverlappingPoisonAreas == 0) SetActionSpeed(1.f);
+	}
+}
+
 void AEnemy::AI_SetupAbilities()
 {
 	const TMap<EAbility, TSoftObjectPtr<UAbilityData>> AbilitiesData = AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->AI_Abilities_Data;
@@ -622,11 +634,9 @@ void AEnemy::SetAnimInstance() { AnimInstance = Cast<UEnemyAnimationInstance>(Ge
 
 void AEnemy::SetMaxWalkSpeed(const float Speed) const
 {
-	GetCharacterMovement()->MaxWalkSpeed = Speed;
-	GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetSafeNormal() * Speed;
+	GetCharacterMovement()->MaxWalkSpeed = Speed * ActionSpeed;
+	GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetSafeNormal() * Speed * ActionSpeed;
 }
-
-void AEnemy::SetInitialWalkSpeed(const bool bState) const { SetMaxWalkSpeed(bState ? P_Data->GetMaxWalkSpeed() : P_Data->GetMaxSlowedSpeed()); }
 
 void AEnemy::AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const
 {
@@ -646,8 +656,9 @@ void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->Set
 
 void AEnemy::DestroyAI()
 {
-	if (Aura) Aura->Deactivate();
-	if (EmpAffected) EmpAffected->Deactivate();
+	if (Aura) Aura->DeactivateImmediate();
+	if (EmpAffected) EmpAffected->DeactivateImmediate();
+	if (PoisonSlowAffected) PoisonSlowAffected->DeactivateImmediate();
 	if (AI)
 	{
 		GetWorld()->GetSubsystem<UEnemyCommunicator>()->RemoveEnemy(this);
@@ -1307,11 +1318,17 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 	{
 		AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, &EmpAffected, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(true, InEffectDuration)}});
 	}
-	else
+	else EmpAffected->Activate(true);
+}
+
+void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
+{
+	if (!PoisonSlowAffected)
 	{
-		if (EmpAffected->IsActive()) EmpAffected->Deactivate();
-		EmpAffected->Activate();
+		AssetsManager->AttachVfx(EVfx::PoisonSlowAffected, [this]() -> bool { return GetIsAlive(); }, &PoisonSlowAffected, GetMesh(), FName("DeathSocket"));
 	}
+	if (bState) PoisonSlowAffected->Activate(true);
+	else PoisonSlowAffected->DeactivateImmediate();
 }
 
 void AEnemy::RestartLevel() const { GameInstance->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, FName("MainMenu"))); }
@@ -1334,4 +1351,17 @@ void AEnemy::ToggleTimeDilation()
 {
 	if (!FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), GameInstance->GetGlobalTimeDilation(), 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), GameInstance->GetGlobalTimeDilation());
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
+}
+
+void AEnemy::SetActionSpeed(const float InSpeed)
+{
+	if (!AI_Data || !AnimInstance || !Weapon) return;
+	ActionSpeed = InSpeed;
+	bActionSpeedModified = !FMath::IsNearlyEqual(InSpeed, 1.f, 0.1f); 
+	TogglePoisonSlowAffectedVfx(bActionSpeedModified);
+	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
+	SetMaxWalkSpeed(bIsHijacked ? P_Data->GetMaxWalkSpeed() : AI_Data->GetMaxWalkSpeed());
+	AnimInstance->SetGlobalPlayRate(ActionSpeed);
+	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ActionSpeed);
+	else if (Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->SetGlobalPlayRate(ActionSpeed);
 }

@@ -27,7 +27,7 @@ void AGuardianWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChang
 
 void AGuardianWeapon::P_Shoot()
 {
-	if (ShootTimer >= ShootCooldown)
+	if (ShootTimer >= GetShootCooldown())
 	{
 		PlayShootMontage();
 		FirstWeapon->P_Shoot();

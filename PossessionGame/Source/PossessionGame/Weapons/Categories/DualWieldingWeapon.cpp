@@ -29,7 +29,7 @@ bool ADualWieldingWeapon::P_CanReload(int32 OtherAmmoSource)
 
 void ADualWieldingWeapon::P_Shoot()
 {
-	if (ShootTimer >= ShootCooldown)
+	if (ShootTimer >= GetShootCooldown())
 	{
 		FirstWeapon->P_Shoot();
 		SecondWeapon->P_Shoot();
@@ -119,4 +119,11 @@ void ADualWieldingWeapon::NonCyclingModeLogic()
 	ShootTimer = 0.f;
 	FirstWeapon->AI_Shoot();
 	SecondWeapon->AI_Shoot();
+}
+
+void ADualWieldingWeapon::SetReverseActionSpeed(const float InActionSpeed)
+{
+	ReverseActionSpeed = InActionSpeed;
+	FirstWeapon->SetReverseActionSpeed(InActionSpeed);
+	SecondWeapon->SetReverseActionSpeed(InActionSpeed);
 }

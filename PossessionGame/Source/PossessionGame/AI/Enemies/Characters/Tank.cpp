@@ -71,7 +71,7 @@ void ATank::P_ToggleChargeMinigun(bool bState)
 		if (!Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp) && !Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot)) Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::ChargeUp);
 	}
 	else P_StopChargingMinigun();
-	if (P_GetIsLeftOrRightInputNotPressed() || bState) SetInitialWalkSpeed(!bState);
+	//if (P_GetIsLeftOrRightInputNotPressed() || bState) SetInitialWalkSpeed(!bState);
 }
 
 void ATank::P_StopChargingMinigun()
@@ -86,7 +86,7 @@ void ATank::P_StopMinigun()
 {
 	if (Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp)) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::ChargeUp);
 	else Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::Shoot, 0.1f);
-	SetInitialWalkSpeed(true);
+	//SetInitialWalkSpeed(true);
 }
 
 void ATank::BeginPlay()

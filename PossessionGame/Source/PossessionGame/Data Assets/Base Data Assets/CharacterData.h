@@ -11,15 +11,12 @@ class POSSESSIONGAME_API UCharacterData : public UDataAsset
 public:
 	virtual float GetMaxHp() { return MaxHp; }
 	float GetMaxWalkSpeed() const { return MaxWalkSpeed; }
-	float GetMaxSlowedSpeed() const { return MaxSlowedSpeed; }
 	float GetMaxRunSpeed() const { return MaxRunSpeed; }
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float MaxHp;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float MaxWalkSpeed;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	float MaxSlowedSpeed;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float MaxRunSpeed;
 };

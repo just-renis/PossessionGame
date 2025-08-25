@@ -111,6 +111,17 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 		case EUpgrade::RangerAbility2:
 			break;
 		case EUpgrade::TricksterAbility1:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.1", "ENEMIES IN POISON SMOKE ARE </>").ToString() +
+						GetRichTextTag(false) + "3x</>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.2", "<UpgradeAttributeText> SLOWED.</>").ToString();
+					}
+					return "";//GetRichTextTag(true) + "+30</> HEALTH\n" + GetRichTextTag(true) + "+40%</> DAMAGE"; // PLACEHOLDER FOR SLOWING 2x PLAYER IN ENEMY POISON SMOKE.
+				default: break;
+			}
 			break;
 		case EUpgrade::TricksterAbility2:
 			break;

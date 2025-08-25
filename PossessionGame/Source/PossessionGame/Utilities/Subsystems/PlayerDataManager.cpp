@@ -1,10 +1,6 @@
 ﻿#include "PlayerDataManager.h"
 
-void UPlayerDataManager::AddRangerGrenadeSpecialStack()
-{
-	RangerGrenadeSpecialData.AddStack();
-	
-}
+void UPlayerDataManager::AddRangerGrenadeSpecialStack() { RangerGrenadeSpecialData.AddStack(); }
 
 void UPlayerDataManager::Reset()
 {

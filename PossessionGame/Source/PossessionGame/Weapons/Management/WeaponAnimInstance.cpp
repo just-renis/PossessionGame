@@ -39,7 +39,7 @@ void UWeaponAnimInstance::PlayMontage(EWeaponAnimState State, float StartPositio
     if (IsMontageExisting(State))
     {
         LoadMontageIfNotLoaded(State);
-        Montage_Play(Montages.Find(State)->Get(), 1, EMontagePlayReturnType::MontageLength, StartPosition);
+        Montage_Play(Montages.Find(State)->Get(), GlobalPlayRate, EMontagePlayReturnType::MontageLength, StartPosition);
         if (State == EWeaponAnimState::Reload) bIsReloading = true;
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontage"), *UEnum::GetValueAsString(WeaponName), *UEnum::GetValueAsString(State));
@@ -53,6 +53,12 @@ void UWeaponAnimInstance::StopMontage(EWeaponAnimState State, float BlendOut)
         Montage_Stop(BlendOut, Montages.Find(State)->Get());
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in StopMontage"), *UEnum::GetValueAsString(WeaponName), *UEnum::GetValueAsString(State));
+}
+
+void UWeaponAnimInstance::SetGlobalPlayRate(const float InPlayRate)
+{
+    GlobalPlayRate = InPlayRate;
+    if (const TObjectPtr<UAnimMontage> CurrentMontage = GetCurrentActiveMontage()) Montage_SetPlayRate(CurrentMontage, GlobalPlayRate);
 }
 
 void UWeaponAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
