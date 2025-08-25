@@ -70,7 +70,7 @@ void AGate::OpenGateAndShowMarker(const EGameMode InGameMode)
 	ShowMarker(InGameMode);
 }
 
-void AGate::CloseGate(const EGameMode InGameMode)
+void AGate::CloseGate()
 {
 	bEventToCloseGateHappened = true;
 	if (bIsGateOpened)

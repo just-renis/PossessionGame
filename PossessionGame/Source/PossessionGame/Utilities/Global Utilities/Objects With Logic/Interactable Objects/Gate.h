@@ -66,7 +66,7 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void OpenGate(const EGameMode InGameMode);
 	void OpenGateAndShowMarker(const EGameMode InGameMode);
-	void CloseGate(const EGameMode InGameMode = EGameMode::None);
+	void CloseGate();
 	virtual void Interact() override;
 	virtual void ChangeOutlineState(const bool bState) override;
 	void SetArtifactCollected() { bNeedsArtifact = false; }

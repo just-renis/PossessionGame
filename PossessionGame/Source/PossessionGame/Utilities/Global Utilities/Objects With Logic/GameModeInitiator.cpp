@@ -22,7 +22,7 @@ void AGameModeInitiator::Initiate(UPrimitiveComponent* OverlappedComponent, AAct
 	if (!OtherActor->ActorHasTag("Player")) return;
 	if (GameMode == EGameMode::ChargeTerminalMode) GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(true);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound();
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound(ESound::BattleModeSoundTrack);
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Destroy();
 }

@@ -9,38 +9,47 @@ void AMusicPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	if (bMusicPlayerPlaysDefaultSoundTrack) return;
-	bIsTutorialFinished = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished();
-	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
-	CurrentSoundtrack = bIsTutorialFinished ? ESound::RestSoundTrack : ESound::TutorialIntroSoundTrack;
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnMusicSoundtrackChangeRequired.BindUObject(this, &AMusicPlayer::ChangeSoundtrack);
 	DelegateManager->ChangeMusicPlayerState.BindUObject(this, &AMusicPlayer::ChangeState);
-	PlayCurrentSoundtrack();
+	CurrentSoundTrack = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished() ? ESound::RestSoundTrack : ESound::TutorialIntroSoundTrack;
+	SwitchSoundTrack();
 }
 
-void AMusicPlayer::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AMusicPlayer::ChangeSoundtrack(const ESound InSoundTrackName)
 {
-	GetWorldTimerManager().ClearTimer(FadeInHandle);
-	Super::EndPlay(EndPlayReason);
-}
-
-void AMusicPlayer::ChangeSoundtrack()
-{
-	if (CurrentSoundtrack == ESound::BattleModeSoundTrack) return;
-	if (CurrentSoundtrack == ESound::TutorialIntroSoundTrack) CurrentSoundtrack = ESound::TutorialChaosSoundTrack;
-	else CurrentSoundtrack = ESound::BattleModeSoundTrack;
-	GetAudioComponent()->FadeOut(0.5f, 0.f);
-	GetWorldTimerManager().SetTimer(FadeInHandle, this, &AMusicPlayer::PlayCurrentSoundtrack, 0.5f, false);
-}
-
-void AMusicPlayer::PlayCurrentSoundtrack() const
-{
-	AssetsManager->ConfigureSound(GetAudioComponent(), nullptr, CurrentSoundtrack);
-	GetAudioComponent()->FadeIn(0.5f, 1.f, 0.f);
+	if (!SoundTracksData.Contains(InSoundTrackName)) return;
+	if (CurrentSoundTrack == InSoundTrackName) return;
+	bNeedToChangeSoundTrack = true;
+	CurrentSoundTrack = InSoundTrackName;
 }
 
 void AMusicPlayer::ChangeState(const bool bState) const
 {
 	if (bState) GetAudioComponent()->Play();
 	else GetAudioComponent()->Stop();
+}
+
+void AMusicPlayer::BeatsPerMinuteProcess()
+{
+	if (++CurrentBeat >= MaxCurrentSoundTrackBeat) CurrentBeat = 0;
+	UE_LOG(LogTemp, Error, TEXT("CurrentBeat: %i"), CurrentBeat);
+	if (!bNeedToChangeSoundTrack) return;
+	if (CurrentBeat % 4 == 0) SwitchSoundTrack();
+}
+
+void AMusicPlayer::SwitchSoundTrack()
+{
+	UE_LOG(LogTemp, Error, TEXT("SwitchSoundTrack:"));
+	if (const int32* BeatsPerMinute = SoundTracksData.Find(CurrentSoundTrack))
+	{
+		MaxCurrentSoundTrackBeat = *BeatsPerMinute;
+		CurrentBeat = 0;
+		bNeedToChangeSoundTrack = false;
+		UE_LOG(LogTemp, Error, TEXT("MaxCurrentSoundTrackBeat: %i"), MaxCurrentSoundTrackBeat);
+		GetWorldTimerManager().SetTimer(BeatsProcessorHandle, this, &AMusicPlayer::BeatsPerMinuteProcess, 60.f / MaxCurrentSoundTrackBeat, true);
+	}
+	GetAudioComponent()->Stop();
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(GetAudioComponent(), nullptr, CurrentSoundTrack);
+	GetAudioComponent()->Play();
 }

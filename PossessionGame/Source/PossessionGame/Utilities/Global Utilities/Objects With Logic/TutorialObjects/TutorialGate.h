@@ -27,6 +27,8 @@ class POSSESSIONGAME_API ATutorialGate : public AActor, public IInteractable
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsGateClosedByTrigger = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bChangeSoundTrack = false;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EGameMode GameModeToFinish;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EGameMode NextGameMode;
@@ -58,7 +60,7 @@ class POSSESSIONGAME_API ATutorialGate : public AActor, public IInteractable
 	void OpenGate(const EGameMode InGameMode);
 	void OpenGateAndShowMarker(const EGameMode InGameMode);
 	void OpenGateOnTutorialMinionDeath();
-	void CloseGate(const EGameMode InGameMode = EGameMode::None);
+	void CloseGate();
 	virtual void Interact() override;
 	virtual void ChangeOutlineState(const bool bState) override;
 	void ShowMarker(const EGameMode InGameMode) const;

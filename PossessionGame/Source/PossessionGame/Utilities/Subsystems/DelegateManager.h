@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "PossessionGame/Enums/ESound.h"
 #include "DelegateManager.generated.h"
 
 enum class EUpgradeAttribute : uint8;
@@ -24,7 +25,6 @@ DECLARE_DELEGATE(FUpdateGameModeEnemiesAmount);
 DECLARE_DELEGATE(FOnBossSpawn);
 DECLARE_DELEGATE(FOnOutOfAmmo);
 DECLARE_DELEGATE(FOnGameLaunchFinished);
-DECLARE_DELEGATE(FOnMusicSoundtrackChangeRequired);
 DECLARE_DELEGATE(FMeleeAttackOccured);
 DECLARE_DELEGATE(FOnGateClosed);
 DECLARE_DELEGATE(FOnTutorialMinionDeath);
@@ -41,6 +41,7 @@ DECLARE_DELEGATE_OneParam(FOnOpenUnlockAbilityPopup, const int32);
 DECLARE_DELEGATE_OneParam(FOnChargeTerminalModeCompletion, const int32);
 DECLARE_DELEGATE_OneParam(FOnHijack, const TObjectPtr<AActor>&);
 DECLARE_DELEGATE_OneParam(FLoadLevel, const FLoadLevelData);
+DECLARE_DELEGATE_OneParam(FOnMusicSoundtrackChangeRequired, const ESound);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
@@ -89,7 +90,6 @@ public:
 	FOnBossSpawn OnBossSpawn;
 	FOnOutOfAmmo OnOutOfAmmo;
 	FOnGameLaunchFinished OnGameLaunchFinished;
-	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;
 	FMeleeAttackOccured MeleeAttackOccured;
 	FOnGateClosed OnGateClosed;
 	FOnTutorialMinionDeath OnTutorialMinionDeath;
@@ -109,6 +109,7 @@ public:
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
 	FOnHijack OnHijack;
 	FLoadLevel LoadLevel;
+	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;
 	FRequestSpecialUpgradeAvailability RequestSpecialUpgradeAvailability;

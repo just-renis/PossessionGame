@@ -69,7 +69,7 @@ void ATutorialGate::OpenGateOnTutorialMinionDeath()
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.RemoveAll(this);
 }
 
-void ATutorialGate::CloseGate(const EGameMode InGameMode)
+void ATutorialGate::CloseGate()
 {
 	bEventToCloseGateHappened = true;
 	if (bIsGateOpened)
@@ -77,6 +77,7 @@ void ATutorialGate::CloseGate(const EGameMode InGameMode)
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.RemoveAll(this);
 		if (bIsUnlockableByInteraction) Collision->SetBoxExtent(FVector(1.f, 450.f, 175.f));
 		Collision->SetCollisionResponseToAllChannels(ECR_Block);
+		if (bChangeSoundTrack) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound(ESound::TutorialIntroSoundTrack);
 		GetWorldTimerManager().SetTimer(CloseGatesHandle, this, &ATutorialGate::CloseGateSides, 0.025f, true);
 	}
 }
