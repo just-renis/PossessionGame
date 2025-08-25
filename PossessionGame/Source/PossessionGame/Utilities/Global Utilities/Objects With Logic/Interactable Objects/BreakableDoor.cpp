@@ -42,7 +42,6 @@ void ABreakableDoor::EnableCollision() const { Collision->SetCollisionEnabled(EC
 void ABreakableDoor::TryBreakingDoor()
 {
 	if (!bIsBreakable) return;
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound(ESound::TutorialIntroBattleSoundTrack);
 	PlayBreakSound();
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::DoorBreak, nullptr, GetActorLocation() + GetActorForwardVector() * 20.f);
 	GetWorldTimerManager().SetTimer(PhysicsStopCheckHandle, this, &ABreakableDoor::CheckIfStoppedPhysics, 0.1f, true);

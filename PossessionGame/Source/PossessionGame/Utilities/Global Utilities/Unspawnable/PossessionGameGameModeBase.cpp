@@ -5,7 +5,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
-#include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/ArtifactSpawnLocation.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
@@ -29,7 +28,6 @@ void APossessionGameGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 	InitAfterPSOPrecache();
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
 }
 
 void APossessionGameGameModeBase::LoadSettingsData()

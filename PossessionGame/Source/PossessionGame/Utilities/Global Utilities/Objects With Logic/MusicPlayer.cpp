@@ -33,20 +33,17 @@ void AMusicPlayer::ChangeState(const bool bState) const
 void AMusicPlayer::BeatsPerMinuteProcess()
 {
 	if (++CurrentBeat >= MaxCurrentSoundTrackBeat) CurrentBeat = 0;
-	UE_LOG(LogTemp, Error, TEXT("CurrentBeat: %i"), CurrentBeat);
 	if (!bNeedToChangeSoundTrack) return;
 	if (CurrentBeat % 4 == 0) SwitchSoundTrack();
 }
 
 void AMusicPlayer::SwitchSoundTrack()
 {
-	UE_LOG(LogTemp, Error, TEXT("SwitchSoundTrack:"));
 	if (const int32* BeatsPerMinute = SoundTracksData.Find(CurrentSoundTrack))
 	{
 		MaxCurrentSoundTrackBeat = *BeatsPerMinute;
 		CurrentBeat = 0;
 		bNeedToChangeSoundTrack = false;
-		UE_LOG(LogTemp, Error, TEXT("MaxCurrentSoundTrackBeat: %i"), MaxCurrentSoundTrackBeat);
 		GetWorldTimerManager().SetTimer(BeatsProcessorHandle, this, &AMusicPlayer::BeatsPerMinuteProcess, 60.f / MaxCurrentSoundTrackBeat, true);
 	}
 	GetAudioComponent()->Stop();

@@ -277,6 +277,11 @@ void ATutorialBot::MoveToNextLocation()
 		SetActorLocationAndRotation(Waypoints[i]->GetActorLocation(), Waypoints[i]->GetActorRotation());
 		break;
 	}
+	if (bIsTutorialFinished && CurrentWaypointIndex == 0)
+	{
+		SetTabletVisibility(false);
+		PlayIdleAnimation();
+	}
 	CurrentWaypointIndex++;
 }
 
@@ -387,13 +392,10 @@ void ATutorialBot::StartTipDialogue() const { Dialogue->StartTipDialogue(); }
 void ATutorialBot::PlayNextToGateAnimation()
 {
 	SetExpression(ETutorialBotExpression::Happy);
-	SetupAndPlayNextAnimation(ETutorialBotAnimState::Wave, &ATutorialBot::WaveAnimationFinished);
+	SetupAndPlayNextAnimation(ETutorialBotAnimState::Wave, &ATutorialBot::PlayIdleAnimation);
 }
 
-void ATutorialBot::WaveAnimationFinished()
-{
-	SetupAndPlayNextAnimation(ETutorialBotAnimState::Idle);
-}
+void ATutorialBot::PlayIdleAnimation() { SetupAndPlayNextAnimation(ETutorialBotAnimState::Idle); }
 
 void ATutorialBot::SpawnMarker() const
 {

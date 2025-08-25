@@ -158,7 +158,7 @@ class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 	void CheckDistanceToTarget();
 	void StartTipDialogue() const;
 	void PlayNextToGateAnimation();
-	void WaveAnimationFinished();
+	void PlayIdleAnimation();
 	void SpawnMarker() const;
 	virtual void Interact() override;
 	void SetPlayerRef(const TObjectPtr<AActor>& InPlayerRef) { Player = InPlayerRef; }

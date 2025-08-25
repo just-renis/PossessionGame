@@ -27,8 +27,6 @@ class POSSESSIONGAME_API ATutorialGate : public AActor, public IInteractable
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsGateClosedByTrigger = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	bool bChangeSoundTrack = false;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EGameMode GameModeToFinish;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EGameMode NextGameMode;
