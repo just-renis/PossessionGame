@@ -597,24 +597,26 @@ void UPrimaryDataAssetsManager::SetupVfx(const FVfxContainer& InVfxData, TFuncti
 {
 	UpdateVfxAttributes(InVfxComponent, InAttributes);
 	if (!InVfxComponent) return;
-	if (bDeactivate || (InCallbackOfDeactivation && !InCallbackOfDeactivation())) InVfxComponent->Deactivate();
+	if (bDeactivate || (InCallbackOfDeactivation && !InCallbackOfDeactivation())) InVfxComponent->DeactivateImmediate();
 	TMap<FName, FNiagaraUserParam>* Params = InVfxData.GetVfxContainer()->GetParams(InVariationName);
+	UE_LOG(LogTemp, Error, TEXT("SetupVfx VARIATIONNAME: %s %s"), *InVfxData.GetVfxContainer().GetName(), *UEnum::GetValueAsString(InVariationName));
 	if (!Params) return;
 	FNiagaraUserRedirectionParameterStore& NiagaraParams = InVfxComponent->GetOverrideParameters();
 	for (const TPair<FName, FNiagaraUserParam>& Param : *Params)
 	{
 		switch (Param.Value.ParamType)
 		{
-			case EUserParamType::Int: InVfxComponent->SetIntParameter(Param.Key, Param.Value.IntValue); break;
-			case EUserParamType::Float: InVfxComponent->SetFloatParameter(Param.Key, Param.Value.FloatValue); break;
-			case EUserParamType::Vector: InVfxComponent->SetVectorParameter(Param.Key, Param.Value.VectorValue); break;
-			case EUserParamType::Color: InVfxComponent->SetColorParameter(Param.Key, Param.Value.ColorValue); break;
+			case EUserParamType::Int: InVfxComponent->SetIntParameter(Param.Key, Param.Value.IntValue); UE_LOG(LogTemp, Error, TEXT("SetupVfx Params INT: %s %s"), *InVfxData.GetVfxContainer().GetName(), *Param.Key.ToString()); break;
+			case EUserParamType::Float: InVfxComponent->SetFloatParameter(Param.Key, Param.Value.FloatValue); UE_LOG(LogTemp, Error, TEXT("SetupVfx Params FLOAT: %s %s"), *InVfxData.GetVfxContainer().GetName(), *Param.Key.ToString()); break;
+			case EUserParamType::Vector: InVfxComponent->SetVectorParameter(Param.Key, Param.Value.VectorValue); UE_LOG(LogTemp, Error, TEXT("SetupVfx Params VECTOR: %s %s"), *InVfxData.GetVfxContainer().GetName(), *Param.Key.ToString()); break;
+			case EUserParamType::Color: InVfxComponent->SetColorParameter(Param.Key, Param.Value.ColorValue); UE_LOG(LogTemp, Error, TEXT("SetupVfx Params COLOR: %s %s"), *InVfxData.GetVfxContainer().GetName(), *Param.Key.ToString()); break;
 			case EUserParamType::Material:
+				UE_LOG(LogTemp, Error, TEXT("SetupVfx Params MATERIAL: %s %s"), *InVfxData.GetVfxContainer().GetName(), *Param.Key.ToString());
 				FNiagaraVariable NiagaraParamName(UMaterialInterface::StaticClass(), Param.Key);
 				TObjectPtr<UMaterialInstanceDynamic> MI_Dynamic = Cast<UMaterialInstanceDynamic>(NiagaraParams.GetUObject(NiagaraParamName));
 				if (!MI_Dynamic)
 				{
-					MI_Dynamic = UMaterialInstanceDynamic::Create(Param.Value.MaterialValue, this);
+					MI_Dynamic = UMaterialInstanceDynamic::Create(Param.Value.MaterialValue, InVfxComponent.Get());
 					InVfxComponent->SetVariableMaterial(Param.Key, MI_Dynamic);
 				}
 				TMap<FName, FDynamicMaterialParams> MaterialParams = Param.Value.MaterialParams;
