@@ -40,7 +40,7 @@ private:
 
 	virtual void P_Setup() override;
 	virtual void P_SetupColorsForUI() override;
-	void P_ChangeRangerVariationMuzzle() const;
+	void P_ChangeRangerVariationMuzzle();
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

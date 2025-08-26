@@ -131,8 +131,8 @@ void AWeapon::P_ChangeVfxVariation()
 {
 	if (MuzzleFlashComponent)
 	{
-		UE_LOG(LogTemp, Error, TEXT("P_ChangeVfxVariation %s"), *UEnum::GetValueAsString(Proprietor->GetVariation()));
-		AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle)), nullptr, MuzzleFlashComponent, false, Proprietor->GetVariation());
+		MuzzleFlashComponent->DeactivateImmediate();
+		MuzzleFlashComponent = nullptr;
 	}
 }
 
@@ -290,7 +290,6 @@ void AWeapon::MuzzleFlashLogic()
 {
 	if (!MuzzleFlashComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("MUZZLE FLASH COMPONENT: %s"), *UEnum::GetValueAsString(Proprietor->GetVariation()));
 		AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); },
 		&MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true,FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, Proprietor->GetVariation());
 	}

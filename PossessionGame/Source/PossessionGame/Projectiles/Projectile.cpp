@@ -44,7 +44,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 		}
 		bHasBeenPooled = true;
 	}
-	else AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail)), nullptr, BulletTrailComponent, false, ProjectileData.GetProprietor()->GetVariation());
+	else AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail)), nullptr, BulletTrailComponent, false, ProjectileData.GetProprietor()->GetVariation()); // FIX THIS CRAP LATER.
 }
 
 void AProjectile::SetDirection(const FVector& InDirection) const { MovementComponent->Velocity = InDirection * MovementComponent->MaxSpeed; }
