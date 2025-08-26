@@ -301,7 +301,7 @@ void ATutorialBot::AlertTriggered() const
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ErrorChaos);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AlertSignalization);
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnAlertStart.Broadcast();
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound(ESound::TutorialChaosSoundTrack);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound(ESound::TutorialChaosSoundTrack, true);
 }
 
 void ATutorialBot::ThirteenthAnimationFinished()

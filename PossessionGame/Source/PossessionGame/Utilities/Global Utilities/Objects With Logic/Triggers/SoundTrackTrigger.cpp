@@ -18,7 +18,7 @@ void ASoundTrackTrigger::BeginPlay()
 void ASoundTrackTrigger::Initiate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag("Player")) return;
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound(SoundTrackName);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnMusicSoundtrackChangeRequired.ExecuteIfBound(SoundTrackName, false);
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Destroy();
 }

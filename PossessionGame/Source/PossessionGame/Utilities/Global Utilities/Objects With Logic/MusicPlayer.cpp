@@ -16,12 +16,13 @@ void AMusicPlayer::BeginPlay()
 	SwitchSoundTrack();
 }
 
-void AMusicPlayer::ChangeSoundtrack(const ESound InSoundTrackName)
+void AMusicPlayer::ChangeSoundtrack(const ESound InSoundTrackName, const bool bInstantChange)
 {
 	if (!SoundTracksData.Contains(InSoundTrackName)) return;
 	if (CurrentSoundTrack == InSoundTrackName) return;
-	bNeedToChangeSoundTrack = true;
 	CurrentSoundTrack = InSoundTrackName;
+	if (bInstantChange) PlayOtherSoundTrack();
+	else bNeedToChangeSoundTrack = true;
 }
 
 void AMusicPlayer::ChangeState(const bool bState) const
@@ -46,6 +47,11 @@ void AMusicPlayer::SwitchSoundTrack()
 		bNeedToChangeSoundTrack = false;
 		GetWorldTimerManager().SetTimer(BeatsProcessorHandle, this, &AMusicPlayer::BeatsPerMinuteProcess, 60.f / MaxCurrentSoundTrackBeat, true);
 	}
+	PlayOtherSoundTrack();
+}
+
+void AMusicPlayer::PlayOtherSoundTrack() const
+{
 	GetAudioComponent()->Stop();
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(GetAudioComponent(), nullptr, CurrentSoundTrack);
 	GetAudioComponent()->Play();

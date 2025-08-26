@@ -25,8 +25,9 @@ class POSSESSIONGAME_API AMusicPlayer : public AAmbientSound
 	FTimerHandle BeatsProcessorHandle;
 
 	virtual void BeginPlay() override;
-	void ChangeSoundtrack(const ESound InSoundTrackName);
+	void ChangeSoundtrack(const ESound InSoundTrackName, const bool bInstantChange);
 	void ChangeState(const bool bState) const;
 	void BeatsPerMinuteProcess();
 	void SwitchSoundTrack();
+	void PlayOtherSoundTrack() const;
 };

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EVariation.h"
@@ -154,7 +153,6 @@ struct POSSESSIONGAME_API FVfxContainer
 	}
 	void TriggerVfxsCallbacks()
 	{
-		UE_LOG(LogTemp, Error, TEXT("ASYNC TriggerVfxsCallbacks: %s"), *GetVfxContainer()->GetVfxName().ToString());
 		for (const FTFunctionCallback Callback : VfxLoadedCallbacks) if (Callback.Function) Callback.Function();
 		VfxLoadedCallbacks.Empty();
 	}
