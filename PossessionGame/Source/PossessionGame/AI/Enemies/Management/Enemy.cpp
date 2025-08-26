@@ -906,6 +906,7 @@ void AEnemy::P_HandleEscapeClick()
 		case EWidget::VariationsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI(); break;
 		case EWidget::AbilitiesMenuUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI)->CloseUI(); break;
 		case EWidget::UpgradeSelectionUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->GoBack(); break;
+		case EWidget::ExplanationUI: break;
 		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 	}
 }
@@ -1327,8 +1328,11 @@ void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
 	{
 		AssetsManager->AttachVfx(EVfx::PoisonSlowAffected, [this]() -> bool { return GetIsAlive(); }, &PoisonSlowAffected, GetMesh(), FName("DeathSocket"));
 	}
-	if (bState) PoisonSlowAffected->Activate(true);
-	else PoisonSlowAffected->DeactivateImmediate();
+	else
+	{
+		if (bState) PoisonSlowAffected->Activate(true);
+		else PoisonSlowAffected->DeactivateImmediate();
+	}
 }
 
 void AEnemy::RestartLevel() const { GameInstance->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, FName("MainMenu"))); }
@@ -1359,9 +1363,9 @@ void AEnemy::SetActionSpeed(const float InSpeed)
 	ActionSpeed = InSpeed;
 	bActionSpeedModified = !FMath::IsNearlyEqual(InSpeed, 1.f, 0.1f); 
 	TogglePoisonSlowAffectedVfx(bActionSpeedModified);
-	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
 	SetMaxWalkSpeed(bIsHijacked ? P_Data->GetMaxWalkSpeed() : AI_Data->GetMaxWalkSpeed());
 	AnimInstance->SetGlobalPlayRate(ActionSpeed);
+	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
 	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ActionSpeed);
 	else if (Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->SetGlobalPlayRate(ActionSpeed);
 }

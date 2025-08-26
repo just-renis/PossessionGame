@@ -30,6 +30,8 @@ void UExplanationUI::Toggle(const bool bState)
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
 	WidgetManager->SetExplanationState(bState);
+	if (bState) PreviousWidgetState = WidgetManager->GetCurrentStateOfUI();
+	WidgetManager->SetCurrentStateOfUI(bState ? EWidget::ExplanationUI : PreviousWidgetState);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	switch (WidgetManager->GetCurrentStateOfUI())
 	{

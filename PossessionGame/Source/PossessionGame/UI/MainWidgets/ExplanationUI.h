@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/EExplanation.h"
 #include "ExplanationUI.generated.h"
 
+enum class EWidget : uint8;
 class UImage;
 class UExplanationHighlight;
 class UTextBlock;
@@ -44,6 +45,7 @@ public:
 private:
 	int32 PreviousPage = -1;
 	int32 CurrentPage = 0;
+	EWidget PreviousWidgetState;
 	UPROPERTY(EditDefaultsOnly, Category = "Explanations", meta = (AllowPrivateAccess = true))
 	TMap<EExplanation, FExplanationData> Explanations;
 	UPROPERTY(meta = (BindWidget))
