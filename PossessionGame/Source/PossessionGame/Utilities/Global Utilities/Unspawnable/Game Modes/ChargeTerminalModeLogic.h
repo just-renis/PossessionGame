@@ -12,10 +12,13 @@ class POSSESSIONGAME_API UChargeTerminalModeLogic : public UGameModeBaseLogic
 	GENERATED_BODY()
 
 	bool bIsTerminalCharged = false;
+	bool bIsUsbRequirementFilled = false;
 	int32 UsbAmountProgress = 0;
-	int32 UsbAmountRequired;
+	int32 ChargeAmount = 0;
 	UPROPERTY()
 	TObjectPtr<UChargeTerminalModeData> Data;
+	UPROPERTY()
+	FTimerHandle NextChargeHandle;
 
 	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData) override;
 	virtual void Finalize() override;
@@ -23,5 +26,7 @@ class POSSESSIONGAME_API UChargeTerminalModeLogic : public UGameModeBaseLogic
 	virtual void UpdateEnemiesAmount() override;
 	virtual void UpdateTaskProgress() override;
 	virtual void FadeInObjectivePanel() const override;
-	void SetData();
+	void UsbRequirementFilled();
+	void ChargeCleared();
+	void InitiateNextCharge();
 };

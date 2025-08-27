@@ -29,6 +29,7 @@ DECLARE_DELEGATE(FMeleeAttackOccured);
 DECLARE_DELEGATE(FOnGateClosed);
 DECLARE_DELEGATE(FOnTutorialMinionDeath);
 DECLARE_DELEGATE(FApplyUpgradeOnSelection);
+DECLARE_DELEGATE(FResetChargeTerminal);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const FRuntimeUpgradeData&);
@@ -94,6 +95,7 @@ public:
 	FOnGateClosed OnGateClosed;
 	FOnTutorialMinionDeath OnTutorialMinionDeath;
 	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
+	FResetChargeTerminal ResetChargeTerminal;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnBossDamaged OnBossDamaged;

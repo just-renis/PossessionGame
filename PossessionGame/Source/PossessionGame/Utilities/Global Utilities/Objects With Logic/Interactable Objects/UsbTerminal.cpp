@@ -1,4 +1,5 @@
 ﻿#include "UsbTerminal.h"
+#include "Components/SphereComponent.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
@@ -8,37 +9,25 @@ AUsbTerminal::AUsbTerminal()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("mesh"));
 	Mesh->SetupAttachment(RootComponent);
-	for (int i = 0; i < 5; i++) UsbMeshes[i] = CreateDefaultSubobject<UStaticMeshComponent>(FName("UsbMesh" + FString::FromInt(i)));
 }
 
 void AUsbTerminal::BeginPlay()
 {
+	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Super::BeginPlay();
-	for (int i = 0; i < 5; i++)
-	{
-		if (UsbMeshes[i])
-		{
-			UsbMeshes[i]->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Socket" + FString::FromInt(i + 1)));
-			UsbMeshes[i]->SetStaticMesh(UsbMesh);
-			UsbMeshes[i]->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			UsbMeshes[i]->SetGenerateOverlapEvents(false);
-			UsbMeshes[i]->CanCharacterStepUpOn = ECB_No;
-			UsbMeshes[i]->SetVisibility(false);
-		}
-	}
 	DelegateManager->OnUsbCollected.BindUObject(this, &AUsbTerminal::EnableInteraction);
+	DelegateManager->ResetChargeTerminal.BindUObject(this, &AUsbTerminal::ResetTerminal);
 	DisableInteraction();
 }
 
 void AUsbTerminal::Interact()
 {
 	if (!GetIsInteractable() || !bIsUsbCollected) return;
-	if (CurrentUsbIndex < 5)
+	if (UsbInsertedAmount < UsbInsertableAmount)
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbInsert);
-		UsbMeshes[CurrentUsbIndex]->SetVisibility(true);
 		(void)DelegateManager->OnUsbInserted.ExecuteIfBound();
-		if (++CurrentUsbIndex < 5) GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(true);
+		if (++UsbInsertedAmount < UsbInsertableAmount) GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(true);
 	}
 	DisableInteraction();
 }
@@ -49,10 +38,18 @@ void AUsbTerminal::EnableInteraction()
 {
 	ShowMarker();
 	bIsUsbCollected = true;
+	Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void AUsbTerminal::DisableInteraction()
 {
 	GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
 	bIsUsbCollected = false;
+	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AUsbTerminal::ResetTerminal()
+{
+	UsbInsertedAmount = 0;
+	GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(true);
 }

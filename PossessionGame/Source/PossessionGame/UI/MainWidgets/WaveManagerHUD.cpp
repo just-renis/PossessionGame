@@ -71,7 +71,7 @@ void UWaveManagerHUD::UpdateObjective(const EGameMode InGameMode, const int32 In
 			break;
 		case EGameMode::ChargeTerminalMode:
 			ObjectiveTitleText->SetText(FText::FromString("Objectives 3"));
-			ObjectiveText->SetText(FText::FromString("Charge the terminal"));
+			ObjectiveText->SetText(FText::FromString("Charge terminal " + FString::FromInt(InData) + " times"));
 			break;
 		case EGameMode::BossMode: 
 			ObjectiveTitleText->SetText(FText::FromString("Objectives 4"));

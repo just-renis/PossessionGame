@@ -1092,7 +1092,7 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 		if (const TObjectPtr<AActor> HitActor = HitResult.GetActor(); HitActor->Implements<UInteractable>())
 		{
 			IInteractable* Interactable = Cast<IInteractable>(HitActor);
-			if (Interactable->GetIsInteractable()) Interactable->ChangeOutlineState(true);
+			if (Interactable && Interactable->GetIsInteractable()) Interactable->ChangeOutlineState(true);
 		}
 		else if (bCanHijackOtherEnemy)
 		{
