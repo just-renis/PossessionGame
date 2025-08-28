@@ -17,6 +17,7 @@ void UMinionBossAbility2::AI_Execute()
 	Proprietor->EnableLaserEyeBall();
 	PlayerLocationAtInitiation = Proprietor->GetAI()->GetStateTreeData().GetTarget()->GetActorLocation();
 	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetIsActionMontagePlaying(true);
+	CurrentRotationSpeed = MinSpeed;
 	GetWorld()->GetTimerManager().SetTimer(ShootLaserHandle, this, &UMinionBossAbility2::ShootLaser, 1.65f, false);
 }
 
@@ -85,9 +86,12 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	FVector Direction = (Player->GetActorLocation() - Start).GetSafeNormal();
 	const FRotator CurrentRotation = Proprietor->GetLaser()->GetComponentRotation();
 	const FRotator DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(Direction.Rotation(), CurrentRotation);
+	if (FMath::Abs(DeltaRotation.Yaw) < 3.f && FMath::Abs(DeltaRotation.Pitch) < 3.f) CurrentRotationSpeed = MinSpeed;
 	FRotator NewRotation = CurrentRotation;
-	NewRotation.Yaw += FMath::Clamp(DeltaRotation.Yaw, -0.75f, 0.75f);
-	NewRotation.Pitch += FMath::Clamp(DeltaRotation.Pitch, -0.75f, 0.75f);
+	NewRotation.Yaw += FMath::Clamp(DeltaRotation.Yaw, -CurrentRotationSpeed, CurrentRotationSpeed);
+	NewRotation.Pitch += FMath::Clamp(DeltaRotation.Pitch, -CurrentRotationSpeed, CurrentRotationSpeed);
+	CurrentRotationSpeed += Acceleration;
+	if (CurrentRotationSpeed > MaxSpeed) CurrentRotationSpeed = MaxSpeed;
 	NewRotation.Roll = 0.f;
 	if (bLaserUpdateFirstFrame)
 	{
