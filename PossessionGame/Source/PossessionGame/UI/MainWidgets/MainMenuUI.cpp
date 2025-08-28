@@ -51,8 +51,16 @@ void UMainMenuUI::Toggle(const bool bState)
 	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = bState;
-	if (bState) PlayerController->SetInputMode(FInputModeGameAndUI());
-	else PlayerController->SetInputMode(FInputModeGameOnly());
+	if (bState)
+	{
+		PlayerController->SetInputMode(FInputModeGameAndUI());
+		PlayAnimation(PulsatingAnim, 0, 0);
+	}
+	else
+	{
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		StopAnimation(PulsatingAnim);
+	}
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::MainMenuUI : EWidget::None);
 }
 

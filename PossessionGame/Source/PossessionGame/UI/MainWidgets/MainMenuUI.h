@@ -35,6 +35,8 @@ private:
 	TObjectPtr<UWidgetAnimation> MainMenuFadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FirstLaunchAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> PulsatingAnim;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FirstLaunchAnimDelegate;
 
