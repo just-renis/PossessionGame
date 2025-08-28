@@ -16,12 +16,14 @@ void UHackTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager,
 	WaveManager->GetDelegateManager()->OnHackModeStart.Broadcast();
 	WaveManager->GetDelegateManager()->OnTerminalInteraction.AddUObject(this, &UHackTerminalModeLogic::StartTerminalHack);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UHackTerminalModeLogic::UpdateEnemiesAmount);
+	WaveManager->GetDelegateManager()->SendHackTerminalRoomMode.AddUObject(this, &UHackTerminalModeLogic::SetTerminalRoomMode);
 }
 
 void UHackTerminalModeLogic::Finalize()
 {
 	ResetTaskProgress();
 	WaveManager->GetDelegateManager()->OnTerminalInteraction.RemoveAll(this);
+	WaveManager->GetDelegateManager()->SendHackTerminalRoomMode.RemoveAll(this);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	GetWorld()->GetTimerManager().ClearTimer(SpawnHandle);
 	Super::Finalize();
@@ -29,7 +31,10 @@ void UHackTerminalModeLogic::Finalize()
 
 void UHackTerminalModeLogic::HandleSpawning()
 {
-	if (!bIsHackFinished && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), true, [this] { IncreaseAliveEnemiesAmount(); });
+	if (!bIsHackFinished && AliveEnemiesAmount < EnemiesOnSceneLimit)
+	{
+		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, CurrentTerminalRoomMode, true, [this] { IncreaseAliveEnemiesAmount(); });
+	}
 }
 
 void UHackTerminalModeLogic::UpdateTaskProgress()
@@ -76,6 +81,7 @@ void UHackTerminalModeLogic::StartTerminalHack()
 void UHackTerminalModeLogic::FinishTerminalHack()
 {
 	PlaySound(ESound::GeneratorCompleted);
+	WaveManager->GetDelegateManager()->OnTerminalHackRoomFinish.Broadcast(CurrentTerminalRoomMode);
 	TerminalHackProgress = 0.f;
 	if (++TerminalsHackedAmount >= Data->GetTerminalsAmountToHack()) Finalize();
 	else

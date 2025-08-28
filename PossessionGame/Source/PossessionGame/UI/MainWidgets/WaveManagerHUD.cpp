@@ -14,7 +14,7 @@ float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return AnnouncementA
 void UWaveManagerHUD::UpdateCountdown(const int32 InCountdown)
 {
 	if (!CountdownText) return;
-	if (InCountdown <= 0) CountdownText->SetText(FText::FromString(TEXT("FIGHT!")));
+	if (InCountdown <= 0) CountdownText->SetText(NSLOCTEXT("ST_Localization", "Fight", "FIGHT!"));
 	else CountdownText->SetText(FText::FromString(FString::Format(TEXT("{0}"), { InCountdown })));
 }
 
@@ -53,7 +53,7 @@ void UWaveManagerHUD::ToggleTaskProgress(const bool bState, const EGameMode InGa
 {
 	if (!TaskProgressInv || !TaskText) return;
 	TaskProgressInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	TaskText->SetText(FText::FromString(InGameMode == EGameMode::HackTerminalsMode ? "Terminal Hack Progress" : "Charge Terminal Progress"));
+	TaskText->SetText(InGameMode == EGameMode::HackTerminalsMode ? NSLOCTEXT("ST_Localization", "TerminalHackProgress", "Terminal Hack Progress") : NSLOCTEXT("ST_Localization", "ChargeTerminalProgress", "Charge Terminal Progress"));
 }
 
 void UWaveManagerHUD::UpdateObjective(const EGameMode InGameMode, const int32 InData) const
@@ -62,20 +62,20 @@ void UWaveManagerHUD::UpdateObjective(const EGameMode InGameMode, const int32 In
 	switch (InGameMode)
 	{
 		case EGameMode::WaveMode:
-			ObjectiveTitleText->SetText(FText::FromString("Objectives 1"));
-			ObjectiveText->SetText(FText::FromString("Defeat " + FString::FromInt(InData) + " waves"));
+			ObjectiveTitleText->SetText(NSLOCTEXT("ST_Localization", "Objectives1", "Objectives 1"));
+			ObjectiveText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "DefeatWaves", "Defeat {0} waves"), InData));
 			break;
 		case EGameMode::HackTerminalsMode:
-			ObjectiveTitleText->SetText(FText::FromString("Objectives 2"));
-			ObjectiveText->SetText(FText::FromString("Hack " + FString::FromInt(InData) + " terminals"));
+			ObjectiveTitleText->SetText(NSLOCTEXT("ST_Localization", "Objectives2", "Objectives 2"));
+			ObjectiveText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HackTerminals", "Hack {0} terminals"), InData));
 			break;
 		case EGameMode::ChargeTerminalMode:
-			ObjectiveTitleText->SetText(FText::FromString("Objectives 3"));
-			ObjectiveText->SetText(FText::FromString("Charge terminal " + FString::FromInt(InData) + " times"));
+			ObjectiveTitleText->SetText(NSLOCTEXT("ST_Localization", "Objectives3", "Objectives 3"));
+			ObjectiveText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "ChargeTerminal", "Charge terminal {0} times"), InData));
 			break;
 		case EGameMode::BossMode: 
-			ObjectiveTitleText->SetText(FText::FromString("Objectives 4"));
-			ObjectiveText->SetText(FText::FromString("Kill the boss"));
+			ObjectiveTitleText->SetText(NSLOCTEXT("ST_Localization", "Objectives4", "Objectives 4"));
+			ObjectiveText->SetText(NSLOCTEXT("ST_Localization", "KillTheBoss", "Kill the boss"));
 		default: ;
 	}
 }

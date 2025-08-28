@@ -14,6 +14,8 @@ class POSSESSIONGAME_API ATerminal : public AInteractableObject
 
 	ATerminal();
 
+	UPROPERTY(EditAnywhere, Category = "Mode", meta = (AllowPrivateAccess = true))
+	EGameMode RoomMode;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 

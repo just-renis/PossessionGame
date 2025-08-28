@@ -4,6 +4,7 @@
 #include "GameModeBaseLogic.h"
 #include "HackTerminalModeLogic.generated.h"
 
+enum class EGameMode : uint8;
 class UHackTerminalModeData;
 
 UCLASS()
@@ -15,6 +16,7 @@ class POSSESSIONGAME_API UHackTerminalModeLogic : public UGameModeBaseLogic
 	int32 TerminalsHackedAmount = 0;
 	float TerminalHackProgress = 0.f;
 	float TerminalHackRequired;
+	EGameMode CurrentTerminalRoomMode;
 	UPROPERTY()
 	TObjectPtr<UHackTerminalModeData> Data;
 	UPROPERTY()
@@ -22,6 +24,7 @@ class POSSESSIONGAME_API UHackTerminalModeLogic : public UGameModeBaseLogic
 	UPROPERTY()
 	FTimerHandle TaskProgressHandle;
 
+	void SetTerminalRoomMode(const EGameMode InTerminalRoomMode) { CurrentTerminalRoomMode = InTerminalRoomMode; }
 	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData) override;
 	virtual void Finalize() override;
 	virtual void HandleSpawning() override;

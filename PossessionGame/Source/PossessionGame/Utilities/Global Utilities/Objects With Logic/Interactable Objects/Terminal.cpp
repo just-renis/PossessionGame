@@ -22,6 +22,7 @@ void ATerminal::BeginPlay()
 void ATerminal::Interact()
 {
 	if (!GetIsInteractable()) return;
+	DelegateManager->SendHackTerminalRoomMode.Broadcast(RoomMode);
 	GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
 	DelegateManager->OnTerminalInteraction.RemoveAll(this);
 	DelegateManager->OnTerminalHackFinish.RemoveAll(this);
@@ -53,7 +54,6 @@ void ATerminal::ToggleInteractableWidget(const bool bState)
 	else
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	//	GetWorld()->GetSubsystem<UMarkerManager>()->DeleteMarkers();
 		FadeOutInteractableUI();
 	}
 }
