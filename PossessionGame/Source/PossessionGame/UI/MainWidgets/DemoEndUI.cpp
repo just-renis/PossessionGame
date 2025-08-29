@@ -41,11 +41,11 @@ void UDemoEndUI::FadeInFinished()
 void UDemoEndUI::ReturnToMainMenu()
 {
 	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, true, true, FName("MainMenu")));
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, true, FName("MainMenu")));
 }
 
 void UDemoEndUI::Continue()
 {
 	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, true, true, FName("Level_1")));
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, true, FName("Level_1")));
 }

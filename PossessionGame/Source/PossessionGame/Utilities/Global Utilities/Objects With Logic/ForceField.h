@@ -17,6 +17,8 @@ class POSSESSIONGAME_API AForceField : public AActor
 	float PatternOpacityDivisor = 0.f;
 	float DeploymentPercent = 0.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bAppearByGameModeInitiation = false;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bForTerminalHackRoom = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ForceFieldIndex = -1;
@@ -33,6 +35,7 @@ class POSSESSIONGAME_API AForceField : public AActor
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyThis();
 	void StartDissolveForceField(const int32 InIndex);
+	void AppearForceField(const EGameMode InGameMode);
 	void ProcessDissolveForceField();
 	void StartDeploymentOfForceField();
 	void ProcessDeploymentOfForceField();

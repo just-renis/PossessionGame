@@ -75,7 +75,7 @@ void UCharacterAbilitiesUI::NativeConstruct()
 	Abilities = { FirstAbility, SecondAbility, ThirdAbility, FourthAbility };
 	FirstAbility->GetButton()->OnClicked.AddDynamic(this, &UCharacterAbilitiesUI::FirstAbilitySelected);
 	SecondAbility->GetButton()->OnClicked.AddDynamic(this, &UCharacterAbilitiesUI::SecondAbilitySelected);
-	ThirdAbility->GetButton()->OnClicked.AddDynamic(this, &UCharacterAbilitiesUI::ThirdAbilitySelected);
+	//ThirdAbility->GetButton()->OnClicked.AddDynamic(this, &UCharacterAbilitiesUI::ThirdAbilitySelected);
 }
 
 void UCharacterAbilitiesUI::SetupAbilitySlot(const int32 InAbilityIndex, const bool bIsFirstSlot, TObjectPtr<UAbilityIconUI>& InAbilitySlot)

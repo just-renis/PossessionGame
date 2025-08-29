@@ -15,6 +15,12 @@ void AForceField::BeginPlay()
 {
 	Super::BeginPlay();
 	MID_Material = ForceField->CreateAndSetMaterialInstanceDynamic(0);
+	if (bAppearByGameModeInitiation)
+	{
+		SetMaterialValuesToInvisible();
+		ForceField->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AForceField::AppearForceField);
+	}
 	if (bForTerminalHackRoom)
 	{
 		SetMaterialValuesToInvisible();
@@ -46,6 +52,13 @@ void AForceField::StartDissolveForceField(const int32 InIndex)
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->StartForceFieldDissolve.RemoveAll(this);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySoundAtLocation(ESound::ForceFieldDissolve, GetActorLocation());
 	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AForceField::ProcessDissolveForceField, 0.025f, true);
+}
+
+void AForceField::AppearForceField(const EGameMode InGameMode)
+{
+	if (TerminalRoomMode != InGameMode) return;
+	ForceField->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	StartDeploymentOfForceField();
 }
 
 void AForceField::ProcessDissolveForceField()
