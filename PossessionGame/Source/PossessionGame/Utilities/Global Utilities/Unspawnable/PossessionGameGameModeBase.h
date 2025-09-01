@@ -29,6 +29,7 @@ public:
 	
 	TArray<TSubclassOf<APrefab>>* GetPrefabsByCategory(const EPrefabCategory Category);
 private:
+	float RunStartTime;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	bool bToggleDebugMode = false;
 	UPROPERTY(EditAnywhere, Category = "Character To Spawn", meta = (AllowPrivateAccess = true))
@@ -55,9 +56,12 @@ private:
 	TMap<EMarkerType, TObjectPtr<UTexture2D>> MarkerTypes;
 	UPROPERTY()
 	FTimerHandle PSOPrecachingHandle;
+	
+	int32 GetRunFinishedTime() const;
 
 	virtual void BeginPlay() override;
 	void LoadSettingsData();
 	void SpawnArtifact() const;
 	void InitAfterPSOPrecache();
+	void SetRunStart();
 };

@@ -1,27 +1,72 @@
 ﻿#include "DemoEndUI.h"
 #include "PlayerHUD.h"
 #include "Components/Button.h"
+#include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
+int32 UDemoEndUI::GetRank()
+{
+	if (Ranks.IsEmpty()) return 1;
+	for (int32 i = 0; i < Ranks.Num(); i++)
+	{
+		if (RunEndTime <= Ranks[i].TimeInSecondsMax) return Ranks.Num() - i;
+	}
+	return 1;
+}
+
+FString UDemoEndUI::GetConvertedNumber(const int32 InNumber)
+{
+	if (InNumber < 10) return TEXT("0") + FString::FromInt(InNumber);
+	return FString::FromInt(InNumber);
+}
+
 void UDemoEndUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	FadeInFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeInFinished);
 	BindToAnimationFinished(FadeInAnim, FadeInFinishedDelegate);
-	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 1.f, FLinearColor::Black, false, true);
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 0.25f, FLinearColor::Black, false, true);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = true;
 	PlayerController->SetInputMode(FInputModeGameAndUI());
 	PlayAnimation(FadeInAnim);
-	GetWorld()->GetTimerManager().SetTimer(PauseHandle, this, &UDemoEndUI::PauseGame, 1.f);
+	GetWorld()->GetTimerManager().SetTimer(PauseHandle, this, &UDemoEndUI::PauseGame, 0.25f);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(true);
+	SetupRankUI();
 }
 
 void UDemoEndUI::PauseGame() const { UGameplayStatics::SetGamePaused(GetWorld(), true); }
+
+void UDemoEndUI::SetupRankUI()
+{
+	if (!TimeText || !CoinsAmountText) return;
+	RunEndTime = GetGameInstance()->GetSubsystem<UDelegateManager>()->OnRunFinished.Execute();
+	SetRankTexture();
+	CoinsAmountText->SetText(FText::AsNumber(GetRank()));
+	const int32 Hours = RunEndTime / 3600;
+	const int32 Minutes = RunEndTime % 3600 / 60;
+	const int32 Seconds = RunEndTime % 60;
+	TimeText->SetText(FText::FromString(NSLOCTEXT("ST_Localization", "Time", "Time").ToString() + TEXT(" ") + GetConvertedNumber(Hours) + TEXT(":") + GetConvertedNumber(Minutes) + TEXT(":") + GetConvertedNumber(Seconds)));
+}
+
+void UDemoEndUI::SetRankTexture()
+{
+	if (!RankImage || Ranks.IsEmpty()) return;
+	for (const FRunTimeRankData RankData : Ranks)
+	{
+		if (RunEndTime <= RankData.TimeInSecondsMax)
+		{
+			RankImage->SetBrushFromAtlasInterface(RankData.RankTexture);
+			return;
+		}
+	}
+	RankImage->SetBrushFromAtlasInterface(Ranks.Last().RankTexture);
+}
 
 void UDemoEndUI::FadeInFinished()
 {
@@ -33,7 +78,7 @@ void UDemoEndUI::FadeInFinished()
 	if (ReplayButton)
 	{
 		ReplayButton->SetButtonVisibility(true);
-		ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Continue);
+		ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Replay);
 	}
 	UnbindFromAnimationFinished(FadeInAnim, FadeInFinishedDelegate);
 }
@@ -44,7 +89,7 @@ void UDemoEndUI::ReturnToMainMenu()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, true, FName("MainMenu")));
 }
 
-void UDemoEndUI::Continue()
+void UDemoEndUI::Replay()
 {
 	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, true, FName("Level_1")));

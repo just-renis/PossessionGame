@@ -30,6 +30,8 @@ DECLARE_DELEGATE(FOnGateClosed);
 DECLARE_DELEGATE(FOnTutorialMinionDeath);
 DECLARE_DELEGATE(FApplyUpgradeOnSelection);
 DECLARE_DELEGATE(FResetChargeTerminal);
+DECLARE_DELEGATE(FOnFirstGameModeInitiated);
+DECLARE_DELEGATE_RetVal(int32, FOnRunFinished);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const FRuntimeUpgradeData&);
@@ -98,6 +100,8 @@ public:
 	FOnTutorialMinionDeath OnTutorialMinionDeath;
 	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
 	FResetChargeTerminal ResetChargeTerminal;
+	FOnFirstGameModeInitiated OnFirstGameModeInitiated;
+	FOnRunFinished OnRunFinished;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnBossDamaged OnBossDamaged;

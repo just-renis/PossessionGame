@@ -14,6 +14,8 @@ class POSSESSIONGAME_API AGameModeInitiator : public AActor
 	AGameModeInitiator();
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bFirstGameMode = false;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EGameMode GameMode;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBoxComponent> Collision;

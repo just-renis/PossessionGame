@@ -24,6 +24,8 @@ TArray<TSubclassOf<APrefab>>* APossessionGameGameModeBase::GetPrefabsByCategory(
 	return nullptr;
 }
 
+int32 APossessionGameGameModeBase::GetRunFinishedTime() const { return FMath::FloorToInt(GetWorld()->GetTimeSeconds() - RunStartTime); }
+
 void APossessionGameGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -75,7 +77,15 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	PlayerController->SetInputMode(FInputModeGameOnly());
 	SpawnArtifact();
 	DelegateManager->OnGameModeInitialized.Broadcast();
+	DelegateManager->OnFirstGameModeInitiated.BindUObject(this, &APossessionGameGameModeBase::SetRunStart);
+	DelegateManager->OnRunFinished.BindUObject(this, &APossessionGameGameModeBase::GetRunFinishedTime);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(CharacterToSpawn, EGameMode::None, false, nullptr);
+}
+
+void APossessionGameGameModeBase::SetRunStart()
+{
+	UE_LOG(LogTemp, Error, TEXT("SET RUN START"));
+	RunStartTime = GetWorld()->GetTimeSeconds();
 }
 
 /*void APossessionGameGameModeBase::PlayCutscene(const EGameMode InGameMode)

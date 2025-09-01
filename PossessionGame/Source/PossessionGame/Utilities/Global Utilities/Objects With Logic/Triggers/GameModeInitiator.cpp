@@ -21,6 +21,7 @@ void AGameModeInitiator::Initiate(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	if (!OtherActor->ActorHasTag("Player")) return;
 	if (GameMode == EGameMode::ChargeTerminalMode) GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(true);
+	if (bFirstGameMode) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnFirstGameModeInitiated.ExecuteIfBound();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Destroy();
