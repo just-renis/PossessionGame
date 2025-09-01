@@ -28,8 +28,8 @@ FString UDemoEndUI::GetConvertedNumber(const int32 InNumber)
 void UDemoEndUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	FadeInFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeInFinished);
-	BindToAnimationFinished(FadeInAnim, FadeInFinishedDelegate);
+	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeInFinished);
+	BindToAnimationFinished(FadeInAnim, FadeFinishedDelegate);
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 0.25f, FLinearColor::Black, false, true);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = true;
@@ -80,17 +80,31 @@ void UDemoEndUI::FadeInFinished()
 		ReplayButton->SetButtonVisibility(true);
 		ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Replay);
 	}
-	UnbindFromAnimationFinished(FadeInAnim, FadeInFinishedDelegate);
+	UnbindFromAnimationFinished(FadeInAnim, FadeFinishedDelegate);
 }
 
 void UDemoEndUI::ReturnToMainMenu()
 {
-	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, true, FName("MainMenu")));
+	if (bAlreadyClickedButton) return;
+	bAlreadyClickedButton = true;
+	LevelNameToLoad = FName("MainMenu");
+	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeOutToNextLevel);
+	PlayAnimation(FadeOutAnim);
+	BindToAnimationFinished(FadeOutAnim, FadeFinishedDelegate);
 }
 
 void UDemoEndUI::Replay()
 {
+	if (bAlreadyClickedButton) return;
+	bAlreadyClickedButton = true;
+	LevelNameToLoad = FName("Level_1");
+	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeOutToNextLevel);
+	PlayAnimation(FadeOutAnim);
+	BindToAnimationFinished(FadeOutAnim, FadeFinishedDelegate);
+}
+
+void UDemoEndUI::FadeOutToNextLevel()
+{
 	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, true, FName("Level_1")));
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, true, LevelNameToLoad));
 }

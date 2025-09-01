@@ -24,7 +24,9 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 {
 	GENERATED_BODY()
 
+	bool bAlreadyClickedButton = false;
 	int32 RunEndTime;
+	FName LevelNameToLoad;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TArray<FRunTimeRankData> Ranks;
 	UPROPERTY(meta = (BindWidget))
@@ -39,8 +41,10 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	TObjectPtr<UTextBlock> CoinsAmountText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> FadeOutAnim;
 	UPROPERTY()
-	FWidgetAnimationDynamicEvent FadeInFinishedDelegate;
+	FWidgetAnimationDynamicEvent FadeFinishedDelegate;
 	UPROPERTY()
 	FTimerHandle PauseHandle;
 
@@ -57,4 +61,6 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	void ReturnToMainMenu();
 	UFUNCTION()
 	void Replay();
+	UFUNCTION()
+	void FadeOutToNextLevel();
 };
