@@ -48,7 +48,7 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	UPROPERTY()
 	FTimerHandle PauseHandle;
 
-	int32 GetRank();
+	int32 GetRankCoinsAmount();
 	FString GetConvertedNumber(const int32 InNumber);
 
 	virtual void NativeConstruct() override;

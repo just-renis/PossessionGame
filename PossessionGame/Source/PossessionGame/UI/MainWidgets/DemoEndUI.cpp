@@ -6,10 +6,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
-int32 UDemoEndUI::GetRank()
+int32 UDemoEndUI::GetRankCoinsAmount()
 {
 	if (Ranks.IsEmpty()) return 1;
 	for (int32 i = 0; i < Ranks.Num(); i++)
@@ -47,7 +49,9 @@ void UDemoEndUI::SetupRankUI()
 	if (!TimeText || !CoinsAmountText) return;
 	RunEndTime = GetGameInstance()->GetSubsystem<UDelegateManager>()->OnRunFinished.Execute();
 	SetRankTexture();
-	CoinsAmountText->SetText(FText::AsNumber(GetRank()));
+	const int32 CoinsAmount = GetRankCoinsAmount();
+	CoinsAmountText->SetText(FText::AsNumber(CoinsAmount));
+	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddCurrencyAmount(CoinsAmount);
 	const int32 Hours = RunEndTime / 3600;
 	const int32 Minutes = RunEndTime % 3600 / 60;
 	const int32 Seconds = RunEndTime % 60;
