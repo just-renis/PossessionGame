@@ -30,10 +30,10 @@ void UDemoEndUI::FadeInFinished()
 		ReturnToMenuButton->SetButtonVisibility(true);
 		ReturnToMenuButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::ReturnToMainMenu);
 	}
-	if (ContinueButton)
+	if (ReplayButton)
 	{
-		ContinueButton->SetButtonVisibility(true);
-		ContinueButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Continue);
+		ReplayButton->SetButtonVisibility(true);
+		ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Continue);
 	}
 	UnbindFromAnimationFinished(FadeInAnim, FadeInFinishedDelegate);
 }

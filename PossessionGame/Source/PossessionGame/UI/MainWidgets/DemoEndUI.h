@@ -4,6 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "DemoEndUI.generated.h"
 
+class UTextBlock;
+class UImage;
 class UMainMenuButtonUI;
 
 UCLASS()
@@ -12,9 +14,13 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	GENERATED_BODY()
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UMainMenuButtonUI> ContinueButton;
+	TObjectPtr<UMainMenuButtonUI> ReplayButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> ReturnToMenuButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> RankImage;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> TimeText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY()
