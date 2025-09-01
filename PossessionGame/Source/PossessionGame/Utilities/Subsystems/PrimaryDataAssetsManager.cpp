@@ -493,6 +493,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_AlertSignalization", ESound::AlertSignalization);
 	SoundMap.Add("PA_DoorBreak", ESound::DoorBreak);
 	SoundMap.Add("PA_Slide", ESound::Slide);
+	SoundMap.Add("PA_EndScreenFadeIn", ESound::EndScreenFadeIn);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

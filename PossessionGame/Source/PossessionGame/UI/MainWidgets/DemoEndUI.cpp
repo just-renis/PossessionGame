@@ -8,6 +8,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -42,7 +43,11 @@ void UDemoEndUI::NativeConstruct()
 	SetupRankUI();
 }
 
-void UDemoEndUI::PauseGame() const { UGameplayStatics::SetGamePaused(GetWorld(), true); }
+void UDemoEndUI::PauseGame() const
+{
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::EndScreenFadeIn);
+}
 
 void UDemoEndUI::SetupRankUI()
 {
@@ -109,6 +114,5 @@ void UDemoEndUI::Replay()
 
 void UDemoEndUI::FadeOutToNextLevel()
 {
-	GetWorld()->GetTimerManager().ClearTimer(PauseHandle);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, true, LevelNameToLoad));
 }

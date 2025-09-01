@@ -47,6 +47,8 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	FWidgetAnimationDynamicEvent FadeFinishedDelegate;
 	UPROPERTY()
 	FTimerHandle PauseHandle;
+	UPROPERTY()
+	FTimerHandle PlayFadeInSoundHandle;
 
 	int32 GetRankCoinsAmount();
 	FString GetConvertedNumber(const int32 InNumber);
