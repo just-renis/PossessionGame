@@ -82,11 +82,7 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(CharacterToSpawn, EGameMode::None, false, nullptr);
 }
 
-void APossessionGameGameModeBase::SetRunStart()
-{
-	UE_LOG(LogTemp, Error, TEXT("SET RUN START"));
-	RunStartTime = GetWorld()->GetTimeSeconds();
-}
+void APossessionGameGameModeBase::SetRunStart() { RunStartTime = GetWorld()->GetTimeSeconds(); }
 
 /*void APossessionGameGameModeBase::PlayCutscene(const EGameMode InGameMode)
 {
