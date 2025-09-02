@@ -114,6 +114,7 @@ public:
 	void SetInputState(const bool bState) { bIsInputLocked = bState; }
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
+	void SetMovementSpeedMultiplier(const float InMultiplier);
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -201,7 +202,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void SetAnimInstance();
-	void SetMaxWalkSpeed(const float Speed) const;
+	void SetMaxWalkSpeed(float Speed = -1.f) const;
 	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
@@ -232,6 +233,7 @@ private:
 	float DamageReduction = 1.f;
 	float DefaultCameraZ;
 	float ActionSpeed = 1.f;
+	float MovementSpeedMultiplier = 1.f;
 	int32 OverlappingPoisonAreas = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Destroy After Seconds", meta = (AllowPrivateAccess = true))
 	float DestroyAfter = 5.f;

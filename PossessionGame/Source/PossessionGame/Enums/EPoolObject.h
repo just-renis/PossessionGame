@@ -19,6 +19,5 @@ enum class EPoolObject : uint8
 	DamageNumber,
 	PoisonArea,
 	Usb,
-	Artifact,
-	Coin
+	Artifact
 };

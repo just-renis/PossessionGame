@@ -10,9 +10,8 @@ void UMinionBossAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsI
 	if (StompMontage && Montage == StompMontage->Get())
 	{
 		(void)Cast<AMinionBossAIController>(Proprietor->GetAI())->OnStompFinished.ExecuteIfBound();
-		Proprietor->SetIsActionInMotion(false);
-		Proprietor->SetIsAbilityInAction(false);
 		SetIsActionMontagePlaying(false);
+		Cast<AMinionBoss>(Proprietor)->OnStompFinish();
 		return;
 	}
 	const TObjectPtr<UAnimMontage>* StopLaserMontage = Montages.Find(EEnemyAnimState::StopLaser);

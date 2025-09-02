@@ -15,6 +15,5 @@ class POSSESSIONGAME_API USTTaskRangerDeployShield : public UStateTreeTaskBluepr
 	TObjectPtr<ARangerAIController> CachedController;
 
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
-	UFUNCTION()
 	void DeployShieldFinished();
 };

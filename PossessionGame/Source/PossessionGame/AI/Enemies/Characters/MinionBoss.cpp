@@ -12,9 +12,7 @@
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EWeapon.h"
-#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
-#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -46,7 +44,22 @@ void AMinionBoss::OnLaserFinish()
 {
 	SetIsActionInMotion(false);
 	SetIsAbilityInAction(false);
+	if (bIsMoveDirectlyToPlayerTriggered) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
 	if (bStompIsReady) ToggleStompTrigger(true);
+}
+
+void AMinionBoss::OnStompFinish()
+{
+	SetIsActionInMotion(false);
+	SetIsAbilityInAction(false);
+	if (bIsMoveDirectlyToPlayerTriggered) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
+}
+
+void AMinionBoss::ResetMoveDirectlyToPlayer()
+{
+	bIsMoveDirectlyToPlayerTriggered = false;
+	SetMovementSpeedMultiplier(1.f);
+	GetWorld()->GetTimerManager().SetTimer(MoveDirectlyToPlayerHandle, this, &AMinionBoss::SetMoveDirectlyToPlayer, MoveDirectlyToPlayerInterval, false);
 }
 
 AMinionBoss::AMinionBoss()
@@ -151,6 +164,7 @@ void AMinionBoss::BeginPlay()
 	LaserCollision->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionBeginOverlap);
 	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
 	(void)DelegateManager->OnBossSpawn.ExecuteIfBound();
+	GetWorld()->GetTimerManager().SetTimer(MoveDirectlyToPlayerHandle, this, &AMinionBoss::SetMoveDirectlyToPlayer, MoveDirectlyToPlayerInterval, false);
 	SetupStompTrigger();
 }
 
@@ -195,11 +209,11 @@ void AMinionBoss::DestroyStompTriggerSphere() const
 
 void AMinionBoss::InitiateDeath()
 {
+	GetWorld()->GetTimerManager().ClearTimer(MoveDirectlyToPlayerHandle);
 	if (MI_Defeated) MI_MeshBaseMaterial = UMaterialInstanceDynamic::Create(MI_Defeated, this);
 	(void)StopLaser.ExecuteIfBound();
 	DestroyStompTriggerSphere();
 	GetMesh()->SetMaterial(0, MI_MeshBaseMaterial);
-	SpawnCoins();
 	Super::InitiateDeath();
 	DelegateManager->OnBossDeath.Broadcast();
 }
@@ -242,6 +256,7 @@ void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 	if (!Target) return;
 	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) >= FMath::Square(1000.f))
 	{
+		if (bIsMoveDirectlyToPlayerTriggered) ResetMoveDirectlyToPlayer();
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossLaserEye);
 		GetWorld()->GetTimerManager().ClearTimer(CheckLaserEyeDistanceHandle);
 	}
@@ -249,28 +264,19 @@ void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 
 void AMinionBoss::DealLaserDamageToPlayer() const { if (Player) Player->ReceiveDamage(2.f, EDamageReason::MinionBossDamage); }
 
-void AMinionBoss::SpawnCoins() const
+void AMinionBoss::SetMoveDirectlyToPlayer()
 {
-	const FVector Location = GetSocketLocation("StompSocket");
-	const TObjectPtr<UPoolingManager> PoolingManager = GetWorld()->GetSubsystem<UPoolingManager>();
-	switch (FMath::RandRange(1, 3))
+	bIsMoveDirectlyToPlayerTriggered = true;
+	if (!GetIsAbilityInAction())
 	{
-		case 1: PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(-35.f, 0.f, 120.f))->Init(); break;
-		case 2:
-			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(15.f, 0.f, 120.f))->Init();
-			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location - FVector(15.f, 0.f, 120.f))->Init();
-			break;
-		case 3:
-			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(-35.f, 30.f, 120.f))->Init();
-			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(-85.f, -30.f, 120.f))->Init();
-			PoolingManager->SpawnObjectFromPool(EPoolObject::Coin, Location + FVector(15.f, -30.f, 120.f))->Init();
-		default: ;
+		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
 	}
 }
 
 void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor)
 {
 	if (!AI || bAffectedByEmp) return;
+	if (bIsMoveDirectlyToPlayerTriggered) ResetMoveDirectlyToPlayer();
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
 	ToggleStompTrigger(false);
 	bStompIsReady = false;

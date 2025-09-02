@@ -21,22 +21,27 @@ public:
 	TObjectPtr<UNiagaraComponent> GetLaser() const { return LaserVfx; }
 	TObjectPtr<UNiagaraComponent> GetLaserEyeBall() const { return LaserEyeBallVfx; }
 
+	void SetIsStompReady(const bool bState) { bStompIsReady = bState; }
 	void ActivateStompTrigger();
 	void TriggerStompCameraShake() const;
 	void EnableLaserEyeBall();
 	void EnableLaser();
 	void EnableDistanceCheckForLaserEye();
 	void OnLaserFinish();
-	void SetIsStompReady(const bool bState) { bStompIsReady = bState; }
+	void OnStompFinish();
+	void ResetMoveDirectlyToPlayer();
 private:
 	AMinionBoss();
 
 	FStopLaser StopLaser;
 	
 	bool bStompIsReady = false;
+	bool bIsMoveDirectlyToPlayerTriggered = false;
 	int32 CurrentWeaponIndex = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompTriggerRadiusInMeters = 3.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	float MoveDirectlyToPlayerInterval = 10.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Laser Collision", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCapsuleComponent> LaserCollision;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
@@ -55,6 +60,8 @@ private:
 	FTimerHandle CheckLaserEyeDistanceHandle;
 	UPROPERTY()
 	FTimerHandle DealLaserDamageToPlayerHandle;
+	UPROPERTY()
+	FTimerHandle MoveDirectlyToPlayerHandle;
 
 	virtual TObjectPtr<AWeapon>& GetWeapon() override; // For getting singular weapon data only.
 	
@@ -83,7 +90,7 @@ private:
 	void CheckDistanceOfLaserEyeTrigger();
 	void DealLaserDamageToPlayer() const;
 	virtual void SetUnHijackOutline(const bool bState) const override {}
-	void SpawnCoins() const;
+	void SetMoveDirectlyToPlayer();
 	UFUNCTION()
 	void OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor);
 	UFUNCTION()

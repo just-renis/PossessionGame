@@ -14,7 +14,7 @@ struct FRunTimeRankData
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	int32 TimeInSecondsMax;
+	int32 TimeInSecondsMax = 0;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UTexture2D> RankTexture;
 };

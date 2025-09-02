@@ -76,7 +76,7 @@ void UEnemyAnimationInstance::ClearMontageWithHoldHandle() { GetWorld()->GetTime
 void UEnemyAnimationInstance::SetGlobalPlayRate(const float InRate)
 {
     GlobalPlayRate = InRate;
-    if (const TObjectPtr<UAnimMontage> CurrentMontage = GetCurrentActiveMontage()) Montage_SetPlayRate(CurrentMontage, GlobalPlayRate);
+    SetCurrentPlayRate();
 }
 
 bool UEnemyAnimationInstance::IsMontageExisting(const EEnemyAnimState InState) const
@@ -128,4 +128,9 @@ void UEnemyAnimationInstance::NativeUpdateAnimation(const float InDeltaSeconds)
 void UEnemyAnimationInstance::LoadMontageIfNotLoaded(const EEnemyAnimState InState)
 {
     if (!Montages.Contains(InState)) Montages.Add(InState, AssetsManager->GetCharacterData(Proprietor->GetCharacterName()).GetCharacterContainer()->Montages[InState].LoadSynchronous());
+}
+
+void UEnemyAnimationInstance::SetCurrentPlayRate()
+{
+    if (const TObjectPtr<UAnimMontage> CurrentMontage = GetCurrentActiveMontage()) Montage_SetPlayRate(CurrentMontage, GlobalPlayRate);
 }

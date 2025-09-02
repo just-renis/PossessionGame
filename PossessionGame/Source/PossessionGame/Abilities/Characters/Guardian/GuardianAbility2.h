@@ -14,6 +14,7 @@ public:
 	virtual void P_Execute() override;
 	virtual void P_StopAbility() override;
 private:
+	float Dilation = 3.f;
 	UPROPERTY()
 	TObjectPtr<AGuardian> Proprietor;
 

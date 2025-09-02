@@ -15,10 +15,10 @@ void UMinionBossAbility2::AI_Execute()
 	Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::ShootLaser, 6.f, false);
 	Proprietor->PlaySound(ESound::MinionBossLaserEyeCharge, true);
 	Proprietor->EnableLaserEyeBall();
-	PlayerLocationAtInitiation = Proprietor->GetAI()->GetStateTreeData().GetTarget()->GetActorLocation();
 	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetIsActionMontagePlaying(true);
 	CurrentRotationSpeed = MinSpeed;
-	GetWorld()->GetTimerManager().SetTimer(ShootLaserHandle, this, &UMinionBossAbility2::ShootLaser, 1.65f, false);
+	GetWorld()->GetTimerManager().SetTimer(ReceivePlayerPositionHandle, this, &UMinionBossAbility2::ReceivePlayerPosition, LaserActivationFromExecution - PlayerPositionReceiveBeforeLaserActivation);
+	GetWorld()->GetTimerManager().SetTimer(ShootLaserHandle, this, &UMinionBossAbility2::ShootLaser, LaserActivationFromExecution);
 }
 
 void UMinionBossAbility2::AI_StopAbility()
@@ -118,4 +118,9 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	Proprietor->GetLaserCollision()->SetCapsuleSize(35.f, Distance * 0.5f);
 	// Laser length vfx change.
 	Proprietor->GetLaser()->SetFloatParameter(TEXT("_Length"), Distance * 0.0007f);
+}
+
+void UMinionBossAbility2::ReceivePlayerPosition()
+{
+	PlayerLocationAtInitiation = Proprietor->GetAI()->GetStateTreeData().GetTarget()->GetActorLocation();
 }

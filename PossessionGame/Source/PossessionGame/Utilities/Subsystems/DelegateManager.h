@@ -37,7 +37,6 @@ DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const FRuntimeUpgradeData&);
 DECLARE_DELEGATE_OneParam(FRequirePlayerAnnouncementInfo, const FText&);
 DECLARE_DELEGATE_OneParam(FChangeMusicPlayerState, const bool);
-DECLARE_DELEGATE_OneParam(FOnCoinCollected, const int32);
 DECLARE_DELEGATE_OneParam(FOnXpReceived, const int32);
 DECLARE_DELEGATE_OneParam(FApplySecretBoostHealth, const int32);
 DECLARE_DELEGATE_OneParam(FOnOpenUnlockAbilityPopup, const int32);
@@ -110,7 +109,6 @@ public:
 	FOnUpgradeCardSelected OnUpgradeCardSelected;
 	FRequirePlayerAnnouncementInfo RequirePlayerAnnouncementInfo;
 	FChangeMusicPlayerState ChangeMusicPlayerState;
-	FOnCoinCollected OnCoinCollected;
 	FOnXpReceived OnXpReceived;
 	FApplySecretBoostHealth ApplySecretBoostHealth;
 	FOnOpenUnlockAbilityPopup OnOpenUnlockAbilityPopup;

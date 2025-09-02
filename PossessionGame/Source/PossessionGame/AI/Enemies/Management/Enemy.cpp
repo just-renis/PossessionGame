@@ -362,6 +362,12 @@ void AEnemy::ChangeOverlappingPoisonAreasInState(const bool bState)
 	}
 }
 
+void AEnemy::SetMovementSpeedMultiplier(const float InMultiplier)
+{
+	MovementSpeedMultiplier = InMultiplier;
+	SetMaxWalkSpeed();
+}
+
 void AEnemy::AI_SetupAbilities()
 {
 	const TMap<EAbility, TSoftObjectPtr<UAbilityData>> AbilitiesData = AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->AI_Abilities_Data;
@@ -632,10 +638,16 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AEnemy::SetAnimInstance() { AnimInstance = Cast<UEnemyAnimationInstance>(GetMesh()->GetAnimInstance()); }
 
-void AEnemy::SetMaxWalkSpeed(const float Speed) const
+void AEnemy::SetMaxWalkSpeed(float Speed) const
 {
-	GetCharacterMovement()->MaxWalkSpeed = Speed * ActionSpeed;
-	GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetSafeNormal() * Speed * ActionSpeed;
+	if (Speed < 0.f)
+	{
+		if (bIsHijacked) Speed = GetMoveMode() == EMoveMode::Walk ? P_Data->GetMaxWalkSpeed() : P_Data->GetMaxRunSpeed();
+		else Speed = GetMoveMode() == EMoveMode::Walk ? AI_Data->GetMaxWalkSpeed() : AI_Data->GetMaxRunSpeed();
+	}
+	GetCharacterMovement()->MaxWalkSpeed = Speed * MovementSpeedMultiplier * ActionSpeed;
+	GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetSafeNormal() * MovementSpeedMultiplier * Speed * ActionSpeed;
+	if (AnimInstance) AnimInstance->SetMovementPlayRate(MovementSpeedMultiplier);
 }
 
 void AEnemy::AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const

@@ -15,6 +15,5 @@ class POSSESSIONGAME_API USTTaskMinionBossStomp : public UStateTreeTaskBlueprint
 	TObjectPtr<AMinionBossAIController> CachedController;
 	
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
-	UFUNCTION()
 	void StompFinished();
 };

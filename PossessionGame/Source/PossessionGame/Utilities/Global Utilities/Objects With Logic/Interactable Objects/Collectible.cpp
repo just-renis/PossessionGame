@@ -70,7 +70,6 @@ void ACollectible::Collect()
 	{
 		case EPoolObject::Usb: (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.ExecuteIfBound(); break;
 		case EPoolObject::Artifact: (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.ExecuteIfBound(); break;
-		case EPoolObject::Coin: (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnCoinCollected.ExecuteIfBound(1);
 		default: ;
 	}
 }

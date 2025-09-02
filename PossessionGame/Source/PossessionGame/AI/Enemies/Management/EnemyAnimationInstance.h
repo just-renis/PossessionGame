@@ -21,6 +21,7 @@ public:
 	void SetSpeed(const float InValue) { Speed = InValue; }
 	void SetLookAtLocation(const FVector& InLookAtLocation) { LookAtLocation = InLookAtLocation; }
 	void SetIsControlRigEnabled(const bool bState) { bIsControlRigEnabled = bState; }
+	void SetMovementPlayRate(const float InRate) { MovementPlayRate = InRate; }
 	void SetDirectionalAngle();
 	void PlayMontage(const EEnemyAnimState InState);
 	void PlayMontageWithHold(const EEnemyAnimState InState, const float InHoldTime, const bool bNeedsToStopAILogic);
@@ -56,10 +57,13 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	float DirectionalAngle = 0.f;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
+	float MovementPlayRate = 1.f;
+	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	FVector LookAtLocation = FVector::ZeroVector;
 	UPROPERTY()
 	FTimerHandle MontageWithHoldHandle;
 
 	virtual void NativeUpdateAnimation(const float InDeltaSeconds) override;
 	void LoadMontageIfNotLoaded(const EEnemyAnimState InState);
+	void SetCurrentPlayRate();
 };

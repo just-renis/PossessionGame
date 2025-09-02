@@ -65,7 +65,6 @@ void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInsta
 	GameInstance = InGameInstance;
 	PlayerLevelData = GameInstance->GetPlayerLevelData();
 	SlotName = InSlotName;
-	GameInstance->GetSubsystem<UDelegateManager>()->OnCoinCollected.BindUObject(this, &USaveSlot::AddCurrencyAmount);
 	GameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
 	#if WITH_EDITOR
 		if (GameInstance->GetUseCustomLevel()) CurrentLevel = GameInstance->GetPlayerLevel();
