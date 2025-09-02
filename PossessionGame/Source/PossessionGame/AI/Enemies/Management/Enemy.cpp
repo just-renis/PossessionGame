@@ -1015,17 +1015,30 @@ void AEnemy::P_QuickMeleeAttack()
 void AEnemy::P_ProcessMeleeAttack()
 {
 	(void)DelegateManager->MeleeAttackOccured.ExecuteIfBound();
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
+	FCollisionQueryParams OverlapParams;
+	OverlapParams.AddIgnoredActor(this);
 	TArray<FOverlapResult> Overlaps;
-	GetWorld()->OverlapMultiByProfile(Overlaps, GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1"), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(QuickMeleeAttackRadiusInMeters * 100.f), Params);
+	const FVector Origin = GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1") - GetActorForwardVector() * 30.f;
+	GetWorld()->OverlapMultiByProfile(Overlaps, Origin, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(QuickMeleeAttackRadiusInMeters * 100.f), OverlapParams);
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
-		TObjectPtr<AActor> HitActor = Overlap.GetActor();
-		if (!HitActor || HitActor == this || !HitActor->ActorHasTag("AliveEnemy")) continue;
-		AssetsManager->PlaySound2D(ESound::DamageTick);
-		(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
-		UGameplayStatics::ApplyDamage(HitActor, QuickMeleeAttackDamage, GetController(), this, UDamageType::StaticClass());
+		TObjectPtr<AActor> Enemy = Overlap.GetActor();
+		if (Enemy && Enemy->ActorHasTag("AliveEnemy"))
+		{
+			FVector ToEnemy = (Enemy->GetActorLocation() - Origin).GetSafeNormal();
+			if (FVector::DotProduct(GetActorForwardVector(), ToEnemy) >= 0.342f)
+			{
+				FHitResult Hit;
+				FCollisionQueryParams TraceParams;
+				TraceParams.AddIgnoredActor(this);
+				TraceParams.AddIgnoredActor(Enemy);
+				if (!GetWorld()->LineTraceSingleByChannel(Hit, Origin, Enemy->GetActorLocation(), ECC_Visibility, TraceParams))
+				{
+					UGameplayStatics::ApplyDamage(Enemy, QuickMeleeAttackDamage, GetController(), this, UDamageType::StaticClass());
+					(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
+				}
+			}
+		}
 	}
 }
 
@@ -1072,7 +1085,19 @@ void AEnemy::P_StompImpact(const FVector& InHitLocation)
 	GetWorld()->OverlapMultiByProfile(Overlaps, InHitLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompRadiusInMeters * 100.f));
 	for (const FOverlapResult& Result : Overlaps)
 	{
-		if (Result.GetActor()->ActorHasTag("AliveEnemy")) UGameplayStatics::ApplyDamage(Result.GetActor(), StompDamage, nullptr, this, UDamageType::StaticClass());
+		TObjectPtr<AActor> Enemy = Result.GetActor();
+		if (Enemy && Enemy->ActorHasTag("AliveEnemy"))
+		{
+			FHitResult Hit;
+			FCollisionQueryParams Params;
+			Params.AddIgnoredActor(this);
+			Params.AddIgnoredActor(Enemy);
+			if (!GetWorld()->LineTraceSingleByChannel(Hit, InHitLocation, Enemy->GetActorLocation(), ECC_Visibility, Params))
+			{
+				UGameplayStatics::ApplyDamage(Enemy, StompDamage, nullptr, this, UDamageType::StaticClass());
+				(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
+			}
+		}
 	}
 }
 
