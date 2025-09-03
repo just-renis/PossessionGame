@@ -25,7 +25,7 @@ private:
 
 	virtual bool IsProprietorPossessed() override;
 	
-	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) override;
-	virtual void CooldownLogic(const float DeltaTime) override;
+	virtual void SetProprietor(TObjectPtr<AEnemy> InAbilityProprietor) override;
+	virtual void CooldownLogic(const float InDeltaTime) override;
 	virtual void SetupUpgradeAppliance(const bool bIsPlayer) override;
 };

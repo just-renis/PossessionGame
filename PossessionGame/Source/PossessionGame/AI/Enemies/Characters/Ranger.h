@@ -4,7 +4,7 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "Ranger.generated.h"
 
-class ATriggerSphere;
+class USphereComponent;
 class UNiagaraComponent;
 
 UCLASS()
@@ -24,9 +24,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade Launcher", meta = (AllowPrivateAccess = true))
 	float GrenadeLaunchTriggerRadiusInMetres = 10.f;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> GrenadeLauncherMuzzleFlashComponent;
+	TObjectPtr<UNiagaraComponent> AI_GrenadeLauncherMuzzleFlashComponent;
 	UPROPERTY()
-	TObjectPtr<ATriggerSphere> AIGrenadeLaunchTriggerSphere;
+	TObjectPtr<USphereComponent> AI_GrenadeLaunchTrigger;
 	UPROPERTY()
 	FTimerHandle TryTriggeringGrenadeLaunchHandle;
 
@@ -35,8 +35,10 @@ private:
 	virtual void AI_PlayDeathSound() override;
 	virtual void AI_PlaySpawnSound() override;
 	virtual void AI_PlayDeathElectrification() override;
+	void AI_DestroyGrenadeLaunchTriggerSphere() const;
+	void AI_TryTriggeringGrenadeLaunch();
 	UFUNCTION()
-	void AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor);
+	void AI_OnPlayerEnterGrenadeLaunchTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	virtual void P_Setup() override;
 	virtual void P_SetupColorsForUI() override;
@@ -48,7 +50,4 @@ private:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitiateDeath() override;
-	void SetupGrenadeLaunchTriggerSphere();
-	void DestroyGrenadeLaunchTriggerSphere() const;
-	void TryTriggeringGrenadeLaunch();
 };

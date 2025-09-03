@@ -11,7 +11,7 @@ class POSSESSIONGAME_API APoisonArea : public AOvertimeDamager
 
 	bool bIsActionSpeedReduceUpgradeTaken = false;
 
-	virtual void Init(const bool bInIsPlayerObject) override;
+	virtual void Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason) override;
 	virtual void DealOvertimeDamage() override;
 	virtual void AddTarget(const TObjectPtr<AEnemy>& InTarget) override;
 	virtual void RemoveTarget(const TObjectPtr<AEnemy>& InTarget) override;

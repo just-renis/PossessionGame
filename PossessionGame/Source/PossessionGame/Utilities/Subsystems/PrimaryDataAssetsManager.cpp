@@ -545,6 +545,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TricksterEmpGrenadeTrail", EVfx::TricksterEmpGrenadeTrail);
 	VfxsMap.Add("PA_TricksterPoisonGrenadeTrail", EVfx::TricksterPoisonGrenadeTrail);
 	VfxsMap.Add("PA_TricksterSpawn", EVfx::TricksterSpawn);
+	VfxsMap.Add("PA_TricksterGrenadeLauncherMarker", EVfx::TricksterGrenadeLauncherMarker);
 	VfxsMap.Add("PA_SpyMuzzle", EVfx::SpyMuzzle);
 	VfxsMap.Add("PA_SpyBulletTrail", EVfx::SpyBulletTrail);
 	VfxsMap.Add("PA_SpyBulletImpact", EVfx::SpyBulletImpact);

@@ -33,6 +33,7 @@ enum class EVfx : uint8
 	TricksterEmpGrenadeTrail,
 	TricksterPoisonGrenadeTrail,
 	TricksterSpawn,
+	TricksterGrenadeLauncherMarker,
 	SpyBulletTrail,
 	SpyBulletImpact,
 	SpyMuzzle,

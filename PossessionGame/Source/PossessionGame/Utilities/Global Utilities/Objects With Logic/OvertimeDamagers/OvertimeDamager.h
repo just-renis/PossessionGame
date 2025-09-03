@@ -1,23 +1,20 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "OvertimeDamager.generated.h"
 
 enum class EDamageReason : uint8;
-enum class EAbility : uint8;
 class AEnemy;
 class USphereComponent;
 
 UCLASS()
-class POSSESSIONGAME_API AOvertimeDamager : public APoolObject
+class POSSESSIONGAME_API AOvertimeDamager : public AActor
 {
 	GENERATED_BODY()
 public:
 	AOvertimeDamager();
 	
-	void Setup(const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason);
-	virtual void Init(bool bInIsPlayerObject) override;
+	virtual void Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason);
 protected:
 	float Damage;
 	float DamageTick;

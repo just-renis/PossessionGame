@@ -23,15 +23,13 @@ void UAbility::P_StopAbility()
 void UAbility::Tick(const float InDeltaTime)
 {
 	if (bIsAbilityInDuration) AbilityInDurationLogic(InDeltaTime);
-	if (!bIsCooldownKill && CurrentChargesAmount < MaxChargesAmount) CooldownLogic(InDeltaTime);
+	if (CurrentChargesAmount < MaxChargesAmount) CooldownLogic(InDeltaTime);
 }
 
 void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
 {			
 	Data = InAbilityData;
 	DelegateManager = InDelegateManager;
-	ReqCooldownKill = InAbilityData->GetCurrentCooldownKill();
-	if (CurrentCooldownKill > 0) bIsCooldownKill = true;
 	SetProprietor(InAbilityProprietor);
 	SetupUpgradeAppliance(IsProprietorPossessed());
 	if (InAbilityProprietor->GetIsHijacked()) P_ApplyVariation();
@@ -51,12 +49,6 @@ void UAbility::P_Execute()
 {
 	UseCharge();
 	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(AbilityIndex, GetIsAbilityCharged(), !bIsAbilityInDuration);
-}
-
-void UAbility::UseCharge()
-{
-	if (bIsCooldownKill) CurrentCooldownKill = 0;
-	else CurrentChargesAmount--;
 }
 
 void UAbility::CooldownLogic(const float InDeltaTime)

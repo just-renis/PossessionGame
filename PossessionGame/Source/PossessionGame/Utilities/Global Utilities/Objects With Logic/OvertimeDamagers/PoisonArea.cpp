@@ -8,10 +8,10 @@
 #include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 
-void APoisonArea::Init(const bool bInIsPlayerObject)
+void APoisonArea::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason)
 {
 	bIsActionSpeedReduceUpgradeTaken = GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility1, EUpgradeAttribute::Special1);
-	Super::Init(bInIsPlayerObject);
+	Super::Setup(bInIsPlayerObject, InDamage, InDamageTick, InLifeSpan, InRadiusSize, InDamageReason);
 }
 
 void APoisonArea::DealOvertimeDamage()

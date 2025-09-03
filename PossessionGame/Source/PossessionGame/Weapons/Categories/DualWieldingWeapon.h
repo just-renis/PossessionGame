@@ -53,6 +53,10 @@ private:
     
     virtual void P_SetVariationMaterial() override;
 
+    virtual FVector GetSocketLocation(const FName InSocketName) const override;
+    virtual FRotator GetSocketRotation(const FName InSocketName) const override;
+    virtual FVector GetSocketScale(const FName InSocketName) const override;
+    
     void CyclingModeLogic();
     void NonCyclingModeLogic();
     virtual void SetReverseActionSpeed(const float InActionSpeed) override;

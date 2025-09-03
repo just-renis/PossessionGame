@@ -33,6 +33,7 @@ AProjectile::AProjectile()
 void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale, const int32 InWhich)
 {
 	SetActorScale3D(Scale);
+	UE_LOG(LogTemp, Error, TEXT("SCALE SIZE: %s %s"), *GetName(), *Scale.ToString());
 	ProjectileData = InProjectileData;
 	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
 	SetupData(ProjectileData.bIsPlayerProjectile, InWhich);
@@ -93,10 +94,10 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	OnImpact(Hit);
 	if (ProjectileData.bProjectileDealsAreaDamage)
 	{
-		if (ProjectileData.ProjectileName == EPoolObject::RangerGrenadeLauncherProjectile)
 		DealAreaDamage();
 		return;
 	}
+	if (!ProjectileData.bIsProjectileDealingDamageItself) return;
 	if (OtherActor->ActorHasTag("Destructible"))
 	{
 		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, Hit.ImpactNormal, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());

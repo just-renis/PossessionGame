@@ -11,7 +11,7 @@ AEMPGrenade::AEMPGrenade()
 {
 	Radius = CreateDefaultSubobject<USphereComponent>("radius");
 	Radius->SetupAttachment(RootComponent);
-	Radius->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Radius->SetCollisionProfileName("TriggerPlayer");
 	Radius->OnComponentBeginOverlap.AddDynamic(this, &AEMPGrenade::TriggerEmpEffect);
 	Sounds.Add(ESound::TricksterEmpImpact, CreateDefaultSubobject<UAudioComponent>(TEXT("EmpImpactSound")));
 	Sounds[ESound::TricksterEmpImpact]->SetAutoActivate(false);
@@ -42,5 +42,6 @@ void AEMPGrenade::Disable(const bool bHide)
 
 void AEMPGrenade::TriggerEmpEffect(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (const TObjectPtr<AEnemy> Target = Cast<AEnemy>(OtherActor)) Target->SetEmpEffect(EffectDuration);
+	UE_LOG(LogTemp, Error, TEXT("TRIGGER EMP EFFECT %s"), *OtherActor->GetName());
+	if (const TObjectPtr<AEnemy> Target = Cast<AEnemy>(OtherActor)) if (!Target->GetIsHijacked()) Target->SetEmpEffect(EffectDuration);
 }

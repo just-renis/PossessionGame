@@ -1,9 +1,7 @@
 ﻿#include "Ranger.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
-#include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
-#include "Engine/TriggerSphere.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Destructibles/RangerShield.h"
@@ -20,6 +18,13 @@
 
 ARanger::ARanger()
 {
+	AI_GrenadeLaunchTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("GrenadeLaunchTrigger"));
+	AI_GrenadeLaunchTrigger->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	AI_GrenadeLaunchTrigger->SetCollisionProfileName("TriggerPlayer");
+	AI_GrenadeLaunchTrigger->CanCharacterStepUpOn = ECB_No;
+	AI_GrenadeLaunchTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AI_GrenadeLaunchTrigger->SetSphereRadius(GrenadeLaunchTriggerRadiusInMetres * 100.f);
+	AI_GrenadeLaunchTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger);
 	Sounds.Add(ESound::RangerSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
 	Sounds[ESound::RangerSpawn]->SetAutoActivate(false);
 	Sounds[ESound::RangerSpawn]->SetupAttachment(GetMesh());
@@ -36,7 +41,7 @@ ARanger::ARanger()
 
 void ARanger::AI_ToggleGrenadeLaunchTrigger(const bool bState) const
 {
-	if (AIGrenadeLaunchTriggerSphere) AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+	if (AI_GrenadeLaunchTrigger) AI_GrenadeLaunchTrigger->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
 }
 
 void ARanger::AI_LaunchGrenade()
@@ -81,10 +86,30 @@ void ARanger::AI_PlayDeathElectrification()
 	AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
 }
 
-void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(AActor* OverlappedActor, AActor* OtherActor)
+void ARanger::AI_DestroyGrenadeLaunchTriggerSphere() const
 {
+	if (AI_GrenadeLaunchTrigger)
+	{
+		AI_GrenadeLaunchTrigger->OnComponentBeginOverlap.RemoveAll(this);
+		AI_GrenadeLaunchTrigger->DestroyComponent();
+	}
+}
+
+void ARanger::AI_TryTriggeringGrenadeLaunch()
+{
+	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload)) return;
+	if (AI->GetStateTreeData().GetIsTargetInMySight())
+	{
+		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerLaunchGrenade);
+		GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeLaunchHandle);
+	}
+}
+
+void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->ActorHasTag("AliveEnemy")) return;
 	AI_ToggleGrenadeLaunchTrigger(false);
-	GetWorld()->GetTimerManager().SetTimer(TryTriggeringGrenadeLaunchHandle, this, &ARanger::TryTriggeringGrenadeLaunch, 0.1f, true);
+	GetWorld()->GetTimerManager().SetTimer(TryTriggeringGrenadeLaunchHandle, this, &ARanger::AI_TryTriggeringGrenadeLaunch, 0.1f, true);
 }
 
 void ARanger::P_Setup()
@@ -100,10 +125,10 @@ void ARanger::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.58431f, 0.1
 
 void ARanger::P_ChangeRangerVariationMuzzle()
 {
-	if (GrenadeLauncherMuzzleFlashComponent)
+	if (AI_GrenadeLauncherMuzzleFlashComponent)
 	{
-		GrenadeLauncherMuzzleFlashComponent->DeactivateImmediate();
-		GrenadeLauncherMuzzleFlashComponent = nullptr;
+		AI_GrenadeLauncherMuzzleFlashComponent->DeactivateImmediate();
+		AI_GrenadeLauncherMuzzleFlashComponent = nullptr;
 	}
 }
 
@@ -111,7 +136,6 @@ void ARanger::BeginPlay()
 {
 	CharacterName = ECharacterType::Ranger;
 	Super::BeginPlay();
-	SetupGrenadeLaunchTriggerSphere();
 }
 
 void ARanger::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -122,12 +146,12 @@ void ARanger::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ARanger::GrenadeLauncherMuzzleFlashLogic()
 {
-	if (!GrenadeLauncherMuzzleFlashComponent)
+	if (!AI_GrenadeLauncherMuzzleFlashComponent)
 	{
-		AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &GrenadeLauncherMuzzleFlashComponent,
+		AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &AI_GrenadeLauncherMuzzleFlashComponent,
 		Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true,FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, GetVariation());
 	}
-	else GrenadeLauncherMuzzleFlashComponent->Activate(true);
+	else AI_GrenadeLauncherMuzzleFlashComponent->Activate(true);
 }
 
 float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -140,41 +164,11 @@ float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 void ARanger::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	DestroyGrenadeLaunchTriggerSphere();
+	AI_DestroyGrenadeLaunchTriggerSphere();
 }
 
 void ARanger::InitiateDeath()
 {
-	DestroyGrenadeLaunchTriggerSphere();
+	AI_DestroyGrenadeLaunchTriggerSphere();
 	Super::InitiateDeath();
-}
-
-void ARanger::SetupGrenadeLaunchTriggerSphere()
-{
-	AIGrenadeLaunchTriggerSphere = GetWorld()->SpawnActor<ATriggerSphere>(ATriggerSphere::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
-	AIGrenadeLaunchTriggerSphere->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
-	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionProfileName("TriggerPlayer");
-	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->CanCharacterStepUpOn = ECB_No;
-	AIGrenadeLaunchTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	Cast<USphereComponent>(AIGrenadeLaunchTriggerSphere->GetCollisionComponent())->SetSphereRadius(GrenadeLaunchTriggerRadiusInMetres * 100.f);
-	AIGrenadeLaunchTriggerSphere->OnActorBeginOverlap.AddDynamic(this, &ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger);
-}
-
-void ARanger::DestroyGrenadeLaunchTriggerSphere() const
-{
-	if (AIGrenadeLaunchTriggerSphere)
-	{
-		AIGrenadeLaunchTriggerSphere->OnActorBeginOverlap.RemoveAll(this);
-		AIGrenadeLaunchTriggerSphere->Destroy();
-	}
-}
-
-void ARanger::TryTriggeringGrenadeLaunch()
-{
-	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload)) return;
-	if (AI->GetStateTreeData().GetIsTargetInMySight())
-	{
-		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerLaunchGrenade);
-		GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeLaunchHandle);
-	}
 }

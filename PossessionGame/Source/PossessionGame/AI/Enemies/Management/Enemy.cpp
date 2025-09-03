@@ -118,12 +118,7 @@ void AEnemy::P_ApplyUpgradeOnSelection()
 void AEnemy::P_UseAbility(const int32 AbilityIndex)
 {
 	if (bIsInputLocked) return;
-	if (!bIsActionInMotion && AbilityIndex < Abilities.Num() && Abilities[AbilityIndex]->CanExecute())
-	{
-		Abilities[AbilityIndex]->P_InitiateExecute();
-		if (!P_HUD) return;
-		if (Abilities[AbilityIndex]->GetIsCooldownKill()) P_HUD->UpdateAbilityUI(Abilities[AbilityIndex]);
-	}
+	if (!bIsActionInMotion && AbilityIndex < Abilities.Num() && Abilities[AbilityIndex]->CanExecute()) Abilities[AbilityIndex]->P_InitiateExecute();
 }
 
 void AEnemy::P_UpdateAmmoHUD(const int32 WeaponAmmo) const { if (P_HUD) P_HUD->UpdateAmmoText(WeaponAmmo); }
@@ -463,7 +458,6 @@ void AEnemy::P_Setup()
 	P_ReceiveCurrentlySelectedVariation();
 	DestroyAI();
 	GetMesh()->SetCollisionProfileName("Player");
-	GetMesh()->SetGenerateOverlapEvents(true);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetTarget(this);
 	P_LoadDataIfNotLoaded(CharacterName);
 	bUseControllerRotationYaw = true;
@@ -662,6 +656,7 @@ void AEnemy::HandleDeactivation()
 	GetCapsuleComponent()->DestroyComponent();
 	if (AnimInstance) AnimInstance->ClearTimers();
 	GetMesh()->SetAnimInstanceClass(nullptr);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetMesh()->SetSimulatePhysics(true);
 }
 
@@ -884,14 +879,6 @@ void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValu
 {
 	HijackBarTimer += InHijackTimeValue * (GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished() ? 1.f : 2.f);
 	P_AddXp(InXp);
-	for (int32 i = 0; i < Abilities.Num(); i++)
-	{
-		if (Abilities[i]->GetIsCooldownKill())
-		{
-			Abilities[i]->ReduceKillCooldown();
-			if (P_HUD) P_HUD->UpdateAbilityUI(Abilities[i]);
-		}
-	}
 }
 
 void AEnemy::P_ToggleGodMode()
@@ -904,7 +891,7 @@ void AEnemy::P_ToggleGodMode()
 
 void AEnemy::P_UpdateAbilitiesUI()
 {
-	for (int32 i = 0; i < Abilities.Num(); i++) if (bIsHijacked && !Abilities[i]->GetIsCooldownKill()) P_HUD->UpdateAbilityUI(Abilities[i]);
+	for (int32 i = 0; i < Abilities.Num(); i++) if (bIsHijacked) P_HUD->UpdateAbilityUI(Abilities[i]);
 }
 
 void AEnemy::P_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->P_StopAbility(); }

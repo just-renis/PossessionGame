@@ -37,9 +37,9 @@ public:
 	int32 GetMagazineCap() const { return MagazineCap; }
 	float GetShootCooldown() const { return ShootCooldown; }
 	EWeapon GetWeaponName() const { return Name; }
-	FVector GetSocketLocation(const FName InSocketName) const { return Mesh->GetSocketLocation(InSocketName); }
-	FRotator GetSocketRotation(const FName InSocketName) const { return Mesh->GetSocketRotation(InSocketName); }
-	FVector GetSocketScale(const FName InSocketName) const { return Mesh->GetSocketTransform(InSocketName).GetScale3D(); }
+	virtual FVector GetSocketLocation(const FName InSocketName) const { return Mesh->GetSocketLocation(InSocketName); }
+	virtual FRotator GetSocketRotation(const FName InSocketName) const { return Mesh->GetSocketRotation(InSocketName); }
+	virtual FVector GetSocketScale(const FName InSocketName) const { return Mesh->GetSocketTransform(InSocketName).GetScale3D(); }
 	FVector GetHandsSocketLocation(const FName InSocketName) const { return HandsMesh->GetSocketLocation(InSocketName); }
 	FProjectileData* GetProjectileData(const EPoolObject InProjectileName) const { return bIsPossessed ? P_Data->GetProjectileData(InProjectileName) : AI_Data->GetProjectileData(InProjectileName); }
 	TObjectPtr<UAIWeaponData>& GetAIData() { return AI_Data; }

@@ -175,20 +175,19 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIs
 	ProjectileData->SetProprietor(Proprietor);
 	const FName& ProjectileSocketName = ProjectileData->ProjectileSocketName;
 	const FRotator BaseRotation = GetSocketRotation(ProjectileSocketName);
+	const FVector BaseLocation = GetSocketLocation(ProjectileSocketName);
+	const FVector BaseScale = GetSocketScale(ProjectileSocketName);
+	UE_LOG(LogTemp, Error, TEXT("BASE SCALE SIZE: %s %s %s"), *ProjectileSocketName.ToString(), *GetName(), *BaseScale.ToString());
 	if (ProjectileData->Amount > 1)
 	{
 		const FAdditionalProjectiles AdditionalProjectilesData = ProjectileData->GetMultiProjectileData(ProjectileData->Amount);
 		for (int32 i = 0; i < AdditionalProjectilesData.Data.Num(); i++)
 		{
-			GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, GetSocketLocation(ProjectileSocketName), BaseRotation.RotateVector(AdditionalProjectilesData.Data[i].Direction).Rotation())
-			->Init(*ProjectileData, BaseRotation.RotateVector(AdditionalProjectilesData.Data[i].Direction).Rotation(), GetSocketScale(ProjectileSocketName), i);
+			GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, BaseLocation, BaseRotation.RotateVector(AdditionalProjectilesData.Data[i].Direction).Rotation())
+			->Init(*ProjectileData, BaseRotation.RotateVector(AdditionalProjectilesData.Data[i].Direction).Rotation(),BaseScale, i);
 		}
 	}
-	else
-	{
-		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, GetSocketLocation(ProjectileSocketName), BaseRotation)
-		->Init(*ProjectileData, BaseRotation, GetSocketScale(ProjectileSocketName));
-	}
+	else GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, BaseLocation, BaseRotation)->Init(*ProjectileData, BaseRotation, BaseScale);
 }
 
 void AWeapon::PostProprietorSetup() { SetupHandsAnimInstance(); }

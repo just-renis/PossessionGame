@@ -105,6 +105,12 @@ void ADualWieldingWeapon::P_SetVariationMaterial()
 	SecondWeapon->P_SetVariationMaterial();
 }
 
+FVector ADualWieldingWeapon::GetSocketLocation(const FName InSocketName) const { return FirstWeapon->GetSocketLocation(InSocketName); }
+
+FRotator ADualWieldingWeapon::GetSocketRotation(const FName InSocketName) const { return FirstWeapon->GetSocketRotation(InSocketName); }
+
+FVector ADualWieldingWeapon::GetSocketScale(const FName InSocketName) const { return FirstWeapon->GetSocketScale(InSocketName); }
+
 void ADualWieldingWeapon::CyclingModeLogic()
 {
 	CurrentAmmo--;

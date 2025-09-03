@@ -16,7 +16,7 @@ class POSSESSIONGAME_API AEMPGrenade : public AProjectile
 	float EffectDuration;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> Radius;
-	
+
 	virtual void PlayImpactSound() override;
 	virtual void OnImpact(const FHitResult& Hit) override;
 	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich) override;
