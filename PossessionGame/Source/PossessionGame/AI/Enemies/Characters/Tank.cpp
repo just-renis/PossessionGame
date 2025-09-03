@@ -1,4 +1,6 @@
 #include "Tank.h"
+
+#include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
 #include "InputMappingContext.h"
 #include "PossessionGame/Enums/ECharacterType.h"

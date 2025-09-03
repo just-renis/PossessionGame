@@ -62,6 +62,7 @@ void UAbilitiesMenuUI::CloseUI()
 	RangerCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	TricksterCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	SaveSlot->SaveSlot();
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestAddAbilitiesToUpgradePool.ExecuteIfBound(SaveSlot);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(ECharacterType::Guardian, EWidget::AbilitiesMenuUI);
 }
 

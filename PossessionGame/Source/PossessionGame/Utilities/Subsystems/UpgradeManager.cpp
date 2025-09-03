@@ -12,6 +12,7 @@ TArray<FRuntimeUpgradeData> UUpgradeManager::GetRandomUpgrades()
 	TArray<FRuntimeUpgradeData> ChosenUpgrades;
 	TArray<EUpgrade> UpgradeKeys;
 	TMap<EUpgrade, TObjectPtr<UUpgradeData>> ChoosableUpgrades = Upgrades;
+	FilterSelectedCharacterAbilities(ChoosableUpgrades);
 	for (const TPair<EUpgrade, TObjectPtr<UUpgradeData>> UpgradeData : ChoosableUpgrades)
 	{
 		if (UpgradeData.Value->GetMaxLevel() <= RunSaveSlot->GetCurrentLevel(UpgradeData.Key)) UpgradeKeys.Add(UpgradeData.Key);
@@ -51,4 +52,15 @@ void UUpgradeManager::AddRandomlyChosenUpgrade(TArray<EUpgrade>& UpgradeKeys, TA
 	}
 	ChosenUpgrades.Add(UpgradeData);
 	UpgradeKeys.RemoveAt(RandomIndex);
+}
+
+void UUpgradeManager::FilterSelectedCharacterAbilities(TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InChoosableUpgrades) const
+{
+	const TArray<EUpgrade> AvailableUpgrades = RunSaveSlot->GetAvailableUpgrades();
+	TArray<EUpgrade> KeysToCheck;
+	InChoosableUpgrades.GetKeys(KeysToCheck);
+	for (int32 i = 0; i < KeysToCheck.Num(); i++)
+	{
+		if (!AvailableUpgrades.Contains(KeysToCheck[i])) InChoosableUpgrades.Remove(KeysToCheck[i]);
+	}
 }

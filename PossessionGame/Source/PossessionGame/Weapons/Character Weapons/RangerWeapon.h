@@ -4,6 +4,9 @@
 #include "PossessionGame/Weapons/Categories/OneHandedWeapon.h"
 #include "RangerWeapon.generated.h"
 
+enum class EUpgrade : uint8;
+enum class EUpgradeAttribute : uint8;
+
 UCLASS()
 class POSSESSIONGAME_API ARangerWeapon : public AOneHandedWeapon
 {

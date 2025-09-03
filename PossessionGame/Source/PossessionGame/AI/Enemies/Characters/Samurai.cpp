@@ -1,4 +1,6 @@
 ﻿#include "Samurai.h"
+
+#include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "PossessionGame/AI/Enemies/Animation Instances/SamuraiAnimationInstance.h"
 #include "PossessionGame/Destructibles/Destructible.h"

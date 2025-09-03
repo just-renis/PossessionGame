@@ -2,19 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "InputActionValue.h"
-#include "InputTriggers.h"
-#include "EnhancedInputComponent.h"
-#include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/Enums/EMoveMode.h"
-#include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
 #include "Enemy.generated.h"
 
-class UTutorialMonitorComponent;
-class UAbilityManager;
+struct FInputActionValue;
+class UDelegateManager;
+class UEnhancedPlayerInput;
 enum class EWidget : uint8;
 class UGlobalSettingsManager;
-class AAIHpBar;
 enum class EVariation : uint8;
 enum class EDamageReason : uint8;
 class UNiagaraComponent;
@@ -26,11 +21,8 @@ class UWidgetComponent;
 class UPrimaryDataAssetsManager;
 enum class EVfx : uint8;
 class ADestructible;
-enum class EMoveMode : uint8;
 class ANavAreaModifier;
 class UAIPerceptionStimuliSourceComponent;
-class UAbilityData;
-class UInputAction;
 class UCameraComponent;
 class UInputMappingContext;
 class AEnemyAIController;
@@ -54,14 +46,14 @@ public:
 	bool IsAsyncAssetStillAllowedToBeUsed() const { return bIsAlive && !bAffectedByEmp; }
 	bool GetIsHijacked() const { return bIsHijacked; }
 	bool GetCanReload() const { return bCanReload; }
-	bool GetIsHijackAble() const;
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
-	bool CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
 	bool GetIsMutant() const { return bIsMutant; }
 	bool GetIsAbilityInAction() const { return bIsAbilityInAction; }
 	bool GetIsStomping() const { return bIsStomping; }
 	bool GetIsHijackActionViable() const { return bCanHijackOtherEnemy; }
 	bool GetIsActionSpeedModified() const { return bActionSpeedModified; }
+	bool GetIsHijackAble() const;
+	bool CanAbilityBeExecuted(const int32 AbilityIndex);
 	float GetActionSpeed() const { return ActionSpeed; }
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
@@ -403,7 +395,6 @@ private:
 	void P_Crouch();
 	void P_AddXp(const int32 InXp) const;
 	void P_ApplySecretBoostHp(const int32 InPercentage);
-	void P_AddDefaultAbility(const TObjectPtr<UAbilityManager>& InAbilityManager, const TObjectPtr<UAbilityData>& InAbilityData);
 	void P_InitiateSlide();
 	void P_EndSlide();
 	void P_SetupSuperJump();

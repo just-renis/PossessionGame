@@ -1,4 +1,6 @@
 #include "Spy.h"
+
+#include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/AI/Enemies/Controllers/SpyAIController.h"

@@ -76,4 +76,5 @@ private:
 
 	void UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation);
 	void VersionMigration();
+	void AddDefaultAbilities();
 };

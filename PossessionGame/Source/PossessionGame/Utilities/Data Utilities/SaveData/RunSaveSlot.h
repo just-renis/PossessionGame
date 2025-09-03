@@ -58,7 +58,9 @@ public:
 	int32 GetCurrentLevelSumOfCharacterAbilities(const ECharacterType InCharacterName);
 	FString GetSlotName() { return SlotName; }
 	TSet<int32> GetUpgradeChoicesIds(const EUpgrade InUpgradeName);
-	
+	TArray<EUpgrade>& GetAvailableUpgrades() { return AvailableUpgrades; }
+
+	void AddAvailableUpgrades(const TArray<EUpgrade>& InAvailableUpgrades) { AvailableUpgrades = InAvailableUpgrades; }
 	void AddUpgrade(const TObjectPtr<UGameInstance>& InGameInstance, const EUpgrade InUpgrade, const FUpgradeChoicePair& InUpgradeChoicePair, const EUpgradeAttribute InSpecialAttribute);
 	void SaveSlot();
 	void SetupSlot(const TObjectPtr<UGameInstance>& InGameInstance, const FString& InSlotName);
@@ -68,6 +70,8 @@ private:
 	int32 SaveVersion = 1;
 	UPROPERTY()
 	FString SlotName;
+	UPROPERTY()
+	TArray<EUpgrade> AvailableUpgrades;
 	UPROPERTY()
 	TMap<EUpgrade, FUpgradeChoicesIds> ChosenUpgradeChoices;
 	UPROPERTY()

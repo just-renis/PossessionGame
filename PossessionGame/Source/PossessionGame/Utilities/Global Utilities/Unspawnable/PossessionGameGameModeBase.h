@@ -5,6 +5,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FPrefabCategoryData.h"
 #include "PossessionGameGameModeBase.generated.h"
 
+class USaveSlot;
 enum class ECharacterType : uint8;
 enum class EMarkerType : uint8;
 class AMarker;

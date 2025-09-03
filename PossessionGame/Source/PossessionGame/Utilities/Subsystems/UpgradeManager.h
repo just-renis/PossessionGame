@@ -28,4 +28,5 @@ private:
 	TMap<EUpgrade, TObjectPtr<UUpgradeData>> Upgrades;
 
 	void AddRandomlyChosenUpgrade(TArray<EUpgrade>& UpgradeKeys, TArray<FRuntimeUpgradeData>& ChosenUpgrades);
+	void FilterSelectedCharacterAbilities(TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InChoosableUpgrades) const;
 };

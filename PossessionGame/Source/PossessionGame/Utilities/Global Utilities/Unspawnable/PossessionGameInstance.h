@@ -5,6 +5,8 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGameInstance.generated.h"
 
+enum class EUpgrade : uint8;
+class USaveSlot;
 struct FLoadLevelData;
 class UPlayerLevelData;
 
@@ -17,6 +19,15 @@ struct POSSESSIONGAME_API FSpawnableEnemyByTotalAmount
 	int32 SpawnThreshold = 0;
 	UPROPERTY(EditDefaultsOnly)
 	ECharacterType Character = ECharacterType::Random;
+};
+
+USTRUCT()
+struct FCharacterUpgrades
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<EUpgrade> Upgrades;
 };
 
 UCLASS()
@@ -49,6 +60,8 @@ private:
 	bool bUseCustomLevel = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	int32 PlayerLevel = 0;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrades Data", meta = (AllowPrivateAccess = true))
+	TMap<ECharacterType, FCharacterUpgrades> ExistingUpgrades;
 	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
 	TArray<FSpawnableEnemyByTotalAmount> SpawnableEnemiesByTotalAmount;
 	UPROPERTY()
@@ -58,4 +71,5 @@ private:
 	void Tick() const;
 	virtual void Shutdown() override;
 	void OpenLevel(const FLoadLevelData InLoadLevelData) const;
+	void AddAvailableUpgrades(const TObjectPtr<USaveSlot>& InSaveSlot) const;
 };

@@ -79,6 +79,8 @@ AEnemy::AEnemy()
 
 bool AEnemy::GetIsHijackAble() const { return AI_Data->GetIsPossessable(); }
 
+bool AEnemy::CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
+
 void AEnemy::AI_InitiateShooting() { if (CurrentMoveMode != EMoveMode::Run && !AnimInstance->IsPlaying(EEnemyAnimState::Reload)) AI_PlayShootMontage(); }
 
 void AEnemy::AI_ShootLogic()
@@ -445,7 +447,6 @@ void AEnemy::P_SetupAbilities()
 			Abilities.Add(Ability);
 		}
 	}
-	if (ChosenAbilities.IsEmpty()) P_AddDefaultAbility(AbilityManager, AbilityData[AbilityManager->GetAbilityName(CharacterName, 0)].LoadSynchronous());
 }
 
 void AEnemy::P_Setup()
@@ -1196,17 +1197,6 @@ void AEnemy::P_ApplySecretBoostHp(const int32 InPercentage)
 	MaxHp += MaxHpIncrease;
 	CurrentHp += MaxHpIncrease;
 	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
-}
-
-void AEnemy::P_AddDefaultAbility(const TObjectPtr<UAbilityManager>& InAbilityManager, const TObjectPtr<UAbilityData>& InAbilityData)
-{
-	if (const TObjectPtr<UAbility> Ability = InAbilityManager->GetAbility(this, CharacterName, 0))
-	{
-		if (P_HUD) P_HUD->SetAbilityIcon(0, 0);
-		Ability->Setup(this, InAbilityData, DelegateManager);
-		Ability->SetAbilityIndex(0);
-		Abilities.Add(Ability);
-	}
 }
 
 void AEnemy::P_InitiateSlide()

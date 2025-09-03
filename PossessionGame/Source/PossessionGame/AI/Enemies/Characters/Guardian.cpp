@@ -1,4 +1,6 @@
 ﻿#include "Guardian.h"
+
+#include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"

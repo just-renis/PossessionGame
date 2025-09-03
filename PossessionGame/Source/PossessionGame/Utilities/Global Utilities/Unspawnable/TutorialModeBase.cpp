@@ -4,6 +4,7 @@
 #include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -40,6 +41,7 @@ void ATutorialModeBase::InitAfterPSOPrecache()
 	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
 	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	(void)DelegateManager->RequestAddAbilitiesToUpgradePool.ExecuteIfBound(SaveSlot);
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
 	GetWorld()->GetSubsystem<UMarkerManager>()->Init(MarkerClass);

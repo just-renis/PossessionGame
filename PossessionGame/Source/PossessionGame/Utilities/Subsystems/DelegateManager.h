@@ -12,6 +12,7 @@ enum class ECharacterType : uint8;
 enum class EVariation : uint8;
 enum class EWidget : uint8;
 struct FRuntimeUpgradeData;
+class USaveSlot;
 
 DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
@@ -43,6 +44,7 @@ DECLARE_DELEGATE_OneParam(FOnOpenUnlockAbilityPopup, const int32);
 DECLARE_DELEGATE_OneParam(FOnChargeTerminalModeCompletion, const int32);
 DECLARE_DELEGATE_OneParam(FOnHijack, const TObjectPtr<AActor>&);
 DECLARE_DELEGATE_OneParam(FLoadLevel, const FLoadLevelData);
+DECLARE_DELEGATE_OneParam(FRequestAddAbilitiesToUpgradePool, const TObjectPtr<USaveSlot>&);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
@@ -115,6 +117,7 @@ public:
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
 	FOnHijack OnHijack;
 	FLoadLevel LoadLevel;
+	FRequestAddAbilitiesToUpgradePool RequestAddAbilitiesToUpgradePool;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;
