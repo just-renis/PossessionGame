@@ -12,6 +12,7 @@ AEMPGrenade::AEMPGrenade()
 	Radius = CreateDefaultSubobject<USphereComponent>("radius");
 	Radius->SetupAttachment(RootComponent);
 	Radius->SetCollisionProfileName("TriggerPlayer");
+	Radius->SetGenerateOverlapEvents(false);
 	Radius->OnComponentBeginOverlap.AddDynamic(this, &AEMPGrenade::TriggerEmpEffect);
 	Sounds.Add(ESound::TricksterEmpImpact, CreateDefaultSubobject<UAudioComponent>(TEXT("EmpImpactSound")));
 	Sounds[ESound::TricksterEmpImpact]->SetAutoActivate(false);
@@ -27,9 +28,9 @@ void AEMPGrenade::OnImpact(const FHitResult& Hit)
 	Super::OnImpact(Hit);
 }
 
-void AEMPGrenade::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich)
+void AEMPGrenade::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich)
 {
-	Super::Init(InProjectileData, Rotation, Scale, InWhich);
+	Super::Init(InProjectileData, Rotation, InWhich);
 	const float EffectDurationIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TricksterAbility2, EUpgradeAttribute::EffectDuration, ProjectileData.bIsPlayerProjectile);
 	EffectDuration = ProjectileData.EffectDuration + ProjectileData.EffectDuration * EffectDurationIncrease * 0.01f;
 }

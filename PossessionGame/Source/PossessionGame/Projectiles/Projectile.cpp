@@ -30,10 +30,8 @@ AProjectile::AProjectile()
 	MovementComponent->ProjectileGravityScale = 0.f;
 }
 
-void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale, const int32 InWhich)
+void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const int32 InWhich)
 {
-	SetActorScale3D(Scale);
-	UE_LOG(LogTemp, Error, TEXT("SCALE SIZE: %s %s"), *GetName(), *Scale.ToString());
 	ProjectileData = InProjectileData;
 	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
 	SetupData(ProjectileData.bIsPlayerProjectile, InWhich);
@@ -68,10 +66,10 @@ void AProjectile::OnImpact(const FHitResult& Hit)
 	PlayImpactSound();
 }
 
-void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich)
+void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich)
 {
-	Super::Init(InProjectileData, Rotation, Scale, InWhich);
-	SetupProjectile(InProjectileData, Scale, InWhich);
+	Super::Init(InProjectileData, Rotation, InWhich);
+	SetupProjectile(InProjectileData, InWhich);
 	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
 	if (BulletTrailComponent) BulletTrailComponent->Activate();
 	MovementComponent->Activate();

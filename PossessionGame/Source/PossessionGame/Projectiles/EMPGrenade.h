@@ -19,7 +19,7 @@ class POSSESSIONGAME_API AEMPGrenade : public AProjectile
 
 	virtual void PlayImpactSound() override;
 	virtual void OnImpact(const FHitResult& Hit) override;
-	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich) override;
+	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich) override;
 	virtual void Disable(const bool bHide) override;
 	UFUNCTION()
 	void TriggerEmpEffect(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

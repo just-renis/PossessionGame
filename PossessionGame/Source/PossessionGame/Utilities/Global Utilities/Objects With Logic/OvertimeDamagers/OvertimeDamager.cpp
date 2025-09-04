@@ -10,10 +10,10 @@ void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage,
 	DamageReason = InDamageReason;
 	DamageTick = InDamageTick;
 	Radius->SetSphereRadius(InRadiusSize);
-	GetWorldTimerManager().SetTimer(DamageOvertimeHandle, this, &AOvertimeDamager::DealOvertimeDamage, DamageTick, true);
-	GetWorldTimerManager().SetTimer(DestroyThisHandle, this, &AOvertimeDamager::DestroyThis, InLifeSpan, false);
 	Radius->SetGenerateOverlapEvents(true);
 	Radius->UpdateOverlaps();
+	GetWorldTimerManager().SetTimer(DamageOvertimeHandle, this, &AOvertimeDamager::DealOvertimeDamage, DamageTick, true);
+	GetWorldTimerManager().SetTimer(DestroyThisHandle, this, &AOvertimeDamager::DestroyThis, InLifeSpan, false);
 }
 
 AOvertimeDamager::AOvertimeDamager()
@@ -21,6 +21,7 @@ AOvertimeDamager::AOvertimeDamager()
 	Radius = CreateDefaultSubobject<USphereComponent>("radius");
 	RootComponent = Radius;
 	Radius->SetCollisionProfileName("TriggerPlayer");
+	Radius->SetGenerateOverlapEvents(false);
 	Radius->OnComponentBeginOverlap.AddDynamic(this, &AOvertimeDamager::AddOverlappedTarget);
 	Radius->OnComponentEndOverlap.AddDynamic(this, &AOvertimeDamager::RemoveOverlappedTarget);
 }
@@ -44,7 +45,6 @@ void AOvertimeDamager::DestroyThis()
 
 void AOvertimeDamager::AddOverlappedTarget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Error, TEXT("AddOverlappedTarget BITCH"));
 	if (const TObjectPtr<AEnemy> Target = Cast<AEnemy>(OtherActor))
 	{
 		if (!bIsPlayer && Target->GetIsHijacked()) AddTarget(Target);

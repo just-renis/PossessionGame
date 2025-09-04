@@ -27,7 +27,7 @@ public:
 
 	bool GetIsPlayerProjectile() const { return ProjectileData.bIsPlayerProjectile; }
 
-	void SetupProjectile(const FProjectileData& InProjectileData, const FVector& Scale, const int32 InWhich);
+	void SetupProjectile(const FProjectileData& InProjectileData, const int32 InWhich);
 	void SetDirection(const FVector& InDirection) const;
 protected:
 	float Damage;
@@ -46,7 +46,7 @@ protected:
 	void PlaySound(const ESound InSoundName);
 	virtual void PlayImpactSound() {}
 	virtual void OnImpact(const FHitResult& Hit);
-	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const FVector& Scale, const int32 InWhich) override;
+	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich) override;
 	void DisableProjectileComponents() const;
 	void SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact);
 	UFUNCTION()
