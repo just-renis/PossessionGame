@@ -13,13 +13,13 @@
 
 ATrickster::ATrickster()
 {
-	AI_PoisonGrenadeLaunchTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("PoisonGrenadeLaunchTrigger"));
-	AI_PoisonGrenadeLaunchTrigger->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
-	AI_PoisonGrenadeLaunchTrigger->SetCollisionProfileName("TriggerPlayer");
-	AI_PoisonGrenadeLaunchTrigger->CanCharacterStepUpOn = ECB_No;
-	AI_PoisonGrenadeLaunchTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	AI_PoisonGrenadeLaunchTrigger->SetSphereRadius(PoisonGrenadeLaunchTriggerRadiusInMetres * 100.f);
-	AI_PoisonGrenadeLaunchTrigger->OnComponentBeginOverlap.AddDynamic(this, &ATrickster::AI_OnPlayerEnterPoisonGrenadeLaunchTrigger);
+	AI_PoisonGrenadeTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("PoisonGrenadeLaunchTrigger"));
+	AI_PoisonGrenadeTrigger->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	AI_PoisonGrenadeTrigger->SetCollisionProfileName("TriggerPlayer");
+	AI_PoisonGrenadeTrigger->CanCharacterStepUpOn = ECB_No;
+	AI_PoisonGrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AI_PoisonGrenadeTrigger->SetSphereRadius(PoisonGrenadeTriggerRadiusInMetres * 100.f);
+	AI_PoisonGrenadeTrigger->OnComponentBeginOverlap.AddDynamic(this, &ATrickster::AI_OnPlayerEnterPoisonGrenadeTrigger);
 	Sounds.Add(ESound::TricksterSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
 	Sounds[ESound::TricksterSpawn]->SetAutoActivate(false);
 	Sounds[ESound::TricksterSpawn]->SetupAttachment(GetMesh());
@@ -34,16 +34,16 @@ ATrickster::ATrickster()
 	Sounds[ESound::RangerGrenadeLaunchAim]->SetupAttachment(GetMesh());
 }
 
-void ATrickster::AI_TogglePoisonGrenadeLaunchTrigger(const bool bState) const
+void ATrickster::AI_TogglePoisonGrenadeTrigger(const bool bState) const
 {
-	if (AI_PoisonGrenadeLaunchTrigger) AI_PoisonGrenadeLaunchTrigger->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+	if (AI_PoisonGrenadeTrigger) AI_PoisonGrenadeTrigger->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
 }
 
 void ATrickster::AI_LaunchPoisonGrenade()
 {
 	PlaySound(ESound::TricksterGrenadeThrow, true);
 	Weapon->ShootProjectile(EPoolObject::TricksterPoisonProjectile, true);
-	//GrenadeLauncherMuzzleFlashLogic();
+	Weapon->MuzzleFlashLogic();
 }
 
 void ATrickster::P_ThrowPoisonGrenade() const
@@ -85,15 +85,24 @@ void ATrickster::AI_TryTriggeringPoisonGrenadeLaunch()
 	if (AI->GetStateTreeData().GetIsTargetInMySight())
 	{
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::TricksterLaunchPoisonGrenade);
-		GetWorld()->GetTimerManager().ClearTimer(TryTriggeringPoisonGrenadeLaunchHandle);
+		GetWorld()->GetTimerManager().ClearTimer(TryTriggeringPoisonGrenadeHandle);
 	}
 }
 
-void ATrickster::AI_OnPlayerEnterPoisonGrenadeLaunchTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ATrickster::AI_DestroyPoisonGrenadeTrigger()
 {
-	if (OtherActor->ActorHasTag("AliveEnemy")) return;
-	AI_TogglePoisonGrenadeLaunchTrigger(false);
-	GetWorld()->GetTimerManager().SetTimer(TryTriggeringPoisonGrenadeLaunchHandle, this, &ATrickster::AI_TryTriggeringPoisonGrenadeLaunch, 0.1f, true);
+	if (AI_PoisonGrenadeTrigger)
+	{
+		AI_PoisonGrenadeTrigger->OnComponentBeginOverlap.RemoveAll(this);
+		AI_PoisonGrenadeTrigger->DestroyComponent();
+	}
+}
+
+void ATrickster::AI_OnPlayerEnterPoisonGrenadeTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (bAffectedByEmp || OtherActor->ActorHasTag("AliveEnemy")) return;
+	AI_TogglePoisonGrenadeTrigger(false);
+	GetWorld()->GetTimerManager().SetTimer(TryTriggeringPoisonGrenadeHandle, this, &ATrickster::AI_TryTriggeringPoisonGrenadeLaunch, 0.1f, true);
 }
 
 void ATrickster::P_Setup()
@@ -109,4 +118,34 @@ void ATrickster::BeginPlay()
 {
 	CharacterName = ECharacterType::Trickster;
 	Super::BeginPlay();
+}
+
+void ATrickster::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	if (NewController && NewController->IsPlayerController()) AI_DestroyPoisonGrenadeTrigger();
+}
+
+void ATrickster::InitiateDeath()
+{
+	AI_DestroyPoisonGrenadeTrigger();
+	Super::InitiateDeath();
+}
+
+void ATrickster::SetEmpEffect(const float InEffectDuration)
+{
+	switch (GetAI()->GetCurrentStateTreeEvent())
+	{
+		case EStateTreeEvent::TricksterLaunchPoisonGrenade: AI_StopAbility(0); break;
+		default: ;
+	}
+	Super::SetEmpEffect(InEffectDuration);
+}
+
+void ATrickster::EmpEffectEnded()
+{
+	Super::EmpEffectEnded();
+	if (!AI_PoisonGrenadeTrigger || AI_PoisonGrenadeTrigger->GetCollisionEnabled() != ECollisionEnabled::QueryOnly) return;
+	AI_PoisonGrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AI_PoisonGrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }

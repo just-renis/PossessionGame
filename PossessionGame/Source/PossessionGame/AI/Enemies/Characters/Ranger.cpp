@@ -18,13 +18,13 @@
 
 ARanger::ARanger()
 {
-	AI_GrenadeLaunchTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("GrenadeLaunchTrigger"));
-	AI_GrenadeLaunchTrigger->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
-	AI_GrenadeLaunchTrigger->SetCollisionProfileName("TriggerPlayer");
-	AI_GrenadeLaunchTrigger->CanCharacterStepUpOn = ECB_No;
-	AI_GrenadeLaunchTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	AI_GrenadeLaunchTrigger->SetSphereRadius(GrenadeLaunchTriggerRadiusInMetres * 100.f);
-	AI_GrenadeLaunchTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger);
+	AI_GrenadeTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("GrenadeLaunchTrigger"));
+	AI_GrenadeTrigger->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	AI_GrenadeTrigger->SetCollisionProfileName("TriggerPlayer");
+	AI_GrenadeTrigger->CanCharacterStepUpOn = ECB_No;
+	AI_GrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AI_GrenadeTrigger->SetSphereRadius(GrenadeTriggerRadiusInMetres * 100.f);
+	AI_GrenadeTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARanger::AI_OnPlayerEnterGrenadeTrigger);
 	Sounds.Add(ESound::RangerSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
 	Sounds[ESound::RangerSpawn]->SetAutoActivate(false);
 	Sounds[ESound::RangerSpawn]->SetupAttachment(GetMesh());
@@ -39,23 +39,23 @@ ARanger::ARanger()
 	Sounds[ESound::RangerGrenadeLaunchAim]->SetupAttachment(GetMesh());
 }
 
-void ARanger::AI_ToggleGrenadeLaunchTrigger(const bool bState) const
+void ARanger::AI_ToggleGrenadeTrigger(const bool bState) const
 {
-	if (AI_GrenadeLaunchTrigger) AI_GrenadeLaunchTrigger->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+	if (AI_GrenadeTrigger) AI_GrenadeTrigger->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
 }
 
 void ARanger::AI_LaunchGrenade()
 {
 	PlaySound(ESound::RangerGrenadeLaunch, true);
 	Weapon->ShootProjectile(EPoolObject::RangerGrenadeLauncherProjectile, true);
-	GrenadeLauncherMuzzleFlashLogic();
+	GrenadeMuzzleFlashLogic();
 }
 
 void ARanger::P_LaunchGrenade()
 {
 	AssetsManager->PlaySound2D(ESound::RangerGrenadeLaunch);
 	Weapon->ShootProjectile(EPoolObject::RangerGrenadeLauncherProjectile, true);
-	GrenadeLauncherMuzzleFlashLogic();
+	GrenadeMuzzleFlashLogic();
 }
 
 void ARanger::SpawnShield()
@@ -86,35 +86,35 @@ void ARanger::AI_PlayDeathElectrification()
 	AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
 }
 
-void ARanger::AI_DestroyGrenadeLaunchTriggerSphere() const
+void ARanger::AI_DestroyGrenadeTrigger() const
 {
-	if (AI_GrenadeLaunchTrigger)
+	if (AI_GrenadeTrigger)
 	{
-		AI_GrenadeLaunchTrigger->OnComponentBeginOverlap.RemoveAll(this);
-		AI_GrenadeLaunchTrigger->DestroyComponent();
+		AI_GrenadeTrigger->OnComponentBeginOverlap.RemoveAll(this);
+		AI_GrenadeTrigger->DestroyComponent();
 	}
 }
 
-void ARanger::AI_TryTriggeringGrenadeLaunch()
+void ARanger::AI_TryTriggeringGrenade()
 {
 	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload)) return;
 	if (AI->GetStateTreeData().GetIsTargetInMySight())
 	{
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerLaunchGrenade);
-		GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeLaunchHandle);
+		GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeHandle);
 	}
 }
 
-void ARanger::AI_OnPlayerEnterGrenadeLaunchTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ARanger::AI_OnPlayerEnterGrenadeTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->ActorHasTag("AliveEnemy")) return;
-	AI_ToggleGrenadeLaunchTrigger(false);
-	GetWorld()->GetTimerManager().SetTimer(TryTriggeringGrenadeLaunchHandle, this, &ARanger::AI_TryTriggeringGrenadeLaunch, 0.1f, true);
+	if (bAffectedByEmp || OtherActor->ActorHasTag("AliveEnemy")) return;
+	AI_ToggleGrenadeTrigger(false);
+	GetWorld()->GetTimerManager().SetTimer(TryTriggeringGrenadeHandle, this, &ARanger::AI_TryTriggeringGrenade, 0.1f, true);
 }
 
 void ARanger::P_Setup()
 {
-	GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeLaunchHandle);
+	GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeHandle);
 	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	P_ChangeRangerVariationMuzzle();
@@ -125,10 +125,10 @@ void ARanger::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.58431f, 0.1
 
 void ARanger::P_ChangeRangerVariationMuzzle()
 {
-	if (AI_GrenadeLauncherMuzzleFlashComponent)
+	if (AI_GrenadeMuzzleFlashComponent)
 	{
-		AI_GrenadeLauncherMuzzleFlashComponent->DeactivateImmediate();
-		AI_GrenadeLauncherMuzzleFlashComponent = nullptr;
+		AI_GrenadeMuzzleFlashComponent->DeactivateImmediate();
+		AI_GrenadeMuzzleFlashComponent = nullptr;
 	}
 }
 
@@ -140,35 +140,54 @@ void ARanger::BeginPlay()
 
 void ARanger::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeLaunchHandle);
+	GetWorld()->GetTimerManager().ClearTimer(TryTriggeringGrenadeHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
-void ARanger::GrenadeLauncherMuzzleFlashLogic()
+void ARanger::GrenadeMuzzleFlashLogic()
 {
-	if (!AI_GrenadeLauncherMuzzleFlashComponent)
+	if (!AI_GrenadeMuzzleFlashComponent)
 	{
-		AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &AI_GrenadeLauncherMuzzleFlashComponent,
+		AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &AI_GrenadeMuzzleFlashComponent,
 		Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true,FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, GetVariation());
 	}
-	else AI_GrenadeLauncherMuzzleFlashComponent->Activate(true);
+	else AI_GrenadeMuzzleFlashComponent->Activate(true);
 }
 
 float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float ReturnDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	if (!bIsActionInMotion && !bIsHijacked && CurrentHp <= MaxHp * 0.5f && CanAbilityBeExecuted(1)) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerDeployShield);
+	if (!bAffectedByEmp && !bIsActionInMotion && !bIsHijacked && CurrentHp <= MaxHp * 0.5f && CanAbilityBeExecuted(1)) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerDeployShield);
 	return ReturnDamage;
 }
 
 void ARanger::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	AI_DestroyGrenadeLaunchTriggerSphere();
+	if (NewController && NewController->IsPlayerController()) AI_DestroyGrenadeTrigger();
 }
 
 void ARanger::InitiateDeath()
 {
-	AI_DestroyGrenadeLaunchTriggerSphere();
+	AI_DestroyGrenadeTrigger();
 	Super::InitiateDeath();
+}
+
+void ARanger::SetEmpEffect(const float InEffectDuration)
+{
+	switch (GetAI()->GetCurrentStateTreeEvent())
+	{
+		case EStateTreeEvent::RangerLaunchGrenade: AI_StopAbility(0); break;
+		case EStateTreeEvent::RangerDeployShield: AI_StopAbility(1); break;
+		default: ;
+	}
+	Super::SetEmpEffect(InEffectDuration);
+}
+
+void ARanger::EmpEffectEnded()
+{
+	Super::EmpEffectEnded();
+	if (!AI_GrenadeTrigger || AI_GrenadeTrigger->GetCollisionEnabled() != ECollisionEnabled::QueryOnly) return;
+	AI_GrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AI_GrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }

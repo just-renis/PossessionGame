@@ -54,7 +54,7 @@ void URangerAbility1::SetProprietor(TObjectPtr<AEnemy> InAbilityProprietor) { Pr
 void URangerAbility1::CooldownLogic(const float InDeltaTime)
 {
 	Super::CooldownLogic(InDeltaTime);
-	if (!Proprietor->GetIsHijacked() && CurrentChargesAmount > 0) Proprietor->AI_ToggleGrenadeLaunchTrigger(true);
+	if (!Proprietor->GetIsHijacked() && CurrentChargesAmount > 0) Proprietor->AI_ToggleGrenadeTrigger(true);
 }
 
 void URangerAbility1::SetupUpgradeAppliance(const bool bIsPlayer)

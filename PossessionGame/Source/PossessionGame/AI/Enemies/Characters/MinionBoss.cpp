@@ -2,10 +2,8 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/ShapeComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Engine/TriggerSphere.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
@@ -69,6 +67,13 @@ AMinionBoss::AMinionBoss()
 		AI_HpBarComponent->DestroyComponent();
 		AI_HpBarComponent = nullptr;
 	}
+	StompTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("StompTrigger"));
+	StompTrigger->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	StompTrigger->SetCollisionProfileName("TriggerPlayer");
+	StompTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StompTrigger->CanCharacterStepUpOn = ECB_No;
+	StompTrigger->SetSphereRadius(StompTriggerRadiusInMeters * 100.f);
+	StompTrigger->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnPlayerEnterStompTrigger);
 	LaserCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("laserCollision"));
 	LaserCollision->SetupAttachment(GetMesh());
 	LaserCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -165,7 +170,6 @@ void AMinionBoss::BeginPlay()
 	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
 	(void)DelegateManager->OnBossSpawn.ExecuteIfBound();
 	GetWorld()->GetTimerManager().SetTimer(MoveDirectlyToPlayerHandle, this, &AMinionBoss::SetMoveDirectlyToPlayer, MoveDirectlyToPlayerInterval, false);
-	SetupStompTrigger();
 }
 
 void AMinionBoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -187,23 +191,12 @@ void AMinionBoss::DestroyThis()
 	Super::DestroyThis();
 }
 
-void AMinionBoss::SetupStompTrigger()
-{
-	StompTriggerSphere = GetWorld()->SpawnActor<ATriggerSphere>(ATriggerSphere::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
-	StompTriggerSphere->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
-	StompTriggerSphere->GetCollisionComponent()->SetCollisionProfileName("TriggerPlayer");
-	StompTriggerSphere->GetCollisionComponent()->CanCharacterStepUpOn = ECB_No;
-	StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	Cast<USphereComponent>(StompTriggerSphere->GetCollisionComponent())->SetSphereRadius(StompTriggerRadiusInMeters * 100.f);
-	StompTriggerSphere->OnActorBeginOverlap.AddDynamic(this, &AMinionBoss::OnPlayerEnterStompTrigger);
-}
-
 void AMinionBoss::DestroyStompTriggerSphere() const
 {
-	if (StompTriggerSphere)
+	if (StompTrigger)
 	{
-		StompTriggerSphere->OnActorBeginOverlap.RemoveAll(this);
-		StompTriggerSphere->Destroy();
+		StompTrigger->OnComponentBeginOverlap.RemoveAll(this);
+		StompTrigger->DestroyComponent();
 	}
 }
 
@@ -220,7 +213,7 @@ void AMinionBoss::InitiateDeath()
 
 void AMinionBoss::ToggleStompTrigger(const bool bState) const
 {
-	if (StompTriggerSphere) StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
+	if (StompTrigger) StompTrigger->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
 }
 
 void AMinionBoss::SetEmpEffect(const float InEffectDuration)
@@ -237,9 +230,9 @@ void AMinionBoss::SetEmpEffect(const float InEffectDuration)
 void AMinionBoss::EmpEffectEnded()
 {
 	Super::EmpEffectEnded();
-	if (!StompTriggerSphere) return;
-	StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	StompTriggerSphere->GetCollisionComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	if (!StompTrigger || StompTrigger->GetCollisionEnabled() != ECollisionEnabled::QueryOnly) return;
+	StompTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StompTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
@@ -273,9 +266,9 @@ void AMinionBoss::SetMoveDirectlyToPlayer()
 	}
 }
 
-void AMinionBoss::OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor)
+void AMinionBoss::OnPlayerEnterStompTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!AI || bAffectedByEmp) return;
+	if (!AI || bAffectedByEmp || OtherActor->ActorHasTag("AliveEnemy")) return;
 	if (bIsMoveDirectlyToPlayerTriggered) ResetMoveDirectlyToPlayer();
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
 	ToggleStompTrigger(false);

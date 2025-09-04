@@ -84,6 +84,7 @@ public:
 	virtual void PostProprietorSetup();
 	virtual void SetCustomDilation(const float InDilation) { CustomTimeDilation = InDilation; }
 	virtual void SetReverseActionSpeed(const float InActionSpeed) { ReverseActionSpeed = InActionSpeed; }
+	virtual void MuzzleFlashLogic();
 protected:
 	bool bIsPossessed = false;
 	bool bIsHitScanEnabled = false;
@@ -140,7 +141,6 @@ protected:
 	void SetupHandsAnimInstance();
 	virtual void DetachWeapon();
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired);
-	void MuzzleFlashLogic();
 	void DisableHandsMesh() const;
 	void DealPointDamage(const FHitResult& InHitResult);
 private:

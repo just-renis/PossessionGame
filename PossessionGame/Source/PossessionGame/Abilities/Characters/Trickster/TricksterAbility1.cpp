@@ -29,5 +29,5 @@ void UTricksterAbility1::SetProprietor(const TObjectPtr<AEnemy> AbilityProprieto
 void UTricksterAbility1::CooldownLogic(const float InDeltaTime)
 {
 	Super::CooldownLogic(InDeltaTime);
-	if (!Proprietor->GetIsHijacked() && CurrentChargesAmount > 0) Proprietor->AI_TogglePoisonGrenadeLaunchTrigger(true);
+	if (!Proprietor->GetIsHijacked() && CurrentChargesAmount > 0) Proprietor->AI_TogglePoisonGrenadeTrigger(true);
 }

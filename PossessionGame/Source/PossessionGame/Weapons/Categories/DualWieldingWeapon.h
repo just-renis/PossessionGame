@@ -60,4 +60,5 @@ private:
     void CyclingModeLogic();
     void NonCyclingModeLogic();
     virtual void SetReverseActionSpeed(const float InActionSpeed) override;
+    virtual void MuzzleFlashLogic() override;
 };

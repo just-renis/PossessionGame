@@ -4,8 +4,8 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "MinionBoss.generated.h"
 
+class USphereComponent;
 class UNiagaraComponent;
-class ATriggerSphere;
 
 DECLARE_DELEGATE(FStopLaser);
 
@@ -49,7 +49,7 @@ private:
 	UPROPERTY()
 	TArray<TObjectPtr<AWeapon>> Weapons;
 	UPROPERTY()
-	TObjectPtr<ATriggerSphere> StompTriggerSphere;
+	TObjectPtr<USphereComponent> StompTrigger;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> LaserEyeBallVfx;
 	UPROPERTY()
@@ -80,7 +80,6 @@ private:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void HandleDeactivation() override;
 	virtual void DestroyThis() override;
-	void SetupStompTrigger();
 	void DestroyStompTriggerSphere() const;
 	virtual void InitiateDeath() override;
 	void ToggleStompTrigger(const bool bState) const;
@@ -92,7 +91,7 @@ private:
 	virtual void SetUnHijackOutline(const bool bState) const override {}
 	void SetMoveDirectlyToPlayer();
 	UFUNCTION()
-	void OnPlayerEnterStompTrigger(AActor* OverlappedActor, AActor* OtherActor);
+	void OnPlayerEnterStompTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

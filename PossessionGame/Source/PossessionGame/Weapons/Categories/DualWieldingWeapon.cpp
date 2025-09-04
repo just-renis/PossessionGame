@@ -133,3 +133,9 @@ void ADualWieldingWeapon::SetReverseActionSpeed(const float InActionSpeed)
 	FirstWeapon->SetReverseActionSpeed(InActionSpeed);
 	SecondWeapon->SetReverseActionSpeed(InActionSpeed);
 }
+
+void ADualWieldingWeapon::MuzzleFlashLogic()
+{
+	FirstWeapon->MuzzleFlashLogic();
+	SecondWeapon->MuzzleFlashLogic();
+}
