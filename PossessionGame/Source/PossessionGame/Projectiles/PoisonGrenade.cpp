@@ -8,6 +8,7 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamagers/OvertimeDamager.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamagers/PoisonArea.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 APoisonGrenade::APoisonGrenade()
@@ -45,4 +46,10 @@ void APoisonGrenade::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 	const TObjectPtr<AOvertimeDamager> PoisonArea = GetWorld()->SpawnActor<AOvertimeDamager>(APoisonArea::StaticClass(), Hit.Location, Hit.Normal.Rotation());
 	PoisonArea->Setup(ProjectileData.bIsPlayerProjectile, Damage, ProjectileData.OvertimeTickTrigger, ModifiedOvertimeAreaLifeSpan, ModifiedOvertimeAreaSize, EDamageReason::TricksterPoisonDamage);
+}
+
+void APoisonGrenade::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact)
+{
+	if (ProjectileData.bIsPlayerProjectile) AssetsManager->SpawnVfx(bFirstImpact ? EVfx::TricksterPoison : EVfx::TricksterPoisonImpact, nullptr, InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), ProjectileData.GetProprietor()->GetVariation(), Attributes);
+	else AssetsManager->SpawnVfx(bFirstImpact ? EVfx::AI_TricksterPoison : EVfx::AI_TricksterPoisonImpact, nullptr, InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), ProjectileData.GetProprietor()->GetVariation(), Attributes);
 }

@@ -539,6 +539,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TricksterBulletTrail", EVfx::TricksterBulletTrail);
 	VfxsMap.Add("PA_TricksterPoisonImpact", EVfx::TricksterPoisonImpact);
 	VfxsMap.Add("PA_TricksterPoison", EVfx::TricksterPoison);
+	VfxsMap.Add("PA_AITricksterPoison", EVfx::AI_TricksterPoison);
+	VfxsMap.Add("PA_AITricksterPoisonImpact", EVfx::AI_TricksterPoisonImpact);
 	VfxsMap.Add("PA_TricksterEmpImpact", EVfx::TricksterEmpImpact);
 	VfxsMap.Add("PA_TricksterReload", EVfx::TricksterReload);
 	VfxsMap.Add("PA_TricksterDeathElectrification", EVfx::TricksterDeathElectrification);

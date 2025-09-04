@@ -14,7 +14,7 @@ void UTricksterAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState
 	Super::InnerPlayMontage(InState);
 	if (InState == EEnemyAnimState::GrenadeLaunch)
 	{
-		GetWorld()->GetTimerManager().SetTimer(TriggerGrenadeProjectionHandle, this, &UTricksterAnimationInstance::TriggerGrenadeProjection, 0.1f, false);
+		GetWorld()->GetTimerManager().SetTimer(TriggerGrenadeProjectionHandle, this, &UTricksterAnimationInstance::TriggerGrenadeProjection, 0.3f, false);
 		GetWorld()->GetTimerManager().SetTimer(LaunchGrenadeHandle, this, &UTricksterAnimationInstance::LaunchGrenade, 1.1f, false);
 	}
 }

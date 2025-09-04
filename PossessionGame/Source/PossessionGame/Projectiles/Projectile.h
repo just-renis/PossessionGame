@@ -48,7 +48,7 @@ protected:
 	virtual void OnImpact(const FHitResult& Hit);
 	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich) override;
 	void DisableProjectileComponents() const;
-	void SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact);
+	virtual void SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact);
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:

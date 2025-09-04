@@ -55,7 +55,6 @@ private:
 
     virtual FVector GetSocketLocation(const FName InSocketName) const override;
     virtual FRotator GetSocketRotation(const FName InSocketName) const override;
-    virtual FVector GetSocketScale(const FName InSocketName) const override;
     
     void CyclingModeLogic();
     void NonCyclingModeLogic();
