@@ -9,9 +9,9 @@ class POSSESSIONGAME_API USTTaskMinionBossMoveDirectlyToPlayer : public USTTaskM
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	float MoveDirectlyToPlayerDuration = 5.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	float MoveSpeedMultiplier = 2.f;
 	UPROPERTY()
 	FTimerHandle MoveDirectlyToPlayerHandle;

@@ -53,6 +53,7 @@ DECLARE_DELEGATE_TwoParams(FOnSaveSlotClicked, const FString&, const FString&);
 DECLARE_DELEGATE_TwoParams(FOnMusicSoundtrackChangeRequired, const ESound, const bool);
 DECLARE_DELEGATE_RetVal_TwoParams(bool, FRequestSpecialUpgradeAvailability, const EUpgrade, const EUpgradeAttribute);
 DECLARE_DELEGATE_ThreeParams(FOnAbilityUse, const int32, const bool, const bool);
+DECLARE_DELEGATE_FourParams(FShowDamageNumber, const FLinearColor, const float, const FVector&, const FVector&);
 DECLARE_MULTICAST_DELEGATE(FOnTerminalInteraction);
 DECLARE_MULTICAST_DELEGATE(FOnPlayerDeath);
 DECLARE_MULTICAST_DELEGATE(FOnHackModeStart);
@@ -123,6 +124,7 @@ public:
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;
 	FRequestSpecialUpgradeAvailability RequestSpecialUpgradeAvailability;
 	FOnAbilityUse OnAbilityUse;
+	FShowDamageNumber ShowDamageNumber;
 	FOnTerminalInteraction OnTerminalInteraction;
 	FOnPlayerDeath OnPlayerDeath;
 	FOnHackModeStart OnHackModeStart;

@@ -100,7 +100,7 @@ void ATrickster::AI_DestroyPoisonGrenadeTrigger()
 
 void ATrickster::AI_OnPlayerEnterPoisonGrenadeTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (bAffectedByEmp || OtherActor->ActorHasTag("AliveEnemy")) return;
+	if (bAffectedByEmp || !OtherActor->ActorHasTag("Player")) return;
 	AI_TogglePoisonGrenadeTrigger(false);
 	GetWorld()->GetTimerManager().SetTimer(TryTriggeringPoisonGrenadeHandle, this, &ATrickster::AI_TryTriggeringPoisonGrenadeLaunch, 0.1f, true);
 }

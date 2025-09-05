@@ -105,9 +105,15 @@ void ARanger::AI_TryTriggeringGrenade()
 	}
 }
 
+void ARanger::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
+{
+	if (CanAbilityBeExecuted(1) && !bAffectedByEmp && !bIsActionInMotion && CurrentHp <= MaxHp * 0.5f) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerDeployShield);
+	Super::AI_ReceivedDamage(InDamageReason, InDamage);
+}
+
 void ARanger::AI_OnPlayerEnterGrenadeTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (bAffectedByEmp || OtherActor->ActorHasTag("AliveEnemy")) return;
+	if (bAffectedByEmp || !OtherActor->ActorHasTag("Player")) return;
 	AI_ToggleGrenadeTrigger(false);
 	GetWorld()->GetTimerManager().SetTimer(TryTriggeringGrenadeHandle, this, &ARanger::AI_TryTriggeringGrenade, 0.1f, true);
 }
@@ -152,13 +158,6 @@ void ARanger::GrenadeMuzzleFlashLogic()
 		Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true,FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, GetVariation());
 	}
 	else AI_GrenadeMuzzleFlashComponent->Activate(true);
-}
-
-float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	const float ReturnDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	if (!bAffectedByEmp && !bIsActionInMotion && !bIsHijacked && CurrentHp <= MaxHp * 0.5f && CanAbilityBeExecuted(1)) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerDeployShield);
-	return ReturnDamage;
 }
 
 void ARanger::PossessedBy(AController* NewController)

@@ -4,8 +4,6 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "RangerAnimationInstance.generated.h"
 
-enum class EVfx : uint8;
-
 UCLASS()
 class POSSESSIONGAME_API URangerAnimationInstance : public UEnemyAnimationInstance
 {

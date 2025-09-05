@@ -81,8 +81,6 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Muzzle }), EVfx::TricksterMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::FpsTrail }), EVfx::TricksterFpsBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterProjectile, EVfxType::Trail }), EVfx::TricksterBulletTrail },
-		{FPoolObjectPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::Impact }), EVfx::TricksterPoisonImpact },
-		{FPoolObjectPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::SecondaryImpact }), EVfx::TricksterPoison },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterPoisonProjectile, EVfxType::Trail }), EVfx::TricksterPoisonGrenadeTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterEmpProjectile, EVfxType::Impact }), EVfx::TricksterEmpImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::TricksterEmpProjectile, EVfxType::Trail }), EVfx::TricksterEmpGrenadeTrail },
@@ -127,8 +125,8 @@ void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAud
 {
 	if (!GetCanAsyncLoadHappen() || !InAudioComp) return;
 	FSoundContainer& SoundData = GetSoundData(InSoundName);
-	if (SoundData.GetSoundContainer()->Sound.IsValid()) SetAndPlaySoundCallback(SoundData, InAudioComp, InCallback, InSoundName, bIsPlayer);
-	else LoadSound3D(SoundData, InAudioComp, InCallback, InSoundName, bIsPlayer);
+	if (SoundData.GetSoundContainer()->Sound.IsValid()) SetAndPlaySoundCallback(SoundData, InAudioComp, InCallback, bIsPlayer);
+	else LoadSound3D(SoundData, InAudioComp, InCallback, bIsPlayer);
 }
 
 void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef, const bool bIsPlayer)
@@ -257,9 +255,9 @@ void UPrimaryDataAssetsManager::LoadSound2D(FSoundContainer& InSoundData, const 
 	RequestSoundLoad(InSoundData);
 }
 
-void UPrimaryDataAssetsManager::LoadSound3D(FSoundContainer& InSoundData, TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
+void UPrimaryDataAssetsManager::LoadSound3D(FSoundContainer& InSoundData, TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const bool bIsPlayer)
 {
-	InSoundData.AddSoundLoadedCallback([this, InSoundData, InAudioComp, InCallback, InSoundName, bIsPlayer] { SetAndPlaySoundCallback(InSoundData, InAudioComp, InCallback, InSoundName, bIsPlayer); });
+	InSoundData.AddSoundLoadedCallback([this, InSoundData, InAudioComp, InCallback, bIsPlayer] { SetAndPlaySoundCallback(InSoundData, InAudioComp, InCallback, bIsPlayer); });
 	RequestSoundLoad(InSoundData);
 }
 
@@ -561,6 +559,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_GuardianBulletImpact", EVfx::GuardianBulletImpact);
 	VfxsMap.Add("PA_GuardianMuzzle", EVfx::GuardianMuzzle);
 	VfxsMap.Add("PA_GuardianDeathElectrification", EVfx::GuardianDeathElectrification);
+	VfxsMap.Add("PA_AIGuardianShield", EVfx::AI_GuardianShield);
 	VfxsMap.Add("PA_MinionBossBulletTrail", EVfx::MinionBossBulletTrail);
 	VfxsMap.Add("PA_MinionBossMuzzle", EVfx::MinionBossMuzzle);
 	VfxsMap.Add("PA_MinionBossStompCrack", EVfx::MinionBossStompCrack);
@@ -589,9 +588,10 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Empty();
 }
 
-void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const FSoundContainer& SoundData, const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, const ESound InSoundName, const bool bIsPlayer)
+void UPrimaryDataAssetsManager::SetAndPlaySoundCallback(const FSoundContainer& SoundData, const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, const bool bIsPlayer)
 {
-	InAudioComp->SetSound(SoundData.GetSoundContainer()->Sound.Get());
+	USoundBase* SoundPtr = SoundData.GetSoundContainer()->Sound.Get();
+	InAudioComp->SetSound(SoundPtr);
 	if (InCallback && !InCallback()) return;
 	if (SoundData.GetSoundContainer()->bIsCharacterTypeDependant) InAudioComp->SetFloatParameter("Volume", bIsPlayer ? SoundData.GetSoundContainer()->PlayerVolume : SoundData.GetSoundContainer()->EnemyVolume);
 	InAudioComp->Play();

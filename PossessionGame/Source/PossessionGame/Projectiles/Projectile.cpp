@@ -98,6 +98,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	if (!ProjectileData.bIsProjectileDealingDamageItself) return;
 	if (OtherActor->ActorHasTag("Destructible"))
 	{
+		if (ProjectileData.bIsPlayerProjectile) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, Hit.Location, OtherActor->GetActorForwardVector());
 		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, Hit.ImpactNormal, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
 		return;
 	}
@@ -190,9 +191,12 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 		return;
 	}
 	const bool bIsCritical = Hit.BoneName == "head";
-	const float DamageMultiplier = bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f;
-	UGameplayStatics::ApplyPointDamage(OtherActor, Damage * DamageMultiplier, Hit.ImpactNormal, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
+	const float DamageAfterCritical = Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f);
+	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAfterCritical, Hit.ImpactNormal, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
+	FLinearColor DamageNumberColor = FLinearColor::White;
+	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor)) DamageNumberColor = Enemy->GetDamageNumberColor();
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(bIsCritical ? FLinearColor(0.9059f, 0.f, 0.1098f) : DamageNumberColor, DamageAfterCritical, Hit.Location, OtherActor->GetActorForwardVector());
 }
 
 void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, true); }

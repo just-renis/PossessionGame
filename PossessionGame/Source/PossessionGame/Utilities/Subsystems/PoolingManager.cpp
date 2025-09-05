@@ -1,4 +1,6 @@
 ﻿#include "PoolingManager.h"
+
+#include "DelegateManager.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 
@@ -25,6 +27,7 @@ void UPoolingManager::Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& InPoolMa
 		Pool.Add(Element.Key);
 		Pool[Element.Key].ObjectClass = Element.Value;
 	}
+	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.BindUObject(this, &UPoolingManager::SpawnDamageNumber);
 }
 
 void UPoolingManager::ReturnObjectToPool(const EPoolObject InObjectName, const TObjectPtr<APoolObject>& InPoolObject)
@@ -36,4 +39,10 @@ void UPoolingManager::ReturnObjectToPool(const EPoolObject InObjectName, const T
 void UPoolingManager::AllocatePoolObject(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation)
 {
 	Pool[InObjectName].Objects.Push(GetWorld()->SpawnActor<APoolObject>(Pool[InObjectName].ObjectClass, InLocation, InRotation));
+}
+
+void UPoolingManager::SpawnDamageNumber(const FLinearColor InColor, const float InDamage, const FVector& InLocation, const FVector& InForwardActor)
+{
+	UE_LOG(LogTemp, Error, TEXT("SpawnDamageNumber"));
+	SpawnObjectFromPool(EPoolObject::DamageNumber, InLocation + InForwardActor * 50.f, FRotator::ZeroRotator)->Init(InDamage, InColor);
 }

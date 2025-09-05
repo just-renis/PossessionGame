@@ -9,12 +9,8 @@
 
 class UUpgradeManager;
 enum class ESound : uint16;
-enum class EVfxType : uint8;
-enum class EVfx : uint8;
 class UPrimaryDataAssetsManager;
 class UNiagaraComponent;
-class IDamageable;
-enum class EPoolObject : uint8;
 class UProjectileMovementComponent;
 class UStaticMeshComponent;
 

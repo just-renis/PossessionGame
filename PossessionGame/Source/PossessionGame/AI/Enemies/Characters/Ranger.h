@@ -37,6 +37,7 @@ private:
 	virtual void AI_PlayDeathElectrification() override;
 	void AI_DestroyGrenadeTrigger() const;
 	void AI_TryTriggeringGrenade();
+	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage) override;
 	UFUNCTION()
 	void AI_OnPlayerEnterGrenadeTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -47,7 +48,6 @@ private:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void GrenadeMuzzleFlashLogic();
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitiateDeath() override;
 	virtual void SetEmpEffect(const float InEffectDuration) override;

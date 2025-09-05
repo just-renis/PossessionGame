@@ -30,4 +30,5 @@ private:
 	TMap<EPoolObject, FObjectPoolData> Pool;
 
 	void AllocatePoolObject(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation);
+	void SpawnDamageNumber(const FLinearColor InColor, const float InDamage, const FVector& InLocation, const FVector& InForwardActor);
 };

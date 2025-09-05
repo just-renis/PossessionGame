@@ -4,11 +4,13 @@
 #include "Components/InvalidationBox.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
+#include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilitiesPanelUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CrosshairUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/InfoPanelUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 

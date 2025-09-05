@@ -5,7 +5,7 @@
 #include "CollectibleData.generated.h"
 
 enum class EPoolObject : uint8;
-enum class EVfx : uint8;
+enum class EVfx : uint16;
 
 UCLASS()
 class POSSESSIONGAME_API UCollectibleData : public UDataAsset

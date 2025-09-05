@@ -1,7 +1,7 @@
 ﻿#include "Guardian.h"
-
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/ESound.h"
@@ -22,6 +22,22 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
+
+FLinearColor AGuardian::GetDamageNumberColor() const { return bIsFirstAbilityInUse ? Super::GetDamageNumberColor() : FLinearColor::White; }
+
+void AGuardian::AI_ToggleShieldVfx(const bool bState)
+{
+	if (!AI_GuardianShieldComponent)
+	{
+		GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::AI_GuardianShield, [this]() -> bool
+		{ return IsAsyncAssetStillAllowedToBeUsed(); }, &AI_GuardianShieldComponent, GetMesh(), FName("DeathSocket"));
+	}
+	else
+	{
+		if (bState) AI_GuardianShieldComponent->Activate(true);
+		else AI_GuardianShieldComponent->DeactivateImmediate();
+	}
+}
 
 void AGuardian::SetCustomTimeDilation(const float InDilation)
 {
@@ -56,6 +72,12 @@ AGuardian::AGuardian()
 	Sounds.Add(ESound::GuardianDeath, CreateDefaultSubobject<UAudioComponent>(TEXT("deathSound")));
 	Sounds[ESound::GuardianDeath]->SetAutoActivate(false);
 	Sounds[ESound::GuardianDeath]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::GuardianOverChargeStart, CreateDefaultSubobject<UAudioComponent>(TEXT("GuardianOverChargeStartSound")));
+	Sounds[ESound::GuardianOverChargeStart]->SetAutoActivate(false);
+	Sounds[ESound::GuardianOverChargeStart]->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::GuardianOverChargeEnd, CreateDefaultSubobject<UAudioComponent>(TEXT("GuardianOverChargeEndSound")));
+	Sounds[ESound::GuardianOverChargeEnd]->SetAutoActivate(false);
+	Sounds[ESound::GuardianOverChargeEnd]->SetupAttachment(GetMesh());
 }
 
 void AGuardian::AI_SetupWeapon()
@@ -75,6 +97,12 @@ void AGuardian::AI_PlaySpawnSound() { PlaySound(ESound::GuardianSpawn, true); }
 void AGuardian::AI_PlayDeathElectrification()
 {
 	AssetsManager->AttachVfx(EVfx::GuardianDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
+}
+
+void AGuardian::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
+{
+	if (CanAbilityBeExecuted(0) && !bAffectedByEmp && !bIsActionInMotion && CurrentHp <= MaxHp * 0.8f && CurrentHp > 0) AI_UseAbility(0);
+	Super::AI_ReceivedDamage(InDamageReason, InDamage);
 }
 
 void AGuardian::P_Setup()
@@ -165,13 +193,14 @@ void AGuardian::P_ResetShieldValues()
 
 float AGuardian::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (bImmuneToFirstHit)
 	{
 		bImmuneToFirstHit = false;
 		return 0.f;
 	}
-	if (EventInstigator && bReflectDamageEnabled) UGameplayStatics::ApplyDamage(EventInstigator->GetPawn(), DamageAmount * 0.5f, nullptr, this, UDamageType::StaticClass());
-	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if (EventInstigator && bReflectDamageEnabled) UGameplayStatics::ApplyDamage(EventInstigator->GetPawn(), Damage * 0.5f, nullptr, this, UDamageType::StaticClass());
+	return Damage;
 }
 
 void AGuardian::BeginPlay()

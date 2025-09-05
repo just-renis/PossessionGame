@@ -16,7 +16,7 @@ class POSSESSIONGAME_API ADamageNumber : public APoolObject
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	virtual void Init(const float InData, const bool bHide) override;
+	virtual void Init(const float InData, const FLinearColor InColor, const bool bHide) override;
 	virtual void Disable(const bool bHide) override;
 	void ReturnToPool();
 

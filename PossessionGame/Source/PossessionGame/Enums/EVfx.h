@@ -1,7 +1,7 @@
 #pragma once
 
 UENUM()
-enum class EVfx : uint8
+enum class EVfx : uint16
 {
 	None,
 	RangerMuzzle,
@@ -49,6 +49,7 @@ enum class EVfx : uint8
 	GuardianMuzzle,
 	GuardianBulletImpact,
 	GuardianDeathElectrification,
+	AI_GuardianShield,
 	MinionBossMuzzle,
 	MinionBossBulletTrail,
 	MinionBossStompCrack,

@@ -19,7 +19,7 @@ enum class ESound : uint16;
 class UAIHpBarUI;
 class UWidgetComponent;
 class UPrimaryDataAssetsManager;
-enum class EVfx : uint8;
+enum class EVfx : uint16;
 class ADestructible;
 class ANavAreaModifier;
 class UAIPerceptionStimuliSourceComponent;
@@ -80,6 +80,8 @@ public:
 	void AI_TryEvolving();
 	void AI_SetupUpgradesAppliance();
 	virtual void AI_CancelShooting() {}
+
+	virtual FLinearColor GetDamageNumberColor() const { return DamageNumberColor; }
 
 	void P_ApplyUpgradeOnSelection();
 	void P_UseAbility(const int32 AbilityIndex);
@@ -171,6 +173,7 @@ protected:
 	virtual void AI_PlayDeathElectrification() {}
 	virtual void AI_TriggerDeathVoiceLine() {}
 	virtual void AI_PlaySpawnSound() {}
+	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage);
 
 	virtual void P_SetupAbilities();
 	virtual void P_Setup();
@@ -271,6 +274,8 @@ private:
 	float SlideHeight = 39.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
 	float SlideCameraZ = 0.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
+	FLinearColor DamageNumberColor = FLinearColor::White;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -343,9 +348,7 @@ private:
 	void AI_SetupData();
 	void AI_StopAllAbilities();
 	void AI_SetupHpBar();
-	void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage);
 	void AI_DestroyHpBar();
-	void AI_ShowDamageNumber(const float InDamageAmount) const;
 	void AI_SpawnUsbOnDeath() const;
 	void AI_TriggerMutantExplosion();
 	void AI_HideHpBar() const;

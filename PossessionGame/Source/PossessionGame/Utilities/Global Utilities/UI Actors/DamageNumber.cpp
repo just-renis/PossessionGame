@@ -22,10 +22,11 @@ void ADamageNumber::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void ADamageNumber::Init(const float InData, const bool bHide)
+void ADamageNumber::Init(const float InData, const FLinearColor InColor, const bool bHide)
 {
-	Super::Init(InData, false);
 	DamageNumber->SetDamageAmount(InData);
+	DamageNumber->SetColorAndOpacity(InColor);
+	Super::Init(InData, InColor, false);
 	GetWorldTimerManager().SetTimer(ReturnToPoolHandle, this, &ADamageNumber::ReturnToPool, DamageNumber->GetAnimationLength(), false);
 }
 

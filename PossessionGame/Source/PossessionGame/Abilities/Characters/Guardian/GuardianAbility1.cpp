@@ -13,6 +13,30 @@
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
+void UGuardianAbility1::AI_Execute()
+{
+	Proprietor->AI_SetFirstAbilityUsageState(true);
+	Cast<AGuardianWeapon>(Proprietor->GetWeapon())->ToggleHandsMeshAbilityState(true);
+	const float ReductionIncrease = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::ReduceDamageTaken, IsProprietorPossessed());
+	TotalDamageReduction = BaseDamageReduction / (1.f + ReductionIncrease * 0.01f);
+	Proprietor->SetDamageReduction(TotalDamageReduction);
+	Proprietor->PlaySound(ESound::GuardianOverChargeStart);
+	Proprietor->AI_ToggleShieldVfx(true);
+	bIsAbilityInDuration = true;
+	Super::AI_Execute();
+}
+
+void UGuardianAbility1::AI_StopAbility()
+{
+	if (!bIsAbilityInDuration) return;
+	Proprietor->AI_SetFirstAbilityUsageState(false);
+	Proprietor->SetDamageReduction(1.f);
+	Cast<AGuardianWeapon>(Proprietor->GetWeapon())->ToggleHandsMeshAbilityState(false);
+	Proprietor->PlaySound(ESound::GuardianOverChargeEnd);
+	Proprietor->AI_ToggleShieldVfx(false);
+	Super::AI_StopAbility();
+}
+
 void UGuardianAbility1::P_Execute()
 {
 	Proprietor->SetIsActionInMotion(true);

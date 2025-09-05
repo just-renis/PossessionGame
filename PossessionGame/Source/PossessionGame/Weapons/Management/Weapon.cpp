@@ -306,10 +306,13 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	const float SecretBoostDamage = P_ReceiveHitScanDamage() + P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
 	const float AfterUpgradeApplianceDamage = SecretBoostDamage + P_UpgradeDamageAppliance();
 	const float Damage = AfterUpgradeApplianceDamage * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
-	if (FMath::IsNearlyEqual(Damage, 0.f, 0.01f)) return;
+	const float CriticalDamage = bIsCritical ? Damage * P_Data->GetCriticalDamage() : Damage;
+	if (FMath::IsNearlyEqual(CriticalDamage, 0.f, 0.01f)) return;
 	(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
-	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), bIsCritical ? Damage * P_Data->GetCriticalDamage() : Damage,
-	(InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
+	FLinearColor DamageNumberColor = FLinearColor::White;
+	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(InHitResult.GetActor())) DamageNumberColor = Enemy->GetDamageNumberColor();
+	(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? FLinearColor(0.9059f, 0.f, 0.1098f) : DamageNumberColor, CriticalDamage, InHitResult.Location, InHitResult.GetActor()->GetActorForwardVector());
+	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), CriticalDamage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 
 void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)

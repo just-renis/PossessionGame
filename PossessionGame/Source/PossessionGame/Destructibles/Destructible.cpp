@@ -2,6 +2,7 @@
 #include "Engine/DamageEvents.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DestructibleData.h"
 #include "PossessionGame/Projectiles/Projectile.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 
 ADestructible::ADestructible()
@@ -62,7 +63,9 @@ float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	{
 		Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 		const bool bIsPlayerProjectile = Cast<AProjectile>(DamageCauser)->GetIsPlayerProjectile();
-		if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) Hp -= Damage * DamageReduction;
+		const float TrueDamage = Damage * DamageReduction;
+		if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) Hp -= TrueDamage;
+		if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, TrueDamage, GetActorLocation(), GetActorForwardVector());
 	}
 	else
 	{

@@ -10,7 +10,7 @@
 #include "Weapon.generated.h"
 
 enum class EVariation : uint8;
-enum class EVfx : uint8;
+enum class EVfx : uint16;
 class UPrimaryDataAssetsManager;
 class AEnemy;
 class UHandsAnimInstance;

@@ -280,11 +280,7 @@ void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageRea
 	const float TrueDamage = InDamage * DamageReduction;
 	CurrentHp -= TrueDamage;
 	if (P_HUD) P_HandlingDamageTaken();
-	else if (bIsAlive)
-	{
-		AI_ReceivedDamage(InDamageReason, TrueDamage);
-		AI_ShowDamageNumber(TrueDamage);
-	}
+	else if (bIsAlive) AI_ReceivedDamage(InDamageReason, TrueDamage);
 	if (bIsAlive && CurrentHp <= 0)
 	{
 		if (bIsHijacked) P_Death();
@@ -426,6 +422,17 @@ void AEnemy::AI_Reload() const
 }
 
 void AEnemy::AI_PlayDeathSound() { PlaySound(ESound::MechanicalDeath); }
+
+void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
+{
+	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 1.f);
+	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.02f, false);
+	ProcessDamageReason(InDamageReason, InDamage);
+	if (CurrentHp <= 0 || !AI_HpBar) return;
+	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
+	AI_HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	GetWorldTimerManager().SetTimer(AI_HideHpBarHandle, this, &AEnemy::AI_HideHpBar, 2.f, false);
+}
 
 void AEnemy::P_SetupAbilities()
 {
@@ -573,7 +580,11 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	const FRadialDamageEvent* RadialDamageEvent = nullptr;
 	const FPointDamageEvent* PointDamageEvent = nullptr;
-	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
+	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+	{
+		if (!bIsHijacked) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), Damage, GetActorLocation(), GetActorForwardVector());
+		RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
+	}
 	else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
 	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None);
 	if (GetMesh()->IsSimulatingPhysics())
@@ -702,17 +713,6 @@ void AEnemy::AI_SetupHpBar()
 	AI_HideHpBar();
 }
 
-void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
-{
-	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 1.f);
-	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.02f, false);
-	ProcessDamageReason(InDamageReason, InDamage);
-	if (!AI_HpBar) return;
-	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
-	AI_HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	GetWorldTimerManager().SetTimer(AI_HideHpBarHandle, this, &AEnemy::AI_HideHpBar, 2.f, false);
-}
-
 void AEnemy::AI_DestroyHpBar()
 {
 	GetWorldTimerManager().ClearTimer(AI_HideHpBarHandle);
@@ -720,11 +720,6 @@ void AEnemy::AI_DestroyHpBar()
 	AI_HpBarComponent->DestroyComponent();
 	AI_HpBar = nullptr;
 	AI_HpBarComponent = nullptr;
-}
-
-void AEnemy::AI_ShowDamageNumber(const float InDamageAmount) const
-{
-	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::DamageNumber, GetActorLocation() + FVector(0.f, 0.f, 60.f) + GetActorForwardVector() * 50.f, FRotator::ZeroRotator)->Init(InDamageAmount);
 }
 
 void AEnemy::AI_SpawnUsbOnDeath() const
@@ -1010,20 +1005,23 @@ void AEnemy::P_ProcessMeleeAttack()
 	GetWorld()->OverlapMultiByProfile(Overlaps, Origin, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(QuickMeleeAttackRadiusInMeters * 100.f), OverlapParams);
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
-		TObjectPtr<AActor> Enemy = Overlap.GetActor();
-		if (Enemy && Enemy->ActorHasTag("AliveEnemy"))
+		TObjectPtr<AActor> Actor = Overlap.GetActor();
+		if (Actor && Actor->ActorHasTag("AliveEnemy"))
 		{
-			FVector ToEnemy = (Enemy->GetActorLocation() - Origin).GetSafeNormal();
+			FVector ToEnemy = (Actor->GetActorLocation() - Origin).GetSafeNormal();
 			if (FVector::DotProduct(GetActorForwardVector(), ToEnemy) >= 0.342f)
 			{
 				FHitResult Hit;
 				FCollisionQueryParams TraceParams;
 				TraceParams.AddIgnoredActor(this);
-				TraceParams.AddIgnoredActor(Enemy);
-				if (!GetWorld()->LineTraceSingleByChannel(Hit, Origin, Enemy->GetActorLocation(), ECC_Visibility, TraceParams))
+				TraceParams.AddIgnoredActor(Actor);
+				if (!GetWorld()->LineTraceSingleByChannel(Hit, Origin, Actor->GetActorLocation(), ECC_Visibility, TraceParams))
 				{
-					UGameplayStatics::ApplyDamage(Enemy, QuickMeleeAttackDamage, GetController(), this, UDamageType::StaticClass());
-					(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
+					UGameplayStatics::ApplyDamage(Actor, QuickMeleeAttackDamage, GetController(), this, UDamageType::StaticClass());
+					(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
+					FLinearColor EnemyDamageNumberColor = FLinearColor::White;
+					if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(Actor)) EnemyDamageNumberColor = Enemy->GetDamageNumberColor();
+					(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(EnemyDamageNumberColor, QuickMeleeAttackDamage, Origin, Actor->GetActorForwardVector());
 				}
 			}
 		}
@@ -1073,17 +1071,20 @@ void AEnemy::P_StompImpact(const FVector& InHitLocation)
 	GetWorld()->OverlapMultiByProfile(Overlaps, InHitLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompRadiusInMeters * 100.f));
 	for (const FOverlapResult& Result : Overlaps)
 	{
-		TObjectPtr<AActor> Enemy = Result.GetActor();
-		if (Enemy && Enemy->ActorHasTag("AliveEnemy"))
+		TObjectPtr<AActor> Actor = Result.GetActor();
+		if (Actor && Actor->ActorHasTag("AliveEnemy"))
 		{
 			FHitResult Hit;
 			FCollisionQueryParams Params;
 			Params.AddIgnoredActor(this);
-			Params.AddIgnoredActor(Enemy);
-			if (!GetWorld()->LineTraceSingleByChannel(Hit, InHitLocation, Enemy->GetActorLocation(), ECC_Visibility, Params))
+			Params.AddIgnoredActor(Actor);
+			if (!GetWorld()->LineTraceSingleByChannel(Hit, InHitLocation, Actor->GetActorLocation(), ECC_Visibility, Params))
 			{
-				UGameplayStatics::ApplyDamage(Enemy, StompDamage, nullptr, this, UDamageType::StaticClass());
-				(void) DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
+				UGameplayStatics::ApplyDamage(Actor, StompDamage, nullptr, this, UDamageType::StaticClass());
+				(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
+				FLinearColor EnemyDamageNumberColor = FLinearColor::White;
+				if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(Actor)) EnemyDamageNumberColor = Enemy->GetDamageNumberColor();
+				(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(EnemyDamageNumberColor, StompDamage, InHitLocation, Actor->GetActorForwardVector());
 			}
 		}
 	}
