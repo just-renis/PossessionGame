@@ -12,8 +12,8 @@ AEnemyAIController::AEnemyAIController()
 {
 	Perception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("perceptionComponent"));
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("sightConfig"));
-	SightConfig->SightRadius = 2000.f;
-	SightConfig->LoseSightRadius = 2000.f;
+	SightConfig->SightRadius = 6000.f;
+	SightConfig->LoseSightRadius = 6000.f;
 	SightConfig->PeripheralVisionAngleDegrees = 60.f;
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;

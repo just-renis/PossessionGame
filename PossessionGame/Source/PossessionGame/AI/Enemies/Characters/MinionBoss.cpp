@@ -255,7 +255,7 @@ void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 	}
 }
 
-void AMinionBoss::DealLaserDamageToPlayer() const { if (Player) Player->ReceiveDamage(2.f, EDamageReason::MinionBossDamage); }
+void AMinionBoss::DealLaserDamageToPlayer() const { if (Player) Player->ReceiveDamage(2.5f, EDamageReason::MinionBossDamage); }
 
 void AMinionBoss::SetMoveDirectlyToPlayer()
 {

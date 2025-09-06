@@ -13,8 +13,8 @@ class POSSESSIONGAME_API UMinionBossAbility2 : public UAbility
 
 	bool bIsLaserDisabled = false;
 	bool bLaserUpdateFirstFrame = true;
-	float Acceleration = 0.05f;
-	float MaxSpeed = 13.f;
+	float Acceleration = 0.1f;
+	float MaxSpeed = 35.f;
 	float MinSpeed = 0.5f;
 	float CurrentRotationSpeed = 0.5f;
 	float LaserActivationFromExecution = 1.65f;

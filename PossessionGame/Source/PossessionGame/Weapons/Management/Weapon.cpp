@@ -308,15 +308,22 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	const float Damage = AfterUpgradeApplianceDamage * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
 	float CriticalDamage = bIsCritical ? Damage * P_Data->GetCriticalDamage() : Damage;
 	if (FMath::IsNearlyEqual(CriticalDamage, 0.f, 0.01f)) return;
-	(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
-	FLinearColor DamageNumberColor = FLinearColor::White;
+	if (InHitResult.GetActor()->ActorHasTag("Destructible"))
+	{
+		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
+		UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), CriticalDamage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
+		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, CriticalDamage, InHitResult.Location, InHitResult.GetActor()->GetActorForwardVector());
+		return;
+	}
 	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(InHitResult.GetActor()))
 	{
-		DamageNumberColor = Enemy->GetDamageNumberColor();
 		CriticalDamage *= Enemy->GetDamageReduction();
+		UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), CriticalDamage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
+		if (!Enemy->GetIsAlive()) return;
+		const FLinearColor DamageNumberColor = Enemy->GetDamageNumberColor();
+		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
+		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? FLinearColor(0.9059f, 0.f, 0.1098f) : DamageNumberColor, CriticalDamage, InHitResult.Location, InHitResult.GetActor()->GetActorForwardVector());
 	}
-	if (!InHitResult.GetActor()->ActorHasTag("Destructible")) (void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? FLinearColor(0.9059f, 0.f, 0.1098f) : DamageNumberColor, CriticalDamage, InHitResult.Location, InHitResult.GetActor()->GetActorForwardVector());
-	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), CriticalDamage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 
 void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)

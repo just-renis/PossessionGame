@@ -1106,8 +1106,10 @@ void AEnemy::P_Death()
 
 void AEnemy::P_ControlLogic()
 {
-	Weapon->P_SetWalkSpread(GetCharacterMovement()->Velocity.Size() >= P_Data->GetMaxWalkSpeed() - 0.1f);
-	Weapon->P_SetWalkingSpeed(GetCharacterMovement()->Velocity.Size());
+	FVector Velocity = GetCharacterMovement()->Velocity;
+	Velocity.Z = 0.f;
+	Weapon->P_SetWalkSpread(Velocity.Size() >= P_Data->GetMaxWalkSpeed() - 0.1f);
+	Weapon->P_SetWalkingSpeed(Velocity.Size());
 	if (!bCanHijackOtherEnemy && !bInUpgradeSelection) P_HijackBarLogic();
 }
 

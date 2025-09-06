@@ -6,6 +6,7 @@
 
 void UGuardianAbility2::P_Execute()
 {
+	if (bIsAbilityInDuration) P_StopAbility();
 	bIsAbilityInDuration = true;
 	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianSlowMotion, true);
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f / Dilation);
@@ -54,6 +55,7 @@ void UGuardianAbility2::P_TimeStopRegressProcess()
 void UGuardianAbility2::P_StopTimeStopProcess()
 {
 	if (!MID_TimeStop) return;
+	TimeStopPulseDistance = 0.f;
 	MID_TimeStop->SetScalarParameterValue("PulseDistance", 0.f);
 	GetWorld()->GetTimerManager().ClearTimer(ProcessTimeStopHandle);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::GuardianTimeStopPulse, MID_TimeStop, 0.f);
