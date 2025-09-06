@@ -16,7 +16,6 @@
 void UGuardianAbility1::AI_Execute()
 {
 	Proprietor->AI_SetFirstAbilityUsageState(true);
-	Cast<AGuardianWeapon>(Proprietor->GetWeapon())->ToggleHandsMeshAbilityState(true);
 	const float ReductionIncrease = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::ReduceDamageTaken, IsProprietorPossessed());
 	TotalDamageReduction = BaseDamageReduction / (1.f + ReductionIncrease * 0.01f);
 	Proprietor->SetDamageReduction(TotalDamageReduction);
@@ -31,7 +30,6 @@ void UGuardianAbility1::AI_StopAbility()
 	if (!bIsAbilityInDuration) return;
 	Proprietor->AI_SetFirstAbilityUsageState(false);
 	Proprietor->SetDamageReduction(1.f);
-	Cast<AGuardianWeapon>(Proprietor->GetWeapon())->ToggleHandsMeshAbilityState(false);
 	Proprietor->PlaySound(ESound::GuardianOverChargeEnd);
 	Proprietor->AI_ToggleShieldVfx(false);
 	Super::AI_StopAbility();

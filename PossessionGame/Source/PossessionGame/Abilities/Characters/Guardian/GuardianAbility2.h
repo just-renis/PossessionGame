@@ -14,11 +14,21 @@ public:
 	virtual void P_Execute() override;
 	virtual void P_StopAbility() override;
 private:
-	float Dilation = 3.f;
+	float Dilation = 2.5f;
+	float TimeStopPulseDistance = 0.f;
 	UPROPERTY()
 	TObjectPtr<AGuardian> Proprietor;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_TimeStop;
+	UPROPERTY()
+	FTimerHandle ProcessTimeStopHandle;
+
+	void P_TimeStopProcess();
+	void P_TimeStopRegressProcess();
+	void P_StopTimeStopProcess();
 
 	virtual bool IsProprietorPossessed() override;
 	
 	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) override;
+	void SetTimeStopProcess();
 };

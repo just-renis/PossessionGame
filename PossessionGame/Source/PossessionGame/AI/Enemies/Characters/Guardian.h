@@ -10,6 +10,7 @@ class POSSESSIONGAME_API AGuardian : public AEnemy
 	GENERATED_BODY()
 public:
 	virtual FLinearColor GetDamageNumberColor() const override;
+	TObjectPtr<UMaterialInterface> GetTimeStopMaterial() const { return MI_TimeStop; }
 	
 	void AI_SetFirstAbilityUsageState(const bool bState) { bIsFirstAbilityInUse = bState; }
 	void AI_ToggleShieldVfx(const bool bState);
@@ -32,12 +33,14 @@ private:
 	TObjectPtr<UMaterialInterface> MI_Guardian;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Shield;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_TimeStop;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Shield;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_EnemyAbilityShield;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> AI_GuardianShieldComponent;
+	TObjectPtr<UNiagaraComponent> GuardianShieldComponent;
 	UPROPERTY()
 	FTimerHandle ShieldUpdateHandle;
 	
@@ -61,9 +64,12 @@ private:
 	void P_UpdateShieldMaterialDisappear();
 	void P_UpdateShieldMaterial(const bool bState);
 	void P_ResetShieldValues();
+	void P_ToggleShieldVfx(const bool bState);
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 	virtual void BeginPlay() override;
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) override;
+	virtual void DisableAllVfxAfterPossession() override;
+	void ToggleShieldVfx(const bool bState, const EVfx InVfxName);
 };

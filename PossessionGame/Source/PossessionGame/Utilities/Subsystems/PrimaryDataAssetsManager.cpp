@@ -525,8 +525,6 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_RangerGrenadeTrail", EVfx::RangerGrenadeTrail);
 	VfxsMap.Add("PA_RangerGrenadeLaunchSpecial", EVfx::RangerGrenadeLaunchSpecial);
 	VfxsMap.Add("PA_RangerSpawn", EVfx::RangerSpawn);
-	VfxsMap.Add("PA_StopTimeAbility", EVfx::StopTimeAbility);
-	VfxsMap.Add("PA_StopTimeAbilityReverse", EVfx::StopTimeAbilityReverse);
 	VfxsMap.Add("PA_MinionMuzzle", EVfx::MinionMuzzle);
 	VfxsMap.Add("PA_MinionBulletTrail", EVfx::MinionBulletTrail);
 	VfxsMap.Add("PA_MinionBulletImpact", EVfx::MinionBulletImpact);
@@ -560,6 +558,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_GuardianMuzzle", EVfx::GuardianMuzzle);
 	VfxsMap.Add("PA_GuardianDeathElectrification", EVfx::GuardianDeathElectrification);
 	VfxsMap.Add("PA_AIGuardianShield", EVfx::AI_GuardianShield);
+	VfxsMap.Add("PA_PlayerGuardianShield", EVfx::PlayerGuardianShield);
 	VfxsMap.Add("PA_MinionBossBulletTrail", EVfx::MinionBossBulletTrail);
 	VfxsMap.Add("PA_MinionBossMuzzle", EVfx::MinionBossMuzzle);
 	VfxsMap.Add("PA_MinionBossStompCrack", EVfx::MinionBossStompCrack);

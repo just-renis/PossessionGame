@@ -14,7 +14,7 @@ class POSSESSIONGAME_API UDamageNumberUI : public UUserWidget
 public:
 	float GetAnimationLength() const { return DamageNumberAnim1->GetEndTime(); }
 	
-	void SetDamageAmount(const float InDamageAmount);
+	void SetDamageAmount(float InDamageAmount);
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DamageNumberText;

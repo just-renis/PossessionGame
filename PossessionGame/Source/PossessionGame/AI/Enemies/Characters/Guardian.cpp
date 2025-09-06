@@ -15,7 +15,6 @@
 #include "PossessionGame/Weapons/Character Weapons/GuardianWeapon.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
-#include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EUpgrade.h"
@@ -28,39 +27,27 @@ FLinearColor AGuardian::GetDamageNumberColor() const { return bIsFirstAbilityInU
 void AGuardian::AI_ToggleShieldVfx(const bool bState)
 {
 	AI_ToggleMeshShieldAbilityState(bState);
-	if (!AI_GuardianShieldComponent)
-	{
-		GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::AI_GuardianShield, [this]() -> bool
-		{ return IsAsyncAssetStillAllowedToBeUsed(); }, &AI_GuardianShieldComponent, GetMesh(), FName("DeathSocket"));
-	}
-	else
-	{
-		if (bState) AI_GuardianShieldComponent->Activate(true);
-		else AI_GuardianShieldComponent->DeactivateImmediate();
-	}
+	ToggleShieldVfx(bState, EVfx::AI_GuardianShield);
 }
 
 void AGuardian::AI_ToggleMeshShieldAbilityState(const bool bState)
 {
 	if (!MID_EnemyAbilityShield) MID_EnemyAbilityShield = GetMesh()->CreateAndSetMaterialInstanceDynamic(0);
-	MID_EnemyAbilityShield->SetScalarParameterValue("Hue", bState ? 0.9f : 1.f);
+	MID_EnemyAbilityShield->SetScalarParameterValue("Hue", bState ? 0.85f : 1.f);
+	MID_EnemyAbilityShield->SetScalarParameterValue("Color Strength", bState ? 10.f : 1.f);
 	MID_EnemyAbilityShield->SetScalarParameterValue("Emissive Effect", bState ? 1.f : 0.f);
 	MID_EnemyAbilityShield->SetScalarParameterValue("Width", bState ? 0.2f : 0.f);
 }
 
 void AGuardian::SetCustomTimeDilation(const float InDilation)
 {
-	if (FMath::IsNearlyEqual(InDilation, 5.f, 0.1f))
-	{
-		AssetsManager->AttachVfx(EVfx::StopTimeAbility, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); },nullptr, Cast<USceneComponent>(GetCamera()), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
-	}
-	else AssetsManager->AttachVfx(EVfx::StopTimeAbilityReverse, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, nullptr, Cast<USceneComponent>(GetCamera()), NAME_None, false, FVector(20.f, 0.f, 0.f), FRotator::ZeroRotator, EAttachLocation::SnapToTarget, true);
 	CustomTimeDilation = InDilation;
 	GetWeapon()->SetCustomDilation(InDilation);
 }
 
 void AGuardian::ToggleShield(const bool bState)
 {
+	P_ToggleShieldVfx(bState);
 	if (bState)
 	{
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::GuardianShield, MID_Shield, 1.f);
@@ -174,6 +161,7 @@ void AGuardian::P_UpdateShieldMaterialDisappear()
 	P_UpdateShieldMaterial(false);
 	if (ShieldColorDensity >= 5.f)
 	{
+		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::GuardianShield, MID_Shield, 0.f);
 		bIsShieldDisappearing = false;
 		GetWorldTimerManager().ClearTimer(ShieldUpdateHandle);
 	}
@@ -200,6 +188,8 @@ void AGuardian::P_ResetShieldValues()
 	bIsShieldDisappearing = false;
 }
 
+void AGuardian::P_ToggleShieldVfx(const bool bState) { ToggleShieldVfx(bState, EVfx::PlayerGuardianShield); }
+
 float AGuardian::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -224,4 +214,26 @@ void AGuardian::SetMesh(const ECharacterType PrimaryDataAssetName)
 {
 	Super::SetMesh(PrimaryDataAssetName);
 	GetMesh()->SetMaterial(0, MI_Guardian);
+}
+
+void AGuardian::DisableAllVfxAfterPossession()
+{
+	Super::DisableAllVfxAfterPossession();
+	AI_ToggleShieldVfx(false);
+	GuardianShieldComponent = nullptr;
+}
+
+void AGuardian::ToggleShieldVfx(const bool bState, const EVfx InVfxName)
+{
+	if (!GuardianShieldComponent)
+	{
+		if (!bState) return;
+		GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(InVfxName, [this]() -> bool
+		{ return IsAsyncAssetStillAllowedToBeUsed(); }, &GuardianShieldComponent, GetMesh(), FName("DeathSocket"));
+	}
+	else
+	{
+		if (bState) GuardianShieldComponent->Activate(true);
+		else GuardianShieldComponent->DeactivateImmediate();
+	}
 }

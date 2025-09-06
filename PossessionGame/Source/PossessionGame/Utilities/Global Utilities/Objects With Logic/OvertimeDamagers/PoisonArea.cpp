@@ -18,7 +18,14 @@ void APoisonArea::DealOvertimeDamage()
 {
 	if (Targets.IsEmpty()) return;
 	if (EVariation::TricksterVariationPurple == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Trickster)) GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddPoisonAreaUptime(DamageTick);
-	for (int32 i = 0; i < Targets.Num(); i++) if (Targets[i]) Targets[i]->ReceiveDamage(Damage, DamageReason);
+	for (int32 i = 0; i < Targets.Num(); i++)
+	{
+		if (!Targets[i]) continue;
+		const float TrueDamage = Damage * Targets[i]->GetDamageReduction();
+		const FVector TargetSocketLocation = Targets[i]->GetSocketLocation("DeathSocket");
+		Targets[i]->ReceiveDamage(TrueDamage, DamageReason);
+		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(Targets[i]->GetDamageNumberColor(), TrueDamage, TargetSocketLocation, TargetSocketLocation.ForwardVector);
+	}
 }
 
 void APoisonArea::AddTarget(const TObjectPtr<AEnemy>& InTarget)

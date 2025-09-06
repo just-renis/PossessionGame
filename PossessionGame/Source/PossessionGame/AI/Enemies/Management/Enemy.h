@@ -204,6 +204,7 @@ protected:
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
 	virtual void DestroyAI();
 	virtual void DestroyThis();
+	virtual void DisableAllVfxAfterPossession();
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanHijackOtherEnemy = false;

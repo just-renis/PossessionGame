@@ -204,7 +204,7 @@ void AEnemy::PossessedBy(AController* NewController)
 		if (Cast<APlayerController>(NewController))
 		{
 			Abilities.Empty();
-			DisableHijackViableVfx();
+			DisableAllVfxAfterPossession();
 			bIsActionInMotion = false;
 			P_TriggerGlitchingEffect();
 			P_ToggleCriticallyDamagedEffects(0.f);
@@ -277,7 +277,6 @@ void AEnemy::InitiateDeath()
 
 void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
 {
-	UE_LOG(LogTemp, Error, TEXT("ReceiveDamage  TRUE DAMAGE: %f"), InDamage);
 	CurrentHp -= InDamage;
 	if (P_HUD) P_HandlingDamageTaken();
 	else if (bIsAlive) AI_ReceivedDamage(InDamageReason, InDamage);
@@ -696,6 +695,8 @@ void AEnemy::DestroyThis()
 	GetWorldTimerManager().SetTimer(DestroyCondenseMaterialsProcessHandle, this, &AEnemy::DestroyCondenseMaterialsProcess, 0.05f, true);
 }
 
+void AEnemy::DisableAllVfxAfterPossession() { DisableHijackViableVfx(); }
+
 void AEnemy::AI_SetupData()
 {
 	CurrentHp = MaxHp = AI_Data->GetMaxHp();
@@ -1024,7 +1025,7 @@ void AEnemy::P_ProcessMeleeAttack()
 		else if (const TObjectPtr<ADestructible> Destructible = Cast<ADestructible>(Actor); Destructible->GetIsPlayerObject()) return;
 		UGameplayStatics::ApplyDamage(Actor, TrueQuickMeleeAttackDamage, GetController(), this, UDamageType::StaticClass());
 		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
-		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(EnemyDamageNumberColor, TrueQuickMeleeAttackDamage, EnemyActorSocketLocation.ContainsNaN() ? Actor->GetActorLocation() : EnemyActorSocketLocation, Actor->GetActorForwardVector() * 0.5f);
+		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(EnemyDamageNumberColor, TrueQuickMeleeAttackDamage, EnemyActorSocketLocation.ContainsNaN() ? Actor->GetActorLocation() : EnemyActorSocketLocation, EnemyActorSocketLocation.ForwardVector * 0.5f);
 	}
 }
 
