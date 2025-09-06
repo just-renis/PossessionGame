@@ -27,6 +27,7 @@ FLinearColor AGuardian::GetDamageNumberColor() const { return bIsFirstAbilityInU
 
 void AGuardian::AI_ToggleShieldVfx(const bool bState)
 {
+	AI_ToggleMeshShieldAbilityState(bState);
 	if (!AI_GuardianShieldComponent)
 	{
 		GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::AI_GuardianShield, [this]() -> bool
@@ -37,6 +38,14 @@ void AGuardian::AI_ToggleShieldVfx(const bool bState)
 		if (bState) AI_GuardianShieldComponent->Activate(true);
 		else AI_GuardianShieldComponent->DeactivateImmediate();
 	}
+}
+
+void AGuardian::AI_ToggleMeshShieldAbilityState(const bool bState)
+{
+	if (!MID_EnemyAbilityShield) MID_EnemyAbilityShield = GetMesh()->CreateAndSetMaterialInstanceDynamic(0);
+	MID_EnemyAbilityShield->SetScalarParameterValue("Hue", bState ? 0.9f : 1.f);
+	MID_EnemyAbilityShield->SetScalarParameterValue("Emissive Effect", bState ? 1.f : 0.f);
+	MID_EnemyAbilityShield->SetScalarParameterValue("Width", bState ? 0.2f : 0.f);
 }
 
 void AGuardian::SetCustomTimeDilation(const float InDilation)

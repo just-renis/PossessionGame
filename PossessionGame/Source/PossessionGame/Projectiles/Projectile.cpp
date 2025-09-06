@@ -191,11 +191,15 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 		return;
 	}
 	const bool bIsCritical = Hit.BoneName == "head";
-	const float DamageAfterCritical = Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f);
+	float DamageAfterCritical = Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f);
+	FLinearColor DamageNumberColor = FLinearColor::White;
+	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor))
+	{
+		DamageAfterCritical *= Enemy->GetDamageReduction();
+		DamageNumberColor = Enemy->GetDamageNumberColor();
+	}
 	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAfterCritical, Hit.ImpactNormal, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
-	FLinearColor DamageNumberColor = FLinearColor::White;
-	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor)) DamageNumberColor = Enemy->GetDamageNumberColor();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(bIsCritical ? FLinearColor(0.9059f, 0.f, 0.1098f) : DamageNumberColor, DamageAfterCritical, Hit.Location, OtherActor->GetActorForwardVector());
 }
 

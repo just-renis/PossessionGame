@@ -55,6 +55,7 @@ public:
 	bool GetIsHijackAble() const;
 	bool CanAbilityBeExecuted(const int32 AbilityIndex);
 	float GetActionSpeed() const { return ActionSpeed; }
+	float GetDamageReduction() const { return DamageReduction; }
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
 	EVariation GetVariation() const { return Variation; }

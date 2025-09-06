@@ -58,32 +58,22 @@ void ADestructible::SetThisLifeSpan()
 
 float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	float Damage;
+	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) * DamageReduction;
 	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
-		Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 		const bool bIsPlayerProjectile = Cast<AProjectile>(DamageCauser)->GetIsPlayerProjectile();
-		const float TrueDamage = Damage * DamageReduction;
-		if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) Hp -= TrueDamage;
-		if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, TrueDamage, GetActorLocation(), GetActorForwardVector());
+		if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) Hp -= Damage;
 	}
-	else
+	else Hp -= Damage;
+	if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, GetActorLocation(), GetActorForwardVector());
+	if (Hp > 0) return Damage;
+	if (bIsAffectedByPhysics)
 	{
-		Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-		Hp -= Damage * DamageReduction;
+		HandleDeactivation();
+		if (!DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) return Damage;
+		const FRadialDamageEvent* RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
+		Mesh->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 20000.f, RIF_Linear);
 	}
-	if (Hp <= 0)
-	{
-		if (bIsAffectedByPhysics)
-		{
-			HandleDeactivation();
-			if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
-			{
-				const FRadialDamageEvent* RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
-				Mesh->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 20000.f, RIF_Linear);
-			}
-		}
-		else DestroyThis();
-	}
+	else DestroyThis();
 	return Damage;
 }

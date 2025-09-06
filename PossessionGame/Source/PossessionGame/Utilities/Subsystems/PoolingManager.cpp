@@ -1,5 +1,4 @@
 ﻿#include "PoolingManager.h"
-
 #include "DelegateManager.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
@@ -43,6 +42,5 @@ void UPoolingManager::AllocatePoolObject(const EPoolObject InObjectName, const F
 
 void UPoolingManager::SpawnDamageNumber(const FLinearColor InColor, const float InDamage, const FVector& InLocation, const FVector& InForwardActor)
 {
-	UE_LOG(LogTemp, Error, TEXT("SpawnDamageNumber"));
-	SpawnObjectFromPool(EPoolObject::DamageNumber, InLocation + InForwardActor * 50.f, FRotator::ZeroRotator)->Init(InDamage, InColor);
+	SpawnObjectFromPool(EPoolObject::DamageNumber, InLocation + InForwardActor * 25.f, FRotator::ZeroRotator)->Init(InDamage, InColor);
 }

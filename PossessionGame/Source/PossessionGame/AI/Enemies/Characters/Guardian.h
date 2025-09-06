@@ -13,6 +13,7 @@ public:
 	
 	void AI_SetFirstAbilityUsageState(const bool bState) { bIsFirstAbilityInUse = bState; }
 	void AI_ToggleShieldVfx(const bool bState);
+	void AI_ToggleMeshShieldAbilityState(const bool bState);
 	
 	void SetCustomTimeDilation(const float InDilation);
 	void ToggleShield(const bool bState);
@@ -33,6 +34,8 @@ private:
 	TObjectPtr<UMaterialInterface> MI_Shield;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Shield;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_EnemyAbilityShield;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> AI_GuardianShieldComponent;
 	UPROPERTY()

@@ -15,6 +15,7 @@ public:
 	ADestructible();
 	
 	bool GetIsDeactivated() const { return bIsDeactivated; }
+	bool GetIsPlayerObject() const { return bIsPlayerObject; }
 	
 	void HandleDeactivation();
 	virtual void Init(bool bInIsPlayerObject) override;
