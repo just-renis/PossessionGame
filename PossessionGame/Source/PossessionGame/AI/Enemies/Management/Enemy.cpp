@@ -456,6 +456,7 @@ void AEnemy::P_Setup()
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
 	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
+	DelegateManager->OnAbilitiesMenuSelectionEnd.BindUObject(this, &AEnemy::P_OnAbilitiesMenuSelectionEnd);
 	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_SetupLevelUpAppliance);
 	DelegateManager->OnXpReceived.BindUObject(this, &AEnemy::P_AddXp);
 	DelegateManager->ApplySecretBoostHealth.BindUObject(this, &AEnemy::P_ApplySecretBoostHp);
@@ -1035,11 +1036,15 @@ void AEnemy::P_SetupNavArea()
 	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
-void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType, const EWidget InWidgetName)
+void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {
-	if (CharacterName != InCharacterType) return;
-	P_HijackLogic(AssetsManager->SpawnVariationReplacement(InCharacterType, InWidgetName));
-	if (InWidgetName == EWidget::VariationsUI) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
+	P_HijackLogic(AssetsManager->SpawnVariationReplacement(InCharacterType, EWidget::VariationsUI));
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
+}
+
+void AEnemy::P_OnAbilitiesMenuSelectionEnd()
+{
+	P_HijackLogic(AssetsManager->SpawnVariationReplacement(CharacterName, EWidget::AbilitiesMenuUI));
 }
 
 void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName); }

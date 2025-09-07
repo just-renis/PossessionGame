@@ -18,5 +18,6 @@ enum class EPoolObject : uint8
 	RangerShield,
 	DamageNumber,
 	Usb,
-	Artifact
+	Artifact,
+	Clone
 };

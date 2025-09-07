@@ -10,6 +10,7 @@
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility3.h"
 #include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility1.h"
 #include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility2.h"
+#include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility3.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 
 EAbility UAbilityManager::GetAbilityName(const ECharacterType InCharacterName, const int32 InAbilityIndex)
@@ -48,6 +49,7 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::Ranger, 1, EAbility::RangerAbility2, URangerAbility2::StaticClass());
     AddAbility(ECharacterType::Trickster, 0, EAbility::TricksterAbility1, UTricksterAbility1::StaticClass());
     AddAbility(ECharacterType::Trickster, 1, EAbility::TricksterAbility2, UTricksterAbility2::StaticClass());
+    AddAbility(ECharacterType::Trickster, 2, EAbility::TricksterAbility3, UTricksterAbility3::StaticClass());
     AddAbility(ECharacterType::Guardian, 0, EAbility::GuardianAbility1, UGuardianAbility1::StaticClass());
     AddAbility(ECharacterType::Guardian, 1, EAbility::GuardianAbility2, UGuardianAbility2::StaticClass());
     AddAbility(ECharacterType::MinionBoss, 0, EAbility::MinionBossAbility1, UMinionBossAbility1::StaticClass());

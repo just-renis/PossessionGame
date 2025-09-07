@@ -43,6 +43,7 @@ public:
 	void CloseUI();
 private:
 	bool FirstTimeOpenInstance = true;
+	bool bIsAbilityUnlockPopupOpened = false;
 	int32 AbilityToUnlock;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SkillPointsText;

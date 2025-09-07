@@ -2,6 +2,7 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
+#include "PoolingManager.h"
 #include "TutorialManager.h"
 #include "WeaponManager.h"
 #include "Components/AudioComponent.h"
@@ -222,6 +223,11 @@ void UPrimaryDataAssetsManager::PlaySoundAtLocation(const ESound InSoundName, co
 	else LoadSoundAtLocation(SoundData, InSoundName, InLocation, bIsPlayer, bStoreSoundRef);
 }
 
+void UPrimaryDataAssetsManager::RequestSpawnClone(const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner)
+{
+	!LoadedEnemies.Contains(InCharacterName) ? AsyncLoadClone(InCharacterName, InOwner) : SpawnClone(InCharacterName, InOwner);
+}
+
 void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (!InVfxComponent) return;
@@ -295,6 +301,53 @@ void UPrimaryDataAssetsManager::SetupSoundAtLocationAndPlay(const FSoundContaine
 	const TObjectPtr<UAudioComponent> AudioComponent = UGameplayStatics::SpawnSoundAtLocation(GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), InLocation, FRotator::ZeroRotator, VolumeMultiplier);
 	if (bStoreSoundRef) StoredSounds.Add(InSoundName, AudioComponent);
 	AudioComponent->Play();
+}
+
+void UPrimaryDataAssetsManager::AsyncLoadClone(const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner)
+{
+	bIsCloneSpawnInProcess = true;
+	if (GetCanAsyncLoadHappen())
+	{
+		FCharacterContainer& CharacterContainer = GetCharacterData(InCharacterName);
+		CharacterContainer.SetWorld(GetWorld());
+		TArray<FSoftObjectPath> PathsToLoad;
+		PathsToLoad.Add(CharacterContainer.GetCharacterContainer()->CharacterClass.ToSoftObjectPath());
+		PathsToLoad.Add(CharacterContainer.GetCharacterContainer()->CharacterMesh.ToSoftObjectPath());
+		EWeapon Weapon = GetWeaponByCharacter(InCharacterName);
+		const TObjectPtr<UPA_WeaponContainer> WeaponContainer = GetWeaponData(Weapon);
+		PathsToLoad.Add(WeaponContainer->WeaponClass.ToSoftObjectPath());
+		PathsToLoad.Add(WeaponContainer->HandsMesh.ToSoftObjectPath());
+		EWeapon SingularWeapon = GetSingularWeapon(Weapon);
+		if (SingularWeapon != EWeapon::None)
+		{
+			const TObjectPtr<UPA_WeaponContainer> SingularWeaponContainer = GetWeaponData(SingularWeapon);
+			PathsToLoad.Add(SingularWeaponContainer->WeaponClass.ToSoftObjectPath());
+			PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
+		}
+		else PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, &CharacterContainer, SingularWeapon, Weapon, InCharacterName, InOwner]
+		{
+			if (IsAsyncAssetWorldValid(CharacterContainer.GetWorld())) AsyncLoadCloneCallback(SingularWeapon, Weapon, InCharacterName, InOwner);
+		});
+		AddAsyncHandle(Handle);
+	}
+}
+
+void UPrimaryDataAssetsManager::AsyncLoadCloneCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner)
+{
+	LoadedEnemies.Add(InCharacterName, Cast<UClass>(GetCharacterData(InCharacterName).GetCharacterContainer()->CharacterClass.ToSoftObjectPath().TryLoad()));
+	if (InSingularWeapon != EWeapon::None)
+	{
+		GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InSingularWeapon, Cast<UClass>(GetWeaponData(InSingularWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
+	}
+	GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
+	SpawnClone(InCharacterName, InOwner);
+}
+
+void UPrimaryDataAssetsManager::SpawnClone(const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner)
+{
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Clone, InOwner->GetActorLocation() + InOwner->GetActorForwardVector() * 50.f)->InitClone(InOwner->GetIsHijacked(), GetCharacterData(InCharacterName).GetCharacterContainer()->CharacterMesh.LoadSynchronous());
+	bIsCloneSpawnInProcess = false;
 }
 
 bool UPrimaryDataAssetsManager::IsAsyncAssetWorldValid(const TWeakObjectPtr<UWorld>& InWorld)

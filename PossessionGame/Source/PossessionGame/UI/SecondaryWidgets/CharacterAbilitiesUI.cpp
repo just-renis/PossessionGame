@@ -21,6 +21,7 @@ void UCharacterAbilitiesUI::ResetFirstAbilitySlot()
 	if (!FirstAbilitySlot) return;
 	if (FirstAbilitySlot == FirstAbility) PlayAnimationForward(Select1To1ReverseAnim);
 	else if (FirstAbilitySlot == SecondAbility) PlayAnimationForward(Select2To1ReverseAnim);
+	else if (FirstAbilitySlot == ThirdAbility) PlayAnimationForward(Select3To1ReverseAnim);
 	FirstAbilitySlot->SetIsInSlot(false);
 	FirstAbilitySlot = nullptr;
 }
@@ -30,6 +31,7 @@ void UCharacterAbilitiesUI::ResetSecondAbilitySlot()
 	if (!SecondAbilitySlot) return;
 	if (SecondAbilitySlot == FirstAbility) PlayAnimationForward(Select1To2ReverseAnim);
 	else if (SecondAbilitySlot == SecondAbility) PlayAnimationForward(Select2To2ReverseAnim);
+	else if (SecondAbilitySlot == ThirdAbility) PlayAnimationForward(Select3To2ReverseAnim);
 	SecondAbilitySlot->SetIsInSlot(false);
 	SecondAbilitySlot = nullptr;
 }
@@ -75,7 +77,7 @@ void UCharacterAbilitiesUI::NativeConstruct()
 	Abilities = { FirstAbility, SecondAbility, ThirdAbility, FourthAbility };
 	FirstAbility->GetButton()->OnClicked.AddDynamic(this, &UCharacterAbilitiesUI::FirstAbilitySelected);
 	SecondAbility->GetButton()->OnClicked.AddDynamic(this, &UCharacterAbilitiesUI::SecondAbilitySelected);
-	//ThirdAbility->GetButton()->OnClicked.AddDynamic(this, &UCharacterAbilitiesUI::ThirdAbilitySelected);
+	ThirdAbility->GetButton()->OnClicked.AddDynamic(this, &UCharacterAbilitiesUI::ThirdAbilitySelected);
 }
 
 void UCharacterAbilitiesUI::SetupAbilitySlot(const int32 InAbilityIndex, const bool bIsFirstSlot, TObjectPtr<UAbilityIconUI>& InAbilitySlot)
@@ -156,4 +158,18 @@ void UCharacterAbilitiesUI::ThirdAbilitySelected()
 		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnOpenUnlockAbilityPopup.ExecuteIfBound(2);
 		return;
 	}
+	if (ThirdAbility->GetIsInSlot()) return;
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
+	ThirdAbility->SetIsInSlot(true);
+	if (!FirstAbilitySlot)
+	{
+		FirstAbilitySlot = ThirdAbility;
+		PlayAnimationForward(Select3To1Anim);
+	}
+	else if (!SecondAbilitySlot)
+	{
+		SecondAbilitySlot = ThirdAbility;
+		PlayAnimationForward(Select3To2Anim);
+	}
+	else ThirdAbility->PlayWobbleAnim();
 }

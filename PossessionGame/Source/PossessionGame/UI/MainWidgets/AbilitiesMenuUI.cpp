@@ -56,6 +56,11 @@ void UAbilitiesMenuUI::OpenUI()
 
 void UAbilitiesMenuUI::CloseUI()
 {
+	if (bIsAbilityUnlockPopupOpened)
+	{
+		FadeOutUnlockAbilityPopup();
+		return;
+	}
 	Toggle(false);
 	const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 	GuardianCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
@@ -63,7 +68,7 @@ void UAbilitiesMenuUI::CloseUI()
 	TricksterCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	SaveSlot->SaveSlot();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestAddAbilitiesToUpgradePool.ExecuteIfBound(SaveSlot);
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(ECharacterType::Guardian, EWidget::AbilitiesMenuUI);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAbilitiesMenuSelectionEnd.ExecuteIfBound();
 }
 
 void UAbilitiesMenuUI::NativeConstruct()
@@ -140,6 +145,7 @@ void UAbilitiesMenuUI::SetupButtons()
 
 void UAbilitiesMenuUI::OpenUnlockAbilityPopup(const int32 InAbilityIndex)
 {
+	bIsAbilityUnlockPopupOpened = true;
 	AbilityToUnlock = InAbilityIndex;
 	UnlockAbilityPopup->PlayPopupFadeInAnim(true);
 }
@@ -206,4 +212,8 @@ void UAbilitiesMenuUI::UnlockAbility()
 	FadeOutUnlockAbilityPopup();
 }
 
-void UAbilitiesMenuUI::FadeOutUnlockAbilityPopup() { UnlockAbilityPopup->PlayPopupFadeInAnim(false); }
+void UAbilitiesMenuUI::FadeOutUnlockAbilityPopup()
+{
+	UnlockAbilityPopup->PlayPopupFadeInAnim(false);
+	bIsAbilityUnlockPopupOpened = false;
+}
