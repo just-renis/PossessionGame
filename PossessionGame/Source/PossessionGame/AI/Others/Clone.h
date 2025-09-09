@@ -19,10 +19,6 @@ class POSSESSIONGAME_API AClone : public APoolObject
 	TObjectPtr<USkeletalMeshComponent> FirstWeaponMesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> SecondWeaponMesh;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UAnimationAsset> WalkAnim;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UAnimMontage> ShootMontage;
 	UPROPERTY()
 	FTimerHandle AnimBlendSpaceMovementSpeedHandle;
 	UPROPERTY()
