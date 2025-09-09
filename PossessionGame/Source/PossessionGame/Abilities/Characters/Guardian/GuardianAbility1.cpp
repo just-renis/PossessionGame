@@ -21,7 +21,6 @@ void UGuardianAbility1::AI_Execute()
 	Proprietor->SetDamageReduction(TotalDamageReduction);
 	Proprietor->PlaySound(ESound::GuardianOverChargeStart);
 	Proprietor->AI_ToggleShieldVfx(true);
-	bIsAbilityInDuration = true;
 	Super::AI_Execute();
 }
 
@@ -46,13 +45,13 @@ void UGuardianAbility1::P_Execute()
 	Proprietor->SetDamageReduction(TotalDamageReduction);
 	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianOverChargeStart);
 	Proprietor->ToggleShield(true);
-	bIsAbilityInDuration = true;
 	if (bReflectDamageEnabled) Proprietor->SetReflectDamageState(true);
 	Super::P_Execute();
 }
 
 void UGuardianAbility1::P_StopAbility()
 {
+	if (!bIsAbilityInDuration) return;
 	Proprietor->P_SetFov(90.f);
 	Proprietor->SetDamageReduction(1.f);
 	Proprietor->ToggleShield(false);

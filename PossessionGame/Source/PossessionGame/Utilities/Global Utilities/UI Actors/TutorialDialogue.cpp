@@ -5,7 +5,17 @@
 void ATutorialDialogue::SetVisibilityState(const bool bState) const
 {
 	Dialogue->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	if (!bState) Dialogue->ClearDialogueText();
+	if (!bState)
+	{
+		Dialogue->ClearDialogueText();
+		DialogueWidgetComponent->SetVisibility(false, true);
+		DialogueWidgetComponent->SetRedrawTime(0.f);
+	}
+	else
+	{
+		DialogueWidgetComponent->SetVisibility(true, true);
+		DialogueWidgetComponent->RequestRedraw();
+	}
 }
 
 ATutorialDialogue::ATutorialDialogue()

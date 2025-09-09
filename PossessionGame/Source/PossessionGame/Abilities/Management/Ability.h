@@ -23,7 +23,7 @@ public:
 	float GetReqCooldownSecs() const { return ReqCooldownSecs; }
 	float GetCurrentCooldownSecs() const { return CurrentCooldownSecs; }
 
-	virtual void AI_Execute() { UseCharge(); }
+	virtual void AI_Execute();
 	virtual void AI_StopAbility() { ResetDuration(); }
 
 	void P_InitiateExecute();

@@ -8,6 +8,12 @@
 
 EAbility UAbility::GetAbilityName() const { return Data->GetAbilityName(); }
 
+void UAbility::AI_Execute()
+{
+	if (Data->GetIsAbilityWithDuration()) bIsAbilityInDuration = true;
+	UseCharge();
+}
+
 void UAbility::P_InitiateExecute()
 {
 	if (bIsAbilityInDuration) P_StopAbility();
@@ -23,7 +29,7 @@ void UAbility::P_StopAbility()
 void UAbility::Tick(const float InDeltaTime)
 {
 	if (bIsAbilityInDuration) AbilityInDurationLogic(InDeltaTime);
-	if (CurrentChargesAmount < MaxChargesAmount) CooldownLogic(InDeltaTime);
+	else if (CurrentChargesAmount < MaxChargesAmount) CooldownLogic(InDeltaTime);
 }
 
 void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
@@ -47,6 +53,7 @@ float UAbility::P_GetCooldownReduction()
 
 void UAbility::P_Execute()
 {
+	if (Data->GetIsAbilityWithDuration()) bIsAbilityInDuration = true;
 	UseCharge();
 	(void)DelegateManager->OnAbilityUse.ExecuteIfBound(AbilityIndex, GetIsAbilityCharged(), !bIsAbilityInDuration);
 }

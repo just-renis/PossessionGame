@@ -15,6 +15,7 @@ class POSSESSIONGAME_API UTricksterAbility3 : public UAbility
 	TObjectPtr<ATrickster> Proprietor;
 
 	virtual void P_Execute() override;
+	virtual void P_StopAbility() override;
 
 	virtual bool IsProprietorPossessed() override;
 

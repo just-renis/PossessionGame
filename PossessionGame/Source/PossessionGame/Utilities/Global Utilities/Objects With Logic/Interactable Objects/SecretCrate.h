@@ -20,6 +20,8 @@ class POSSESSIONGAME_API ASecretCrate : public AInteractableObject
 	TObjectPtr<UAnimSequence> OpenAnim;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
+	UPROPERTY()
+	FTimerHandle OpenAnimFinishedHandle;
 	
 	virtual TObjectPtr<USkeletalMeshComponent> GetSkeletalMesh() override { return CrateMesh; }
 
@@ -28,4 +30,5 @@ class POSSESSIONGAME_API ASecretCrate : public AInteractableObject
 	void GiveReward();
 	void PlaySound(const ESound InSoundName);
 	void StopSound(const ESound InSoundName);
+	void OnSecretCrateAnimFinished() const;
 };

@@ -225,7 +225,11 @@ void UPrimaryDataAssetsManager::PlaySoundAtLocation(const ESound InSoundName, co
 
 void UPrimaryDataAssetsManager::RequestSpawnClone(const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner)
 {
-	!LoadedEnemies.Contains(InCharacterName) ? AsyncLoadClone(InCharacterName, InOwner) : SpawnClone(InCharacterName, InOwner);
+	if (!bIsCloneSpawnInProcess)
+	{
+		!LoadedEnemies.Contains(InCharacterName) ? AsyncLoadClone(InCharacterName, InOwner) : SpawnClone(GetSingularWeapon(GetWeaponByCharacter(InCharacterName)), InCharacterName, InOwner);
+	}
+	else ClonesToSpawnAfterAsyncLoad++;
 }
 
 void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes)
@@ -341,13 +345,18 @@ void UPrimaryDataAssetsManager::AsyncLoadCloneCallback(const EWeapon InSingularW
 		GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InSingularWeapon, Cast<UClass>(GetWeaponData(InSingularWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
 	}
 	GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
-	SpawnClone(InCharacterName, InOwner);
+	SpawnClone(InSingularWeapon, InCharacterName, InOwner);
 }
 
-void UPrimaryDataAssetsManager::SpawnClone(const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner)
+void UPrimaryDataAssetsManager::SpawnClone(const EWeapon InSingularWeapon, const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner)
 {
-	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Clone, InOwner->GetActorLocation() + InOwner->GetActorForwardVector() * 50.f)->InitClone(InOwner->GetIsHijacked(), GetCharacterData(InCharacterName).GetCharacterContainer()->CharacterMesh.LoadSynchronous());
+	for (int32 i = 0; i < ClonesToSpawnAfterAsyncLoad + 1; i++)
+	{
+		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Clone, InOwner->GetActorLocation() + InOwner->GetActorForwardVector() * 50.f)->InitClone(InOwner->GetIsHijacked(),
+		GetCharacterData(InCharacterName).GetCharacterContainer()->CharacterMesh.LoadSynchronous(), GetWeaponData(InSingularWeapon)->WeaponMesh.LoadSynchronous());
+	}
 	bIsCloneSpawnInProcess = false;
+	ClonesToSpawnAfterAsyncLoad = 0;
 }
 
 bool UPrimaryDataAssetsManager::IsAsyncAssetWorldValid(const TWeakObjectPtr<UWorld>& InWorld)
@@ -761,6 +770,8 @@ void UPrimaryDataAssetsManager::ClearBeforeInit()
 {
 	bCanAsyncLoadHappen = true;
 	bIsSpawnInProcess = false;
+	bIsCloneSpawnInProcess = false;
+	ClonesToSpawnAfterAsyncLoad = 0;
 	for (TPair<ESound, FSoundContainer>& SoundContainer : SoundContainers) SoundContainer.Value.ResetLoadVariables();
 	for (TPair<EVfx, FVfxContainer>& VfxContainer : VfxContainers) VfxContainer.Value.ResetLoadVariables();
 	SpawnLocations.Empty();

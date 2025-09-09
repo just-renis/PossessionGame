@@ -256,7 +256,6 @@ void AEnemy::InitiateDeath()
 	DisableHijackViableVfx();
 	GetMesh()->SetOverlayMaterial(nullptr);
 	ClearTimers();
-	AI_DestroyHpBar();
 	bIsAlive = false;
 	Tags.Remove("AliveEnemy");
 	if (!bIsHijacked)
@@ -673,6 +672,7 @@ void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->Set
 
 void AEnemy::DestroyAI()
 {
+	AI_DestroyHpBar();
 	if (Aura) Aura->DeactivateImmediate();
 	if (EmpAffected) EmpAffected->DeactivateImmediate();
 	if (PoisonSlowAffected) PoisonSlowAffected->DeactivateImmediate();

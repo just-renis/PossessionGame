@@ -162,6 +162,7 @@ class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 	void SpawnMarker() const;
 	virtual void Interact() override;
 	void SetPlayerRef(const TObjectPtr<AActor>& InPlayerRef) { Player = InPlayerRef; }
+	void SetupMeshOptimization();
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

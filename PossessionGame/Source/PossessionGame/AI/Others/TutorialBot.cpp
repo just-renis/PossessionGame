@@ -39,6 +39,7 @@ TObjectPtr<UAnimMontage> ATutorialBot::GetAnimation(const ETutorialBotAnimState 
 void ATutorialBot::BeginPlay()
 {
 	Super::BeginPlay();
+	SetupMeshOptimization();
 	SetupExpression();
 	RetrieveWaypoints();
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
@@ -125,7 +126,6 @@ void ATutorialBot::ClearTimers()
 	GetWorld()->GetTimerManager().ClearTimer(EndBlinkHandle);
 	GetWorld()->GetTimerManager().ClearTimer(CheckDistanceToTargetHandle);
 	GetWorld()->GetTimerManager().ClearTimer(PressTabletHandle);
-	
 }
 
 void ATutorialBot::SetupDialogue(const FName& InSocketName)
@@ -406,4 +406,14 @@ void ATutorialBot::Interact()
 {
 	if (!GetIsInteractable()) return;
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI)->OpenUI();
+}
+
+void ATutorialBot::SetupMeshOptimization()
+{
+	Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	Mesh->bEnableUpdateRateOptimizations = true;
+	Mesh->SkipUpdateOverlapsOptimEnabled = true;
+	Mesh->SetAllowAnimCurveEvaluation(false);
+	Mesh->bUseRefPoseOnInitAnim = true;
+	Mesh->SetComponentTickInterval(1.f / 30.f);
 }

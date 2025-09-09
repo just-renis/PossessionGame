@@ -23,7 +23,9 @@ ASecretCrate::ASecretCrate()
 void ASecretCrate::BeginPlay()
 {
 	Super::BeginPlay();
+	CrateMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 	PlaySound(ESound::SecretCratePassive);
+	CrateMesh->SetComponentTickEnabled(false);
 }
 
 void ASecretCrate::Interact()
@@ -31,7 +33,9 @@ void ASecretCrate::Interact()
 	if (!GetIsInteractable()) return;
 	StopSound(ESound::SecretCratePassive);
 	PlaySound(ESound::SecretCrateOpen);
+	CrateMesh->SetComponentTickEnabled(true);
 	CrateMesh->PlayAnimation(OpenAnim, false);
+	GetWorldTimerManager().SetTimer(OpenAnimFinishedHandle, this, &ASecretCrate::OnSecretCrateAnimFinished, OpenAnim->GetPlayLength());
 	Collision->OnComponentBeginOverlap.RemoveAll(this);
 	Collision->OnComponentEndOverlap.RemoveAll(this);
 	FadeOutInteractableUI();
@@ -56,3 +60,5 @@ void ASecretCrate::StopSound(const ESound InSoundName)
 	if (!Sounds.Contains(InSoundName)) return;
 	Sounds[InSoundName]->Stop();
 }
+
+void ASecretCrate::OnSecretCrateAnimFinished() const { CrateMesh->SetComponentTickEnabled(false); }

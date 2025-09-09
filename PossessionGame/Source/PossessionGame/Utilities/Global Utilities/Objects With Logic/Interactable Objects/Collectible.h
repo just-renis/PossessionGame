@@ -47,7 +47,7 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public ICollectable
 	virtual void Init(bool bInIsPlayerObject) override;
 	virtual void Collect() override;
 	void ToggleCollectible(const bool bState, const bool bMarkerIncluded = false);
-	void Float();
+	void Float() const;
 	void Spin();
 	void ProcessSpawnVisualization();
 	void ClearSpawnVisualization();

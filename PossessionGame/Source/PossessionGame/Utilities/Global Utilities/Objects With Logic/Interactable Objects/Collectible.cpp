@@ -12,8 +12,8 @@ ACollectible::ACollectible()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("collectibleMesh"));
 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("collision"));
-	RootComponent = Mesh;
-	Collision->SetupAttachment(RootComponent);
+	RootComponent = Collision;
+	Mesh->SetupAttachment(RootComponent);
 }
 
 void ACollectible::BeginPlay()
@@ -88,11 +88,9 @@ void ACollectible::ToggleCollectible(const bool bState, const bool bMarkerInclud
 	}
 }
 
-void ACollectible::Float()
+void ACollectible::Float() const
 {
-	FVector NewLocation = GetActorLocation();
-	NewLocation.Z = InitialSpawnZ + FMath::Sin(GetWorld()->GetTimeSeconds() * 2.f) * 20.f;
-	SetActorLocation(NewLocation);
+	Mesh->SetRelativeLocation(FVector(0.f, 0.f, FMath::Sin(GetWorld()->GetTimeSeconds() * 2.f) * 20.f));
 }
 
 void ACollectible::Spin()

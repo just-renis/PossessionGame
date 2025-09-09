@@ -206,6 +206,7 @@ private:
 	bool bIsCloneSpawnInProcess = false;
 	int32 TotalSpawnedEnemies = 0;
 	int32 NextSpawnableEnemyIndex = 0;
+	int32 ClonesToSpawnAfterAsyncLoad = 0;
 	UPROPERTY()
 	TMap<EWeapon, TObjectPtr<UPA_WeaponContainer>> WeaponContainers;
 	UPROPERTY()
@@ -264,7 +265,7 @@ private:
 	void SetupSoundAtLocationAndPlay(const FSoundContainer& InSoundData, const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer, const bool bStoreSoundRef);
 	void AsyncLoadClone(const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner);
 	void AsyncLoadCloneCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner);
-	void SpawnClone(const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner);
+	void SpawnClone(const EWeapon InSingularWeapon, const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner);
 	template<typename EnumType, typename ContainerType, typename AssetType>
 	void FillContainers(TMap<FName, EnumType>& InMap, TMap<EnumType, ContainerType>& InContainers, const FName InType);
 	template<typename EnumType, typename ContainerType>

@@ -62,6 +62,7 @@ DECLARE_MULTICAST_DELEGATE(FOnBossDeath);
 DECLARE_MULTICAST_DELEGATE(FOnInteractionTry);
 DECLARE_MULTICAST_DELEGATE(FOnSecretBoostSelected);
 DECLARE_MULTICAST_DELEGATE(FOnGameModeInitialized);
+DECLARE_MULTICAST_DELEGATE(FDespawnPlayerClones);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelUp, const int32);
@@ -134,6 +135,7 @@ public:
 	FOnInteractionTry OnInteractionTry;
 	FOnSecretBoostSelected OnSecretBoostSelected;
 	FOnGameModeInitialized OnGameModeInitialized;
+	FDespawnPlayerClones DespawnPlayerClones;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnConcealAbilityChange OnConcealAbilityChange;
 	FOnLevelUp OnLevelUp;
