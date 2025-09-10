@@ -41,7 +41,11 @@ void ARangerWeapon::P_Reload(int32 OtherAmmoSource)
 {
 	AssetsManager->PlaySound2D(ESound::RangerReload);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
-	if (AnimInstance) AnimInstance->PlayMontage(EWeaponAnimState::Reload);
+	if (AnimInstance)
+	{
+		Mesh->SetComponentTickEnabled(true);
+		AnimInstance->PlayMontage(EWeaponAnimState::Reload);
+	}
 	Super::P_Reload(OtherAmmoSource);
 }
 
@@ -61,6 +65,7 @@ void ARangerWeapon::BeginPlay()
 {
 	Name = EWeapon::RangerWeapon;
 	Super::BeginPlay();
+	Mesh->SetComponentTickInterval(1.f / 30.f);
 	AnimInstance = Cast<UWeaponAnimInstance>(Mesh->GetAnimInstance());
 	AnimInstance->SetWeaponName(Name);
 }
@@ -84,4 +89,10 @@ void ARangerWeapon::ChangeGrenadeLaunchSpecialComponentState(const bool bState) 
 	if (!GrenadeLaunchSpecialComponent) return;
 	if (bState) GrenadeLaunchSpecialComponent->Activate(true);
 	else GrenadeLaunchSpecialComponent->Deactivate();
+}
+
+void ARangerWeapon::WeaponReloadMontageFinished()
+{
+	Super::WeaponReloadMontageFinished();
+	if (Mesh) Mesh->SetComponentTickEnabled(false);
 }

@@ -83,7 +83,6 @@ void AWeapon::P_InitialSetupTransfer()
 
 void AWeapon::P_SetupTransfer(const bool bSetToFirstHand)
 {
-	DelegateManager->OnHandsReloadMontageEnd.BindUObject(this, &AWeapon::P_UpdateAmmoTextHUD);
 	P_InitialSetupTransfer();
 	if (bSetToFirstHand) P_AttachHandsToCamera(P_Data->GetFirstWeaponLocation(), P_Data->GetFirstWeaponRotation(), P_Data->GetFirstWeaponScale());
 	else P_AttachHandsToCamera(P_Data->GetSecondWeaponLocation(), P_Data->GetSecondWeaponRotation(), P_Data->GetSecondWeaponScale());
@@ -95,6 +94,7 @@ void AWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeTwoPara
 
 void AWeapon::P_AttachHandsToCamera(const FVector& InLocation, const FRotator& InRotation, const FVector& InScale)
 {
+	HandsMesh->SetComponentTickEnabled(true);
 	HandsMesh->SetHiddenInGame(false);
 	HandsMesh->AttachToComponent(GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetTransformComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	HandsMesh->SetRelativeLocationAndRotation(InLocation, InRotation);
@@ -229,8 +229,11 @@ void AWeapon::P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName)
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+	HandsMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	HandsMesh->SetComponentTickEnabled(false);
 	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	DelegateManager->OnWeaponReloadMontageEnd.BindUObject(this, &AWeapon::WeaponReloadMontageFinished);
 	if (Name != EWeapon::MinionWeapon) SetMeshes(Name);
 	AI_Setup();
 }
@@ -325,6 +328,8 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? FLinearColor(0.9059f, 0.f, 0.1098f) : DamageNumberColor, CriticalDamage, InHitResult.Location, InHitResult.GetActor()->GetActorForwardVector());
 	}
 }
+
+void AWeapon::WeaponReloadMontageFinished() { if (bIsPossessed) P_UpdateAmmoTextHUD(); }
 
 void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
 {

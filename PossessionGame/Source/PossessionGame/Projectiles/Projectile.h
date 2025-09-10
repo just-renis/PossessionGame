@@ -7,6 +7,7 @@
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "Projectile.generated.h"
 
+class USphereComponent;
 class UUpgradeManager;
 enum class ESound : uint16;
 class UPrimaryDataAssetsManager;

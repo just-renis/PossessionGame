@@ -143,6 +143,7 @@ protected:
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired);
 	void DisableHandsMesh() const;
 	void DealPointDamage(const FHitResult& InHitResult);
+	virtual void WeaponReloadMontageFinished();
 private:
 	bool bFirstShotWasShot = false;
 	int32 ShootCyclesUntilReload;

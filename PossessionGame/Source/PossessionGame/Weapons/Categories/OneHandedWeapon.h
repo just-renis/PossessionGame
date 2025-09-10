@@ -10,4 +10,6 @@ class POSSESSIONGAME_API AOneHandedWeapon : public AWeapon
 	GENERATED_BODY()
 public:
 	AOneHandedWeapon();
+protected:
+	virtual void BeginPlay() override;
 };

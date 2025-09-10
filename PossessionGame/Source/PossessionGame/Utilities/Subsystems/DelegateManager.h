@@ -14,7 +14,6 @@ enum class EWidget : uint8;
 struct FRuntimeUpgradeData;
 class USaveSlot;
 
-DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
 DECLARE_DELEGATE(FOnUpgradeSelectionOpened);
 DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
@@ -33,6 +32,7 @@ DECLARE_DELEGATE(FApplyUpgradeOnSelection);
 DECLARE_DELEGATE(FResetChargeTerminal);
 DECLARE_DELEGATE(FOnFirstGameModeInitiated);
 DECLARE_DELEGATE(FOnAbilitiesMenuSelectionEnd);
+DECLARE_DELEGATE(FOnWeaponReloadMontageEnd);
 DECLARE_DELEGATE_RetVal(int32, FOnRunFinished);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
@@ -87,7 +87,6 @@ class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 public:
-	FOnHandsReloadMontageEnd OnHandsReloadMontageEnd;
 	FOnGraphicsSettingChange OnGraphicsSettingChange;
 	FOnUpgradeSelectionOpened OnUpgradeSelectionOpened;
 	FOnUpgradeSelectionFinished OnUpgradeSelectionFinished;
@@ -106,6 +105,7 @@ public:
 	FResetChargeTerminal ResetChargeTerminal;
 	FOnFirstGameModeInitiated OnFirstGameModeInitiated;
 	FOnAbilitiesMenuSelectionEnd OnAbilitiesMenuSelectionEnd;
+	FOnWeaponReloadMontageEnd OnWeaponReloadMontageEnd;
 	FOnRunFinished OnRunFinished;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemyDeath OnEnemyDeath;

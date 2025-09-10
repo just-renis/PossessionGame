@@ -414,7 +414,11 @@ void AEnemy::AI_PlayShootMontage()
 void AEnemy::AI_Reload() const
 {
 	AnimInstance->PlayMontage(EEnemyAnimState::Reload);
-	if (Weapon->GetAnimInstance() && Weapon->GetAnimInstance()->IsMontageExisting(EWeaponAnimState::AIReload)) Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::AIReload);
+	if (Weapon->GetAnimInstance() && Weapon->GetAnimInstance()->IsMontageExisting(EWeaponAnimState::AIReload))
+	{
+		Weapon->GetMesh()->SetComponentTickEnabled(true);
+		Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::AIReload);
+	}
 	Weapon->AI_Reload();
 	Weapon->AI_ResetShootCycles();
 }
@@ -426,9 +430,10 @@ void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float I
 	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 1.f);
 	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.02f, false);
 	ProcessDamageReason(InDamageReason, InDamage);
-	if (CurrentHp <= 0 || !AI_HpBar) return;
+	if (CurrentHp <= 0 || !AI_HpBar || !AI_HpBarComponent) return;
+    AI_HpBarComponent->SetVisibility(true);
+	AI_HpBarComponent->SetComponentTickEnabled(true);
 	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
-	AI_HpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	GetWorldTimerManager().SetTimer(AI_HideHpBarHandle, this, &AEnemy::AI_HideHpBar, 2.f, false);
 }
 
@@ -451,6 +456,7 @@ void AEnemy::P_SetupAbilities()
 
 void AEnemy::P_Setup()
 {
+	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f);
 	DelegateManager->ApplyUpgradeOnSelection.BindUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
@@ -595,6 +601,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	GetCharacterMovement()->SetComponentTickInterval(1.f / 30.f);
 	GameInstance = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance());
 	DelegateManager = GameInstance->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
@@ -604,6 +611,7 @@ void AEnemy::BeginPlay()
 	AssetsManager = GameInstance->GetSubsystem<UPrimaryDataAssetsManager>();
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
 	SetMesh(CharacterName);
+	SetupMeshOptimization();
 	ProcessSpawnEffects();
 	SetAnimInstance();
 	Tags.Add("Enemy");
@@ -747,7 +755,12 @@ void AEnemy::AI_TriggerMutantExplosion()
 	}
 }
 
-void AEnemy::AI_HideHpBar() const { if (AI_HpBar) AI_HpBar->SetVisibility(ESlateVisibility::Collapsed); }
+void AEnemy::AI_HideHpBar() const
+{
+	if (!AI_HpBarComponent) return;
+    AI_HpBarComponent->SetVisibility(false);
+	AI_HpBarComponent->SetComponentTickEnabled(false);
+}
 
 void AEnemy::AI_ClearShootPause()
 {
@@ -1392,4 +1405,16 @@ void AEnemy::SetActionSpeed(const float InSpeed)
 	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
 	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ActionSpeed);
 	else if (Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->SetGlobalPlayRate(ActionSpeed);
+}
+
+void AEnemy::SetupMeshOptimization() const
+{
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	GetMesh()->bEnableUpdateRateOptimizations = true;
+	GetMesh()->SkipUpdateOverlapsOptimEnabled = true;
+	GetMesh()->SetAllowAnimCurveEvaluation(false);
+	GetMesh()->bUseRefPoseOnInitAnim = true;
+	GetMesh()->SetComponentTickInterval(1.f / 30.f);
+	GetCharacterMovement()->bComponentShouldUpdatePhysicsVolume = false;
+	GetCharacterMovement()->bAutoRegisterPhysicsVolumeUpdates = false;
 }

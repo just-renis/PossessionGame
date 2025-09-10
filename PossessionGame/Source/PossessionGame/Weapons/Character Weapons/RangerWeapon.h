@@ -30,4 +30,5 @@ private:
 	void AddSpecialUpgradeLogic(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialAttributeName);
 	void AttachGrenadeLaunchSpecialVfx();
 	void ChangeGrenadeLaunchSpecialComponentState(const bool bState) const;
+	virtual void WeaponReloadMontageFinished() override;
 };

@@ -408,7 +408,7 @@ void ATutorialBot::Interact()
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI)->OpenUI();
 }
 
-void ATutorialBot::SetupMeshOptimization()
+void ATutorialBot::SetupMeshOptimization() const
 {
 	Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 	Mesh->bEnableUpdateRateOptimizations = true;

@@ -6,3 +6,10 @@ AOneHandedWeapon::AOneHandedWeapon()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("weaponMesh"));
 	Mesh->SetupAttachment(RootComponent);
 }
+
+void AOneHandedWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+	Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	Mesh->SetComponentTickEnabled(false);
+}

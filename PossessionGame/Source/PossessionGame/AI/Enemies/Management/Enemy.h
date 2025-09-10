@@ -426,4 +426,5 @@ private:
 	void SetupTutorialManager();
 	void ToggleTimeDilation();
 	void SetActionSpeed(const float InSpeed);
+	void SetupMeshOptimization() const;
 };

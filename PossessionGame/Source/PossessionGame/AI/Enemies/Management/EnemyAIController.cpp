@@ -10,6 +10,7 @@
 
 AEnemyAIController::AEnemyAIController()
 {
+	PrimaryActorTick.TickInterval = 0.1f;
 	Perception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("perceptionComponent"));
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("sightConfig"));
 	SightConfig->SightRadius = 6000.f;
@@ -21,6 +22,7 @@ AEnemyAIController::AEnemyAIController()
 	Perception->OnTargetPerceptionUpdated.AddDynamic(this, &AEnemyAIController::OnTargetPerceptionUpdated);
 	StateTree = CreateDefaultSubobject<UStateTreeComponent>(TEXT("StateTreeComponent"));
 	StateTree->SetStartLogicAutomatically(false);
+	StateTree->SetComponentTickInterval(0.1f);
 }
 
 void AEnemyAIController::SetShootCooldown(const float InValue) { StateTreeData.SetShootCooldown(InValue); }

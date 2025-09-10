@@ -28,6 +28,10 @@ AProjectile::AProjectile()
 	MovementComponent->InitialSpeed = 2000.f;
 	MovementComponent->MaxSpeed = 2000.f;
 	MovementComponent->ProjectileGravityScale = 0.f;
+	MovementComponent->SetComponentTickInterval(1.f / 30.f);
+	MovementComponent->bAutoRegisterPhysicsVolumeUpdates = false;
+	MovementComponent->bComponentShouldUpdatePhysicsVolume = false;
+	MovementComponent->UpdatedComponent = RootComponent;
 }
 
 void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const int32 InWhich)
@@ -72,12 +76,14 @@ void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotati
 	SetupProjectile(InProjectileData, InWhich);
 	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
 	if (BulletTrailComponent) BulletTrailComponent->Activate();
+	MovementComponent->SetComponentTickEnabled(true);
 	MovementComponent->Activate();
 }
 
 void AProjectile::DisableProjectileComponents() const
 {
 	if (BulletTrailComponent) BulletTrailComponent->Deactivate();
+	MovementComponent->SetComponentTickEnabled(false);
 	MovementComponent->Deactivate();
 }
 
