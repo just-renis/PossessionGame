@@ -8,6 +8,7 @@
 #include "Components/AudioComponent.h"
 #include "Engine/AssetManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/AI/Enemies/Characters/Trickster.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_SoundContainer.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
@@ -223,13 +224,10 @@ void UPrimaryDataAssetsManager::PlaySoundAtLocation(const ESound InSoundName, co
 	else LoadSoundAtLocation(SoundData, InSoundName, InLocation, bIsPlayer, bStoreSoundRef);
 }
 
-void UPrimaryDataAssetsManager::RequestSpawnClone(const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner)
+void UPrimaryDataAssetsManager::RequestSpawnClone(const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount)
 {
-	if (!bIsCloneSpawnInProcess)
-	{
-		!LoadedEnemies.Contains(InCharacterName) ? AsyncLoadClone(InCharacterName, InOwner) : SpawnClone(GetSingularWeapon(GetWeaponByCharacter(InCharacterName)), InCharacterName, InOwner);
-	}
-	else ClonesToSpawnAfterAsyncLoad++;
+	if (bIsCloneSpawnInProcess) return;
+	!LoadedEnemies.Contains(InCharacterName) ? AsyncLoadClone(InCharacterName, InOwner, InAmount) : SpawnClone(GetSingularWeapon(GetWeaponByCharacter(InCharacterName)), InCharacterName, InOwner, InAmount);
 }
 
 void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes)
@@ -307,7 +305,7 @@ void UPrimaryDataAssetsManager::SetupSoundAtLocationAndPlay(const FSoundContaine
 	AudioComponent->Play();
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadClone(const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner)
+void UPrimaryDataAssetsManager::AsyncLoadClone(const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount)
 {
 	bIsCloneSpawnInProcess = true;
 	if (GetCanAsyncLoadHappen())
@@ -329,15 +327,15 @@ void UPrimaryDataAssetsManager::AsyncLoadClone(const ECharacterType InCharacterN
 			PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
 		}
 		else PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, &CharacterContainer, SingularWeapon, Weapon, InCharacterName, InOwner]
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, &CharacterContainer, SingularWeapon, Weapon, InCharacterName, InOwner, InAmount]
 		{
-			if (IsAsyncAssetWorldValid(CharacterContainer.GetWorld())) AsyncLoadCloneCallback(SingularWeapon, Weapon, InCharacterName, InOwner);
+			if (IsAsyncAssetWorldValid(CharacterContainer.GetWorld())) AsyncLoadCloneCallback(SingularWeapon, Weapon, InCharacterName, InOwner, InAmount);
 		});
 		AddAsyncHandle(Handle);
 	}
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadCloneCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner)
+void UPrimaryDataAssetsManager::AsyncLoadCloneCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount)
 {
 	LoadedEnemies.Add(InCharacterName, Cast<UClass>(GetCharacterData(InCharacterName).GetCharacterContainer()->CharacterClass.ToSoftObjectPath().TryLoad()));
 	if (InSingularWeapon != EWeapon::None)
@@ -345,18 +343,19 @@ void UPrimaryDataAssetsManager::AsyncLoadCloneCallback(const EWeapon InSingularW
 		GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InSingularWeapon, Cast<UClass>(GetWeaponData(InSingularWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
 	}
 	GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
-	SpawnClone(InSingularWeapon, InCharacterName, InOwner);
+	SpawnClone(InSingularWeapon, InCharacterName, InOwner, InAmount);
 }
 
-void UPrimaryDataAssetsManager::SpawnClone(const EWeapon InSingularWeapon, const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner)
+void UPrimaryDataAssetsManager::SpawnClone(const EWeapon InSingularWeapon, const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount)
 {
-	for (int32 i = 0; i < ClonesToSpawnAfterAsyncLoad + 1; i++)
+	const TArray<FVector> CloneSpawnOffsets = InOwner->GetAvailableCloneSpawnOffsets(InAmount);
+	for (int32 i = 0; i < CloneSpawnOffsets.Num(); i++)
 	{
-		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Clone, InOwner->GetActorLocation() + InOwner->GetActorForwardVector() * 50.f)->InitClone(InOwner->GetIsHijacked(),
-		GetCharacterData(InCharacterName).GetCharacterContainer()->CharacterMesh.LoadSynchronous(), GetWeaponData(InSingularWeapon)->WeaponMesh.LoadSynchronous());
+		const TObjectPtr<APoolObject> Clone = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Clone, CloneSpawnOffsets[i]);
+		Clone->SetActorRotation(InOwner->GetActorRotation() - FRotator(0.f, 90.f, 0.f));
+		Clone->InitClone(InOwner->GetIsHijacked(), GetCharacterData(InCharacterName).GetCharacterContainer()->CharacterMesh.LoadSynchronous(), GetWeaponData(InSingularWeapon)->WeaponMesh.LoadSynchronous());
 	}
 	bIsCloneSpawnInProcess = false;
-	ClonesToSpawnAfterAsyncLoad = 0;
 }
 
 bool UPrimaryDataAssetsManager::IsAsyncAssetWorldValid(const TWeakObjectPtr<UWorld>& InWorld)
@@ -771,7 +770,6 @@ void UPrimaryDataAssetsManager::ClearBeforeInit()
 	bCanAsyncLoadHappen = true;
 	bIsSpawnInProcess = false;
 	bIsCloneSpawnInProcess = false;
-	ClonesToSpawnAfterAsyncLoad = 0;
 	for (TPair<ESound, FSoundContainer>& SoundContainer : SoundContainers) SoundContainer.Value.ResetLoadVariables();
 	for (TPair<EVfx, FVfxContainer>& VfxContainer : VfxContainers) VfxContainer.Value.ResetLoadVariables();
 	SpawnLocations.Empty();

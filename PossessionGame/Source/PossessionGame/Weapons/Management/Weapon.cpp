@@ -229,8 +229,7 @@ void AWeapon::P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName)
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	HandsMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
-	HandsMesh->SetComponentTickEnabled(false);
+	SetupHandsOptimization();
 	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnWeaponReloadMontageEnd.BindUObject(this, &AWeapon::WeaponReloadMontageFinished);
@@ -335,4 +334,15 @@ void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
 {
 	HitScanDamage -= DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
 	HitScanDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
+}
+
+void AWeapon::SetupHandsOptimization() const
+{
+	HandsMesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	HandsMesh->SetComponentTickEnabled(false);
+	HandsMesh->bEnableUpdateRateOptimizations = true;
+	HandsMesh->SkipUpdateOverlapsOptimEnabled = true;
+	HandsMesh->SetAllowAnimCurveEvaluation(false);
+	HandsMesh->bUseRefPoseOnInitAnim = true;
+	HandsMesh->SetComponentTickInterval(1.f / 60.f);
 }

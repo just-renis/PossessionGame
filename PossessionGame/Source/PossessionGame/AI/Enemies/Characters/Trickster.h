@@ -16,9 +16,13 @@ public:
 	
 	void P_ThrowPoisonGrenade() const;
 	void P_ThrowEmpGrenade() const;
+
+	TArray<FVector> GetAvailableCloneSpawnOffsets(int32 InClonesAmount);
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade Launcher", meta = (AllowPrivateAccess = true))
 	float PoisonGrenadeTriggerRadiusInMetres = 8.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Clones", meta = (AllowPrivateAccess = true))
+	TArray<FVector> CloneSpawnOffsets;
 	UPROPERTY()
 	TObjectPtr<USphereComponent> AI_PoisonGrenadeTrigger;
 	UPROPERTY()

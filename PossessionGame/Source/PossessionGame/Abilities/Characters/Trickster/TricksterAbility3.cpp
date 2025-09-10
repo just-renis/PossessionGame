@@ -6,16 +6,7 @@
 void UTricksterAbility3::P_Execute()
 {
 	UE_LOG(LogTemp, Error, TEXT("P_EXECUTE"));
-	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor);
-	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor);
-	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor);
-	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor);
-	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor);
-	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor);
-	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor);
-	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor);
-	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor);
-	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor);
+	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor, 5);
 	Super::P_Execute();
 }
 

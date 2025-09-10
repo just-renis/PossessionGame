@@ -11,6 +11,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FTFunctionCallback.h"
 #include "PrimaryDataAssetsManager.generated.h"
 
+class ATrickster;
 enum class EWidget : uint8;
 struct FSpawnableEnemyByTotalAmount;
 enum class EGameMode : uint8;
@@ -197,7 +198,7 @@ public:
 	void Init(const bool bIsTutorialFinished, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount);
 	void SetupSpawnLocations();
 	void PlaySoundAtLocation(const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer = true, const bool bStoreSoundRef = false);
-	void RequestSpawnClone(const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner);
+	void RequestSpawnClone(const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount);
 private:
 	bool bIsInitialized = false;
 	bool bCanAsyncLoadHappen = true;
@@ -206,7 +207,6 @@ private:
 	bool bIsCloneSpawnInProcess = false;
 	int32 TotalSpawnedEnemies = 0;
 	int32 NextSpawnableEnemyIndex = 0;
-	int32 ClonesToSpawnAfterAsyncLoad = 0;
 	UPROPERTY()
 	TMap<EWeapon, TObjectPtr<UPA_WeaponContainer>> WeaponContainers;
 	UPROPERTY()
@@ -263,9 +263,9 @@ private:
 	void RequestSoundLoad(FSoundContainer& InSoundData);
 	void LoadSoundAtLocation(FSoundContainer& InSoundData, const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer, const bool bStoreSoundRef);
 	void SetupSoundAtLocationAndPlay(const FSoundContainer& InSoundData, const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer, const bool bStoreSoundRef);
-	void AsyncLoadClone(const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner);
-	void AsyncLoadCloneCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner);
-	void SpawnClone(const EWeapon InSingularWeapon, const ECharacterType InCharacterName, const TObjectPtr<AEnemy>& InOwner);
+	void AsyncLoadClone(const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount);
+	void AsyncLoadCloneCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount);
+	void SpawnClone(const EWeapon InSingularWeapon, const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount);
 	template<typename EnumType, typename ContainerType, typename AssetType>
 	void FillContainers(TMap<FName, EnumType>& InMap, TMap<EnumType, ContainerType>& InContainers, const FName InType);
 	template<typename EnumType, typename ContainerType>

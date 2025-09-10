@@ -1,4 +1,5 @@
 #include "Trickster.h"
+#include "NavigationSystem.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
@@ -56,6 +57,31 @@ void ATrickster::P_ThrowEmpGrenade() const
 {
 	AssetsManager->PlaySound2D(ESound::TricksterGrenadeThrow);
 	Weapon->ShootProjectile(EPoolObject::TricksterEmpProjectile, true, false);
+}
+
+TArray<FVector> ATrickster::GetAvailableCloneSpawnOffsets(int32 InClonesAmount)
+{
+	const TObjectPtr<UNavigationSystemV1> NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	TArray<FVector> ValidOffsets;
+	if (!NavSys) return ValidOffsets;
+	for (const FVector& Offset : CloneSpawnOffsets)
+	{
+		FNavLocation NavLocation;
+		if (NavSys->ProjectPointToNavigation(GetActorLocation() + GetActorRotation().RotateVector(Offset), NavLocation, FVector(50.f, 50.f, 1000.f)))
+		{
+			NavLocation.Location.Z = GetActorLocation().Z;
+			FHitResult Hit;
+			FCollisionQueryParams Params;
+			Params.AddIgnoredActor(this);
+			DrawDebugLine(GetWorld(), GetActorLocation(), NavLocation.Location, FColor::Green, false, 5.f);
+			if (!GetWorld()->LineTraceSingleByChannel(Hit, GetActorLocation(), NavLocation.Location, ECC_WorldStatic, Params))
+			{
+				ValidOffsets.Add(NavLocation.Location);
+				if (--InClonesAmount <= 0) return ValidOffsets;
+			}
+		}
+	}
+	return ValidOffsets;
 }
 
 void ATrickster::AI_SetupWeapon()
