@@ -84,10 +84,14 @@ void AClone::SetupWeaponsMeshesOptimization() const
 
 void AClone::MoveTowardsTargetLogic()
 {
-	if (!Target) return;
+	if (!Target)
+	{
+		if (!AnimInstance->GetIsIdleAnimationEnabled()) AnimInstance->SetIdleAnimationState(true);
+		ChangeTarget(nullptr);
+		return;
+	}
 	FVector Direction = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 	Direction.Z = 0.f;
-	UE_LOG(LogTemp, Error, TEXT("MOVING TOWARDS TARGET SUPPOSEDLY: %s"), *GetActorLocation().ToString());
 	AddActorWorldOffset(Direction * MovementSpeed * 0.02f, true);
 	FRotator TargetRot = Direction.Rotation();
 	TargetRot.Pitch = 0.f;
@@ -116,6 +120,17 @@ void AClone::ShootProjectile()
 
 void AClone::ChangeTarget(const TObjectPtr<AActor>& InActorThatDied)
 {
-	if (Target != InActorThatDied || !GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetIsEnemiesAvailable()) return;
+	if (InActorThatDied && Target != InActorThatDied) return;
+	if (!GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetIsEnemiesAvailable())
+	{
+		Target = nullptr;
+		GetWorldTimerManager().ClearTimer(ShootHandle);
+		return;
+	}
 	Target = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetClosestEnemy(GetActorLocation());
+	if (AnimInstance->GetIsIdleAnimationEnabled())
+	{
+		AnimInstance->SetIdleAnimationState(false);
+		GetWorldTimerManager().SetTimer(ShootHandle, this, &AClone::ShootProjectile, 0.37f, true);
+	}
 }

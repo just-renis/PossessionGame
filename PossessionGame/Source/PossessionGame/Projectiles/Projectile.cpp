@@ -227,7 +227,7 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 		DamageAfterCritical *= Enemy->GetDamageReduction();
 		UGameplayStatics::ApplyPointDamage(OtherActor, DamageAfterCritical, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
 		if (!Enemy->GetIsAlive()) return;
-		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
+		if (ProjectileData.GetProprietor()) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(bIsCritical ? FLinearColor(0.9059f, 0.f, 0.1098f) : Enemy->GetDamageNumberColor(), DamageAfterCritical, Hit.Location, OtherActor->GetActorForwardVector());
 	}
 }

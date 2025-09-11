@@ -47,6 +47,7 @@ DECLARE_DELEGATE_OneParam(FOnHijack, const TObjectPtr<AActor>&);
 DECLARE_DELEGATE_OneParam(FLoadLevel, const FLoadLevelData);
 DECLARE_DELEGATE_OneParam(FRequestAddAbilitiesToUpgradePool, const TObjectPtr<USaveSlot>&);
 DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
+DECLARE_DELEGATE_OneParam(FRequestMinorAnnouncement, const FText&);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
@@ -123,6 +124,7 @@ public:
 	FLoadLevel LoadLevel;
 	FRequestAddAbilitiesToUpgradePool RequestAddAbilitiesToUpgradePool;
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
+	FRequestMinorAnnouncement RequestMinorAnnouncement;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;

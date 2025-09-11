@@ -42,7 +42,7 @@ public:
 	void SetCharacterType(const ECharacterType InCharacterType);
 	void SetCurrentCrosshair() const;
 	void ToggleInfoPanel(const bool bState) const;
-	void ShowHijackUnavailable();
+	void ShowMinorAnnouncement(const FText& InText);
 	void ShowOutOfAmmo();
 	void SetAbilityIcon(const int32 InAbilityIndex, const int32 InAbilityIconIndex);
 private:
@@ -115,7 +115,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> OutOfAmmoInv;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> HijackUnavailableInv;
+	TObjectPtr<UInvalidationBox> MinorAnnouncementInv;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> MinorAnnouncementText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> HijackProgressBar;
 	UPROPERTY(meta = (BindWidget))
@@ -141,7 +143,7 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> LevelUpAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> HijackUnavailableAnim;
+	TObjectPtr<UWidgetAnimation> MinorAnnouncementAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> OutOfAmmoAnim;
 	UPROPERTY()

@@ -1,11 +1,17 @@
 ﻿#include "TricksterAbility3.h"
 #include "PossessionGame/AI/Enemies/Characters/Trickster.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void UTricksterAbility3::P_Execute()
 {
 	UE_LOG(LogTemp, Error, TEXT("P_EXECUTE"));
+	if (!GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetIsEnemiesAvailable())
+	{
+		DelegateManager->RequestMinorAnnouncement.ExecuteIfBound(NSLOCTEXT("ST_Localization", "NoTargetsAvailable", "No Targets Available"));
+		return;
+	}
 	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor, 1);
 	Super::P_Execute();
 }

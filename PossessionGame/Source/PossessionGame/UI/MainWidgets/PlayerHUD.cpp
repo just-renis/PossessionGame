@@ -184,11 +184,12 @@ void UPlayerHUD::ToggleInfoPanel(const bool bState) const
 	InfoPanelInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
-void UPlayerHUD::ShowHijackUnavailable()
+void UPlayerHUD::ShowMinorAnnouncement(const FText& InText)
 {
-	if (!HijackUnavailableInv) return;
-	PlayAnimation(HijackUnavailableAnim);
-	HijackUnavailableInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (!MinorAnnouncementInv || !MinorAnnouncementText) return;
+	MinorAnnouncementText->SetText(InText);
+	PlayAnimation(MinorAnnouncementAnim);
+	MinorAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UPlayerHUD::ShowOutOfAmmo()
@@ -224,6 +225,7 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerHUD::UpdatePressToHijackKeyBind);
 	DelegateManager->OnOutOfAmmo.BindUObject(this, &UPlayerHUD::ShowOutOfAmmo);
 	DelegateManager->RequirePlayerAnnouncementInfo.BindUObject(this, &UPlayerHUD::PlayAnnouncement);
+	DelegateManager->RequestMinorAnnouncement.BindUObject(this, &UPlayerHUD::ShowMinorAnnouncement);
 	if (HijackProgressBar) MID_HijackProgress = HijackProgressBar->GetDynamicMaterial();
 	UpdateHijackIndicator(false);
 	SetLevelText(GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevel());
