@@ -30,13 +30,13 @@ FVector UEnemyCommunicator::GetPointLocation(ECharacterType InCharacterType, FVe
 
 FVector UEnemyCommunicator::GetTargetLocation() const { return Target ? Target->GetActorLocation() : FVector(NAN, NAN, NAN); }
 
-FVector UEnemyCommunicator::GetFarthestEnemyLocation(FVector FromLocation)
+FVector UEnemyCommunicator::GetFarthestEnemyLocation(const FVector& InFromLocation)
 {
 	float Distance = 0.f;
 	int32 Index = 0;
 	for (int32 i = 0; i < Enemies.Num(); i++)
 	{
-		const float CalcDistance = FVector::Distance(FromLocation, Enemies[i]->GetActorLocation());
+		const float CalcDistance = FVector::DistSquared(InFromLocation, Enemies[i]->GetActorLocation());
 		if (CalcDistance > Distance)
 		{
 			Distance = CalcDistance;
@@ -44,6 +44,23 @@ FVector UEnemyCommunicator::GetFarthestEnemyLocation(FVector FromLocation)
 		}
 	}
 	return Enemies[Index]->GetActorLocation();
+}
+
+TObjectPtr<AActor> UEnemyCommunicator::GetClosestEnemy(const FVector& InFromLocation)
+{
+	if (!GetIsEnemiesAvailable()) return nullptr;
+	float Distance = FLT_MAX;
+	int32 Index = 0;
+	for (int32 i = 0; i < Enemies.Num(); i++)
+	{
+		const float CalcDistance = FVector::DistSquared(InFromLocation, Enemies[i]->GetActorLocation());
+		if (CalcDistance < Distance)
+		{
+			Distance = CalcDistance;
+			Index = i;
+		}
+	}
+	return Enemies[Index];
 }
 
 void UEnemyCommunicator::Init(TObjectPtr<UDelegateManager> InDelegateManager, TObjectPtr<UEnvQuery> InTargetEQS)

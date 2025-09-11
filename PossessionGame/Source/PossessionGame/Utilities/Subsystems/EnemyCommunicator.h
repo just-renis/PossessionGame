@@ -17,10 +17,12 @@ class POSSESSIONGAME_API UEnemyCommunicator : public UWorldSubsystem
 	GENERATED_BODY()
 public:
 	bool GetIsUsbDroppable() const { return bIsUsbDroppable; }
+	bool GetIsEnemiesAvailable() const { return !Enemies.IsEmpty(); }
 	FVector GetPointLocation(ECharacterType InCharacterType, FVector InLocation);
 	FVector GetTargetLocation() const;
 	TObjectPtr<AActor>& GetTarget() { return Target; }
-	FVector GetFarthestEnemyLocation(FVector FromLocation);
+	FVector GetFarthestEnemyLocation(const FVector& InFromLocation);
+	TObjectPtr<AActor> GetClosestEnemy(const FVector& InFromLocation);
 	FOnEQSFinish& GetEQSDelegate() { return OnEQSFinish; }
 	TArray<TObjectPtr<AActor>>& GetAllEnemies() { return Enemies; }
 

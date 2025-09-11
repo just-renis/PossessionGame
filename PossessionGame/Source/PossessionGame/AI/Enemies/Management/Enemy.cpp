@@ -266,6 +266,7 @@ void AEnemy::InitiateDeath()
 		DestroyAI();
 		if (bIsMutant) AI_TriggerMutantExplosion();
 		if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
+		DelegateManager->OnEnemyDeathOccurred.Broadcast(this);
 		(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
 	}
 	else P_Destroy();

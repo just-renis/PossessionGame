@@ -8,6 +8,8 @@ void APoolObject::InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USke
 
 void APoolObject::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich) { SetPoolObjectState(true); }
 
+void APoolObject::InitCloneProjectile(FProjectileData& InProjectileData, const FRotator& Rotation) { SetPoolObjectState(true); }
+
 void APoolObject::Disable(const bool bHide) { SetPoolObjectState(false, bHide); }
 
 void APoolObject::SetPoolObjectState(const bool bState, const bool bHide)

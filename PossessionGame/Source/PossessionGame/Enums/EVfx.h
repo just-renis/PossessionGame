@@ -71,5 +71,7 @@ enum class EVfx : uint16
 	HitVent,
 	CrashVent,
 	ComputerElectrification,
-	DoorBreak
+	DoorBreak,
+	CloneBullet,
+	CloneBulletImpact
 };

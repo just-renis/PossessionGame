@@ -80,6 +80,29 @@ void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotati
 	MovementComponent->Activate();
 }
 
+void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const FRotator& Rotation)
+{
+	Super::InitCloneProjectile(InProjectileData, Rotation);
+	ProjectileData = InProjectileData;
+	ProjectileData.ProjectileName = EPoolObject::CloneProjectile;
+	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AProjectile::DestroyThis, ProjectileData.LifeSpan, false);
+	const FAdditionalProjectileData AdditionalProjectileData = ProjectileData.GetMultiProjectileData(0).Data[0];
+	MovementComponent->InitialSpeed = AdditionalProjectileData.InitialSpeed;
+	MovementComponent->MaxSpeed = AdditionalProjectileData.MaxSpeed;
+	MovementComponent->ProjectileGravityScale = AdditionalProjectileData.GravityScale;
+	Damage = DefaultDamage = ProjectileData.Damage;
+	if (!bHasBeenPooled)
+	{
+		AssetsManager->AttachVfx(EVfx::CloneBullet, nullptr, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
+		bHasBeenPooled = true;
+	}
+	SetDirection(Rotation.Vector());
+	if (BulletTrailComponent) BulletTrailComponent->Activate();
+	MovementComponent->SetComponentTickEnabled(true);
+	MovementComponent->Activate();
+}
+
 void AProjectile::DisableProjectileComponents() const
 {
 	if (BulletTrailComponent) BulletTrailComponent->Deactivate();
@@ -89,7 +112,8 @@ void AProjectile::DisableProjectileComponents() const
 
 void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact)
 {
-	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), nullptr, InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), ProjectileData.GetProprietor()->GetVariation(), Attributes);
+	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), nullptr,
+	InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetVariation() : EVariation::Default, Attributes);
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -105,7 +129,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	if (OtherActor->ActorHasTag("Destructible"))
 	{
 		if (ProjectileData.bIsPlayerProjectile) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, Hit.Location, OtherActor->GetActorForwardVector());
-		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
 		return;
 	}
 	if (!OtherActor->ActorHasTag("Enemy")) return;
@@ -197,11 +221,11 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 		return;
 	}
 	const bool bIsCritical = Hit.BoneName == "head";
-	float DamageAfterCritical = Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f);
+	float DamageAfterCritical = ProjectileData.GetProprietor() ? Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f) : Damage;
 	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor))
 	{
 		DamageAfterCritical *= Enemy->GetDamageReduction();
-		UGameplayStatics::ApplyPointDamage(OtherActor, DamageAfterCritical, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyPointDamage(OtherActor, DamageAfterCritical, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
 		if (!Enemy->GetIsAlive()) return;
 		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(bIsCritical ? FLinearColor(0.9059f, 0.f, 0.1098f) : Enemy->GetDamageNumberColor(), DamageAfterCritical, Hit.Location, OtherActor->GetActorForwardVector());
