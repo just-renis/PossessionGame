@@ -44,6 +44,7 @@ protected:
 	virtual void PlayImpactSound() {}
 	virtual void OnImpact(const FHitResult& Hit);
 	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich) override;
+	virtual void InitCloneProjectile(FProjectileData& InProjectileData, const FRotator& Rotation) override;
 	void DisableProjectileComponents() const;
 	virtual void SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact);
 	UFUNCTION()

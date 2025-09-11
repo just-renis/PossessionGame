@@ -2,6 +2,7 @@
 #include "HandsAnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "NiagaraComponent.h"
+#include "WeaponAnimInstance.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
@@ -76,6 +77,7 @@ void AWeapon::P_Shoot()
 
 void AWeapon::P_InitialSetupTransfer()
 {
+	if (AnimInstance) AnimInstance->Montage_Stop(0.f);
 	bIsPossessed = true;
 	P_Setup();
 	SetCastShadow(false);

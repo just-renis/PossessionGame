@@ -3,6 +3,7 @@
 #include "Components/CapsuleComponent.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 
 AClone::AClone()
@@ -17,17 +18,13 @@ AClone::AClone()
 
 void AClone::InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USkeletalMesh> InSkeletalMesh, const TObjectPtr<USkeletalMesh> InWeaponMesh)
 {
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeathOccurred.AddUObject(this, &AClone::ChangeTarget);
 	Velocity = FVector::ZeroVector;
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->DespawnPlayerClones.AddUObject(this, &AClone::DestroyThis);
 	if (!Mesh->GetSkeletalMeshAsset())
 	{
 		Mesh->SetSkeletalMeshAsset(InSkeletalMesh);
-		Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
-		Mesh->bEnableUpdateRateOptimizations = true;
-		Mesh->SkipUpdateOverlapsOptimEnabled = true;
-		Mesh->SetAllowAnimCurveEvaluation(false);
-		Mesh->bUseRefPoseOnInitAnim = true;
-		Mesh->SetComponentTickInterval(1.f / 30.f);
+		SetupMeshOptimization();
 		AnimInstance = Cast<UCloneAnimationInstance>(Mesh->GetAnimInstance());
 	}
 	else Mesh->SetComponentTickEnabled(true);
@@ -35,29 +32,27 @@ void AClone::InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USkeletal
 	{
 		FirstWeaponMesh->SetSkeletalMeshAsset(InWeaponMesh);
 		SecondWeaponMesh->SetSkeletalMeshAsset(InWeaponMesh);
-		FirstWeaponMesh->SetComponentTickEnabled(false);
-		SecondWeaponMesh->SetComponentTickEnabled(false);
-		FirstWeaponMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket1"));
-		SecondWeaponMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket2"));
+		SetupWeaponsMeshesOptimization();
 	}
 	AnimInstance->SetIsEnabled(true);
-	GetWorldTimerManager().SetTimer(AnimBlendSpaceMovementSpeedHandle, this, &AClone::SetAnimBlendSpaceMovementSpeed, 0.05f, true);
 	GetWorldTimerManager().SetTimer(GravityHandle, this, &AClone::GravityLogic, 0.02f, true);
 	Super::InitClone(bIsSpawnedByPlayer, InSkeletalMesh, InWeaponMesh);
+	Target = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetClosestEnemy(GetActorLocation());
+	GetWorldTimerManager().SetTimer(MoveHandle, this, &AClone::MoveTowardsTargetLogic, 0.02f, true);
+	ShootProjectile();
+	GetWorldTimerManager().SetTimer(ShootHandle, this, &AClone::ShootProjectile, 0.37f, true);
 }
 
 void AClone::DestroyThis()
 {
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeathOccurred.RemoveAll(this);
 	AnimInstance->SetIsEnabled(false);
 	Mesh->SetComponentTickEnabled(false);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->DespawnPlayerClones.RemoveAll(this);
-	GetWorldTimerManager().ClearTimer(AnimBlendSpaceMovementSpeedHandle);
+	GetWorldTimerManager().ClearTimer(MoveHandle);
+	GetWorldTimerManager().ClearTimer(ShootHandle);
+	GetWorldTimerManager().ClearTimer(GravityHandle);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::Clone, this);
-}
-
-void AClone::SetAnimBlendSpaceMovementSpeed() const
-{
-	AnimInstance->SetSpeed(100.f);
 }
 
 void AClone::GravityLogic()
@@ -67,4 +62,60 @@ void AClone::GravityLogic()
 	FHitResult Hit;
 	AddActorWorldOffset(Velocity * 0.02f, true, &Hit);
 	if (Hit.bBlockingHit) Velocity.Z = 0.f;
+}
+
+void AClone::SetupMeshOptimization() const
+{
+	Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
+	Mesh->bEnableUpdateRateOptimizations = true;
+	Mesh->SkipUpdateOverlapsOptimEnabled = true;
+	Mesh->SetAllowAnimCurveEvaluation(false);
+	Mesh->bUseRefPoseOnInitAnim = true;
+	Mesh->SetComponentTickInterval(1.f / 30.f);
+}
+
+void AClone::SetupWeaponsMeshesOptimization() const
+{
+	FirstWeaponMesh->SetComponentTickEnabled(false);
+	SecondWeaponMesh->SetComponentTickEnabled(false);
+	FirstWeaponMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket1"));
+	SecondWeaponMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket2"));
+}
+
+void AClone::MoveTowardsTargetLogic()
+{
+	if (!Target) return;
+	FVector Direction = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	Direction.Z = 0.f;
+	UE_LOG(LogTemp, Error, TEXT("MOVING TOWARDS TARGET SUPPOSEDLY: %s"), *GetActorLocation().ToString());
+	AddActorWorldOffset(Direction * MovementSpeed * 0.02f, true);
+	FRotator TargetRot = Direction.Rotation();
+	TargetRot.Pitch = 0.f;
+	TargetRot.Roll = 0.f;
+	TargetRot.Yaw -= 90.f;
+	SetActorRotation(TargetRot);
+}
+
+void AClone::ShootProjectile()
+{
+	FRotator BaseRotation;
+	FVector BaseLocation;
+	if (bFirstWeaponTurnToShoot)
+	{
+		BaseLocation = FirstWeaponMesh->GetSocketLocation("ProjectileSocket");
+		BaseRotation = FirstWeaponMesh->GetSocketRotation("ProjectileSocket");
+	}
+	else
+	{
+		BaseLocation = SecondWeaponMesh->GetSocketLocation("ProjectileSocket");
+		BaseRotation = SecondWeaponMesh->GetSocketRotation("ProjectileSocket");
+	}
+	bFirstWeaponTurnToShoot = !bFirstWeaponTurnToShoot;
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::CloneProjectile, BaseLocation, BaseRotation)->InitCloneProjectile(ProjectileData, BaseRotation);
+}
+
+void AClone::ChangeTarget(const TObjectPtr<AActor>& InActorThatDied)
+{
+	if (Target != InActorThatDied || !GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetIsEnemiesAvailable()) return;
+	Target = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetClosestEnemy(GetActorLocation());
 }

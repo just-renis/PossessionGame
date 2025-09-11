@@ -76,6 +76,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FStartForceFieldDissolve, const int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGateWithAssociationOpened, const int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTerminalHackRoomFinish, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FSendHackTerminalRoomMode, const EGameMode);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemyDeathOccurred, const TObjectPtr<AActor>&);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType, const EVariation);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&, bool);
@@ -149,6 +150,7 @@ public:
 	FOnGateWithAssociationOpened OnGateWithAssociationOpened;
 	FOnTerminalHackRoomFinish OnTerminalHackRoomFinish;
 	FSendHackTerminalRoomMode SendHackTerminalRoomMode;
+	FOnEnemyDeathOccurred OnEnemyDeathOccurred;
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
 	FOnVariationSelection OnVariationSelection;
 	FOnTargetChange OnTargetChange;
