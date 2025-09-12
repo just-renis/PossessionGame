@@ -17,6 +17,9 @@ class POSSESSIONGAME_API AClone : public APoolObject
 
 	bool bFirstWeaponTurnToShoot = true;
 	float MovementSpeed = 100.f;
+	float PatternMaxOpacity = 0.f;
+	float PatternOpacityDivisor = 0.f;
+	float DeploymentPercent = 0.f;
 	FVector Velocity;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
@@ -27,6 +30,8 @@ class POSSESSIONGAME_API AClone : public APoolObject
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCapsuleComponent> MainCollision;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> CloneMaterial;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	FProjectileData ProjectileData;
 	UPROPERTY()
 	FTimerHandle GravityHandle;
@@ -35,9 +40,13 @@ class POSSESSIONGAME_API AClone : public APoolObject
 	UPROPERTY()
 	FTimerHandle ShootHandle;
 	UPROPERTY()
+	FTimerHandle DissolveHandle;
+	UPROPERTY()
 	TObjectPtr<UCloneAnimationInstance> AnimInstance;
 	UPROPERTY()
 	TObjectPtr<AActor> Target;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Clone;
 
 	virtual void InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USkeletalMesh> InSkeletalMesh, const TObjectPtr<USkeletalMesh> InWeaponMesh) override;
 	void DestroyThis();
@@ -47,4 +56,8 @@ class POSSESSIONGAME_API AClone : public APoolObject
 	void MoveTowardsTargetLogic();
 	void ShootProjectile();
 	void ChangeTarget(const TObjectPtr<AActor>& InActorThatDied);
+	void StartDissolve();
+	void DissolveProcess();
+	void StartDeployment();
+	void ProcessDeployment();
 };

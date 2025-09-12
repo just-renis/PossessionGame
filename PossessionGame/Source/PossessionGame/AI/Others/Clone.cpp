@@ -20,10 +20,11 @@ void AClone::InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USkeletal
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeathOccurred.AddUObject(this, &AClone::ChangeTarget);
 	Velocity = FVector::ZeroVector;
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->DespawnPlayerClones.AddUObject(this, &AClone::DestroyThis);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->DespawnPlayerClones.AddUObject(this, &AClone::StartDissolve);
 	if (!Mesh->GetSkeletalMeshAsset())
 	{
 		Mesh->SetSkeletalMeshAsset(InSkeletalMesh);
+		MID_Clone = UMaterialInstanceDynamic::Create(CloneMaterial, this);
 		SetupMeshOptimization();
 		AnimInstance = Cast<UCloneAnimationInstance>(Mesh->GetAnimInstance());
 	}
@@ -34,13 +35,15 @@ void AClone::InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USkeletal
 		SecondWeaponMesh->SetSkeletalMeshAsset(InWeaponMesh);
 		SetupWeaponsMeshesOptimization();
 	}
-	AnimInstance->SetIsEnabled(true);
-	GetWorldTimerManager().SetTimer(GravityHandle, this, &AClone::GravityLogic, 0.02f, true);
+	if (MID_Clone)
+	{
+		Mesh->SetMaterial(0, MID_Clone);
+		FirstWeaponMesh->SetMaterial(0, MID_Clone);
+		SecondWeaponMesh->SetMaterial(0, MID_Clone);
+	}
 	Super::InitClone(bIsSpawnedByPlayer, InSkeletalMesh, InWeaponMesh);
 	Target = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetClosestEnemy(GetActorLocation());
-	GetWorldTimerManager().SetTimer(MoveHandle, this, &AClone::MoveTowardsTargetLogic, 0.02f, true);
-	ShootProjectile();
-	GetWorldTimerManager().SetTimer(ShootHandle, this, &AClone::ShootProjectile, 0.37f, true);
+	StartDeployment();
 }
 
 void AClone::DestroyThis()
@@ -133,4 +136,46 @@ void AClone::ChangeTarget(const TObjectPtr<AActor>& InActorThatDied)
 		AnimInstance->SetIdleAnimationState(false);
 		GetWorldTimerManager().SetTimer(ShootHandle, this, &AClone::ShootProjectile, 0.37f, true);
 	}
+}
+
+void AClone::StartDissolve()
+{
+	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AClone::DissolveProcess, 0.025f, true);
+}
+
+void AClone::DissolveProcess() // 0.5 sec
+{
+	if (!MID_Clone) return;
+	PatternMaxOpacity -= 0.025f;
+	PatternOpacityDivisor -= 0.2f;
+	DeploymentPercent -= 0.1f;
+	MID_Clone->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
+	MID_Clone->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
+	MID_Clone->SetScalarParameterValue("DeploymentPercent", DeploymentPercent);
+	if (PatternOpacityDivisor > KINDA_SMALL_NUMBER) return;
+	GetWorldTimerManager().ClearTimer(DissolveHandle);
+	DestroyThis();
+}
+
+void AClone::StartDeployment()
+{
+	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AClone::ProcessDeployment, 0.025f, true);
+}
+
+void AClone::ProcessDeployment() // 1 sec
+{
+	if (!MID_Clone) return;
+	PatternMaxOpacity += 0.0125f;
+	PatternOpacityDivisor += 0.1f;
+	DeploymentPercent += 0.05f;
+	MID_Clone->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
+	MID_Clone->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
+	MID_Clone->SetScalarParameterValue("DeploymentPercent", DeploymentPercent);
+	if (PatternOpacityDivisor < 2.f) return;
+	AnimInstance->SetIsEnabled(true);
+	GetWorldTimerManager().SetTimer(GravityHandle, this, &AClone::GravityLogic, 0.02f, true);
+	GetWorldTimerManager().SetTimer(MoveHandle, this, &AClone::MoveTowardsTargetLogic, 0.02f, true);
+	ShootProjectile();
+	GetWorldTimerManager().SetTimer(ShootHandle, this, &AClone::ShootProjectile, 0.37f, true);
+	GetWorldTimerManager().ClearTimer(DissolveHandle);
 }

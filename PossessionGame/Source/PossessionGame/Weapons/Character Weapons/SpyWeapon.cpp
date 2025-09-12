@@ -23,6 +23,7 @@ void ASpyWeapon::BeginPlay()
 {
 	Name = EWeapon::SpyWeapon;
 	Super::BeginPlay();
+	SetWeaponReloadMontageDelegate();
 }
 
 void ASpyWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const bool bFromFirstWeapon)

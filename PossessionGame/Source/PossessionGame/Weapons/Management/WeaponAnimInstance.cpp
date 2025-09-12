@@ -1,6 +1,5 @@
 #include "WeaponAnimInstance.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 bool UWeaponAnimInstance::IsPlaying(EWeaponAnimState State)
@@ -65,18 +64,13 @@ void UWeaponAnimInstance::SetGlobalPlayRate(const float InPlayRate)
 void UWeaponAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
 {
     if (bIsInterrupted || !Montages.Contains(EWeaponAnimState::Reload)) return;
-    if (Montage == Montages.Find(EWeaponAnimState::Reload)->Get())
-    {
-        (void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnWeaponReloadMontageEnd.ExecuteIfBound();
-        bIsReloading = false;
-    }
+    if (Montage == Montages.Find(EWeaponAnimState::Reload)->Get()) bIsReloading = false;
 }
 
 void UWeaponAnimInstance::NativeBeginPlay()
 {
     Super::NativeBeginPlay();
     AssetsManager = GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
-    OnMontageBlendingOut.AddDynamic(this, &UWeaponAnimInstance::OnMontageEnd);
 }
 
 void UWeaponAnimInstance::BeginDestroy()

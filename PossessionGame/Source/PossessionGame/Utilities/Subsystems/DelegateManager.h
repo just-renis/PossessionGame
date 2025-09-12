@@ -32,7 +32,7 @@ DECLARE_DELEGATE(FApplyUpgradeOnSelection);
 DECLARE_DELEGATE(FResetChargeTerminal);
 DECLARE_DELEGATE(FOnFirstGameModeInitiated);
 DECLARE_DELEGATE(FOnAbilitiesMenuSelectionEnd);
-DECLARE_DELEGATE(FOnWeaponReloadMontageEnd);
+DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE_RetVal(int32, FOnRunFinished);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
@@ -107,7 +107,7 @@ public:
 	FResetChargeTerminal ResetChargeTerminal;
 	FOnFirstGameModeInitiated OnFirstGameModeInitiated;
 	FOnAbilitiesMenuSelectionEnd OnAbilitiesMenuSelectionEnd;
-	FOnWeaponReloadMontageEnd OnWeaponReloadMontageEnd;
+	FOnHandsReloadMontageEnd OnHandsReloadMontageEnd;
 	FOnRunFinished OnRunFinished;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemyDeath OnEnemyDeath;

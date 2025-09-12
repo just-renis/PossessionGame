@@ -46,6 +46,7 @@ void ATricksterWeapon::BeginPlay()
 {
 	Name = EWeapon::TricksterWeapon;
 	Super::BeginPlay();
+	SetWeaponReloadMontageDelegate();
 }
 
 void ATricksterWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh)

@@ -15,5 +15,6 @@ enum class EHandsAnimState : uint8
 	OverCharge,
 	QuickMelee,
 	Jump,
-	Slide
+	Slide,
+	DeployClone
 };

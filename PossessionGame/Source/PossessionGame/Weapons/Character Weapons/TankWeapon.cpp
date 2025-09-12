@@ -40,6 +40,7 @@ void ATankWeapon::BeginPlay()
 {
 	Name = EWeapon::TankWeapon;
 	Super::BeginPlay();
+	SetWeaponReloadMontageDelegate();
 	AnimInstance = Cast<UWeaponAnimInstance>(Mesh->GetAnimInstance());
 	AnimInstance->SetWeaponName(Name);
 }

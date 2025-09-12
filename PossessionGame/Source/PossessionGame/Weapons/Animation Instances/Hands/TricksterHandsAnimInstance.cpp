@@ -18,6 +18,12 @@ void UTricksterHandsAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsIn
 		(void)OnHandsMontageEnd.ExecuteIfBound(false);
 		return;
 	}
-	const TObjectPtr<UAnimMontage>* EMPThrowMontage = Montages.Find(EHandsAnimState::SecondaryGrenadeLaunch);
-	if (EMPThrowMontage && Montage == EMPThrowMontage->Get()) (void)OnHandsMontageEnd.ExecuteIfBound(false);
+	const TObjectPtr<UAnimMontage>* EmpThrowMontage = Montages.Find(EHandsAnimState::SecondaryGrenadeLaunch);
+	if (EmpThrowMontage && Montage == EmpThrowMontage->Get())
+	{
+		(void)OnHandsMontageEnd.ExecuteIfBound(false);
+		return;
+	}
+	const TObjectPtr<UAnimMontage>* DeployCloneMontage = Montages.Find(EHandsAnimState::DeployClone);
+	if (DeployCloneMontage && Montage == DeployCloneMontage->Get()) (void)OnHandsMontageEnd.ExecuteIfBound(false);
 }

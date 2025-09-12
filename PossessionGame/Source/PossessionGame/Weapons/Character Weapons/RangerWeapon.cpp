@@ -65,6 +65,7 @@ void ARangerWeapon::BeginPlay()
 {
 	Name = EWeapon::RangerWeapon;
 	Super::BeginPlay();
+	SetWeaponReloadMontageDelegate();
 	Mesh->SetComponentTickInterval(1.f / 30.f);
 	AnimInstance = Cast<UWeaponAnimInstance>(Mesh->GetAnimInstance());
 	AnimInstance->SetWeaponName(Name);

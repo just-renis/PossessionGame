@@ -144,6 +144,7 @@ protected:
 	void DisableHandsMesh() const;
 	void DealPointDamage(const FHitResult& InHitResult);
 	virtual void WeaponReloadMontageFinished();
+	void SetWeaponReloadMontageDelegate();
 private:
 	bool bFirstShotWasShot = false;
 	int32 ShootCyclesUntilReload;

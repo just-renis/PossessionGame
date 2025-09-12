@@ -1,17 +1,21 @@
 ﻿#include "TricksterAbility3.h"
 #include "PossessionGame/AI/Enemies/Characters/Trickster.h"
+#include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
+#include "PossessionGame/Weapons/Management/Weapon.h"
 
 void UTricksterAbility3::P_Execute()
 {
-	UE_LOG(LogTemp, Error, TEXT("P_EXECUTE"));
 	if (!GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetIsEnemiesAvailable())
 	{
 		DelegateManager->RequestMinorAnnouncement.ExecuteIfBound(NSLOCTEXT("ST_Localization", "NoTargetsAvailable", "No Targets Available"));
 		return;
 	}
+	Proprietor->SetIsActionInMotion(true);
+	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::DeployClone);
 	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnClone(ECharacterType::Minion, Proprietor, 1);
 	Super::P_Execute();
 }
@@ -19,7 +23,6 @@ void UTricksterAbility3::P_Execute()
 void UTricksterAbility3::P_StopAbility()
 {
 	if (!bIsAbilityInDuration) return;
-	UE_LOG(LogTemp, Error, TEXT("P_StopAbility"));
 	DelegateManager->DespawnPlayerClones.Broadcast();
 	Super::P_StopAbility();
 }

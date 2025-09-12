@@ -234,7 +234,6 @@ void AWeapon::BeginPlay()
 	SetupHandsOptimization();
 	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
-	DelegateManager->OnWeaponReloadMontageEnd.BindUObject(this, &AWeapon::WeaponReloadMontageFinished);
 	if (Name != EWeapon::MinionWeapon) SetMeshes(Name);
 	AI_Setup();
 }
@@ -331,6 +330,8 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 }
 
 void AWeapon::WeaponReloadMontageFinished() { if (bIsPossessed) P_UpdateAmmoTextHUD(); }
+
+void AWeapon::SetWeaponReloadMontageDelegate() { DelegateManager->OnHandsReloadMontageEnd.BindUObject(this, &AWeapon::WeaponReloadMontageFinished); }
 
 void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
 {
