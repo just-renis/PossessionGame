@@ -93,9 +93,13 @@ void AClone::MoveTowardsTargetLogic()
 		ChangeTarget(nullptr);
 		return;
 	}
-	FVector Direction = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	Direction.Z = 0.f;
-	AddActorWorldOffset(Direction * MovementSpeed * 0.02f, true);
+	FVector ToTarget = Target->GetActorLocation() - GetActorLocation();
+	ToTarget.Z = 0.f;
+	const float Distance = ToTarget.Size();
+	const FVector Direction = ToTarget.GetSafeNormal();
+	AnimInstance->SetLookAtLocation(Target->GetActorLocation());
+	if (Distance > 400.f) AddActorWorldOffset(Direction * MovementSpeed * 0.02f, true);
+	else AddActorWorldOffset(-Direction * MovementSpeed * 0.02f, true);
 	FRotator TargetRot = Direction.Rotation();
 	TargetRot.Pitch = 0.f;
 	TargetRot.Roll = 0.f;
