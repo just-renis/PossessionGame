@@ -102,5 +102,7 @@ enum class ESound : uint16
 	ErrorChaos,
 	DoorBreak,
 	Slide,
-	EndScreenFadeIn
+	EndScreenFadeIn,
+	CloneSpawn,
+	CloneDisappear
 };

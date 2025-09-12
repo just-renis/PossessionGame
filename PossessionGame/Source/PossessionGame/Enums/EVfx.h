@@ -73,5 +73,6 @@ enum class EVfx : uint16
 	ComputerElectrification,
 	DoorBreak,
 	CloneBullet,
-	CloneBulletImpact
+	CloneBulletImpact,
+	CloneSpawn
 };

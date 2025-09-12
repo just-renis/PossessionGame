@@ -47,6 +47,10 @@ class POSSESSIONGAME_API AClone : public APoolObject
 	TObjectPtr<AActor> Target;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Clone;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> CloneSpawnComponent;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> DisappearSound;
 
 	virtual void InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USkeletalMesh> InSkeletalMesh, const TObjectPtr<USkeletalMesh> InWeaponMesh) override;
 	void DestroyThis();
@@ -60,4 +64,5 @@ class POSSESSIONGAME_API AClone : public APoolObject
 	void DissolveProcess();
 	void StartDeployment();
 	void ProcessDeployment();
+	void EnableSpawnVfx();
 };

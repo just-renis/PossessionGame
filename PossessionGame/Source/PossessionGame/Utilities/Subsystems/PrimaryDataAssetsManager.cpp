@@ -554,6 +554,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_DoorBreak", ESound::DoorBreak);
 	SoundMap.Add("PA_Slide", ESound::Slide);
 	SoundMap.Add("PA_EndScreenFadeIn", ESound::EndScreenFadeIn);
+	SoundMap.Add("PA_CloneSpawn", ESound::CloneSpawn);
+	SoundMap.Add("PA_CloneDisappear", ESound::CloneDisappear);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -647,6 +649,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_DoorBreak", EVfx::DoorBreak);
 	VfxsMap.Add("PA_CloneBullet", EVfx::CloneBullet);
 	VfxsMap.Add("PA_CloneBulletImpact", EVfx::CloneBulletImpact);
+	VfxsMap.Add("PA_CloneSpawn", EVfx::CloneSpawn);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

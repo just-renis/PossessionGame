@@ -1,10 +1,13 @@
 ﻿#include "Clone.h"
 #include "CloneAnimationInstance.h"
+#include "NiagaraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AClone::AClone()
 {
@@ -14,10 +17,14 @@ AClone::AClone()
 	Mesh->SetupAttachment(RootComponent);
 	FirstWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("FirstWeaponMesh");
 	SecondWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SecondWeaponMesh");
+	DisappearSound = CreateDefaultSubobject<UAudioComponent>(TEXT("DisappearSound"));
+	DisappearSound->SetAutoActivate(false);
+	DisappearSound->SetupAttachment(Mesh);
 }
 
 void AClone::InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USkeletalMesh> InSkeletalMesh, const TObjectPtr<USkeletalMesh> InWeaponMesh)
 {
+	EnableSpawnVfx();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeathOccurred.AddUObject(this, &AClone::ChangeTarget);
 	Velocity = FVector::ZeroVector;
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->DespawnPlayerClones.AddUObject(this, &AClone::StartDissolve);
@@ -144,6 +151,7 @@ void AClone::ChangeTarget(const TObjectPtr<AActor>& InActorThatDied)
 
 void AClone::StartDissolve()
 {
+	DisappearSound->Sound ? DisappearSound->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(DisappearSound, TFunction<bool()>(), ESound::CloneDisappear);
 	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AClone::DissolveProcess, 0.025f, true);
 }
 
@@ -163,6 +171,7 @@ void AClone::DissolveProcess() // 0.5 sec
 
 void AClone::StartDeployment()
 {
+	if (AnimInstance->GetIsIdleAnimationEnabled()) AnimInstance->SetIdleAnimationState(false);
 	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AClone::ProcessDeployment, 0.025f, true);
 }
 
@@ -182,4 +191,10 @@ void AClone::ProcessDeployment() // 1 sec
 	ShootProjectile();
 	GetWorldTimerManager().SetTimer(ShootHandle, this, &AClone::ShootProjectile, 0.37f, true);
 	GetWorldTimerManager().ClearTimer(DissolveHandle);
+}
+
+void AClone::EnableSpawnVfx()
+{
+	if (!CloneSpawnComponent) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::CloneSpawn, nullptr, &CloneSpawnComponent, Mesh, FName("DeathSocket"));
+	else CloneSpawnComponent->Activate();
 }
