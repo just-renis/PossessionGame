@@ -93,6 +93,10 @@ void UCharacterAbilitiesUI::SetupAbilitySlot(const int32 InAbilityIndex, const b
 			Animation = bIsFirstSlot ? Select2To1ReverseAnim : Select2To2ReverseAnim;
 			InAbilitySlot = SecondAbility;
 			break;
+		case 2:
+			Animation = bIsFirstSlot ? Select3To1ReverseAnim : Select3To2ReverseAnim;
+			InAbilitySlot = ThirdAbility;
+			break;
 		default: return;
 	}
 	PlayAnimation(Animation);
@@ -105,7 +109,8 @@ void UCharacterAbilitiesUI::AddAbility(const int32 InAbilityIndex)
 	switch (InAbilityIndex)
 	{
 		case 0: FirstAbilitySelected(); break;
-		case 1: SecondAbilitySelected();
+		case 1: SecondAbilitySelected(); break;
+		case 2: ThirdAbilitySelected();
 		default: ;
 	}
 }
@@ -130,6 +135,7 @@ void UCharacterAbilitiesUI::FirstAbilitySelected()
 
 void UCharacterAbilitiesUI::SecondAbilitySelected()
 {
+	if (!AbilitiesData[1].bAbilityExists) return;
 	if (SecondAbility->GetIsLocked())
 	{
 		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnOpenUnlockAbilityPopup.ExecuteIfBound(1);
@@ -153,6 +159,7 @@ void UCharacterAbilitiesUI::SecondAbilitySelected()
 
 void UCharacterAbilitiesUI::ThirdAbilitySelected()
 {
+	if (!AbilitiesData[2].bAbilityExists) return;
 	if (ThirdAbility->GetIsLocked())
 	{
 		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnOpenUnlockAbilityPopup.ExecuteIfBound(2);

@@ -24,7 +24,6 @@ AClone::AClone()
 
 void AClone::InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USkeletalMesh> InSkeletalMesh, const TObjectPtr<USkeletalMesh> InWeaponMesh)
 {
-	EnableSpawnVfx();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeathOccurred.AddUObject(this, &AClone::ChangeTarget);
 	Velocity = FVector::ZeroVector;
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->DespawnPlayerClones.AddUObject(this, &AClone::StartDissolve);
@@ -100,13 +99,23 @@ void AClone::MoveTowardsTargetLogic()
 		ChangeTarget(nullptr);
 		return;
 	}
+	if (AnimInstance->GetIsSetShootOnly()) AnimInstance->SetShootOnly(false);
 	FVector ToTarget = Target->GetActorLocation() - GetActorLocation();
 	ToTarget.Z = 0.f;
 	const float Distance = ToTarget.Size();
 	const FVector Direction = ToTarget.GetSafeNormal();
 	AnimInstance->SetLookAtLocation(Target->GetActorLocation());
-	if (Distance > 400.f) AddActorWorldOffset(Direction * MovementSpeed * 0.02f, true);
-	else AddActorWorldOffset(-Direction * MovementSpeed * 0.02f, true);
+	if (Distance > 400.f)
+	{
+		if (!AnimInstance->GetIsDirectionForward()) AnimInstance->SetMovementDirectionForward(true);
+		AddActorWorldOffset(Direction * MovementSpeed * 0.02f, true);
+	}
+	else if (Distance < 300.f)
+	{
+		if (AnimInstance->GetIsDirectionForward()) AnimInstance->SetMovementDirectionForward(false);
+		AddActorWorldOffset(-Direction * MovementSpeed * 0.02f, true);
+	}
+	else AnimInstance->SetShootOnly(true);
 	FRotator TargetRot = Direction.Rotation();
 	TargetRot.Pitch = 0.f;
 	TargetRot.Roll = 0.f;
@@ -171,6 +180,8 @@ void AClone::DissolveProcess() // 0.5 sec
 
 void AClone::StartDeployment()
 {
+	EnableSpawnVfx();
+	if (AnimInstance->GetIsSetShootOnly()) AnimInstance->SetShootOnly(false);
 	if (AnimInstance->GetIsIdleAnimationEnabled()) AnimInstance->SetIdleAnimationState(false);
 	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AClone::ProcessDeployment, 0.025f, true);
 }

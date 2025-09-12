@@ -8,6 +8,8 @@ struct FAbilityIconData
 	GENERATED_BODY()
 	
 	UPROPERTY(EditAnywhere)
+	bool bAbilityExists = false;
+	UPROPERTY(EditAnywhere)
 	int32 AbilityIndex = -1;
 	UPROPERTY(EditAnywhere)
 	FText Details;
