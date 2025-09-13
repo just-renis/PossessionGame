@@ -19,7 +19,6 @@
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
-#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 
 FLinearColor AGuardian::GetDamageNumberColor() const { return bIsFirstAbilityInUse ? Super::GetDamageNumberColor() : FLinearColor::White; }

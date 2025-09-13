@@ -1,13 +1,18 @@
 #include "Trickster.h"
 #include "NavigationSystem.h"
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EMoveMode.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/TricksterWeapon.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
@@ -73,7 +78,6 @@ TArray<FVector> ATrickster::GetAvailableCloneSpawnOffsets(int32 InClonesAmount)
 			FHitResult Hit;
 			FCollisionQueryParams Params;
 			Params.AddIgnoredActor(this);
-			DrawDebugLine(GetWorld(), GetActorLocation(), NavLocation.Location, FColor::Green, false, 5.f);
 			if (!GetWorld()->LineTraceSingleByChannel(Hit, GetActorLocation(), NavLocation.Location, ECC_WorldStatic, Params))
 			{
 				ValidOffsets.Add(NavLocation.Location);
@@ -140,10 +144,18 @@ void ATrickster::P_Setup()
 
 void ATrickster::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.f, 0.57255f, 0.58431f)); }
 
+float ATrickster::ReceiveMovementSpeedModification() const
+{
+	if (bIsCloneEnemyRunUpgradeTaken && !bIsHijacked && CurrentMoveMode == EMoveMode::Run) return AI_MovementSpeedMultiplierForCloneSpecialUpgrade;
+	return 1.f;
+}
+
 void ATrickster::BeginPlay()
 {
 	CharacterName = ECharacterType::Trickster;
 	Super::BeginPlay();
+	bIsCloneEnemyRunUpgradeTaken = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::TricksterAbility3, EUpgradeAttribute::Special1);
+	if (bIsCloneEnemyRunUpgradeTaken) AssetsManager->AttachVfx(EVfx::AI_TricksterCloneAbilityRun, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &AI_CloneAbilityRunVfx, GetMesh(), FName("DeathSocket"));
 }
 
 void ATrickster::PossessedBy(AController* NewController)
@@ -174,4 +186,21 @@ void ATrickster::EmpEffectEnded()
 	if (!AI_PoisonGrenadeTrigger || AI_PoisonGrenadeTrigger->GetCollisionEnabled() != ECollisionEnabled::QueryOnly) return;
 	AI_PoisonGrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AI_PoisonGrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void ATrickster::SetMoveMode(const EMoveMode InMoveMode)
+{
+	Super::SetMoveMode(InMoveMode);
+	if (!bIsCloneEnemyRunUpgradeTaken || !AI_CloneAbilityRunVfx) return;
+	if (CurrentMoveMode == EMoveMode::Walk) AI_CloneAbilityRunVfx->DeactivateImmediate();
+	else AI_CloneAbilityRunVfx->Activate();
+}
+
+void ATrickster::DestroyAIVfxs()
+{
+	Super::DestroyAIVfxs();
+	if (!AI_CloneAbilityRunVfx) return;
+	AI_CloneAbilityRunVfx->DeactivateImmediate();
+	AI_CloneAbilityRunVfx->DestroyComponent();
+	AI_CloneAbilityRunVfx = nullptr;
 }

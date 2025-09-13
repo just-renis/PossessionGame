@@ -97,11 +97,7 @@ void AEnemy::AI_ReloadLogic()
 
 void AEnemy::AI_UseAbility(const int32 AbilityIndex) { if (AbilityIndex < Abilities.Num()) Abilities[AbilityIndex]->AI_Execute(); }
 
-void AEnemy::AI_SetMoveMode(const EMoveMode InMoveMode)
-{
-	CurrentMoveMode = InMoveMode;
-	SetMaxWalkSpeed(InMoveMode == EMoveMode::Walk ? AI_Data->GetMaxWalkSpeed() : AI_Data->GetMaxRunSpeed());
-}
+void AEnemy::AI_SetMoveMode(const EMoveMode InMoveMode) { SetMaxWalkSpeed(InMoveMode); }
 
 void AEnemy::AI_SetShootPause()
 {
@@ -134,9 +130,9 @@ void AEnemy::P_SetFov(const float InFov)
 	GetWorldTimerManager().SetTimer(P_ContinuousFovChangeHandle, this, &AEnemy::P_ContinuousFovChange, 0.025f, true);
 }
 
-void AEnemy::P_IncreaseMovementSpeed(const float InPercentage) const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed() + P_Data->GetMaxWalkSpeed() * InPercentage * 0.01f); }
+void AEnemy::P_IncreaseMovementSpeed(const float InPercentage) { SetMaxWalkSpeed(CurrentMoveMode, P_Data->GetMaxWalkSpeed() + P_Data->GetMaxWalkSpeed() * InPercentage * 0.01f); }
 
-void AEnemy::P_ResetMovementSpeed() const { SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed()); }
+void AEnemy::P_ResetMovementSpeed() { SetMaxWalkSpeed(EMoveMode::Walk); }
 
 void AEnemy::SetIsActionInMotion(const bool bState)
 {
@@ -357,7 +353,7 @@ void AEnemy::ChangeOverlappingPoisonAreasInState(const bool bState)
 void AEnemy::SetMovementSpeedMultiplier(const float InMultiplier)
 {
 	MovementSpeedMultiplier = InMultiplier;
-	SetMaxWalkSpeed();
+	SetMaxWalkSpeed(CurrentMoveMode);
 }
 
 void AEnemy::AI_SetupAbilities()
@@ -599,6 +595,12 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	return Damage;
 }
 
+float AEnemy::ReceiveDefaultMovementSpeed() const
+{
+	if (bIsHijacked) return GetMoveMode() == EMoveMode::Walk ? P_Data->GetMaxWalkSpeed() : P_Data->GetMaxRunSpeed();
+	return GetMoveMode() == EMoveMode::Walk ? AI_Data->GetMaxWalkSpeed() : AI_Data->GetMaxRunSpeed();
+}
+
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
@@ -650,15 +652,13 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AEnemy::SetAnimInstance() { AnimInstance = Cast<UEnemyAnimationInstance>(GetMesh()->GetAnimInstance()); }
 
-void AEnemy::SetMaxWalkSpeed(float Speed) const
+void AEnemy::SetMaxWalkSpeed(const EMoveMode InMoveMode, float InNewSpeed)
 {
-	if (Speed < 0.f)
-	{
-		if (bIsHijacked) Speed = GetMoveMode() == EMoveMode::Walk ? P_Data->GetMaxWalkSpeed() : P_Data->GetMaxRunSpeed();
-		else Speed = GetMoveMode() == EMoveMode::Walk ? AI_Data->GetMaxWalkSpeed() : AI_Data->GetMaxRunSpeed();
-	}
-	GetCharacterMovement()->MaxWalkSpeed = Speed * MovementSpeedMultiplier * ActionSpeed;
-	GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetSafeNormal() * MovementSpeedMultiplier * Speed * ActionSpeed;
+	SetMoveMode(InMoveMode);
+	if (InNewSpeed < 0.f) InNewSpeed = ReceiveDefaultMovementSpeed();
+	InNewSpeed *= ReceiveMovementSpeedModification();
+	GetCharacterMovement()->MaxWalkSpeed = InNewSpeed * MovementSpeedMultiplier * ActionSpeed;
+	GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetSafeNormal() * MovementSpeedMultiplier * InNewSpeed * ActionSpeed;
 	if (AnimInstance) AnimInstance->SetMovementPlayRate(MovementSpeedMultiplier);
 }
 
@@ -682,9 +682,7 @@ void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->Set
 void AEnemy::DestroyAI()
 {
 	AI_DestroyHpBar();
-	if (Aura) Aura->DeactivateImmediate();
-	if (EmpAffected) EmpAffected->DeactivateImmediate();
-	if (PoisonSlowAffected) PoisonSlowAffected->DeactivateImmediate();
+	DestroyAIVfxs();
 	if (AI)
 	{
 		GetWorld()->GetSubsystem<UEnemyCommunicator>()->RemoveEnemy(this);
@@ -710,7 +708,7 @@ void AEnemy::DisableAllVfxAfterPossession() { DisableHijackViableVfx(); }
 void AEnemy::AI_SetupData()
 {
 	CurrentHp = MaxHp = AI_Data->GetMaxHp();
-	SetMaxWalkSpeed(AI_Data->GetMaxWalkSpeed());
+	SetMaxWalkSpeed(EMoveMode::Walk);
 }
 
 void AEnemy::AI_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->AI_StopAbility(); }
@@ -793,7 +791,7 @@ void AEnemy::P_SetupData()
 	bIsHijacked = true;
 	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 	bCanShoot = true;
-	SetMaxWalkSpeed(P_Data->GetMaxWalkSpeed());
+	SetMaxWalkSpeed(EMoveMode::Walk);
 }
 
 void AEnemy::P_SetupUI()
@@ -880,7 +878,7 @@ void AEnemy::P_ToggleRun(const bool bState)
 		return;
 	}
 	bIsRunning = bState;
-	SetMaxWalkSpeed(bIsRunning ? P_Data->GetMaxRunSpeed() : P_Data->GetMaxWalkSpeed());
+	SetMaxWalkSpeed(bIsRunning ? EMoveMode::Run : EMoveMode::Walk);
 	if (P_HUD) P_HUD->UpdateRunIndicator(bIsRunning);
 }
 
@@ -1401,7 +1399,7 @@ void AEnemy::SetActionSpeed(const float InSpeed)
 	ActionSpeed = InSpeed;
 	bActionSpeedModified = !FMath::IsNearlyEqual(InSpeed, 1.f, 0.1f); 
 	TogglePoisonSlowAffectedVfx(bActionSpeedModified);
-	SetMaxWalkSpeed(bIsHijacked ? P_Data->GetMaxWalkSpeed() : AI_Data->GetMaxWalkSpeed());
+	SetMaxWalkSpeed(EMoveMode::Walk);
 	AnimInstance->SetGlobalPlayRate(ActionSpeed);
 	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
 	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ActionSpeed);
@@ -1418,4 +1416,26 @@ void AEnemy::SetupMeshOptimization() const
 	GetMesh()->SetComponentTickInterval(1.f / 30.f);
 	GetCharacterMovement()->bComponentShouldUpdatePhysicsVolume = false;
 	GetCharacterMovement()->bAutoRegisterPhysicsVolumeUpdates = false;
+}
+
+void AEnemy::DestroyAIVfxs()
+{
+	if (Aura)
+	{
+		Aura->DeactivateImmediate();
+		Aura->DestroyComponent();
+		Aura = nullptr;
+	}
+	if (EmpAffected)
+	{
+		EmpAffected->DeactivateImmediate();
+		EmpAffected->DestroyComponent();
+		EmpAffected = nullptr;
+	}
+	if (PoisonSlowAffected)
+	{
+		PoisonSlowAffected->DeactivateImmediate();
+		PoisonSlowAffected->DestroyComponent();
+		PoisonSlowAffected = nullptr;
+	}
 }

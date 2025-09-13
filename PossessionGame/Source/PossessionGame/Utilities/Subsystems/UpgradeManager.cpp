@@ -32,6 +32,7 @@ void UUpgradeManager::Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpg
 		{EAbility::RangerAbility2, EUpgrade::RangerAbility2},
 		{EAbility::TricksterAbility1, EUpgrade::TricksterAbility1},
 		{EAbility::TricksterAbility2, EUpgrade::TricksterAbility2},
+		{EAbility::TricksterAbility3, EUpgrade::TricksterAbility3},
 		{EAbility::GuardianAbility1, EUpgrade::GuardianAbility1},
 		{EAbility::GuardianAbility2, EUpgrade::GuardianAbility2}
 	};
@@ -59,8 +60,5 @@ void UUpgradeManager::FilterSelectedCharacterAbilities(TMap<EUpgrade, TObjectPtr
 	const TArray<EUpgrade> AvailableUpgrades = RunSaveSlot->GetAvailableUpgrades();
 	TArray<EUpgrade> KeysToCheck;
 	InChoosableUpgrades.GetKeys(KeysToCheck);
-	for (int32 i = 0; i < KeysToCheck.Num(); i++)
-	{
-		if (!AvailableUpgrades.Contains(KeysToCheck[i])) InChoosableUpgrades.Remove(KeysToCheck[i]);
-	}
+	for (int32 i = 0; i < KeysToCheck.Num(); i++) if (!AvailableUpgrades.Contains(KeysToCheck[i])) InChoosableUpgrades.Remove(KeysToCheck[i]);
 }

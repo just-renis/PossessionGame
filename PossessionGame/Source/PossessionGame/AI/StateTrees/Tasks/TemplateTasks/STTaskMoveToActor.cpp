@@ -2,7 +2,6 @@
 #include "StateTreeExecutionContext.h"
 #include "NavFilters/NavigationQueryFilter.h"
 #include "Navigation/PathFollowingComponent.h"
-#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 
 EStateTreeRunStatus USTTaskMoveToActor::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)

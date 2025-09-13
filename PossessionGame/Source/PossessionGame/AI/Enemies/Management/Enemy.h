@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "PossessionGame/Enums/EMoveMode.h"
 #include "Enemy.generated.h"
 
 struct FInputActionValue;
@@ -34,6 +33,7 @@ class UPlayerCharacterData;
 class UAICharacterData;
 enum class EAbility : uint8;
 enum class ECharacterType : uint8;
+enum class EMoveMode : uint8;
 
 UCLASS(Abstract)
 class POSSESSIONGAME_API AEnemy : public ACharacter
@@ -66,7 +66,6 @@ public:
 	virtual TObjectPtr<AWeapon>& GetWeapon() { return Weapon; }
 	TObjectPtr<UCameraComponent> GetCamera() { return Camera; }
 	TObjectPtr<UEnemyAnimationInstance>& GetAnimInstance() { return AnimInstance; }
-	TObjectPtr<UPossessionGameInstance>& GetGameInstance() { return GameInstance; }
 	TObjectPtr<UInputMappingContext>& GetMappingContext() { return PlayerMappingContext; }
 
 	virtual void AI_InitiateShooting();
@@ -90,8 +89,8 @@ public:
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo, const int32 MaxAmmo) const;
 	void P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeaponAmmo, const int32 MaxAmmo) const;
 	void P_SetFov(const float InFov);
-	void P_IncreaseMovementSpeed(const float InPercentage) const;
-	void P_ResetMovementSpeed() const;
+	void P_IncreaseMovementSpeed(const float InPercentage);
+	void P_ResetMovementSpeed();
 
 	void SetIsAbilityInAction(const bool bState) { bIsAbilityInAction = bState; }
 	void SetIsActionInMotion(const bool bState);
@@ -123,7 +122,7 @@ protected:
 	float CurrentHp;
 	ECharacterType CharacterName;
 	EVariation Variation;
-	EMoveMode CurrentMoveMode = EMoveMode::Walk;
+	EMoveMode CurrentMoveMode;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompRadiusInMeters = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
@@ -192,19 +191,23 @@ protected:
 	virtual void P_InitiateStomp();
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	float ReceiveDefaultMovementSpeed() const;
+	virtual float ReceiveMovementSpeedModification() const { return 1.f; }
 
 	void SetCurrentHp(const float NewCurrentHp) { CurrentHp = NewCurrentHp; }
 	void SetMaxHp(const float NewMaxHp) { MaxHp = NewMaxHp; }
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void SetAnimInstance();
-	void SetMaxWalkSpeed(float Speed = -1.f) const;
+	void SetMaxWalkSpeed(const EMoveMode InMoveMode, float InNewSpeed = -1.f);
 	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
 	virtual void DestroyAI();
 	virtual void DestroyThis();
 	virtual void DisableAllVfxAfterPossession();
+	virtual void SetMoveMode(const EMoveMode InMoveMode) { CurrentMoveMode = InMoveMode; }
+	virtual void DestroyAIVfxs();
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanHijackOtherEnemy = false;

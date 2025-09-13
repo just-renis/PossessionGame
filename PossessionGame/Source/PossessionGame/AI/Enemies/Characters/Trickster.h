@@ -4,6 +4,7 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "Trickster.generated.h"
 
+enum class EMoveMode : uint8;
 class USphereComponent;
 
 UCLASS()
@@ -19,12 +20,17 @@ public:
 
 	TArray<FVector> GetAvailableCloneSpawnOffsets(int32 InClonesAmount);
 private:
+	bool bIsCloneEnemyRunUpgradeTaken = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade Launcher", meta = (AllowPrivateAccess = true))
 	float PoisonGrenadeTriggerRadiusInMetres = 8.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Clones", meta = (AllowPrivateAccess = true))
+	float AI_MovementSpeedMultiplierForCloneSpecialUpgrade = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Clones", meta = (AllowPrivateAccess = true))
 	TArray<FVector> CloneSpawnOffsets;
 	UPROPERTY()
 	TObjectPtr<USphereComponent> AI_PoisonGrenadeTrigger;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> AI_CloneAbilityRunVfx;
 	UPROPERTY()
 	FTimerHandle TryTriggeringPoisonGrenadeHandle;
 	
@@ -43,9 +49,13 @@ private:
 	virtual void P_Setup() override;
 	virtual void P_SetupColorsForUI() override;
 
+	virtual float ReceiveMovementSpeedModification() const override;
+
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitiateDeath() override;
 	virtual void SetEmpEffect(const float InEffectDuration) override;
 	virtual void EmpEffectEnded() override;
+	virtual void SetMoveMode(const EMoveMode InMoveMode) override;
+	virtual void DestroyAIVfxs() override;
 };

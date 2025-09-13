@@ -34,6 +34,7 @@ enum class EVfx : uint16
 	TricksterGrenadeLauncherMarker,
 	AI_TricksterPoison,
 	AI_TricksterPoisonImpact,
+	AI_TricksterCloneAbilityRun,
 	SpyBulletTrail,
 	SpyBulletImpact,
 	SpyMuzzle,

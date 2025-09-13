@@ -81,8 +81,8 @@ int32 URunSaveSlot::GetCurrentLevelSumOfCharacterAbilities(const ECharacterType 
 	switch (InCharacterName)
 	{
 		case ECharacterType::Ranger: return GetCurrentLevel(EUpgrade::RangerAbility1) + GetCurrentLevel(EUpgrade::RangerAbility2);
-		case ECharacterType::Trickster: return GetCurrentLevel(EUpgrade::TricksterAbility1) + GetCurrentLevel(EUpgrade::TricksterAbility2);
-		case ECharacterType::Guardian: return GetCurrentLevel(EUpgrade::GuardianAbility1) + GetCurrentLevel(EUpgrade::GuardianAbility1);
+		case ECharacterType::Trickster: return GetCurrentLevel(EUpgrade::TricksterAbility1) + GetCurrentLevel(EUpgrade::TricksterAbility2) + GetCurrentLevel(EUpgrade::TricksterAbility3);
+		case ECharacterType::Guardian: return GetCurrentLevel(EUpgrade::GuardianAbility1) + GetCurrentLevel(EUpgrade::GuardianAbility2);
 		default: ;
 	}
 	return 0;
@@ -149,6 +149,7 @@ EUpgrade URunSaveSlot::GetUpgradeByAbilityName(const EAbility InAbilityName)
 		case EAbility::RangerAbility2: return EUpgrade::RangerAbility2;
 		case EAbility::TricksterAbility1: return EUpgrade::TricksterAbility1;
 		case EAbility::TricksterAbility2: return EUpgrade::TricksterAbility2;
+		case EAbility::TricksterAbility3: return EUpgrade::TricksterAbility3;
 		default: ;
 	}
 	return EUpgrade::None;
@@ -161,6 +162,7 @@ EUpgrade URunSaveSlot::GetUpgradeByPoolObjectName(const EPoolObject InPoolObject
 		case EPoolObject::RangerGrenadeLauncherProjectile: return EUpgrade::RangerAbility1;
 		case EPoolObject::TricksterPoisonProjectile: return EUpgrade::TricksterAbility1;
 		case EPoolObject::TricksterEmpProjectile: return EUpgrade::TricksterAbility2;
+		case EPoolObject::CloneProjectile: return EUpgrade::TricksterAbility3;
 		default: ;
 	}
 	return EUpgrade::None;
@@ -173,7 +175,7 @@ TArray<EUpgrade> URunSaveSlot::GetUpgradesByPoolObjectName(const EPoolObject InP
 		switch (InPoolObjectName)
 		{
 			case EPoolObject::RangerGrenadeLauncherProjectile: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2 });
-			case EPoolObject::TricksterEmpProjectile: case EPoolObject::TricksterPoisonProjectile: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2 });
+			case EPoolObject::TricksterEmpProjectile: case EPoolObject::TricksterPoisonProjectile: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
 			default: ;
 		}
 	}
@@ -183,7 +185,7 @@ TArray<EUpgrade> URunSaveSlot::GetUpgradesByPoolObjectName(const EPoolObject InP
 		{
 			case EPoolObject::GuardianProjectile: return TArray({ EUpgrade::GuardianAbility1, EUpgrade::GuardianAbility2 });
 			case EPoolObject::RangerProjectile: case EPoolObject::RangerGrenadeLauncherProjectile: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2 });
-			case EPoolObject::TricksterProjectile: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2 });
+			case EPoolObject::TricksterProjectile: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
 			default: ;
 		}
 	}
@@ -195,7 +197,7 @@ TArray<EUpgrade> URunSaveSlot::GetHpUpgradesByCharacterName(const ECharacterType
 	switch (InCharacterName)
 	{
 		case ECharacterType::Guardian: return TArray({ EUpgrade::GuardianAbility1, EUpgrade::GuardianAbility2 });
-		case ECharacterType::Trickster: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2 });
+		case ECharacterType::Trickster: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
 		case ECharacterType::Ranger: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2 });
 		default: ;
 	}

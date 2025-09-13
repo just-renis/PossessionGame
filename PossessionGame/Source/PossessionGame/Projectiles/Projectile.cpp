@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/AI/Base Data/AICharacterData.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EVfxType.h"
@@ -92,6 +93,12 @@ void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const F
 	MovementComponent->MaxSpeed = AdditionalProjectileData.MaxSpeed;
 	MovementComponent->ProjectileGravityScale = AdditionalProjectileData.GravityScale;
 	Damage = DefaultDamage = ProjectileData.Damage;
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	if (RunSaveSlot->IsSpecialUpgradeAvailable(EUpgrade::TricksterAbility3, EUpgradeAttribute::Special1))
+	{
+		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
+	}
+	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, true);
 	if (!bHasBeenPooled)
 	{
 		AssetsManager->AttachVfx(EVfx::CloneBullet, nullptr, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));

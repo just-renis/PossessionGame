@@ -4,6 +4,7 @@
 #include "Components/StateTreeComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/EmptyActor.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
