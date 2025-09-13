@@ -16,6 +16,7 @@ public:
 	
 	virtual void Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason);
 protected:
+	bool bIsPlayer;
 	float Damage;
 	float DamageTick;
 	EDamageReason DamageReason;
@@ -25,7 +26,6 @@ protected:
 	virtual void AddTarget(const TObjectPtr<AEnemy>& InTarget);
 	virtual void RemoveTarget(const TObjectPtr<AEnemy>& InTarget);
 private:
-	bool bIsPlayer;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> Radius;
 	UPROPERTY()
