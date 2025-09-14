@@ -15,6 +15,13 @@ void AForceField::BeginPlay()
 {
 	Super::BeginPlay();
 	MID_Material = ForceField->CreateAndSetMaterialInstanceDynamic(0);
+	if (bWithDurationForceField)
+	{
+		SetMaterialValuesToInvisible();
+		ForceField->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetWorldTimerManager().SetTimer(DurationHandle, this, &AForceField::SetupDurationTimer, 0.1f, false, StartLoopAfter);
+		return;
+	}
 	if (bAppearByGameModeInitiation)
 	{
 		SetMaterialValuesToInvisible();
@@ -118,4 +125,31 @@ void AForceField::SetMaterialValuesToInvisible() const
 	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
 	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
 	MID_Material->SetScalarParameterValue("DeploymentPercent", DeploymentPercent);
+}
+
+void AForceField::SetupDurationTimer()
+{
+	AppearForceField(EGameMode::None);
+	GetWorldTimerManager().SetTimer(DurationHandle, this, &AForceField::DissolveForceField, DurationUntilDisappear);
+}
+
+void AForceField::DissolveForceField()
+{
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySoundAtLocation(ESound::ForceFieldDissolve, GetActorLocation());
+	GetWorldTimerManager().SetTimer(DissolveHandle, this, &AForceField::ProcessDissolveForceFieldWithoutDestroying, 0.025f, true);
+	GetWorldTimerManager().SetTimer(DurationHandle, this, &AForceField::SetupDurationTimer, DurationUntilAppear);
+}
+
+void AForceField::ProcessDissolveForceFieldWithoutDestroying()
+{
+	if (!MID_Material) return;
+	PatternMaxOpacity -= 0.0125f;
+	PatternOpacityDivisor -= 0.1f;
+	DeploymentPercent -= 0.05f;
+	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
+	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
+	MID_Material->SetScalarParameterValue("DeploymentPercent", DeploymentPercent);
+	if (PatternOpacityDivisor > 0.f) return;
+	ForceField->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetWorldTimerManager().ClearTimer(DissolveHandle);
 }

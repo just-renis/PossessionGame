@@ -58,6 +58,7 @@ enum class EVfx : uint16
 	MinionBossDeathExplosion,
 	MinionBossDeathElectrification,
 	MinionBossSpawn,
+	MinionBossLaserImpact,
 	UsbAura,
 	ArtifactAura,
 	MutantAura,

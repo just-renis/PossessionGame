@@ -38,6 +38,10 @@ ATrickster::ATrickster()
 	Sounds.Add(ESound::RangerGrenadeLaunchAim, CreateDefaultSubobject<UAudioComponent>(TEXT("PoisonGrenadeLaunchAimSound")));
 	Sounds[ESound::RangerGrenadeLaunchAim]->SetAutoActivate(false);
 	Sounds[ESound::RangerGrenadeLaunchAim]->SetupAttachment(GetMesh());
+	CloneUpgradeDashSound = CreateDefaultSubobject<UAudioComponent>(TEXT("CloneUpgradeDashSound"));
+	CloneUpgradeDashSound->SetAutoActivate(false);
+	CloneUpgradeDashSound->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::TricksterCloneDash, CloneUpgradeDashSound);
 }
 
 void ATrickster::AI_TogglePoisonGrenadeTrigger(const bool bState) const
@@ -193,7 +197,11 @@ void ATrickster::SetMoveMode(const EMoveMode InMoveMode)
 	Super::SetMoveMode(InMoveMode);
 	if (!bIsCloneEnemyRunUpgradeTaken || !AI_CloneAbilityRunVfx) return;
 	if (CurrentMoveMode == EMoveMode::Walk) AI_CloneAbilityRunVfx->DeactivateImmediate();
-	else AI_CloneAbilityRunVfx->Activate();
+	else
+	{
+		PlaySound(ESound::TricksterCloneDash, true);
+		AI_CloneAbilityRunVfx->Activate();
+	}
 }
 
 void ATrickster::DestroyAIVfxs()

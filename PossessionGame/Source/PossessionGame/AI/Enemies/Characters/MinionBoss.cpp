@@ -34,6 +34,8 @@ void AMinionBoss::EnableLaser()
 {
 	if (!LaserVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaser, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &LaserVfx, GetMesh(), "LaserSocket");
 	else LaserVfx->Activate();
+	if (!LaserImpactVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserImpact, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &LaserImpactVfx);
+	else LaserImpactVfx->Activate();
 }
 
 void AMinionBoss::EnableDistanceCheckForLaserEye() { GetWorld()->GetTimerManager().SetTimer(CheckLaserEyeDistanceHandle, this, &AMinionBoss::CheckDistanceOfLaserEyeTrigger, 0.2f, true); }

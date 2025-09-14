@@ -39,6 +39,7 @@ enum class ESound : uint16
 	TricksterPoisonImpact,
 	TricksterGrenadeThrow,
 	TricksterEmpImpact,
+	TricksterCloneDash,
 	GuardianShoot,
 	GuardianSpawn,
 	GuardianDeath,

@@ -20,6 +20,7 @@ public:
 	TObjectPtr<UCapsuleComponent> GetLaserCollision() const { return LaserCollision; }
 	TObjectPtr<UNiagaraComponent> GetLaser() const { return LaserVfx; }
 	TObjectPtr<UNiagaraComponent> GetLaserEyeBall() const { return LaserEyeBallVfx; }
+	TObjectPtr<UNiagaraComponent> GetLaserImpact() const { return LaserImpactVfx; }
 
 	void SetIsStompReady(const bool bState) { bStompIsReady = bState; }
 	void ActivateStompTrigger();
@@ -54,6 +55,8 @@ private:
 	TObjectPtr<UNiagaraComponent> LaserEyeBallVfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> LaserVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> LaserImpactVfx;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
 	UPROPERTY()

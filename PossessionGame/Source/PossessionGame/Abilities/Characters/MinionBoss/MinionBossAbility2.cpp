@@ -55,8 +55,9 @@ void UMinionBossAbility2::TurnOffLaser()
 {
 	GetWorld()->GetTimerManager().ClearTimer(ShootLaserHandle);
 	Proprietor->StopSound(ESound::MinionBossLaserEyeHold);
-	if (Proprietor->GetLaser()) Proprietor->GetLaser()->Deactivate();
-	if (Proprietor->GetLaserEyeBall()) Proprietor->GetLaserEyeBall()->Deactivate();
+	if (Proprietor->GetLaser()) Proprietor->GetLaser()->DeactivateImmediate();
+	if (Proprietor->GetLaserEyeBall()) Proprietor->GetLaserEyeBall()->DeactivateImmediate();
+	if (Proprietor->GetLaserImpact()) Proprietor->GetLaserImpact()->DeactivateImmediate();
 	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -78,7 +79,7 @@ void UMinionBossAbility2::ShootLaser()
 
 void UMinionBossAbility2::UpdateLaserEndLocation()
 {
-	if (!Proprietor || !Proprietor->GetLaser()) return;
+	if (!Proprietor || !Proprietor->GetLaser() || !Proprietor->GetLaserImpact()) return;
 	const TObjectPtr<AActor> Player = Proprietor->GetAI()->GetStateTreeData().GetTarget();
 	if (!Player) return;
 	// Laser calculation logic.
@@ -86,7 +87,11 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	FVector Direction = (Player->GetActorLocation() - Start).GetSafeNormal();
 	const FRotator CurrentRotation = Proprietor->GetLaser()->GetComponentRotation();
 	const FRotator DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(Direction.Rotation(), CurrentRotation);
-	if (FMath::Abs(DeltaRotation.Yaw) < 1.f && FMath::Abs(DeltaRotation.Pitch) < 1.f) CurrentRotationSpeed = MinSpeed;
+	if (FMath::Abs(DeltaRotation.Yaw) < 1.5f && FMath::Abs(DeltaRotation.Pitch) < 1.5f)
+	{
+		CurrentRotationSpeed = MinSpeed;
+		UE_LOG(LogTemp, Error, TEXT("RESET SPEED"));
+	}
 	FRotator NewRotation = CurrentRotation;
 	NewRotation.Yaw += FMath::Clamp(DeltaRotation.Yaw, -CurrentRotationSpeed, CurrentRotationSpeed);
 	NewRotation.Pitch += FMath::Clamp(DeltaRotation.Pitch, -CurrentRotationSpeed, CurrentRotationSpeed);
@@ -116,6 +121,7 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	Proprietor->GetLaserCollision()->SetWorldLocation(Start + LaserForward * Distance * 0.45f);
 	Proprietor->GetLaserCollision()->SetWorldRotation(NewRotation);
 	Proprietor->GetLaserCollision()->SetCapsuleSize(35.f, Distance * 0.5f);
+	Proprietor->GetLaserImpact()->SetWorldLocation(LaserHit.ImpactPoint);
 	// Laser length vfx change.
 	Proprietor->GetLaser()->SetFloatParameter(TEXT("_Length"), Distance * 0.0007f);
 }

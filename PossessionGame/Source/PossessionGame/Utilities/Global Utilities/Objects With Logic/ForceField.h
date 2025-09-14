@@ -21,6 +21,14 @@ class POSSESSIONGAME_API AForceField : public AActor
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bForTerminalHackRoom = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bWithDurationForceField = false;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", AllowPrivateAccess = true))
+	float StartLoopAfter = 0.f;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", AllowPrivateAccess = true))
+	float DurationUntilDisappear = 5.f;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", AllowPrivateAccess = true))
+	float DurationUntilAppear = 5.f;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ForceFieldIndex = -1;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EGameMode TerminalRoomMode;
@@ -30,6 +38,8 @@ class POSSESSIONGAME_API AForceField : public AActor
 	TObjectPtr<UMaterialInstanceDynamic> MID_Material;
 	UPROPERTY()
 	FTimerHandle DissolveHandle;
+	UPROPERTY()
+	FTimerHandle DurationHandle;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -42,4 +52,7 @@ class POSSESSIONGAME_API AForceField : public AActor
 	void DeployOnTerminalHackInitiation(const EGameMode InTerminalRoomMode);
 	void DissolveOnTerminalHackFinish(const EGameMode InTerminalRoomMode);
 	void SetMaterialValuesToInvisible() const;
+	void SetupDurationTimer();
+	void DissolveForceField();
+	void ProcessDissolveForceFieldWithoutDestroying();
 };

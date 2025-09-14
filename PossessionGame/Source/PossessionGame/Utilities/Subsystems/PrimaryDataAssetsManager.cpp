@@ -383,7 +383,8 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 
 TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::AttachAndReceiveVfx(const EVfx InVfxName, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const FVector& InLocation, const FRotator& InRotation,  const EAttachLocation::Type InAttachType,  const bool bAutoDestroy)
 {
-	return UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName).GetVfxContainer()->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+	if (InAttachTo) return UNiagaraFunctionLibrary::SpawnSystemAttached(GetVfxData(InVfxName).GetVfxContainer()->GetVfxEffect().Get(), InAttachTo, InSocketName, InLocation, InRotation, InAttachType, bAutoDestroy);
+	return UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetVfxData(InVfxName).GetVfxContainer()->GetVfxEffect().Get(), InLocation, InRotation);
 }
 
 TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::SpawnAndReceiveVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
@@ -556,6 +557,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_EndScreenFadeIn", ESound::EndScreenFadeIn);
 	SoundMap.Add("PA_CloneSpawn", ESound::CloneSpawn);
 	SoundMap.Add("PA_CloneDisappear", ESound::CloneDisappear);
+	SoundMap.Add("PA_TricksterCloneDash", ESound::TricksterCloneDash);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -632,6 +634,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_MinionBossDeathExplosion", EVfx::MinionBossDeathExplosion);
 	VfxsMap.Add("PA_MinionBossDeathElectrification", EVfx::MinionBossDeathElectrification);
 	VfxsMap.Add("PA_MinionBossSpawn", EVfx::MinionBossSpawn);
+	VfxsMap.Add("PA_MinionBossLaserImpact", EVfx::MinionBossLaserImpact);
 	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
 	VfxsMap.Add("PA_UsbAura", EVfx::UsbAura);
 	VfxsMap.Add("PA_ArtifactAura", EVfx::ArtifactAura);

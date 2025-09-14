@@ -32,6 +32,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> AI_CloneAbilityRunVfx;
 	UPROPERTY()
+	TObjectPtr<UAudioComponent> CloneUpgradeDashSound;
+	UPROPERTY()
 	FTimerHandle TryTriggeringPoisonGrenadeHandle;
 	
 	ATrickster();
