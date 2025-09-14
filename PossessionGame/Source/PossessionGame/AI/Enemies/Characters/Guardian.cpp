@@ -3,6 +3,7 @@
 #include "InputMappingContext.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EVariation.h"
@@ -40,6 +41,7 @@ void AGuardian::AI_ToggleMeshShieldAbilityState(const bool bState)
 
 void AGuardian::SetCustomTimeDilation(const float InDilation)
 {
+	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f / InDilation);
 	CustomTimeDilation = InDilation;
 	GetWeapon()->SetCustomDilation(InDilation);
 }

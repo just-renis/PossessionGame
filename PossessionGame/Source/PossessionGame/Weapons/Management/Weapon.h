@@ -82,7 +82,7 @@ public:
 	void AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh) const;
 	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon = true);
 	virtual void PostProprietorSetup();
-	virtual void SetCustomDilation(const float InDilation) { CustomTimeDilation = InDilation; }
+	virtual void SetCustomDilation(const float InDilation);
 	virtual void SetReverseActionSpeed(const float InActionSpeed) { ReverseActionSpeed = InActionSpeed; }
 	virtual void MuzzleFlashLogic();
 protected:

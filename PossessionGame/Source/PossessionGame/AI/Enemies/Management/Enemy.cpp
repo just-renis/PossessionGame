@@ -453,6 +453,7 @@ void AEnemy::P_SetupAbilities()
 
 void AEnemy::P_Setup()
 {
+	GetMesh()->SetComponentTickEnabled(false);
 	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f);
 	DelegateManager->ApplyUpgradeOnSelection.BindUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);

@@ -14,7 +14,7 @@ void UTricksterAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState
 	Super::InnerPlayMontage(InState);
 	if (InState == EEnemyAnimState::GrenadeLaunch)
 	{
-		GetWorld()->GetTimerManager().SetTimer(TriggerGrenadeProjectionHandle, this, &UTricksterAnimationInstance::TriggerGrenadeProjection, 0.35f, false);
+		GetWorld()->GetTimerManager().SetTimer(TriggerGrenadeProjectionHandle, this, &UTricksterAnimationInstance::TriggerGrenadeProjection, 0.45f, false);
 		GetWorld()->GetTimerManager().SetTimer(LaunchGrenadeHandle, this, &UTricksterAnimationInstance::LaunchGrenade, 1.03f, false);
 	}
 }
@@ -30,7 +30,10 @@ void UTricksterAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsIn
 	}
 }
 
-void UTricksterAnimationInstance::LaunchGrenade() const { if (Proprietor->IsAsyncAssetStillAllowedToBeUsed()) Cast<ATrickster>(Proprietor)->AI_LaunchPoisonGrenade(); }
+void UTricksterAnimationInstance::LaunchGrenade() const
+{
+	if (Proprietor->IsAsyncAssetStillAllowedToBeUsed()) Cast<ATrickster>(Proprietor)->AI_LaunchPoisonGrenade();
+}
 
 void UTricksterAnimationInstance::TriggerGrenadeProjection() const
 {

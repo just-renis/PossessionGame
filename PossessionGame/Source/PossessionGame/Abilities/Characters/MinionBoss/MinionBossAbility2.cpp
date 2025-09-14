@@ -87,11 +87,7 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	FVector Direction = (Player->GetActorLocation() - Start).GetSafeNormal();
 	const FRotator CurrentRotation = Proprietor->GetLaser()->GetComponentRotation();
 	const FRotator DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(Direction.Rotation(), CurrentRotation);
-	if (FMath::Abs(DeltaRotation.Yaw) < 1.5f && FMath::Abs(DeltaRotation.Pitch) < 1.5f)
-	{
-		CurrentRotationSpeed = MinSpeed;
-		UE_LOG(LogTemp, Error, TEXT("RESET SPEED"));
-	}
+	if (FMath::Abs(DeltaRotation.Yaw) < 1.5f && FMath::Abs(DeltaRotation.Pitch) < 1.5f) CurrentRotationSpeed = MinSpeed;
 	FRotator NewRotation = CurrentRotation;
 	NewRotation.Yaw += FMath::Clamp(DeltaRotation.Yaw, -CurrentRotationSpeed, CurrentRotationSpeed);
 	NewRotation.Pitch += FMath::Clamp(DeltaRotation.Pitch, -CurrentRotationSpeed, CurrentRotationSpeed);

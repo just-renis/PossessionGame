@@ -176,8 +176,8 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIs
 	}
 	ProjectileData->SetProprietor(Proprietor);
 	const FName& ProjectileSocketName = ProjectileData->ProjectileSocketName;
-	const FRotator BaseRotation = GetSocketRotation(ProjectileSocketName);
 	const FVector BaseLocation = GetSocketLocation(ProjectileSocketName);
+	const FRotator BaseRotation = GetSocketRotation(ProjectileSocketName);
 	//const FVector BaseScale = Mesh->GetSocketTransform(ProjectileSocketName, RTS_Component).GetScale3D(); If ill need scale for some reason from socket for projectiles.
 	if (ProjectileData->Amount > 1)
 	{
@@ -192,6 +192,12 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIs
 }
 
 void AWeapon::PostProprietorSetup() { SetupHandsAnimInstance(); }
+
+void AWeapon::SetCustomDilation(const float InDilation)
+{
+	CustomTimeDilation = InDilation;
+	HandsMesh->SetComponentTickInterval(1.f / 60.f / InDilation);
+}
 
 void AWeapon::AI_Setup()
 {
