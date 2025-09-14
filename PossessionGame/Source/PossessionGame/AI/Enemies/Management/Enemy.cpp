@@ -1051,7 +1051,7 @@ void AEnemy::P_SetupNavArea()
 
 void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {
-	P_HijackLogic(AssetsManager->SpawnVariationReplacement(InCharacterType, EWidget::VariationsUI));
+	if (const TObjectPtr<AEnemy> Enemy = AssetsManager->SpawnVariationReplacement(InCharacterType, EWidget::VariationsUI)) P_HijackLogic(Enemy);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
 }
 

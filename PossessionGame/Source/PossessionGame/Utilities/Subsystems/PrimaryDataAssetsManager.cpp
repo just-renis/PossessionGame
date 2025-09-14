@@ -63,7 +63,11 @@ FVfxContainer& UPrimaryDataAssetsManager::GetVfxData(const EVfx InVfxName) { ret
 
 TObjectPtr<AEnemy> UPrimaryDataAssetsManager::SpawnVariationReplacement(const ECharacterType InCharacter, const EWidget InWidgetName)
 {
-	return SpawnLocations[InWidgetName == EWidget::VariationsUI ? EGameMode::TutorialMode1 : EGameMode::TutorialMode2].SpawnLocations[0]->SpawnEnemy(LoadedEnemies[InCharacter]);
+	if (const TSubclassOf<AEnemy>* Enemy = LoadedEnemies.Find(InCharacter))
+	{
+		return SpawnLocations[InWidgetName == EWidget::VariationsUI ? EGameMode::TutorialMode1 : EGameMode::TutorialMode2].SpawnLocations[0]->SpawnEnemy(*Enemy);
+	}
+	return nullptr;
 }
 
 void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
