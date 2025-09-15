@@ -8,7 +8,7 @@ void URangerAbility3::P_Execute()
 {
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::ThrowMine);
-	Proprietor->P_ThrowMine();
+	Proprietor->P_InitiateThrowMine();
 	Super::P_Execute();
 }
 

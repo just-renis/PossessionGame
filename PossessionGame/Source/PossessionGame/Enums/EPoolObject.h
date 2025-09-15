@@ -20,5 +20,6 @@ enum class EPoolObject : uint8
 	Usb,
 	Artifact,
 	Clone,
-	CloneProjectile
+	CloneProjectile,
+	RangerMine
 };

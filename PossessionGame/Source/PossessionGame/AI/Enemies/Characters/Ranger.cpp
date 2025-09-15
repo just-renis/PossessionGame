@@ -8,6 +8,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
+#include "PossessionGame/Projectiles/Throwables/RangerMine.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -25,11 +26,6 @@ ARanger::ARanger()
 	AI_GrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AI_GrenadeTrigger->SetSphereRadius(GrenadeTriggerRadiusInMetres * 100.f);
 	AI_GrenadeTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARanger::AI_OnPlayerEnterGrenadeTrigger);
-	MineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MineMesh"));
-	MineMesh->SetComponentTickInterval(1.f / 30.f);
-	MineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	MineMesh->SetVisibility(false);
-	MineMesh->Deactivate();
 	Sounds.Add(ESound::RangerSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
 	Sounds[ESound::RangerSpawn]->SetAutoActivate(false);
 	Sounds[ESound::RangerSpawn]->SetupAttachment(GetMesh());
@@ -63,12 +59,13 @@ void ARanger::P_LaunchGrenade()
 	GrenadeMuzzleFlashLogic();
 }
 
-void ARanger::P_ThrowMine()
+void ARanger::P_InitiateThrowMine()
 {
-	MineMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	MineMesh->SetVisibility(true);
-	MineMesh->Activate(true);
-	UE_LOG(LogTemp, Error, TEXT("THROW MINE"));
+	Mine = Cast<ARangerMine>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::RangerMine));
+	Mine->Init();
+	Mine->AttachToComponent(Weapon->GetHandsMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MineSocket"));
+	GetWorldTimerManager().SetTimer(MineThrowHandle, this, &ARanger::P_ThrowMine, 0.46f, false);
+	UE_LOG(LogTemp, Error, TEXT("P_InitiateThrowMine"));
 }
 
 void ARanger::SpawnShield()
@@ -138,7 +135,6 @@ void ARanger::P_Setup()
 	Super::P_Setup();
 	P_ChangeRangerVariationMuzzle();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ARanger::SetIsActionInMotion);
-	MineMesh->AttachToComponent(Weapon->GetHandsMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MineSocket"));
 }
 
 void ARanger::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.58431f, 0.11373f, 0.f)); }
@@ -150,6 +146,12 @@ void ARanger::P_ChangeRangerVariationMuzzle()
 		AI_GrenadeMuzzleFlashComponent->DeactivateImmediate();
 		AI_GrenadeMuzzleFlashComponent = nullptr;
 	}
+}
+
+void ARanger::P_ThrowMine()
+{
+	Mine->Throw(1000.f);
+	UE_LOG(LogTemp, Error, TEXT("P_ThrowMine"));
 }
 
 void ARanger::BeginPlay()

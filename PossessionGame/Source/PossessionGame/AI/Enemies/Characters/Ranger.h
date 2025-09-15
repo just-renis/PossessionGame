@@ -4,6 +4,7 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "Ranger.generated.h"
 
+class ARangerMine;
 class USphereComponent;
 class UNiagaraComponent;
 
@@ -18,20 +19,22 @@ public:
 	void AI_LaunchGrenade();
 
 	void P_LaunchGrenade();
-	void P_ThrowMine();
+	void P_InitiateThrowMine();
 	
 	void SpawnShield();
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade Launcher", meta = (AllowPrivateAccess = true))
 	float GrenadeTriggerRadiusInMetres = 10.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Mine", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UStaticMeshComponent> MineMesh;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> AI_GrenadeMuzzleFlashComponent;
 	UPROPERTY()
 	TObjectPtr<USphereComponent> AI_GrenadeTrigger;
 	UPROPERTY()
 	FTimerHandle TryTriggeringGrenadeHandle;
+	UPROPERTY()
+	FTimerHandle MineThrowHandle;
+	UPROPERTY()
+	TObjectPtr<ARangerMine> Mine;
 
 	virtual void AI_TriggerDeathVoiceLine() override;
 	virtual void AI_SetupWeapon() override;
@@ -47,6 +50,7 @@ private:
 	virtual void P_Setup() override;
 	virtual void P_SetupColorsForUI() override;
 	void P_ChangeRangerVariationMuzzle();
+	void P_ThrowMine();
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

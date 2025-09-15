@@ -19,7 +19,7 @@ void AForceField::BeginPlay()
 	{
 		SetMaterialValuesToInvisible();
 		ForceField->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		GetWorldTimerManager().SetTimer(DurationHandle, this, &AForceField::SetupDurationTimer, 0.1f, false, StartLoopAfter);
+		GetWorldTimerManager().SetTimer(DurationHandle, this, &AForceField::SetupDurationTimer, StartLoopAfter, false);
 		return;
 	}
 	if (bAppearByGameModeInitiation)
