@@ -5,6 +5,7 @@
 #include "PossessionGame/Abilities/Characters/MinionBoss/MinionBossAbility2.h"
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility1.h"
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility2.h"
+#include "PossessionGame/Abilities/Characters/Ranger/RangerAbility3.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility1.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility2.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility3.h"
@@ -47,6 +48,7 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::Spy, 2, EAbility::SpyAbility3, USpyAbility3::StaticClass());
     AddAbility(ECharacterType::Ranger, 0, EAbility::RangerAbility1, URangerAbility1::StaticClass());
     AddAbility(ECharacterType::Ranger, 1, EAbility::RangerAbility2, URangerAbility2::StaticClass());
+    AddAbility(ECharacterType::Ranger, 2, EAbility::RangerAbility3, URangerAbility3::StaticClass());
     AddAbility(ECharacterType::Trickster, 0, EAbility::TricksterAbility1, UTricksterAbility1::StaticClass());
     AddAbility(ECharacterType::Trickster, 1, EAbility::TricksterAbility2, UTricksterAbility2::StaticClass());
     AddAbility(ECharacterType::Trickster, 2, EAbility::TricksterAbility3, UTricksterAbility3::StaticClass());

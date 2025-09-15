@@ -18,11 +18,14 @@ public:
 	void AI_LaunchGrenade();
 
 	void P_LaunchGrenade();
+	void P_ThrowMine();
 	
 	void SpawnShield();
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade Launcher", meta = (AllowPrivateAccess = true))
 	float GrenadeTriggerRadiusInMetres = 10.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Mine", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> MineMesh;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> AI_GrenadeMuzzleFlashComponent;
 	UPROPERTY()

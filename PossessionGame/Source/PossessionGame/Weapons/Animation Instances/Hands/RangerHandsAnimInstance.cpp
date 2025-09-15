@@ -10,6 +10,12 @@ void URangerHandsAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInter
 		(void)OnHandsMontageEnd.ExecuteIfBound(false);
 		return;
 	}
-	const TObjectPtr<UAnimMontage>* RangerDeployShieldMontage = Montages.Find(EHandsAnimState::RangerDeployShield);
-	if (RangerDeployShieldMontage && Montage == RangerDeployShieldMontage->Get()) (void)OnHandsMontageEnd.ExecuteIfBound(false);
+	const TObjectPtr<UAnimMontage>* DeployShieldMontage = Montages.Find(EHandsAnimState::DeployShield);
+	if (DeployShieldMontage && Montage == DeployShieldMontage->Get())
+	{
+		(void)OnHandsMontageEnd.ExecuteIfBound(false);
+		return;
+	}
+	const TObjectPtr<UAnimMontage>* ThrowMineMontage = Montages.Find(EHandsAnimState::ThrowMine);
+	if (ThrowMineMontage && Montage == ThrowMineMontage->Get()) (void)OnHandsMontageEnd.ExecuteIfBound(false);
 }

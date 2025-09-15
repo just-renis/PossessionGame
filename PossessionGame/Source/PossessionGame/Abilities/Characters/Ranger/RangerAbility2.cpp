@@ -16,7 +16,7 @@ void URangerAbility2::AI_Execute()
 void URangerAbility2::P_Execute()
 {
 	Proprietor->SetIsActionInMotion(true);
-	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::RangerDeployShield);
+	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::DeployShield);
 	Proprietor->SpawnShield();
 	Super::P_Execute();
 }

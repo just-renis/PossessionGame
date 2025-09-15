@@ -25,6 +25,11 @@ ARanger::ARanger()
 	AI_GrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AI_GrenadeTrigger->SetSphereRadius(GrenadeTriggerRadiusInMetres * 100.f);
 	AI_GrenadeTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARanger::AI_OnPlayerEnterGrenadeTrigger);
+	MineMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MineMesh"));
+	MineMesh->SetComponentTickInterval(1.f / 30.f);
+	MineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MineMesh->SetVisibility(false);
+	MineMesh->Deactivate();
 	Sounds.Add(ESound::RangerSpawn, CreateDefaultSubobject<UAudioComponent>(TEXT("spawnSound")));
 	Sounds[ESound::RangerSpawn]->SetAutoActivate(false);
 	Sounds[ESound::RangerSpawn]->SetupAttachment(GetMesh());
@@ -56,6 +61,14 @@ void ARanger::P_LaunchGrenade()
 	AssetsManager->PlaySound2D(ESound::RangerGrenadeLaunch);
 	Weapon->ShootProjectile(EPoolObject::RangerGrenadeLauncherProjectile, true);
 	GrenadeMuzzleFlashLogic();
+}
+
+void ARanger::P_ThrowMine()
+{
+	MineMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	MineMesh->SetVisibility(true);
+	MineMesh->Activate(true);
+	UE_LOG(LogTemp, Error, TEXT("THROW MINE"));
 }
 
 void ARanger::SpawnShield()
@@ -125,6 +138,7 @@ void ARanger::P_Setup()
 	Super::P_Setup();
 	P_ChangeRangerVariationMuzzle();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ARanger::SetIsActionInMotion);
+	MineMesh->AttachToComponent(Weapon->GetHandsMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MineSocket"));
 }
 
 void ARanger::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.58431f, 0.11373f, 0.f)); }

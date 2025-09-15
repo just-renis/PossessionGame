@@ -9,6 +9,7 @@ enum class EAbility : uint8
     SpyAbility3,
     RangerAbility1,
     RangerAbility2,
+    RangerAbility3,
     TricksterAbility1,
     TricksterAbility2,
     TricksterAbility3,

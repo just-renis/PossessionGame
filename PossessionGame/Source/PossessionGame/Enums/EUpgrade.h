@@ -6,6 +6,7 @@ enum class EUpgrade : uint8
 	None,
     RangerAbility1,
 	RangerAbility2,
+	RangerAbility3,
 	TricksterAbility1,
 	TricksterAbility2,
 	TricksterAbility3,

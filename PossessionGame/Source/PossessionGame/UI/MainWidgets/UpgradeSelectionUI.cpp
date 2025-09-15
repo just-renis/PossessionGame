@@ -77,6 +77,7 @@ FText UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 	{
 		case EUpgrade::RangerAbility1: return NSLOCTEXT("ST_Localization", "GrenadeLauncherUpgrade", "GRENADE LAUNCHER");
 		case EUpgrade::RangerAbility2: return NSLOCTEXT("ST_Localization", "ShieldUpgrade", "SHIELD");
+		case EUpgrade::RangerAbility3: return NSLOCTEXT("ST_Localization", "MineUpgrade", "MINE");
 		case EUpgrade::TricksterAbility1: return NSLOCTEXT("ST_Localization", "PoisonUpgrade", "POISON");
 		case EUpgrade::TricksterAbility2: return NSLOCTEXT("ST_Localization", "EmpUpgrade", "EMP");
 		case EUpgrade::TricksterAbility3: return NSLOCTEXT("ST_Localization", "CloneUpgrade", "CLONE");
