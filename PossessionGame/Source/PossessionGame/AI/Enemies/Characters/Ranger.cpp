@@ -61,10 +61,7 @@ void ARanger::P_LaunchGrenade()
 
 void ARanger::P_InitiateThrowMine()
 {
-	Mine = Cast<ARangerMine>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::RangerMine));
-	Mine->Init();
-	Mine->AttachToComponent(Weapon->GetHandsMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("MineSocket"));
-	GetWorldTimerManager().SetTimer(MineThrowHandle, this, &ARanger::P_ThrowMine, 0.46f, false);
+	GetWorldTimerManager().SetTimer(MineThrowHandle, this, &ARanger::P_ThrowMine, 0.34f, false);
 	UE_LOG(LogTemp, Error, TEXT("P_InitiateThrowMine"));
 }
 
@@ -150,6 +147,10 @@ void ARanger::P_ChangeRangerVariationMuzzle()
 
 void ARanger::P_ThrowMine()
 {
+	Mine = Cast<ARangerMine>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::RangerMine));
+	Mine->Init();
+	Mine->SetActorLocationAndRotation(Weapon->GetHandsSocketLocation(FName("MineSocket")), Weapon->GetHandsSocketRotation(FName("MineSocket")));
+	AssetsManager->PlaySound2D(ESound::RangerThrowMine);
 	Mine->Throw(2000.f);
 	UE_LOG(LogTemp, Error, TEXT("P_ThrowMine"));
 }

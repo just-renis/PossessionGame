@@ -41,6 +41,7 @@ public:
 	virtual FRotator GetSocketRotation(const FName InSocketName) const { return Mesh->GetSocketRotation(InSocketName); }
 	virtual FVector GetSocketScale(const FName InSocketName) const { return Mesh->GetSocketTransform(InSocketName).GetScale3D(); }
 	FVector GetHandsSocketLocation(const FName InSocketName) const { return HandsMesh->GetSocketLocation(InSocketName); }
+	FRotator GetHandsSocketRotation(const FName InSocketName) const { return HandsMesh->GetSocketRotation(InSocketName); }
 	FProjectileData* GetProjectileData(const EPoolObject InProjectileName) const { return bIsPossessed ? P_Data->GetProjectileData(InProjectileName) : AI_Data->GetProjectileData(InProjectileName); }
 	TObjectPtr<UAIWeaponData>& GetAIData() { return AI_Data; }
 	TObjectPtr<UPlayerWeaponData>& GetPlayerData() { return P_Data; }
@@ -49,7 +50,6 @@ public:
 	TObjectPtr<USkeletalMeshComponent>& GetMesh() { return Mesh; }
 	TObjectPtr<UNiagaraComponent>& GetMuzzleFlashComponent() { return MuzzleFlashComponent; }
 	TObjectPtr<AEnemy>& GetProprietor() { return Proprietor; }
-	TObjectPtr<USkeletalMeshComponent>& GetHandsMesh() { return HandsMesh; }
 	
 	bool AI_CanShoot() const;
 	virtual void AI_Shoot();

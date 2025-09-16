@@ -562,6 +562,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_CloneSpawn", ESound::CloneSpawn);
 	SoundMap.Add("PA_CloneDisappear", ESound::CloneDisappear);
 	SoundMap.Add("PA_TricksterCloneDash", ESound::TricksterCloneDash);
+	SoundMap.Add("PA_RangerDeployMine", ESound::RangerDeployMine);
+	SoundMap.Add("PA_RangerThrowMine", ESound::RangerThrowMine);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -658,6 +660,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_CloneBullet", EVfx::CloneBullet);
 	VfxsMap.Add("PA_CloneBulletImpact", EVfx::CloneBulletImpact);
 	VfxsMap.Add("PA_CloneSpawn", EVfx::CloneSpawn);
+	VfxsMap.Add("PA_RangerMineRadius", EVfx::RangerMineRadius);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

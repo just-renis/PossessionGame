@@ -2,12 +2,10 @@
 
 void AThrowable::Throw(const float InImpulseForce)
 {
-	Mesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
 	GetWorldTimerManager().SetTimer(ScalingHandle, this, &AThrowable::ScalingProcess, 0.05f, true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Mesh->SetSimulatePhysics(true);
-	Mesh->AddImpulse((-GetActorRightVector() - GetActorForwardVector() * 0.08f).GetSafeNormal() * InImpulseForce, NAME_None, true);
+	Mesh->AddImpulse((-GetActorRightVector() + GetActorForwardVector() * 0.3f).GetSafeNormal() * InImpulseForce, NAME_None, true);
 	Mesh->OnComponentHit.AddDynamic(this, &AThrowable::OnHit);
 }
 
@@ -24,14 +22,15 @@ void AThrowable::ScalingProcess()
 	if (CurrentScale >= 8.f) GetWorldTimerManager().ClearTimer(ScalingHandle);
 }
 
+void AThrowable::OnImpact(const FHitResult& Hit)
+{
+	Mesh->OnComponentHit.RemoveAll(this);
+	SetActorLocation(Hit.ImpactNormal, true);
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
 void AThrowable::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Error, TEXT("Normal: %s, Impact Normal: %s"), *Hit.Normal.ToString(), *Hit.ImpactNormal.ToString());
-	if (FMath::IsNearlyEqual(Hit.ImpactNormal.Z, 1.f, 0.1f))
-	{
-		Mesh->OnComponentHit.RemoveAll(this);
-		SetActorLocation(Hit.ImpactNormal, true);
-		Mesh->SetSimulatePhysics(false);
-		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}
+	if (FMath::IsNearlyEqual(Hit.ImpactNormal.Z, 1.f, 0.1f)) OnImpact(Hit);
 }

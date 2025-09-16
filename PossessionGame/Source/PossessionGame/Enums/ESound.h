@@ -105,5 +105,7 @@ enum class ESound : uint16
 	Slide,
 	EndScreenFadeIn,
 	CloneSpawn,
-	CloneDisappear
+	CloneDisappear,
+	RangerDeployMine,
+	RangerThrowMine
 };

@@ -15,6 +15,7 @@ enum class EVfx : uint16
 	RangerGrenadeLauncherMarker,
 	RangerDeathElectrification,
 	RangerGrenadeTrail,
+	RangerMineRadius,
 	MinionMuzzle,
 	MinionBulletTrail,
 	MinionBulletImpact,
