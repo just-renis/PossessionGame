@@ -1,14 +1,13 @@
 ﻿#include "Throwable.h"
 
-void AThrowable::Throw(const FVector& InOwnerDirection, const float InImpulseForce)
+void AThrowable::Throw(const float InImpulseForce)
 {
-	UE_LOG(LogTemp, Error, TEXT("InOwnerDIrection: %s"), *InOwnerDirection.ToString());
 	Mesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
 	GetWorldTimerManager().SetTimer(ScalingHandle, this, &AThrowable::ScalingProcess, 0.05f, true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Mesh->SetSimulatePhysics(true);
-	Mesh->AddImpulse(-GetActorRightVector() * InImpulseForce, NAME_None, true);
+	Mesh->AddImpulse((-GetActorRightVector() - GetActorForwardVector() * 0.08f).GetSafeNormal() * InImpulseForce, NAME_None, true);
 	Mesh->OnComponentHit.AddDynamic(this, &AThrowable::OnHit);
 }
 
