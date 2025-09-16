@@ -3,7 +3,7 @@
 void AThrowable::Throw(const float InImpulseForce)
 {
 	Mesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	Mesh->SetRelativeScale3D(FVector(4.f));
+	GetWorldTimerManager().SetTimer(ScalingHandle, this, &AThrowable::ScalingProcess, 0.05f, true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Mesh->SetSimulatePhysics(true);
 	Mesh->AddImpulse(-GetActorRightVector() * InImpulseForce, NAME_None, true);
@@ -14,6 +14,13 @@ AThrowable::AThrowable()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = Mesh;
+}
+
+void AThrowable::ScalingProcess()
+{
+	CurrentScale += 0.8f;
+	Mesh->SetRelativeScale3D(FVector(CurrentScale));
+	if (CurrentScale >= 8.f) GetWorldTimerManager().ClearTimer(ScalingHandle);
 }
 
 void AThrowable::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

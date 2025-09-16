@@ -1,5 +1,6 @@
 ﻿#include "TutorialManager.h"
 #include "DelegateManager.h"
+#include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 
