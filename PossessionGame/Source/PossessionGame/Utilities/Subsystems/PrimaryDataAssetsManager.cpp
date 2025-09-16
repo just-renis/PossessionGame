@@ -597,6 +597,9 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_RangerGrenadeTrail", EVfx::RangerGrenadeTrail);
 	VfxsMap.Add("PA_RangerGrenadeLaunchSpecial", EVfx::RangerGrenadeLaunchSpecial);
 	VfxsMap.Add("PA_RangerSpawn", EVfx::RangerSpawn);
+	VfxsMap.Add("PA_RangerMineRadius", EVfx::RangerMineRadius);
+	VfxsMap.Add("PA_RangerMineImpact", EVfx::RangerMineImpact);
+	VfxsMap.Add("PA_RangerMineExplosion", EVfx::RangerMineExplosion);
 	VfxsMap.Add("PA_MinionMuzzle", EVfx::MinionMuzzle);
 	VfxsMap.Add("PA_MinionBulletTrail", EVfx::MinionBulletTrail);
 	VfxsMap.Add("PA_MinionBulletImpact", EVfx::MinionBulletImpact);
@@ -660,7 +663,6 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_CloneBullet", EVfx::CloneBullet);
 	VfxsMap.Add("PA_CloneBulletImpact", EVfx::CloneBulletImpact);
 	VfxsMap.Add("PA_CloneSpawn", EVfx::CloneSpawn);
-	VfxsMap.Add("PA_RangerMineRadius", EVfx::RangerMineRadius);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

@@ -257,8 +257,12 @@ void AWeapon::HitScanLogic()
 	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
 	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), nullptr, GetSocketLocation("FpsProjectileSocket"), GetSocketRotation("FpsProjectileSocket"), Proprietor->GetVariation());
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility))
+	FCollisionQueryParams QueryParams;
+	QueryParams.bTraceComplex = false;
+	QueryParams.bReturnPhysicalMaterial = false;
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, QueryParams))
 	{
+		UE_LOG(LogTemp, Error, TEXT("HIT"));
 		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), nullptr, HitResult.Location, HitResult.ImpactNormal.Rotation(), Proprietor->GetVariation());
 		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
 	}
@@ -321,7 +325,6 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	{
 		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 		UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), CriticalDamage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
-		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, CriticalDamage, InHitResult.Location, InHitResult.GetActor()->GetActorForwardVector());
 		return;
 	}
 	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(InHitResult.GetActor()))

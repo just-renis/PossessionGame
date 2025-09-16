@@ -62,10 +62,17 @@ float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
 		const bool bIsPlayerProjectile = Cast<AProjectile>(DamageCauser)->GetIsPlayerProjectile();
-		if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) Hp -= Damage;
+		if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject))
+		{
+			Hp -= Damage;
+			if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, GetActorLocation(), GetActorForwardVector());
+		}
 	}
-	else Hp -= Damage;
-	if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, GetActorLocation(), GetActorForwardVector());
+	else
+	{
+		Hp -= Damage;
+		if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, GetActorLocation(), GetActorForwardVector());
+	}
 	if (Hp > 0) return Damage;
 	if (bIsAffectedByPhysics)
 	{
