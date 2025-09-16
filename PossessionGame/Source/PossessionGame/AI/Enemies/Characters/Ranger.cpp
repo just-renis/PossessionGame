@@ -148,9 +148,9 @@ void ARanger::P_ChangeRangerVariationMuzzle()
 	}
 }
 
-void ARanger::P_ThrowMine()
+void ARanger::P_ThrowMine()f
 {
-	Mine->Throw(GetActorForwardVector(), 2000.f);
+	Mine->Throw(2000.f);
 	UE_LOG(LogTemp, Error, TEXT("P_ThrowMine"));
 }
 
