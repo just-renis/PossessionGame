@@ -9,7 +9,7 @@ class POSSESSIONGAME_API AThrowable : public APoolObject
 {
 	GENERATED_BODY()
 public:
-	virtual void Throw(const float InImpulseForce);
+	virtual void Throw(const FVector& InOwnerDirection, const float InImpulseForce);
 protected:
 	AThrowable();
 	

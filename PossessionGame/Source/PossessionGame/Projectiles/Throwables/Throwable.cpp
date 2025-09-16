@@ -1,8 +1,10 @@
 ﻿#include "Throwable.h"
 
-void AThrowable::Throw(const float InImpulseForce)
+void AThrowable::Throw(const FVector& InOwnerDirection, const float InImpulseForce)
 {
+	UE_LOG(LogTemp, Error, TEXT("InOwnerDIrection: %s"), *InOwnerDirection.ToString());
 	Mesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
 	GetWorldTimerManager().SetTimer(ScalingHandle, this, &AThrowable::ScalingProcess, 0.05f, true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Mesh->SetSimulatePhysics(true);
@@ -29,7 +31,7 @@ void AThrowable::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimit
 	if (FMath::IsNearlyEqual(Hit.ImpactNormal.Z, 1.f, 0.1f))
 	{
 		Mesh->OnComponentHit.RemoveAll(this);
-		SetActorLocation(Hit.ImpactPoint, true);
+		SetActorLocation(Hit.ImpactNormal, true);
 		Mesh->SetSimulatePhysics(false);
 		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
