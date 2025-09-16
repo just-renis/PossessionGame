@@ -2,7 +2,7 @@
 
 void AThrowable::Throw(const float InImpulseForce)
 {
-	GetWorldTimerManager().SetTimer(ScalingHandle, this, &AThrowable::ScalingProcess, 0.05f, true);
+//	GetWorldTimerManager().SetTimer(ScalingHandle, this, &AThrowable::ScalingProcess, 0.05f, true);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Mesh->SetSimulatePhysics(true);
 	Mesh->AddImpulse((-GetActorRightVector() + GetActorForwardVector() * 0.3f).GetSafeNormal() * InImpulseForce, NAME_None, true);
