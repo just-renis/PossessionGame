@@ -143,9 +143,7 @@ void ARanger::P_ChangeRangerVariationMuzzle()
 
 void ARanger::P_ThrowMine()
 {
-	Mine = Cast<ARangerMine>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::RangerMine));
-	Mine->Init(true);
-	Mine->SetActorLocationAndRotation(Weapon->GetHandsSocketLocation(FName("MineSocket")), Weapon->GetHandsSocketRotation(FName("MineSocket")));
+	const TObjectPtr<ARangerMine> Mine = Cast<ARangerMine>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnRangerMineFromPool(Weapon->GetHandsSocketLocation(FName("MineSocket")), Weapon->GetHandsSocketRotation(FName("MineSocket"))));
 	AssetsManager->PlaySound2D(ESound::RangerThrowMine);
 	Mine->Throw(2000.f);
 }

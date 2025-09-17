@@ -11,10 +11,11 @@ UCLASS()
 class POSSESSIONGAME_API ARangerMine : public AThrowable
 {
 	GENERATED_BODY()
-	
+public:
+	void DestroyThis() const;
+private:
 	ARangerMine();
 
-	bool bAlreadyExploded = false;
 	bool bAlreadyLanded = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> MineTriggerCollision;
@@ -23,7 +24,7 @@ class POSSESSIONGAME_API ARangerMine : public AThrowable
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> MineImpactVfx;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> MineExplosionVfx;
+	FTimerHandle ReturnToPoolHandle;
 
 	virtual void BeginPlay() override;
 	virtual void OnImpact(const FHitResult& Hit) override;

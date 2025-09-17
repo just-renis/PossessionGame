@@ -3,7 +3,7 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
-#include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -21,7 +21,6 @@ void ARangerMine::BeginPlay()
 	Super::BeginPlay();
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineRadius, [this]() -> bool { return bAlreadyLanded; }, &MineRadiusVfx, Mesh);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineImpact, [this]() -> bool { return bAlreadyLanded; }, &MineImpactVfx, Mesh);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineExplosion, [this]() -> bool { return bAlreadyExploded; }, &MineExplosionVfx);
 }
 
 void ARangerMine::OnImpact(const FHitResult& Hit)
@@ -34,6 +33,13 @@ void ARangerMine::OnImpact(const FHitResult& Hit)
 	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
+void ARangerMine::DestroyThis() const
+{
+	if (MineRadiusVfx) MineImpactVfx->DeactivateImmediate();
+	if (MineRadiusVfx) MineRadiusVfx->DeactivateImmediate();
+	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 void ARangerMine::DealAreaDamage()
 {
 	//TArray<TObjectPtr<AActor>> IgnoredActors;
@@ -42,23 +48,14 @@ void ARangerMine::DealAreaDamage()
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Data->GetDamage(), Data->GetRadiusMinimumDamage(),
 	GetActorLocation(), Data->GetDamageInnerRadius(), Data->GetDamageOuterRadius(), Data->GetDamageFalloff(), UDamageType::StaticClass(),
 	TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
-	if (MineExplosionVfx)
-	{
-		MineExplosionVfx->SetWorldLocation(GetActorLocation());
-		UE_LOG(LogTemp, Error, TEXT("SET LOCATION %s"), *GetActorLocation().ToString());
-		MineExplosionVfx->Activate();
-	}
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::RangerMineExplosion, nullptr, GetActorLocation());
 }
 
 void ARangerMine::TriggeredCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag(FName("AliveEnemy"))) return;
 	DealAreaDamage();
-	bAlreadyExploded = true;
-	if (MineRadiusVfx) MineImpactVfx->DeactivateImmediate();
-	if (MineRadiusVfx) MineRadiusVfx->DeactivateImmediate();
-	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SetActorScale3D(FVector(1.f));
-	CurrentScale = 1.f;
-	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::RangerMine, this);
+	DestroyThis();
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestRangerMineRemoval.ExecuteIfBound(this);
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnRangerMineToPool(this);
 }

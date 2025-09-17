@@ -35,7 +35,7 @@ void AMusicPlayer::BeatsPerMinuteProcess()
 {
 	if (++CurrentBeat >= MaxCurrentSoundTrackBeat) CurrentBeat = 0;
 	if (!bNeedToChangeSoundTrack) return;
-	if (CurrentBeat % 4 == 0) SwitchSoundTrack();
+	if (CurrentBeat % 5 == 0) SwitchSoundTrack();
 }
 
 void AMusicPlayer::SwitchSoundTrack()

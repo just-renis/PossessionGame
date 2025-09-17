@@ -4,6 +4,7 @@
 #include "PossessionGame/Enums/ESound.h"
 #include "DelegateManager.generated.h"
 
+class ARangerMine;
 enum class EUpgradeAttribute : uint8;
 struct FLoadLevelData;
 enum class EGameMode : uint8;
@@ -48,6 +49,7 @@ DECLARE_DELEGATE_OneParam(FLoadLevel, const FLoadLevelData);
 DECLARE_DELEGATE_OneParam(FRequestAddAbilitiesToUpgradePool, const TObjectPtr<USaveSlot>&);
 DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FRequestMinorAnnouncement, const FText&);
+DECLARE_DELEGATE_OneParam(FRequestRangerMineRemoval, const TObjectPtr<ARangerMine>&);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
@@ -125,6 +127,7 @@ public:
 	FRequestAddAbilitiesToUpgradePool RequestAddAbilitiesToUpgradePool;
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
 	FRequestMinorAnnouncement RequestMinorAnnouncement;
+	FRequestRangerMineRemoval RequestRangerMineRemoval;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;

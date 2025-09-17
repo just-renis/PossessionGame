@@ -33,8 +33,6 @@ private:
 	FTimerHandle TryTriggeringGrenadeHandle;
 	UPROPERTY()
 	FTimerHandle MineThrowHandle;
-	UPROPERTY()
-	TObjectPtr<ARangerMine> Mine;
 
 	virtual void AI_TriggerDeathVoiceLine() override;
 	virtual void AI_SetupWeapon() override;

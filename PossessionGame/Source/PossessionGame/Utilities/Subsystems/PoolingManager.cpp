@@ -2,6 +2,7 @@
 #include "DelegateManager.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
+#include "PossessionGame/Projectiles/Throwables/RangerMine.h"
 
 TObjectPtr<APoolObject> UPoolingManager::SpawnObjectFromPool(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation)
 {
@@ -19,6 +20,26 @@ TObjectPtr<APoolObject> UPoolingManager::SpawnObjectFromPool(const EPoolObject I
 	return PoolObject;
 }
 
+TObjectPtr<APoolObject> UPoolingManager::SpawnRangerMineFromPool(const FVector& InLocation, const FRotator& InRotation)
+{
+	TObjectPtr<ARangerMine> RangerMine;
+	if (RangerExistingMines.Num() >= RangerMineAmountCap)
+	{
+		RangerMine = RangerExistingMines[0];
+		RangerExistingMines.RemoveAt(0);
+		RangerMine->DestroyThis();
+	}
+	else
+	{
+		if (Pool[EPoolObject::RangerMine].Objects.IsEmpty()) AllocatePoolObject(EPoolObject::RangerMine);
+		RangerMine = Cast<ARangerMine>(Pool[EPoolObject::RangerMine].Objects.Pop());
+	}
+	RangerMine->Init();
+    RangerMine->SetActorLocationAndRotation(InLocation, InRotation);
+	RangerExistingMines.Add(RangerMine);
+	return RangerMine;
+}
+
 void UPoolingManager::Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& InPoolMap)
 {
 	for (TTuple<EPoolObject, TSubclassOf<APoolObject>>& Element : InPoolMap)
@@ -27,12 +48,19 @@ void UPoolingManager::Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& InPoolMa
 		Pool[Element.Key].ObjectClass = Element.Value;
 	}
 	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.BindUObject(this, &UPoolingManager::SpawnDamageNumber);
+	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestRangerMineRemoval.BindUObject(this, &UPoolingManager::RemoveRangerMineFromExistingMines);
 }
 
 void UPoolingManager::ReturnObjectToPool(const EPoolObject InObjectName, const TObjectPtr<APoolObject>& InPoolObject)
 {
 	InPoolObject->Disable();
 	Pool[InObjectName].Objects.Add(InPoolObject);
+}
+
+void UPoolingManager::ReturnRangerMineToPool(const TObjectPtr<APoolObject>& InPoolObject)
+{
+	InPoolObject->Disable();
+	Pool[EPoolObject::RangerMine].Objects.Add(InPoolObject);
 }
 
 void UPoolingManager::AllocatePoolObject(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation)
