@@ -1,8 +1,27 @@
 ﻿#include "PoolingManager.h"
 #include "DelegateManager.h"
+#include "SaveSlotManager.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Projectiles/Throwables/RangerMine.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+
+bool UPoolingManager::CanRangerThrowMine()
+{
+	RangerMineIndexToUse = -1;
+	const int32 CapFromUpgrade = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::Cap, true);
+	if (RangerExistingMines.Num() < RangerMineAmountCap + CapFromUpgrade) return true;
+	for (int32 i = 0; i < RangerExistingMines.Num(); i++)
+	{
+		if (!RangerExistingMines[i]->GetInExplosionProcess())
+		{
+			RangerMineIndexToUse = i;
+			return true;
+		}
+	}
+	return false;
+}
 
 TObjectPtr<APoolObject> UPoolingManager::SpawnObjectFromPool(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation)
 {
@@ -23,13 +42,14 @@ TObjectPtr<APoolObject> UPoolingManager::SpawnObjectFromPool(const EPoolObject I
 TObjectPtr<APoolObject> UPoolingManager::SpawnRangerMineFromPool(const FVector& InLocation, const FRotator& InRotation)
 {
 	TObjectPtr<ARangerMine> RangerMine;
-	if (RangerExistingMines.Num() >= RangerMineAmountCap)
+	if (RangerMineIndexToUse != -1)
 	{
-		RangerMine = RangerExistingMines[0];
-		RangerExistingMines.RemoveAt(0);
+		RangerMine = RangerExistingMines[RangerMineIndexToUse];
+		RangerExistingMines.RemoveAt(RangerMineIndexToUse);
 		RangerMine->DestroyThis();
+		ReturnRangerMineToPool(RangerMine);
 	}
-	else
+	if (!RangerMine)
 	{
 		if (Pool[EPoolObject::RangerMine].Objects.IsEmpty()) AllocatePoolObject(EPoolObject::RangerMine);
 		RangerMine = Cast<ARangerMine>(Pool[EPoolObject::RangerMine].Objects.Pop());

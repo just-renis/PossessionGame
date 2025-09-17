@@ -199,6 +199,7 @@ public:
 	void SetupSpawnLocations();
 	void PlaySoundAtLocation(const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer = true, const bool bStoreSoundRef = false);
 	void RequestSpawnClone(const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount);
+	void UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes);
 private:
 	bool bIsInitialized = false;
 	bool bCanAsyncLoadHappen = true;
@@ -256,7 +257,6 @@ private:
 	void LoadVfx(FVfxContainer& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);
 	void LoadVfx(FVfxContainer& InVfxData, const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation, const FRotator& InRotation, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);
 	void RequestVfxLoad(FVfxContainer& InVfxData);
-	void UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes);
 	void SetupSound2D(const FSoundContainer& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef);
 	void LoadSound2D(FSoundContainer& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef);
 	void LoadSound3D(FSoundContainer& InSoundData, TObjectPtr<UAudioComponent> InAudioComp, TFunction<bool()> InCallback, const bool bIsPlayer);

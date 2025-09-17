@@ -24,6 +24,7 @@ class POSSESSIONGAME_API UPoolingManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
+	bool CanRangerThrowMine();
 	TObjectPtr<APoolObject> SpawnObjectFromPool(const EPoolObject InObjectName, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator);
 	TObjectPtr<APoolObject> SpawnRangerMineFromPool(const FVector& InLocation, const FRotator& InRotation);
 	
@@ -31,6 +32,7 @@ public:
 	void ReturnObjectToPool(const EPoolObject InObjectName, const TObjectPtr<APoolObject>& InPoolObject);
 	void ReturnRangerMineToPool(const TObjectPtr<APoolObject>& InPoolObject);
 private:
+	int32 RangerMineIndexToUse = -1;
 	int32 RangerMineAmountCap = 3;
 	UPROPERTY()
 	TMap<EPoolObject, FObjectPoolData> Pool;

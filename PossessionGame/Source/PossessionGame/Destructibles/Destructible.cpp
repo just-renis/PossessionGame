@@ -61,12 +61,15 @@ float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) * DamageReduction;
 	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
-		const bool bIsPlayerProjectile = Cast<AProjectile>(DamageCauser)->GetIsPlayerProjectile();
-		if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject))
+		if (const TObjectPtr<AProjectile> ProjectileCauser = Cast<AProjectile>(DamageCauser))
 		{
-			Hp -= Damage;
-			if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, GetActorLocation(), GetActorForwardVector());
+			const bool bIsPlayerProjectile = ProjectileCauser->GetIsPlayerProjectile();
+			if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject))
+			{
+				Hp -= Damage;
+			}
 		}
+		if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, GetActorLocation(), GetActorForwardVector());
 	}
 	else
 	{

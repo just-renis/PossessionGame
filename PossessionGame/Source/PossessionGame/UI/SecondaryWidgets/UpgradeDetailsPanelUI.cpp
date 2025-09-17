@@ -58,6 +58,7 @@ FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const T
 		case EUpgradeAttribute::EffectDuration: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "EffectDuration", "EFFECT DURATION").ToString() + "</>\n";
 		case EUpgradeAttribute::ReduceDamageTaken: return GetRichTextTag(bForEnemy) + "-" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "DamageTaken", "DAMAGE TAKEN").ToString() + "</>\n";
 		case EUpgradeAttribute::CloneAmount: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "CloneAmount", "CLONE AMOUNT").ToString() + "</>\n";
+		case EUpgradeAttribute::Cap: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Cap", "CAP").ToString() + "</>\n";
 		default: return GetSpecialUpgradeText(InAttribute.Key, bForEnemy);
 	}
 }

@@ -1,11 +1,15 @@
 ﻿#include "RangerMine.h"
 #include "NiagaraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
+#include "PossessionGame/Enums/EUpgrade.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 ARangerMine::ARangerMine()
 {
@@ -14,29 +18,46 @@ ARangerMine::ARangerMine()
 	MineTriggerCollision->SetCollisionProfileName(FName("TriggerPlayer"));
 	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	MineTriggerCollision->OnComponentBeginOverlap.AddDynamic(this, &ARangerMine::TriggeredCollision);
+	DeploySfx = CreateDefaultSubobject<UAudioComponent>(TEXT("MineImpactSfx"));
+	DeploySfx->SetAutoActivate(false);
+	DeploySfx->SetupAttachment(Mesh);
+	ExplosionSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("MineExplosionSfx"));
+	ExplosionSfx->SetAutoActivate(false);
+	ExplosionSfx->SetupAttachment(Mesh);
+	Sounds.Add(ESound::RangerDeployMine, DeploySfx);
+	Sounds.Add(ESound::RangerDetonateMine, ExplosionSfx);
 }
 
 void ARangerMine::BeginPlay()
 {
 	Super::BeginPlay();
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineRadius, [this]() -> bool { return bAlreadyLanded; }, &MineRadiusVfx, Mesh);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineImpact, [this]() -> bool { return bAlreadyLanded; }, &MineImpactVfx, Mesh);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineRadius, [this]() -> bool { return bAlreadyLanded; }, &RadiusVfx, Mesh);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineImpact, [this]() -> bool { return bAlreadyLanded; }, &ImpactVfx, Mesh);
 }
 
 void ARangerMine::OnImpact(const FHitResult& Hit)
 {
 	Super::OnImpact(Hit);
 	bAlreadyLanded = true;
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::RangerDeployMine);
-	if (MineRadiusVfx) MineImpactVfx->Activate();
-	if (MineRadiusVfx) MineRadiusVfx->Activate();
+	PlaySound(ESound::RangerDeployMine);
+	if (ImpactVfx) ImpactVfx->Activate();
+	if (RadiusVfx)
+	{
+		TMap<FName, FNiagaraAttribute> Attributes;
+		const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::Size, true);
+		const float CollisionRadius = DefaultCollisionRadius + DefaultCollisionRadius * RadiusIncrease * 0.01f;
+		Attributes.Add(FName("Mesh Uniform Scale"), FNiagaraAttribute(true, CollisionRadius / DefaultCollisionRadius));
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->UpdateVfxAttributes(RadiusVfx, Attributes);
+		MineTriggerCollision->SetSphereRadius(CollisionRadius);
+		RadiusVfx->Activate();
+	}
 	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void ARangerMine::DestroyThis() const
 {
-	if (MineRadiusVfx) MineImpactVfx->DeactivateImmediate();
-	if (MineRadiusVfx) MineRadiusVfx->DeactivateImmediate();
+	if (ImpactVfx) ImpactVfx->DeactivateImmediate();
+	if (RadiusVfx) RadiusVfx->DeactivateImmediate();
 	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -51,11 +72,24 @@ void ARangerMine::DealAreaDamage()
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::RangerMineExplosion, nullptr, GetActorLocation());
 }
 
+void ARangerMine::Explode()
+{
+	DealAreaDamage();
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestRangerMineRemoval.ExecuteIfBound(this);
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnRangerMineToPool(this);
+	bInExplosionProcess = false;
+}
+
+void ARangerMine::PlaySound(const ESound InSoundName)
+{
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], TFunction<bool()>(), InSoundName);
+}
+
 void ARangerMine::TriggeredCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag(FName("AliveEnemy"))) return;
-	DealAreaDamage();
+	bInExplosionProcess = true;
+	PlaySound(ESound::RangerDetonateMine);
 	DestroyThis();
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestRangerMineRemoval.ExecuteIfBound(this);
-	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnRangerMineToPool(this);
+	GetWorldTimerManager().SetTimer(ExplosionHandle, this, &ARangerMine::Explode, ExplosionDelay);
 }

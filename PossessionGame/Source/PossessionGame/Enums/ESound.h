@@ -107,5 +107,6 @@ enum class ESound : uint16
 	CloneSpawn,
 	CloneDisappear,
 	RangerDeployMine,
+	RangerDetonateMine,
 	RangerThrowMine
 };

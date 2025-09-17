@@ -564,6 +564,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TricksterCloneDash", ESound::TricksterCloneDash);
 	SoundMap.Add("PA_RangerDeployMine", ESound::RangerDeployMine);
 	SoundMap.Add("PA_RangerThrowMine", ESound::RangerThrowMine);
+	SoundMap.Add("PA_RangerDetonateMine", ESound::RangerDetonateMine);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

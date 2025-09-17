@@ -1,11 +1,18 @@
 ﻿#include "RangerAbility3.h"
 #include "PossessionGame/AI/Enemies/Characters/Ranger.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
 void URangerAbility3::P_Execute()
 {
+	if (!GetWorld()->GetSubsystem<UPoolingManager>()->CanRangerThrowMine())
+	{
+		DelegateManager->RequestMinorAnnouncement.ExecuteIfBound(NSLOCTEXT("ST_Localization", "MineDetonationInProgress", "Mine Detonation in Progress"));
+		return;
+	}
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::ThrowMine);
 	Proprietor->P_InitiateThrowMine();

@@ -14,7 +14,8 @@ enum class EUpgradeAttribute : uint8
     EffectDuration,
     AbilityChargesAmount,
     ReduceDamageTaken,
-    CloneAmount,
+	CloneAmount,
+	Cap,
     Special1,
     Special2,
     Special3
