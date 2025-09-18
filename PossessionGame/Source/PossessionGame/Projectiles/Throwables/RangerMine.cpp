@@ -6,10 +6,24 @@
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
+
+void ARangerMine::Disable(const bool bHide)
+{
+	DestroyThis();
+	Super::Disable(bHide);
+}
+
+void ARangerMine::DestroyThis() const
+{
+	if (ImpactVfx) ImpactVfx->DeactivateImmediate();
+	if (RadiusVfx) RadiusVfx->DeactivateImmediate();
+	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
 
 ARangerMine::ARangerMine()
 {
@@ -54,27 +68,25 @@ void ARangerMine::OnImpact(const FHitResult& Hit)
 	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-void ARangerMine::DestroyThis() const
-{
-	if (ImpactVfx) ImpactVfx->DeactivateImmediate();
-	if (RadiusVfx) RadiusVfx->DeactivateImmediate();
-	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
 void ARangerMine::DealAreaDamage()
 {
 	//TArray<TObjectPtr<AActor>> IgnoredActors;
 	//if (!ProjectileData.bIsPlayerProjectile) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
 	//else IgnoredActors = { ProjectileData.GetProprietor() };
-	const float NormalDamage = Data->GetDamage();
-	const float MinimumDamage = Data->GetRadiusMinimumDamage();
-	const float InnerRadius = Data->GetDamageInnerRadius();
-	const float OuterRadius = Data->GetDamageOuterRadius();
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	const bool bIsSpecialUpgradeAvailable1 = RunSaveSlot->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1);
+	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::Size, true);
+	const float DamageIncrease = Data->GetDamage() * RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::DamagePercentage, true) * 0.01f;
+	float NormalDamage = (Data->GetDamage() + DamageIncrease) * (bIsSpecialUpgradeAvailable1 ? SpecialUpgradeDamageMultiplier : 1.f);
+	float MinimumDamage = Data->GetRadiusMinimumDamage() + DamageIncrease;
+	const float InnerRadius = Data->GetDamageInnerRadius() + Data->GetDamageInnerRadius() * RadiusIncrease * 0.01f;
+	const float OuterRadius = Data->GetDamageOuterRadius() + Data->GetDamageOuterRadius() * RadiusIncrease * 0.01f;
+	const float LevelDamageBoost = Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
+	NormalDamage += LevelDamageBoost;
+	MinimumDamage += LevelDamageBoost;
 	const float DamageFalloff = (NormalDamage - MinimumDamage) / (OuterRadius - InnerRadius);
-	UE_LOG(LogTemp, Error, TEXT("Damage Falloff: %f"), DamageFalloff);
-	const bool bIsSpecialUpgradeAvailable1 = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1);
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
-	bIsSpecialUpgradeAvailable1 ? DamageFalloff : Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
+	DamageFalloff, UDamageType::StaticClass(), TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::RangerMineExplosion, nullptr, GetActorLocation());
 }
 

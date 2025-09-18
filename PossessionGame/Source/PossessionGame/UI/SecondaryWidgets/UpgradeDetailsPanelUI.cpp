@@ -119,7 +119,7 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 					if (!bForEnemy)
 					{
 						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.1", "MINE DEALS MORE DAMAGE THE CLOSER ENEMY IS TO THE CENTER UP TO</>").ToString() +
-						GetRichTextTag(false) + " 2.5X </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.2", "<UpgradeAttributeText>TIMES.</>").ToString();
+						GetRichTextTag(false) + " 2X </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.2", "<UpgradeAttributeText>TIMES.</>").ToString();
 					}
 					return NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.3", "<UpgradeAttributeText>DEAL</>").ToString() +
 					GetRichTextTag(true) + " 10% </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.4", "<UpgradeAttributeText>LESS DAMAGE FOR EVERY HALF METER CLOSER TO THE TARGET.</>").ToString();

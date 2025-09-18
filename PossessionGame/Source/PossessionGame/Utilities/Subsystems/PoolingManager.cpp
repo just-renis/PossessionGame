@@ -11,7 +11,8 @@ bool UPoolingManager::CanRangerThrowMine()
 {
 	RangerMineIndexToUse = -1;
 	const int32 CapFromUpgrade = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::Cap, true);
-	if (RangerExistingMines.Num() < RangerMineAmountCap + CapFromUpgrade) return true;
+	RangerMineAmountCap = DefaultRangerMineAmountCap + CapFromUpgrade;
+	if (RangerExistingMines.Num() < RangerMineAmountCap) return true;
 	for (int32 i = 0; i < RangerExistingMines.Num(); i++)
 	{
 		if (!RangerExistingMines[i]->GetInExplosionProcess())
@@ -41,22 +42,23 @@ TObjectPtr<APoolObject> UPoolingManager::SpawnObjectFromPool(const EPoolObject I
 
 TObjectPtr<APoolObject> UPoolingManager::SpawnRangerMineFromPool(const FVector& InLocation, const FRotator& InRotation)
 {
-	TObjectPtr<ARangerMine> RangerMine;
+	TObjectPtr<APoolObject> RangerMine;
+	if (RangerExistingMines.Num() < RangerMineAmountCap) RangerMineIndexToUse = -1;
 	if (RangerMineIndexToUse != -1)
 	{
-		RangerMine = RangerExistingMines[RangerMineIndexToUse];
+		ReturnRangerMineToPool(RangerExistingMines[RangerMineIndexToUse]);
+		RangerExistingMines[RangerMineIndexToUse]->Disable(true);
 		RangerExistingMines.RemoveAt(RangerMineIndexToUse);
-		RangerMine->DestroyThis();
-		ReturnRangerMineToPool(RangerMine);
+		RangerMine = Pool[EPoolObject::RangerMine].Objects.Pop();
 	}
 	if (!RangerMine)
 	{
 		if (Pool[EPoolObject::RangerMine].Objects.IsEmpty()) AllocatePoolObject(EPoolObject::RangerMine);
-		RangerMine = Cast<ARangerMine>(Pool[EPoolObject::RangerMine].Objects.Pop());
+		RangerMine = Pool[EPoolObject::RangerMine].Objects.Pop();
 	}
 	RangerMine->Init();
     RangerMine->SetActorLocationAndRotation(InLocation, InRotation);
-	RangerExistingMines.Add(RangerMine);
+	RangerExistingMines.Add(Cast<ARangerMine>(RangerMine));
 	return RangerMine;
 }
 

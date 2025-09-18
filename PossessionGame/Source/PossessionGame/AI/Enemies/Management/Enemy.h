@@ -80,7 +80,7 @@ public:
 	void AI_StopAbility(const int32 InIndex);
 	void AI_TryEvolving();
 	void AI_SetupUpgradesAppliance();
-	void AI_SetupShootLogic();
+	//void AI_SetupShootLogic();
 	virtual void AI_CancelShooting() {}
 
 	virtual FLinearColor GetDamageNumberColor() const { return DamageNumberColor; }
@@ -186,7 +186,7 @@ protected:
 	virtual void P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) {}
 	virtual void P_Destroy();
 	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
-	void P_SetupCharacterMovement();
+	void P_SetupCharacterMovement() const;
 	virtual void P_SetupColorsForUI() {}
 	virtual void P_Move(const FInputActionValue& Value);
 	virtual void P_InitiateJump();
@@ -362,10 +362,10 @@ private:
 	void AI_TriggerMutantExplosion();
 	void AI_HideHpBar() const;
 	void AI_ClearShootPause();
-	void AI_SetCharacterMovementSpeed();
+	void AI_SetCharacterMovementSpeed() const;
 	void AI_DisableDamageTakenRedFlash() const;
-	void AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent);
-	void AI_MainShootLogic();
+	//void AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent);
+	//void AI_MainShootLogic();
 	
 	void P_SetupData();
 	void P_SetupUI();

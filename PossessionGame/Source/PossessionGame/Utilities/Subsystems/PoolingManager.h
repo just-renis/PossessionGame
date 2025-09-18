@@ -33,6 +33,7 @@ public:
 	void ReturnRangerMineToPool(const TObjectPtr<APoolObject>& InPoolObject);
 private:
 	int32 RangerMineIndexToUse = -1;
+	int32 DefaultRangerMineAmountCap = 3;
 	int32 RangerMineAmountCap = 3;
 	UPROPERTY()
 	TMap<EPoolObject, FObjectPoolData> Pool;

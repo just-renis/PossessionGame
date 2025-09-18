@@ -15,12 +15,15 @@ class POSSESSIONGAME_API ARangerMine : public AThrowable
 public:
 	bool GetInExplosionProcess() const { return bInExplosionProcess; }
 	
+	virtual void Disable(const bool bHide) override;
 	void DestroyThis() const;
 private:
 	ARangerMine();
 
 	bool bAlreadyLanded = false;
 	bool bInExplosionProcess = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta = (AllowPrivateAccess = true))
+	float SpecialUpgradeDamageMultiplier = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Explosion", meta = (AllowPrivateAccess = true))
 	float ExplosionDelay = 0.75f;
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))

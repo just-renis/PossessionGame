@@ -247,7 +247,7 @@ void AEnemy::AI_SetupUpgradesAppliance()
 	CurrentHp = MaxHp;
 }
 
-void AEnemy::AI_SetupShootLogic()
+/*void AEnemy::AI_SetupShootLogic()
 {
 	AI->GetStateTreeData().OnStateTreeEvent.BindUObject(this, &AEnemy::AI_FinishShootLogicByEvent);
 	GetWorld()->GetTimerManager().SetTimer(AI_ShootLogicHandle, this, &AEnemy::AI_MainShootLogic, GetWeapon()->GetShootCooldown(), true);
@@ -256,7 +256,7 @@ void AEnemy::AI_SetupShootLogic()
 		GetWeapon()->SetFirstShotWasShot();
 		AI_MainShootLogic();
 	}
-}
+}*/
 
 void AEnemy::InitiateDeath()
 {
@@ -392,7 +392,7 @@ void AEnemy::AI_Setup()
 	AI_SetupAbilities();
 	AI_SetupData();
 	if (Weapon && Weapon->GetIsReloadEnabled()) AI->SetReloadDelay(AnimInstance->GetMontageLength(EEnemyAnimState::Reload));
-	AI_SetupShootLogic();
+	//AI_SetupShootLogic();
 }
 
 void AEnemy::AI_SetupWeapon()
@@ -545,7 +545,7 @@ void AEnemy::P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 	if (!P_Data) P_Data = AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->P_Data.LoadSynchronous();
 }
 
-void AEnemy::P_SetupCharacterMovement()
+void AEnemy::P_SetupCharacterMovement() const
 {
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = bCanCrouch;
 	GetCharacterMovement()->SetCrouchedHalfHeight(CrouchHalfHeight);
@@ -781,11 +781,11 @@ void AEnemy::AI_ClearShootPause()
 	GetWorldTimerManager().ClearTimer(AI_ClearShootPauseHandle);
 }
 
-void AEnemy::AI_SetCharacterMovementSpeed() { AnimInstance->SetSpeed(GetCharacterMovement()->Velocity.Size()); }
+void AEnemy::AI_SetCharacterMovementSpeed() const { AnimInstance->SetSpeed(GetCharacterMovement()->Velocity.Size()); }
 
 void AEnemy::AI_DisableDamageTakenRedFlash() const { if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 0.f); }
 
-void AEnemy::AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent)
+/*void AEnemy::AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent)
 {
 //	AI->GetStateTreeData().OnStateTreeEvent.Unbind();
 //	GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
@@ -795,9 +795,9 @@ void AEnemy::AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent)
 void AEnemy::AI_MainShootLogic()
 {
 	if (GetIsActionInMotion() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
-	if (/*bIsWeaponMontageOnly ? !GetWeapon()->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot) : */!GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) AI_InitiateShooting();
+	if (/bIsWeaponMontageOnly ? !GetWeapon()->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot) : /!GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) AI_InitiateShooting();
 	if (!GetIsActionSpeedModified() || GetWeapon()->AI_CanShoot()) AI_ShootLogic();
-}
+}*/
 
 bool AEnemy::CanJumpInternal_Implementation() const
 {

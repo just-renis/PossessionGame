@@ -188,7 +188,6 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const FVfxContainer& InVfxDat
 
 void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
-	UE_LOG(LogTemp, Error, TEXT("RequestSpawnEnemy "));
 	if (InCharacter == ECharacterType::Random) InCharacter = GetRandomCharacterToSpawn();
 	!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack) : SpawnEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack);
 	TotalSpawnedEnemies++;
@@ -708,7 +707,6 @@ void UPrimaryDataAssetsManager::SetupVfx(const FVfxContainer& InVfxData, TFuncti
 
 void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
-	UE_LOG(LogTemp, Error, TEXT("AsyncLoadEnemy %s"), *UEnum::GetValueAsString(InCharacter));
 	if (GetCanAsyncLoadHappen())
 	{
 		FCharacterContainer& CharacterContainer = GetCharacterData(InCharacter);
