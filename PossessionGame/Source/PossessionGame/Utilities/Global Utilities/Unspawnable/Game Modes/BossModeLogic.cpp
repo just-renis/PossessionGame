@@ -29,7 +29,8 @@ void UBossModeLogic::Finalize()
 
 void UBossModeLogic::HandleSpawning()
 {
-	if (bIsBossAlive && AliveEnemiesAmount < EnemiesOnSceneLimit)
+	if (bAsyncLoadInProcess) return;
+ 	if (bIsBossAlive && AliveEnemiesAmount < EnemiesOnSceneLimit)
 	{
 		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), true, [this] { IncreaseAliveEnemiesAmount(); });
 	}

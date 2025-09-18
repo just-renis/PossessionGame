@@ -19,6 +19,7 @@
 #include "PossessionGame/Projectiles/Projectile.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/SpawnLocation.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Weapons/Management/Weapon.h"
 
 bool UPrimaryDataAssetsManager::IsAsyncLoadingFinished()
 {
@@ -187,13 +188,11 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const FVfxContainer& InVfxDat
 
 void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
-	if (!bIsSpawnInProcess)
-	{
-		if (InCharacter == ECharacterType::Random) InCharacter = GetRandomCharacterToSpawn();
-		!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack) : SpawnEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack);
-		TotalSpawnedEnemies++;
-		AddSpawnableEnemiesToThePool();
-	}
+	UE_LOG(LogTemp, Error, TEXT("RequestSpawnEnemy "));
+	if (InCharacter == ECharacterType::Random) InCharacter = GetRandomCharacterToSpawn();
+	!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack) : SpawnEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack);
+	TotalSpawnedEnemies++;
+	AddSpawnableEnemiesToThePool();
 }
 
 void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount)
@@ -342,12 +341,12 @@ void UPrimaryDataAssetsManager::AsyncLoadClone(const ECharacterType InCharacterN
 
 void UPrimaryDataAssetsManager::AsyncLoadCloneCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount)
 {
-	LoadedEnemies.Add(InCharacterName, Cast<UClass>(GetCharacterData(InCharacterName).GetCharacterContainer()->CharacterClass.ToSoftObjectPath().TryLoad()));
+	LoadedEnemies.Add(InCharacterName, Cast<UClass>(GetCharacterData(InCharacterName).GetCharacterContainer()->CharacterClass.Get()));
 	if (InSingularWeapon != EWeapon::None)
 	{
-		GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InSingularWeapon, Cast<UClass>(GetWeaponData(InSingularWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
+		GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InSingularWeapon, Cast<UClass>(GetWeaponData(InSingularWeapon)->WeaponClass.Get()));
 	}
-	GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
+	GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.Get()));
 	SpawnClone(InSingularWeapon, InCharacterName, InOwner, InAmount);
 }
 
@@ -709,7 +708,7 @@ void UPrimaryDataAssetsManager::SetupVfx(const FVfxContainer& InVfxData, TFuncti
 
 void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
-	bIsSpawnInProcess = true;
+	UE_LOG(LogTemp, Error, TEXT("AsyncLoadEnemy %s"), *UEnum::GetValueAsString(InCharacter));
 	if (GetCanAsyncLoadHappen())
 	{
 		FCharacterContainer& CharacterContainer = GetCharacterData(InCharacter);
@@ -766,7 +765,6 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 			{
 				if (bCanEvolve) Enemy->AI_TryEvolving();
 				else Enemy->AI_SetupUpgradesAppliance();
-				bIsSpawnInProcess = false;
 				if (InCallBack) InCallBack();
 				break;
 			}
@@ -788,7 +786,6 @@ void UPrimaryDataAssetsManager::AddSpawnableEnemiesToThePool()
 void UPrimaryDataAssetsManager::ClearBeforeInit()
 {
 	bCanAsyncLoadHappen = true;
-	bIsSpawnInProcess = false;
 	bIsCloneSpawnInProcess = false;
 	for (TPair<ESound, FSoundContainer>& SoundContainer : SoundContainers) SoundContainer.Value.ResetLoadVariables();
 	for (TPair<EVfx, FVfxContainer>& VfxContainer : VfxContainers) VfxContainer.Value.ResetLoadVariables();

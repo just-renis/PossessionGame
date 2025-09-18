@@ -38,6 +38,7 @@ void UChargeTerminalModeLogic::Finalize()
 
 void UChargeTerminalModeLogic::HandleSpawning()
 {
+	if (bAsyncLoadInProcess) return;
 	if (!bIsTerminalCharged && !bIsUsbRequirementFilled && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), true, [this] { IncreaseAliveEnemiesAmount(); });
 }
 

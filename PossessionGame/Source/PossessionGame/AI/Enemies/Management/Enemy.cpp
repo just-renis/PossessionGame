@@ -247,6 +247,17 @@ void AEnemy::AI_SetupUpgradesAppliance()
 	CurrentHp = MaxHp;
 }
 
+void AEnemy::AI_SetupShootLogic()
+{
+	AI->GetStateTreeData().OnStateTreeEvent.BindUObject(this, &AEnemy::AI_FinishShootLogicByEvent);
+	GetWorld()->GetTimerManager().SetTimer(AI_ShootLogicHandle, this, &AEnemy::AI_MainShootLogic, GetWeapon()->GetShootCooldown(), true);
+	if (!GetWeapon()->GetIsFirstShotWasShot())
+	{
+		GetWeapon()->SetFirstShotWasShot();
+		AI_MainShootLogic();
+	}
+}
+
 void AEnemy::InitiateDeath()
 {
 	DisableHijackViableVfx();
@@ -381,6 +392,7 @@ void AEnemy::AI_Setup()
 	AI_SetupAbilities();
 	AI_SetupData();
 	if (Weapon && Weapon->GetIsReloadEnabled()) AI->SetReloadDelay(AnimInstance->GetMontageLength(EEnemyAnimState::Reload));
+	AI_SetupShootLogic();
 }
 
 void AEnemy::AI_SetupWeapon()
@@ -691,6 +703,7 @@ void AEnemy::DestroyAI()
 		ChangeXRayState(false);
 		AI_StopAllAbilities();
 		GetMesh()->SetAnimInstanceClass(nullptr);
+		GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
 		AI->DestroyThis();
 		AI->UnPossess();
 		AI->Destroy();
@@ -771,6 +784,20 @@ void AEnemy::AI_ClearShootPause()
 void AEnemy::AI_SetCharacterMovementSpeed() { AnimInstance->SetSpeed(GetCharacterMovement()->Velocity.Size()); }
 
 void AEnemy::AI_DisableDamageTakenRedFlash() const { if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 0.f); }
+
+void AEnemy::AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent)
+{
+//	AI->GetStateTreeData().OnStateTreeEvent.Unbind();
+//	GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
+	AI_CancelShooting();
+}
+
+void AEnemy::AI_MainShootLogic()
+{
+	if (GetIsActionInMotion() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
+	if (/*bIsWeaponMontageOnly ? !GetWeapon()->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot) : */!GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) AI_InitiateShooting();
+	if (!GetIsActionSpeedModified() || GetWeapon()->AI_CanShoot()) AI_ShootLogic();
+}
 
 bool AEnemy::CanJumpInternal_Implementation() const
 {

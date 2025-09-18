@@ -66,9 +66,15 @@ void ARangerMine::DealAreaDamage()
 	//TArray<TObjectPtr<AActor>> IgnoredActors;
 	//if (!ProjectileData.bIsPlayerProjectile) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
 	//else IgnoredActors = { ProjectileData.GetProprietor() };
-	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Data->GetDamage(), Data->GetRadiusMinimumDamage(),
-	GetActorLocation(), Data->GetDamageInnerRadius(), Data->GetDamageOuterRadius(), Data->GetDamageFalloff(), UDamageType::StaticClass(),
-	TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
+	const float NormalDamage = Data->GetDamage();
+	const float MinimumDamage = Data->GetRadiusMinimumDamage();
+	const float InnerRadius = Data->GetDamageInnerRadius();
+	const float OuterRadius = Data->GetDamageOuterRadius();
+	const float DamageFalloff = (NormalDamage - MinimumDamage) / (OuterRadius - InnerRadius);
+	UE_LOG(LogTemp, Error, TEXT("Damage Falloff: %f"), DamageFalloff);
+	const bool bIsSpecialUpgradeAvailable1 = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1);
+	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
+	bIsSpecialUpgradeAvailable1 ? DamageFalloff : Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::RangerMineExplosion, nullptr, GetActorLocation());
 }
 

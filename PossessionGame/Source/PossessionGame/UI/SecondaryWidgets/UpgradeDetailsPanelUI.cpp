@@ -86,8 +86,8 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.1", "WHILE ACTIVE, YOU REFLECT </>").ToString() +
-						GetRichTextTag(false) + "50%</>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.2", "<UpgradeAttributeText> OF THE DAMAGE.</>").ToString();
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.1", "WHILE ACTIVE, YOU REFLECT</>").ToString() +
+						GetRichTextTag(false) + " 50% </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.2", "<UpgradeAttributeText>OF THE DAMAGE.</>").ToString();
 					}
 					return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.3", "<UpgradeAttributeText>GUARDIAN TAKES NO DAMAGE ON FIRST HIT.</>").ToString();
 				default: break;
@@ -100,17 +100,31 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.1", "AFTER USING GRENADE LAUNCHER </>").ToString() +
-						GetRichTextTag(false) + "+10%</>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.2", "<UpgradeAttributeText> DAMAGE FOR </>").ToString() +
-						GetRichTextTag(false) + "15</>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.3", "<UpgradeAttributeText> SECONDS.</>").ToString();
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.1", "AFTER USING GRENADE LAUNCHER</>").ToString() +
+						GetRichTextTag(false) + " +10% </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.2", "<UpgradeAttributeText>DAMAGE FOR</>").ToString() +
+						GetRichTextTag(false) + " 15 </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.3", "<UpgradeAttributeText>SECONDS.</>").ToString();
 					}
-					return NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.4", "<UpgradeAttributeText>EACH RANGER UPGRADE GIVES </>").ToString() +
-					GetRichTextTag(true) + "+10%</>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.5", "<UpgradeAttributeText> DAMAGE </>").ToString() +
-					GetRichTextTag(true) + "-10%</>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.6", "<UpgradeAttributeText> COOLDOWN.</>").ToString();
+					return NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.4", "<UpgradeAttributeText>EACH RANGER UPGRADE GIVES</>").ToString() +
+					GetRichTextTag(true) + " +10% </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.5", "<UpgradeAttributeText>DAMAGE</>").ToString() +
+					GetRichTextTag(true) + " -10% </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.6", "<UpgradeAttributeText>COOLDOWN.</>").ToString();
 				default: break;
 			}
 			break;
 		case EUpgrade::RangerAbility2:
+			break;
+		case EUpgrade::RangerAbility3:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.1", "MINE DEALS MORE DAMAGE THE CLOSER ENEMY IS TO THE CENTER UP TO</>").ToString() +
+						GetRichTextTag(false) + " 2.5X </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.2", "<UpgradeAttributeText>TIMES.</>").ToString();
+					}
+					return NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.3", "<UpgradeAttributeText>DEAL</>").ToString() +
+					GetRichTextTag(true) + " 10% </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.4", "<UpgradeAttributeText>LESS DAMAGE FOR EVERY HALF METER CLOSER TO THE TARGET.</>").ToString();
+				default: break;
+			}
 			break;
 		case EUpgrade::TricksterAbility1:
 			switch (InUpgradeAttribute)
@@ -118,8 +132,8 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.1", "ENEMIES IN POISON SMOKE ARE </>").ToString() +
-						GetRichTextTag(false) + "3x</>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.2", "<UpgradeAttributeText> SLOWED.</>").ToString();
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.1", "ENEMIES IN POISON SMOKE ARE</>").ToString() +
+						GetRichTextTag(false) + " 3x </>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.2", "<UpgradeAttributeText>SLOWED.</>").ToString();
 					}
 					return "";//GetRichTextTag(true) + "+30</> HEALTH\n" + GetRichTextTag(true) + "+40%</> DAMAGE"; // PLACEHOLDER FOR SLOWING 2x PLAYER IN ENEMY POISON SMOKE.
 				default: break;

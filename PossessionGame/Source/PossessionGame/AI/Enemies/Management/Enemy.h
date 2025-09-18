@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
+enum class EStateTreeEvent : uint8;
 struct FInputActionValue;
 class UDelegateManager;
 class UEnhancedPlayerInput;
@@ -79,6 +80,7 @@ public:
 	void AI_StopAbility(const int32 InIndex);
 	void AI_TryEvolving();
 	void AI_SetupUpgradesAppliance();
+	void AI_SetupShootLogic();
 	virtual void AI_CancelShooting() {}
 
 	virtual FLinearColor GetDamageNumberColor() const { return DamageNumberColor; }
@@ -328,6 +330,8 @@ private:
 	UPROPERTY()
 	FTimerHandle AI_DamageTakenEffectHandle;
 	UPROPERTY()
+	FTimerHandle AI_ShootLogicHandle;
+	UPROPERTY()
 	FTimerHandle P_DetectIfPlayerPointingAtOutlineObjectsHandle;
 	UPROPERTY()
 	FTimerHandle P_TriggerCriticalDamageIndicatorHandle;
@@ -360,8 +364,8 @@ private:
 	void AI_ClearShootPause();
 	void AI_SetCharacterMovementSpeed();
 	void AI_DisableDamageTakenRedFlash() const;
-
-	virtual bool CanJumpInternal_Implementation() const override;
+	void AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent);
+	void AI_MainShootLogic();
 	
 	void P_SetupData();
 	void P_SetupUI();
@@ -407,6 +411,8 @@ private:
 	void P_InitiateSlide();
 	void P_EndSlide();
 	void P_SetupSuperJump();
+
+	virtual bool CanJumpInternal_Implementation() const override;
 
 	void TickAbilities(const float InDeltaTime);
 	void SetupStimuliSource();

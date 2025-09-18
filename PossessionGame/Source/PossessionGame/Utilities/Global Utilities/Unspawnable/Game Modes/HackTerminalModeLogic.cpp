@@ -31,8 +31,10 @@ void UHackTerminalModeLogic::Finalize()
 
 void UHackTerminalModeLogic::HandleSpawning()
 {
+	if (bAsyncLoadInProcess) return;
 	if (!bIsHackFinished && AliveEnemiesAmount < EnemiesOnSceneLimit)
 	{
+		bAsyncLoadInProcess = true;
 		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, CurrentTerminalRoomMode, true, [this] { IncreaseAliveEnemiesAmount(); });
 	}
 }

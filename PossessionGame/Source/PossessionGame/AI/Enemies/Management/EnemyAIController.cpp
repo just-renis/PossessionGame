@@ -53,6 +53,7 @@ void AEnemyAIController::SetupStateTree()
 		StateTreeData.SetEQSTargetRef(EQSTarget);
 		StateTreeData.SetStateTreeRef(StateTree);
 		StateTree->StartLogic();
+		Proprietor->AI_SetupShootLogic();
 	}
 }
 

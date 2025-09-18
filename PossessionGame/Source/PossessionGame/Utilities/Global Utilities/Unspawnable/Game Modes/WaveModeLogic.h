@@ -10,7 +10,7 @@ UCLASS()
 class POSSESSIONGAME_API UWaveModeLogic : public UGameModeBaseLogic
 {
 	GENERATED_BODY()
-	
+
 	bool bWaveNotStarted = false;
 	int32 CurrentWave = 1;
 	int32 EnemiesPerWave;

@@ -40,8 +40,10 @@ void UWaveModeLogic::SetupTimers()
 
 void UWaveModeLogic::HandleSpawning()
 {
+	if (bAsyncLoadInProcess) return;
 	if (EnemiesLeftToKill > 0 && AliveEnemiesAmount < EnemiesOnSceneLimit)
 	{
+		bAsyncLoadInProcess = true;
 		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), true, [this] { AfterSpawnEnemyCallback(); });
 	}
 	else if (!bWaveNotStarted && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) WaveCompleted();
@@ -98,6 +100,7 @@ void UWaveModeLogic::WaveCompleted()
 
 void UWaveModeLogic::AfterSpawnEnemyCallback()
 {
+	bAsyncLoadInProcess = false;
 	AliveEnemiesAmount++;
 	EnemiesLeftToKill--;
 }

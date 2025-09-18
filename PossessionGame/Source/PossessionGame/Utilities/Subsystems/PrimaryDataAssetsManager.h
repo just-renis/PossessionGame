@@ -203,7 +203,6 @@ public:
 private:
 	bool bIsInitialized = false;
 	bool bCanAsyncLoadHappen = true;
-	bool bIsSpawnInProcess = false;
 	bool bTutorialIsFinished = false;
 	bool bIsCloneSpawnInProcess = false;
 	int32 TotalSpawnedEnemies = 0;

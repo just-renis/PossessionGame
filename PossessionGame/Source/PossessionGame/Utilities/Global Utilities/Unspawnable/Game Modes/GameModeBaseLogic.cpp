@@ -50,6 +50,12 @@ void UGameModeBaseLogic::ResetTaskProgress() const
 	WaveManagerHUD->UpdateTaskProgress(0.f, 1.f);
 }
 
+void UGameModeBaseLogic::IncreaseAliveEnemiesAmount()
+{
+	bAsyncLoadInProcess = false;
+	AliveEnemiesAmount++;
+}
+
 void UGameModeBaseLogic::FadeOutObjectivePanel() const
 {
 	if (!WaveManagerHUD) return;

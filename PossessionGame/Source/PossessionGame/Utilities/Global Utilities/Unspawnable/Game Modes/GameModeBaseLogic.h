@@ -16,6 +16,7 @@ class POSSESSIONGAME_API UGameModeBaseLogic : public UObject
 public:
 	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData);
 protected:
+	bool bAsyncLoadInProcess = false;
 	int32 AliveEnemiesAmount = 0;
 	int32 EnemiesOnSceneLimit;
 	float SpawnRate;
@@ -33,7 +34,7 @@ protected:
 	virtual void Finalize();
 	void PlaySound(const ESound InSoundName) const;
 	virtual void ResetTaskProgress() const;
-	void IncreaseAliveEnemiesAmount() { AliveEnemiesAmount++; }
+	void IncreaseAliveEnemiesAmount();
 	void FadeOutObjectivePanel() const;
 	virtual void HandleSpawning() {}
 	virtual void FadeInObjectivePanel() const;
