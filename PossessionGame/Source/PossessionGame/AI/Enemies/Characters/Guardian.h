@@ -15,6 +15,8 @@ public:
 	void AI_SetFirstAbilityUsageState(const bool bState) { bIsFirstAbilityInUse = bState; }
 	void AI_ToggleShieldVfx(const bool bState);
 	void AI_ToggleMeshShieldAbilityState(const bool bState);
+
+	void P_LaunchVectorBlast() const;
 	
 	void SetCustomTimeDilation(const float InDilation);
 	void ToggleShield(const bool bState);

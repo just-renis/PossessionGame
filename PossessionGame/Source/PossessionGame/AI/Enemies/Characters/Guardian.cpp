@@ -39,6 +39,12 @@ void AGuardian::AI_ToggleMeshShieldAbilityState(const bool bState)
 	MID_EnemyAbilityShield->SetScalarParameterValue("Width", bState ? 0.2f : 0.f);
 }
 
+void AGuardian::P_LaunchVectorBlast() const
+{
+	UE_LOG(LogTemp, Error, TEXT("P_LaunchVectorBlast"));
+	Weapon->ShootProjectile(EPoolObject::VectorBlastProjectile, true);
+}
+
 void AGuardian::SetCustomTimeDilation(const float InDilation)
 {
 	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f / InDilation);

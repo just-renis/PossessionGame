@@ -94,6 +94,8 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 			}
 		case EUpgrade::GuardianAbility2:
 			break;
+		case EUpgrade::GuardianAbility3:
+			break;
 		case EUpgrade::RangerAbility1:
 			switch (InUpgradeAttribute)
 			{

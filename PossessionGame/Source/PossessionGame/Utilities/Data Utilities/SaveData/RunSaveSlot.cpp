@@ -82,7 +82,7 @@ int32 URunSaveSlot::GetCurrentLevelSumOfCharacterAbilities(const ECharacterType 
 	{
 		case ECharacterType::Ranger: return GetCurrentLevel(EUpgrade::RangerAbility1) + GetCurrentLevel(EUpgrade::RangerAbility2) + GetCurrentLevel(EUpgrade::RangerAbility3);
 		case ECharacterType::Trickster: return GetCurrentLevel(EUpgrade::TricksterAbility1) + GetCurrentLevel(EUpgrade::TricksterAbility2) + GetCurrentLevel(EUpgrade::TricksterAbility3);
-		case ECharacterType::Guardian: return GetCurrentLevel(EUpgrade::GuardianAbility1) + GetCurrentLevel(EUpgrade::GuardianAbility2);
+		case ECharacterType::Guardian: return GetCurrentLevel(EUpgrade::GuardianAbility1) + GetCurrentLevel(EUpgrade::GuardianAbility2) + GetCurrentLevel(EUpgrade::GuardianAbility3);
 		default: ;
 	}
 	return 0;
@@ -145,6 +145,7 @@ EUpgrade URunSaveSlot::GetUpgradeByAbilityName(const EAbility InAbilityName)
 	{
 		case EAbility::GuardianAbility1: return EUpgrade::GuardianAbility1;
 		case EAbility::GuardianAbility2: return EUpgrade::GuardianAbility2;
+		case EAbility::GuardianAbility3: return EUpgrade::GuardianAbility3;
 		case EAbility::RangerAbility1: return EUpgrade::RangerAbility1;
 		case EAbility::RangerAbility2: return EUpgrade::RangerAbility2;
 		case EAbility::RangerAbility3: return EUpgrade::RangerAbility3;
@@ -184,7 +185,7 @@ TArray<EUpgrade> URunSaveSlot::GetUpgradesByPoolObjectName(const EPoolObject InP
 	{
 		switch (InPoolObjectName)
 		{
-			case EPoolObject::GuardianProjectile: return TArray({ EUpgrade::GuardianAbility1, EUpgrade::GuardianAbility2 });
+			case EPoolObject::GuardianProjectile: return TArray({ EUpgrade::GuardianAbility1, EUpgrade::GuardianAbility2, EUpgrade::GuardianAbility3 });
 			case EPoolObject::RangerProjectile: case EPoolObject::RangerGrenadeLauncherProjectile: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2, EUpgrade::RangerAbility3 });
 			case EPoolObject::TricksterProjectile: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
 			default: ;
@@ -197,7 +198,7 @@ TArray<EUpgrade> URunSaveSlot::GetHpUpgradesByCharacterName(const ECharacterType
 {
 	switch (InCharacterName)
 	{
-		case ECharacterType::Guardian: return TArray({ EUpgrade::GuardianAbility1, EUpgrade::GuardianAbility2 });
+		case ECharacterType::Guardian: return TArray({ EUpgrade::GuardianAbility1, EUpgrade::GuardianAbility2, EUpgrade::GuardianAbility3 });
 		case ECharacterType::Trickster: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
 		case ECharacterType::Ranger: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2, EUpgrade::RangerAbility3 });
 		default: ;
