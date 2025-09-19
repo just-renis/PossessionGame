@@ -37,6 +37,7 @@ AProjectile::AProjectile()
 
 void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const int32 InWhich)
 {
+	StartLocation = GetActorLocation();
 	ProjectileData = InProjectileData;
 	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
 	SetupData(ProjectileData.bIsPlayerProjectile, InWhich);
@@ -84,6 +85,7 @@ void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotati
 void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const FRotator& Rotation)
 {
 	Super::InitCloneProjectile(InProjectileData, Rotation);
+	StartLocation = GetActorLocation();
 	ProjectileData = InProjectileData;
 	ProjectileData.ProjectileName = EPoolObject::CloneProjectile;
 	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
@@ -135,7 +137,6 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	if (!ProjectileData.bIsProjectileDealingDamageItself) return;
 	if (OtherActor->ActorHasTag("Destructible"))
 	{
-		if (ProjectileData.bIsPlayerProjectile) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, Hit.Location, OtherActor->GetActorForwardVector());
 		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
 		return;
 	}
@@ -227,16 +228,12 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
 		return;
 	}
-	const bool bIsCritical = Hit.BoneName == "head";
-	float DamageAfterCritical = ProjectileData.GetProprietor() ? Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f) : Damage;
-	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(OtherActor))
-	{
-		DamageAfterCritical *= Enemy->GetDamageReduction();
-		UGameplayStatics::ApplyPointDamage(OtherActor, DamageAfterCritical, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
-		if (!Enemy->GetIsAlive()) return;
-		if (ProjectileData.GetProprietor()) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
-		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(bIsCritical ? FLinearColor(0.9059f, 0.f, 0.1098f) : Enemy->GetDamageNumberColor(), DamageAfterCritical, Hit.Location, OtherActor->GetActorForwardVector());
-	}
+	const bool bIsCritical = Hit.BoneName.IsEqual(FName("head"));
+	const float DamageAfterCritical = ProjectileData.GetProprietor() ? Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f) : Damage;
+	FHitResult ModifiableHit = Hit;
+	ModifiableHit.TraceStart = StartLocation;
+	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAfterCritical, (ModifiableHit.Location - GetActorLocation()).GetSafeNormal() * 2.f, ModifiableHit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
+	if (ProjectileData.GetProprietor()) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 }
 
 void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, true); }

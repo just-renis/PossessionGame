@@ -23,6 +23,7 @@ public:
 	
 	void SpawnShield();
 private:
+	bool bIsMineSpecialUpgrade1Taken = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade Launcher", meta = (AllowPrivateAccess = true))
 	float GrenadeTriggerRadiusInMetres = 10.f;
 	UPROPERTY()
@@ -57,4 +58,5 @@ private:
 	virtual void InitiateDeath() override;
 	virtual void SetEmpEffect(const float InEffectDuration) override;
 	virtual void EmpEffectEnded() override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };

@@ -122,6 +122,7 @@ protected:
 	bool bAffectedByEmp = false;
 	float MaxHp;
 	float CurrentHp;
+	float DamageReduction = 1.f;
 	ECharacterType CharacterName;
 	EVariation Variation;
 	EMoveMode CurrentMoveMode;
@@ -129,6 +130,10 @@ protected:
 	float StompRadiusInMeters = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompDamage = 40.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
+	FLinearColor DamageNumberColor = FLinearColor::White;
+	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
+	FLinearColor CriticalDamageNumberColor = FLinearColor::Red;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -232,7 +237,6 @@ private:
 	float MeshEmissiveMaterialOpacityValue = 0.f;
 	float FovChangeTick;
 	float TargetFov;
-	float DamageReduction = 1.f;
 	float DefaultCameraZ;
 	float ActionSpeed = 1.f;
 	float MovementSpeedMultiplier = 1.f;
@@ -281,8 +285,6 @@ private:
 	float SlideHeight = 39.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
 	float SlideCameraZ = 0.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
-	FLinearColor DamageNumberColor = FLinearColor::White;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))

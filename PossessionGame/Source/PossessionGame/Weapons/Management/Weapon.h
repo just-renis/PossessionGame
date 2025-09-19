@@ -136,7 +136,7 @@ protected:
 	
 	virtual void BeginPlay() override;
 	virtual void Tick(const float DeltaTime) override;
-	virtual void HitScanLogic();
+	void HitScanLogic();
 	void MakeShootingCameraShake() const;
 	virtual void SetMeshes(const EWeapon InPrimaryDataAssetName);
 	void SetupHandsAnimInstance();

@@ -21,10 +21,7 @@ void APoisonArea::DealOvertimeDamage()
 	for (int32 i = 0; i < Targets.Num(); i++)
 	{
 		if (!Targets[i]) continue;
-		const float TrueDamage = Damage * Targets[i]->GetDamageReduction();
-		const FVector TargetSocketLocation = Targets[i]->GetSocketLocation("DeathSocket");
-		Targets[i]->ReceiveDamage(TrueDamage, DamageReason);
-		if (bIsPlayer) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(Targets[i]->GetDamageNumberColor(), TrueDamage, TargetSocketLocation, TargetSocketLocation.ForwardVector);
+		Targets[i]->ReceiveDamage(Damage, DamageReason);
 	}
 }
 

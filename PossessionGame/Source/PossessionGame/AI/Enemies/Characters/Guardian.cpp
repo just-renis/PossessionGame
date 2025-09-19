@@ -199,14 +199,9 @@ float AGuardian::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 		bImmuneToFirstHit = false;
 		return 0.f;
 	}
-	if (EventInstigator && bReflectDamageEnabled)
+	if (bReflectDamageEnabled && EventInstigator && EventInstigator->GetPawn())
 	{
-		if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(EventInstigator->GetPawn()))
-		{
-			const float TrueDamage = Damage * 0.5f;
-			UGameplayStatics::ApplyDamage(Enemy, TrueDamage, nullptr, this, UDamageType::StaticClass());
-			(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(Enemy->GetDamageNumberColor(), TrueDamage, Enemy->GetActorLocation(), Enemy->GetActorForwardVector());
-		}
+		UGameplayStatics::ApplyDamage(EventInstigator->GetPawn(), Damage * 0.5f, nullptr, this, UDamageType::StaticClass());
 	}
 	return Damage;
 }

@@ -599,6 +599,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_RangerMineRadius", EVfx::RangerMineRadius);
 	VfxsMap.Add("PA_RangerMineImpact", EVfx::RangerMineImpact);
 	VfxsMap.Add("PA_RangerMineExplosion", EVfx::RangerMineExplosion);
+	VfxsMap.Add("PA_RangerMineSpecialRadius", EVfx::RangerMineSpecialRadius);
 	VfxsMap.Add("PA_MinionMuzzle", EVfx::MinionMuzzle);
 	VfxsMap.Add("PA_MinionBulletTrail", EVfx::MinionBulletTrail);
 	VfxsMap.Add("PA_MinionBulletImpact", EVfx::MinionBulletImpact);

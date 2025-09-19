@@ -4,6 +4,8 @@
 #include "Throwable.h"
 #include "RangerMine.generated.h"
 
+enum class EUpgrade : uint8;
+enum class EUpgradeAttribute : uint8;
 enum class ESound : uint16;
 class USphereComponent;
 class UNiagaraComponent;
@@ -48,6 +50,7 @@ private:
 	void DealAreaDamage();
 	void Explode();
 	void PlaySound(const ESound InSoundName);
+	void ChangeRadiusVfx(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttributeName);
 	UFUNCTION()
 	void TriggeredCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

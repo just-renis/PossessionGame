@@ -2,17 +2,21 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "Engine/DamageEvents.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Destructibles/RangerShield.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Projectiles/Throwables/RangerMine.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Animation Instances/Hands/RangerHandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -153,6 +157,7 @@ void ARanger::BeginPlay()
 {
 	CharacterName = ECharacterType::Ranger;
 	Super::BeginPlay();
+	bIsMineSpecialUpgrade1Taken = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1);
 }
 
 void ARanger::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -200,4 +205,46 @@ void ARanger::EmpEffectEnded()
 	if (!AI_GrenadeTrigger || AI_GrenadeTrigger->GetCollisionEnabled() != ECollisionEnabled::QueryOnly) return;
 	AI_GrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AI_GrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (!bIsMineSpecialUpgrade1Taken) return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	float Damage = DamageAmount * DamageReduction;
+	const FRadialDamageEvent* RadialDamageEvent = nullptr;
+	const FPointDamageEvent* PointDamageEvent = nullptr;
+	FVector HitLocation = GetActorLocation();
+	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
+	{
+		RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
+		HitLocation = RadialDamageEvent->Origin;
+	}
+	else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+	{
+		PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
+		HitLocation = PointDamageEvent->HitInfo.TraceStart;
+	}
+	const float Distance = FVector::Dist(HitLocation, GetActorLocation()) * 0.01f;
+	const float ProximityMultiplier = 0.5f + FMath::Clamp(FMath::FloorToFloat(Distance), 0.f, 5.f) * 0.1f;
+	Damage *= ProximityMultiplier;
+	if (GetMesh()->IsSimulatingPhysics())
+	{
+		if (RadialDamageEvent) GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
+		else if (PointDamageEvent) GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
+		return 0.f;
+	}
+	if (bIsHijacked)
+	{
+		ReceiveDamage(Damage, EDamageReason::None);
+		return Damage;
+	}
+	if (RadialDamageEvent) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), Damage, GetActorLocation(), GetActorForwardVector());
+	else if (PointDamageEvent)
+	{
+		const bool bIsCritical = PointDamageEvent->HitInfo.BoneName.IsEqual(FName("head"));
+		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? CriticalDamageNumberColor : DamageNumberColor, Damage, PointDamageEvent->HitInfo.Location, GetActorForwardVector());
+	}
+	else (void)DelegateManager->ShowDamageNumber.ExecuteIfBound(DamageNumberColor, Damage, GetActorLocation(), GetActorForwardVector());
+	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None);
+	return Damage;
 }

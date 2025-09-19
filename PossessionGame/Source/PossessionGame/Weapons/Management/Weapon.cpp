@@ -263,7 +263,11 @@ void AWeapon::HitScanLogic()
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, QueryParams))
 	{
 		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), nullptr, HitResult.Location, HitResult.ImpactNormal.Rotation(), Proprietor->GetVariation());
-		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible")) DealPointDamage(HitResult);
+		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible"))
+		{
+			HitResult.TraceStart = StartLocation;
+			DealPointDamage(HitResult);
+		}
 	}
 }
 
@@ -314,27 +318,18 @@ void AWeapon::DisableHandsMesh() const
 
 void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 {
-	const bool bIsCritical = InHitResult.BoneName == "head";
 	const float SecretBoostDamage = P_ReceiveHitScanDamage() + P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
 	const float AfterUpgradeApplianceDamage = SecretBoostDamage + P_UpgradeDamageAppliance();
 	const float Damage = AfterUpgradeApplianceDamage * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
-	float CriticalDamage = bIsCritical ? Damage * P_Data->GetCriticalDamage() : Damage;
-	if (FMath::IsNearlyEqual(CriticalDamage, 0.f, 0.01f)) return;
+	if (FMath::IsNearlyEqual(Damage, 0.f, 0.01f)) return;
+	const bool bIsCritical = InHitResult.BoneName.IsEqual(FName("head"));
+	(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 	if (InHitResult.GetActor()->ActorHasTag("Destructible"))
 	{
-		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
-		UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), CriticalDamage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), Damage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 		return;
 	}
-	if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(InHitResult.GetActor()))
-	{
-		CriticalDamage *= Enemy->GetDamageReduction();
-		UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), CriticalDamage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
-		if (!Enemy->GetIsAlive()) return;
-		const FLinearColor DamageNumberColor = Enemy->GetDamageNumberColor();
-		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
-		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? FLinearColor(0.9059f, 0.f, 0.1098f) : DamageNumberColor, CriticalDamage, InHitResult.Location, InHitResult.GetActor()->GetActorForwardVector());
-	}
+	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), Damage * (bIsCritical ? P_Data->GetCriticalDamage() : 1.f), (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 
 void AWeapon::WeaponReloadMontageFinished() { if (bIsPossessed) P_UpdateAmmoTextHUD(); }
