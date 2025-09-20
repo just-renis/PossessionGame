@@ -9,7 +9,6 @@ void UGuardianAbility3::P_Execute()
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Shoot);
 	Proprietor->P_LaunchVectorBlast();
-	UE_LOG(LogTemp, Error, TEXT("EXECUTE"));
 	Super::P_Execute();
 }
 

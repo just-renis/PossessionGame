@@ -80,5 +80,7 @@ enum class EVfx : uint16
 	DoorBreak,
 	CloneBullet,
 	CloneBulletImpact,
-	CloneSpawn
+	CloneSpawn,
+	VectorBlastImpact,
+	VectorBlastTrail
 };

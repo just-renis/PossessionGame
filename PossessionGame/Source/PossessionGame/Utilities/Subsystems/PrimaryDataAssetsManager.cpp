@@ -102,6 +102,8 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::Muzzle }), EVfx::GuardianMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::Trail }), EVfx::GuardianBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::GuardianProjectile, EVfxType::Impact }), EVfx::GuardianBulletImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::VectorBlastProjectile, EVfxType::Impact }), EVfx::VectorBlastImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::VectorBlastProjectile, EVfxType::Trail }), EVfx::VectorBlastTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Trail }), EVfx::MinionBossBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Muzzle }), EVfx::MinionBossMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::CloneProjectile, EVfxType::Impact }), EVfx::CloneBulletImpact }
@@ -563,6 +565,9 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_RangerDeployMine", ESound::RangerDeployMine);
 	SoundMap.Add("PA_RangerThrowMine", ESound::RangerThrowMine);
 	SoundMap.Add("PA_RangerDetonateMine", ESound::RangerDetonateMine);
+	SoundMap.Add("PA_VectorBlastBounce", ESound::VectorBlastBounce);
+	SoundMap.Add("PA_VectorBlastHit", ESound::VectorBlastHit);
+	SoundMap.Add("PA_VectorBlastLaunch", ESound::VectorBlastLaunch);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -663,6 +668,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_CloneBullet", EVfx::CloneBullet);
 	VfxsMap.Add("PA_CloneBulletImpact", EVfx::CloneBulletImpact);
 	VfxsMap.Add("PA_CloneSpawn", EVfx::CloneSpawn);
+	VfxsMap.Add("PA_VectorBlastTrail", EVfx::VectorBlastTrail);
+	VfxsMap.Add("PA_VectorBlastImpact", EVfx::VectorBlastImpact);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

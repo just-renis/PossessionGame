@@ -41,7 +41,7 @@ void AGuardian::AI_ToggleMeshShieldAbilityState(const bool bState)
 
 void AGuardian::P_LaunchVectorBlast()
 {
-	UE_LOG(LogTemp, Error, TEXT("P_LaunchVectorBlast"));
+	AssetsManager->PlaySound2D(ESound::VectorBlastLaunch);
 	Weapon->ShootProjectile(EPoolObject::VectorBlastProjectile, true);
 	FTimerDelegate TimerDel;
 	TimerDel.BindUFunction(this, FName("ShootSecondWeaponProjectile"), EPoolObject::VectorBlastProjectile, true, false);
@@ -253,5 +253,6 @@ void AGuardian::ToggleShieldVfx(const bool bState, const EVfx InVfxName)
 
 void AGuardian::ShootSecondWeaponProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon)
 {
+	AssetsManager->PlaySound2D(ESound::VectorBlastLaunch);
 	Weapon->ShootProjectile(InProjectileName, bIsFromAbility, bFromFirstWeapon);
 }
