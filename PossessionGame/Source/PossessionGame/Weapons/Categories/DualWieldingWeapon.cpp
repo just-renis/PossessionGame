@@ -137,3 +137,9 @@ void ADualWieldingWeapon::MuzzleFlashLogic()
 	FirstWeapon->MuzzleFlashLogic();
 	SecondWeapon->MuzzleFlashLogic();
 }
+
+void ADualWieldingWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon)
+{
+	if (bFromFirstWeapon) FirstWeapon->ShootProjectile(InProjectileName, bIsFromAbility);
+	else SecondWeapon->ShootProjectile(InProjectileName, bIsFromAbility);
+}

@@ -39,10 +39,13 @@ void AGuardian::AI_ToggleMeshShieldAbilityState(const bool bState)
 	MID_EnemyAbilityShield->SetScalarParameterValue("Width", bState ? 0.2f : 0.f);
 }
 
-void AGuardian::P_LaunchVectorBlast() const
+void AGuardian::P_LaunchVectorBlast()
 {
 	UE_LOG(LogTemp, Error, TEXT("P_LaunchVectorBlast"));
 	Weapon->ShootProjectile(EPoolObject::VectorBlastProjectile, true);
+	FTimerDelegate TimerDel;
+	TimerDel.BindUFunction(this, FName("ShootSecondWeaponProjectile"), EPoolObject::VectorBlastProjectile, true, false);
+	GetWorldTimerManager().SetTimer(ShootSecondWeaponProjectileHandle, TimerDel, 0.2f, false);
 }
 
 void AGuardian::SetCustomTimeDilation(const float InDilation)
@@ -246,4 +249,9 @@ void AGuardian::ToggleShieldVfx(const bool bState, const EVfx InVfxName)
 		if (bState) GuardianShieldComponent->Activate(true);
 		else GuardianShieldComponent->DeactivateImmediate();
 	}
+}
+
+void AGuardian::ShootSecondWeaponProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon)
+{
+	Weapon->ShootProjectile(InProjectileName, bIsFromAbility, bFromFirstWeapon);
 }

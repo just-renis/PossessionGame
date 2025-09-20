@@ -49,7 +49,12 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 		}
 		bHasBeenPooled = true;
 	}
-	else AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail)), nullptr, BulletTrailComponent, false, ProjectileData.GetProprietor()->GetVariation()); // FIX THIS CRAP LATER.
+	else
+	{
+		const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail);
+		if (VfxName == EVfx::None) return;
+		AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(VfxName), nullptr, BulletTrailComponent, false, ProjectileData.GetProprietor()->GetVariation()); // FIX THIS CRAP LATER.
+	}
 }
 
 void AProjectile::SetDirection(const FVector& InDirection) const { MovementComponent->Velocity = InDirection * MovementComponent->MaxSpeed; }
@@ -124,6 +129,38 @@ void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool b
 	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), nullptr,
 	InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetVariation() : EVariation::Default, Attributes);
 }
+
+void AProjectile::DealAreaDamage()
+{
+	TArray<TObjectPtr<AActor>> IgnoredActors;
+	if (!ProjectileData.bCanBeDamagedByOwnProjectile)
+	{
+		if (!ProjectileData.bIsPlayerProjectile) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
+		else IgnoredActors = { ProjectileData.GetProprietor() };
+	}
+	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Damage, ProjectileData.RadiusMinimumDamage,
+	GetActorLocation(), ProjectileData.DamageInnerRadius, ProjectileData.DamageOuterRadius, ProjectileData.DamageFalloff, UDamageType::StaticClass(),
+	IgnoredActors, this, ProjectileData.GetProprietor()->GetController(), ECC_GameTraceChannel4);
+	//	DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 12, FColor::Green, false, 3.f);
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), 500.f, 12, FColor::Red, false, 3.f);
+}
+
+void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)
+{
+	if (!bIsPlayerProjectile)
+	{
+		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
+		return;
+	}
+	const bool bIsCritical = Hit.BoneName.IsEqual(FName("head"));
+	const float DamageAfterCritical = ProjectileData.GetProprietor() ? Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f) : Damage;
+	FHitResult ModifiableHit = Hit;
+	ModifiableHit.TraceStart = StartLocation;
+	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAfterCritical, (ModifiableHit.Location - GetActorLocation()).GetSafeNormal() * 2.f, ModifiableHit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
+	if (ProjectileData.GetProprietor()) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
+}
+
+void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, true); }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
@@ -205,38 +242,6 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 		if (ProjectileData.GetProprietor()->GetIsMutant()) Damage -= Damage * 0.01f * ProjectileData.GetProprietor()->GetAIData()->GetMutantDamageIncreasePercentage();
 	}
 }
-
-void AProjectile::DealAreaDamage()
-{
-	TArray<TObjectPtr<AActor>> IgnoredActors;
-	if (!ProjectileData.bCanBeDamagedByOwnProjectile)
-	{
-		if (!ProjectileData.bIsPlayerProjectile) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
-		else IgnoredActors = { ProjectileData.GetProprietor() };
-	}
-	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Damage, ProjectileData.RadiusMinimumDamage,
-	GetActorLocation(), ProjectileData.DamageInnerRadius, ProjectileData.DamageOuterRadius, ProjectileData.DamageFalloff, UDamageType::StaticClass(),
-	IgnoredActors, this, ProjectileData.GetProprietor()->GetController(), ECC_GameTraceChannel4);
-//	DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 12, FColor::Green, false, 3.f);
-	//DrawDebugSphere(GetWorld(), GetActorLocation(), 500.f, 12, FColor::Red, false, 3.f);
-}
-
-void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)
-{
-	if (!bIsPlayerProjectile)
-	{
-		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
-		return;
-	}
-	const bool bIsCritical = Hit.BoneName.IsEqual(FName("head"));
-	const float DamageAfterCritical = ProjectileData.GetProprietor() ? Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f) : Damage;
-	FHitResult ModifiableHit = Hit;
-	ModifiableHit.TraceStart = StartLocation;
-	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAfterCritical, (ModifiableHit.Location - GetActorLocation()).GetSafeNormal() * 2.f, ModifiableHit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
-	if (ProjectileData.GetProprietor()) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
-}
-
-void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, true); }
 
 void AProjectile::DestroyThis()
 {
