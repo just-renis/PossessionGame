@@ -1,5 +1,11 @@
 ﻿#include "GuardianProjectile.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EVariation.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Weapons/Character Weapons/GuardianWeapon.h"
 
@@ -8,4 +14,59 @@ void AGuardianProjectile::P_VariationDamageAppliance()
 	if (EVariation::GuardianVariationGold != GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ProjectileData.GetProprietor()->GetCharacterName())) return;
 	const int32 NumIntervals = FMath::Clamp(FMath::FloorToInt(Cast<AGuardianWeapon>(ProjectileData.GetProprietor()->GetWeapon())->P_GetShootingHoldDuration() * 2.f), 0, 10);
 	Damage += DefaultDamage * 0.05f * NumIntervals;
+}
+
+void AGuardianProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+	bIsFirstSpecialBounceUpgradeTaken = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::GuardianAbility3, EUpgradeAttribute::Special1);
+	if (!bIsFirstSpecialBounceUpgradeTaken) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSpecialUpgradeAdded.AddUObject(this, &AGuardianProjectile::SpecialUpgradeTaken);
+	else SetupBounce();
+}
+
+void AGuardianProjectile::SpecialUpgradeTaken(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttributeName)
+{
+	bIsFirstSpecialBounceUpgradeTaken = InUpgradeName == EUpgrade::GuardianAbility3 && InSpecialUpgradeAttributeName == EUpgradeAttribute::Special1;
+	if (bIsFirstSpecialBounceUpgradeTaken)
+	{
+		SetupBounce();
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSpecialUpgradeAdded.RemoveAll(this);
+	}
+}
+
+void AGuardianProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (!bIsFirstSpecialBounceUpgradeTaken)
+	{
+		Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+		return;
+	}
+	if (OtherActor == this || OtherActor == nullptr) return;
+	if (++CurrentBounceAmount > MaxBounceAmount) DestroyThis();
+	SpawnFirstProjectileImpactVfx(Hit);
+	if (OtherActor->ActorHasTag("Destructible"))
+	{
+		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
+		return;
+	}
+	if (!OtherActor->ActorHasTag("Enemy")) return;
+	const bool bIsPlayerProjectile = Mesh->GetCollisionObjectType() == ECC_GameTraceChannel1;
+	if (bIsPlayerProjectile)
+	{
+		DealDamageToSentientActor(bIsPlayerProjectile, OtherActor, Hit);
+		return;
+	}
+	const bool bIsEnemyProjectile = Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2;
+	if (bIsEnemyProjectile && Cast<AEnemy>(OtherActor)->GetIsHijacked()) DealDamageToSentientActor(bIsPlayerProjectile, OtherActor, Hit);
+}
+
+void AGuardianProjectile::SetupBounce() const
+{
+	MovementComponent->bShouldBounce = true;
+}
+
+void AGuardianProjectile::DestroyThis()
+{
+	CurrentBounceAmount = 0;
+	Super::DestroyThis();
 }

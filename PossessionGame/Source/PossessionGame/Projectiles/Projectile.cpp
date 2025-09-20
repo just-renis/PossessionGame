@@ -162,6 +162,14 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 
 void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, true); }
 
+void AProjectile::DestroyThis()
+{
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
+	DisableProjectileComponents();
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);
+}
+
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor == this || OtherActor == nullptr) return;
@@ -222,10 +230,10 @@ void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 {
-	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AProjectile::DestroyThis, ProjectileData.LifeSpan, false);
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AProjectile::DestroyThis, GetModifiedLifeSpan());
 	const FAdditionalProjectileData AdditionalProjectileData = ProjectileData.GetMultiProjectileData(ProjectileData.Amount).Data[InWhich];
-	MovementComponent->InitialSpeed = AdditionalProjectileData.InitialSpeed;
-	MovementComponent->MaxSpeed = AdditionalProjectileData.MaxSpeed;
+	MovementComponent->InitialSpeed = AdditionalProjectileData.InitialSpeed + GetModifiedProjectileInitialSpeed(AdditionalProjectileData.InitialSpeed);
+	MovementComponent->MaxSpeed = AdditionalProjectileData.MaxSpeed + GetModifiedProjectileInitialSpeed(AdditionalProjectileData.MaxSpeed);
 	MovementComponent->ProjectileGravityScale = AdditionalProjectileData.GravityScale;
 	Damage = DefaultDamage = ProjectileData.Damage;
 	if (bIsPlayerProjectile)
@@ -241,12 +249,4 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 		AI_SetupUpgradesAppliance();
 		if (ProjectileData.GetProprietor()->GetIsMutant()) Damage -= Damage * 0.01f * ProjectileData.GetProprietor()->GetAIData()->GetMutantDamageIncreasePercentage();
 	}
-}
-
-void AProjectile::DestroyThis()
-{
-	GetWorldTimerManager().ClearTimer(DestroyHandle);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
-	DisableProjectileComponents();
-	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);
 }

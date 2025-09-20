@@ -46,13 +46,14 @@ FVector UEnemyCommunicator::GetFarthestEnemyLocation(const FVector& InFromLocati
 	return Enemies[Index]->GetActorLocation();
 }
 
-TObjectPtr<AActor> UEnemyCommunicator::GetClosestEnemy(const FVector& InFromLocation)
+TObjectPtr<AActor> UEnemyCommunicator::GetClosestEnemy(const FVector& InFromLocation, const TObjectPtr<AActor>& InIgnoreEnemy)
 {
 	if (!GetIsEnemiesAvailable()) return nullptr;
 	float Distance = FLT_MAX;
-	int32 Index = 0;
+	int32 Index = -1;
 	for (int32 i = 0; i < Enemies.Num(); i++)
 	{
+		if (InIgnoreEnemy == Enemies[i]) continue;
 		const float CalcDistance = FVector::DistSquared(InFromLocation, Enemies[i]->GetActorLocation());
 		if (CalcDistance < Distance)
 		{
@@ -60,6 +61,7 @@ TObjectPtr<AActor> UEnemyCommunicator::GetClosestEnemy(const FVector& InFromLoca
 			Index = i;
 		}
 	}
+	if (Index == -1) return nullptr;
 	return Enemies[Index];
 }
 

@@ -16,5 +16,9 @@ class POSSESSIONGAME_API AVectorBlastProjectile : public AProjectile
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> BounceSfx;
 
+	virtual float GetModifiedLifeSpan() const override;
+	virtual float GetModifiedProjectileInitialSpeed(const float InBaseInitialSpeed) const override;
+	virtual float GetModifiedProjectileMaxSpeed(const float InBaseMaxSpeed) const override;
+
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
 };

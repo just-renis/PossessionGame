@@ -16,6 +16,7 @@ enum class EUpgradeAttribute : uint8
     ReduceDamageTaken,
 	CloneAmount,
 	Cap,
+	ProjectileSpeed,
     Special1,
     Special2,
     Special3

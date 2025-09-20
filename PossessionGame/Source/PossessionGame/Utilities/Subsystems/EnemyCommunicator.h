@@ -22,7 +22,7 @@ public:
 	FVector GetTargetLocation() const;
 	TObjectPtr<AActor>& GetTarget() { return Target; }
 	FVector GetFarthestEnemyLocation(const FVector& InFromLocation);
-	TObjectPtr<AActor> GetClosestEnemy(const FVector& InFromLocation);
+	TObjectPtr<AActor> GetClosestEnemy(const FVector& InFromLocation, const TObjectPtr<AActor>& InIgnoreEnemy = nullptr);
 	FOnEQSFinish& GetEQSDelegate() { return OnEQSFinish; }
 	TArray<TObjectPtr<AActor>>& GetAllEnemies() { return Enemies; }
 

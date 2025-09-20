@@ -31,6 +31,8 @@ protected:
 	float DefaultDamage;
 	FProjectileData ProjectileData;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UProjectileMovementComponent> MovementComponent;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
@@ -38,6 +40,10 @@ protected:
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 	UPROPERTY()
 	TMap<FName, FNiagaraAttribute> Attributes;
+	
+	virtual float GetModifiedLifeSpan() const { return ProjectileData.LifeSpan; }
+	virtual float GetModifiedProjectileInitialSpeed(const float InBaseInitialSpeed) const { return 0.f; }
+	virtual float GetModifiedProjectileMaxSpeed(const float InBaseMaxSpeed) const { return 0.f; }
 
 	virtual void BeginPlay() override;
 	void PlaySound(const ESound InSoundName);
@@ -50,13 +56,12 @@ protected:
 	void DealAreaDamage();
 	void DealDamageToSentientActor(const bool bIsPlayerProjectile, const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
 	virtual void SpawnFirstProjectileImpactVfx(const FHitResult& Hit);
+	virtual void DestroyThis();
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
 	bool bHasBeenPooled = false;
 	FVector StartLocation;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UProjectileMovementComponent> MovementComponent;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
 	UPROPERTY()
@@ -79,5 +84,4 @@ private:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
 	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) {}
-	virtual void DestroyThis();
 };

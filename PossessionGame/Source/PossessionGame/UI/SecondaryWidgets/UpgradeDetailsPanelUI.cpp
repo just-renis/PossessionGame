@@ -59,6 +59,7 @@ FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const T
 		case EUpgradeAttribute::ReduceDamageTaken: return GetRichTextTag(bForEnemy) + "-" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "DamageTaken", "DAMAGE TAKEN").ToString() + "</>\n";
 		case EUpgradeAttribute::CloneAmount: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "CloneAmount", "CLONE AMOUNT").ToString() + "</>\n";
 		case EUpgradeAttribute::Cap: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Cap", "CAP").ToString() + "</>\n";
+		case EUpgradeAttribute::ProjectileSpeed: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "ProjectileSpeed", "PROJECTILE SPEED").ToString() + "</>\n";
 		default: return GetSpecialUpgradeText(InAttribute.Key, bForEnemy);
 	}
 }
@@ -95,6 +96,17 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 		case EUpgrade::GuardianAbility2:
 			break;
 		case EUpgrade::GuardianAbility3:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.1", "PER EACH ENEMY HIT TRANSFER THE DAMAGE TO CLOSEST ENEMY.</>").ToString();
+					}
+					return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.2", "<UpgradeAttributeText>PROJECTILES BOUNCE</>").ToString() +
+					GetRichTextTag(true) + " 2 </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.3", "<UpgradeAttributeText>TIMES.</>").ToString();
+				default: break;
+			}
 			break;
 		case EUpgrade::RangerAbility1:
 			switch (InUpgradeAttribute)
