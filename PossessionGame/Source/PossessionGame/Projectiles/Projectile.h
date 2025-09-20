@@ -47,6 +47,9 @@ protected:
 	virtual void InitCloneProjectile(FProjectileData& InProjectileData, const FRotator& Rotation) override;
 	void DisableProjectileComponents() const;
 	virtual void SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact);
+	void DealAreaDamage();
+	void DealDamageToSentientActor(const bool bIsPlayerProjectile, const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
+	virtual void SpawnFirstProjectileImpactVfx(const FHitResult& Hit);
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
@@ -75,9 +78,6 @@ private:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
-	void DealAreaDamage();
-	void DealDamageToSentientActor(const bool bIsPlayerProjectile, const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
-	virtual void SpawnFirstProjectileImpactVfx(const FHitResult& Hit);
 	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) {}
 	virtual void DestroyThis();
 };

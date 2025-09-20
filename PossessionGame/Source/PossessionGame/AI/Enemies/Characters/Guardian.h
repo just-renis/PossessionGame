@@ -4,6 +4,8 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "Guardian.generated.h"
 
+enum class EPoolObject : uint8;
+
 UCLASS()
 class POSSESSIONGAME_API AGuardian : public AEnemy
 {
@@ -16,7 +18,7 @@ public:
 	void AI_ToggleShieldVfx(const bool bState);
 	void AI_ToggleMeshShieldAbilityState(const bool bState);
 
-	void P_LaunchVectorBlast() const;
+	void P_LaunchVectorBlast();
 	
 	void SetCustomTimeDilation(const float InDilation);
 	void ToggleShield(const bool bState);
@@ -45,6 +47,8 @@ private:
 	TObjectPtr<UNiagaraComponent> GuardianShieldComponent;
 	UPROPERTY()
 	FTimerHandle ShieldUpdateHandle;
+	UPROPERTY()
+	FTimerHandle ShootSecondWeaponProjectileHandle;
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
@@ -74,4 +78,6 @@ private:
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) override;
 	virtual void DisableAllVfxAfterPossession() override;
 	void ToggleShieldVfx(const bool bState, const EVfx InVfxName);
+	UFUNCTION()
+	void ShootSecondWeaponProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon);
 };

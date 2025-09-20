@@ -50,6 +50,8 @@ protected:
 private:
     UPROPERTY()
     FWeaponCyclingState CyclingState;
+    UPROPERTY()
+    FTimerHandle ShootSecondWeaponProjectileHandle;
     
     virtual void P_SetVariationMaterial() override;
 
@@ -60,4 +62,5 @@ private:
     void NonCyclingModeLogic();
     virtual void SetReverseActionSpeed(const float InActionSpeed) override;
     virtual void MuzzleFlashLogic() override;
+    virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon) override;
 };

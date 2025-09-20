@@ -5,5 +5,11 @@ void UGuardianHandsAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInt
 {
 	Super::OnMontageEnd(Montage, bIsInterrupted);
 	const TObjectPtr<UAnimMontage>* OverChargeMontage = Montages.Find(EHandsAnimState::OverCharge);
-	if (OverChargeMontage && Montage == OverChargeMontage->Get()) (void)OnHandsMontageEnd.ExecuteIfBound(false);
+	if (OverChargeMontage && Montage == OverChargeMontage->Get())
+	{
+		(void)OnHandsMontageEnd.ExecuteIfBound(false);
+		return;
+	}
+	const TObjectPtr<UAnimMontage>* ShootMontage = Montages.Find(EHandsAnimState::Shoot);
+	if (ShootMontage && Montage == ShootMontage->Get()) (void)OnHandsMontageEnd.ExecuteIfBound(false);
 }

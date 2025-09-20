@@ -1,9 +1,13 @@
 ﻿#include "GuardianAbility3.h"
 #include "PossessionGame/AI/Enemies/Characters/Guardian.h"
+#include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
+#include "PossessionGame/Weapons/Management/Weapon.h"
 
 void UGuardianAbility3::P_Execute()
 {
 	Proprietor->SetIsActionInMotion(true);
+	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Shoot);
 	Proprietor->P_LaunchVectorBlast();
 	UE_LOG(LogTemp, Error, TEXT("EXECUTE"));
 	Super::P_Execute();
