@@ -75,6 +75,7 @@ enum class ESound : uint16
 	UsbInsert,
 	UsbCollect,
 	ForceFieldDissolve,
+	ForceFieldDissolveWarning,
 	GatesOpen,
 	QuickMelee,
 	SecretCrateOpen,

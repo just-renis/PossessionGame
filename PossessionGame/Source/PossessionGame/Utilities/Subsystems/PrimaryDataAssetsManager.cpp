@@ -531,6 +531,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_UsbInsert", ESound::UsbInsert);
 	SoundMap.Add("PA_GatesOpen", ESound::GatesOpen);
 	SoundMap.Add("PA_ForceFieldDissolve", ESound::ForceFieldDissolve);
+	SoundMap.Add("PA_ForceFieldDissolveWarning", ESound::ForceFieldDissolveWarning);
 	SoundMap.Add("PA_QuickMelee", ESound::QuickMelee);
 	SoundMap.Add("PA_SecretCrateOpen", ESound::SecretCrateOpen);
 	SoundMap.Add("PA_SecretCratePassive", ESound::SecretCratePassive);

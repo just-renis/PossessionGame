@@ -17,6 +17,7 @@ void AForceField::BeginPlay()
 	MID_Material = ForceField->CreateAndSetMaterialInstanceDynamic(0);
 	if (bWithDurationForceField)
 	{
+		if (MID_Material) MID_Material->GetVectorParameterValue(FName("BarrierColorPrimary"), DefaultColor);
 		SetMaterialValuesToInvisible();
 		ForceField->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetWorldTimerManager().SetTimer(DurationHandle, this, &AForceField::SetupDurationTimer, StartLoopAfter, false);
@@ -44,6 +45,9 @@ void AForceField::BeginPlay()
 void AForceField::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorldTimerManager().ClearTimer(DissolveHandle);
+	GetWorldTimerManager().ClearTimer(WarningDissolveHandle);
+	GetWorldTimerManager().ClearTimer(DurationHandle);
+	GetWorldTimerManager().ClearTimer(WarningBlinkHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -74,9 +78,9 @@ void AForceField::ProcessDissolveForceField()
 	PatternMaxOpacity -= 0.0125f;
 	PatternOpacityDivisor -= 0.1f;
 	DeploymentPercent -= 0.05f;
-	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
-	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
-	MID_Material->SetScalarParameterValue("DeploymentPercent", DeploymentPercent);
+	MID_Material->SetScalarParameterValue(FName("PatternMaxOpacity"), PatternMaxOpacity); 
+	MID_Material->SetScalarParameterValue(FName("PatternOpacityDivisor"), PatternOpacityDivisor);
+	MID_Material->SetScalarParameterValue(FName("DeploymentPercent"), DeploymentPercent);
 	if (PatternOpacityDivisor > 0.f) return;
 	DestroyThis();
 }
@@ -98,9 +102,9 @@ void AForceField::ProcessDeploymentOfForceField()
 	PatternMaxOpacity += 0.0125f;
 	PatternOpacityDivisor += 0.1f;
 	DeploymentPercent += 0.05f;
-	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
-	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
-	MID_Material->SetScalarParameterValue("DeploymentPercent", DeploymentPercent);
+	MID_Material->SetScalarParameterValue(FName("PatternMaxOpacity"), PatternMaxOpacity); 
+	MID_Material->SetScalarParameterValue(FName("PatternOpacityDivisor"), PatternOpacityDivisor);
+	MID_Material->SetScalarParameterValue(FName("DeploymentPercent"), DeploymentPercent);
 	if (PatternOpacityDivisor >= 2.f) GetWorldTimerManager().ClearTimer(DissolveHandle);
 }
 
@@ -122,14 +126,16 @@ void AForceField::DissolveOnTerminalHackFinish(const EGameMode InTerminalRoomMod
 void AForceField::SetMaterialValuesToInvisible() const
 {
 	if (!MID_Material) return;
-	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
-	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
-	MID_Material->SetScalarParameterValue("DeploymentPercent", DeploymentPercent);
+	MID_Material->SetScalarParameterValue(FName("PatternMaxOpacity"), PatternMaxOpacity); 
+	MID_Material->SetScalarParameterValue(FName("PatternOpacityDivisor"), PatternOpacityDivisor);
+	MID_Material->SetScalarParameterValue(FName("DeploymentPercent"), DeploymentPercent);
 }
 
 void AForceField::SetupDurationTimer()
 {
 	AppearForceField(EGameMode::None);
+	GetWorldTimerManager().SetTimer(WarningDissolveHandle, this, &AForceField::TriggerWarningOfDissolve, DurationUntilDisappear - TimeBeforeWarning);
+	GetWorldTimerManager().SetTimer(WarningDissolveHandle, this, &AForceField::WarningBlinkingProcess, 0.2f, true, DurationUntilDisappear - TimeBeforeWarning);
 	GetWorldTimerManager().SetTimer(DurationHandle, this, &AForceField::DissolveForceField, DurationUntilDisappear);
 }
 
@@ -146,10 +152,28 @@ void AForceField::ProcessDissolveForceFieldWithoutDestroying()
 	PatternMaxOpacity -= 0.0125f;
 	PatternOpacityDivisor -= 0.1f;
 	DeploymentPercent -= 0.05f;
-	MID_Material->SetScalarParameterValue("PatternMaxOpacity", PatternMaxOpacity); 
-	MID_Material->SetScalarParameterValue("PatternOpacityDivisor", PatternOpacityDivisor);
-	MID_Material->SetScalarParameterValue("DeploymentPercent", DeploymentPercent);
+	MID_Material->SetScalarParameterValue(FName("PatternMaxOpacity"), PatternMaxOpacity); 
+	MID_Material->SetScalarParameterValue(FName("PatternOpacityDivisor"), PatternOpacityDivisor);
+	MID_Material->SetScalarParameterValue(FName("DeploymentPercent"), DeploymentPercent);
 	if (PatternOpacityDivisor > 0.f) return;
 	ForceField->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetWorldTimerManager().ClearTimer(DissolveHandle);
+}
+
+void AForceField::TriggerWarningOfDissolve() const
+{
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySoundAtLocation(ESound::ForceFieldDissolveWarning, GetActorLocation());
+}
+
+void AForceField::WarningBlinkingProcess()
+{
+	if (!MID_Material) return;
+	if (++BlinkTimes > BlinkTimesRequired)
+	{
+		BlinkTimes = 0;
+		GetWorldTimerManager().ClearTimer(WarningBlinkHandle);
+		return;
+	}
+	bBossForceFieldState = !bBossForceFieldState;
+	MID_Material->SetVectorParameterValue(FName("BarrierColorPrimary"), bBossForceFieldState ? WarningColor : DefaultColor);
 }

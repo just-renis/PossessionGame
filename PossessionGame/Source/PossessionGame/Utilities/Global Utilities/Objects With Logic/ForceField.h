@@ -12,10 +12,14 @@ class POSSESSIONGAME_API AForceField : public AActor
 
 	AForceField();
 
+	bool bBossForceFieldState = true;
 	int32 HintIndex = 0;
+	int32 BlinkTimes = 0;
+	int32 BlinkTimesRequired = 5;
 	float PatternMaxOpacity = 0.f;
 	float PatternOpacityDivisor = 0.f;
 	float DeploymentPercent = 0.f;
+	FLinearColor DefaultColor;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bAppearByGameModeInitiation = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -28,6 +32,10 @@ class POSSESSIONGAME_API AForceField : public AActor
 	float DurationUntilDisappear = 5.f;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", AllowPrivateAccess = true))
 	float DurationUntilAppear = 5.f;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", AllowPrivateAccess = true))
+	float TimeBeforeWarning = 1.f;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", AllowPrivateAccess = true))
+	FLinearColor WarningColor;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ForceFieldIndex = -1;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -40,6 +48,10 @@ class POSSESSIONGAME_API AForceField : public AActor
 	FTimerHandle DissolveHandle;
 	UPROPERTY()
 	FTimerHandle DurationHandle;
+	UPROPERTY()
+	FTimerHandle WarningDissolveHandle;;
+	UPROPERTY()
+	FTimerHandle WarningBlinkHandle;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -55,4 +67,6 @@ class POSSESSIONGAME_API AForceField : public AActor
 	void SetupDurationTimer();
 	void DissolveForceField();
 	void ProcessDissolveForceFieldWithoutDestroying();
+	void TriggerWarningOfDissolve() const;
+	void WarningBlinkingProcess();
 };

@@ -73,7 +73,7 @@ private:
 	UPROPERTY()
 	TArray<TObjectPtr<UAbilityIconUI>> Abilities;
 
-	int32 GetAvailableAbilityIndex(const TObjectPtr<USaveSlot>& InSaveSlot);
+	int32 GetAvailableAbilityIndex();
 
 	virtual void NativeConstruct() override;
 	void SetupAbilitySlot(const int32 InAbilityIndex, const bool bIsFirstSlot, TObjectPtr<UAbilityIconUI>& InAbilitySlot);

@@ -49,9 +49,9 @@ void UCharacterAbilitiesUI::LoadAbilitiesLayout(const TObjectPtr<USaveSlot>& InS
 
 void UCharacterAbilitiesUI::SaveAbilitiesLayout(const TObjectPtr<USaveSlot>& InSaveSlot)
 {
-	const int32 FirstAbilityIndex = FirstAbilitySlot ? FirstAbilitySlot->GetAbilityIndex() : GetAvailableAbilityIndex(InSaveSlot);
+	const int32 FirstAbilityIndex = FirstAbilitySlot ? FirstAbilitySlot->GetAbilityIndex() : GetAvailableAbilityIndex();
 	AddAbility(FirstAbilityIndex);
-	const int32 SecondAbilityIndex = SecondAbilitySlot ? SecondAbilitySlot->GetAbilityIndex() : GetAvailableAbilityIndex(InSaveSlot);
+	const int32 SecondAbilityIndex = SecondAbilitySlot ? SecondAbilitySlot->GetAbilityIndex() : GetAvailableAbilityIndex();
 	AddAbility(SecondAbilityIndex);
 	InSaveSlot->AddChosenAbilities(Character, FirstAbilityIndex, SecondAbilityIndex);
 }
@@ -61,13 +61,9 @@ void UCharacterAbilitiesUI::SetAbilitiesIconData()
 	for (int32 i = 0; i < Abilities.Num(); i++) if (AbilitiesData.IsValidIndex(i)) Abilities[i]->SetData(Character, AbilitiesData[i]);
 }
 
-int32 UCharacterAbilitiesUI::GetAvailableAbilityIndex(const TObjectPtr<USaveSlot>& InSaveSlot)
+int32 UCharacterAbilitiesUI::GetAvailableAbilityIndex()
 {
-	const int32 UnlockedAbilitiesAmount = InSaveSlot->GetCharacterUnlockedAbilities(Character).Abilities.Num() + 1;
-	for (int32 i = 0; i < UnlockedAbilitiesAmount; i++)
-	{
-		if (!Abilities[i]->GetIsLocked() && !Abilities[i]->GetIsInSlot()) return i;
-	}
+	for (int32 i = 0; i < Abilities.Num(); i++) if (!Abilities[i]->GetIsLocked() && !Abilities[i]->GetIsInSlot()) return i;
 	return -1;
 }
 
