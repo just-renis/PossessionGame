@@ -22,6 +22,7 @@ class POSSESSIONGAME_API AGuardianProjectile : public AProjectile
 	virtual void BeginPlay() override;
 	void SpecialUpgradeTaken(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttributeName);
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
-	void SetupBounce() const;
+	void SetBounceState(const bool bState) const;
+	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich) override;
 	virtual void DestroyThis() override;
 };

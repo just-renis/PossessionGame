@@ -101,7 +101,7 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.1", "PER EACH ENEMY HIT TRANSFER THE DAMAGE TO CLOSEST ENEMY.</>").ToString();
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.1", "EACH ENEMY HIT PASSES DAMAGE TO THE CLOSEST ENEMY.</>").ToString();
 					}
 					return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.2", "<UpgradeAttributeText>PROJECTILES BOUNCE</>").ToString() +
 					GetRichTextTag(true) + " 2 </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.3", "<UpgradeAttributeText>TIMES.</>").ToString();

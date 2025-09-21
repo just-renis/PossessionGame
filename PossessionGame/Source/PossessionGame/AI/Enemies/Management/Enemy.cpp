@@ -592,7 +592,6 @@ void AEnemy::P_InitiateStomp()
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (!bIsHijacked) UE_LOG(LogTemp, Error, TEXT("TAKE DAMAGE: %s %f"), *GetName(), DamageAmount);
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) * DamageReduction;
 	const FRadialDamageEvent* RadialDamageEvent = nullptr;
 	const FPointDamageEvent* PointDamageEvent = nullptr;

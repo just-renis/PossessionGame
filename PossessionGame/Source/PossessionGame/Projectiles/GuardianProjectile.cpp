@@ -21,22 +21,17 @@ void AGuardianProjectile::BeginPlay()
 	Super::BeginPlay();
 	bIsFirstSpecialBounceUpgradeTaken = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::GuardianAbility3, EUpgradeAttribute::Special1);
 	if (!bIsFirstSpecialBounceUpgradeTaken) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSpecialUpgradeAdded.AddUObject(this, &AGuardianProjectile::SpecialUpgradeTaken);
-	else SetupBounce();
 }
 
 void AGuardianProjectile::SpecialUpgradeTaken(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttributeName)
 {
 	bIsFirstSpecialBounceUpgradeTaken = InUpgradeName == EUpgrade::GuardianAbility3 && InSpecialUpgradeAttributeName == EUpgradeAttribute::Special1;
-	if (bIsFirstSpecialBounceUpgradeTaken)
-	{
-		SetupBounce();
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSpecialUpgradeAdded.RemoveAll(this);
-	}
+	if (bIsFirstSpecialBounceUpgradeTaken) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSpecialUpgradeAdded.RemoveAll(this);
 }
 
 void AGuardianProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (!bIsFirstSpecialBounceUpgradeTaken)
+	if (!bIsFirstSpecialBounceUpgradeTaken || ProjectileData.bIsPlayerProjectile)
 	{
 		Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 		return;
@@ -60,9 +55,13 @@ void AGuardianProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 	if (bIsEnemyProjectile && Cast<AEnemy>(OtherActor)->GetIsHijacked()) DealDamageToSentientActor(bIsPlayerProjectile, OtherActor, Hit);
 }
 
-void AGuardianProjectile::SetupBounce() const
+void AGuardianProjectile::SetBounceState(const bool bState) const { MovementComponent->bShouldBounce = bState; }
+
+void AGuardianProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich)
 {
-	MovementComponent->bShouldBounce = true;
+	Super::Init(InProjectileData, Rotation, InWhich);
+	if (!bIsFirstSpecialBounceUpgradeTaken) return;
+	SetBounceState(!InProjectileData.bIsPlayerProjectile);
 }
 
 void AGuardianProjectile::DestroyThis()
