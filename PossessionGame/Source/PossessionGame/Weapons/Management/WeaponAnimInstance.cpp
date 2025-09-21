@@ -73,13 +73,13 @@ void UWeaponAnimInstance::NativeBeginPlay()
     AssetsManager = GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 }
 
-void UWeaponAnimInstance::BeginDestroy()
-{
-    Super::BeginDestroy();
-    OnMontageBlendingOut.RemoveAll(this);
-}
-
 void UWeaponAnimInstance::LoadMontageIfNotLoaded(EWeaponAnimState State)
 {
     if (!Montages.Contains(State)) Montages.Add(State, AssetsManager->GetWeaponData(WeaponName)->WeaponMontages[State].LoadSynchronous());
+}
+
+void UWeaponAnimInstance::NativeUninitializeAnimation()
+{
+    OnMontageBlendingOut.RemoveAll(this);
+    Super::NativeUninitializeAnimation();
 }

@@ -227,6 +227,7 @@ void AWeapon::P_Setup()
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
 	DelegateManager->OnLevelUp.AddUObject(this, &AWeapon::P_SetupLevelUpAppliance);
+	DelegateManager->OnPlayerReloadMontageEnd.BindUObject(this, &AWeapon::P_UpdateAmmoTextHUD);
 }
 
 void AWeapon::P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName)
@@ -331,8 +332,6 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	}
 	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), Damage * (bIsCritical ? P_Data->GetCriticalDamage() : 1.f), (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
-
-void AWeapon::WeaponReloadMontageFinished() { if (bIsPossessed) P_UpdateAmmoTextHUD(); }
 
 void AWeapon::SetWeaponReloadMontageDelegate() { DelegateManager->OnHandsReloadMontageEnd.BindUObject(this, &AWeapon::WeaponReloadMontageFinished); }
 

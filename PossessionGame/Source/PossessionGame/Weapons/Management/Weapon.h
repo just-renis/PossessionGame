@@ -144,7 +144,7 @@ protected:
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired);
 	void DisableHandsMesh() const;
 	void DealPointDamage(const FHitResult& InHitResult);
-	virtual void WeaponReloadMontageFinished();
+	virtual void WeaponReloadMontageFinished() {}
 	void SetWeaponReloadMontageDelegate();
 private:
 	bool bFirstShotWasShot = false;

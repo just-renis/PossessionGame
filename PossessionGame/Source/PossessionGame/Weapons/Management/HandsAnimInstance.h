@@ -59,7 +59,7 @@ private:
 	bool IsMontageExisting(const EHandsAnimState InState);
 	
 	void LoadMontageIfNotLoaded(const EHandsAnimState InState);
-	virtual void BeginDestroy() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void MontageWithHoldEnd();
+	virtual void NativeUninitializeAnimation() override;
 };

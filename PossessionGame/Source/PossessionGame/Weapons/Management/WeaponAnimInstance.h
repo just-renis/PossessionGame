@@ -40,6 +40,6 @@ private:
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	
 	virtual void NativeBeginPlay() override;
-	virtual void BeginDestroy() override;
 	void LoadMontageIfNotLoaded(EWeaponAnimState State);
+	virtual void NativeUninitializeAnimation() override;
 };

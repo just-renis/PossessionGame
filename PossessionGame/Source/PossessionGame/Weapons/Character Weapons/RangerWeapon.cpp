@@ -92,8 +92,4 @@ void ARangerWeapon::ChangeGrenadeLaunchSpecialComponentState(const bool bState) 
 	else GrenadeLaunchSpecialComponent->Deactivate();
 }
 
-void ARangerWeapon::WeaponReloadMontageFinished()
-{
-	Super::WeaponReloadMontageFinished();
-	if (Mesh) Mesh->SetComponentTickEnabled(false);
-}
+void ARangerWeapon::WeaponReloadMontageFinished() { if (Mesh) Mesh->SetComponentTickEnabled(false); }

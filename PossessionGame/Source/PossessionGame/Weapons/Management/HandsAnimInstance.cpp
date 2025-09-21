@@ -81,6 +81,7 @@ void UHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupt
     {
         bIsReloading = false;
         (void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHandsReloadMontageEnd.ExecuteIfBound();
+        (void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerReloadMontageEnd.ExecuteIfBound();
         return;
     }
     const TObjectPtr<UAnimMontage>* QuickMeleeMontage = Montages.Find(EHandsAnimState::QuickMelee);
@@ -97,12 +98,6 @@ void UHandsAnimInstance::LoadMontageIfNotLoaded(const EHandsAnimState InState)
     if (!Montages.Contains(InState)) Montages.Add(InState, AssetsManager->GetWeaponData(WeaponName)->HandsMontages[InState].LoadSynchronous());
 }
 
-void UHandsAnimInstance::BeginDestroy()
-{
-    Super::BeginDestroy();
-    OnMontageBlendingOut.RemoveAll(this);
-}
-
 void UHandsAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
     Super::NativeUpdateAnimation(DeltaSeconds);
@@ -110,3 +105,9 @@ void UHandsAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 }
 
 void UHandsAnimInstance::MontageWithHoldEnd() { StopAllMontages(0.1f); }
+
+void UHandsAnimInstance::NativeUninitializeAnimation()
+{
+    OnMontageBlendingOut.RemoveAll(this);
+    Super::NativeUninitializeAnimation();
+}

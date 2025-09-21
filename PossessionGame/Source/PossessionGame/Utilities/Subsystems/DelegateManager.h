@@ -34,6 +34,7 @@ DECLARE_DELEGATE(FResetChargeTerminal);
 DECLARE_DELEGATE(FOnFirstGameModeInitiated);
 DECLARE_DELEGATE(FOnAbilitiesMenuSelectionEnd);
 DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
+DECLARE_DELEGATE(FOnPlayerReloadMontageEnd);
 DECLARE_DELEGATE_RetVal(int32, FOnRunFinished);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
@@ -110,6 +111,7 @@ public:
 	FOnFirstGameModeInitiated OnFirstGameModeInitiated;
 	FOnAbilitiesMenuSelectionEnd OnAbilitiesMenuSelectionEnd;
 	FOnHandsReloadMontageEnd OnHandsReloadMontageEnd;
+	FOnPlayerReloadMontageEnd OnPlayerReloadMontageEnd;
 	FOnRunFinished OnRunFinished;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemyDeath OnEnemyDeath;
