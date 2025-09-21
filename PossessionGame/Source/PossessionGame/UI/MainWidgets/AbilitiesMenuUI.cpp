@@ -85,6 +85,17 @@ void UAbilitiesMenuUI::NativeConstruct()
 	TricksterCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 }
 
+void UAbilitiesMenuUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (!bWaitingForSwitch) return;
+	SwitchDelayAccumulator += InDeltaTime;
+	if (SwitchDelayAccumulator < 0.2f) return;
+	bWaitingForSwitch = false;
+	SwitchDelayAccumulator = 0.f;
+	SwitchAbilityIcons();
+}
+
 void UAbilitiesMenuUI::Toggle(const bool bState)
 {
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(bState);
@@ -110,7 +121,6 @@ void UAbilitiesMenuUI::Toggle(const bool bState)
 void UAbilitiesMenuUI::SwitchCharacterAbilities(const ECharacterType InCharacterName)
 {
 	PlayAnimationForward(CharacterTransitionAnim);
-	int32 ActiveWidgetIndex = 0;
 	if (CurrentlySelectedCharacter.GetIcon()) CurrentlySelectedCharacter.GetIcon()->SetEventsEnabled(true);
 	switch (InCharacterName)
 	{
@@ -127,7 +137,7 @@ void UAbilitiesMenuUI::SwitchCharacterAbilities(const ECharacterType InCharacter
 			ActiveWidgetIndex = 2;
 		default: ;
 	}
-	CharacterAbilitiesSwitcher->SetActiveWidgetIndex(ActiveWidgetIndex);
+	bWaitingForSwitch = true;
 }
 
 void UAbilitiesMenuUI::TriggerSwitchOnTheFirstOpen()
@@ -173,6 +183,8 @@ void UAbilitiesMenuUI::UpdateAbilityIcon() const
 		default: ;
 	}
 }
+
+void UAbilitiesMenuUI::SwitchAbilityIcons() const { CharacterAbilitiesSwitcher->SetActiveWidgetIndex(ActiveWidgetIndex); }
 
 void UAbilitiesMenuUI::FadeOutAnimFinished()
 {

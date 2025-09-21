@@ -44,7 +44,10 @@ public:
 private:
 	bool FirstTimeOpenInstance = true;
 	bool bIsAbilityUnlockPopupOpened = false;
+	bool bWaitingForSwitch = false;
+	float SwitchDelayAccumulator = 0.f;
 	int32 AbilityToUnlock;
+	int32 ActiveWidgetIndex = 0;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SkillPointsText;
 	UPROPERTY(meta = (BindWidget))
@@ -79,6 +82,7 @@ private:
 	FWidgetAnimationDynamicEvent FadeOutAnimEndDelegate;
 
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	void Toggle(const bool bState);
 	void SwitchCharacterAbilities(const ECharacterType InCharacterName);
 	void TriggerSwitchOnTheFirstOpen();
@@ -87,6 +91,7 @@ private:
 	void SetupUnlockAbilityPopup();
 	void UpdateSkillPointsText() const;
 	void UpdateAbilityIcon() const;
+	void SwitchAbilityIcons() const;
 	UFUNCTION()
 	void FadeOutAnimFinished();
 	UFUNCTION()
