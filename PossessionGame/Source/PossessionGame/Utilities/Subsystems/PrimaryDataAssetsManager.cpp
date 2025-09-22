@@ -143,16 +143,8 @@ void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool
 {
 	if (!GetCanAsyncLoadHappen()) return;
 	FSoundContainer& SoundData = GetSoundData(InSoundName);
-	if (SoundData.GetSoundContainer()->Sound.IsValid())
-	{
-		UE_LOG(LogTemp, Error, TEXT("ITS VALID LOL"));
-		SetupSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("ITS INVALID"));
-		LoadSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
-	}
+	if (SoundData.GetSoundContainer()->Sound.IsValid()) SetupSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
+	else LoadSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
 }
 
 void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
