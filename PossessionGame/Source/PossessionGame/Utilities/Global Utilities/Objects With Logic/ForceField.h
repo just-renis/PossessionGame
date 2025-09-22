@@ -67,6 +67,6 @@ class POSSESSIONGAME_API AForceField : public AActor
 	void SetupDurationTimer();
 	void DissolveForceField();
 	void ProcessDissolveForceFieldWithoutDestroying();
-	void TriggerWarningOfDissolve() const;
+	void TriggerWarningOfDissolve();
 	void WarningBlinkingProcess();
 };

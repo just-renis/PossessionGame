@@ -146,6 +146,7 @@ protected:
 	void DealPointDamage(const FHitResult& InHitResult);
 	virtual void WeaponReloadMontageFinished() {}
 	void SetWeaponReloadMontageDelegate();
+	virtual void MuzzleLogicFromAbility() {}
 private:
 	bool bFirstShotWasShot = false;
 	int32 ShootCyclesUntilReload;

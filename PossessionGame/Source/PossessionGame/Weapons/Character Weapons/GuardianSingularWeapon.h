@@ -13,6 +13,8 @@ class POSSESSIONGAME_API AGuardianSingularWeapon : public AOneHandedWeapon
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_GuardianWeaponMaterial;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> VectorBlastMuzzleComponent;
 	
 	virtual void AI_Shoot() override;
 
@@ -20,4 +22,5 @@ class POSSESSIONGAME_API AGuardianSingularWeapon : public AOneHandedWeapon
 
 	virtual void BeginPlay() override;
 	virtual void SetMeshes(EWeapon PrimaryDataAssetName) override;
+	virtual void MuzzleLogicFromAbility() override;
 };

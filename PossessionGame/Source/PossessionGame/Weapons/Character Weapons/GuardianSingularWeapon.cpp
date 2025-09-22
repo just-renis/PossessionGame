@@ -1,4 +1,6 @@
 ﻿#include "GuardianSingularWeapon.h"
+
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -40,4 +42,14 @@ void AGuardianSingularWeapon::SetMeshes(EWeapon PrimaryDataAssetName)
 	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(PrimaryDataAssetName)->WeaponMesh.Get());
 	Mesh->SetMaterial(0, MI_GuardianWeaponMaterial);
 	OriginalScale = Mesh->GetRelativeScale3D();
+}
+
+void AGuardianSingularWeapon::MuzzleLogicFromAbility()
+{
+	if (!VectorBlastMuzzleComponent)
+	{
+		AssetsManager->AttachVfx(EVfx::VectorBlastMuzzle, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); },
+		&VectorBlastMuzzleComponent, Mesh, FName("MuzzleSocket"));
+	}
+	else VectorBlastMuzzleComponent->Activate(true);
 }

@@ -51,6 +51,7 @@ void ARanger::AI_ToggleGrenadeTrigger(const bool bState) const
 
 void ARanger::AI_LaunchGrenade()
 {
+	if (bIsHijacked) return;
 	PlaySound(ESound::RangerGrenadeLaunch, true);
 	Weapon->ShootProjectile(EPoolObject::RangerGrenadeLauncherProjectile, true);
 	GrenadeMuzzleFlashLogic();

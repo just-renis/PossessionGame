@@ -134,8 +134,9 @@ void AForceField::SetMaterialValuesToInvisible() const
 void AForceField::SetupDurationTimer()
 {
 	AppearForceField(EGameMode::None);
+	if (MID_Material) MID_Material->SetVectorParameterValue(FName("BarrierColorPrimary"), DefaultColor);
+	bBossForceFieldState = true;
 	GetWorldTimerManager().SetTimer(WarningDissolveHandle, this, &AForceField::TriggerWarningOfDissolve, DurationUntilDisappear - TimeBeforeWarning);
-	GetWorldTimerManager().SetTimer(WarningDissolveHandle, this, &AForceField::WarningBlinkingProcess, 0.2f, true, DurationUntilDisappear - TimeBeforeWarning);
 	GetWorldTimerManager().SetTimer(DurationHandle, this, &AForceField::DissolveForceField, DurationUntilDisappear);
 }
 
@@ -160,9 +161,10 @@ void AForceField::ProcessDissolveForceFieldWithoutDestroying()
 	GetWorldTimerManager().ClearTimer(DissolveHandle);
 }
 
-void AForceField::TriggerWarningOfDissolve() const
+void AForceField::TriggerWarningOfDissolve()
 {
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySoundAtLocation(ESound::ForceFieldDissolveWarning, GetActorLocation());
+	GetWorldTimerManager().SetTimer(WarningBlinkHandle, this, &AForceField::WarningBlinkingProcess, 0.2f, true);
 }
 
 void AForceField::WarningBlinkingProcess()
@@ -175,5 +177,5 @@ void AForceField::WarningBlinkingProcess()
 		return;
 	}
 	bBossForceFieldState = !bBossForceFieldState;
-	MID_Material->SetVectorParameterValue(FName("BarrierColorPrimary"), bBossForceFieldState ? WarningColor : DefaultColor);
+	MID_Material->SetVectorParameterValue(FName("BarrierColorPrimary"), bBossForceFieldState ? DefaultColor : WarningColor);
 }

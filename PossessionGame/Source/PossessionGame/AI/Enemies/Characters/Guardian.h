@@ -46,6 +46,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> GuardianShieldComponent;
 	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> VectorBlastMuzzleComponent;
+	UPROPERTY()
 	FTimerHandle ShieldUpdateHandle;
 	UPROPERTY()
 	FTimerHandle ShootSecondWeaponProjectileHandle;

@@ -143,8 +143,16 @@ void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool
 {
 	if (!GetCanAsyncLoadHappen()) return;
 	FSoundContainer& SoundData = GetSoundData(InSoundName);
-	if (SoundData.GetSoundContainer()->Sound.IsValid()) SetupSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
-	else LoadSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
+	if (SoundData.GetSoundContainer()->Sound.IsValid())
+	{
+		UE_LOG(LogTemp, Error, TEXT("ITS VALID LOL"));
+		SetupSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ITS INVALID"));
+		LoadSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
+	}
 }
 
 void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
@@ -257,9 +265,9 @@ void UPrimaryDataAssetsManager::SetupSound2D(const FSoundContainer& InSoundData,
 	if (InSoundData.GetSoundContainer()->bIsCharacterTypeDependant) VolumeMultiplier = bIsPlayer ? InSoundData.GetSoundContainer()->PlayerVolume : InSoundData.GetSoundContainer()->EnemyVolume;
 	if (bStoreSoundRef)
 	{
-		StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), VolumeMultiplier));
+		StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetGameInstance()->GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), VolumeMultiplier));
 	}
-	else UGameplayStatics::PlaySound2D(GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), VolumeMultiplier);
+	else UGameplayStatics::PlaySound2D(GetGameInstance()->GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), VolumeMultiplier);
 }
 
 void UPrimaryDataAssetsManager::LoadSound2D(FSoundContainer& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef)
@@ -649,7 +657,6 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_MinionBossDeathExplosion", EVfx::MinionBossDeathExplosion);
 	VfxsMap.Add("PA_MinionBossDeathElectrification", EVfx::MinionBossDeathElectrification);
 	VfxsMap.Add("PA_MinionBossSpawn", EVfx::MinionBossSpawn);
-	VfxsMap.Add("PA_MinionBossLaserImpact", EVfx::MinionBossLaserImpact);
 	VfxsMap.Add("PA_PlayerStomp", EVfx::PlayerStomp);
 	VfxsMap.Add("PA_UsbAura", EVfx::UsbAura);
 	VfxsMap.Add("PA_ArtifactAura", EVfx::ArtifactAura);
@@ -671,6 +678,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_CloneSpawn", EVfx::CloneSpawn);
 	VfxsMap.Add("PA_VectorBlastTrail", EVfx::VectorBlastTrail);
 	VfxsMap.Add("PA_VectorBlastImpact", EVfx::VectorBlastImpact);
+	VfxsMap.Add("PA_VectorBlastMuzzle", EVfx::VectorBlastMuzzle);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
@@ -792,6 +800,9 @@ void UPrimaryDataAssetsManager::AddSpawnableEnemiesToThePool()
 
 void UPrimaryDataAssetsManager::ClearBeforeInit()
 {
+	TotalSpawnedEnemies = 0;
+	NextSpawnableEnemyIndex = 0;
+	EnemyTypes.Empty();
 	bCanAsyncLoadHappen = true;
 	bIsCloneSpawnInProcess = false;
 	for (TPair<ESound, FSoundContainer>& SoundContainer : SoundContainers) SoundContainer.Value.ResetLoadVariables();

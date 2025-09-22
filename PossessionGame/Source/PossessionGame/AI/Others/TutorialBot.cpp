@@ -59,6 +59,7 @@ void ATutorialBot::BeginPlay()
 	}
 	else
 	{
+		Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 		TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "AbilitiesTabletSocket");
 		SetupDialogue("BodySocket");
 		SetControlRigState(true);
@@ -410,7 +411,6 @@ void ATutorialBot::Interact()
 
 void ATutorialBot::SetupMeshOptimization() const
 {
-	Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 	Mesh->bEnableUpdateRateOptimizations = true;
 	Mesh->SkipUpdateOverlapsOptimEnabled = true;
 	Mesh->SetAllowAnimCurveEvaluation(false);

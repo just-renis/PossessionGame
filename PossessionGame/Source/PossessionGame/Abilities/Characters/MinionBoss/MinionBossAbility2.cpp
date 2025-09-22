@@ -57,7 +57,6 @@ void UMinionBossAbility2::TurnOffLaser()
 	Proprietor->StopSound(ESound::MinionBossLaserEyeHold);
 	if (Proprietor->GetLaser()) Proprietor->GetLaser()->DeactivateImmediate();
 	if (Proprietor->GetLaserEyeBall()) Proprietor->GetLaserEyeBall()->DeactivateImmediate();
-	if (Proprietor->GetLaserImpact()) Proprietor->GetLaserImpact()->DeactivateImmediate();
 	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -79,7 +78,7 @@ void UMinionBossAbility2::ShootLaser()
 
 void UMinionBossAbility2::UpdateLaserEndLocation()
 {
-	if (!Proprietor || !Proprietor->GetLaser() || !Proprietor->GetLaserImpact()) return;
+	if (!Proprietor || !Proprietor->GetLaser()) return;
 	const TObjectPtr<AActor> Player = Proprietor->GetAI()->GetStateTreeData().GetTarget();
 	if (!Player) return;
 	// Laser calculation logic.
@@ -117,9 +116,8 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	Proprietor->GetLaserCollision()->SetWorldLocation(Start + LaserForward * Distance * 0.45f);
 	Proprietor->GetLaserCollision()->SetWorldRotation(NewRotation);
 	Proprietor->GetLaserCollision()->SetCapsuleSize(35.f, Distance * 0.5f);
-	Proprietor->GetLaserImpact()->SetWorldLocation(LaserHit.ImpactPoint);
 	// Laser length vfx change.
-	Proprietor->GetLaser()->SetFloatParameter(TEXT("_Length"), Distance * 0.0007f);
+	Proprietor->GetLaser()->SetFloatParameter(FName("_Length"), Distance * 0.0007f);
 }
 
 void UMinionBossAbility2::ReceivePlayerPosition()

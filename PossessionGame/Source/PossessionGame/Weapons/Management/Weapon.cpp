@@ -171,6 +171,7 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIs
 	if (!ProjectileData) return;
 	if (bIsFromAbility)
 	{
+		MuzzleLogicFromAbility();
 		const int32 ProjectilesAmount = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(InProjectileName, EUpgradeAttribute::ProjectilesAmount, bIsPossessed, true);
 		ProjectileData->SetAmount(ProjectilesAmount + 1);
 	}

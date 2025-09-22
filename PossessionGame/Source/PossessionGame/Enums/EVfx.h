@@ -62,7 +62,6 @@ enum class EVfx : uint16
 	MinionBossDeathExplosion,
 	MinionBossDeathElectrification,
 	MinionBossSpawn,
-	MinionBossLaserImpact,
 	UsbAura,
 	ArtifactAura,
 	MutantAura,
@@ -82,5 +81,6 @@ enum class EVfx : uint16
 	CloneBulletImpact,
 	CloneSpawn,
 	VectorBlastImpact,
-	VectorBlastTrail
+	VectorBlastTrail,
+	VectorBlastMuzzle
 };

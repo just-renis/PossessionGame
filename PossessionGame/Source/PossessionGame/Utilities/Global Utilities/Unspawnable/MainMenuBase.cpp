@@ -33,6 +33,7 @@ void AMainMenuBase::LoadSettingsData() const
 
 void AMainMenuBase::InitAfterPSOPrecache() const
 {
+	Cast<UPossessionGameInstance>(GetGameInstance())->InitGameInstanceManagers();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ChangeMusicPlayerState.ExecuteIfBound(true);
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();

@@ -209,7 +209,7 @@ void AEnemy::PossessedBy(AController* NewController)
 			AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeepFps);
 			GetWorldTimerManager().SetTimer(AI_TriggerDeathVoiceLineHandle, this, &AEnemy::AI_TriggerDeathVoiceLine, 1.f, false);
 			P_Setup();
-			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(FText::FromString("Hijacked"));
+			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(NSLOCTEXT("ST_Localization", "Hijacked", "Hijacked"));
 			(void)DelegateManager->OnHijack.ExecuteIfBound(this);
 			SetInputState(false);
 		}
@@ -1391,7 +1391,10 @@ void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
 	}
 }
 
-void AEnemy::RestartLevel() const { GameInstance->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, FName("MainMenu"))); }
+void AEnemy::RestartLevel() const
+{
+	GameInstance->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, FName("MainMenu")));
+}
 
 void AEnemy::DisableHijackViableVfx() const
 {

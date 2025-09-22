@@ -66,10 +66,7 @@ void UEnemyAnimationInstance::StopMontage(const EEnemyAnimState InState, const f
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in StopMontage"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
 }
 
-void UEnemyAnimationInstance::ClearTimers()
-{
-    GetWorld()->GetTimerManager().ClearTimer(MontageWithHoldHandle);
-}
+void UEnemyAnimationInstance::ClearTimers() { GetWorld()->GetTimerManager().ClearTimer(MontageWithHoldHandle); }
 
 void UEnemyAnimationInstance::ClearMontageWithHoldHandle() { GetWorld()->GetTimerManager().ClearTimer(MontageWithHoldHandle); }
 

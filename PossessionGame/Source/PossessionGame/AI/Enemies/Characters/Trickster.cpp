@@ -51,6 +51,7 @@ void ATrickster::AI_TogglePoisonGrenadeTrigger(const bool bState) const
 
 void ATrickster::AI_LaunchPoisonGrenade()
 {
+	if (bIsHijacked) return;
 	PlaySound(ESound::TricksterGrenadeThrow, true);
 	Weapon->ShootProjectile(EPoolObject::TricksterPoisonProjectile, true);
 	Weapon->MuzzleFlashLogic();
