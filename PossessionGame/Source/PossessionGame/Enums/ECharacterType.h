@@ -11,5 +11,6 @@ enum class ECharacterType : uint8
 	Ranger,
 	Samurai,
 	Guardian,
-	MinionBoss
+	MinionBoss,
+	Warden
 };

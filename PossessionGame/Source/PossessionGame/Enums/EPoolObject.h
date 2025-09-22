@@ -22,5 +22,6 @@ enum class EPoolObject : uint8
 	Clone,
 	CloneProjectile,
 	RangerMine,
-	VectorBlastProjectile
+	VectorBlastProjectile,
+	WardenProjectile
 };

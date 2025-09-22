@@ -584,6 +584,7 @@ void UPrimaryDataAssetsManager::SetupCharactersPrimaryAssets()
 	CharactersMap.Add("PA_Samurai", ECharacterType::Samurai);
 	CharactersMap.Add("PA_Guardian", ECharacterType::Guardian);
 	CharactersMap.Add("PA_MinionBoss", ECharacterType::MinionBoss);
+	CharactersMap.Add("PA_Warden", ECharacterType::Warden);
 	FillContainers<ECharacterType, FCharacterContainer, UPA_CharacterContainer>(CharactersMap, CharacterContainers, "Character");
 	CharactersMap.Empty();
 }
