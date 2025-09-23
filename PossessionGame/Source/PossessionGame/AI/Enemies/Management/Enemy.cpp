@@ -1348,7 +1348,7 @@ void AEnemy::SpawnCondenseMaterialsProcess()
 	MeshBaseMaterialCondenseValue -= 0.015f;
 	MeshEmissiveMaterialOpacityValue += 0.025f;
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
-	MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
+	if (MI_MeshEmissiveMaterial) MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
 	if (MeshEmissiveMaterialOpacityValue >= 0.5f) GetWorldTimerManager().ClearTimer(SpawnCondenseMaterialsProcessHandle);
 }
 
@@ -1357,7 +1357,7 @@ void AEnemy::DestroyCondenseMaterialsProcess()
 	MeshBaseMaterialCondenseValue += 0.015f;
 	MeshEmissiveMaterialOpacityValue -= 0.025f;
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
-	MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
+	if (MI_MeshEmissiveMaterial) MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
 	if (MeshEmissiveMaterialOpacityValue <= 0.f)
 	{
 		GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);

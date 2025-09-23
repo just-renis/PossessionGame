@@ -408,6 +408,7 @@ EWeapon UPrimaryDataAssetsManager::GetWeaponByCharacter(const ECharacterType InC
 		case ECharacterType::Samurai: return EWeapon::SamuraiWeapon;
 		case ECharacterType::Guardian: return EWeapon::GuardianWeapon;
 		case ECharacterType::MinionBoss: return EWeapon::MinionBossHandWeapon;
+		case ECharacterType::Warden: return EWeapon::WardenBlasterWeapon;
 		default: return EWeapon::None;
 	}
 }
@@ -453,6 +454,7 @@ void UPrimaryDataAssetsManager::SetupWeaponsPrimaryAssets()
 	WeaponsMap.Add("PA_GuardianWeapon", EWeapon::GuardianWeapon);
 	WeaponsMap.Add("PA_GuardianSingularWeapon", EWeapon::GuardianSingularWeapon);
 	WeaponsMap.Add("PA_MinionBossHandWeapon", EWeapon::MinionBossHandWeapon);
+	WeaponsMap.Add("PA_WardenBlasterWeapon", EWeapon::WardenBlasterWeapon);
 	FillContainers(WeaponsMap, WeaponContainers, "Weapon");
 	WeaponsMap.Empty();
 }

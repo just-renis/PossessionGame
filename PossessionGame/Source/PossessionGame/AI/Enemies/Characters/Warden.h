@@ -9,5 +9,7 @@ class POSSESSIONGAME_API AWarden : public AEnemy
 {
 	GENERATED_BODY()
 
-	
+	virtual void AI_SetupWeapon() override;
+
+	virtual void BeginPlay() override;
 };

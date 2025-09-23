@@ -8,4 +8,6 @@ UCLASS()
 class POSSESSIONGAME_API AWardenBlasterWeapon : public AOneHandedWeapon
 {
 	GENERATED_BODY()
+
+	virtual void BeginPlay() override;
 };
