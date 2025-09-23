@@ -92,7 +92,6 @@ void AEnemyAIController::AdjustCustomFocus() const
 		else
 		{
 			Proprietor->GetAnimInstance()->SetIsControlRigEnabled(true);
-			UE_LOG(LogTemp, Error, TEXT("SET TARGET LOCATION: %s"), *TargetLocation.ToString());
 			Proprietor->GetAnimInstance()->SetLookAtLocation(TargetLocation);
 			CustomFocusToLocation(TargetLocation);
 		}
