@@ -3,6 +3,11 @@
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 
+AWarden::AWarden()
+{
+	BeamWeapon = CreateDefaultSubobject<USkeletalMeshComponent>("BeamWeapon");
+}
+
 void AWarden::AI_SetupWeapon()
 {
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::WardenBlasterWeapon, GetMesh());
@@ -13,4 +18,5 @@ void AWarden::BeginPlay()
 {
 	CharacterName = ECharacterType::Warden;
 	Super::BeginPlay();
+	BeamWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("BeamWeaponSocket"));
 }
