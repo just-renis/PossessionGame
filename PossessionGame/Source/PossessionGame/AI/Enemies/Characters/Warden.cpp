@@ -18,5 +18,6 @@ void AWarden::BeginPlay()
 {
 	CharacterName = ECharacterType::Warden;
 	Super::BeginPlay();
+	bCanShoot = true;
 	BeamWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("BeamWeaponSocket"));
 }

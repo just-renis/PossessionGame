@@ -20,10 +20,10 @@ public:
 protected:
 	bool bShowPressAnyKeyToContinueOnDialogueEnd = false;
 	int32 DialogueTextIndex = -1;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TArray<FString> DialogueTexts;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TArray<FString> TipTexts;
+	UPROPERTY()
+	TArray<FText> DialogueTexts;
+	UPROPERTY()
+	TArray<FText> TipTexts;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DialogueText;
 	UPROPERTY()

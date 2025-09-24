@@ -82,5 +82,6 @@ enum class EVfx : uint16
 	CloneSpawn,
 	VectorBlastImpact,
 	VectorBlastTrail,
-	VectorBlastMuzzle
+	VectorBlastMuzzle,
+	WardenBlasterProjectile
 };

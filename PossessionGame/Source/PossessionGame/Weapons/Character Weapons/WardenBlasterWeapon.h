@@ -9,5 +9,7 @@ class POSSESSIONGAME_API AWardenBlasterWeapon : public AOneHandedWeapon
 {
 	GENERATED_BODY()
 
+	virtual void AI_Shoot() override;
+	
 	virtual void BeginPlay() override;
 };

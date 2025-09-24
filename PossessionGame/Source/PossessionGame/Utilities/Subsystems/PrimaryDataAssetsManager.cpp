@@ -105,6 +105,7 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::VectorBlastProjectile, EVfxType::Impact }), EVfx::VectorBlastImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::VectorBlastProjectile, EVfxType::Trail }), EVfx::VectorBlastTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Trail }), EVfx::MinionBossBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::WardenProjectile, EVfxType::Trail }), EVfx::WardenBlasterProjectile },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Muzzle }), EVfx::MinionBossMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::CloneProjectile, EVfxType::Impact }), EVfx::CloneBulletImpact }
 	};
@@ -674,6 +675,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_VectorBlastTrail", EVfx::VectorBlastTrail);
 	VfxsMap.Add("PA_VectorBlastImpact", EVfx::VectorBlastImpact);
 	VfxsMap.Add("PA_VectorBlastMuzzle", EVfx::VectorBlastMuzzle);
+	VfxsMap.Add("PA_WardenBlasterProjectile", EVfx::WardenBlasterProjectile);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

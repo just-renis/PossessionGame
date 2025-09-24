@@ -37,7 +37,9 @@ void USTTaskShoot::FinishTaskByEvent(const EStateTreeEvent InEvent)
 
 void USTTaskShoot::ShootLogic()
 {
+	UE_LOG(LogTemp, Error, TEXT("ShootLogic 1"));
 	if (!CachedController->GetStateTreeData().GetIsTargetInMySight()) return;
+	UE_LOG(LogTemp, Error, TEXT("ShootLogic 2"));
 	const TObjectPtr<AEnemy> Enemy = CachedController->GetProprietor();
 	if (bIsWeaponMontageOnly ? !Enemy->GetWeapon()->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot) : !Enemy->GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) Enemy->AI_InitiateShooting();
 	if (!Enemy->GetIsActionSpeedModified() || Enemy->GetWeapon()->AI_CanShoot()) Enemy->AI_ShootLogic();

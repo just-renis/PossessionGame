@@ -85,6 +85,7 @@ void AEnemy::AI_InitiateShooting() { if (CurrentMoveMode != EMoveMode::Run && !A
 
 void AEnemy::AI_ShootLogic()
 {
+	UE_LOG(LogTemp, Error, TEXT("AI_ShootLogic bIsInputLocked %i || bIsActionInMotion %i || !bCanShoot %i || AnimInstance->IsPlaying(EEnemyAnimState::Reload) %i || CurrentMoveMode == EMoveMode::Run %i"), bIsInputLocked,bIsActionInMotion,!bCanShoot,AnimInstance->IsPlaying(EEnemyAnimState::Reload),CurrentMoveMode == EMoveMode::Run);
 	if (bIsInputLocked || bIsActionInMotion || !bCanShoot || AnimInstance->IsPlaying(EEnemyAnimState::Reload) || CurrentMoveMode == EMoveMode::Run) return;
 	AI_Shoot();
 }
@@ -402,7 +403,8 @@ void AEnemy::AI_SetupWeapon()
 	Weapon->PostProprietorSetup();
 }
 
-void AEnemy::AI_Shoot() { Weapon->AI_Shoot(); }
+void AEnemy::AI_Shoot() { 	UE_LOG(LogTemp, Error, TEXT("AI_Shoot"));
+Weapon->AI_Shoot(); }
 
 void AEnemy::AI_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 {

@@ -31,7 +31,8 @@ AWeapon::AWeapon()
 bool AWeapon::AI_CanShoot() const { return ShootTimer >= ShootCooldown * ReverseActionSpeed; }
 
 void AWeapon::AI_Shoot()
-{
+{	UE_LOG(LogTemp, Error, TEXT("AI_Shoot REAL"));
+
 	MuzzleFlashLogic();
 	ShootTimer = 0.f;
 }
