@@ -4,7 +4,6 @@
 
 EStateTreeRunStatus USTTaskWardenBeamShot::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
 {
-	UE_LOG(LogTemp, Error, TEXT("USTTaskWardenBeamShot::EnterState"));
 	CachedController = Cast<AWardenAIController>(Context.GetOwner());
 	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::WardenBeamShot);
 	CachedController->GetProprietor()->AI_UseAbility(0);
@@ -14,7 +13,6 @@ EStateTreeRunStatus USTTaskWardenBeamShot::EnterState(FStateTreeExecutionContext
 
 void USTTaskWardenBeamShot::BeamShot()
 {
-	UE_LOG(LogTemp, Error, TEXT("BeamShot"));
 	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::None);
 	FinishTask();
 }

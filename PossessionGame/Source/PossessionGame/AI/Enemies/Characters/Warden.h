@@ -9,11 +9,15 @@ class POSSESSIONGAME_API AWarden : public AEnemy
 {
 	GENERATED_BODY()
 public:
+	TSubclassOf<UCameraShakeBase> GetBeamShotCameraShake() { return BeamShotCameraShake; }
+	
 	void TriggerBeam() const;
 private:
 	AWarden();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Beam Weapon", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> BeamShotCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Beam Weapon", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> BeamWeapon;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BeamVfx;

@@ -37,7 +37,7 @@ DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnPlayerReloadMontageEnd);
 DECLARE_DELEGATE_RetVal(int32, FOnRunFinished);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
-DECLARE_DELEGATE_OneParam(FOnMinionBossStomp, const TSubclassOf<UCameraShakeBase>&);
+DECLARE_DELEGATE_OneParam(FRequestCameraShake, const TSubclassOf<UCameraShakeBase>&);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const FRuntimeUpgradeData&);
 DECLARE_DELEGATE_OneParam(FRequirePlayerAnnouncementInfo, const FText&);
 DECLARE_DELEGATE_OneParam(FChangeMusicPlayerState, const bool);
@@ -116,7 +116,7 @@ public:
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnBossDamaged OnBossDamaged;
-	FOnMinionBossStomp OnMinionBossStomp;
+	FRequestCameraShake RequestCameraShake;
 	FOnUpgradeCardSelected OnUpgradeCardSelected;
 	FRequirePlayerAnnouncementInfo RequirePlayerAnnouncementInfo;
 	FChangeMusicPlayerState ChangeMusicPlayerState;

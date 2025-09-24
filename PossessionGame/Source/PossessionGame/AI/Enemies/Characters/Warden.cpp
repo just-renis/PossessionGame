@@ -40,9 +40,7 @@ void AWarden::SetEmpEffect(const float InEffectDuration)
 
 void AWarden::TryTriggeringBeamShot()
 {
-	UE_LOG(LogTemp, Error, TEXT("TryTriggeringBeamShot"));
 	if (!CanAbilityBeExecuted(0) || GetIsAbilityInAction() || !AI) return;
-	UE_LOG(LogTemp, Error, TEXT("TryTriggeringBeamShot 1"));
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::WardenBeamShot);
 }
 
