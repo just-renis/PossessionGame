@@ -11,9 +11,12 @@ class POSSESSIONGAME_API UWardenAbility1 : public UAbility
 {
 	GENERATED_BODY()
 
+	float TriggerBeamShakeTime = 1.f;
 	float TriggerBeamEndTime = 1.5f;
 	UPROPERTY()
 	TObjectPtr<AWarden> Proprietor;
+	UPROPERTY()
+	FTimerHandle BeamShakeHandle;
 	UPROPERTY()
 	FTimerHandle BeamHandle;
 
@@ -23,5 +26,6 @@ class POSSESSIONGAME_API UWardenAbility1 : public UAbility
 	virtual bool IsProprietorPossessed() override;
 	
 	virtual void SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) override;
+	void TriggerBeamShake() const;
 	void TriggerBeamEnd() const;
 };

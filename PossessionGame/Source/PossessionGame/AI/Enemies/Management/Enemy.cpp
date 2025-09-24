@@ -469,7 +469,7 @@ void AEnemy::P_Setup()
 	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f);
 	DelegateManager->ApplyUpgradeOnSelection.BindUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
-	DelegateManager->OnMinionBossStomp.BindUObject(this, &AEnemy::P_MakeCameraShake);
+	DelegateManager->RequestCameraShake.BindUObject(this, &AEnemy::P_MakeCameraShake);
 	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
 	DelegateManager->OnAbilitiesMenuSelectionEnd.BindUObject(this, &AEnemy::P_OnAbilitiesMenuSelectionEnd);
 	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_SetupLevelUpAppliance);
@@ -524,7 +524,7 @@ void AEnemy::P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputCompon
 
 void AEnemy::P_Destroy()
 {
-	DelegateManager->OnMinionBossStomp.Unbind();
+	DelegateManager->RequestCameraShake.Unbind();
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();
 	Weapon->SetToOriginalSettings();
