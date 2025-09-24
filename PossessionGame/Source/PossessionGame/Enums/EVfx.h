@@ -83,5 +83,6 @@ enum class EVfx : uint16
 	VectorBlastImpact,
 	VectorBlastTrail,
 	VectorBlastMuzzle,
-	WardenBlasterProjectile
+	WardenBlasterProjectile,
+	WardenBeamShot
 };

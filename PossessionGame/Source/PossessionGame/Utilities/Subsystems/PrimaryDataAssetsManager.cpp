@@ -676,6 +676,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_VectorBlastImpact", EVfx::VectorBlastImpact);
 	VfxsMap.Add("PA_VectorBlastMuzzle", EVfx::VectorBlastMuzzle);
 	VfxsMap.Add("PA_WardenBlasterProjectile", EVfx::WardenBlasterProjectile);
+	VfxsMap.Add("PA_WardenBeamShot", EVfx::WardenBeamShot);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

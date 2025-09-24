@@ -13,6 +13,7 @@
 #include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility1.h"
 #include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility2.h"
 #include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility3.h"
+#include "PossessionGame/Abilities/Characters/Warden/WardenAbility1.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 
 EAbility UAbilityManager::GetAbilityName(const ECharacterType InCharacterName, const int32 InAbilityIndex)
@@ -58,6 +59,7 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::Guardian, 2, EAbility::GuardianAbility3, UGuardianAbility3::StaticClass());
     AddAbility(ECharacterType::MinionBoss, 0, EAbility::MinionBossAbility1, UMinionBossAbility1::StaticClass());
     AddAbility(ECharacterType::MinionBoss, 1, EAbility::MinionBossAbility2, UMinionBossAbility2::StaticClass());
+    AddAbility(ECharacterType::Warden, 0, EAbility::WardenAbility1, UWardenAbility1::StaticClass());
 }
 
 void UAbilityManager::AddAbility(const ECharacterType InCharacterName, const int32 InAbilityIndex, const EAbility InAbilityName, const TSubclassOf<UAbility>& InAbilityClass)
