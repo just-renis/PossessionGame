@@ -31,8 +31,7 @@ AWeapon::AWeapon()
 bool AWeapon::AI_CanShoot() const { return ShootTimer >= ShootCooldown * ReverseActionSpeed; }
 
 void AWeapon::AI_Shoot()
-{	UE_LOG(LogTemp, Error, TEXT("AI_Shoot REAL"));
-
+{
 	MuzzleFlashLogic();
 	ShootTimer = 0.f;
 }
@@ -166,7 +165,7 @@ void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh
 	Mesh->AttachToComponent(OwnerMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("AIWeaponSocket1"));
 }
 
-void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon)
+void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, bool bFromFirstWeapon)
 {
 	FProjectileData* ProjectileData = GetProjectileData(InProjectileName);
 	if (!ProjectileData) return;
@@ -177,7 +176,7 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIs
 		ProjectileData->SetAmount(ProjectilesAmount + 1);
 	}
 	ProjectileData->SetProprietor(Proprietor);
-	const FName& ProjectileSocketName = ProjectileData->ProjectileSocketName;
+	const FName& ProjectileSocketName = InProjectileSocketName == NAME_None ? ProjectileData->ProjectileSocketName : InProjectileSocketName;
 	const FVector BaseLocation = GetSocketLocation(ProjectileSocketName);
 	const FRotator BaseRotation = GetSocketRotation(ProjectileSocketName);
 	//const FVector BaseScale = Mesh->GetSocketTransform(ProjectileSocketName, RTS_Component).GetScale3D(); If ill need scale for some reason from socket for projectiles.

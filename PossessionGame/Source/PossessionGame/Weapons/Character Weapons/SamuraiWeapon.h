@@ -29,5 +29,5 @@ private:
 
 	virtual void BeginPlay() override;
 	void PlayHandsAndWeaponMontage(EHandsAnimState State, EWeaponAnimState WeaponState, float StartSeconds = 0.f);
-	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const bool bFromFirstWeapon) override;
+	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, const bool bFromFirstWeapon) override;
 };

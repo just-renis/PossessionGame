@@ -2,8 +2,10 @@
 
 void AWardenBlasterWeapon::AI_Shoot()
 {
-	Super::AI_Shoot();UE_LOG(LogTemp, Error, TEXT("AI_Shoot ShootProjectile"));
-	ShootProjectile(EPoolObject::WardenProjectile, false);
+	Super::AI_Shoot();
+	if (bFirstWeaponTrigger) ShootProjectile(EPoolObject::WardenProjectile, false);
+	else ShootProjectile(EPoolObject::WardenProjectile, false, "SecondProjectileSocket");
+	bFirstWeaponTrigger = !bFirstWeaponTrigger;
 }
 
 void AWardenBlasterWeapon::BeginPlay()

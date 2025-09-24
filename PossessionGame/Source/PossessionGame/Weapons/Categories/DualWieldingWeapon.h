@@ -62,5 +62,5 @@ private:
     void NonCyclingModeLogic();
     virtual void SetReverseActionSpeed(const float InActionSpeed) override;
     virtual void MuzzleFlashLogic() override;
-    virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon) override;
+    virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, const bool bFromFirstWeapon) override;
 };

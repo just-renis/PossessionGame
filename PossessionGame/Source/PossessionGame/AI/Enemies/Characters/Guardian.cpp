@@ -254,5 +254,5 @@ void AGuardian::ToggleShieldVfx(const bool bState, const EVfx InVfxName)
 void AGuardian::ShootSecondWeaponProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon)
 {
 	AssetsManager->PlaySound2D(ESound::VectorBlastLaunch);
-	Weapon->ShootProjectile(InProjectileName, bIsFromAbility, bFromFirstWeapon);
+	Weapon->ShootProjectile(InProjectileName, bIsFromAbility, NAME_None, bFromFirstWeapon);
 }

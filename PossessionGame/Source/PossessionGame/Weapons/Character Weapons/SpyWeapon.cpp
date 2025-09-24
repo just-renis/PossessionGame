@@ -10,7 +10,7 @@ void ASpyWeapon::P_Shoot()
 	MakeShootingCameraShake();
 	CurrentAmmo--;
 	ShootTimer = 0.f;
-	bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::SpyProjectile, false, true);
+	bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::SpyProjectile, false, NAME_None, true);
 }
 
 void ASpyWeapon::P_Reload(int32 OtherAmmoSource)
@@ -26,7 +26,7 @@ void ASpyWeapon::BeginPlay()
 	SetWeaponReloadMontageDelegate();
 }
 
-void ASpyWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const bool bFromFirstWeapon)
+void ASpyWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, const bool bFromFirstWeapon)
 {
 	Super::ShootProjectile(InProjectileName, bIsFromAbility);
 	if (CurrentAmmo <= MagazineCap * 0.1f) OnAmmoPercentageChanged.Broadcast(10);
@@ -43,5 +43,5 @@ void ASpyWeapon::AI_Shoot()
 {
 	//PlaySound(ESound::TricksterShoot);
 	Super::AI_Shoot();
-	ShootProjectile(EPoolObject::SpyProjectile, false, true);
+	ShootProjectile(EPoolObject::SpyProjectile, false, NAME_None, true);
 }

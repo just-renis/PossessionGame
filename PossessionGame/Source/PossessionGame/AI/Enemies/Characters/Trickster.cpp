@@ -66,7 +66,7 @@ void ATrickster::P_ThrowPoisonGrenade() const
 void ATrickster::P_ThrowEmpGrenade() const
 {
 	AssetsManager->PlaySound2D(ESound::TricksterGrenadeThrow);
-	Weapon->ShootProjectile(EPoolObject::TricksterEmpProjectile, true, false);
+	Weapon->ShootProjectile(EPoolObject::TricksterEmpProjectile, true, NAME_None, false);
 }
 
 TArray<FVector> ATrickster::GetAvailableCloneSpawnOffsets(int32 InClonesAmount)
