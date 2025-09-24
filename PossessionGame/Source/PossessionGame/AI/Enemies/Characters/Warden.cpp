@@ -50,4 +50,28 @@ void AWarden::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void AWarden::TriggerBeam() const { if (BeamVfx) BeamVfx->Activate(true); }
+void AWarden::TriggerBeam() const
+{
+	if (!BeamVfx) return;
+	const TObjectPtr<AActor> Player = AI->GetStateTreeData().GetTarget();
+	if (!Player) return;
+	// Beam calculation logic.
+	const FVector Start = BeamWeapon->GetSocketLocation(FName("BeamSocket"));
+	const FVector Direction = Player->GetActorLocation() - Start;
+	float Distance = Direction.Size();
+	// Beam blocking logic.
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	const FVector LaserEnd = Start + BeamWeapon->GetSocketRotation(FName("BeamSocket")).Vector() * 4000.f;
+	FHitResult LaserHit;
+	GetWorld()->LineTraceSingleByChannel(LaserHit, Start, LaserEnd, ECC_Visibility, QueryParams);
+	if (LaserHit.bBlockingHit) Distance = LaserHit.Distance;
+	// Beam collision setup.
+	//Proprietor->GetLaserCollision()->SetWorldLocation(Start + LaserForward * Distance * 0.45f);
+	//Proprietor->GetLaserCollision()->SetWorldRotation(NewRotation);
+	//Proprietor->GetLaserCollision()->SetCapsuleSize(35.f, Distance * 0.5f);
+	// Beam length vfx change.
+	BeamVfx->SetVectorParameter(FName("Scale Factor 1"), FVector(Distance * DistanceMulti, 1.f, 1.f));
+	BeamVfx->SetVectorParameter(FName("Scale Factor001"), FVector(Distance * DistanceMulti, 1.f, 1.f));
+	BeamVfx->Activate(true);
+}

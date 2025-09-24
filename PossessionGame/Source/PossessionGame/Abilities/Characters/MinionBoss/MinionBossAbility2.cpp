@@ -82,7 +82,7 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	const TObjectPtr<AActor> Player = Proprietor->GetAI()->GetStateTreeData().GetTarget();
 	if (!Player) return;
 	// Laser calculation logic.
-	const FVector Start = Proprietor->GetMesh()->GetSocketLocation(TEXT("LaserSocket"));
+	const FVector Start = Proprietor->GetMesh()->GetSocketLocation(FName("LaserSocket"));
 	FVector Direction = (Player->GetActorLocation() - Start).GetSafeNormal();
 	const FRotator CurrentRotation = Proprietor->GetLaser()->GetComponentRotation();
 	const FRotator DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(Direction.Rotation(), CurrentRotation);

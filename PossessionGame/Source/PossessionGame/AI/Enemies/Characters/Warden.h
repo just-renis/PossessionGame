@@ -16,6 +16,8 @@ private:
 	AWarden();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Beam Weapon", meta = (AllowPrivateAccess = true))
+	float DistanceMulti = 0.00111f;
+	UPROPERTY(EditDefaultsOnly, Category = "Beam Weapon", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> BeamShotCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Beam Weapon", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> BeamWeapon;

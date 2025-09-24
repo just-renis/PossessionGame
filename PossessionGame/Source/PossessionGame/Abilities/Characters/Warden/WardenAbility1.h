@@ -11,8 +11,8 @@ class POSSESSIONGAME_API UWardenAbility1 : public UAbility
 {
 	GENERATED_BODY()
 
-	float TriggerBeamShakeTime = 1.f;
-	float TriggerBeamEndTime = 1.5f;
+	float TriggerBeamShakeTime = 0.5f;
+	float TriggerBeamEndTime = 1.f;
 	UPROPERTY()
 	TObjectPtr<AWarden> Proprietor;
 	UPROPERTY()
