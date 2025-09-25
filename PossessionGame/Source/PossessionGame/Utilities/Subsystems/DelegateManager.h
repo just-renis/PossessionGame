@@ -23,7 +23,6 @@ DECLARE_DELEGATE(FOnUsbInserted);
 DECLARE_DELEGATE(FOnArtifactCollected);
 DECLARE_DELEGATE(FOnSecretDoorOpened);
 DECLARE_DELEGATE(FUpdateGameModeEnemiesAmount);
-DECLARE_DELEGATE(FOnBossSpawn);
 DECLARE_DELEGATE(FOnOutOfAmmo);
 DECLARE_DELEGATE(FOnGameLaunchFinished);
 DECLARE_DELEGATE(FMeleeAttackOccured);
@@ -51,6 +50,7 @@ DECLARE_DELEGATE_OneParam(FRequestAddAbilitiesToUpgradePool, const TObjectPtr<US
 DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FRequestMinorAnnouncement, const FText&);
 DECLARE_DELEGATE_OneParam(FRequestRangerMineRemoval, const TObjectPtr<ARangerMine>&);
+DECLARE_DELEGATE_OneParam(FOnBossSpawn, const FLinearColor);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
@@ -100,7 +100,6 @@ public:
 	FOnArtifactCollected OnArtifactCollected;
 	FOnSecretDoorOpened OnSecretDoorOpened;
 	FUpdateGameModeEnemiesAmount UpdateGameModeEnemiesAmount;
-	FOnBossSpawn OnBossSpawn;
 	FOnOutOfAmmo OnOutOfAmmo;
 	FOnGameLaunchFinished OnGameLaunchFinished;
 	FMeleeAttackOccured MeleeAttackOccured;
@@ -130,6 +129,7 @@ public:
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
 	FRequestMinorAnnouncement RequestMinorAnnouncement;
 	FRequestRangerMineRemoval RequestRangerMineRemoval;
+	FOnBossSpawn OnBossSpawn;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;

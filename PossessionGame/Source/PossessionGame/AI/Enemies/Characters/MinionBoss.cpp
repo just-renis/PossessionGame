@@ -168,7 +168,7 @@ void AMinionBoss::BeginPlay()
 	Super::BeginPlay();
 	LaserCollision->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionBeginOverlap);
 	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
-	(void)DelegateManager->OnBossSpawn.ExecuteIfBound();
+	(void)DelegateManager->OnBossSpawn.ExecuteIfBound(FLinearColor());
 	GetWorld()->GetTimerManager().SetTimer(MoveDirectlyToPlayerHandle, this, &AMinionBoss::SetMoveDirectlyToPlayer, MoveDirectlyToPlayerInterval, false);
 }
 

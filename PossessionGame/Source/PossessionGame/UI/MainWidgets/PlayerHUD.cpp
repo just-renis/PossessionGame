@@ -260,7 +260,11 @@ void UPlayerHUD::UpdateBossHpBar(const float InCurrent, const float InMax)
 	UpdateProgressBar(EUIBar::Boss, InCurrent, InMax);
 }
 
-void UPlayerHUD::EnableBossHpBar() const { if (BossHpBarInv) BossHpBarInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible); }
+void UPlayerHUD::EnableBossHpBar(const FLinearColor InBarColor) const
+{
+	if (BossHpBarInv) BossHpBarInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (BossHpBar) BossHpBar->SetFillColorAndOpacity(InBarColor);
+}
 
 void UPlayerHUD::DisableBossHpBar() const { if (BossHpBarInv) BossHpBarInv->SetVisibility(ESlateVisibility::Collapsed); }
 

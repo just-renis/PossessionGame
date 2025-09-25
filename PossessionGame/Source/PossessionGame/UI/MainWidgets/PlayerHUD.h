@@ -165,7 +165,7 @@ private:
 	void PlayLevelUpAnim();
 	void SetLevelText(const int32 InLevel) const;
 	void UpdateBossHpBar(const float InCurrent, const float InMax);
-	void EnableBossHpBar() const;
+	void EnableBossHpBar(const FLinearColor InBarColor) const;
 	void DisableBossHpBar() const;
 	void UpdateWhiteHpBar();
 	void UpdateBossWhiteHpBar();

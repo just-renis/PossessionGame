@@ -2,16 +2,23 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 
 AWarden::AWarden()
 {
+	if (AI_HpBarComponent)
+	{
+		AI_HpBarComponent->DestroyComponent();
+		AI_HpBarComponent = nullptr;
+	}
 	BeamWeapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BeamWeapon"));
 	BeamCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("BeamCollision"));
 	BeamCollision->SetupAttachment(BeamWeapon, FName("BeamSocket"));
@@ -56,6 +63,7 @@ void AWarden::BeginPlay()
 	CharacterName = ECharacterType::Warden;
 	Super::BeginPlay();
 	bCanShoot = true;
+	(void)DelegateManager->OnBossSpawn.ExecuteIfBound(FLinearColor::Red);
 	BeamWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("BeamWeaponSocket"));
 	AssetsManager->AttachVfx(EVfx::WardenBeamShot, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &BeamVfx, BeamWeapon, FName("BeamSocket"), true);
 	GetWorldTimerManager().SetTimer(BeamTriggerHandle, this, &AWarden::TryTriggeringBeamShot, 1.f, true);
@@ -88,6 +96,18 @@ void AWarden::DisableBeamCollision()
 {
 	if (BeamCollision) BeamCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetWorldTimerManager().ClearTimer(BeamDisableCollisionHandle);
+}
+
+void AWarden::InitiateDeath()
+{
+	Super::InitiateDeath();
+	DelegateManager->OnBossDeath.Broadcast();
+}
+
+void AWarden::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
+{
+	Super::ReceiveDamage(InDamage, InDamageReason);
+	(void)DelegateManager->OnBossDamaged.ExecuteIfBound(CurrentHp, MaxHp);
 }
 
 void AWarden::TriggerBeam()
