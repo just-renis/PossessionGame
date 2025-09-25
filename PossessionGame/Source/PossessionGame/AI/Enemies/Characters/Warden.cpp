@@ -1,7 +1,9 @@
 ﻿#include "Warden.h"
 #include "NiagaraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -9,7 +11,12 @@
 
 AWarden::AWarden()
 {
-	BeamWeapon = CreateDefaultSubobject<USkeletalMeshComponent>("BeamWeapon");
+	BeamWeapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BeamWeapon"));
+	BeamCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("BeamCollision"));
+	BeamCollision->SetupAttachment(BeamWeapon, FName("BeamSocket"));
+	BeamCollision->SetCollisionProfileName(FName("TriggerPlayer"));
+	BeamCollision->SetGenerateOverlapEvents(true);
+	BeamCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AWarden::AI_SetupWeapon()
@@ -26,6 +33,7 @@ void AWarden::BeginPlay()
 	BeamWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("BeamWeaponSocket"));
 	AssetsManager->AttachVfx(EVfx::WardenBeamShot, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &BeamVfx, BeamWeapon, FName("BeamSocket"), true);
 	GetWorldTimerManager().SetTimer(BeamTriggerHandle, this, &AWarden::TryTriggeringBeamShot, 1.f, true);
+	BeamCollision->OnComponentBeginOverlap.AddDynamic(this, &AWarden::OnBeamCollisionBeginOverlap);
 }
 
 void AWarden::SetEmpEffect(const float InEffectDuration)
@@ -50,28 +58,53 @@ void AWarden::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+void AWarden::DisableBeamCollision()
+{
+	if (BeamCollision) BeamCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetWorldTimerManager().ClearTimer(BeamDisableCollisionHandle);
+}
+
 void AWarden::TriggerBeam() const
 {
-	if (!BeamVfx) return;
+	if (!BeamVfx || !BeamCollision) return;
 	const TObjectPtr<AActor> Player = AI->GetStateTreeData().GetTarget();
 	if (!Player) return;
 	// Beam calculation logic.
 	const FVector Start = BeamWeapon->GetSocketLocation(FName("BeamSocket"));
 	const FVector Direction = Player->GetActorLocation() - Start;
 	float Distance = Direction.Size();
+	const FVector BeamForward = BeamWeapon->GetSocketRotation(FName("BeamSocket")).Vector();
 	// Beam blocking logic.
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
-	const FVector LaserEnd = Start + BeamWeapon->GetSocketRotation(FName("BeamSocket")).Vector() * 4000.f;
+	const FVector LaserEnd = Start + BeamForward * 4000.f;
 	FHitResult LaserHit;
 	GetWorld()->LineTraceSingleByChannel(LaserHit, Start, LaserEnd, ECC_Visibility, QueryParams);
 	if (LaserHit.bBlockingHit) Distance = LaserHit.Distance;
 	// Beam collision setup.
-	//Proprietor->GetLaserCollision()->SetWorldLocation(Start + LaserForward * Distance * 0.45f);
-	//Proprietor->GetLaserCollision()->SetWorldRotation(NewRotation);
-	//Proprietor->GetLaserCollision()->SetCapsuleSize(35.f, Distance * 0.5f);
+	const FVector BeamCenter = Start + BeamForward * (Distance * 0.5f);
+	const FRotator BeamRotation = BeamForward.Rotation() + FRotator(90.f, 0.f, 0.f);
+	// Set capsule collision transform
+	BeamCollision->SetWorldLocation(BeamCenter);
+	BeamCollision->SetWorldRotation(BeamRotation);
+	BeamCollision->SetCapsuleSize(35.f, Distance * 0.5f);
 	// Beam length vfx change.
 	BeamVfx->SetVectorParameter(FName("Scale Factor 1"), FVector(Distance * DistanceMulti, 1.f, 1.f));
 	BeamVfx->SetVectorParameter(FName("Scale Factor001"), FVector(Distance * DistanceMulti, 1.f, 1.f));
 	BeamVfx->Activate(true);
+}
+
+void AWarden::TriggerBeamDamage()
+{
+	BeamCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetWorldTimerManager().SetTimer(BeamDisableCollisionHandle, this, &AWarden::DisableBeamCollision, DamageTimeSpan);
+}
+
+void AWarden::OnBeamCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (const TObjectPtr<AEnemy> Player = Cast<AEnemy>(OtherActor); Player->GetIsHijacked())
+	{
+		Player->ReceiveDamage(Damage, EDamageReason::None);
+		DisableBeamCollision();
+	}
 }
