@@ -46,6 +46,11 @@ void AWarden::AI_PlayDeathSound()
 
 void AWarden::AI_PlaySpawnSound() { PlaySound(ESound::WardenSpawn, true); }
 
+void AWarden::AI_PlayDeathElectrification()
+{
+	AssetsManager->AttachVfx(EVfx::WardenDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
+}
+
 void AWarden::BeginPlay()
 {
 	CharacterName = ECharacterType::Warden;

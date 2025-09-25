@@ -155,7 +155,7 @@ void AWeapon::DeactivateWeapon()
 	bIsPossessed = false;
 	Mesh->SetAnimInstanceClass(nullptr);
 	if (HandsMesh) DisableHandsMesh();
-	DetachWeapon();
+	if (bIsWeaponDetachable) DetachWeapon();
 }
 
 void AWeapon::SetProprietor(const TObjectPtr<AEnemy> InProprietor) { Proprietor = InProprietor; }

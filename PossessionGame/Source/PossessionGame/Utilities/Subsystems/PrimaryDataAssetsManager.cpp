@@ -114,7 +114,9 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FCharacterPairWrapper({ ECharacterType::Guardian, EVfxType::Spawn }), EVfx::GuardianSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Ranger, EVfxType::Spawn }), EVfx::RangerSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Trickster, EVfxType::Spawn }), EVfx::TricksterSpawn },
-		{FCharacterPairWrapper({ ECharacterType::Minion, EVfxType::Spawn }), EVfx::MinionSpawn }
+		{FCharacterPairWrapper({ ECharacterType::Minion, EVfxType::Spawn }), EVfx::MinionSpawn },
+		{FCharacterPairWrapper({ ECharacterType::Warden, EVfxType::Spawn }), EVfx::WardenSpawn },
+		{FCharacterPairWrapper({ ECharacterType::MinionBoss, EVfxType::Spawn }), EVfx::MinionBossSpawn }
 	};
 	PrimaryInit();
 }
@@ -681,6 +683,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_VectorBlastMuzzle", EVfx::VectorBlastMuzzle);
 	VfxsMap.Add("PA_WardenBlasterProjectile", EVfx::WardenBlasterProjectile);
 	VfxsMap.Add("PA_WardenBeamShot", EVfx::WardenBeamShot);
+	VfxsMap.Add("PA_WardenSpawn", EVfx::WardenSpawn);
+	VfxsMap.Add("PA_WardenDeathElectrification", EVfx::WardenDeathElectrification);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

@@ -91,6 +91,7 @@ protected:
 	bool bIsHitScanEnabled = false;
 	bool bIsReloadEnabled = true;
 	bool bWalkSpreadEnabled = false;
+	bool bIsWeaponDetachable = true;
 	int32 MagazineCap;
 	int32 TotalAmmo;
 	float ShootCooldown;
