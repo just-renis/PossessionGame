@@ -112,5 +112,9 @@ enum class ESound : uint16
 	RangerThrowMine,
 	VectorBlastBounce,
 	VectorBlastHit,
-	VectorBlastLaunch
+	VectorBlastLaunch,
+	WardenDeath,
+	WardenSpawn,
+	WardenBeamFire,
+	WardenShoot
 };

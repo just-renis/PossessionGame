@@ -11,7 +11,7 @@ class POSSESSIONGAME_API AWarden : public AEnemy
 public:
 	TSubclassOf<UCameraShakeBase> GetBeamShotCameraShake() { return BeamShotCameraShake; }
 	
-	void TriggerBeam() const;
+	void TriggerBeam();
 	void TriggerBeamDamage();
 private:
 	AWarden();
@@ -31,11 +31,19 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BeamVfx;
 	UPROPERTY()
+	TObjectPtr<UAudioComponent> DeathSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> SpawnSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> BeamFireSfx;
+	UPROPERTY()
 	FTimerHandle BeamTriggerHandle;
 	UPROPERTY()
 	FTimerHandle BeamDisableCollisionHandle;
 
 	virtual void AI_SetupWeapon() override;
+	virtual void AI_PlayDeathSound() override;
+	virtual void AI_PlaySpawnSound() override;
 
 	virtual void BeginPlay() override;
 	virtual void SetEmpEffect(const float InEffectDuration) override;

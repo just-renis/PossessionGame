@@ -1,5 +1,6 @@
 ﻿#include "Warden.h"
 #include "NiagaraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECharacterType.h"
@@ -17,6 +18,18 @@ AWarden::AWarden()
 	BeamCollision->SetCollisionProfileName(FName("TriggerPlayer"));
 	BeamCollision->SetGenerateOverlapEvents(true);
 	BeamCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	DeathSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("DeathSound"));
+	DeathSfx->SetAutoActivate(false);
+	DeathSfx->SetupAttachment(GetMesh());
+	SpawnSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("SpawnSound"));
+	SpawnSfx->SetAutoActivate(false);
+	SpawnSfx->SetupAttachment(GetMesh());
+	BeamFireSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("BeamFireSound"));
+	BeamFireSfx->SetAutoActivate(false);
+	BeamFireSfx->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::WardenDeath, DeathSfx);
+	Sounds.Add(ESound::WardenSpawn, SpawnSfx);
+	Sounds.Add(ESound::WardenBeamFire, BeamFireSfx);
 }
 
 void AWarden::AI_SetupWeapon()
@@ -24,6 +37,14 @@ void AWarden::AI_SetupWeapon()
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::WardenBlasterWeapon, GetMesh());
 	Super::AI_SetupWeapon();
 }
+
+void AWarden::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::WardenDeath);
+}
+
+void AWarden::AI_PlaySpawnSound() { PlaySound(ESound::WardenSpawn, true); }
 
 void AWarden::BeginPlay()
 {
@@ -64,11 +85,12 @@ void AWarden::DisableBeamCollision()
 	GetWorldTimerManager().ClearTimer(BeamDisableCollisionHandle);
 }
 
-void AWarden::TriggerBeam() const
+void AWarden::TriggerBeam()
 {
 	if (!BeamVfx || !BeamCollision) return;
 	const TObjectPtr<AActor> Player = AI->GetStateTreeData().GetTarget();
 	if (!Player) return;
+	PlaySound(ESound::WardenBeamFire);
 	// Beam calculation logic.
 	const FVector Start = BeamWeapon->GetSocketLocation(FName("BeamSocket"));
 	const FVector Direction = Player->GetActorLocation() - Start;

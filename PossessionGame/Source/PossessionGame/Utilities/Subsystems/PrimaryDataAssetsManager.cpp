@@ -572,6 +572,10 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_VectorBlastBounce", ESound::VectorBlastBounce);
 	SoundMap.Add("PA_VectorBlastHit", ESound::VectorBlastHit);
 	SoundMap.Add("PA_VectorBlastLaunch", ESound::VectorBlastLaunch);
+	SoundMap.Add("PA_WardenDeath", ESound::WardenDeath);
+	SoundMap.Add("PA_WardenSpawn", ESound::WardenSpawn);
+	SoundMap.Add("PA_WardenBeamFire", ESound::WardenBeamFire);
+	SoundMap.Add("PA_WardenShoot", ESound::WardenShoot);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
