@@ -4,46 +4,13 @@
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/Interactable Objects/InteractableObject.h"
 #include "TutorialBot.generated.h"
 
+enum class ETutorialBotAnimState : uint8;
+enum class ETutorialBotExpression : uint8;
 class ADroneWaypoint;
 class UTutorialBotAnimationInstance;
 class ATutorialDialogue;
 enum class ESound : uint16;
-
-UENUM()
-enum class ETutorialBotAnimState
-{
-	Tutorial1,
-	Tutorial2,
-	Tutorial3,
-	Tutorial4,
-	Tutorial5,
-	Tutorial6,
-	Tutorial7,
-	Tutorial8,
-	Tutorial9,
-	Tutorial10,
-	Tutorial11,
-	Tutorial12,
-	Tutorial13,
-	Tutorial14,
-	Idle,
-	ThumbsUp,
-	Wave,
-	TabletHolding
-};
-
-UENUM()
-enum class ETutorialBotExpression
-{
-	HappyWink,
-	NeutralWink,
-	Blink,
-	Thinking,
-	Sad,
-	Happy,
-	Grumpy,
-	NeutralFace
-};
+enum class EGameState : uint8;
 
 UCLASS()
 class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
@@ -60,6 +27,7 @@ class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 	int32 PressKeyIndex = 0;
 	FVector WaypointLocation = FVector::ZeroVector;
 	ETutorialBotExpression CurrentExpression;
+	EGameState CurrentGameState;
 	UPROPERTY(EditDefaultsOnly, Category = "Expression | Random Blink", meta = (AllowPrivateAccess = true))
 	float MinRange = 0.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Expression | Random Blink", meta = (AllowPrivateAccess = true))
@@ -156,13 +124,14 @@ class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 	void SetupExpression();
 	void EnableCheckDistanceToTarget();
 	void CheckDistanceToTarget();
-	void StartTipDialogue() const;
+	void StartTipDialogue();
 	void PlayNextToGateAnimation();
 	void PlayIdleAnimation();
 	void SpawnMarker() const;
 	virtual void Interact() override;
 	void SetPlayerRef(const TObjectPtr<AActor>& InPlayerRef) { Player = InPlayerRef; }
 	void SetupMeshOptimization() const;
+	void SetCurrentGameState(const EGameState InGameState) { CurrentGameState = InGameState; }
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

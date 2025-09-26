@@ -5,6 +5,8 @@
 #include "PossessionGame/AI/Navigation/DroneWaypoint.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/ETutorialBotAnimState.h"
+#include "PossessionGame/Enums/ETutorialBotExpression.h"
 #include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/TutorialDialogue.h"
@@ -388,7 +390,7 @@ void ATutorialBot::CheckDistanceToTarget()
 	}
 }
 
-void ATutorialBot::StartTipDialogue() const { Dialogue->StartTipDialogue(); }
+void ATutorialBot::StartTipDialogue() { SetExpression(Dialogue->StartTipDialogue(CurrentGameState)); }
 
 void ATutorialBot::PlayNextToGateAnimation()
 {

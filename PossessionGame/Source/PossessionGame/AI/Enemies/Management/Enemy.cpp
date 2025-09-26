@@ -833,7 +833,7 @@ void AEnemy::P_SetupUI()
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
 	P_SetupColorsForUI();
-	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.25f, true);
+	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.05f, true);
 }
 
 void AEnemy::P_HijackEnemy()

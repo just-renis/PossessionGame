@@ -1,8 +1,23 @@
 ﻿#include "DialogueUI.h"
 #include "Components/TextBlock.h"
+#include "PossessionGame/Enums/EGameState.h"
+#include "PossessionGame/Enums/ETutorialBotAnimState.h"
+#include "PossessionGame/Enums/ETutorialBotExpression.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/TutorialManager.h"
+
+ETutorialBotExpression UDialogueUI::StartTipDialogue(const EGameState InCurrentGameState, const float InSpeed)
+{
+	if (GetVisibility() == ESlateVisibility::Collapsed) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	AssetsManager->PlaySound2D(ESound::DialogueStart);
+	TargetText = GetGameStateDialogues(InCurrentGameState).ToString();
+	CurrentText = "";
+	CurrentIndex = 0;
+	TypeSpeed = InSpeed;
+	GetWorld()->GetTimerManager().SetTimer(TypeHandle, this, &UDialogueUI::TypeNextLetter, TypeSpeed, true);
+	return SavedExpression;
+}
 
 void UDialogueUI::ClearDialogueText() const { if (DialogueText) DialogueText->SetText(FText::FromString("")); }
 
@@ -12,23 +27,28 @@ void UDialogueUI::StartDialogue(const int32 InIndex, const bool bShowPressAnyKey
 	if (GetVisibility() == ESlateVisibility::Collapsed) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	bShowPressAnyKeyToContinueOnDialogueEnd = bShowPressAnyKeyToContinue;
 	AssetsManager->PlaySound2D(ESound::DialogueStart);
-	DialogueTextIndex = InIndex;
-	TargetText = (DialogueTextIndex == -1 ? TipTexts[FMath::RandRange(0, TipTexts.Num() - 1)] : DialogueTexts[InIndex]).ToString();
+	TargetText = DialogueTexts[InIndex].ToString();
 	CurrentText = "";
 	CurrentIndex = 0;
 	TypeSpeed = InSpeed;
 	GetWorld()->GetTimerManager().SetTimer(TypeHandle, this, &UDialogueUI::TypeNextLetter, TypeSpeed, true);
 }
 
-void UDialogueUI::StartTipDialogue(const float InSpeed)
+FText UDialogueUI::GetGameStateDialogues(const EGameState InGameState)
 {
-	if (GetVisibility() == ESlateVisibility::Collapsed) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	AssetsManager->PlaySound2D(ESound::DialogueStart);
-	TargetText = TipTexts[FMath::RandRange(0, TipTexts.Num() - 1)].ToString();
-	CurrentText = "";
-	CurrentIndex = 0;
-	TypeSpeed = InSpeed;
-	GetWorld()->GetTimerManager().SetTimer(TypeHandle, this, &UDialogueUI::TypeNextLetter, TypeSpeed, true);
+	SavedExpression = ETutorialBotExpression::NeutralFace;
+	if (const FGameStateDialogues* GameStateDialoguesData = TipTexts.Find(InGameState))
+	{
+		TMap<ETutorialBotExpression, FExpressionDialogues> GameStateDialogues = GameStateDialoguesData->Texts;
+		if (GameStateDialogues.IsEmpty()) return FText();
+		TArray<ETutorialBotExpression> Keys;
+		GameStateDialogues.GetKeys(Keys);
+		SavedExpression = Keys[FMath::RandRange(0, Keys.Num() - 1)];
+		const FExpressionDialogues& RandomValue = GameStateDialogues[SavedExpression];
+		if (RandomValue.Texts.IsEmpty()) return FText();
+		return RandomValue.Texts[FMath::RandRange(0, RandomValue.Texts.Num() - 1)];
+	}
+	return FText();
 }
 
 void UDialogueUI::NativeConstruct()
@@ -47,17 +67,85 @@ void UDialogueUI::NativeConstruct()
 	DialogueTexts.Add(NSLOCTEXT("ST_Localization", "TutorialDialogue10", "We're almost there. Keep going!"));
 	DialogueTexts.Add(NSLOCTEXT("ST_Localization", "TutorialDialogue11", "You made it!"));
 	DialogueTexts.Add(NSLOCTEXT("ST_Localization", "TutorialDialogue12", "Now let's set everything up."));
-	TipTexts.Add(NSLOCTEXT("ST_Localization", "Tip0", "There's someone working with us behind the scenes, wonder who."));
-	TipTexts.Add(NSLOCTEXT("ST_Localization", "Tip1", "Well done, keep going!"));
-	TipTexts.Add(NSLOCTEXT("ST_Localization", "Tip2", "Nice work, you're pretty good at this."));
-	TipTexts.Add(NSLOCTEXT("ST_Localization", "Tip3", "My radars sense we have an ally, just can't seem to find him."));
-	TipTexts.Add(NSLOCTEXT("ST_Localization", "Tip4", "Your Hijack bar charges with each kill, use this to your advantage."));
-	TipTexts.Add(NSLOCTEXT("ST_Localization", "Tip5", "Good shooting, just don't forget to check your ammo sometimes."));
-	TipTexts.Add(NSLOCTEXT("ST_Localization", "Tip6", "Must be lucky to be with infinite lives right?"));
-	TipTexts.Add(NSLOCTEXT("ST_Localization", "Tip7", "Choose upgrades carefuly! So the enemy doesin't become too strong."));
-	TipTexts.Add(NSLOCTEXT("ST_Localization", "Tip8", "Let's setup your abilities before you go."));
-	TipTexts.Add(NSLOCTEXT("ST_Localization", "Tip9", "Did you setup your abilities?"));
-	TipTexts.Add(NSLOCTEXT("ST_Localization", "Tip10", "Have a look at your abilities before you go."));
+	
+	FGameStateDialogues GameStateDialogues;
+	FExpressionDialogues ExpressionDialogues;
+	ExpressionDialogues.Animation = ETutorialBotAnimState::TabletHolding;
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "PreGameTip0", "Don't forget to setup your abilities."));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "PreGameTip1", "Let's setup your abilities."));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "PreGameTip2", "Don't forget your abilities."));
+	GameStateDialogues.Texts.Add(ETutorialBotExpression::NeutralFace, ExpressionDialogues);
+	TipTexts.Add(EGameState::PreGame, GameStateDialogues);
+	GameStateDialogues.Texts.Empty();
+	ExpressionDialogues.Texts.Empty();
+
+	ExpressionDialogues.Animation = ETutorialBotAnimState::Dancing;
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "DuringGameDancingTip0", "Good Job!"));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "DuringGameDancingTip1", "Nice Shooting!"));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "DuringGameDancingTip2", "Eliminating enemies charges your hijack bar."));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "DuringGameDancingTip3", "Robots have limited amount of ammo, make sure you don't run out."));
+	GameStateDialogues.Texts.Add(ETutorialBotExpression::Happy, ExpressionDialogues);
+	ExpressionDialogues.Texts.Empty();
+	ExpressionDialogues.Animation = ETutorialBotAnimState::Thinking;
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "DuringGameThinkingTip0", "I think there's someone else fighting with us."));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "DuringGameThinkingTip1", "My radar detects we have an ally nearby."));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "DuringGameThinkingTip2", "Something scary is happening in the world, unknown entities."));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "DuringGameThinkingTip3", "The only way to get out of here is to go up."));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "DuringGameThinkingTip4", "Earth seems to be having unidentified guests from space."));
+	GameStateDialogues.Texts.Add(ETutorialBotExpression::Happy, ExpressionDialogues);
+	TipTexts.Add(EGameState::DuringGame, GameStateDialogues);
+	GameStateDialogues.Texts.Empty();
+	ExpressionDialogues.Texts.Empty();
+	
+	ExpressionDialogues.Animation = ETutorialBotAnimState::Idle;
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "PreBossTip0", "This fight will be tough! Good Luck!"));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "PreBossTip1", "A strong enemy awaits further ahead."));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "PreBossTip2", "Tough guy up next. Give 'em hell!"));
+	GameStateDialogues.Texts.Add(ETutorialBotExpression::NeutralFace, ExpressionDialogues);
+	TipTexts.Add(EGameState::PreBoss, GameStateDialogues);
+	GameStateDialogues.Texts.Empty();
+	ExpressionDialogues.Texts.Empty();
+	
+	ExpressionDialogues.Animation = ETutorialBotAnimState::Celebration;
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "PostBossTip0", "You did it! You were awsome back there!"));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "PostBossTip1", "That big guy stood no chance againts you!"));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "PostBossTip2", "Awsome shooting, that robot was no match for you!"));
+	GameStateDialogues.Texts.Add(ETutorialBotExpression::Happy, ExpressionDialogues);
+	TipTexts.Add(EGameState::PostBoss, GameStateDialogues);
+	GameStateDialogues.Texts.Empty();
+	ExpressionDialogues.Texts.Empty();
+	
+	ExpressionDialogues.Animation = ETutorialBotAnimState::FingerPointing;
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "SecretRoomTip0", "You found an Artifact, have a look inside!"));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "SecretRoomTip1", "You found the purple coin, it's a key for these gates."));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "SecretRoomTip2", "You found the key, have a look inside."));
+	GameStateDialogues.Texts.Add(ETutorialBotExpression::NeutralFace, ExpressionDialogues);
+	TipTexts.Add(EGameState::PostBoss, GameStateDialogues);
+	GameStateDialogues.Texts.Empty();
+	ExpressionDialogues.Texts.Empty();
+
+	UE_LOG(LogTemp, Error, TEXT("TIP TEXTS"));
+	for (const TPair<EGameState, FGameStateDialogues>& GameStatePair : TipTexts)
+	{
+		EGameState GameState = GameStatePair.Key;
+		const FGameStateDialogues& GameStateDialoguess = GameStatePair.Value;
+
+		UE_LOG(LogTemp, Error, TEXT("GameState: %s"), *UEnum::GetValueAsString(GameState));
+
+		for (const TPair<ETutorialBotExpression, FExpressionDialogues>& ExpressionPair : GameStateDialoguess.Texts)
+		{
+			ETutorialBotExpression Expression = ExpressionPair.Key;
+			const FExpressionDialogues& ExpressionDialoguess = ExpressionPair.Value;
+
+			UE_LOG(LogTemp, Error, TEXT("  Expression: %s"), *UEnum::GetValueAsString(Expression));
+
+			for (const FText& DialogueLine : ExpressionDialoguess.Texts)
+			{
+				UE_LOG(LogTemp, Error, TEXT("    Line: %s"), *DialogueLine.ToString());
+			}
+		}
+	}
+	
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
     if (DialogueText) DialogueText->SetText(FText::FromString(""));
