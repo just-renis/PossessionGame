@@ -69,7 +69,7 @@ class POSSESSIONGAME_API AGate : public AActor, public IInteractable
 	void CloseGate();
 	virtual void Interact() override;
 	virtual void ChangeOutlineState(const bool bState) override;
-	void SetArtifactCollected() { bNeedsArtifact = false; }
+	void SetArtifactCollected();
 	void ShowMarker(const EGameMode InGameMode) const;
 	void FadeOutAnimFinished() const;
 	void OpenGateSides();

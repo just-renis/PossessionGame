@@ -13,8 +13,7 @@ class POSSESSIONGAME_API ATutorialDialogue : public AActor
 {
 	GENERATED_BODY()
 public:
-	ETutorialBotExpression StartTipDialogue(const EGameState InGameState) const;
-	
+	void StartTipDialogue(const EGameState InGameState) const;
 	void SetVisibilityState(const bool bState) const;
 	void StartDialogue(const int32 InIndex, const bool bShowPressAnyKeyToContinue) const;
 private:

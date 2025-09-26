@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Navigation/DroneWaypoint.h"
 #include "PossessionGame/Enums/EGameMode.h"
+#include "PossessionGame/Enums/EGameState.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/ETutorialBotAnimState.h"
 #include "PossessionGame/Enums/ETutorialBotExpression.h"
@@ -47,6 +48,7 @@ void ATutorialBot::BeginPlay()
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
 	bIsTutorialFinished = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHijack.BindUObject(this, &ATutorialBot::SetPlayerRef);
+	CurrentGameState = EGameState::PreGame;
 	if (!bIsTutorialFinished)
 	{
 		TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "TutorialTabletSocket");
@@ -69,6 +71,9 @@ void ATutorialBot::BeginPlay()
 		SetupAndPlayNextAnimation(ETutorialBotAnimState::TabletHolding);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateClosed.BindUObject(this, &ATutorialBot::MoveToNextLocation);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitialized.AddUObject(this, &ATutorialBot::SpawnMarker);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.AddUObject(this, &ATutorialBot::SetArtifactCollected);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialBotTipDialogue.BindUObject(this, &ATutorialBot::SetExpressionAndPlayAnimation);
+		EnableCheckDistanceToTarget();
 	}
 }
 
@@ -273,18 +278,22 @@ void ATutorialBot::MoveToNextLocation()
 {
 	if (Collision && Collision->GetCollisionEnabled() == ECollisionEnabled::QueryOnly) Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	EnableCheckDistanceToTarget();
+	SetExpression(ETutorialBotExpression::NeutralFace);
 	Dialogue->SetVisibilityState(false);
 	for (int32 i = 0; i < Waypoints.Num(); i++)
 	{
 		if (Waypoints[i]->GetOrder() != CurrentWaypointIndex) continue;
-		SetActorLocationAndRotation(Waypoints[i]->GetActorLocation(), Waypoints[i]->GetActorRotation());
+		bCurrentWaypointAssociatedWithSecretRoom = Waypoints[i]->GetIsAssociatedWithSecretRoom();
+		if (bArtifactCollected && bCurrentWaypointAssociatedWithSecretRoom) MoveToSecretRoomWaypoint();
+		else
+		{
+			SetActorLocationAndRotation(Waypoints[i]->GetActorLocation(), Waypoints[i]->GetActorRotation());
+			CurrentGameState = Waypoints[i]->GetGameState();
+		}
 		break;
 	}
-	if (bIsTutorialFinished && CurrentWaypointIndex == 0)
-	{
-		SetTabletVisibility(false);
-		PlayIdleAnimation();
-	}
+	if (bIsTutorialFinished && CurrentWaypointIndex == 0) SetTabletVisibility(false);
+	PlayIdleAnimation();
 	CurrentWaypointIndex++;
 }
 
@@ -390,7 +399,7 @@ void ATutorialBot::CheckDistanceToTarget()
 	}
 }
 
-void ATutorialBot::StartTipDialogue() { SetExpression(Dialogue->StartTipDialogue(CurrentGameState)); }
+void ATutorialBot::StartTipDialogue() const { Dialogue->StartTipDialogue(CurrentGameState); }
 
 void ATutorialBot::PlayNextToGateAnimation()
 {
@@ -402,7 +411,7 @@ void ATutorialBot::PlayIdleAnimation() { SetupAndPlayNextAnimation(ETutorialBotA
 
 void ATutorialBot::SpawnMarker() const
 {
-	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 150.f, EMarkerType::Exclamation);
+	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 200.f, EMarkerType::Exclamation);
 }
 
 void ATutorialBot::Interact()
@@ -418,4 +427,28 @@ void ATutorialBot::SetupMeshOptimization() const
 	Mesh->SetAllowAnimCurveEvaluation(false);
 	Mesh->bUseRefPoseOnInitAnim = true;
 	Mesh->SetComponentTickInterval(1.f / 30.f);
+}
+
+void ATutorialBot::SetArtifactCollected()
+{
+	if (bCurrentWaypointAssociatedWithSecretRoom) MoveToSecretRoomWaypoint();
+	bArtifactCollected = true;
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.RemoveAll(this);
+}
+
+void ATutorialBot::MoveToSecretRoomWaypoint()
+{
+	for (int32 i = 0; i < Waypoints.Num(); i++) // Inefficient but since there will be max 5 waypoints does not matter.
+	{
+		if (Waypoints[i]->GetOrder() != -1) continue;
+		SetActorLocationAndRotation(Waypoints[i]->GetActorLocation(), Waypoints[i]->GetActorRotation());
+		CurrentGameState = EGameState::SecretRoom;
+		break;
+	}
+}
+
+void ATutorialBot::SetExpressionAndPlayAnimation(const ETutorialBotAnimState InAnimState, const ETutorialBotExpression InExpression)
+{
+	SetExpression(InExpression);
+	SetupAndPlayNextAnimation(InAnimState);
 }

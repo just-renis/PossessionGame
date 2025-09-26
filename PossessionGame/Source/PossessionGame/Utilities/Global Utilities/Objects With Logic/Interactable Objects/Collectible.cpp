@@ -69,7 +69,7 @@ void ACollectible::Collect()
 	switch (Data->GetCollectibleName())
 	{
 		case EPoolObject::Usb: GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.Broadcast(); break;
-		case EPoolObject::Artifact: (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.ExecuteIfBound();
+		case EPoolObject::Artifact: GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.Broadcast();
 		default: ;
 	}
 }
