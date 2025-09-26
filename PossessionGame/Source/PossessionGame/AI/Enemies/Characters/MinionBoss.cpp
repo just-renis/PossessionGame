@@ -8,6 +8,7 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
+#include "PossessionGame/Enums/EEnemyHpBar.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -168,7 +169,7 @@ void AMinionBoss::BeginPlay()
 	Super::BeginPlay();
 	LaserCollision->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionBeginOverlap);
 	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
-	(void)DelegateManager->OnBossSpawn.ExecuteIfBound(FLinearColor());
+	(void)DelegateManager->OnBossSpawn.ExecuteIfBound(EEnemyHpBar::MinionBoss);
 	GetWorld()->GetTimerManager().SetTimer(MoveDirectlyToPlayerHandle, this, &AMinionBoss::SetMoveDirectlyToPlayer, MoveDirectlyToPlayerInterval, false);
 }
 

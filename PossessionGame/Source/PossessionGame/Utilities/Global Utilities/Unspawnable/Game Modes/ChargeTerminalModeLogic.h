@@ -13,7 +13,6 @@ class POSSESSIONGAME_API UChargeTerminalModeLogic : public UGameModeBaseLogic
 
 	bool bIsTerminalCharged = false;
 	bool bIsUsbRequirementFilled = false;
-	int32 UsbAmountProgress = 0;
 	int32 ChargeAmount = 0;
 	UPROPERTY()
 	TObjectPtr<UChargeTerminalModeData> Data;

@@ -32,9 +32,9 @@ void UWaveManagerHUD::PlayObjectivePanelFadeInAnim(const bool bState)
 	PlayAnimation(ObjectivePanelFadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
 
-void UWaveManagerHUD::PlayAnnouncementAnim(const FString& InAnnouncementText)
+void UWaveManagerHUD::PlayAnnouncementAnim(const FText& InAnnouncementText)
 {
-	if (AnnouncementText) AnnouncementText->SetText(FText::FromString(InAnnouncementText));
+	if (AnnouncementText) AnnouncementText->SetText(InAnnouncementText);
 	if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	PlayAnimation(AnnouncementAnim);
 	GetWorld()->GetTimerManager().SetTimer(AnnouncementHandle, this, &UWaveManagerHUD::HideWaveCompletedAnnouncement, AnnouncementAnim->GetEndTime(), false);

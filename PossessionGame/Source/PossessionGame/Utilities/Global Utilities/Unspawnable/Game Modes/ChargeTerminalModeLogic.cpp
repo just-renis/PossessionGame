@@ -12,10 +12,10 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 	Data = Cast<UChargeTerminalModeData>(InGameModeData);
 	SetupWaveManagerUI();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UChargeTerminalModeLogic::UpdateEnemiesAmount);
-	WaveManager->GetDelegateManager()->OnUsbInserted.BindUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
+	WaveManager->GetDelegateManager()->OnUsbInserted.AddUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
 	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.BindUObject(this, &UChargeTerminalModeLogic::InitiateNextCharge);
 	PlaySound(ESound::TaskAnnouncement);
-	if (WaveManagerHUD) WaveManagerHUD->ToggleTaskProgress(true, WaveManager->GetCurrentGameMode());
+	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Warden, EGameMode::MiniBossSpawn, false, [this] { IncreaseAliveEnemiesAmount(); });
 	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
 }
 
@@ -24,7 +24,7 @@ void UChargeTerminalModeLogic::Finalize()
 	Super::Finalize();
 	if (WaveManagerHUD)
 	{
-		WaveManagerHUD->PlayAnnouncementAnim("Barrier Disabled");
+		WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "BarrierDisabled", "Barrier Disabled"));
 		WaveManagerHUD->UpdateObjectiveProgress(ChargeAmount, Data->GetChargeAmountRequired(), true);
 		WaveManagerHUD->ToggleFinishOffEnemiesText(false);
 	}
@@ -32,7 +32,7 @@ void UChargeTerminalModeLogic::Finalize()
 	ResetTaskProgress();
 	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.Unbind();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
-	WaveManager->GetDelegateManager()->OnUsbInserted.Unbind();
+	WaveManager->GetDelegateManager()->OnUsbInserted.RemoveAll(this);
 	GetWorld()->GetTimerManager().ClearTimer(SpawnHandle);
 }
 
@@ -53,17 +53,13 @@ void UChargeTerminalModeLogic::UpdateEnemiesAmount()
 void UChargeTerminalModeLogic::UpdateTaskProgress()
 {
 	if (!WaveManagerHUD) return;
-	if (++UsbAmountProgress >= Data->GetUsbAmountRequired())
+	if (++ChargeAmount >= Data->GetChargeAmountRequired())
 	{
-		if (++ChargeAmount >= Data->GetChargeAmountRequired())
-		{
-			bIsTerminalCharged = true;
-			if (AliveEnemiesAmount <= 0) Finalize();
-			else WaveManagerHUD->ToggleFinishOffEnemiesText(true);
-		}
-		else UsbRequirementFilled();
+		bIsTerminalCharged = true;
+		if (AliveEnemiesAmount <= 0) Finalize();
+		else WaveManagerHUD->ToggleFinishOffEnemiesText(true);
 	}
-	WaveManagerHUD->UpdateTaskProgress(UsbAmountProgress, Data->GetUsbAmountRequired());
+	else UsbRequirementFilled();
 }
 
 void UChargeTerminalModeLogic::FadeInObjectivePanel() const
@@ -88,17 +84,15 @@ void UChargeTerminalModeLogic::UsbRequirementFilled()
 void UChargeTerminalModeLogic::ChargeCleared()
 {
 	if (!WaveManagerHUD) return;
-	WaveManagerHUD->PlayAnnouncementAnim("Wave Completed");
+	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "WaveCompleted", "Wave Completed"));
 	GetWorld()->GetTimerManager().SetTimer(NextChargeHandle, this, &UChargeTerminalModeLogic::ShowUpgradeSelection, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 
 void UChargeTerminalModeLogic::InitiateNextCharge()
 {
-	UsbAmountProgress = 0;
 	bIsUsbRequirementFilled = false;
-	WaveManagerHUD->UpdateTaskProgress(0.f, Data->GetUsbAmountRequired());
 	WaveManagerHUD->UpdateObjectiveProgress(ChargeAmount, Data->GetChargeAmountRequired(), true);
 	WaveManagerHUD->ToggleFinishOffEnemiesText(false);
-	(void)WaveManager->GetDelegateManager()->ResetChargeTerminal.ExecuteIfBound();
+	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Warden, EGameMode::MiniBossSpawn, false, [this] { IncreaseAliveEnemiesAmount(); });
 	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
 }

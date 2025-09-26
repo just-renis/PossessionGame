@@ -19,7 +19,7 @@ public:
 	void UpdateCountdown(const int32 InCountdown);
 	void ToggleCountdownText();
 	void PlayObjectivePanelFadeInAnim(const bool bState);
-	void PlayAnnouncementAnim(const FString& InAnnouncementText);
+	void PlayAnnouncementAnim(const FText& InAnnouncementText);
 	void PlayCountdownAnim();
 	void UpdateTaskProgress(const float InProgress, const float InMaxProgress) const;
 	void ToggleTaskProgress(const bool bState, const EGameMode InGameMode) const;

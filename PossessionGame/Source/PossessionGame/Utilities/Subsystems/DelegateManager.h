@@ -4,6 +4,7 @@
 #include "PossessionGame/Enums/ESound.h"
 #include "DelegateManager.generated.h"
 
+enum class EEnemyHpBar : uint8;
 class ARangerMine;
 enum class EUpgradeAttribute : uint8;
 struct FLoadLevelData;
@@ -18,8 +19,6 @@ class USaveSlot;
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
 DECLARE_DELEGATE(FOnUpgradeSelectionOpened);
 DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
-DECLARE_DELEGATE(FOnUsbCollected);
-DECLARE_DELEGATE(FOnUsbInserted);
 DECLARE_DELEGATE(FOnArtifactCollected);
 DECLARE_DELEGATE(FOnSecretDoorOpened);
 DECLARE_DELEGATE(FUpdateGameModeEnemiesAmount);
@@ -29,7 +28,6 @@ DECLARE_DELEGATE(FMeleeAttackOccured);
 DECLARE_DELEGATE(FOnGateClosed);
 DECLARE_DELEGATE(FOnTutorialMinionDeath);
 DECLARE_DELEGATE(FApplyUpgradeOnSelection);
-DECLARE_DELEGATE(FResetChargeTerminal);
 DECLARE_DELEGATE(FOnFirstGameModeInitiated);
 DECLARE_DELEGATE(FOnAbilitiesMenuSelectionEnd);
 DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
@@ -50,7 +48,7 @@ DECLARE_DELEGATE_OneParam(FRequestAddAbilitiesToUpgradePool, const TObjectPtr<US
 DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FRequestMinorAnnouncement, const FText&);
 DECLARE_DELEGATE_OneParam(FRequestRangerMineRemoval, const TObjectPtr<ARangerMine>&);
-DECLARE_DELEGATE_OneParam(FOnBossSpawn, const FLinearColor);
+DECLARE_DELEGATE_OneParam(FOnBossSpawn, const EEnemyHpBar);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
@@ -67,6 +65,8 @@ DECLARE_MULTICAST_DELEGATE(FOnInteractionTry);
 DECLARE_MULTICAST_DELEGATE(FOnSecretBoostSelected);
 DECLARE_MULTICAST_DELEGATE(FOnGameModeInitialized);
 DECLARE_MULTICAST_DELEGATE(FDespawnPlayerClones);
+DECLARE_MULTICAST_DELEGATE(FOnUsbInserted);
+DECLARE_MULTICAST_DELEGATE(FOnUsbCollected);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelUp, const int32);
@@ -95,8 +95,6 @@ public:
 	FOnGraphicsSettingChange OnGraphicsSettingChange;
 	FOnUpgradeSelectionOpened OnUpgradeSelectionOpened;
 	FOnUpgradeSelectionFinished OnUpgradeSelectionFinished;
-	FOnUsbCollected OnUsbCollected;
-	FOnUsbInserted OnUsbInserted;
 	FOnArtifactCollected OnArtifactCollected;
 	FOnSecretDoorOpened OnSecretDoorOpened;
 	FUpdateGameModeEnemiesAmount UpdateGameModeEnemiesAmount;
@@ -106,7 +104,6 @@ public:
 	FOnGateClosed OnGateClosed;
 	FOnTutorialMinionDeath OnTutorialMinionDeath;
 	FApplyUpgradeOnSelection ApplyUpgradeOnSelection;
-	FResetChargeTerminal ResetChargeTerminal;
 	FOnFirstGameModeInitiated OnFirstGameModeInitiated;
 	FOnAbilitiesMenuSelectionEnd OnAbilitiesMenuSelectionEnd;
 	FOnHandsReloadMontageEnd OnHandsReloadMontageEnd;
@@ -144,6 +141,8 @@ public:
 	FOnSecretBoostSelected OnSecretBoostSelected;
 	FOnGameModeInitialized OnGameModeInitialized;
 	FDespawnPlayerClones DespawnPlayerClones;
+	FOnUsbInserted OnUsbInserted;
+	FOnUsbCollected OnUsbCollected;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnConcealAbilityChange OnConcealAbilityChange;
 	FOnLevelUp OnLevelUp;

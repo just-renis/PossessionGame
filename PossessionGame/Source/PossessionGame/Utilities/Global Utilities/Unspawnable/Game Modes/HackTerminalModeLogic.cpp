@@ -74,7 +74,7 @@ void UHackTerminalModeLogic::StartTerminalHack()
 	if (WaveManagerHUD)
 	{
 		WaveManagerHUD->ToggleTaskProgress(true, WaveManager->GetCurrentGameMode());
-		WaveManagerHUD->PlayAnnouncementAnim("Hack Initiated");
+		WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "HackInitiated", "Hack Initiated"));
 	}
 	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UHackTerminalModeLogic::HandleSpawning, SpawnRate, true);
 	GetWorld()->GetTimerManager().SetTimer(TaskProgressHandle, this, &UHackTerminalModeLogic::UpdateTaskProgress, 0.5f, true);
@@ -93,7 +93,7 @@ void UHackTerminalModeLogic::FinishTerminalHack()
 	}
 	if (!WaveManagerHUD) return;
 	WaveManagerHUD->ToggleFinishOffEnemiesText(false);
-	WaveManagerHUD->PlayAnnouncementAnim("Hack Completed");
+	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "HackCompleted", "Hack Completed"));
 	WaveManagerHUD->UpdateObjectiveProgress(TerminalsHackedAmount, Data->GetTerminalsAmountToHack());
 	GetWorld()->GetTimerManager().SetTimer(OpenUpgradeSelectionHandle, this, &UHackTerminalModeLogic::ShowUpgradeSelection, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }

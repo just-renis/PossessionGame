@@ -48,7 +48,6 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
-#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -267,7 +266,6 @@ void AEnemy::InitiateDeath()
 	Tags.Remove("AliveEnemy");
 	if (!bIsHijacked)
 	{
-		AI_SpawnUsbOnDeath();
 		AI_PlayDeathSound();
 		AI_PlayDeathExplosion();
 		DestroyAI();
@@ -752,16 +750,6 @@ void AEnemy::AI_DestroyHpBar()
 	AI_HpBarComponent->DestroyComponent();
 	AI_HpBar = nullptr;
 	AI_HpBarComponent = nullptr;
-}
-
-void AEnemy::AI_SpawnUsbOnDeath() const
-{
-	if (!GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetIsUsbDroppable()) return;
-	if (FMath::FRand() <= AI_Data->GetUsbDropChance())
-	{
-		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Usb, GetActorLocation())->Init();
-		GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(false);
-	}
 }
 
 void AEnemy::AI_TriggerMutantExplosion()

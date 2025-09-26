@@ -14,11 +14,10 @@ class POSSESSIONGAME_API AUsbTerminal : public AInteractableObject
 	AUsbTerminal();
 
 	bool bIsUsbCollected = false;
-	int32 UsbInsertedAmount = 0;
-	UPROPERTY(EditAnywhere, Category = "Usb Data", meta = (AllowPrivateAccess = true))
-	int32 UsbInsertableAmount = 2;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Locks;
 
 	virtual TObjectPtr<UStaticMeshComponent> GetMesh() override { return Mesh; }
 
@@ -27,5 +26,4 @@ class POSSESSIONGAME_API AUsbTerminal : public AInteractableObject
 	void ShowMarker() const;
 	void EnableInteraction();
 	void DisableInteraction();
-	void ResetTerminal();
 };

@@ -6,9 +6,13 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
+#include "PossessionGame/Enums/EEnemyHpBar.h"
+#include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 
@@ -63,7 +67,7 @@ void AWarden::BeginPlay()
 	CharacterName = ECharacterType::Warden;
 	Super::BeginPlay();
 	bCanShoot = true;
-	(void)DelegateManager->OnBossSpawn.ExecuteIfBound(FLinearColor::Red);
+	(void)DelegateManager->OnBossSpawn.ExecuteIfBound(EEnemyHpBar::Warden);
 	BeamWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("BeamWeaponSocket"));
 	AssetsManager->AttachVfx(EVfx::WardenBeamShot, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &BeamVfx, BeamWeapon, FName("BeamSocket"), true);
 	GetWorldTimerManager().SetTimer(BeamTriggerHandle, this, &AWarden::TryTriggeringBeamShot, 1.f, true);
@@ -100,6 +104,7 @@ void AWarden::DisableBeamCollision()
 
 void AWarden::InitiateDeath()
 {
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Usb, GetActorLocation())->Init();
 	Super::InitiateDeath();
 	DelegateManager->OnBossDeath.Broadcast();
 }

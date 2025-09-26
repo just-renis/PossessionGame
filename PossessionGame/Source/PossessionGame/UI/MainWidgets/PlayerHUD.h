@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PlayerHUD.generated.h"
 
+enum class EEnemyHpBar : uint8;
 class UPrimaryDataAssetsManager;
 class UInfoPanelUI;
 class UCrosshairUI;
@@ -50,6 +51,8 @@ private:
 	float StepHpPercentage;
 	float BossStepHpPercentage;
 	ECharacterType CharacterType;
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Hp Bars Data", meta = (AllowPrivateAccess = true))
+	TMap<EEnemyHpBar, TObjectPtr<UTexture2D>> EnemyHpBars;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> DamageTickTexture;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -165,7 +168,7 @@ private:
 	void PlayLevelUpAnim();
 	void SetLevelText(const int32 InLevel) const;
 	void UpdateBossHpBar(const float InCurrent, const float InMax);
-	void EnableBossHpBar(const FLinearColor InBarColor) const;
+	void EnableBossHpBar(const EEnemyHpBar InHpBarType) const;
 	void DisableBossHpBar() const;
 	void UpdateWhiteHpBar();
 	void UpdateBossWhiteHpBar();

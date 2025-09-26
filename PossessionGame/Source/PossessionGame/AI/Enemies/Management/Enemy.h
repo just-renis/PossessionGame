@@ -360,7 +360,6 @@ private:
 	void AI_StopAllAbilities();
 	void AI_SetupHpBar();
 	void AI_DestroyHpBar();
-	void AI_SpawnUsbOnDeath() const;
 	void AI_TriggerMutantExplosion();
 	void AI_HideHpBar() const;
 	void AI_ClearShootPause();

@@ -16,7 +16,6 @@ class POSSESSIONGAME_API UEnemyCommunicator : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-	bool GetIsUsbDroppable() const { return bIsUsbDroppable; }
 	bool GetIsEnemiesAvailable() const { return !Enemies.IsEmpty(); }
 	FVector GetPointLocation(ECharacterType InCharacterType, FVector InLocation);
 	FVector GetTargetLocation() const;
@@ -32,9 +31,7 @@ public:
 	void RemoveEnemy(TObjectPtr<AActor> InEnemy);
 	void AddPoint(int32 Key, const FEQSPointData& Data);
 	void RemovePoint(int32 Key);
-	void SetIsUsbDroppable(const bool bState) { bIsUsbDroppable = bState; }
 private:
-	bool bIsUsbDroppable = false;
 	bool bWasTargetSet = false;
 	int32 EnemiesAmount = 0;
 	FOnEQSFinish OnEQSFinish;

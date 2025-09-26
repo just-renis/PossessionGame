@@ -1,8 +1,6 @@
 ﻿#include "GameModeInitiator.h"
 #include "Components/BoxComponent.h"
-#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
-#include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 
 AGameModeInitiator::AGameModeInitiator()
 {
@@ -20,7 +18,6 @@ void AGameModeInitiator::BeginPlay()
 void AGameModeInitiator::Initiate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag("Player")) return;
-	if (GameMode == EGameMode::ChargeTerminalMode) GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetIsUsbDroppable(true);
 	if (bFirstGameMode) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnFirstGameModeInitiated.ExecuteIfBound();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.Broadcast(GameMode);
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);

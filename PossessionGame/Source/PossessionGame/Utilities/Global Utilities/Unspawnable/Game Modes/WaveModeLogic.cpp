@@ -92,7 +92,7 @@ void UWaveModeLogic::WaveCompleted()
 {
 	if (!WaveManagerHUD) return;
 	WaveManagerHUD->UpdateObjectiveProgress(CurrentWave, AmountOfWaves);
-	WaveManagerHUD->PlayAnnouncementAnim("Wave Completed");
+	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "WaveCompleted", "Wave Completed"));
 	PlaySound(ESound::WaveCompleted);
 	bWaveNotStarted = true;
 	GetWorld()->GetTimerManager().SetTimer(OpenUpgradeSelectionHandle, this, &UWaveModeLogic::ShowUpgradeSelection, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);

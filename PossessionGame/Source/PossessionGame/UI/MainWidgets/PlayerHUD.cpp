@@ -4,6 +4,7 @@
 #include "Components/InvalidationBox.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
+#include "PossessionGame/Enums/EEnemyHpBar.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilitiesPanelUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CrosshairUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/InfoPanelUI.h"
@@ -260,10 +261,14 @@ void UPlayerHUD::UpdateBossHpBar(const float InCurrent, const float InMax)
 	UpdateProgressBar(EUIBar::Boss, InCurrent, InMax);
 }
 
-void UPlayerHUD::EnableBossHpBar(const FLinearColor InBarColor) const
+void UPlayerHUD::EnableBossHpBar(const EEnemyHpBar InHpBarType) const
 {
-	if (BossHpBarInv) BossHpBarInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (BossHpBar) BossHpBar->SetFillColorAndOpacity(InBarColor);
+	if (!BossHpBarInv || !BossHpBar) return;
+	FProgressBarStyle CurrentStyle = BossHpBar->GetWidgetStyle();
+	CurrentStyle.FillImage.SetResourceObject(EnemyHpBars[InHpBarType]);
+	BossHpBar->SetWidgetStyle(CurrentStyle);
+	BossHpBar->SetPercent(1.f);
+	BossHpBarInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UPlayerHUD::DisableBossHpBar() const { if (BossHpBarInv) BossHpBarInv->SetVisibility(ESlateVisibility::Collapsed); }

@@ -15,7 +15,6 @@ public:
 	float GetMutantHpIncreasePercentage() const { return MutantHpIncreasePercentage; }
 	float GetMutantDamageIncreasePercentage() const { return MutantDamageIncreasePercentage; }
 	float GetMutationChance() const { return MutationChance; }
-	float GetUsbDropChance() const { return UsbDropChance; }
 	int32 GetXp() const { return Xp; }
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -26,8 +25,6 @@ private:
 	float PossessionTimeValue = 11.25f;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	float MutationChance;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	float UsbDropChance;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 Xp = 0;
 	UPROPERTY(EditAnywhere, Category = "Mutant", meta = (AllowPrivateAccess = true))
