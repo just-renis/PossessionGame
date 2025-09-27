@@ -335,7 +335,10 @@ void UPrimaryDataAssetsManager::AsyncLoadClone(const ECharacterType InCharacterN
 			PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
 		}
 		else PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, &CharacterContainer, SingularWeapon, Weapon, InCharacterName, InOwner, InAmount]
+		
+		TArray<FSoftObjectPath> ValidPaths;
+		for (const FSoftObjectPath& Path : PathsToLoad) if (!Path.GetAssetPathString().IsEmpty()) ValidPaths.Add(Path);
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, &CharacterContainer, SingularWeapon, Weapon, InCharacterName, InOwner, InAmount]
 		{
 			if (IsAsyncAssetWorldValid(CharacterContainer.GetWorld())) AsyncLoadCloneCallback(SingularWeapon, Weapon, InCharacterName, InOwner, InAmount);
 		});
@@ -749,7 +752,9 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 			PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
 		}
 		else PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(PathsToLoad, [this, &CharacterContainer, SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack]
+		TArray<FSoftObjectPath> ValidPaths;
+		for (const FSoftObjectPath& Path : PathsToLoad) if (!Path.GetAssetPathString().IsEmpty()) ValidPaths.Add(Path);
+		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, &CharacterContainer, SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack]
 		{
 			if (IsAsyncAssetWorldValid(CharacterContainer.GetWorld())) AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
 		});
