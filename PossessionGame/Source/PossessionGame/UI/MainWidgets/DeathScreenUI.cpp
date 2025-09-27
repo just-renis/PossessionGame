@@ -45,10 +45,25 @@ void UDeathScreenUI::ToggleButtons(const bool bState) const
 
 void UDeathScreenUI::ReturnToMainMenu()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, FName("MainMenu")));
+	if (bAlreadyClickedButton) return;
+	bAlreadyClickedButton = true;
+	LevelNameToLoad = FName("MainMenu");
+	FadeFinishedDelegate.BindDynamic(this, &UDeathScreenUI::FadeOutToNextLevel);
+	PlayAnimation(FadeOutAnim);
+	BindToAnimationFinished(FadeOutAnim, FadeFinishedDelegate);
 }
 
 void UDeathScreenUI::Restart()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, FName("Level_1")));
+	if (bAlreadyClickedButton) return;
+	bAlreadyClickedButton = true;
+	LevelNameToLoad = FName("Level_1");
+	FadeFinishedDelegate.BindDynamic(this, &UDeathScreenUI::FadeOutToNextLevel);
+	PlayAnimation(FadeOutAnim);
+	BindToAnimationFinished(FadeOutAnim, FadeFinishedDelegate);
+}
+
+void UDeathScreenUI::FadeOutToNextLevel()
+{
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, LevelNameToLoad));
 }

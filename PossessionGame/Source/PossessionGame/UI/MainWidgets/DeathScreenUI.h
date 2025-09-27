@@ -13,6 +13,8 @@ class POSSESSIONGAME_API UDeathScreenUI : public UUserWidget
 public:
 	void OpenUI();
 private:
+	bool bAlreadyClickedButton = false;
+	FName LevelNameToLoad;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> RestartButton;
 	UPROPERTY(meta = (BindWidget))
@@ -21,6 +23,8 @@ private:
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeOutAnim;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent FadeFinishedDelegate;
 
 	virtual void NativeConstruct() override;
 	void Toggle(const bool bState);
@@ -29,4 +33,6 @@ private:
 	void ReturnToMainMenu();
 	UFUNCTION()
 	void Restart();
+	UFUNCTION()
+	void FadeOutToNextLevel();
 };
