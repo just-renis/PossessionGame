@@ -19,8 +19,10 @@ class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 
 	ATutorialBot();
 
+	bool bArtifactCollected = false;
 	bool bIsTutorialFinished = false;
 	bool bIsTutorialPressKeyToContinueNeeded = false;
+	bool bCurrentWaypointAssociatedWithSecretRoom = false;
 	int32 TutorialDialogueIndex = 0;
 	int32 CurrentTutorialAnimation = 0;
 	int32 CurrentWaypointIndex = 0;
@@ -124,7 +126,7 @@ class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 	void SetupExpression();
 	void EnableCheckDistanceToTarget();
 	void CheckDistanceToTarget();
-	void StartTipDialogue();
+	void StartTipDialogue() const;
 	void PlayNextToGateAnimation();
 	void PlayIdleAnimation();
 	void SpawnMarker() const;
@@ -132,6 +134,9 @@ class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 	void SetPlayerRef(const TObjectPtr<AActor>& InPlayerRef) { Player = InPlayerRef; }
 	void SetupMeshOptimization() const;
 	void SetCurrentGameState(const EGameState InGameState) { CurrentGameState = InGameState; }
+	void SetArtifactCollected();
+	void MoveToSecretRoomWaypoint();
+	void SetExpressionAndPlayAnimation(const ETutorialBotAnimState InAnimState, const ETutorialBotExpression InExpression);
 };
 
 using FAnimCallback = void (ATutorialBot::*)();

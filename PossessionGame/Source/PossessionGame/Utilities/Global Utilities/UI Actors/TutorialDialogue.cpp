@@ -1,14 +1,13 @@
 ﻿#include "TutorialDialogue.h"
 #include "Components/WidgetComponent.h"
 #include "PossessionGame/Enums/EGameState.h"
-#include "PossessionGame/Enums/ETutorialBotExpression.h"
 #include "PossessionGame/UI/SecondaryWidgets/DialogueUI.h"
 
-ETutorialBotExpression ATutorialDialogue::StartTipDialogue(const EGameState InGameState) const
+void ATutorialDialogue::StartTipDialogue(const EGameState InGameState) const
 {
-	if (!Dialogue) return ETutorialBotExpression::NeutralFace;
+	if (!Dialogue) return;
 	SetVisibilityState(true);
-	return Dialogue->StartTipDialogue(InGameState);
+	Dialogue->StartTipDialogue(InGameState);
 }
 
 void ATutorialDialogue::SetVisibilityState(const bool bState) const

@@ -4,6 +4,8 @@
 #include "PossessionGame/Enums/ESound.h"
 #include "DelegateManager.generated.h"
 
+enum class ETutorialBotExpression : uint8;
+enum class ETutorialBotAnimState : uint8;
 enum class EEnemyHpBar : uint8;
 class ARangerMine;
 enum class EUpgradeAttribute : uint8;
@@ -19,7 +21,6 @@ class USaveSlot;
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
 DECLARE_DELEGATE(FOnUpgradeSelectionOpened);
 DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
-DECLARE_DELEGATE(FOnArtifactCollected);
 DECLARE_DELEGATE(FOnSecretDoorOpened);
 DECLARE_DELEGATE(FUpdateGameModeEnemiesAmount);
 DECLARE_DELEGATE(FOnOutOfAmmo);
@@ -54,6 +55,7 @@ DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
 DECLARE_DELEGATE_TwoParams(FOnSaveSlotClicked, const FString&, const FString&);
 DECLARE_DELEGATE_TwoParams(FOnMusicSoundtrackChangeRequired, const ESound, const bool);
+DECLARE_DELEGATE_TwoParams(FOnTutorialBotTipDialogue, const ETutorialBotAnimState, const ETutorialBotExpression);
 DECLARE_DELEGATE_RetVal_TwoParams(bool, FRequestSpecialUpgradeAvailability, const EUpgrade, const EUpgradeAttribute);
 DECLARE_DELEGATE_ThreeParams(FOnAbilityUse, const int32, const bool, const bool);
 DECLARE_DELEGATE_FourParams(FShowDamageNumber, const FLinearColor, const float, const FVector&, const FVector&);
@@ -67,6 +69,7 @@ DECLARE_MULTICAST_DELEGATE(FOnGameModeInitialized);
 DECLARE_MULTICAST_DELEGATE(FDespawnPlayerClones);
 DECLARE_MULTICAST_DELEGATE(FOnUsbInserted);
 DECLARE_MULTICAST_DELEGATE(FOnUsbCollected);
+DECLARE_MULTICAST_DELEGATE(FOnArtifactCollected);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelUp, const int32);
@@ -95,7 +98,6 @@ public:
 	FOnGraphicsSettingChange OnGraphicsSettingChange;
 	FOnUpgradeSelectionOpened OnUpgradeSelectionOpened;
 	FOnUpgradeSelectionFinished OnUpgradeSelectionFinished;
-	FOnArtifactCollected OnArtifactCollected;
 	FOnSecretDoorOpened OnSecretDoorOpened;
 	FUpdateGameModeEnemiesAmount UpdateGameModeEnemiesAmount;
 	FOnOutOfAmmo OnOutOfAmmo;
@@ -130,6 +132,7 @@ public:
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;
+	FOnTutorialBotTipDialogue OnTutorialBotTipDialogue;
 	FRequestSpecialUpgradeAvailability RequestSpecialUpgradeAvailability;
 	FOnAbilityUse OnAbilityUse;
 	FShowDamageNumber ShowDamageNumber;
@@ -143,6 +146,7 @@ public:
 	FDespawnPlayerClones DespawnPlayerClones;
 	FOnUsbInserted OnUsbInserted;
 	FOnUsbCollected OnUsbCollected;
+	FOnArtifactCollected OnArtifactCollected;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnConcealAbilityChange OnConcealAbilityChange;
 	FOnLevelUp OnLevelUp;

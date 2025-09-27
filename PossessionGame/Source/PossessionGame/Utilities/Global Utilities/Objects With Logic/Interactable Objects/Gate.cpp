@@ -46,7 +46,7 @@ void AGate::BeginPlay()
 		CloseTriggerCollision->OnComponentBeginOverlap.AddDynamic(this, &AGate::CloseTriggerPassed);
 		CloseTriggerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
-	if (bNeedsArtifact) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.BindUObject(this, &AGate::SetArtifactCollected);
+	if (bNeedsArtifact) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.AddUObject(this, &AGate::SetArtifactCollected);
 }
 
 void AGate::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -106,6 +106,12 @@ void AGate::ChangeOutlineState(const bool bState)
 	FirstGateSide->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
 	SecondGateSide->SetOverlayMaterial(bState ? MI_InteractionOutline : nullptr);
 	if (bState) GetWorldTimerManager().SetTimer(DisableOutlineHandle, this, &AGate::DisableOutline, 0.245f, false);
+}
+
+void AGate::SetArtifactCollected()
+{
+	bNeedsArtifact = false;
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.RemoveAll(this);
 }
 
 void AGate::ShowMarker(const EGameMode InGameMode) const
