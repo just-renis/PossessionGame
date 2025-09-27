@@ -279,23 +279,18 @@ void UPrimaryDataAssetsManager::LoadSound3D(FSoundContainer& InSoundData, TObjec
 
 void UPrimaryDataAssetsManager::RequestSoundLoad(FSoundContainer& InSoundData)
 {
-	if (!InSoundData.GetIsInLoad())
+	if (InSoundData.GetIsInLoad()) return;
+	InSoundData.SetIsInLoad(true);
+	if (!GetCanAsyncLoadHappen()) return;
+	TWeakObjectPtr WeakWorld = GetWorld();
+	FSoundContainer* SoundContainer = &InSoundData;
+	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InSoundData.GetSoundContainer()->Sound.ToSoftObjectPath(), [this, WeakWorld, SoundContainer]
 	{
-		InSoundData.SetIsInLoad(true);
-		InSoundData.SetWorld(GetWorld());
-		if (GetCanAsyncLoadHappen())
-		{
-			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InSoundData.GetSoundContainer()->Sound.ToSoftObjectPath(), [this, &InSoundData]
-			{
-				if (IsAsyncAssetWorldValid(InSoundData.GetWorld()))
-				{
-					InSoundData.SetIsLoaded(true);
-					InSoundData.TriggerSoundsCallbacks();
-				}
-			});
-			AddAsyncHandle(Handle);
-		}
-	}
+		if (!WeakWorld.IsValid() || !IsAsyncAssetWorldValid(WeakWorld.Get()) || !SoundContainer) return;
+		SoundContainer->SetIsLoaded(true);
+		SoundContainer->TriggerSoundsCallbacks();
+	});
+	AddAsyncHandle(Handle);
 }
 
 void UPrimaryDataAssetsManager::LoadSoundAtLocation(FSoundContainer& InSoundData, const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer, const bool bStoreSoundRef)
@@ -316,34 +311,59 @@ void UPrimaryDataAssetsManager::SetupSoundAtLocationAndPlay(const FSoundContaine
 void UPrimaryDataAssetsManager::AsyncLoadClone(const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount)
 {
 	bIsCloneSpawnInProcess = true;
-	if (GetCanAsyncLoadHappen())
+	if (!GetCanAsyncLoadHappen()) return;
+	const FCharacterContainer& CharacterContainer = GetCharacterData(InCharacterName);
+	TArray<FSoftObjectPath> PathsToLoad;
+	const TObjectPtr<UPA_CharacterContainer> CharContainer = CharacterContainer.GetCharacterContainer();
+	if (!IsValid(CharContainer))
 	{
-		FCharacterContainer& CharacterContainer = GetCharacterData(InCharacterName);
-		CharacterContainer.SetWorld(GetWorld());
-		TArray<FSoftObjectPath> PathsToLoad;
-		PathsToLoad.Add(CharacterContainer.GetCharacterContainer()->CharacterClass.ToSoftObjectPath());
-		PathsToLoad.Add(CharacterContainer.GetCharacterContainer()->CharacterMesh.ToSoftObjectPath());
-		EWeapon Weapon = GetWeaponByCharacter(InCharacterName);
-		const TObjectPtr<UPA_WeaponContainer> WeaponContainer = GetWeaponData(Weapon);
-		PathsToLoad.Add(WeaponContainer->WeaponClass.ToSoftObjectPath());
-		PathsToLoad.Add(WeaponContainer->HandsMesh.ToSoftObjectPath());
-		EWeapon SingularWeapon = GetSingularWeapon(Weapon);
-		if (SingularWeapon != EWeapon::None)
-		{
-			const TObjectPtr<UPA_WeaponContainer> SingularWeaponContainer = GetWeaponData(SingularWeapon);
-			PathsToLoad.Add(SingularWeaponContainer->WeaponClass.ToSoftObjectPath());
-			PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
-		}
-		else PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
-		
-		TArray<FSoftObjectPath> ValidPaths;
-		for (const FSoftObjectPath& Path : PathsToLoad) if (!Path.GetAssetPathString().IsEmpty()) ValidPaths.Add(Path);
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, &CharacterContainer, SingularWeapon, Weapon, InCharacterName, InOwner, InAmount]
-		{
-			if (IsAsyncAssetWorldValid(CharacterContainer.GetWorld())) AsyncLoadCloneCallback(SingularWeapon, Weapon, InCharacterName, InOwner, InAmount);
-		});
-		AddAsyncHandle(Handle);
+		UE_LOG(LogTemp, Error, TEXT("Invalid CharacterContainer for character %s"), *UEnum::GetValueAsString(InCharacterName));
+		return;
 	}
+	if (!CharContainer->CharacterClass.IsNull()) PathsToLoad.Add(CharContainer->CharacterClass.ToSoftObjectPath());
+	else UE_LOG(LogTemp, Warning, TEXT("CharacterClass is invalid for character %s"), *UEnum::GetValueAsString(InCharacterName));
+	if (!CharContainer->CharacterMesh.IsNull()) PathsToLoad.Add(CharContainer->CharacterMesh.ToSoftObjectPath());
+	else UE_LOG(LogTemp, Warning, TEXT("CharacterMesh is invalid for character %s"), *UEnum::GetValueAsString(InCharacterName));
+	EWeapon Weapon = GetWeaponByCharacter(InCharacterName);
+	const TObjectPtr<UPA_WeaponContainer> WeaponContainer = GetWeaponData(Weapon);
+	if (!IsValid(WeaponContainer))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid WeaponContainer for weapon %s"), *UEnum::GetValueAsString(Weapon));
+		return;
+	}
+	if (!WeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponClass.ToSoftObjectPath());
+	else UE_LOG(LogTemp, Warning, TEXT("WeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
+	if (!WeaponContainer->HandsMesh.IsNull()) PathsToLoad.Add(WeaponContainer->HandsMesh.ToSoftObjectPath());
+	else UE_LOG(LogTemp, Warning, TEXT("HandsMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
+	EWeapon SingularWeapon = GetSingularWeapon(Weapon);
+	if (SingularWeapon != EWeapon::None)
+	{
+		const TObjectPtr<UPA_WeaponContainer> SingularWeaponContainer = GetWeaponData(SingularWeapon);
+		if (IsValid(SingularWeaponContainer))
+		{
+			if (!SingularWeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponClass.ToSoftObjectPath());
+			else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
+			if (!SingularWeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
+			else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
+		}
+	}
+	else if (!WeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
+	else UE_LOG(LogTemp, Warning, TEXT("WeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
+	TArray<FSoftObjectPath> ValidPaths;
+	for (const FSoftObjectPath& Path : PathsToLoad) if (!Path.GetAssetPathString().IsEmpty()) ValidPaths.Add(Path);
+	if (ValidPaths.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No valid paths to async load for character %s"), *UEnum::GetValueAsString(InCharacterName));
+		return;
+	}
+	for (const FSoftObjectPath& Path : ValidPaths) UE_LOG(LogTemp, Warning, TEXT("Path: %s"), *Path.ToString());
+	TWeakObjectPtr WeakWorld = GetWorld();
+	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, WeakWorld, SingularWeapon, Weapon, InCharacterName, InOwner, InAmount]
+	{
+		if (WeakWorld.IsValid() && IsAsyncAssetWorldValid(WeakWorld.Get())) AsyncLoadCloneCallback(SingularWeapon, Weapon, InCharacterName, InOwner, InAmount);
+		else UE_LOG(LogTemp, Warning, TEXT("World no longer valid during AsyncLoadEnemy callback for character %s"), *UEnum::GetValueAsString(InCharacterName));
+	});
+	AddAsyncHandle(Handle);
 }
 
 void UPrimaryDataAssetsManager::AsyncLoadCloneCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount)
@@ -733,33 +753,59 @@ void UPrimaryDataAssetsManager::SetupVfx(const FVfxContainer& InVfxData, TFuncti
 
 void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
-	if (GetCanAsyncLoadHappen())
+	if (!GetCanAsyncLoadHappen()) return;
+	const FCharacterContainer& CharacterContainer = GetCharacterData(InCharacter);
+	TArray<FSoftObjectPath> PathsToLoad;
+	const TObjectPtr<UPA_CharacterContainer> CharContainer = CharacterContainer.GetCharacterContainer();
+	if (!IsValid(CharContainer))
 	{
-		FCharacterContainer& CharacterContainer = GetCharacterData(InCharacter);
-		CharacterContainer.SetWorld(GetWorld());
-		TArray<FSoftObjectPath> PathsToLoad;
-		PathsToLoad.Add(CharacterContainer.GetCharacterContainer()->CharacterClass.ToSoftObjectPath());
-		PathsToLoad.Add(CharacterContainer.GetCharacterContainer()->CharacterMesh.ToSoftObjectPath());
-		EWeapon Weapon = GetWeaponByCharacter(InCharacter);
-		const TObjectPtr<UPA_WeaponContainer> WeaponContainer = GetWeaponData(Weapon);
-		PathsToLoad.Add(WeaponContainer->WeaponClass.ToSoftObjectPath());
-		PathsToLoad.Add(WeaponContainer->HandsMesh.ToSoftObjectPath());
-		EWeapon SingularWeapon = GetSingularWeapon(Weapon);
-		if (SingularWeapon != EWeapon::None)
-		{
-			const TObjectPtr<UPA_WeaponContainer> SingularWeaponContainer = GetWeaponData(SingularWeapon);
-			PathsToLoad.Add(SingularWeaponContainer->WeaponClass.ToSoftObjectPath());
-			PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
-		}
-		else PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
-		TArray<FSoftObjectPath> ValidPaths;
-		for (const FSoftObjectPath& Path : PathsToLoad) if (!Path.GetAssetPathString().IsEmpty()) ValidPaths.Add(Path);
-		TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, &CharacterContainer, SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack]
-		{
-			if (IsAsyncAssetWorldValid(CharacterContainer.GetWorld())) AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
-		});
-		AddAsyncHandle(Handle);
+		UE_LOG(LogTemp, Error, TEXT("Invalid CharacterContainer for character %s"), *UEnum::GetValueAsString(InCharacter));
+		return;
 	}
+	if (!CharContainer->CharacterClass.IsNull()) PathsToLoad.Add(CharContainer->CharacterClass.ToSoftObjectPath());
+	else UE_LOG(LogTemp, Warning, TEXT("CharacterClass is invalid for character %s"), *UEnum::GetValueAsString(InCharacter));
+	if (!CharContainer->CharacterMesh.IsNull()) PathsToLoad.Add(CharContainer->CharacterMesh.ToSoftObjectPath());
+	else UE_LOG(LogTemp, Warning, TEXT("CharacterMesh is invalid for character %s"), *UEnum::GetValueAsString(InCharacter));
+	EWeapon Weapon = GetWeaponByCharacter(InCharacter);
+	const TObjectPtr<UPA_WeaponContainer> WeaponContainer = GetWeaponData(Weapon);
+	if (!IsValid(WeaponContainer))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid WeaponContainer for weapon %s"), *UEnum::GetValueAsString(Weapon));
+		return;
+	}
+	if (!WeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponClass.ToSoftObjectPath());
+	else UE_LOG(LogTemp, Warning, TEXT("WeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
+	if (!WeaponContainer->HandsMesh.IsNull()) PathsToLoad.Add(WeaponContainer->HandsMesh.ToSoftObjectPath());
+	else UE_LOG(LogTemp, Warning, TEXT("HandsMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
+	EWeapon SingularWeapon = GetSingularWeapon(Weapon);
+	if (SingularWeapon != EWeapon::None)
+	{
+		const TObjectPtr<UPA_WeaponContainer> SingularWeaponContainer = GetWeaponData(SingularWeapon);
+		if (IsValid(SingularWeaponContainer))
+		{
+			if (!SingularWeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponClass.ToSoftObjectPath());
+			else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
+			if (!SingularWeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
+			else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
+		}
+	}
+	else if (!WeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
+	else UE_LOG(LogTemp, Warning, TEXT("WeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
+	TArray<FSoftObjectPath> ValidPaths;
+	for (const FSoftObjectPath& Path : PathsToLoad) if (!Path.GetAssetPathString().IsEmpty()) ValidPaths.Add(Path);
+	if (ValidPaths.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No valid paths to async load for character %s"), *UEnum::GetValueAsString(InCharacter));
+		return;
+	}
+	for (const FSoftObjectPath& Path : ValidPaths) UE_LOG(LogTemp, Warning, TEXT("Path: %s"), *Path.ToString());
+	TWeakObjectPtr WeakWorld = GetWorld();
+	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, WeakWorld, SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack]
+	{
+		if (WeakWorld.IsValid() && IsAsyncAssetWorldValid(WeakWorld.Get())) AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
+		else UE_LOG(LogTemp, Warning, TEXT("World no longer valid during AsyncLoadEnemy callback for character %s"), *UEnum::GetValueAsString(InCharacter));
+	});
+	AddAsyncHandle(Handle);
 }
 
 void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
@@ -847,23 +893,18 @@ void UPrimaryDataAssetsManager::LoadVfx(FVfxContainer& InVfxData, const EVfx InV
 
 void UPrimaryDataAssetsManager::RequestVfxLoad(FVfxContainer& InVfxData)
 {
-	if (!InVfxData.GetIsInLoad())
+	if (InVfxData.GetIsInLoad()) return;
+	InVfxData.SetIsInLoad(true);
+	if (!GetCanAsyncLoadHappen()) return;
+	TWeakObjectPtr WeakWorld = GetWorld();
+	FVfxContainer* VfxContainer = &InVfxData;
+	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InVfxData.GetVfxContainer()->GetVfxEffect().ToSoftObjectPath(), [this, WeakWorld, VfxContainer]
 	{
-		InVfxData.SetIsInLoad(true);
-		InVfxData.SetWorld(GetWorld());
-		if (GetCanAsyncLoadHappen())
-		{
-			TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(InVfxData.GetVfxContainer()->GetVfxEffect().ToSoftObjectPath(), [this, &InVfxData]
-			{
-				if (IsAsyncAssetWorldValid(InVfxData.GetWorld()))
-				{
-					InVfxData.SetIsLoaded(true);
-					InVfxData.TriggerVfxsCallbacks();
-				}
-			});
-			AddAsyncHandle(Handle);
-		}
-	}
+		if (!WeakWorld.IsValid() || !IsAsyncAssetWorldValid(WeakWorld.Get()) || !VfxContainer) return;
+		VfxContainer->SetIsLoaded(true);
+		VfxContainer->TriggerVfxsCallbacks();
+	});
+	AddAsyncHandle(Handle);
 }
 
 template<typename EnumType, typename ContainerType, typename AssetType>

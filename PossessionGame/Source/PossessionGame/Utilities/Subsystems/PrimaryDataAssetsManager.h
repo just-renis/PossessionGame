@@ -81,13 +81,8 @@ struct POSSESSIONGAME_API FCharacterContainer
 	FCharacterContainer() {}
 	explicit FCharacterContainer(const TObjectPtr<UPA_CharacterContainer>& InCharacterContainer) { CharacterContainer = InCharacterContainer; }
 
-	TWeakObjectPtr<UWorld> GetWorld() const { return World; }
 	TObjectPtr<UPA_CharacterContainer> GetCharacterContainer() const { return CharacterContainer; }
-	
-	void SetWorld(const TObjectPtr<UWorld>& InWorld) { World = InWorld; }
 private:
-	UPROPERTY()
-	TWeakObjectPtr<UWorld> World;
 	UPROPERTY()
 	TObjectPtr<UPA_CharacterContainer> CharacterContainer;
 };
@@ -102,12 +97,10 @@ struct POSSESSIONGAME_API FSoundContainer
 
 	bool GetIsInLoad() const { return bIsInLoad; }
 	bool GetIsLoaded() const { return bIsLoaded; }
-	TWeakObjectPtr<UWorld> GetWorld() const { return World; }
 	TObjectPtr<UPA_SoundContainer> GetSoundContainer() const { return SoundContainer; }
 	
 	void SetIsInLoad(const bool bState) { bIsInLoad = bState; }
 	void SetIsLoaded(const bool bState) { bIsLoaded = bState; }
-	void SetWorld(const TObjectPtr<UWorld>& InWorld) { World = InWorld; }
 	void ResetLoadVariables()
 	{
 		SetIsLoaded(false);
@@ -122,8 +115,6 @@ struct POSSESSIONGAME_API FSoundContainer
 private:
 	bool bIsInLoad = false;
 	bool bIsLoaded = false;
-	UPROPERTY()
-	TWeakObjectPtr<UWorld> World;
 	UPROPERTY()
 	TObjectPtr<UPA_SoundContainer> SoundContainer;
 	UPROPERTY()
@@ -140,12 +131,10 @@ struct POSSESSIONGAME_API FVfxContainer
 
 	bool GetIsInLoad() const { return bIsInLoad; }
 	bool GetIsLoaded() const { return bIsLoaded; }
-	TWeakObjectPtr<UWorld> GetWorld() const { return World; }
 	TObjectPtr<UPA_VfxContainer> GetVfxContainer() const { return VfxContainer; }
 	
 	void SetIsInLoad(const bool bState) { bIsInLoad = bState; }
 	void SetIsLoaded(const bool bState) { bIsLoaded = bState; }
-	void SetWorld(const TObjectPtr<UWorld>& InWorld) { World = InWorld; }
 	void ResetLoadVariables()
 	{
 		SetIsLoaded(false);
@@ -160,8 +149,6 @@ struct POSSESSIONGAME_API FVfxContainer
 private:
 	bool bIsInLoad = false;
 	bool bIsLoaded = false;
-	UPROPERTY()
-	TWeakObjectPtr<UWorld> World;
 	UPROPERTY()
 	TObjectPtr<UPA_VfxContainer> VfxContainer;
 	UPROPERTY()
