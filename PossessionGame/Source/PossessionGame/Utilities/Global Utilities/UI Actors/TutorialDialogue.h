@@ -16,6 +16,7 @@ public:
 	void StartTipDialogue(const EGameState InGameState) const;
 	void SetVisibilityState(const bool bState) const;
 	void StartDialogue(const int32 InIndex, const bool bShowPressAnyKeyToContinue) const;
+	void SetNextDialogueText(const EGameState InGameState) const;
 private:
 	ATutorialDialogue();
 	

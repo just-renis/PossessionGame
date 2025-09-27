@@ -33,6 +33,12 @@ void ATutorialDialogue::StartDialogue(const int32 InIndex, const bool bShowPress
 	Dialogue->StartDialogue(InIndex, bShowPressAnyKeyToContinue);
 }
 
+void ATutorialDialogue::SetNextDialogueText(const EGameState InGameState) const
+{
+	if (!Dialogue) return;
+	Dialogue->SetNextDialogueText(InGameState);
+}
+
 ATutorialDialogue::ATutorialDialogue()
 {
 	DialogueWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("dialogueWidgetComponent");

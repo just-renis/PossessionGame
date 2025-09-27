@@ -11,7 +11,7 @@ void UDialogueUI::StartTipDialogue(const EGameState InCurrentGameState, const fl
 {
 	if (GetVisibility() == ESlateVisibility::Collapsed) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	AssetsManager->PlaySound2D(ESound::DialogueStart);
-	TargetText = GetDialogueText(InCurrentGameState).ToString();
+	if (TargetText.IsEmpty()) TargetText = GetDialogueText(InCurrentGameState).ToString();
 	CurrentText = "";
 	CurrentIndex = 0;
 	TypeSpeed = InSpeed;
@@ -31,6 +31,18 @@ void UDialogueUI::StartDialogue(const int32 InIndex, const bool bShowPressAnyKey
 	CurrentIndex = 0;
 	TypeSpeed = InSpeed;
 	GetWorld()->GetTimerManager().SetTimer(TypeHandle, this, &UDialogueUI::TypeNextLetter, TypeSpeed, true);
+}
+
+void UDialogueUI::SetNextDialogueText(const EGameState InCurrentGameState) { TargetText = GetDialogueText(InCurrentGameState).ToString(); }
+
+void UDialogueUI::FinishedTypingDialogue()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TypeHandle);
+	if (bShowPressAnyKeyToContinueOnDialogueEnd)
+	{
+		GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.Broadcast(true);
+		bShowPressAnyKeyToContinueOnDialogueEnd = false;
+	}
 }
 
 FText UDialogueUI::GetDialogueText(const EGameState InGameState)
@@ -126,16 +138,6 @@ void UDialogueUI::NativeConstruct()
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
     if (DialogueText) DialogueText->SetText(FText::FromString(""));
-}
-
-void UDialogueUI::FinishedTypingDialogue()
-{
-	GetWorld()->GetTimerManager().ClearTimer(TypeHandle);
-	if (bShowPressAnyKeyToContinueOnDialogueEnd)
-	{
-		GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.Broadcast(true);
-		bShowPressAnyKeyToContinueOnDialogueEnd = false;
-	}
 }
 
 void UDialogueUI::TypeNextLetter()

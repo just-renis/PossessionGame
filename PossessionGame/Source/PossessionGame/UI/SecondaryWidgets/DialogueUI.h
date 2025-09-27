@@ -39,6 +39,7 @@ public:
 	void StartTipDialogue(const EGameState InCurrentGameState, const float InSpeed = 0.025f);
 	void ClearDialogueText() const;
 	void StartDialogue(const int32 InIndex, const bool bShowPressAnyKeyToContinue, const float InSpeed = 0.025f);
+	void SetNextDialogueText(const EGameState InCurrentGameState);
 protected:
 	bool bShowPressAnyKeyToContinueOnDialogueEnd = false;
 	UPROPERTY()
@@ -58,6 +59,7 @@ private:
 	float TypeSpeed = 0.05f;
 	FString TargetText;
 	FString CurrentText;
+	FText SavedText;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 

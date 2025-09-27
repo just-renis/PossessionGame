@@ -79,6 +79,7 @@ void AProjectile::OnImpact(const FHitResult& Hit)
 
 void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich)
 {
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	Super::Init(InProjectileData, Rotation, InWhich);
 	SetupProjectile(InProjectileData, InWhich);
 	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
@@ -89,6 +90,7 @@ void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotati
 
 void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const FRotator& Rotation)
 {
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	Super::InitCloneProjectile(InProjectileData, Rotation);
 	StartLocation = GetActorLocation();
 	ProjectileData = InProjectileData;

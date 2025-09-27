@@ -292,8 +292,12 @@ void ATutorialBot::MoveToNextLocation()
 		}
 		break;
 	}
-	if (bIsTutorialFinished && CurrentWaypointIndex == 0) SetTabletVisibility(false);
-	PlayIdleAnimation();
+	if (bIsTutorialFinished && CurrentWaypointIndex == 0)
+	{
+		SetTabletVisibility(false);
+		PlayIdleAnimation();
+	}
+	if (bIsTutorialFinished) Dialogue->SetNextDialogueText(CurrentGameState);
 	CurrentWaypointIndex++;
 }
 
@@ -443,6 +447,7 @@ void ATutorialBot::MoveToSecretRoomWaypoint()
 		if (Waypoints[i]->GetOrder() != -1) continue;
 		SetActorLocationAndRotation(Waypoints[i]->GetActorLocation(), Waypoints[i]->GetActorRotation());
 		CurrentGameState = EGameState::SecretRoom;
+		Dialogue->SetNextDialogueText(CurrentGameState);
 		break;
 	}
 }
