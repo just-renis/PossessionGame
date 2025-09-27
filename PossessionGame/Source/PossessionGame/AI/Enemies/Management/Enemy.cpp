@@ -32,13 +32,13 @@
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
+#include "PossessionGame/UI/MainWidgets/DeathScreenUI.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/AIHpBarUI.h"
-#include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
@@ -668,7 +668,6 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorldTimerManager().ClearTimer(CheckIfFallOutOfWorldHandle);
 	GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);
 	GetWorldTimerManager().ClearTimer(SpawnCondenseMaterialsProcessHandle);
-	GetWorldTimerManager().ClearTimer(RestartLevelHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -998,7 +997,7 @@ void AEnemy::P_InitiateDeathEvents()
 	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeepFps);
 	DelegateManager->OnPlayerDeath.Broadcast();
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor::Black, false, true);
-	GetWorldTimerManager().SetTimer(RestartLevelHandle, this, &AEnemy::RestartLevel, 3.f, false);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UDeathScreenUI>(EWidget::DeathMenuUI)->OpenUI();
 }
 
 void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
@@ -1377,11 +1376,6 @@ void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
 		if (bState) PoisonSlowAffected->Activate(true);
 		else PoisonSlowAffected->DeactivateImmediate();
 	}
-}
-
-void AEnemy::RestartLevel() const
-{
-	GameInstance->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, FName("MainMenu")));
 }
 
 void AEnemy::DisableHijackViableVfx() const

@@ -40,7 +40,8 @@ int32 UWidgetManager::GetWidgetZOrder(const EWidget InWidgetName)
 		case EWidget::SecretRoomUI: return 1;
 		case EWidget::AbilitiesMenuUI: return 1;
 		case EWidget::ExplanationUI: return 2;
-		default: return 5;
+		case EWidget::SaveSlotMenuUI: return 3;
+	default: return 5;
 	}
 }
 

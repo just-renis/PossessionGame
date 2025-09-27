@@ -19,5 +19,6 @@ enum class EWidget : uint8
     AbilitiesMenuUI,
     ExplanationUI,
     ChapterLaunchUI,
-    SaveSlotMenuUI
+    SaveSlotMenuUI,
+    DeathMenuUI
 };

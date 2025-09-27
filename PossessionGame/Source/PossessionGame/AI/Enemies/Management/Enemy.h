@@ -353,8 +353,6 @@ private:
 	FTimerHandle DestroyCondenseMaterialsProcessHandle;
 	UPROPERTY()
 	FTimerHandle SpawnCondenseMaterialsProcessHandle;
-	UPROPERTY()
-	FTimerHandle RestartLevelHandle;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
@@ -431,7 +429,6 @@ private:
 	void CloseInfoPanel();
 	void PlayEmpAffectedVfx(const float InEffectDuration);
 	void TogglePoisonSlowAffectedVfx(const bool bState);
-	void RestartLevel() const;
 	void DisableHijackViableVfx() const;
 	void SetupTutorialManager();
 	void ToggleTimeDilation();
