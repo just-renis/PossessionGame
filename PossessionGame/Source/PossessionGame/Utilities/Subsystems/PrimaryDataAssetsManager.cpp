@@ -254,6 +254,41 @@ void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraCom
 	}
 }
 
+void UPrimaryDataAssetsManager::StressTest_AsyncLoadEnemy(ECharacterType Character, EGameMode GameMode, int32 Iterations, float Delay)
+{
+	if (Iterations <= 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No iterations specified."));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("[StressTest] Starting AsyncLoadEnemy stress test for %s - %d iterations"),
+		*UEnum::GetValueAsString(Character), Iterations);
+
+	for (int32 i = 0; i < Iterations; ++i)
+	{
+		FTimerHandle TmpHandle;
+		// Spread out calls slightly to overlap loading but avoid flooding tick instantly
+		GetWorld()->GetTimerManager().SetTimer(
+			TmpHandle,
+			[this, Character, GameMode, i]()
+			{
+				UE_LOG(LogTemp, Verbose, TEXT("[StressTest] Iteration #%d"), i);
+				this->AsyncLoadEnemy(Character, GameMode, /*bCanEvolve=*/false, []()
+				{
+					UE_LOG(LogTemp, Verbose, TEXT("[StressTest] Callback executed."));
+				});
+
+				// Force GC occasionally to really stress object annotations
+				if (i % 5 == 0)
+				{
+					CollectGarbage(GARBAGE_COLLECTION_KEEPFLAGS);
+				}
+			},
+			i * Delay, false);
+	}
+}
+
 void UPrimaryDataAssetsManager::SetupSound2D(const FSoundContainer& InSoundData, const ESound InSoundName, const bool bIsPlayer, const bool bStoreSoundRef)
 {
 	float VolumeMultiplier = 1.f;
@@ -360,8 +395,12 @@ void UPrimaryDataAssetsManager::AsyncLoadClone(const ECharacterType InCharacterN
 	TWeakObjectPtr WeakWorld = GetWorld();
 	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, WeakWorld, SingularWeapon, Weapon, InCharacterName, InOwner, InAmount]
 	{
-		if (WeakWorld.IsValid() && IsAsyncAssetWorldValid(WeakWorld.Get())) AsyncLoadCloneCallback(SingularWeapon, Weapon, InCharacterName, InOwner, InAmount);
-		else UE_LOG(LogTemp, Warning, TEXT("World no longer valid during AsyncLoadEnemy callback for character %s"), *UEnum::GetValueAsString(InCharacterName));
+		if (!WeakWorld.IsValid() || !IsAsyncAssetWorldValid(WeakWorld.Get()))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("World no longer valid during AsyncLoadEnemy callback for character %s"), *UEnum::GetValueAsString(InCharacterName));
+			return;
+		}
+		AsyncLoadCloneCallback(SingularWeapon, Weapon, InCharacterName, InOwner, InAmount);
 	});
 	AddAsyncHandle(Handle);
 }
@@ -802,8 +841,12 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 	TWeakObjectPtr WeakWorld = GetWorld();
 	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, WeakWorld, SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack]
 	{
-		if (WeakWorld.IsValid() && IsAsyncAssetWorldValid(WeakWorld.Get())) AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
-		else UE_LOG(LogTemp, Warning, TEXT("World no longer valid during AsyncLoadEnemy callback for character %s"), *UEnum::GetValueAsString(InCharacter));
+		if (!WeakWorld.IsValid() || !IsAsyncAssetWorldValid(WeakWorld.Get()))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("World no longer valid during AsyncLoadEnemy callback for character %s"), *UEnum::GetValueAsString(InCharacter));
+			return;
+		}
+		AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
 	});
 	AddAsyncHandle(Handle);
 }

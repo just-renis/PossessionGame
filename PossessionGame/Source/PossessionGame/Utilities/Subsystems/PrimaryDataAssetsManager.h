@@ -187,6 +187,7 @@ public:
 	void PlaySoundAtLocation(const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer = true, const bool bStoreSoundRef = false);
 	void RequestSpawnClone(const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount);
 	void UpdateVfxAttributes(const TObjectPtr<UNiagaraComponent>& InVfxComponent, const TMap<FName, FNiagaraAttribute>& InAttributes);
+	void StressTest_AsyncLoadEnemy(ECharacterType Character, EGameMode GameMode, int32 Iterations, float Delay);
 private:
 	bool bIsInitialized = false;
 	bool bCanAsyncLoadHappen = true;
