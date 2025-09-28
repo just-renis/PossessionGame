@@ -9,7 +9,7 @@ class POSSESSIONGAME_API AWarden : public AEnemy
 {
 	GENERATED_BODY()
 public:
-	TSubclassOf<UCameraShakeBase> GetBeamShotCameraShake() { return BeamShotCameraShake; }
+	TSubclassOf<UCameraShakeBase>& GetBeamShotCameraShake() { return BeamShotCameraShake; }
 	
 	void TriggerBeam();
 	void TriggerBeamDamage();

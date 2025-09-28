@@ -21,5 +21,5 @@ void UInteractableUI::NativeConstruct()
 void UInteractableUI::UpdateInteractableText(const FName& InKeyBindName, const FText& InKeyBindText)
 {
 	if (!InteractableText || !InKeyBindName.IsEqual("Interact")) return;
-	InteractableText->SetText(FText::Format(FText::FromString("Press [{0}] to interact"), InKeyBindText));
+	InteractableText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "PressToInteract", "Press [{0}] to interact"), InKeyBindText));
 }

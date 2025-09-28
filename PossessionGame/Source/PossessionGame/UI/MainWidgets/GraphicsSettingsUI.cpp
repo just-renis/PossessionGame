@@ -53,9 +53,9 @@ void UGraphicsSettingsUI::UpdateDefaultGraphicsSettings()
 	Resolution = GEngine->GetGameUserSettings()->GetDesktopResolution();
 	if (ResolutionOption) ResolutionOption->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
 	Vsync = GameUserSettings->IsVSyncEnabled();
-	if (VsyncOption) VsyncOption->SetText(FText::FromString(Vsync ? "Enabled" : "Disabled"));
+	if (VsyncOption) VsyncOption->SetText(Vsync ? NSLOCTEXT("ST_Localization", "Enabled", "Enabled") : NSLOCTEXT("ST_Localization", "Disabled", "Disabled"));
 	MotionBlur = GameUserSettings->GetMotionBlur();
-	if (MotionBlurOption) MotionBlurOption->SetText(FText::FromString(MotionBlur ? "Enabled" : "Disabled"));
+	if (MotionBlurOption) MotionBlurOption->SetText(MotionBlur ? NSLOCTEXT("ST_Localization", "Enabled", "Enabled") : NSLOCTEXT("ST_Localization", "Disabled", "Disabled"));
 	if (BrightnessSlider)
 	{
 		BrightnessSlider->SetValue((GameUserSettings->GetGamma() - 1.f) / 4.f);
@@ -136,7 +136,7 @@ FText UGraphicsSettingsUI::GetAntiAliasingMethodName() const
 {
 	switch (CurrentAntiAliasingMethod)
 	{
-		case 0: return FText::FromString("None");
+		case 0: return NSLOCTEXT("ST_Localization", "None", "None");
 		case 1: return FText::FromString("FXAA");
 		case 2: return FText::FromString("TAA");
 		case 3: return FText::FromString("MSAA");
@@ -205,13 +205,13 @@ void UGraphicsSettingsUI::IncreaseResolution()
 void UGraphicsSettingsUI::ToggleVsync()
 {
 	Vsync = !Vsync;
-	if (VsyncOption) VsyncOption->SetText(FText::FromString(Vsync ? "Enabled" : "Disabled"));
+	if (VsyncOption) VsyncOption->SetText(Vsync ? NSLOCTEXT("ST_Localization", "Enabled", "Enabled") : NSLOCTEXT("ST_Localization", "Disabled", "Disabled"));
 }
 
 void UGraphicsSettingsUI::ToggleMotionBlur()
 {
 	MotionBlur = !MotionBlur;
-	if (MotionBlurOption) MotionBlurOption->SetText(FText::FromString(MotionBlur ? "Enabled" : "Disabled"));
+	if (MotionBlurOption) MotionBlurOption->SetText(MotionBlur ? NSLOCTEXT("ST_Localization", "Enabled", "Enabled") : NSLOCTEXT("ST_Localization", "Disabled", "Disabled"));
 }
 
 void UGraphicsSettingsUI::ChangeAntiAliasingMethodToRight()

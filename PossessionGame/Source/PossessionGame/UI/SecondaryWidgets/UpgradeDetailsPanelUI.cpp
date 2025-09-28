@@ -185,8 +185,8 @@ void UUpgradeDetailsPanelUI::SetUpgradeText(const bool bIsPlayerUpgrade)
 	if (UpgradeChoice.IsEmpty())
 	{
 		UpgradeChoiceButton->SetIsEnabled(false);
-		if (bIsPlayerUpgrade) PlayerUpgradeText->SetText(FText::FromString("No available choice"));
-		else EnemyUpgradeText->SetText(FText::FromString("No available choice"));
+		if (bIsPlayerUpgrade) PlayerUpgradeText->SetText(NSLOCTEXT("ST_Localization", "NoAvailableChoice", "No available choice"));
+		else EnemyUpgradeText->SetText(NSLOCTEXT("ST_Localization", "NoAvailableChoice", "No available choice"));
 		return;
 	}
 	FString UpgradeTextString = "";
