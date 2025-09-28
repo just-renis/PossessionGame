@@ -19,3 +19,5 @@ FText UGlobalSettingsManager::GetKeyBindText(const FName& InKeyName) const
 }
 
 FText* UGlobalSettingsManager::GetKeyDisplayName(const FKey& InKeyName) { return CustomKeyDisplayNames.Find(InKeyName); }
+
+FText* UGlobalSettingsManager::GetLocalizedMappingName(const FString& InMappingName) { return LocalizedActionDisplayNames.Find(InMappingName); }

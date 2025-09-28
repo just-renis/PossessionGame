@@ -26,7 +26,11 @@ void UKeyBindingUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	SetupEvents();
-	if (Title) Title->SetTitleText(Mapping.GetDisplayName());
+	if (Title)
+	{
+		const FText* LocalizedMappingName = GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetLocalizedMappingName(Mapping.GetDisplayName().ToString());
+		Title->SetTitleText(LocalizedMappingName ? *LocalizedMappingName : Mapping.GetDisplayName());
+	}
 	SetSavedKeyBind();
 }
 
