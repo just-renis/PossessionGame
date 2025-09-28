@@ -1,4 +1,5 @@
 ﻿#include "AudioSettingsUI.h"
+#include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ELanguageCode.h"
@@ -50,6 +51,7 @@ void UAudioSettingsUI::ApplySettings()
 	if (FpsCapSlider) FpsCapSlider->SaveValue();
 	const FString& LanguageEncode = GetLanguageOption(LanguageCode).LanguageCode;
 	SavedSettings->SetLanguage(LanguageEncode);
+	UE_LOG(LogTemp, Error, TEXT("LanguageEncode: %s"), *LanguageEncode);
 	FInternationalization::Get().SetCurrentCulture(LanguageEncode);
 	UGameplayStatics::SaveGameToSlot(SavedSettings, "SettingsSlot", 0);
 }
@@ -67,13 +69,33 @@ void UAudioSettingsUI::SetSavedSettings()
 ELanguageCode UAudioSettingsUI::GetLanguageCode(const FString& InCode)
 {
 	if (InCode.Equals("lt")) return ELanguageCode::Lt;
+	if (InCode.Equals("de-DE")) return ELanguageCode::De;
+	if (InCode.Equals("es-ES")) return ELanguageCode::Es;
+	if (InCode.Equals("fr-FR")) return ELanguageCode::Fr;
+	if (InCode.Equals("ja-JP")) return ELanguageCode::Ja;
+	if (InCode.Equals("ko-KR")) return ELanguageCode::Ko;
+	if (InCode.Equals("lv")) return ELanguageCode::Lv;
+	if (InCode.Equals("pl-PL")) return ELanguageCode::Pl;
+	if (InCode.Equals("ru-RU")) return ELanguageCode::Ru;
+	if (InCode.Equals("uk-UA")) return ELanguageCode::Uk;
+	if (InCode.Equals("zh-Hans-CN")) return ELanguageCode::Zh;
 	return ELanguageCode::En;
 }
 
 FText UAudioSettingsUI::GetLanguageNameByCode(const FString& InCode)
 {
-	if (InCode.Equals("lt")) return FText::FromString("Lithuanian");
-	return FText::FromString("English");
+	if (InCode.Equals("lt")) return NSLOCTEXT("ST_Localization", "Lithuanian", "Lithuanian");
+	if (InCode.Equals("de-DE")) return NSLOCTEXT("ST_Localization", "German", "German");
+	if (InCode.Equals("es-ES")) return NSLOCTEXT("ST_Localization", "Spanish", "Spanish");
+	if (InCode.Equals("fr-FR")) return NSLOCTEXT("ST_Localization", "France", "France");
+	if (InCode.Equals("ja-JP")) return NSLOCTEXT("ST_Localization", "Japanese", "Japanese");
+	if (InCode.Equals("ko-KR")) return NSLOCTEXT("ST_Localization", "Korean", "Korean");
+	if (InCode.Equals("lv")) return NSLOCTEXT("ST_Localization", "Latvian", "Latvian");
+	if (InCode.Equals("pl-PL")) return NSLOCTEXT("ST_Localization", "Poland", "Poland");
+	if (InCode.Equals("ru-RU")) return NSLOCTEXT("ST_Localization", "Russian", "Russian");
+	if (InCode.Equals("uk-UA")) return NSLOCTEXT("ST_Localization", "Ukrainian", "Ukrainian");
+	if (InCode.Equals("zh-Hans-CN")) return NSLOCTEXT("ST_Localization", "Simplified Chinese", "Simplified Chinese");
+	return NSLOCTEXT("ST_Localization", "English", "English");
 }
 
 FLanguageOption UAudioSettingsUI::GetLanguageOption(const ELanguageCode InLanguageCode)
@@ -90,8 +112,8 @@ void UAudioSettingsUI::NativeConstruct()
 	LanguageCode = GetLanguageCode(SavedSettings->GetCurrentLanguage());
 	SetupLanguagesData();
 	LanguageOption->SetText(GetLanguageOption(LanguageCode).LanguageName);
-//	LanguageOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchLeft);
-//	LanguageOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchRight);
+	LanguageOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchLeft);
+	LanguageOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchRight);
 	if (FpsCapSlider) FpsCapSlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::SetFpsValue);
 	if (HorizontalSensitivitySlider) HorizontalSensitivitySlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::SetHorizontalSensitivityNumberValue);
 	if (VerticalSensitivitySlider) VerticalSensitivitySlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::UAudioSettingsUI::SetVerticalSensitivityNumberValue);

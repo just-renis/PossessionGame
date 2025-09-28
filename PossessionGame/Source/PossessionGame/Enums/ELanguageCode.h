@@ -4,5 +4,15 @@ UENUM()
 enum class ELanguageCode : uint8
 {
     En,
-    Lt
+    Lt,
+    De,
+    Es,
+    Fr,
+    Ja,
+    Ko,
+    Lv,
+    Pl,
+    Ru,
+    Uk,
+    Zh
 };
