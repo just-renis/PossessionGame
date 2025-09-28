@@ -258,11 +258,11 @@ void UPrimaryDataAssetsManager::StressTest_AsyncLoadEnemy(ECharacterType Charact
 {
 	if (Iterations <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No iterations specified."));
+		UE_LOG(LogTemp, Error, TEXT("No iterations specified."));
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("[StressTest] Starting AsyncLoadEnemy stress test for %s - %d iterations"),
+	UE_LOG(LogTemp, Error, TEXT("[StressTest] Starting AsyncLoadEnemy stress test for %s - %d iterations"),
 		*UEnum::GetValueAsString(Character), Iterations);
 
 	for (int32 i = 0; i < Iterations; ++i)
@@ -273,14 +273,14 @@ void UPrimaryDataAssetsManager::StressTest_AsyncLoadEnemy(ECharacterType Charact
 			TmpHandle,
 			[this, Character, GameMode, i]()
 			{
-				UE_LOG(LogTemp, Verbose, TEXT("[StressTest] Iteration #%d"), i);
+				UE_LOG(LogTemp, Error, TEXT("[StressTest] Iteration #%d"), i);
 				this->AsyncLoadEnemy(Character, GameMode, /*bCanEvolve=*/false, []()
 				{
-					UE_LOG(LogTemp, Verbose, TEXT("[StressTest] Callback executed."));
+					UE_LOG(LogTemp, Error, TEXT("[StressTest] Callback executed."));
 				});
 
 				// Force GC occasionally to really stress object annotations
-				if (i % 5 == 0)
+				if (i % 2 == 0)
 				{
 					CollectGarbage(GARBAGE_COLLECTION_KEEPFLAGS);
 				}
