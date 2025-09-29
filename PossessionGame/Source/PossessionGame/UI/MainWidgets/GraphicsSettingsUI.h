@@ -55,7 +55,7 @@ private:
 	TObjectPtr<USliderUI> BrightnessSlider;
 
 	uint8 GetGlobalGraphicsQuality();
-	FString GetFixedScreenMode() const;
+	FText GetFixedScreenMode() const;
 	FText GetAntiAliasingMethodName() const;
 
 	virtual void NativeConstruct() override;

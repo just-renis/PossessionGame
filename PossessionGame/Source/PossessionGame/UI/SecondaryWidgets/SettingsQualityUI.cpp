@@ -61,7 +61,15 @@ EGraphicsQuality USettingsQualityUI::SetAndGetAppliedQuality()
 void USettingsQualityUI::UpdateQuality(const uint8 InQualityInt)
 {
 	TemporalQuality = GetQualityEnum(InQualityInt);
-	if (Text) Text->SetText(FText::FromString(UEnum::GetValueAsString(TemporalQuality).Replace(TEXT("EGraphicsQuality::"), TEXT(""))));
+	switch (TemporalQuality)
+	{
+		case EGraphicsQuality::Low: Text->SetText(NSLOCTEXT("ST_Localization", "Low", "Low")); break;
+		case EGraphicsQuality::Medium: Text->SetText(NSLOCTEXT("ST_Localization", "Medium", "Medium")); break;
+		case EGraphicsQuality::High: Text->SetText(NSLOCTEXT("ST_Localization", "High", "High")); break;
+		case EGraphicsQuality::Epic: Text->SetText(NSLOCTEXT("ST_Localization", "Epic", "Epic")); break;
+		case EGraphicsQuality::Ultra: Text->SetText(NSLOCTEXT("ST_Localization", "Ultra", "Ultra")); break;
+		case EGraphicsQuality::Custom: Text->SetText(NSLOCTEXT("ST_Localization", "Custom", "Custom"));
+	}
 }
 
 void USettingsQualityUI::UpdateDefaultQuality(const uint8 InQualityInt)

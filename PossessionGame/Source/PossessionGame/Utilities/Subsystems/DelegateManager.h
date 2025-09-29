@@ -4,6 +4,7 @@
 #include "PossessionGame/Enums/ESound.h"
 #include "DelegateManager.generated.h"
 
+enum class ECameraShake : uint8;
 enum class ETutorialBotExpression : uint8;
 enum class ETutorialBotAnimState : uint8;
 enum class EEnemyHpBar : uint8;
@@ -35,7 +36,7 @@ DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnPlayerReloadMontageEnd);
 DECLARE_DELEGATE_RetVal(int32, FOnRunFinished);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
-DECLARE_DELEGATE_OneParam(FRequestCameraShake, const TSubclassOf<UCameraShakeBase>&);
+DECLARE_DELEGATE_OneParam(FRequestTriggerCameraShake, const ECameraShake);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const FRuntimeUpgradeData&);
 DECLARE_DELEGATE_OneParam(FRequirePlayerAnnouncementInfo, const FText&);
 DECLARE_DELEGATE_OneParam(FChangeMusicPlayerState, const bool);
@@ -112,9 +113,9 @@ public:
 	FOnPlayerReloadMontageEnd OnPlayerReloadMontageEnd;
 	FOnRunFinished OnRunFinished;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
+	FRequestTriggerCameraShake RequestTriggerCameraShake;
 	FOnEnemyDeath OnEnemyDeath;
 	FOnBossDamaged OnBossDamaged;
-	FRequestCameraShake RequestCameraShake;
 	FOnUpgradeCardSelected OnUpgradeCardSelected;
 	FRequirePlayerAnnouncementInfo RequirePlayerAnnouncementInfo;
 	FChangeMusicPlayerState ChangeMusicPlayerState;

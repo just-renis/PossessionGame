@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
+enum class ECameraShake : uint8;
 enum class EStateTreeEvent : uint8;
 struct FInputActionValue;
 class UDelegateManager;
@@ -138,6 +139,8 @@ protected:
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> StompCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> WardenBeamShake;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
@@ -381,6 +384,7 @@ private:
 	void P_HandleEscapeClick();
 	void P_TriggerGlitchingEffect() const;
 	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
+	void P_MakeCameraShake(const ECameraShake InCameraShakeName) const;
 	void P_HandlingDamageTaken();
 	void P_TriggerTakeDamageEffects() const;
 	void P_EnableCriticalDamage();
