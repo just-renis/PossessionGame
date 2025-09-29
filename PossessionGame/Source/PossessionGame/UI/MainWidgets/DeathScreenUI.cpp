@@ -5,16 +5,15 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
-void UDeathScreenUI::OpenUI()
-{
-	Toggle(true);
-}
+void UDeathScreenUI::OpenUI() { Toggle(true); }
 
 void UDeathScreenUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	ReturnToMainMenuButton->Get()->OnClicked.AddDynamic(this, &UDeathScreenUI::ReturnToMainMenu);
 	RestartButton->Get()->OnClicked.AddDynamic(this, &UDeathScreenUI::Restart);
+	ReturnToMainMenuButton->Get()->OnHovered.AddDynamic(this, &UDeathScreenUI::PlayHoverSound);
+	RestartButton->Get()->OnHovered.AddDynamic(this, &UDeathScreenUI::PlayHoverSound);
 }
 
 void UDeathScreenUI::Toggle(const bool bState)
@@ -46,6 +45,7 @@ void UDeathScreenUI::ToggleButtons(const bool bState) const
 void UDeathScreenUI::ReturnToMainMenu()
 {
 	if (bAlreadyClickedButton) return;
+	PlaySound(ButtonClickSound);
 	bAlreadyClickedButton = true;
 	LevelNameToLoad = FName("MainMenu");
 	FadeFinishedDelegate.BindDynamic(this, &UDeathScreenUI::FadeOutToNextLevel);
@@ -56,6 +56,7 @@ void UDeathScreenUI::ReturnToMainMenu()
 void UDeathScreenUI::Restart()
 {
 	if (bAlreadyClickedButton) return;
+	PlaySound(ButtonClickSound);
 	bAlreadyClickedButton = true;
 	LevelNameToLoad = FName("Level_1");
 	FadeFinishedDelegate.BindDynamic(this, &UDeathScreenUI::FadeOutToNextLevel);
@@ -67,3 +68,5 @@ void UDeathScreenUI::FadeOutToNextLevel()
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(true, false, true, LevelNameToLoad));
 }
+
+void UDeathScreenUI::PlayHoverSound() { PlaySound(ButtonHoverSound); }

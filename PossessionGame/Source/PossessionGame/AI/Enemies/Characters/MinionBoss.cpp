@@ -240,7 +240,7 @@ void AMinionBoss::EmpEffectEnded()
 void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
 {
 	Super::ReceiveDamage(InDamage, InDamageReason);
-	PlaySound(ESound::MinionBossTakeDamage);
+	if (FMath::RandRange(1, 10) >= 9) PlaySound(ESound::MinionBossTakeDamage);
 	(void)DelegateManager->OnBossDamaged.ExecuteIfBound(CurrentHp, MaxHp);
 }
 

@@ -13,7 +13,9 @@ void UEQG_AroundPlayer::GenerateItems(FEnvQueryInstance& QueryInstance) const
 	constexpr int32 NumRings = 3;
 	constexpr int32 NumPointsInRing = 12;
 	const TObjectPtr<AActor> QueryActor = Cast<AActor>(QueryInstance.Owner.Get());
+	if (!QueryActor) return;
 	const TObjectPtr<UNavigationSystemV1> NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());
+	if (!NavSys) return;
 	QueryInstance.ReserveItemData(NumRings * NumPointsInRing);
 	for (int32 RingIndex = 0, i = 0; RingIndex < NumRings; RingIndex++)
 	{

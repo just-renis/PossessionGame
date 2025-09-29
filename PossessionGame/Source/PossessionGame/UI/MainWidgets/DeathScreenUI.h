@@ -15,6 +15,10 @@ public:
 private:
 	bool bAlreadyClickedButton = false;
 	FName LevelNameToLoad;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<USoundBase> ButtonHoverSound;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<USoundBase> ButtonClickSound;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> RestartButton;
 	UPROPERTY(meta = (BindWidget))
@@ -35,4 +39,6 @@ private:
 	void Restart();
 	UFUNCTION()
 	void FadeOutToNextLevel();
+	UFUNCTION()
+	void PlayHoverSound();
 };
