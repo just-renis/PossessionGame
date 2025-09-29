@@ -49,7 +49,7 @@ void UGraphicsSettingsUI::UpdateDefaultGraphicsSettings()
 	if (Effects) Effects->UpdateDefaultQuality(GameUserSettings->GetVisualEffectQuality());
 	if (Shading) Shading->UpdateDefaultQuality(GameUserSettings->GetShadingQuality());
 	if (ScreenMode) ScreenMode = GameUserSettings->GetFullscreenMode();
-	if (ScreenModeOption) ScreenModeOption->SetText(FText::FromString(GetFixedScreenMode()));
+	if (ScreenModeOption) ScreenModeOption->SetText(GetFixedScreenMode());
 	Resolution = GEngine->GetGameUserSettings()->GetDesktopResolution();
 	if (ResolutionOption) ResolutionOption->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
 	Vsync = GameUserSettings->IsVSyncEnabled();
@@ -125,11 +125,12 @@ uint8 UGraphicsSettingsUI::GetGlobalGraphicsQuality()
 	return Value;
 }
 
-FString UGraphicsSettingsUI::GetFixedScreenMode() const
+FText UGraphicsSettingsUI::GetFixedScreenMode() const
 {
-	FString WindowMode = UEnum::GetValueAsString(ScreenMode).Replace(TEXT("EWindowMode::"), TEXT(""));
-	if (WindowMode.Equals("WindowedFullscreen")) WindowMode = "WindowFull";
-	return WindowMode;
+	const FString WindowMode = UEnum::GetValueAsString(ScreenMode).Replace(TEXT("EWindowMode::"), TEXT(""));
+	if (WindowMode.Equals("Windowed")) return NSLOCTEXT("ST_Localization", "Windowed", "Windowed");
+	if (WindowMode.Equals("WindowedFullscreen")) return NSLOCTEXT("ST_Localization", "WindowedFullscreen", "Windowed Fullscreen");
+	return NSLOCTEXT("ST_Localization", "Fullscreen", "Fullscreen");
 }
 
 FText UGraphicsSettingsUI::GetAntiAliasingMethodName() const
@@ -171,7 +172,7 @@ void UGraphicsSettingsUI::LowerWindowMode()
 	if (ScreenMode != EWindowMode::Windowed)
 	{
 		ScreenMode = static_cast<EWindowMode::Type>(static_cast<uint8>(ScreenMode) + 1);
-		if (ScreenModeOption) ScreenModeOption->SetText(FText::FromString(GetFixedScreenMode()));
+		if (ScreenModeOption) ScreenModeOption->SetText(GetFixedScreenMode());
 	}
 }
 
@@ -180,7 +181,7 @@ void UGraphicsSettingsUI::IncreaseWindowMode()
 	if (ScreenMode != EWindowMode::Fullscreen)
 	{
 		ScreenMode = static_cast<EWindowMode::Type>(static_cast<uint8>(ScreenMode) - 1);
-		if (ScreenModeOption) ScreenModeOption->SetText(FText::FromString(GetFixedScreenMode()));
+		if (ScreenModeOption) ScreenModeOption->SetText(GetFixedScreenMode());
 	}
 }
 

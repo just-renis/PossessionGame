@@ -9,8 +9,6 @@ class POSSESSIONGAME_API AWarden : public AEnemy
 {
 	GENERATED_BODY()
 public:
-	TSubclassOf<UCameraShakeBase>& GetBeamShotCameraShake() { return BeamShotCameraShake; }
-	
 	void TriggerBeam();
 	void TriggerBeamDamage();
 private:
@@ -22,8 +20,6 @@ private:
 	float Damage = 40.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Beam Weapon", meta = (AllowPrivateAccess = true))
 	float DistanceMulti = 0.00111f;
-	UPROPERTY(EditDefaultsOnly, Category = "Beam Weapon", meta = (AllowPrivateAccess = true))
-	TSubclassOf<UCameraShakeBase> BeamShotCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Beam Weapon", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> BeamWeapon;
 	UPROPERTY()

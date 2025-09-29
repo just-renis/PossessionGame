@@ -6,6 +6,7 @@
 #include "Components/WidgetComponent.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
+#include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
@@ -22,7 +23,7 @@ void AMinionBoss::ActivateStompTrigger()
 	if (!bIsAbilityInAction) ToggleStompTrigger(true);
 }
 
-void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->RequestCameraShake.ExecuteIfBound(StompCameraShake); }
+void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::MinionBossStomp); }
 
 void AMinionBoss::EnableLaserEyeBall()
 {

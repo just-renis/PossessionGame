@@ -362,7 +362,7 @@ void UPrimaryDataAssetsManager::AsyncLoadClone(const ECharacterType InCharacterN
 	{
 		if (!WeakWorld.IsValid() || !IsAsyncAssetWorldValid(WeakWorld.Get()))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("World no longer valid during AsyncLoadEnemy callback for character %s"), *UEnum::GetValueAsString(InCharacterName));
+			UE_LOG(LogTemp, Warning, TEXT("World no longer valid during AsyncLoadClone callback for character %s"), *UEnum::GetValueAsString(InCharacterName));
 			return;
 		}
 		AsyncLoadCloneCallback(SingularWeapon, Weapon, InCharacterName, InOwner, InAmount);
@@ -803,27 +803,46 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 		return;
 	}
 	for (const FSoftObjectPath& Path : ValidPaths) UE_LOG(LogTemp, Warning, TEXT("Path: %s"), *Path.ToString());
+	TWeakObjectPtr WeakThis(this);
 	TWeakObjectPtr WeakWorld = GetWorld();
-	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, WeakWorld, SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack]
+	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, WeakThis, WeakWorld, SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack]
 	{
-		if (!WeakWorld.IsValid() || !IsAsyncAssetWorldValid(WeakWorld.Get()))
+		if (!WeakThis.IsValid())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AsyncLoadEnemy finished but manager no longer exists"));
+			return;
+		}
+		if (!WeakWorld.IsValid() || !WeakThis->IsAsyncAssetWorldValid(WeakWorld.Get()))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("World no longer valid during AsyncLoadEnemy callback for character %s"), *UEnum::GetValueAsString(InCharacter));
 			return;
 		}
-		AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
+		 WeakThis->AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, bCanEvolve, InCallBack);
 	});
 	AddAsyncHandle(Handle);
 }
 
 void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, const bool bCanEvolve, TFunction<void()> InCallBack)
 {
-	LoadedEnemies.Add(InCharacter, Cast<UClass>(GetCharacterData(InCharacter).GetCharacterContainer()->CharacterClass.ToSoftObjectPath().TryLoad()));
+	const TObjectPtr<UWeaponManager> WeaponManager = GetGameInstance()->GetSubsystem<UWeaponManager>();
+	if (!WeaponManager)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("WeaponManager subsystem is null."));
+		if (InCallBack) InCallBack();
+		return;
+	}
+	UObject* EnemyClass = GetCharacterData(InCharacter).GetCharacterContainer()->CharacterClass.ToSoftObjectPath().TryLoad();
+	if (!EnemyClass) UE_LOG(LogTemp, Warning, TEXT("Failed to load character class for %s"), *UEnum::GetValueAsString(InCharacter));
+	LoadedEnemies.Add(InCharacter, Cast<UClass>(EnemyClass));
 	if (InSingularWeapon != EWeapon::None)
 	{
-		GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InSingularWeapon, Cast<UClass>(GetWeaponData(InSingularWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
+		UObject* SingularWeaponClass = GetWeaponData(InSingularWeapon)->WeaponClass.ToSoftObjectPath().TryLoad();
+		if (!SingularWeaponClass) { UE_LOG(LogTemp, Warning, TEXT("Failed to load singular weapon class %s"), *UEnum::GetValueAsString(InSingularWeapon)); }
+		else WeaponManager->AddWeapon(InSingularWeapon, Cast<UClass>(SingularWeaponClass));
 	}
-	GetGameInstance()->GetSubsystem<UWeaponManager>()->AddWeapon(InWeapon, Cast<UClass>(GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad()));
+	UObject* WeaponClass = GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad();
+	if (!WeaponClass) { UE_LOG(LogTemp, Warning, TEXT("Failed to load weapon class %s"), *UEnum::GetValueAsString(InWeapon)); }
+	else WeaponManager->AddWeapon(InWeapon, Cast<UClass>(WeaponClass));
 	SpawnEnemy(InCharacter, InGameMode, bCanEvolve, InCallBack);
 }
 

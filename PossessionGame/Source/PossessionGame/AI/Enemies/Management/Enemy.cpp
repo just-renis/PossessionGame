@@ -23,6 +23,7 @@
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerCharacterData.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
 #include "PossessionGame/Destructibles/Destructible.h"
+#include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EMoveMode.h"
@@ -467,7 +468,7 @@ void AEnemy::P_Setup()
 	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f);
 	DelegateManager->ApplyUpgradeOnSelection.BindUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
-	DelegateManager->RequestCameraShake.BindUObject(this, &AEnemy::P_MakeCameraShake);
+	DelegateManager->RequestTriggerCameraShake.BindUObject(this, &AEnemy::P_MakeCameraShake);
 	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
 	DelegateManager->OnAbilitiesMenuSelectionEnd.BindUObject(this, &AEnemy::P_OnAbilitiesMenuSelectionEnd);
 	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_SetupLevelUpAppliance);
@@ -522,7 +523,7 @@ void AEnemy::P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputCompon
 
 void AEnemy::P_Destroy()
 {
-	DelegateManager->RequestCameraShake.Unbind();
+	DelegateManager->RequestTriggerCameraShake.Unbind();
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();
 	Weapon->SetToOriginalSettings();
@@ -949,6 +950,15 @@ void AEnemy::P_TriggerGlitchingEffect() const { GetWorld()->GetSubsystem<UPostPr
 void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
 {
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(InCameraShake);
+}
+
+void AEnemy::P_MakeCameraShake(const ECameraShake InCameraShakeName) const
+{
+	switch (InCameraShakeName)
+	{
+		case ECameraShake::WardenBeam: P_MakeCameraShake(WardenBeamShake); break;
+		case ECameraShake::MinionBossStomp: P_MakeCameraShake(StompCameraShake);
+	}
 }
 
 void AEnemy::P_HandlingDamageTaken()

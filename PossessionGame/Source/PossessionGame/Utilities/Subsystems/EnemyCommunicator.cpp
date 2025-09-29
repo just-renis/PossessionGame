@@ -119,10 +119,7 @@ void UEnemyCommunicator::TargetQueryResult(TSharedPtr<FEnvQueryResult> Result)
 			}
 		}
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("EQS Query Result: Failure - Reason: %s"), *UEnum::GetValueAsString(Result->GetRawStatus()));
-	}
+	else UE_LOG(LogTemp, Warning, TEXT("EQS Query Result: Failure - Reason: %s"), *UEnum::GetValueAsString(Result->GetRawStatus()));
 }
 
 void UEnemyCommunicator::GeneratePointsAroundTarget()
