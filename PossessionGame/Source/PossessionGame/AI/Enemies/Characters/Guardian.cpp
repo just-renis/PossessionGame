@@ -200,6 +200,12 @@ void AGuardian::P_ResetShieldValues()
 
 void AGuardian::P_ToggleShieldVfx(const bool bState) { ToggleShieldVfx(bState, EVfx::PlayerGuardianShield); }
 
+void AGuardian::P_ShowReceivedDamageNumber(const float InDamage)
+{
+	if (bIsFirstAbilityInUse) (void)DelegateManager->OnPlayerDamageTaken.ExecuteIfBound(InDamage, FLinearColor::Blue);
+	else Super::P_ShowReceivedDamageNumber(InDamage);
+}
+
 float AGuardian::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);

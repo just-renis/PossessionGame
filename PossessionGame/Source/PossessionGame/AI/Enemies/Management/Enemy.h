@@ -199,6 +199,7 @@ protected:
 	virtual void P_Move(const FInputActionValue& Value);
 	virtual void P_InitiateJump();
 	virtual void P_InitiateStomp();
+	virtual void P_ShowReceivedDamageNumber(const float InDamage);
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	float ReceiveDefaultMovementSpeed() const;

@@ -57,6 +57,7 @@ DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
 DECLARE_DELEGATE_TwoParams(FOnSaveSlotClicked, const FString&, const FString&);
 DECLARE_DELEGATE_TwoParams(FOnMusicSoundtrackChangeRequired, const ESound, const bool);
 DECLARE_DELEGATE_TwoParams(FOnTutorialBotTipDialogue, const ETutorialBotAnimState, const ETutorialBotExpression);
+DECLARE_DELEGATE_TwoParams(FOnPlayerDamageTaken, float, const FLinearColor);
 DECLARE_DELEGATE_RetVal_TwoParams(bool, FRequestSpecialUpgradeAvailability, const EUpgrade, const EUpgradeAttribute);
 DECLARE_DELEGATE_ThreeParams(FOnAbilityUse, const int32, const bool, const bool);
 DECLARE_DELEGATE_FourParams(FShowDamageNumber, const FLinearColor, const float, const FVector&, const FVector&);
@@ -134,6 +135,7 @@ public:
 	FOnSaveSlotClicked OnSaveSlotClicked;
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;
 	FOnTutorialBotTipDialogue OnTutorialBotTipDialogue;
+	FOnPlayerDamageTaken OnPlayerDamageTaken;
 	FRequestSpecialUpgradeAvailability RequestSpecialUpgradeAvailability;
 	FOnAbilityUse OnAbilityUse;
 	FShowDamageNumber ShowDamageNumber;

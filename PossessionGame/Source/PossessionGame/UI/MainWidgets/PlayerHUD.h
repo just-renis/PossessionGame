@@ -64,6 +64,8 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UAbilitiesPanelUI> GuardianAbilitiesPanel;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> DamageNumberText;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> XpBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> Crosshair;
@@ -149,6 +151,8 @@ private:
 	TObjectPtr<UWidgetAnimation> MinorAnnouncementAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> OutOfAmmoAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> DamageReceivedAnim;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
 	UPROPERTY()
@@ -174,6 +178,7 @@ private:
 	void UpdateBossWhiteHpBar();
 	void UpdatePressToHijackKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const;
 	void PlayAnnouncement(const FText& InText);
+	void SetDamageNumber(float InDamage, const FLinearColor InColor);
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };

@@ -227,6 +227,7 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->OnOutOfAmmo.BindUObject(this, &UPlayerHUD::ShowOutOfAmmo);
 	DelegateManager->RequirePlayerAnnouncementInfo.BindUObject(this, &UPlayerHUD::PlayAnnouncement);
 	DelegateManager->RequestMinorAnnouncement.BindUObject(this, &UPlayerHUD::ShowMinorAnnouncement);
+	DelegateManager->OnPlayerDamageTaken.BindUObject(this, &UPlayerHUD::SetDamageNumber);
 	if (HijackProgressBar) MID_HijackProgress = HijackProgressBar->GetDynamicMaterial();
 	UpdateHijackIndicator(false);
 	SetLevelText(GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevel());
@@ -309,6 +310,15 @@ void UPlayerHUD::PlayAnnouncement(const FText& InText)
 	AnnouncementText->SetText(InText);
 	PlayAnimation(HijackedPopup);
 	if (InText.ToString().Equals("Hijacked")) PlayAnimation(HijackIndicatorPopup, 0, 1, EUMGSequencePlayMode::Reverse);
+}
+
+void UPlayerHUD::SetDamageNumber(float InDamage, const FLinearColor InColor)
+{
+	if (!DamageNumberText) return;
+	if (InDamage < 1.f) InDamage = 1.f;
+	DamageNumberText->SetColorAndOpacity(InColor);
+	DamageNumberText->SetText(FText::Format(FText::FromString("-{0}"), FText::AsNumber(FMath::RoundToInt(InDamage))));
+	PlayAnimation(DamageReceivedAnim);
 }
 
 template<typename T>

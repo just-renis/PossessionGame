@@ -14,7 +14,6 @@ public:
 	virtual FLinearColor GetDamageNumberColor() const override;
 	TObjectPtr<UMaterialInterface> GetTimeStopMaterial() const { return MI_TimeStop; }
 	
-	void AI_SetFirstAbilityUsageState(const bool bState) { bIsFirstAbilityInUse = bState; }
 	void AI_ToggleShieldVfx(const bool bState);
 	void AI_ToggleMeshShieldAbilityState(const bool bState);
 
@@ -23,6 +22,7 @@ public:
 	void SetCustomTimeDilation(const float InDilation);
 	void ToggleShield(const bool bState);
 	void SetReflectDamageState(const bool bState) { bReflectDamageEnabled = bState; }
+	void SetFirstAbilityUsageState(const bool bState) { bIsFirstAbilityInUse = bState; }
 protected:
 	AGuardian();
 private:
@@ -73,6 +73,7 @@ private:
 	void P_UpdateShieldMaterial(const bool bState);
 	void P_ResetShieldValues();
 	void P_ToggleShieldVfx(const bool bState);
+	virtual void P_ShowReceivedDamageNumber(const float InDamage) override;
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	

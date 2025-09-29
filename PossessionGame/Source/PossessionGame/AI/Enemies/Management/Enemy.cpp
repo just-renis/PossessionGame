@@ -284,7 +284,11 @@ void AEnemy::InitiateDeath()
 void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
 {
 	CurrentHp -= InDamage;
-	if (P_HUD) P_HandlingDamageTaken();
+	if (bIsHijacked)
+	{
+		P_HandlingDamageTaken();
+		P_ShowReceivedDamageNumber(InDamage);
+	}
 	else if (bIsAlive) AI_ReceivedDamage(InDamageReason, InDamage);
 	if (bIsAlive && CurrentHp <= 0)
 	{
@@ -588,6 +592,8 @@ void AEnemy::P_InitiateStomp()
 	Velocity.Z = 0.f;
 	GetCharacterMovement()->Velocity = Velocity + FVector(0.f, 0.f, -3000.f);
 }
+
+void AEnemy::P_ShowReceivedDamageNumber(const float InDamage) { (void)DelegateManager->OnPlayerDamageTaken.ExecuteIfBound(InDamage, FLinearColor::Red); }
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {

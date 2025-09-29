@@ -15,7 +15,7 @@
 
 void UGuardianAbility1::AI_Execute()
 {
-	Proprietor->AI_SetFirstAbilityUsageState(true);
+	Proprietor->SetFirstAbilityUsageState(true);
 	const float ReductionIncrease = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::ReduceDamageTaken, IsProprietorPossessed());
 	TotalDamageReduction = BaseDamageReduction / (1.f + ReductionIncrease * 0.01f);
 	Proprietor->SetDamageReduction(TotalDamageReduction);
@@ -27,7 +27,7 @@ void UGuardianAbility1::AI_Execute()
 void UGuardianAbility1::AI_StopAbility()
 {
 	if (!bIsAbilityInDuration) return;
-	Proprietor->AI_SetFirstAbilityUsageState(false);
+	Proprietor->SetFirstAbilityUsageState(false);
 	Proprietor->SetDamageReduction(1.f);
 	Proprietor->PlaySound(ESound::GuardianOverChargeEnd);
 	Proprietor->AI_ToggleShieldVfx(false);
@@ -36,6 +36,7 @@ void UGuardianAbility1::AI_StopAbility()
 
 void UGuardianAbility1::P_Execute()
 {
+	Proprietor->SetFirstAbilityUsageState(true);
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::OverCharge);
 	Proprietor->P_SetFov(95.f);
@@ -52,6 +53,7 @@ void UGuardianAbility1::P_Execute()
 void UGuardianAbility1::P_StopAbility()
 {
 	if (!bIsAbilityInDuration) return;
+	Proprietor->SetFirstAbilityUsageState(false);
 	Proprietor->P_SetFov(90.f);
 	Proprietor->SetDamageReduction(1.f);
 	Proprietor->ToggleShield(false);

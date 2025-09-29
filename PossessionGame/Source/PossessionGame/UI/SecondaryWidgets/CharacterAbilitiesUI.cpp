@@ -114,17 +114,19 @@ void UCharacterAbilitiesUI::AddAbility(const int32 InAbilityIndex)
 void UCharacterAbilitiesUI::FirstAbilitySelected()
 {
 	if (FirstAbility->GetIsInSlot()) return;
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
-	FirstAbility->SetIsInSlot(true);
 	if (!FirstAbilitySlot)
 	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
 		FirstAbilitySlot = FirstAbility;
 		PlayAnimationForward(Select1To1Anim);
+		FirstAbility->SetIsInSlot(true);
 	}
 	else if (!SecondAbilitySlot)
 	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
 		SecondAbilitySlot = FirstAbility;
 		PlayAnimationForward(Select1To2Anim);
+		FirstAbility->SetIsInSlot(true);
 	}
 	else FirstAbility->PlayWobbleAnim();
 }
@@ -138,17 +140,19 @@ void UCharacterAbilitiesUI::SecondAbilitySelected()
 		return;
 	}
 	if (SecondAbility->GetIsInSlot()) return;
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
-	SecondAbility->SetIsInSlot(true);
 	if (!FirstAbilitySlot)
 	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
 		FirstAbilitySlot = SecondAbility;
 		PlayAnimationForward(Select2To1Anim);
+		SecondAbility->SetIsInSlot(true);
 	}
 	else if (!SecondAbilitySlot)
 	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
 		SecondAbilitySlot = SecondAbility;
 		PlayAnimationForward(Select2To2Anim);
+		SecondAbility->SetIsInSlot(true);
 	}
 	else SecondAbility->PlayWobbleAnim();
 }
@@ -162,17 +166,19 @@ void UCharacterAbilitiesUI::ThirdAbilitySelected()
 		return;
 	}
 	if (ThirdAbility->GetIsInSlot()) return;
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
-	ThirdAbility->SetIsInSlot(true);
 	if (!FirstAbilitySlot)
 	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
 		FirstAbilitySlot = ThirdAbility;
 		PlayAnimationForward(Select3To1Anim);
+		ThirdAbility->SetIsInSlot(true);
 	}
 	else if (!SecondAbilitySlot)
 	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::AbilitySelect);
 		SecondAbilitySlot = ThirdAbility;
 		PlayAnimationForward(Select3To2Anim);
+		ThirdAbility->SetIsInSlot(true);
 	}
 	else ThirdAbility->PlayWobbleAnim();
 }

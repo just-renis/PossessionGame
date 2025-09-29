@@ -1,6 +1,5 @@
 ﻿#include "UpgradeDetailsPanelUI.h"
 #include "Components/Button.h"
-#include "Components/Image.h"
 #include "Components/RichTextBlock.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
@@ -197,7 +196,15 @@ void UUpgradeDetailsPanelUI::SetUpgradeText(const bool bIsPlayerUpgrade)
 	else EnemyUpgradeText->SetText(FText::FromString(UpgradeTextString));
 }
 
-void UUpgradeDetailsPanelUI::SetUpgradeChoiceBackground() { UpgradeChoiceBackground->SetBrushFromAtlasInterface(Textures[static_cast<uint8>(UpgradeChoice.Rarity)]); }
+void UUpgradeDetailsPanelUI::SetUpgradeChoiceBackground()
+{
+	FButtonStyle Style = UpgradeChoiceButton->GetStyle();
+	const uint8 Index = static_cast<uint8>(UpgradeChoice.Rarity);
+	Style.Normal.SetResourceObject(NormalTextures[Index]);
+	Style.Hovered.SetResourceObject(HoverTextures[Index]);
+	Style.Pressed.SetResourceObject(HoverTextures[Index]);
+	UpgradeChoiceButton->SetStyle(Style);
+}
 
 void UUpgradeDetailsPanelUI::SelectUpgrade()
 {

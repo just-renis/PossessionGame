@@ -7,7 +7,6 @@
 #include "UpgradeDetailsPanelUI.generated.h"
 
 class URichTextBlock;
-class UImage;
 enum class EUpgradeAttribute : uint8;
 class UButton;
 
@@ -25,7 +24,9 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ChoiceIndex;
 	UPROPERTY(EditDefaultsOnly, Category = "Textures", meta = (AllowPrivateAccess = true))
-	TArray<TObjectPtr<UTexture2D>> Textures;
+	TArray<TObjectPtr<UTexture2D>> NormalTextures;
+	UPROPERTY(EditDefaultsOnly, Category = "Textures", meta = (AllowPrivateAccess = true))
+	TArray<TObjectPtr<UTexture2D>> HoverTextures;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<URichTextBlock> PlayerUpgradeText;
 	UPROPERTY(meta = (BindWidget))
@@ -34,8 +35,6 @@ private:
 	TObjectPtr<UButton> UpgradeChoiceButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidget> UpgradeDetailsPanelOverlay;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> UpgradeChoiceBackground;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> HoverAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
