@@ -15,4 +15,16 @@ public:
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> Button;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> HoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ClickAnim;
+
+	virtual void NativeConstruct() override;
+	UFUNCTION()
+	void OnHovered();
+	UFUNCTION()
+	void OnUnHovered();
+	UFUNCTION()
+	void OnClicked();
 };

@@ -500,6 +500,7 @@ void AEnemy::P_Setup()
 	if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
 	(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
 	DelegateManager->OnEnemyDeath.BindUObject(this, &AEnemy::P_OnEnemyDeathEvents);
+	GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Equip);
 }
 
 void AEnemy::P_Shoot()

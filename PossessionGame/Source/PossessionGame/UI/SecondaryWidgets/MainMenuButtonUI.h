@@ -31,16 +31,17 @@ private:
 	TObjectPtr<UButton> Button;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ButtonText;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UBorder> ButtonContainer;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> ButtonHoverAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> ButtonClickAnim;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_ButtonBackground;
 
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	void SetupButtonEvents();
+	void SetupDynamicMaterialForButton();
 	UFUNCTION()
 	void TriggerClickAnim();
 	UFUNCTION()

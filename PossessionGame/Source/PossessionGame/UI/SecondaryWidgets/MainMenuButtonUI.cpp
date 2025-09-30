@@ -1,5 +1,4 @@
 ﻿#include "MainMenuButtonUI.h"
-#include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -28,15 +27,18 @@ void UMainMenuButtonUI::NativePreConstruct()
 	FSlateFontInfo FontInfo = ButtonText->GetFont();
 	FontInfo.Size = FontSize;
 	ButtonText->SetFont(FontInfo);
-	if (!BackgroundTexture || !ButtonContainer) return;
-	FSlateBrush Brush;
-	Brush.SetResourceObject(BackgroundTexture);
-	ButtonContainer->SetBrush(Brush);
+	if (!BackgroundTexture) return;
+	FButtonStyle Style = Button->GetStyle();
+	Style.Normal.SetResourceObject(BackgroundTexture);
+	Style.Hovered.SetResourceObject(BackgroundTexture);
+	Style.Pressed.SetResourceObject(BackgroundTexture);
+	Button->SetStyle(Style);
 }
 
 void UMainMenuButtonUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+	SetupDynamicMaterialForButton();
 	SetupButtonEvents();
 }
 
@@ -48,6 +50,21 @@ void UMainMenuButtonUI::SetupButtonEvents()
 	Button->OnUnhovered.AddDynamic(this, &UMainMenuButtonUI::TriggerUnHoverAnim);
 }
 
+void UMainMenuButtonUI::SetupDynamicMaterialForButton()
+{
+	const FButtonStyle& Style = Button->GetStyle();
+	const TObjectPtr<UObject> Resource = Style.Normal.GetResourceObject();
+	if (const TObjectPtr<UMaterialInterface> Material = Cast<UMaterialInterface>(Resource))
+	{
+		MID_ButtonBackground = UMaterialInstanceDynamic::Create(Material, this);
+		FButtonStyle NewStyle = Style;
+		NewStyle.Normal.SetResourceObject(MID_ButtonBackground);
+		NewStyle.Hovered.SetResourceObject(MID_ButtonBackground);
+		NewStyle.Pressed.SetResourceObject(MID_ButtonBackground);
+		Button->SetStyle(NewStyle);
+	}
+}
+
 void UMainMenuButtonUI::TriggerClickAnim()
 {
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bStrongButtonSelect ? ESound::ButtonSelect : ESound::ClickArrow);
@@ -56,11 +73,13 @@ void UMainMenuButtonUI::TriggerClickAnim()
 
 void UMainMenuButtonUI::TriggerHoverAnim()
 {
+	if (MID_ButtonBackground) MID_ButtonBackground->SetScalarParameterValue(FName("HoverValue"), 3.f);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim));
 }
 
 void UMainMenuButtonUI::TriggerUnHoverAnim()
 {
+	if (MID_ButtonBackground) MID_ButtonBackground->SetScalarParameterValue(FName("HoverValue"), 1.f);
 	PlayAnimation(ButtonHoverAnim, GetAnimationCurrentTime(ButtonHoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }
