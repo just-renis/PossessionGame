@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "SettingsUI.generated.h"
 
+class UCloseButtonUI;
 class UMainMenuButtonUI;
 class UKeyBindingUI;
 class UAlertPopupUI;
@@ -30,8 +31,6 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UMainMenuButtonUI> ApplySettingsButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UButton> CloseButton;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UMainMenuButtonUI> GraphicsTabButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UMainMenuButtonUI> MainTabButton;
@@ -51,8 +50,8 @@ private:
 	TObjectPtr<UInvalidationBox> TabsInv;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UInvalidationBox> SettingsInv;
-	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
-	TObjectPtr<UInvalidationBox> CloseButtonInv;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCloseButtonUI> CloseButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UInvalidationBox> ApplySettingsButtonInv;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
