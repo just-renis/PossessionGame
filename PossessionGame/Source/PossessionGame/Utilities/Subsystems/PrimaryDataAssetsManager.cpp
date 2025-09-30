@@ -144,9 +144,7 @@ void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAud
 
 void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef, const bool bIsPlayer)
 {
-	UE_LOG(LogTemp, Error, TEXT("PlaySound2D"));
 	if (!GetCanAsyncLoadHappen()) return;
-	UE_LOG(LogTemp, Error, TEXT("PlaySound2D 1"));
 	FSoundContainer& SoundData = GetSoundData(InSoundName);
 	if (SoundData.GetSoundContainer()->Sound.IsValid()) SetupSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
 	else LoadSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);

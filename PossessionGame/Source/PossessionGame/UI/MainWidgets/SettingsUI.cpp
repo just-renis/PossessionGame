@@ -10,6 +10,7 @@
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/AlertPopupUI.h"
+#include "PossessionGame/UI/SecondaryWidgets/CloseButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/KeyBindingUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -87,7 +88,7 @@ void USettingsUI::SetupUIEvents()
 	if (GraphicsSettings) GraphicsSettings->SetupUIEvents();
 	if (ResetKeyBindsButton) ResetKeyBindsButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::ResetKeyBindsToDefault);
 	if (ApplySettingsButton) ApplySettingsButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::ApplySettings);
-	if (CloseButton) CloseButton->OnClicked.AddDynamic(this, &USettingsUI::CloseWithButton);
+	if (CloseButton) CloseButton->Get()->OnClicked.AddDynamic(this, &USettingsUI::CloseWithButton);
 	if (MainTabButton)
 	{
 		MainTabButton->Get()->SetIsEnabled(false);
