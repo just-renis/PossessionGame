@@ -1419,7 +1419,7 @@ void AEnemy::SetActionSpeed(const float InSpeed)
 	if (!AI_Data || !AnimInstance || !Weapon) return;
 	ActionSpeed = InSpeed;
 	bActionSpeedModified = !FMath::IsNearlyEqual(InSpeed, 1.f, 0.1f); 
-	TogglePoisonSlowAffectedVfx(bActionSpeedModified);
+	if (!bIsHijacked) TogglePoisonSlowAffectedVfx(bActionSpeedModified);
 	SetMaxWalkSpeed(EMoveMode::Walk);
 	AnimInstance->SetGlobalPlayRate(ActionSpeed);
 	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);

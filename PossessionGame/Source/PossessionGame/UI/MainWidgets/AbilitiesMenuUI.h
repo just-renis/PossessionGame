@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "AbilitiesMenuUI.generated.h"
 
+class UCloseButtonUI;
 class UWidgetSwitcher;
 class UCharacterAbilitiesUI;
 class UAbilityResetButtonUI;
@@ -40,6 +41,7 @@ public:
 	
 	void ToggleDetailsPanel(const bool bState, const FText& InText) const;
 	void OpenUI();
+	UFUNCTION()
 	void CloseUI();
 private:
 	bool FirstTimeOpenInstance = true;
@@ -72,6 +74,8 @@ private:
 	TObjectPtr<UAbilityResetButtonUI> SecondAbilityResetButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCustomTextUI> DetailsPanel;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCloseButtonUI> CloseButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))

@@ -8,6 +8,7 @@
 #include "PossessionGame/Enums/EExplanation.h"
 #include "PossessionGame/UI/SecondaryWidgets/AbilityResetButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CharacterAbilitiesUI.h"
+#include "PossessionGame/UI/SecondaryWidgets/CloseButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CustomTextUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
@@ -151,6 +152,7 @@ void UAbilitiesMenuUI::SetupButtons()
 {
 	FirstAbilityResetButton->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::FirstSlotResetClicked);
 	SecondAbilityResetButton->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::SecondSlotResetClicked);
+	CloseButton->Get()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::CloseUI);
 }
 
 void UAbilitiesMenuUI::OpenUnlockAbilityPopup(const int32 InAbilityIndex)

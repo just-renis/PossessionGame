@@ -13,6 +13,7 @@ class UVariationOptionUI;
 class UVariationUnlockDetailsUI;
 class UWidgetSwitcher;
 class UVariationCharacterIconUI;
+class UCloseButtonUI;
 
 UCLASS()
 class POSSESSIONGAME_API UVariationsUI : public UUserWidget
@@ -20,6 +21,7 @@ class POSSESSIONGAME_API UVariationsUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void OpenUI();
+	UFUNCTION()
 	void CloseUI();
 private:
 	bool bHasAlreadyOpened = false;
@@ -47,6 +49,8 @@ private:
 	TObjectPtr<UVariationOptionUI> TricksterVariationDefault;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationOptionUI> TricksterVariationPurple;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCloseButtonUI> CloseButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> VariationMenuFadeInAnim;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

@@ -1,6 +1,7 @@
 ﻿#include "SaveSlotMenuUI.h"
 #include "MainMenuUI.h"
 #include "Components/Button.h"
+#include "PossessionGame/UI/SecondaryWidgets/CloseButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
@@ -27,6 +28,7 @@ void USaveSlotMenuUI::CloseUI()
 void USaveSlotMenuUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+	CloseButton->Get()->OnClicked.AddDynamic(this, &USaveSlotMenuUI::CloseUI);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSaveSlotClicked.BindUObject(this, &USaveSlotMenuUI::OpenConfirmationPopup);
 }
 

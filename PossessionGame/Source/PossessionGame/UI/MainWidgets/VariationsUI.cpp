@@ -1,6 +1,7 @@
 ﻿#include "VariationsUI.h"
 #include "PlayerHUD.h"
 #include "Animation/WidgetAnimation.h"
+#include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationCharacterIconUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationOptionUI.h"
@@ -10,6 +11,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EExplanation.h"
 #include "PossessionGame/Enums/EVariation.h"
+#include "PossessionGame/UI/SecondaryWidgets/CloseButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationCurrencyPanelUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -46,6 +48,7 @@ void UVariationsUI::NativeConstruct()
 	RangerVariationBlue->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	TricksterVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	TricksterVariationPurple->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	CloseButton->Get()->OnClicked.AddDynamic(this, &UVariationsUI::CloseUI);
 	FadeOutDelegate.BindDynamic(this, &UVariationsUI::HideVariationsPanel);
 }
 

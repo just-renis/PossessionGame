@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "SaveSlotMenuUI.generated.h"
 
+class UCloseButtonUI;
 class UConfirmationPopupUI;
 
 UCLASS()
@@ -12,6 +13,7 @@ class POSSESSIONGAME_API USaveSlotMenuUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void OpenUI();
+	UFUNCTION()
 	void CloseUI();
 private:
 	bool bIsConfirmationPanelOpen = false;
@@ -27,6 +29,8 @@ private:
 	TObjectPtr<UWidget> SaveSlot3;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidget> SaveSlot4;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCloseButtonUI> CloseButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY()
