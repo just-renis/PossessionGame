@@ -56,7 +56,6 @@ void AMainMenuBase::ShowGameLaunchUI()
 	{
 		GameInstance->SetMainMenuLaunchedOnce();
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UGameLaunchUI>(EWidget::GameLaunchUI);
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameLaunchFinished.BindUObject(this, &AMainMenuBase::InitAfterPSOPrecache);
 	}
-	else InitAfterPSOPrecache();
+	InitAfterPSOPrecache();
 }

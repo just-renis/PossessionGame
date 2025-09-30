@@ -20,6 +20,8 @@ public:
 private:
 	bool bIsPauseMenuClosed = false;
 	bool bIsReturnToMainMenuPopupOpened = false;
+	bool bReturnToMainMenuInProcess = false;
+	float TimerOfFadeOut = 0.f;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> ContinueButton;
 	UPROPERTY(meta = (BindWidget))
@@ -32,10 +34,13 @@ private:
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeOutAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> BlackScreenFadeOutAnim;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeOutAnimDelegate;
 
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	void Toggle(bool bState);
 	void SetupButtons();
 	void SetButtonsState(const bool bState) const;

@@ -25,7 +25,6 @@ DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
 DECLARE_DELEGATE(FOnSecretDoorOpened);
 DECLARE_DELEGATE(FUpdateGameModeEnemiesAmount);
 DECLARE_DELEGATE(FOnOutOfAmmo);
-DECLARE_DELEGATE(FOnGameLaunchFinished);
 DECLARE_DELEGATE(FMeleeAttackOccured);
 DECLARE_DELEGATE(FOnGateClosed);
 DECLARE_DELEGATE(FOnTutorialMinionDeath);
@@ -103,7 +102,6 @@ public:
 	FOnSecretDoorOpened OnSecretDoorOpened;
 	FUpdateGameModeEnemiesAmount UpdateGameModeEnemiesAmount;
 	FOnOutOfAmmo OnOutOfAmmo;
-	FOnGameLaunchFinished OnGameLaunchFinished;
 	FMeleeAttackOccured MeleeAttackOccured;
 	FOnGateClosed OnGateClosed;
 	FOnTutorialMinionDeath OnTutorialMinionDeath;

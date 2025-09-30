@@ -38,6 +38,18 @@ void UPauseMenuUI::NativeConstruct()
 	SetupButtons();
 }
 
+void UPauseMenuUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (!bReturnToMainMenuInProcess) return;
+	TimerOfFadeOut += InDeltaTime;
+	if (TimerOfFadeOut >= 3.f)
+	{
+		TimerOfFadeOut = 0.f;
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, false, FName("MainMenu")));
+	}
+}
+
 void UPauseMenuUI::Toggle(const bool bState)
 {
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>(); 
@@ -78,7 +90,14 @@ void UPauseMenuUI::SetButtonsState(const bool bState) const
 
 void UPauseMenuUI::ReturnToMainMenu()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, false, FName("MainMenu")));
+	if (const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		if (const TObjectPtr<APawn> Pawn = PlayerController->GetPawn()) Pawn->DisableInput(PlayerController);
+		PlayerController->bShowMouseCursor = false;
+	}
+	PlayAnimation(BlackScreenFadeOutAnim);
+	bReturnToMainMenuInProcess = true;
 }
 
 void UPauseMenuUI::OpenSettings()
