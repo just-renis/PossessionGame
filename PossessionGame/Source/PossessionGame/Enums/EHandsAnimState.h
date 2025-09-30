@@ -17,6 +17,5 @@ enum class EHandsAnimState : uint8
 	Jump,
 	Slide,
 	DeployClone,
-	ThrowMine,
-	Equip
+	ThrowMine
 };

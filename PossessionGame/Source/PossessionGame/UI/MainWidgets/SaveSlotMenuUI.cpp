@@ -95,6 +95,11 @@ void USaveSlotMenuUI::ToggleSaveSlots(const bool bState) const
 	SaveSlot4->SetIsEnabled(bState);
 }
 
+void USaveSlotMenuUI::LoadLevel() const
+{
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(PendingLoadLevelData);
+}
+
 void USaveSlotMenuUI::FadeOutAnimFinished()
 {
 	UnbindFromAnimationFinished(FadeInAnim, FadeInAnimFinishedDelegate);
@@ -106,12 +111,19 @@ void USaveSlotMenuUI::OpenCurrentSaveLevel()
 	ResetToDefaultPlayerInputMode();
 	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished())
 	{
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, true, false, FName("TutorialLevel")));
+		PlayAnimation(FadeOutAnim);
+		PendingLoadLevelData = FLoadLevelData(false, true, false, FName("TutorialLevel"));
+		UE_LOG(LogTemp, Error, TEXT("OpenCurrentSaveLevel 0"));
+		GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &USaveSlotMenuUI::LoadLevel, 3.f);
 		return;
 	}
 	switch (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCurrentChapter())
 	{
-		case 1: GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, false, FName("Level_1")));
+		case 1: 
+			PlayAnimation(FadeOutAnim);
+			PendingLoadLevelData = FLoadLevelData(false, false, false, FName("Level_1"));
+			UE_LOG(LogTemp, Error, TEXT("OpenCurrentSaveLevel 1"));
+			GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &USaveSlotMenuUI::LoadLevel, 3.f);
 		default: ;
 	}
 }
@@ -119,7 +131,10 @@ void USaveSlotMenuUI::OpenCurrentSaveLevel()
 void USaveSlotMenuUI::OverwriteSaveAndOpenLevel()
 {
 	ResetToDefaultPlayerInputMode();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, true, true, FName("TutorialLevel")));
+	PlayAnimation(FadeOutAnim);
+	PendingLoadLevelData = FLoadLevelData(false, true, true, FName("TutorialLevel"));
+	UE_LOG(LogTemp, Error, TEXT("OverwriteSaveAndOpenLevel"));
+	GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &USaveSlotMenuUI::LoadLevel, 3.f);
 }
 
 void USaveSlotMenuUI::LoadSaveAndOpenLevel()
@@ -127,7 +142,10 @@ void USaveSlotMenuUI::LoadSaveAndOpenLevel()
 	ResetToDefaultPlayerInputMode();
 	GetGameInstance()->GetSubsystem<USaveSlotManager>()->LoadSaveSlot(SaveSlotName);
 	GetGameInstance()->GetSubsystem<USaveSlotManager>()->LoadRunSaveSlot(RunSaveSlotName);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, false, FName("TutorialLevel")));
+	PlayAnimation(FadeOutAnim);
+	PendingLoadLevelData = FLoadLevelData(false, false, false, FName("TutorialLevel"));
+	UE_LOG(LogTemp, Error, TEXT("LoadSaveAndOpenLevel"));
+	GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &USaveSlotMenuUI::LoadLevel, 3.f);
 }
 
 void USaveSlotMenuUI::GoBack() { ConfirmationPopup->PlayPopupFadeInAnim(false); }
