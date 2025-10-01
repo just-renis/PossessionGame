@@ -238,6 +238,8 @@ private:
 	float ActionSpeed = 1.f;
 	float MovementSpeedMultiplier = 1.f;
 	int32 OverlappingPoisonAreas = 0;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Explosion Radius From Emp Upgrade", meta = (AllowPrivateAccess = true))
+	float ExplosionRadiusFromEmpUpgradeInMetres = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Destroy After Seconds", meta = (AllowPrivateAccess = true))
 	float DestroyAfter = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
@@ -361,7 +363,7 @@ private:
 	void AI_StopAllAbilities();
 	void AI_SetupHpBar();
 	void AI_DestroyHpBar();
-	void AI_TriggerMutantExplosion();
+	void AI_TriggerEmpExplosion();
 	void AI_HideHpBar() const;
 	void AI_ClearShootPause();
 	void AI_SetCharacterMovementSpeed() const;

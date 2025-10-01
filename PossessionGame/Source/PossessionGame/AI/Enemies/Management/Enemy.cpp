@@ -29,6 +29,7 @@
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EUIBar.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Interfaces/Interactable.h"
@@ -262,6 +263,11 @@ void AEnemy::InitiateDeath()
 		if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
 		DelegateManager->OnEnemyDeathOccurred.Broadcast(this);
 		(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
+		if (bAffectedByEmp && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility2, EUpgradeAttribute::Special1))
+		{
+			UE_LOG(LogTemp, Error, TEXT("EXPLOSION HAPPEN"));
+			AI_TriggerEmpExplosion();
+		}
 	}
 	else P_Destroy();
 	AI_PlayDeathElectrification();
@@ -746,18 +752,18 @@ void AEnemy::AI_DestroyHpBar()
 	AI_HpBarComponent = nullptr;
 }
 
-void AEnemy::AI_TriggerMutantExplosion()
+void AEnemy::AI_TriggerEmpExplosion()
 {
 	AssetsManager->SpawnVfx(EVfx::EmpExplosion, nullptr, GetActorLocation());
 	TArray<FOverlapResult> Overlaps;
-	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(200.f));
+	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(ExplosionRadiusFromEmpUpgradeInMetres * 100.f));
 	TSet<TObjectPtr<AActor>> UniqueActors;
 	for (const FOverlapResult& Result : Overlaps)
 	{
 		TObjectPtr<AActor> HitActor = Result.GetActor();
 		if (!HitActor || UniqueActors.Contains(HitActor)) continue;
 		UniqueActors.Add(HitActor);
-	//	if (HitActor->ActorHasTag("Player")) UGameplayStatics::ApplyDamage(HitActor, MutantExplosionDamage, nullptr, this, UDamageType::StaticClass());
+		if (HitActor->ActorHasTag("AliveEnemy")) UGameplayStatics::ApplyDamage(HitActor, AI_Data->GetMaxHp() * 0.25f, nullptr, this, UDamageType::StaticClass());
 	}
 }
 
