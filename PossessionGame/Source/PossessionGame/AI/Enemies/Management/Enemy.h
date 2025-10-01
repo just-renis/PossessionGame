@@ -135,12 +135,6 @@ protected:
 	FLinearColor CriticalDamageNumberColor = FLinearColor::Red;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
-	TSubclassOf<UCameraShakeBase> StompCameraShake;
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
-	TSubclassOf<UCameraShakeBase> WardenBeamShake;
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
-	TSubclassOf<UCameraShakeBase> MinionBossLaserShake;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
@@ -289,6 +283,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> StompCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> WardenBeamShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> MinionBossLaserShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ReceivingDamageCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> QuickMeleeCameraShake;
@@ -314,6 +314,10 @@ private:
 	TObjectPtr<UNiagaraComponent> PoisonSlowAffected;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> HijackViable;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> LevelUpVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> RunVfx;
 	UPROPERTY()
 	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
 	UPROPERTY()
@@ -430,6 +434,7 @@ private:
 	void PlayEmpAffectedVfx(const float InEffectDuration);
 	void TogglePoisonSlowAffectedVfx(const bool bState);
 	void DisableHijackViableVfx() const;
+	void DisableVfxs() const;
 	void SetupTutorialManager();
 	void ToggleTimeDilation();
 	void SetActionSpeed(const float InSpeed);

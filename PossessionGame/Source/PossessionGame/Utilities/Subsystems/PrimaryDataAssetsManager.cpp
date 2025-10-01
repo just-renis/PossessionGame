@@ -711,6 +711,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_WardenBeamShot", EVfx::WardenBeamShot);
 	VfxsMap.Add("PA_WardenSpawn", EVfx::WardenSpawn);
 	VfxsMap.Add("PA_WardenDeathElectrification", EVfx::WardenDeathElectrification);
+	VfxsMap.Add("PA_RunEffect", EVfx::RunEffect);
+	VfxsMap.Add("PA_LevelUpEffect", EVfx::LevelUpEffect);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

@@ -43,7 +43,7 @@ void UPauseMenuUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	if (!bReturnToMainMenuInProcess) return;
 	TimerOfFadeOut += InDeltaTime;
-	if (TimerOfFadeOut >= 3.f)
+	if (TimerOfFadeOut >= 1.5f)
 	{
 		TimerOfFadeOut = 0.f;
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, false, FName("MainMenu")));

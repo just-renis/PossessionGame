@@ -249,7 +249,7 @@ void AEnemy::AI_SetupUpgradesAppliance()
 
 void AEnemy::InitiateDeath()
 {
-	DisableHijackViableVfx();
+	DisableVfxs();
 	GetMesh()->SetOverlayMaterial(nullptr);
 	ClearTimers();
 	bIsAlive = false;
@@ -899,6 +899,12 @@ void AEnemy::P_ToggleRun(const bool bState)
 		return;
 	}
 	bIsRunning = bState;
+	if (bIsRunning)
+	{
+		if (!RunVfx) AssetsManager->AttachVfx(EVfx::RunEffect, [this]() -> bool { return GetIsAlive(); }, &RunVfx, GetMesh(), FName("DeathSocket"));
+		else RunVfx->Activate();
+	}
+	else if (RunVfx) RunVfx->DeactivateImmediate();
 	SetMaxWalkSpeed(bIsRunning ? EMoveMode::Run : EMoveMode::Walk);
 	if (P_HUD) P_HUD->UpdateRunIndicator(bIsRunning);
 }
@@ -1099,6 +1105,8 @@ void AEnemy::P_Stomp()
 
 void AEnemy::P_SetupLevelUpAppliance(const int32 InLevel)
 {
+	if (!LevelUpVfx) AssetsManager->AttachVfx(EVfx::LevelUpEffect, [this]() -> bool { return GetIsAlive(); }, &LevelUpVfx, GetMesh(), FName("DeathSocket"));
+	else LevelUpVfx->Activate();
 	MaxHp -= MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
 	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
 }
@@ -1381,6 +1389,13 @@ void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
 		if (bState) PoisonSlowAffected->Activate(true);
 		else PoisonSlowAffected->DeactivateImmediate();
 	}
+}
+
+void AEnemy::DisableVfxs() const
+{
+	DisableHijackViableVfx();
+	if (LevelUpVfx) LevelUpVfx->DeactivateImmediate();
+	if (RunVfx) RunVfx->DeactivateImmediate();
 }
 
 void AEnemy::DisableHijackViableVfx() const
