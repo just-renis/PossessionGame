@@ -35,7 +35,6 @@ void UHandsAnimInstance::PlayMontage(const EHandsAnimState InState, const float 
         LoadMontageIfNotLoaded(InState);
         Montage_Play(Montages.Find(InState)->Get(), GlobalPlayRate, EMontagePlayReturnType::MontageLength, InStartPosition);
         if (InState == EHandsAnimState::Reload) bIsReloading = true;
-        else if (InState == EHandsAnimState::Equip) Proprietor->SetIsActionInMotion(true);
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontage"), *UEnum::GetValueAsString(WeaponName), *UEnum::GetValueAsString(InState));
 }
@@ -86,13 +85,7 @@ void UHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupt
         return;
     }
     const TObjectPtr<UAnimMontage>* QuickMeleeMontage = Montages.Find(EHandsAnimState::QuickMelee);
-    if (QuickMeleeMontage && InMontage == QuickMeleeMontage->Get())
-    {
-        Proprietor->SetIsActionInMotion(false);
-        return;
-    }
-    const TObjectPtr<UAnimMontage>* EquipMontage = Montages.Find(EHandsAnimState::Equip);
-    if (EquipMontage && InMontage == EquipMontage->Get()) Proprietor->SetIsActionInMotion(false);
+    if (QuickMeleeMontage && InMontage == QuickMeleeMontage->Get()) Proprietor->SetIsActionInMotion(false);
 }
 
 bool UHandsAnimInstance::IsMontageExisting(const EHandsAnimState InState)

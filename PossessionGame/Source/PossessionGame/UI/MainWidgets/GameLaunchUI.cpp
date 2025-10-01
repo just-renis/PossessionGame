@@ -1,5 +1,4 @@
 ﻿#include "GameLaunchUI.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UGameLaunchUI::NativeConstruct()
@@ -12,7 +11,6 @@ void UGameLaunchUI::NativeConstruct()
 
 void UGameLaunchUI::GameLaunchAnimationFinished()
 {
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameLaunchFinished.ExecuteIfBound();
 	UnbindAllFromAnimationFinished(GameLaunchAnimation);
 	GetWorld()->GetSubsystem<UWidgetManager>()->DestroyWidget(EWidget::GameLaunchUI);
 }
