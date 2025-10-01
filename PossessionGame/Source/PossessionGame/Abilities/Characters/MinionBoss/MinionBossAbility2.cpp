@@ -69,6 +69,7 @@ void UMinionBossAbility2::DisableLaser()
 void UMinionBossAbility2::ShootLaser()
 {
 	if (bIsLaserDisabled) return;
+	Proprietor->TriggerLaserCameraShake();
 	Proprietor->EnableLaser();
 	Proprietor->PlaySound(ESound::MinionBossLaserEyeHold, true);
 	Proprietor->GetLaserCollision()->SetCapsuleSize(0.f, 0.f);

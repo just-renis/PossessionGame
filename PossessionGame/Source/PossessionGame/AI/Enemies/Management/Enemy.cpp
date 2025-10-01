@@ -356,7 +356,7 @@ void AEnemy::ChangeOverlappingPoisonAreasInState(const bool bState)
 {
 	if (bState)
 	{
-		if (++OverlappingPoisonAreas == 1) SetActionSpeed(1.f / 3.f);
+		if (++OverlappingPoisonAreas == 1) SetActionSpeed(1.f / (bIsHijacked ? 2.f : 3.f));
 	}
 	else
 	{
@@ -963,7 +963,8 @@ void AEnemy::P_MakeCameraShake(const ECameraShake InCameraShakeName) const
 	switch (InCameraShakeName)
 	{
 		case ECameraShake::WardenBeam: P_MakeCameraShake(WardenBeamShake); break;
-		case ECameraShake::MinionBossStomp: P_MakeCameraShake(StompCameraShake);
+		case ECameraShake::MinionBossStomp: P_MakeCameraShake(StompCameraShake); break;
+		case ECameraShake::MinionBossLaser: P_MakeCameraShake(MinionBossLaserShake);
 	}
 }
 

@@ -25,6 +25,8 @@ void AMinionBoss::ActivateStompTrigger()
 
 void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::MinionBossStomp); }
 
+void AMinionBoss::TriggerLaserCameraShake() const { (void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::MinionBossLaser); }
+
 void AMinionBoss::EnableLaserEyeBall()
 {
 	ToggleStompTrigger(false);

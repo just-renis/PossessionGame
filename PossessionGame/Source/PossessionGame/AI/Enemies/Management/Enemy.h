@@ -141,6 +141,8 @@ protected:
 	TSubclassOf<UCameraShakeBase> StompCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> WardenBeamShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> MinionBossLaserShake;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))

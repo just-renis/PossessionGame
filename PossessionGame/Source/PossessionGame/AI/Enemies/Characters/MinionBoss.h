@@ -24,6 +24,7 @@ public:
 	void SetIsStompReady(const bool bState) { bStompIsReady = bState; }
 	void ActivateStompTrigger();
 	void TriggerStompCameraShake() const;
+	void TriggerLaserCameraShake() const;
 	void EnableLaserEyeBall();
 	void EnableLaser();
 	void EnableDistanceCheckForLaserEye();
