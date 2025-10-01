@@ -230,17 +230,6 @@ void AEnemy::AI_Disable() { if (AI) AI->StopLogic(true); }
 
 void AEnemy::AI_StopAbility(const int32 InIndex) { if (Abilities.IsValidIndex(InIndex)) Abilities[InIndex]->AI_StopAbility(); }
 
-void AEnemy::AI_TryEvolving()
-{
-	if (FMath::FRand() <= AI_Data->GetMutationChance())
-	{
-		bIsMutant = true;
-		MaxHp -= MaxHp * 0.01f * AI_Data->GetMutantHpIncreasePercentage();
-		AssetsManager->AttachVfx(EVfx::MutantAura, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &Aura, GetMesh(), FName("MutantAuraSocket"));
-	}
-	AI_SetupUpgradesAppliance();
-}
-
 void AEnemy::AI_SetupUpgradesAppliance()
 {
 	MaxHp += GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
@@ -270,7 +259,6 @@ void AEnemy::InitiateDeath()
 		AI_PlayDeathSound();
 		AI_PlayDeathExplosion();
 		DestroyAI();
-		if (bIsMutant) AI_TriggerMutantExplosion();
 		if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
 		DelegateManager->OnEnemyDeathOccurred.Broadcast(this);
 		(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
@@ -760,7 +748,7 @@ void AEnemy::AI_DestroyHpBar()
 
 void AEnemy::AI_TriggerMutantExplosion()
 {
-	AssetsManager->SpawnVfx(EVfx::MutantExplosion, nullptr, GetActorLocation());
+	AssetsManager->SpawnVfx(EVfx::EmpExplosion, nullptr, GetActorLocation());
 	TArray<FOverlapResult> Overlaps;
 	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(200.f));
 	TSet<TObjectPtr<AActor>> UniqueActors;
@@ -769,7 +757,7 @@ void AEnemy::AI_TriggerMutantExplosion()
 		TObjectPtr<AActor> HitActor = Result.GetActor();
 		if (!HitActor || UniqueActors.Contains(HitActor)) continue;
 		UniqueActors.Add(HitActor);
-		if (HitActor->ActorHasTag("Player")) UGameplayStatics::ApplyDamage(HitActor, MutantExplosionDamage, nullptr, this, UDamageType::StaticClass());
+	//	if (HitActor->ActorHasTag("Player")) UGameplayStatics::ApplyDamage(HitActor, MutantExplosionDamage, nullptr, this, UDamageType::StaticClass());
 	}
 }
 
@@ -861,7 +849,7 @@ void AEnemy::P_HijackEnemy()
 void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy)
 {
 	if (!InEnemy || InEnemy->bIsHijacked || !InEnemy->bIsAlive) return;
-	if (!InEnemy->GetIsHijackAble() || InEnemy->GetIsMutant())
+	if (!InEnemy->GetIsHijackAble())
 	{
 		AssetsManager->PlaySound2D(ESound::NotSelectable);
 		if (P_HUD) P_HUD->ShowMinorAnnouncement(NSLOCTEXT("ST_Localization", "HijackUnavailable", "Hijack Unavailable"));
@@ -1173,7 +1161,7 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 				if (Enemy != CurrentLookedAtEnemy)
 				{
 					if (CurrentLookedAtEnemy) CurrentLookedAtEnemy->SetHijackOutline(false);
-					if (Enemy->GetIsHijackAble() && !Enemy->GetIsMutant()) Enemy->SetHijackOutline(true);
+					if (Enemy->GetIsHijackAble()) Enemy->SetHijackOutline(true);
 					else Enemy->SetUnHijackOutline(true);
 					CurrentLookedAtEnemy = Enemy;
 				}
@@ -1442,12 +1430,6 @@ void AEnemy::SetupMeshOptimization() const
 
 void AEnemy::DestroyAIVfxs()
 {
-	if (Aura)
-	{
-		Aura->DeactivateImmediate();
-		Aura->DestroyComponent();
-		Aura = nullptr;
-	}
 	if (EmpAffected)
 	{
 		EmpAffected->DeactivateImmediate();

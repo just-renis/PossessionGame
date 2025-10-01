@@ -49,7 +49,6 @@ public:
 	bool GetIsHijacked() const { return bIsHijacked; }
 	bool GetCanReload() const { return bCanReload; }
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
-	bool GetIsMutant() const { return bIsMutant; }
 	bool GetIsAbilityInAction() const { return bIsAbilityInAction; }
 	bool GetIsStomping() const { return bIsStomping; }
 	bool GetIsHijackActionViable() const { return bCanHijackOtherEnemy; }
@@ -79,7 +78,6 @@ public:
 	virtual void AI_SetCanShoot(const bool bState);
 	virtual void AI_Disable();
 	void AI_StopAbility(const int32 InIndex);
-	void AI_TryEvolving();
 	void AI_SetupUpgradesAppliance();
 	//void AI_SetupShootLogic();
 	virtual void AI_CancelShooting() {}
@@ -229,7 +227,6 @@ private:
 	bool bIsCriticallyDamaged = false;
 	bool bIsAIBarCreated = false;
 	bool bPlayerDied = false;
-	bool bIsMutant = false;
 	bool bIsStomping = false;
 	bool bCanRun = true;
 	bool bIsRunning = false;
@@ -253,8 +250,6 @@ private:
 	float QuickMeleeAttackRadiusInMeters = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
 	float QuickMeleeAttackDamage = 20.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Mutant", meta = (AllowPrivateAccess = true))
-	float MutantExplosionDamage = 50.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	bool bCanStomp = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
@@ -313,8 +308,6 @@ private:
 	TObjectPtr<UMaterialInstanceDynamic> MI_MeshEmissiveMaterial;
 	UPROPERTY()
 	TObjectPtr<UPossessionGameInstance> GameInstance;
-	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> Aura;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> EmpAffected;
 	UPROPERTY()

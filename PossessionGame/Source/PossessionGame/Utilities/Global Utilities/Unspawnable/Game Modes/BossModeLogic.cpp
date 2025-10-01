@@ -12,7 +12,7 @@ void UBossModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const T
 	SetupWaveManagerUI();
 	WaveManager->GetDelegateManager()->OnBossDeath.AddUObject(this, &UBossModeLogic::BossDeath);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UBossModeLogic::UpdateEnemiesAmount);
-	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, WaveManager->GetCurrentGameMode(), false, [this] { IncreaseAliveEnemiesAmount(); });
+	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::MinionBoss, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
 	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UBossModeLogic::HandleSpawning, SpawnRate, true);
 }
 
@@ -32,7 +32,7 @@ void UBossModeLogic::HandleSpawning()
 	if (bAsyncLoadInProcess) return;
  	if (bIsBossAlive && AliveEnemiesAmount < EnemiesOnSceneLimit)
 	{
-		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), true, [this] { IncreaseAliveEnemiesAmount(); });
+		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
 	}
 }
 

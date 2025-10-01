@@ -177,6 +177,7 @@ void ATrickster::InitiateDeath()
 
 void ATrickster::SetEmpEffect(const float InEffectDuration)
 {
+	if (DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility2, EUpgradeAttribute::Special1)) return;
 	switch (GetAI()->GetCurrentStateTreeEvent())
 	{
 		case EStateTreeEvent::TricksterLaunchPoisonGrenade: AI_StopAbility(0); break;

@@ -5,7 +5,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
-#include "PossessionGame/Data Assets/AI/Base Data/AICharacterData.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfx.h"
@@ -246,9 +245,5 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
-	else
-	{
-		AI_SetupUpgradesAppliance();
-		if (ProjectileData.GetProprietor()->GetIsMutant()) Damage -= Damage * 0.01f * ProjectileData.GetProprietor()->GetAIData()->GetMutantDamageIncreasePercentage();
-	}
+	else AI_SetupUpgradesAppliance();
 }

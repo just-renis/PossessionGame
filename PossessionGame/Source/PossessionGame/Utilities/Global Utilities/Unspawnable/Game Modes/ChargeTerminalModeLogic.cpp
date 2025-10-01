@@ -15,7 +15,7 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 	WaveManager->GetDelegateManager()->OnUsbInserted.AddUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
 	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.BindUObject(this, &UChargeTerminalModeLogic::InitiateNextCharge);
 	PlaySound(ESound::TaskAnnouncement);
-	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Warden, EGameMode::MiniBossSpawn, false, [this]
+	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Warden, EGameMode::MiniBossSpawn, [this]
 	{
 		IncreaseAliveEnemiesAmount();
 		GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
@@ -42,7 +42,7 @@ void UChargeTerminalModeLogic::Finalize()
 void UChargeTerminalModeLogic::HandleSpawning()
 {
 	if (bAsyncLoadInProcess) return;
-	if (!bIsTerminalCharged && !bIsUsbRequirementFilled && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), true, [this] { IncreaseAliveEnemiesAmount(); });
+	if (!bIsTerminalCharged && !bIsUsbRequirementFilled && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); });
 }
 
 void UChargeTerminalModeLogic::UpdateEnemiesAmount()
@@ -96,6 +96,6 @@ void UChargeTerminalModeLogic::InitiateNextCharge()
 	bIsUsbRequirementFilled = false;
 	WaveManagerHUD->UpdateObjectiveProgress(ChargeAmount, Data->GetChargeAmountRequired(), true);
 	WaveManagerHUD->ToggleFinishOffEnemiesText(false);
-	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Warden, EGameMode::MiniBossSpawn, false, [this] { IncreaseAliveEnemiesAmount(); });
+	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Warden, EGameMode::MiniBossSpawn, [this] { IncreaseAliveEnemiesAmount(); });
 	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
 }

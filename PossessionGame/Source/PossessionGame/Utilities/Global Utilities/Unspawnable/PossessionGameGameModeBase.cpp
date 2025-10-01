@@ -82,7 +82,7 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	DelegateManager->OnGameModeInitialized.Broadcast();
 	DelegateManager->OnFirstGameModeInitiated.BindUObject(this, &APossessionGameGameModeBase::SetRunStart);
 	DelegateManager->OnRunFinished.BindUObject(this, &APossessionGameGameModeBase::GetRunFinishedTime);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(CharacterToSpawn, EGameMode::None, false, nullptr);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(CharacterToSpawn, EGameMode::None, nullptr);
 }
 
 void APossessionGameGameModeBase::SetRunStart() { RunStartTime = GetWorld()->GetTimeSeconds(); }

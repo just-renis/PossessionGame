@@ -153,6 +153,17 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 			}
 			break;
 		case EUpgrade::TricksterAbility2:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial2.1", "KILLED ENEMY AFFECTED BY EMP EXPLODES AND DEALS</>").ToString() +
+						GetRichTextTag(false) + " 25% </>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial2.2", "<UpgradeAttributeText>OF THEIR MAX HP DAMAGE TO OTHER ENEMIES.</>").ToString();
+					}
+					return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial2.3", "TRICKSTER IS IMMUNE TO EMP.</>").ToString();
+				default: break;
+			}
 			break;
 		case EUpgrade::TricksterAbility3:
 			switch (InUpgradeAttribute)
