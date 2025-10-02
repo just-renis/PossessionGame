@@ -17,6 +17,8 @@ class POSSESSIONGAME_API AGuardianProjectile : public AProjectile
 	UPROPERTY(EditDefaultsOnly, Category = "Vector Blast First Special Upgrade Data", meta = (AllowPrivateAccess = true))
 	int32 MaxBounceAmount = 2;
 
+	virtual float P_UpgradeDamageAppliance() override;
+
 	virtual void P_VariationDamageAppliance() override;
 
 	virtual void BeginPlay() override;

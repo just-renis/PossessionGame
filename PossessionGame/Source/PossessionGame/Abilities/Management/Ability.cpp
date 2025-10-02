@@ -29,11 +29,7 @@ void UAbility::P_StopAbility()
 void UAbility::Tick(const float InDeltaTime)
 {
 	if (bIsAbilityInDuration) AbilityInDurationLogic(InDeltaTime);
-	else if (CurrentChargesAmount < MaxChargesAmount)
-	{
-		UE_LOG(LogTemp, Error, TEXT("CurrentChargesAmount < MaxChargesAmount %i"), CurrentChargesAmount);
-		CooldownLogic(InDeltaTime);
-	}
+	else if (CurrentChargesAmount < MaxChargesAmount) CooldownLogic(InDeltaTime);
 }
 
 void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)

@@ -6,14 +6,6 @@
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
-#include "GuardianWeapon.h"
-#include "GuardianSingularWeapon.h"
-#include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
-#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
-#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
-#include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
-#include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 
 void AGuardianWeapon::P_CancelShootingHold()
 {

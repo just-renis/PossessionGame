@@ -34,6 +34,7 @@ DECLARE_DELEGATE(FOnAbilitiesMenuSelectionEnd);
 DECLARE_DELEGATE(FOnHandsReloadMontageEnd);
 DECLARE_DELEGATE(FOnPlayerReloadMontageEnd);
 DECLARE_DELEGATE_RetVal(int32, FOnRunFinished);
+DECLARE_DELEGATE_RetVal(bool, FRequestIsTimeStopUsed);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FRequestTriggerCameraShake, const ECameraShake);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const FRuntimeUpgradeData&);
@@ -90,6 +91,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&, bool);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText&);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSpecialUpgradeAdded, const EUpgrade, const EUpgradeAttribute);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FAddActionSpeedBoost, const float, const float);
 
 UCLASS()
 class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
@@ -111,6 +113,7 @@ public:
 	FOnHandsReloadMontageEnd OnHandsReloadMontageEnd;
 	FOnPlayerReloadMontageEnd OnPlayerReloadMontageEnd;
 	FOnRunFinished OnRunFinished;
+	FRequestIsTimeStopUsed RequestIsTimeStopUsed;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FRequestTriggerCameraShake RequestTriggerCameraShake;
 	FOnEnemyDeath OnEnemyDeath;
@@ -167,4 +170,5 @@ public:
 	FOnTargetChange OnTargetChange;
 	FOnKeyBindChange OnKeyBindChange;
 	FOnSpecialUpgradeAdded OnSpecialUpgradeAdded;
+	FAddActionSpeedBoost AddActionSpeedBoost;
 };

@@ -93,6 +93,20 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				default: break;
 			}
 		case EUpgrade::GuardianAbility2:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.1", "FOR EACH ENEMY KILLED WHILE ABILITY ACTIVE</>").ToString() +
+						GetRichTextTag(false) + " 5% </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.2", "<UpgradeAttributeText>MORE DAMAGE FOR</>").ToString() +
+						GetRichTextTag(false) + " 20 </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.3", "<UpgradeAttributeText>SECS.</>").ToString();
+					}
+					return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.4", "<UpgradeAttributeText>ALL ENEMIES RECEIVE</>").ToString() +
+					GetRichTextTag(true) + " 50% </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.5", "<UpgradeAttributeText>ACTION SPEED FOR</>").ToString() +
+					GetRichTextTag(true) + " 5 </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.6", "<UpgradeAttributeText>SECS.</>").ToString();
+				default: break;
+			}
 			break;
 		case EUpgrade::GuardianAbility3:
 			switch (InUpgradeAttribute)

@@ -22,6 +22,8 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 
+EDamageReason AGuardian::GetDamageReason() const { return EDamageReason::GuardianDamage; }
+
 FLinearColor AGuardian::GetDamageNumberColor() const { return bIsFirstAbilityInUse ? Super::GetDamageNumberColor() : FLinearColor::White; }
 
 void AGuardian::AI_ToggleShieldVfx(const bool bState)
@@ -45,7 +47,7 @@ void AGuardian::P_LaunchVectorBlast()
 	Weapon->ShootProjectile(EPoolObject::VectorBlastProjectile, true);
 	FTimerDelegate TimerDel;
 	TimerDel.BindUFunction(this, FName("ShootSecondWeaponProjectile"), EPoolObject::VectorBlastProjectile, true, false);
-	GetWorldTimerManager().SetTimer(ShootSecondWeaponProjectileHandle, TimerDel, 0.2f, false);
+	GetWorldTimerManager().SetTimer(ShootSecondWeaponProjectileHandle, TimerDel, 0.2f / CustomTimeDilation, false);
 }
 
 void AGuardian::SetCustomTimeDilation(const float InDilation)
@@ -115,6 +117,7 @@ void AGuardian::P_Setup()
 {
 	bImmuneToFirstHit = false;
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
+	DelegateManager->RequestIsTimeStopUsed.BindUObject(this, &AGuardian::IsSecondAbilityInUse);
 	Super::P_Setup();
 	MID_Shield = UMaterialInstanceDynamic::Create(MI_Shield, this);
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &AGuardian::SetIsActionInMotion);
@@ -255,6 +258,12 @@ void AGuardian::ToggleShieldVfx(const bool bState, const EVfx InVfxName)
 		if (bState) GuardianShieldComponent->Activate(true);
 		else GuardianShieldComponent->DeactivateImmediate();
 	}
+}
+
+void AGuardian::InitiateDeath()
+{
+	if (bIsHijacked) DelegateManager->RequestIsTimeStopUsed.Unbind();
+	Super::InitiateDeath();
 }
 
 void AGuardian::ShootSecondWeaponProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon)

@@ -50,6 +50,7 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -346,11 +347,11 @@ void AEnemy::ChangeOverlappingPoisonAreasInState(const bool bState)
 {
 	if (bState)
 	{
-		if (++OverlappingPoisonAreas == 1) SetActionSpeed(1.f / (bIsHijacked ? 2.f : 3.f));
+		if (++OverlappingPoisonAreas == 1) SetActionSpeed(1.f / (bIsHijacked ? 2.f : 3.f), true);
 	}
 	else
 	{
-		if (OverlappingPoisonAreas > 0 && --OverlappingPoisonAreas == 0) SetActionSpeed(1.f);
+		if (OverlappingPoisonAreas > 0 && --OverlappingPoisonAreas == 0) SetActionSpeed(1.f, true);
 	}
 }
 
@@ -468,6 +469,7 @@ void AEnemy::P_Setup()
 	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_SetupLevelUpAppliance);
 	DelegateManager->OnXpReceived.BindUObject(this, &AEnemy::P_AddXp);
 	DelegateManager->ApplySecretBoostHealth.BindUObject(this, &AEnemy::P_ApplySecretBoostHp);
+	DelegateManager->AddActionSpeedBoost.RemoveAll(this);
 	Tags.Remove("AliveEnemy");
 	Tags.Add("Player");
 	P_ReceiveCurrentlySelectedVariation();
@@ -643,6 +645,7 @@ void AEnemy::BeginPlay()
 	GetWorldTimerManager().SetTimer(AI_SetCharacterMovementSpeedHandle, this, &AEnemy::AI_SetCharacterMovementSpeed, 0.05f, true);
 	GetWorldTimerManager().SetTimer(AI_PlaySpawnSoundHandle, this, &AEnemy::AI_PlaySpawnSound, 3.f + UKismetMathLibrary::RandomInteger(4), false);
 	DelegateManager->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
+	DelegateManager->AddActionSpeedBoost.AddUObject(this, &AEnemy::AddAdditionalActionSpeed);
 	AI_Setup();
 	SetInputState(false);
 }
@@ -723,6 +726,22 @@ void AEnemy::DestroyThis()
 }
 
 void AEnemy::DisableAllVfxAfterPossession() { DisableHijackViableVfx(); }
+
+void AEnemy::DestroyAIVfxs()
+{
+	if (EmpAffected)
+	{
+		EmpAffected->DeactivateImmediate();
+		EmpAffected->DestroyComponent();
+		EmpAffected = nullptr;
+	}
+	if (PoisonSlowAffected)
+	{
+		PoisonSlowAffected->DeactivateImmediate();
+		PoisonSlowAffected->DestroyComponent();
+		PoisonSlowAffected = nullptr;
+	}
+}
 
 void AEnemy::AI_SetupData()
 {
@@ -1294,7 +1313,7 @@ void AEnemy::ClearTimers()
 	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
 	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
 	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
-	
+	GetWorldTimerManager().ClearTimer(ActionSpeedHandle);
 }
 
 void AEnemy::ProcessSpawnEffects()
@@ -1322,7 +1341,12 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 {
 	switch (InDamageReason)
 	{
-		case EDamageReason::GuardianDamage: GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ProgressVariationUnlock(EVariation::GuardianVariationGold, 1); break;
+		case EDamageReason::GuardianDamage:
+			if (DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::GuardianAbility2, EUpgradeAttribute::Special1))
+			{
+				if (DelegateManager->RequestIsTimeStopUsed.IsBound() && DelegateManager->RequestIsTimeStopUsed.Execute()) GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddGuardianTimeStopSpecialStack();
+			}
+			GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ProgressVariationUnlock(EVariation::GuardianVariationGold, 1); break;
 		case EDamageReason::RangerGrenadeDamage: GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ProgressVariationUnlock(EVariation::RangerVariationBlue, 1); break;
 		default: ;
 	}
@@ -1382,15 +1406,26 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 
 void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
 {
-	if (!PoisonSlowAffected)
+	if (!PoisonSlowAffected && !bIsPoisonSlowAffected)
 	{
-		AssetsManager->AttachVfx(EVfx::PoisonSlowAffected, [this]() -> bool { return GetIsAlive(); }, &PoisonSlowAffected, GetMesh(), FName("DeathSocket"));
+		bIsPoisonSlowAffected = true;
+		AssetsManager->AttachVfx(EVfx::PoisonSlowAffected, [this]() -> bool { return GetIsAlive() && bIsPoisonSlowAffected; }, &PoisonSlowAffected, GetMesh(), FName("DeathSocket"));
 	}
 	else
 	{
 		if (bState) PoisonSlowAffected->Activate(true);
-		else PoisonSlowAffected->DeactivateImmediate();
+		else
+		{
+			bIsPoisonSlowAffected = false;
+			PoisonSlowAffected->DeactivateImmediate();
+		}
 	}
+}
+
+void AEnemy::DisableHijackViableVfx() const
+{
+	if (!HijackViable) return;
+	HijackViable->DeactivateImmediate();
 }
 
 void AEnemy::DisableVfxs() const
@@ -1398,12 +1433,6 @@ void AEnemy::DisableVfxs() const
 	DisableHijackViableVfx();
 	if (LevelUpVfx) LevelUpVfx->DeactivateImmediate();
 	if (RunVfx) RunVfx->DeactivateImmediate();
-}
-
-void AEnemy::DisableHijackViableVfx() const
-{
-	if (!HijackViable) return;
-	HijackViable->DeactivateImmediate();
 }
 
 void AEnemy::SetupTutorialManager()
@@ -1420,13 +1449,13 @@ void AEnemy::ToggleTimeDilation()
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
-void AEnemy::SetActionSpeed(const float InSpeed)
+void AEnemy::SetActionSpeed(const float InSpeed, const bool bIsPoisonToggle)
 {
 	if (!AI_Data || !AnimInstance || !Weapon) return;
-	ActionSpeed = InSpeed;
+	ActionSpeed = InSpeed + AdditionalActionSpeedValue;
 	bActionSpeedModified = !FMath::IsNearlyEqual(InSpeed, 1.f, 0.1f); 
-	if (!bIsHijacked) TogglePoisonSlowAffectedVfx(bActionSpeedModified);
-	SetMaxWalkSpeed(EMoveMode::Walk);
+	if (bIsPoisonToggle && !bIsHijacked) TogglePoisonSlowAffectedVfx(bActionSpeedModified);
+	SetMaxWalkSpeed(CurrentMoveMode);
 	AnimInstance->SetGlobalPlayRate(ActionSpeed);
 	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
 	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ActionSpeed);
@@ -1445,18 +1474,16 @@ void AEnemy::SetupMeshOptimization() const
 	GetCharacterMovement()->bAutoRegisterPhysicsVolumeUpdates = false;
 }
 
-void AEnemy::DestroyAIVfxs()
+void AEnemy::AddAdditionalActionSpeed(const float InValue, const float InDuration)
 {
-	if (EmpAffected)
-	{
-		EmpAffected->DeactivateImmediate();
-		EmpAffected->DestroyComponent();
-		EmpAffected = nullptr;
-	}
-	if (PoisonSlowAffected)
-	{
-		PoisonSlowAffected->DeactivateImmediate();
-		PoisonSlowAffected->DestroyComponent();
-		PoisonSlowAffected = nullptr;
-	}
+	if (InDuration > 0.f) GetWorldTimerManager().SetTimer(ActionSpeedHandle, this, &AEnemy::ResetAdditionalActionSpeed, InDuration);
+	AdditionalActionSpeedValue += InValue;
+	SetActionSpeed(ActionSpeed, false);
+}
+
+void AEnemy::ResetAdditionalActionSpeed()
+{
+	ActionSpeed -= AdditionalActionSpeedValue;
+	AdditionalActionSpeedValue = 0.f;
+	SetActionSpeed(ActionSpeed, false);
 }

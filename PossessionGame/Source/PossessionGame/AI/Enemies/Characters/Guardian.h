@@ -2,15 +2,17 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Interfaces/DamageReasonProvider.h"
 #include "Guardian.generated.h"
 
 enum class EPoolObject : uint8;
 
 UCLASS()
-class POSSESSIONGAME_API AGuardian : public AEnemy
+class POSSESSIONGAME_API AGuardian : public AEnemy, public IDamageReasonProvider
 {
 	GENERATED_BODY()
 public:
+	virtual EDamageReason GetDamageReason() const override;
 	virtual FLinearColor GetDamageNumberColor() const override;
 	TObjectPtr<UMaterialInterface> GetTimeStopMaterial() const { return MI_TimeStop; }
 	
@@ -23,6 +25,7 @@ public:
 	void ToggleShield(const bool bState);
 	void SetReflectDamageState(const bool bState) { bReflectDamageEnabled = bState; }
 	void SetFirstAbilityUsageState(const bool bState) { bIsFirstAbilityInUse = bState; }
+	void SetSecondAbilityUsageState(const bool bState) { bIsSecondAbilityInUse = bState; }
 protected:
 	AGuardian();
 private:
@@ -30,6 +33,7 @@ private:
 	bool bIsShieldDisappearing = false;
 	bool bImmuneToFirstHit = false;
 	bool bIsFirstAbilityInUse = false;
+	bool bIsSecondAbilityInUse = false;
 	float ShieldColorDensity = 5.f;
 	float ShieldRadialRadius = 1.f;
 	float Radius = 3.f;
@@ -51,6 +55,8 @@ private:
 	FTimerHandle ShieldUpdateHandle;
 	UPROPERTY()
 	FTimerHandle ShootSecondWeaponProjectileHandle;
+
+	bool IsSecondAbilityInUse() const { return bIsSecondAbilityInUse; }
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
@@ -81,6 +87,7 @@ private:
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) override;
 	virtual void DisableAllVfxAfterPossession() override;
 	void ToggleShieldVfx(const bool bState, const EVfx InVfxName);
+	virtual void InitiateDeath() override;
 	UFUNCTION()
 	void ShootSecondWeaponProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon);
 };

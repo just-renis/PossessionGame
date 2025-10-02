@@ -13,7 +13,7 @@
 
 void UPossessionGameInstance::InitGameInstanceManagers()
 {
-	GetTimerManager().SetTimer(TickHandle, this, &UPossessionGameInstance::Tick, 0.1f, true);
+	GetTimerManager().SetTimer(TickHandle, this, &UPossessionGameInstance::Tick, 0.2f, true);
 	if (!GetSubsystem<USaveSlotManager>()->GetSaveSlot()) return;
 	GetSubsystem<UPrimaryDataAssetsManager>()->Init(GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished(), SpawnableEnemiesByTotalAmount);
 }

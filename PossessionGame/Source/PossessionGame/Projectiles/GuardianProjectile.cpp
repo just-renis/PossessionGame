@@ -5,9 +5,12 @@
 #include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Weapons/Character Weapons/GuardianWeapon.h"
+
+float AGuardianProjectile::P_UpgradeDamageAppliance() { return DefaultDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetGuardianTimeStopSpecialBoost(); }
 
 void AGuardianProjectile::P_VariationDamageAppliance()
 {
@@ -59,6 +62,8 @@ void AGuardianProjectile::SetBounceState(const bool bState) const { MovementComp
 
 void AGuardianProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich)
 {
+	CustomTimeDilation = InProjectileData.GetProprietor()->CustomTimeDilation;
+	MovementComponent->SetComponentTickInterval(1.f / 30.f / CustomTimeDilation);
 	Super::Init(InProjectileData, Rotation, InWhich);
 	if (!bIsFirstSpecialBounceUpgradeTaken) return;
 	SetBounceState(!InProjectileData.bIsPlayerProjectile);

@@ -229,6 +229,7 @@ private:
 	bool bIsDoubleJumpOccured = false;
 	bool bIsImmortal = false;
 	bool bActionSpeedModified = false;
+	bool bIsPoisonSlowAffected = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -237,6 +238,7 @@ private:
 	float DefaultCameraZ;
 	float ActionSpeed = 1.f;
 	float MovementSpeedMultiplier = 1.f;
+	float AdditionalActionSpeedValue = 0.f;
 	int32 OverlappingPoisonAreas = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Explosion Radius From Emp Upgrade", meta = (AllowPrivateAccess = true))
 	float ExplosionRadiusFromEmpUpgradeInMetres = 5.f;
@@ -358,6 +360,8 @@ private:
 	FTimerHandle DestroyCondenseMaterialsProcessHandle;
 	UPROPERTY()
 	FTimerHandle SpawnCondenseMaterialsProcessHandle;
+	UPROPERTY()
+	FTimerHandle ActionSpeedHandle;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
@@ -439,6 +443,8 @@ private:
 	void DisableVfxs() const;
 	void SetupTutorialManager();
 	void ToggleTimeDilation();
-	void SetActionSpeed(const float InSpeed);
+	void SetActionSpeed(const float InSpeed, const bool bIsPoisonToggle);
 	void SetupMeshOptimization() const;
+	void AddAdditionalActionSpeed(const float InValue, const float InDuration);
+	void ResetAdditionalActionSpeed();
 };

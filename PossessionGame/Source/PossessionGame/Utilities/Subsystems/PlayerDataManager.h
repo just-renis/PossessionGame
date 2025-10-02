@@ -96,6 +96,29 @@ struct FRangerShieldSpecialData
 	}
 };
 
+USTRUCT()
+struct FGuardianTimeStopSpecialData
+{
+	GENERATED_BODY()
+	
+	float StackDuration = 20.f;
+	float DamageBoostPercentage = 0.05f;
+	TArray<float> Stacks;
+
+	float GetDamageBoost() const { return DamageBoostPercentage * Stacks.Num(); }
+	
+	void AddStack() { Stacks.Add(0.f); }
+	void RemoveStackAt(const int32 InIndex) { Stacks.RemoveAt(InIndex); }
+	void TickStackDuration(const float InTickTime)
+	{
+		for (int32 i = Stacks.Num() - 1; i >= 0; i--)
+		{
+			Stacks[i] += InTickTime;
+			if (Stacks[i] >= StackDuration) RemoveStackAt(i);
+		}
+	}
+};
+
 UCLASS()
 class POSSESSIONGAME_API UPlayerDataManager : public UGameInstanceSubsystem
 {
@@ -104,15 +127,18 @@ public:
 	float GetPoisonAreaStackBoost() const { return TricksterPurpleVariationData.GetDamageBoost(); }
 	float GetRangerGrenadeSpecialBoost() const { return RangerGrenadeSpecialData.GetDamageBoost(); }
 	float GetRangerShieldSpecialBoost() const { return RangerShieldSpecialData.GetDamageBoost(); }
+	float GetGuardianTimeStopSpecialBoost() const { return GuardianTimeStopSpecialData.GetDamageBoost(); }
 	FOnRangerAbilityStackStatusChanged& GetOnRangerAbilityStackStatusChangedDelegate() { return RangerGrenadeSpecialData.OnRangerAbilityStackStatusChanged; }
 	
 	void AddPoisonAreaUptime(const float InUptime) { TricksterPurpleVariationData.AddPoisonAreaUptime(InUptime); }
 	void AddRangerGrenadeSpecialStack();
 	void AddRangerShieldSpecialStack();
+	void AddGuardianTimeStopSpecialStack();
 	void Reset();
 	void Tick(const float InTickTime);
 private:
 	FTricksterPurpleVariationData TricksterPurpleVariationData;
 	FRangerGrenadeSpecialData RangerGrenadeSpecialData;
 	FRangerShieldSpecialData RangerShieldSpecialData;
+	FGuardianTimeStopSpecialData GuardianTimeStopSpecialData;
 };

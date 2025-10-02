@@ -1,5 +1,6 @@
 ﻿#include "VectorBlastProjectile.h"
 #include "Components/AudioComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EUpgrade.h"
@@ -32,6 +33,13 @@ float AVectorBlastProjectile::GetModifiedProjectileInitialSpeed(const float InBa
 float AVectorBlastProjectile::GetModifiedProjectileMaxSpeed(const float InBaseMaxSpeed) const
 {
 	return InBaseMaxSpeed * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::GuardianAbility3, EUpgradeAttribute::ProjectileSpeed, true) * 0.01f;
+}
+
+void AVectorBlastProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich)
+{
+	CustomTimeDilation = InProjectileData.GetProprietor()->CustomTimeDilation;
+	MovementComponent->SetComponentTickInterval(1.f / 30.f / CustomTimeDilation);
+	Super::Init(InProjectileData, Rotation, InWhich);
 }
 
 void AVectorBlastProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
