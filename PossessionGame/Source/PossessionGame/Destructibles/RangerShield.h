@@ -4,6 +4,7 @@
 #include "Destructible.h"
 #include "RangerShield.generated.h"
 
+class AEnemy;
 enum class ESound : uint16;
 
 UCLASS()
@@ -13,7 +14,7 @@ class POSSESSIONGAME_API ARangerShield : public ADestructible
 public:
 	ARangerShield();
 	
-	void SetProprietor(const TObjectPtr<AActor>& InProprietor) { Proprietor = InProprietor; }
+	void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
 private:
 	int32 ShieldMaterialValueChanger;
 	UPROPERTY()
@@ -21,13 +22,15 @@ private:
 	UPROPERTY()
 	FTimerHandle MoveShieldHandle;
 	UPROPERTY()
-	TObjectPtr<AActor> Proprietor;
+	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> M_ForceField;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> M_Shield;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

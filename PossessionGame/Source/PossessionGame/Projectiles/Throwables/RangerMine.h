@@ -44,6 +44,8 @@ private:
 	FTimerHandle ExplosionHandle;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
+	
+	float UpgradeAppliance() const;
 
 	virtual void BeginPlay() override;
 	virtual void OnImpact(const FHitResult& Hit) override;

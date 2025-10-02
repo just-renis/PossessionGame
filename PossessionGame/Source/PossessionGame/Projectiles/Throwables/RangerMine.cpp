@@ -8,6 +8,7 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -40,6 +41,12 @@ ARangerMine::ARangerMine()
 	ExplosionSfx->SetupAttachment(Mesh);
 	Sounds.Add(ESound::RangerDeployMine, DeploySfx);
 	Sounds.Add(ESound::RangerDetonateMine, ExplosionSfx);
+}
+
+float ARangerMine::UpgradeAppliance() const
+{
+	return Data->GetDamage() * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerGrenadeSpecialBoost()
+	+ Data->GetDamage() * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerShieldSpecialBoost();
 }
 
 void ARangerMine::BeginPlay()
@@ -75,9 +82,6 @@ void ARangerMine::OnImpact(const FHitResult& Hit)
 
 void ARangerMine::DealAreaDamage()
 {
-	//TArray<TObjectPtr<AActor>> IgnoredActors;
-	//if (!ProjectileData.bIsPlayerProjectile) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
-	//else IgnoredActors = { ProjectileData.GetProprietor() };
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	const bool bIsSpecialUpgradeAvailable1 = RunSaveSlot->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1);
 	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::Size, true);
@@ -89,6 +93,9 @@ void ARangerMine::DealAreaDamage()
 	const float LevelDamageBoost = Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
 	NormalDamage += LevelDamageBoost;
 	MinimumDamage += LevelDamageBoost;
+	const float UpgradeDamageBoost = UpgradeAppliance();
+	NormalDamage += UpgradeDamageBoost;
+	MinimumDamage += UpgradeDamageBoost;
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
 	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::RangerMineExplosion, nullptr, GetActorLocation());

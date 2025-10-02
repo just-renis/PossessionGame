@@ -124,6 +124,18 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 			}
 			break;
 		case EUpgrade::RangerAbility2:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial2.1", "EACH HIT TO SHIELD RAISES PLAYER DAMAGE BY</>").ToString() +
+						GetRichTextTag(false) + " 1% </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial2.2", "<UpgradeAttributeText>FOR</>").ToString() +
+						GetRichTextTag(false) + " 15 </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial2.3", "<UpgradeAttributeText>SECONDS.</>").ToString();
+					}
+					return FString();
+				default: break;
+			}
 			break;
 		case EUpgrade::RangerAbility3:
 			switch (InUpgradeAttribute)

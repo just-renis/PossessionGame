@@ -58,7 +58,8 @@ void ARangerWeapon::P_Setup()
 
 float ARangerWeapon::P_UpgradeDamageAppliance()
 {
-	return P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerGrenadeSpecialBoost();
+	return P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerGrenadeSpecialBoost()
+	+ P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerShieldSpecialBoost();
 }
 
 void ARangerWeapon::BeginPlay()

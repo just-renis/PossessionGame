@@ -52,6 +52,7 @@ void UAudioSettingsUI::ApplySettings()
 	const FString& LanguageEncode = GetLanguageOption(LanguageCode).LanguageCode;
 	SavedSettings->SetLanguage(LanguageEncode);
 	FInternationalization::Get().SetCurrentCulture(LanguageEncode);
+	SetupLanguagesData();
 	UGameplayStatics::SaveGameToSlot(SavedSettings, "SettingsSlot", 0);
 }
 
@@ -138,6 +139,7 @@ void UAudioSettingsUI::ApplyMusicVolumeValue(const float InValue) const
 
 void UAudioSettingsUI::SetupLanguagesData()
 {
+	Languages.Empty();
 	TArray<FString> AvailableCultures = FTextLocalizationManager::Get().GetLocalizedCultureNames(ELocalizationLoadFlags::Game);
 	for (const FString& CultureName : AvailableCultures) Languages.Add(GetLanguageCode(CultureName), FLanguageOption(GetLanguageNameByCode(CultureName), CultureName));
 }

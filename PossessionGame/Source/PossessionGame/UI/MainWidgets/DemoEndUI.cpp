@@ -71,6 +71,7 @@ void UDemoEndUI::SetRankTexture()
 		if (RunEndTime <= RankData.TimeInSecondsMax)
 		{
 			RankImage->SetBrushFromAtlasInterface(RankData.RankTexture);
+			RankImage->SetDesiredSizeOverride(FVector2D(200.f));
 			return;
 		}
 	}

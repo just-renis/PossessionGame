@@ -263,11 +263,7 @@ void AEnemy::InitiateDeath()
 		if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
 		DelegateManager->OnEnemyDeathOccurred.Broadcast(this);
 		(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
-		if (bAffectedByEmp && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility2, EUpgradeAttribute::Special1))
-		{
-			UE_LOG(LogTemp, Error, TEXT("EXPLOSION HAPPEN"));
-			AI_TriggerEmpExplosion();
-		}
+		if (bAffectedByEmp && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility2, EUpgradeAttribute::Special1)) AI_TriggerEmpExplosion();
 	}
 	else P_Destroy();
 	AI_PlayDeathElectrification();
@@ -907,7 +903,7 @@ void AEnemy::P_ToggleRun(const bool bState)
 	bIsRunning = bState;
 	if (bIsRunning)
 	{
-		if (!RunVfx) AssetsManager->AttachVfx(EVfx::RunEffect, [this]() -> bool { return GetIsAlive(); }, &RunVfx, GetMesh(), FName("DeathSocket"));
+		if (!RunVfx) AssetsManager->AttachVfx(EVfx::RunEffect, [this]() -> bool { return GetIsAlive() && bIsRunning; }, &RunVfx, GetMesh(), FName("DeathSocket"));
 		else RunVfx->Activate();
 	}
 	else if (RunVfx) RunVfx->DeactivateImmediate();

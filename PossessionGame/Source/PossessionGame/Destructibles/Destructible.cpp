@@ -33,29 +33,6 @@ void ADestructible::Init(const bool bInIsPlayerObject)
 	SetUpgradesApplication();
 }
 
-void ADestructible::BeginPlay()
-{
-	Super::BeginPlay();
-	Tags.Add("Destructible");
-}
-
-void ADestructible::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	GetWorldTimerManager().ClearTimer(DestroyHandle);
-	Super::EndPlay(EndPlayReason);
-}
-
-void ADestructible::DestroyThis()
-{
-	GetWorldTimerManager().ClearTimer(DestroyHandle);
-	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(Data->GetObjectName(), this);
-}
-
-void ADestructible::SetThisLifeSpan()
-{
-	GetWorldTimerManager().SetTimer(DestroyHandle, this, &ADestructible::DestroyThis, LifeSpan, false);
-}
-
 float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) * DamageReduction;
@@ -86,4 +63,27 @@ float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	}
 	else DestroyThis();
 	return Damage;
+}
+
+void ADestructible::BeginPlay()
+{
+	Super::BeginPlay();
+	Tags.Add("Destructible");
+}
+
+void ADestructible::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
+void ADestructible::DestroyThis()
+{
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(Data->GetObjectName(), this);
+}
+
+void ADestructible::SetThisLifeSpan()
+{
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &ADestructible::DestroyThis, LifeSpan, false);
 }

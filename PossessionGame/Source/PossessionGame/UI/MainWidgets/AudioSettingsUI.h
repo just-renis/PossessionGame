@@ -19,7 +19,7 @@ struct POSSESSIONGAME_API FLanguageOption
 	FLanguageOption(const FText& InLanguageName, const FString& InLanguageCode) : LanguageName(InLanguageName), LanguageCode(InLanguageCode) {}
 
 	UPROPERTY()
-	FText LanguageName = FText::FromString("English");
+	FText LanguageName = NSLOCTEXT("ST_Localization", "English", "English");
 	UPROPERTY()
 	FString LanguageCode = "en";
 };

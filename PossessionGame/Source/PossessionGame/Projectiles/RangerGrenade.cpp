@@ -23,7 +23,8 @@ float ARangerGrenade::AI_UpgradeDamageAppliance()
 
 float ARangerGrenade::P_UpgradeDamageAppliance()
 {
-	return DefaultDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerGrenadeSpecialBoost();
+	return DefaultDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerGrenadeSpecialBoost()
+	+ DefaultDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerShieldSpecialBoost();
 }
 
 void ARangerGrenade::PlayImpactSound() { PlaySound(ESound::RangerGrenadeExplosion); }

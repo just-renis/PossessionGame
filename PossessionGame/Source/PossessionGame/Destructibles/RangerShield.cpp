@@ -1,10 +1,13 @@
 ﻿#include "RangerShield.h"
 #include "Components/AudioComponent.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DestructibleData.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
@@ -16,6 +19,16 @@ ARangerShield::ARangerShield()
 	Sounds.Add(ESound::RangerDissolveShield, CreateDefaultSubobject<UAudioComponent>(TEXT("dissolveSound")));
 	Sounds[ESound::RangerDissolveShield]->SetAutoActivate(false);
 	Sounds[ESound::RangerDissolveShield]->SetupAttachment(Mesh);
+}
+
+float ARangerShield::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (bIsPlayerObject && GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::RangerAbility2, EUpgradeAttribute::Special1))
+	{
+		UE_LOG(LogTemp, Error, TEXT("ADDED STACK"));
+		GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddRangerShieldSpecialStack();
+	}
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void ARangerShield::BeginPlay()
@@ -48,7 +61,7 @@ void ARangerShield::Init(bool bInIsPlayerObject)
 
 void ARangerShield::DestroyThis()
 {
-	SetActorScale3D(FVector(1.f, 1.f, 1.f));
+	SetActorScale3D(FVector(1.f));
 	SetActorEnableCollision(false);
 	ShieldMaterialValueChanger = 0;
 	PlaySound(ESound::RangerDissolveShield);
