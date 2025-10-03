@@ -13,10 +13,11 @@ class POSSESSIONGAME_API USaveSlotMenuUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void OpenUI();
+	void OpenUI(const bool bStoryMode);
 	UFUNCTION()
 	void CloseUI();
 private:
+	bool bEnterStoryMode = true;
 	bool bIsConfirmationPanelOpen = false;
 	FString SaveSlotName;
 	FString RunSaveSlotName;

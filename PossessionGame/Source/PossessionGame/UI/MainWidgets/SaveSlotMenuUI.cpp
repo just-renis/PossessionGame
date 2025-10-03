@@ -10,7 +10,11 @@
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
-void USaveSlotMenuUI::OpenUI() { Toggle(true); }
+void USaveSlotMenuUI::OpenUI(const bool bStoryMode)
+{
+	bEnterStoryMode = bStoryMode;
+	Toggle(true);
+}
 
 void USaveSlotMenuUI::CloseUI()
 {
@@ -120,7 +124,7 @@ void USaveSlotMenuUI::OpenCurrentSaveLevel()
 	{
 		case 1: 
 			PlayAnimation(FadeOutAnim);
-			PendingLoadLevelData = FLoadLevelData(false, false, false, FName("Level_1"));
+			PendingLoadLevelData = FLoadLevelData(false, false, false, bEnterStoryMode ? FName("Level_1") : FName("L_Arena"));
 			GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &USaveSlotMenuUI::LoadLevel, 1.5f);
 		default: ;
 	}

@@ -37,6 +37,5 @@ class POSSESSIONGAME_API UWaveModeLogic : public UGameModeBaseLogic
 	void WaveCompleted();
 	void AfterSpawnEnemyCallback();
 	void SetData();
-	UFUNCTION()
 	void UpdateCountdown();
 };

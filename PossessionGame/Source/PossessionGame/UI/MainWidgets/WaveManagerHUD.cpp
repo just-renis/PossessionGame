@@ -6,6 +6,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Enums/EGameMode.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -103,9 +104,16 @@ void UWaveManagerHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
 	OnObjectivePanelAnimEnd.BindUFunction(this, "OpenUpgradeSelection");
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestMiniPopup.BindUObject(this, &UWaveManagerHUD::TriggerMiniPopup);
 }
 
 void UWaveManagerHUD::HideWaveCompletedAnnouncement() const { if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::Collapsed); }
+
+void UWaveManagerHUD::TriggerMiniPopup(const FText& InText)
+{
+	MiniPopupText->SetText(InText);
+	PlayAnimation(MiniPopupAnim);
+}
 
 void UWaveManagerHUD::OpenUpgradeSelection()
 {

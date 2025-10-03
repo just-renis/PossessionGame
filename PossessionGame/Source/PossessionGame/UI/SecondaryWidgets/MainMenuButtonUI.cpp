@@ -10,6 +10,7 @@ void UMainMenuButtonUI::SetButtonVisibility(const bool bState)
 	if (!Button) return;
 	SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
 	Button->SetVisibility(bState ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	SetIsEnabled(bState);
 }
 
 void UMainMenuButtonUI::SetFontSize(const int32 InFontSize) const

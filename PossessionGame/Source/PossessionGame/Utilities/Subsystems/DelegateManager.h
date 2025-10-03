@@ -51,6 +51,7 @@ DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FRequestMinorAnnouncement, const FText&);
 DECLARE_DELEGATE_OneParam(FRequestRangerMineRemoval, const TObjectPtr<ARangerMine>&);
 DECLARE_DELEGATE_OneParam(FOnBossSpawn, const EEnemyHpBar);
+DECLARE_DELEGATE_OneParam(FRequestMiniPopup, const FText&);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
 DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
@@ -132,6 +133,7 @@ public:
 	FRequestMinorAnnouncement RequestMinorAnnouncement;
 	FRequestRangerMineRemoval RequestRangerMineRemoval;
 	FOnBossSpawn OnBossSpawn;
+	FRequestMiniPopup RequestMiniPopup;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;

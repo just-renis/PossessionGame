@@ -82,7 +82,7 @@ void UWaveModeLogic::SetupNextWave()
 {
 	EnemiesPerWave += Data->GetEnemiesAmountIncreasePerWave();
 	EnemiesLeftToKill = EnemiesPerWave;
-	CountdownSeconds = 4.f;
+	CountdownSeconds = Data->GetCountdownSeconds();
 	UpdateCountdown();
 	GetWorld()->GetTimerManager().ClearTimer(SpawnHandle);
 	GetWorld()->GetTimerManager().SetTimer(CountdownHandle, this, &UWaveModeLogic::UpdateCountdown, 1.f, true);

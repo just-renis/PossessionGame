@@ -68,8 +68,13 @@ void ACollectible::Collect()
 	ToggleCollectible(false, true);
 	switch (Data->GetCollectibleName())
 	{
-		case EPoolObject::Usb: GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.Broadcast(); break;
-		case EPoolObject::Artifact: GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.Broadcast();
+		case EPoolObject::Usb:
+			GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.Broadcast();
+			GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestMiniPopup.ExecuteIfBound(NSLOCTEXT("ST_Localization", "UsbObtained", "USB OBTAINED"));
+			break;
+		case EPoolObject::Artifact:
+			GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.Broadcast();
+			GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestMiniPopup.ExecuteIfBound(NSLOCTEXT("ST_Localization", "ArtifactObtained", "ARTIFACT OBTAINED"));
 		default: ;
 	}
 }

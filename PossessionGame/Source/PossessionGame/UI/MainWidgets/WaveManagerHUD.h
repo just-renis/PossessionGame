@@ -48,6 +48,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> TaskProgressInv;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> MiniPopupText;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> AnnouncementInv;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> ObjectivePanelFadeInAnim;
@@ -59,6 +61,8 @@ private:
 	TObjectPtr<UWidgetAnimation> ObjectiveCompletedFadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FinishOffEnemiesFadeInAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> MiniPopupAnim;
 	UPROPERTY()
 	FTimerHandle AnnouncementHandle;
 	UPROPERTY()
@@ -66,6 +70,7 @@ private:
 
 	virtual void NativeConstruct() override;
 	void HideWaveCompletedAnnouncement() const;
+	void TriggerMiniPopup(const FText& InText);
 	UFUNCTION()
 	void OpenUpgradeSelection();
 };
