@@ -116,5 +116,7 @@ enum class ESound : uint16
 	WardenDeath,
 	WardenSpawn,
 	WardenBeamFire,
-	WardenShoot
+	WardenShoot,
+	ArenaModeRestSoundTrack,
+	ArenaModeBattleSoundTrack
 };

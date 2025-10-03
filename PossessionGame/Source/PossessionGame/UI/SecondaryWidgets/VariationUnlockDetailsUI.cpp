@@ -66,7 +66,7 @@ void UVariationUnlockDetailsUI::ChangeVisibilityOfUnlockElements(const bool bSta
 
 void UVariationUnlockDetailsUI::UnlockVariation()
 {
-	if (SaveSlot->GetCurrencyAmount() >= UnlockPrice)
+	if (SaveSlot->GetIsVariationTaskCompleted(Variation) && SaveSlot->GetCurrencyAmount() >= UnlockPrice)
 	{
 		SaveSlot->AddCurrencyAmount(-UnlockPrice);
 		SaveSlot->UnlockVariation(Variation);

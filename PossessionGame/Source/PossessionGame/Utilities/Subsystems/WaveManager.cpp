@@ -1,7 +1,9 @@
 #include "WaveManager.h"
 #include "DelegateManager.h"
 #include "PrimaryDataAssetsManager.h"
+#include "PossessionGame/Data Assets/Game Modes/ArenaModeData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/SpawnLocation.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/Game Modes/ArenaModeLogic.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/Game Modes/BossModeLogic.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/Game Modes/ChargeTerminalModeLogic.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/Game Modes/HackTerminalModeLogic.h"
@@ -32,6 +34,7 @@ void UWaveManager::SetAndStartGameMode(const EGameMode InGameMode)
 		case EGameMode::HackTerminalsMode: CurrentModeLogic = NewObject<UHackTerminalModeLogic>(this); break;
 		case EGameMode::ChargeTerminalMode: CurrentModeLogic = NewObject<UChargeTerminalModeLogic>(this); break;
 		case EGameMode::BossMode: CurrentModeLogic = NewObject<UBossModeLogic>(this); break;
+		case EGameMode::ArenaMode: CurrentModeLogic = NewObject<UArenaModeLogic>(this); break;
 		default: return;
 	}
 	if (!CurrentModeLogic) return;

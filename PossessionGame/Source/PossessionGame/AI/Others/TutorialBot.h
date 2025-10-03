@@ -30,6 +30,8 @@ class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 	FVector WaypointLocation = FVector::ZeroVector;
 	ETutorialBotExpression CurrentExpression;
 	EGameState CurrentGameState;
+	UPROPERTY(EditAnywhere, Category = "Mode", meta = (AllowPrivateAccess = true))
+	bool bIsArenaMode = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Expression | Random Blink", meta = (AllowPrivateAccess = true))
 	float MinRange = 0.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Expression | Random Blink", meta = (AllowPrivateAccess = true))

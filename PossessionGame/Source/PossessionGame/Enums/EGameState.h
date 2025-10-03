@@ -7,5 +7,6 @@ enum class EGameState : uint8
     DuringGame,
     PreBoss,
     PostBoss,
-    SecretRoom
+    SecretRoom,
+    ArenaMode
 };

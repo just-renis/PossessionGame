@@ -12,7 +12,8 @@ void AMusicPlayer::BeginPlay()
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnMusicSoundtrackChangeRequired.BindUObject(this, &AMusicPlayer::ChangeSoundtrack);
 	DelegateManager->ChangeMusicPlayerState.BindUObject(this, &AMusicPlayer::ChangeState);
-	CurrentSoundTrack = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished() ? ESound::RestSoundTrack : ESound::TutorialIntroSoundTrack;
+	if (bIsArenaMode) CurrentSoundTrack = ESound::ArenaModeRestSoundTrack;
+	else CurrentSoundTrack = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished() ? ESound::RestSoundTrack : ESound::TutorialIntroSoundTrack;
 	SwitchSoundTrack();
 }
 

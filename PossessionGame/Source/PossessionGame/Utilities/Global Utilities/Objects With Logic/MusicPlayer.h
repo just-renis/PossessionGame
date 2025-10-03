@@ -18,6 +18,8 @@ class POSSESSIONGAME_API AMusicPlayer : public AAmbientSound
 	UPROPERTY(EditAnywhere, Category = "Sound Tracks", meta = (AllowPrivateAccess = true))
 	TMap<ESound, int32> SoundTracksData;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bIsArenaMode = false;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bMusicPlayerPlaysDefaultSoundTrack = false;
 	UPROPERTY()
 	FTimerHandle SwitchHandle;

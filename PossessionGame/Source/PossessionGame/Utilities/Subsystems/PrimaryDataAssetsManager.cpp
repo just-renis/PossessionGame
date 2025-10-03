@@ -548,6 +548,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TutorialIntroSoundTrack", ESound::TutorialIntroSoundTrack);
 	SoundMap.Add("PA_TutorialChaosSoundTrack", ESound::TutorialChaosSoundTrack);
 	SoundMap.Add("PA_TutorialIntroBattleSoundTrack", ESound::TutorialIntroBattleSoundTrack);
+	SoundMap.Add("PA_ArenaModeBattleSoundTrack", ESound::ArenaModeBattleSoundTrack);
+	SoundMap.Add("PA_ArenaModeRestSoundTrack", ESound::ArenaModeRestSoundTrack);
 	SoundMap.Add("PA_ButtonHover", ESound::ButtonHover);
 	SoundMap.Add("PA_ButtonSelect", ESound::ButtonSelect);
 	SoundMap.Add("PA_UpgradeCardSelect", ESound::UpgradeCardSelect);

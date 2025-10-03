@@ -47,7 +47,7 @@ struct FRangerBlueVariationData
 	GENERATED_BODY()
 	
 	float StackDuration = 20.f;
-	float DamageBoostPercentage = 0.08f;
+	float DamageBoostPercentage = 0.05f;
 	TArray<float> Stacks;
 
 	float GetCriticalDamageBoost() const { return DamageBoostPercentage * Stacks.Num(); }

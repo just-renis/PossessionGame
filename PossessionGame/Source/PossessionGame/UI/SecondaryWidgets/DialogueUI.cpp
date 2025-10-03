@@ -135,6 +135,15 @@ void UDialogueUI::NativeConstruct()
 	GameStateDialogues.Texts.Empty();
 	ExpressionDialogues.Texts.Empty();
 	
+	ExpressionDialogues.Animation = ETutorialBotAnimState::TabletHolding;
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "ArenaModeTip0", "This is the arena, have fun!"));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "ArenaModeTip1", "This is the endless mode, have fun!"));
+	ExpressionDialogues.Texts.Add(NSLOCTEXT("ST_Localization", "ArenaModeTip2", "Here is the playground!"));
+	GameStateDialogues.Texts.Add(ETutorialBotExpression::NeutralFace, ExpressionDialogues);
+	TipTexts.Add(EGameState::ArenaMode, GameStateDialogues);
+	GameStateDialogues.Texts.Empty();
+	ExpressionDialogues.Texts.Empty();
+	
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
     if (DialogueText) DialogueText->SetText(FText::FromString(""));

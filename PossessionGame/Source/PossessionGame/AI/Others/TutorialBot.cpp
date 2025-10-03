@@ -48,7 +48,7 @@ void ATutorialBot::BeginPlay()
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
 	bIsTutorialFinished = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHijack.BindUObject(this, &ATutorialBot::SetPlayerRef);
-	CurrentGameState = EGameState::PreGame;
+	CurrentGameState = bIsArenaMode ? EGameState::ArenaMode : EGameState::PreGame;
 	if (!bIsTutorialFinished)
 	{
 		TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "TutorialTabletSocket");

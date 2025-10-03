@@ -8,7 +8,10 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
-void UVariationOptionUI::UpdateUnlockProgressText(const TObjectPtr<USaveSlot>& InSaveSlot) { UnlockProgressText = FText::Format(DefaultUnlockText, FText::FromString(GetUnlockProgressString(InSaveSlot))); }
+void UVariationOptionUI::UpdateUnlockProgressText(const TObjectPtr<USaveSlot>& InSaveSlot)
+{
+	UnlockProgressText = FText::Format(DefaultUnlockText, FText::FromString(GetUnlockProgressString(InSaveSlot)));
+}
 
 void UVariationOptionUI::UnlockVariation()
 {
