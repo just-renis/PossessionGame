@@ -131,6 +131,7 @@ protected:
 	
 	float P_GetHitScanCalcSpread() const { return P_Data->GetHitScanSpread() * (bWalkSpreadEnabled ? 2.f : 1.f); }
 	virtual float P_ReceiveHitScanDamage() { return HitScanDamage; }
+	virtual float P_GetCriticalDamage() { return P_Data->GetCriticalDamage(); }
 	
 	virtual void P_Setup();
 	void P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName);

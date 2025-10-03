@@ -113,15 +113,15 @@ void UVariationsUI::SwitchVariation(const ECharacterType InCharacterName)
 	VariationsSwitcher->SetActiveWidgetIndex(ActiveWidgetIndex);
 }
 
-void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVariationName, const FString& InVariationDetailsText, const FString& InUnlockDetailsText)
+void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVariationName, const FText& InVariationDetailsText, const FText& InUnlockDetailsText)
 {
 	if (!UnlockDetailsPanel || !VariationDetailsPanel) return;
 	if (bState)
 	{
 		if (VariationDetailsPanel->GetVisibility() == ESlateVisibility::Hidden) VariationDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		if (UnlockDetailsPanel->GetVisibility() == ESlateVisibility::Hidden) UnlockDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		VariationDetailsPanel->SetDetailsText(FText::FromString(InVariationDetailsText));
-		UnlockDetailsPanel->SetDetailsText(FText::FromString(InUnlockDetailsText));
+		VariationDetailsPanel->SetDetailsText(InVariationDetailsText);
+		UnlockDetailsPanel->SetDetailsText(InUnlockDetailsText);
 		if (const int32* UnlockPrice = UnlockPrices.Find(InVariationName)) UnlockDetailsPanel->SetupDetailsPanel(InVariationName, *UnlockPrice);
 		else UnlockDetailsPanel->SetupDetailsPanel(InVariationName, INT_MAX);
 		if (SaveSlot->GetIsVariationUnlocked(InVariationName)) UnlockDetailsPanel->SetUnlockedVariation(true);

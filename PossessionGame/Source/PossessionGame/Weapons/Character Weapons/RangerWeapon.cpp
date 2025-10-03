@@ -62,6 +62,8 @@ float ARangerWeapon::P_UpgradeDamageAppliance()
 	+ P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerShieldSpecialBoost();
 }
 
+float ARangerWeapon::P_GetCriticalDamage() { return Super::P_GetCriticalDamage() + Super::P_GetCriticalDamage() * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetCriticalDamageStackBoost(); }
+
 void ARangerWeapon::BeginPlay()
 {
 	Name = EWeapon::RangerWeapon;

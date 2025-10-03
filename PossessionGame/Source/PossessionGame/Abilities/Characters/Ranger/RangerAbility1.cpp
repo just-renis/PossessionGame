@@ -2,6 +2,7 @@
 #include "PossessionGame/AI/Enemies/Characters/Ranger.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
+#include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EVariation.h"
@@ -27,6 +28,7 @@ void URangerAbility1::P_Execute()
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::GrenadeLaunch);
 	Proprietor->P_LaunchGrenade();
 	if (bFirstSpecialUpgradeEnabled) GetWorld()->GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddRangerGrenadeSpecialStack();
+	if (bRangerBlueVariationEnabled) GetWorld()->GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddCriticalDamageStack();
 	Super::P_Execute();
 }
 
@@ -36,15 +38,6 @@ float URangerAbility1::AI_GetCooldownReduction()
 	if (!GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::RangerAbility1, EUpgradeAttribute::Special1)) return CooldownReduction;
 	const int32 AbilitiesUpgradesLevel = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentLevelSumOfCharacterAbilities(Proprietor->GetCharacterName());
 	return CooldownReduction + AbilitiesUpgradesLevel * 10.f;
-}
-
-void URangerAbility1::P_ApplyVariation()
-{
-	if (EVariation::RangerVariationBlue == Proprietor->GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(Proprietor->GetCharacterName()))
-	{
-		MaxChargesAmount += 2;
-		ReqCooldownSecs *= 0.7f;
-	}
 }
 
 bool URangerAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
@@ -61,4 +54,10 @@ void URangerAbility1::SetupUpgradeAppliance(const bool bIsPlayer)
 {
 	bFirstSpecialUpgradeEnabled = DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::RangerAbility1, EUpgradeAttribute::Special1);
 	Super::SetupUpgradeAppliance(bIsPlayer);
+}
+
+void URangerAbility1::Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
+{
+	Super::Setup(InAbilityOwner, InAbilityData, InDelegateManager);
+	bRangerBlueVariationEnabled = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Ranger) == EVariation::RangerVariationBlue;
 }

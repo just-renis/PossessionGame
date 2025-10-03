@@ -40,25 +40,25 @@ FString UUpgradeDetailsPanelUI::ConvertUpgradeAttributeValueToString(const float
 	return FloatValueString;
 }
 
-FString UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute, const bool bForEnemy)
+FText UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute, const bool bForEnemy)
 {
-	if (InAttribute.Key == EUpgradeAttribute::None) return FString();
+	if (InAttribute.Key == EUpgradeAttribute::None) return FText();
 	const FString AttributeValue = ConvertUpgradeAttributeValueToString(InAttribute.Value);
 	switch (InAttribute.Key)
 	{
-		case EUpgradeAttribute::FlatDamage: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Damage", "DAMAGE").ToString() + "</>\n";
-		case EUpgradeAttribute::FlatHealth: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "FlatHealth", "HEALTH").ToString() + "</>\n";
-		case EUpgradeAttribute::DamagePercentage: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Damage", "DAMAGE").ToString() + "</>\n";
-		case EUpgradeAttribute::ProjectilesAmount: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Projectiles", "PROJECTILES").ToString() + "</>\n";
-		case EUpgradeAttribute::AbilityCooldownReduction: return GetRichTextTag(bForEnemy) + "-" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityCooldown", "ABILITY COOLDOWN").ToString() + "</>\n";
-		case EUpgradeAttribute::AbilityChargesAmount: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityCharges", "ABILITY CHARGES").ToString() + "</>\n";
-		case EUpgradeAttribute::Size: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Area", "AREA").ToString() + "</>\n";
-		case EUpgradeAttribute::AbilityDuration: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityDuration", "ABILITY DURATION").ToString() + "</>\n";
-		case EUpgradeAttribute::EffectDuration: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "EffectDuration", "EFFECT DURATION").ToString() + "</>\n";
-		case EUpgradeAttribute::ReduceDamageTaken: return GetRichTextTag(bForEnemy) + "-" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "DamageTaken", "DAMAGE TAKEN").ToString() + "</>\n";
-		case EUpgradeAttribute::CloneAmount: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "CloneAmount", "CLONE AMOUNT").ToString() + "</>\n";
-		case EUpgradeAttribute::Cap: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Cap", "CAP").ToString() + "</>\n";
-		case EUpgradeAttribute::ProjectileSpeed: return GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "ProjectileSpeed", "PROJECTILE SPEED").ToString() + "</>\n";
+		case EUpgradeAttribute::FlatDamage: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue +"</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Damage", "DAMAGE").ToString() + "</>");
+		case EUpgradeAttribute::FlatHealth: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue +"</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "FlatHealth", "HEALTH").ToString() + "</>");
+		case EUpgradeAttribute::DamagePercentage: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue +"%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Damage", "DAMAGE").ToString() + "</>");
+		case EUpgradeAttribute::ProjectilesAmount: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue +"</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Projectiles", "PROJECTILES").ToString() + "</>");
+		case EUpgradeAttribute::AbilityCooldownReduction: return FText::FromString(GetRichTextTag(bForEnemy) + "-" + AttributeValue +"%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityCooldown", "ABILITY COOLDOWN").ToString() + "</>");
+		case EUpgradeAttribute::AbilityChargesAmount: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue +"</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityCharges", "ABILITY CHARGES").ToString() + "</>");
+		case EUpgradeAttribute::Size: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue +"%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Area", "AREA").ToString() + "</>");
+		case EUpgradeAttribute::AbilityDuration: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue +"%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityDuration", "ABILITY DURATION").ToString() + "</>");
+		case EUpgradeAttribute::EffectDuration: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue +"%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "EffectDuration", "EFFECT DURATION").ToString() + "</>");
+		case EUpgradeAttribute::ReduceDamageTaken: return FText::FromString(GetRichTextTag(bForEnemy) + "-" + AttributeValue +"%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "DamageTaken", "DAMAGE TAKEN").ToString() + "</>");
+		case EUpgradeAttribute::CloneAmount: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue +"</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "CloneAmount", "CLONE AMOUNT").ToString() + "</>");
+		case EUpgradeAttribute::Cap: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue +"</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Cap", "CAP").ToString() + "</>");
+		case EUpgradeAttribute::ProjectileSpeed: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue +"%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "ProjectileSpeed", "PROJECTILE SPEED").ToString() + "</>");
 		default: return GetSpecialUpgradeText(InAttribute.Key, bForEnemy);
 	}
 }
@@ -75,7 +75,7 @@ FString UUpgradeDetailsPanelUI::GetRichTextTag(const bool bForEnemy) const
 	return {};
 }
 
-FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUpgradeAttribute, const bool bForEnemy)
+FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUpgradeAttribute, const bool bForEnemy)
 {
 	SpecialAttribute = InUpgradeAttribute;
 	switch (UpgradeName)
@@ -86,10 +86,11 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.1", "WHILE ACTIVE, YOU REFLECT</>").ToString() +
-						GetRichTextTag(false) + " 50% </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.2", "<UpgradeAttributeText>OF THE DAMAGE.</>").ToString();
+						return FText::Format(NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.1",
+							"<UpgradeAttributeText>WHILE ACTIVE, YOU REFLECT</>{0}{1}<UpgradeAttributeText>OF THE DAMAGE.</>"),
+							FText::FromString(GetRichTextTag(false)), FText::FromString(" 50% </>"));
 					}
-					return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.3", "<UpgradeAttributeText>GUARDIAN TAKES NO DAMAGE ON FIRST HIT.</>").ToString();
+					return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.2", "<UpgradeAttributeText>GUARDIAN TAKES NO DAMAGE ON FIRST HIT.</>");
 				default: break;
 			}
 		case EUpgrade::GuardianAbility2:
@@ -98,13 +99,13 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.1", "FOR EACH ENEMY KILLED WHILE ABILITY ACTIVE</>").ToString() +
-						GetRichTextTag(false) + " 5% </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.2", "<UpgradeAttributeText>MORE DAMAGE FOR</>").ToString() +
-						GetRichTextTag(false) + " 20 </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.3", "<UpgradeAttributeText>SECS.</>").ToString();
+						return FText::Format(NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.1",
+							"<UpgradeAttributeText>FOR EACH ENEMY KILLED WHILE ABILITY ACTIVE</>{0}{1}<UpgradeAttributeText>MORE DAMAGE FOR</>{2}{3}<UpgradeAttributeText>SECS.</>"),
+							FText::FromString(GetRichTextTag(false)), FText::FromString(" 5% </>"), FText::FromString(GetRichTextTag(false)), FText::FromString(" 20 </>"));
 					}
-					return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.4", "<UpgradeAttributeText>ALL ENEMIES RECEIVE</>").ToString() +
-					GetRichTextTag(true) + " 50% </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.5", "<UpgradeAttributeText>ACTION SPEED FOR</>").ToString() +
-					GetRichTextTag(true) + " 5 </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.6", "<UpgradeAttributeText>SECS.</>").ToString();
+					return FText::Format(NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.2",
+						"<UpgradeAttributeText>WHEN ABILITY ENDS, ALL ENEMIES RECEIVE</>{0}{1}<UpgradeAttributeText>ACTION SPEED FOR</>{2}{3}<UpgradeAttributeText>SECS.</>"),
+						FText::FromString(GetRichTextTag(true)), FText::FromString(" 50% </>"), FText::FromString(GetRichTextTag(true)), FText::FromString(" 5 </>"));
 				default: break;
 			}
 			break;
@@ -112,12 +113,10 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 			switch (InUpgradeAttribute)
 			{
 				case EUpgradeAttribute::Special1:
-					if (!bForEnemy)
-					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.1", "EACH ENEMY HIT PASSES DAMAGE TO THE CLOSEST ENEMY.</>").ToString();
-					}
-					return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.2", "<UpgradeAttributeText>PROJECTILES BOUNCE</>").ToString() +
-					GetRichTextTag(true) + " 2 </>" + NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.3", "<UpgradeAttributeText>TIMES.</>").ToString();
+					if (!bForEnemy) return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.1", "<UpgradeAttributeText>EACH ENEMY HIT PASSES DAMAGE TO THE CLOSEST ENEMY.</>");
+					return FText::Format(NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.2",
+						"<UpgradeAttributeText>PROJECTILES BOUNCE</>{0}{1}<UpgradeAttributeText>TIMES.</>"),
+						FText::FromString(GetRichTextTag(true)), FText::FromString(" 2 </>"));
 				default: break;
 			}
 			break;
@@ -127,13 +126,13 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.1", "AFTER USING GRENADE LAUNCHER</>").ToString() +
-						GetRichTextTag(false) + " +10% </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.2", "<UpgradeAttributeText>DAMAGE FOR</>").ToString() +
-						GetRichTextTag(false) + " 15 </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.3", "<UpgradeAttributeText>SECONDS.</>").ToString();
+						return FText::Format(NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.1",
+							"<UpgradeAttributeText>AFTER USING GRENADE LAUNCHER</>{0}{1}<UpgradeAttributeText>DAMAGE FOR</>{2}{3}<UpgradeAttributeText>SECS.</>"),
+							FText::FromString(GetRichTextTag(false)), FText::FromString(" +10% </>"), FText::FromString(GetRichTextTag(false)), FText::FromString(" 15 </>"));
 					}
-					return NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.4", "<UpgradeAttributeText>EACH RANGER UPGRADE GIVES</>").ToString() +
-					GetRichTextTag(true) + " +10% </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.5", "<UpgradeAttributeText>DAMAGE</>").ToString() +
-					GetRichTextTag(true) + " -10% </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.6", "<UpgradeAttributeText>COOLDOWN.</>").ToString();
+					return FText::Format(NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.2",
+						"<UpgradeAttributeText>EACH RANGER UPGRADE GIVES</>{0}{1}<UpgradeAttributeText>DAMAGE</>{2}{3}<UpgradeAttributeText>COOLDOWN.</>"),
+						FText::FromString(GetRichTextTag(true)), FText::FromString(" +10% </>"), FText::FromString(GetRichTextTag(true)), FText::FromString(" -10% </>"));
 				default: break;
 			}
 			break;
@@ -143,11 +142,11 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial2.1", "EACH HIT TO SHIELD RAISES PLAYER DAMAGE BY</>").ToString() +
-						GetRichTextTag(false) + " 1% </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial2.2", "<UpgradeAttributeText>FOR</>").ToString() +
-						GetRichTextTag(false) + " 15 </>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial2.3", "<UpgradeAttributeText>SECONDS.</>").ToString();
+						return FText::Format(NSLOCTEXT("ST_Localization", "RangerAbilitySpecial2.1",
+							"<UpgradeAttributeText>EACH HIT TO SHIELD RAISES PLAYER DAMAGE BY</>{0}{1}<UpgradeAttributeText>DAMAGE</>{2}{3}<UpgradeAttributeText>SECS.</>"),
+							FText::FromString(GetRichTextTag(false)), FText::FromString(" 1% </>"), FText::FromString(GetRichTextTag(false)), FText::FromString(" 15 </>"));
 					}
-					return FString();
+					return FText();
 				default: break;
 			}
 			break;
@@ -157,10 +156,11 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.1", "MINE DAMAGE INCREASES NEAR IT'S CENTER UP TO</>").ToString() +
-						GetRichTextTag(false) + " 2X.</>";
+						return FText::Format(NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.1",
+							"<UpgradeAttributeText>MINE DAMAGE INCREASES NEAR IT'S CENTER UP TO</>{0}{1}<UpgradeAttributeText>.</>"),
+							FText::FromString(GetRichTextTag(false)), FText::FromString(" 2X </>"));
 					}
-					return NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.2", "<UpgradeAttributeText>THE CLOSER DAMAGE IS TO RANGER, THE LESS DAMAGE RANGER TAKES.</>").ToString();
+				return NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.2", "<UpgradeAttributeText>THE CLOSER DAMAGE IS TO RANGER, THE LESS DAMAGE RANGER TAKES.</>");
 				default: break;
 			}
 			break;
@@ -170,11 +170,13 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.1", "ENEMIES IN POISON SMOKE ARE</>").ToString() +
-						GetRichTextTag(false) + " 3x </>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.2", "<UpgradeAttributeText>SLOWED.</>").ToString();
+						return FText::Format(NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.1",
+							"<UpgradeAttributeText>ENEMIES IN POISON SMOKE ARE</>{0}{1}<UpgradeAttributeText>SLOWER.</>"),
+							FText::FromString(GetRichTextTag(false)), FText::FromString(" 3X </>"));
 					}
-					return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.3", "PLAYER IN POISON SMOKE ARE</>").ToString() +
-					GetRichTextTag(true) + " 2x </>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.2", "<UpgradeAttributeText>SLOWED.</>").ToString();
+				return FText::Format(NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.2",
+					"<UpgradeAttributeText>PLAYER IN POISON SMOKE IS</>{0}{1}<UpgradeAttributeText>SLOWER.</>"),
+					FText::FromString(GetRichTextTag(true)), FText::FromString(" 2X </>"));
 				default: break;
 			}
 			break;
@@ -184,10 +186,11 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial2.1", "KILLED ENEMY AFFECTED BY EMP EXPLODES AND DEALS</>").ToString() +
-						GetRichTextTag(false) + " 25% </>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial2.2", "<UpgradeAttributeText>OF THEIR MAX HP DAMAGE TO OTHER ENEMIES.</>").ToString();
+						return FText::Format(NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial2.1",
+							"<UpgradeAttributeText>KILLED ENEMY AFFECTED BY EMP EXPLODES AND DEALS</>{0}{1}<UpgradeAttributeText>OF THEIR MAX HP DAMAGE TO OTHER ENEMIES.</>"),
+							FText::FromString(GetRichTextTag(false)), FText::FromString(" 25% </>"));
 					}
-					return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial2.3", "TRICKSTER IS IMMUNE TO EMP.</>").ToString();
+				return NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial2.2", "<UpgradeAttributeText>TRICKSTER IS IMMUNE TO EMP.</>");
 				default: break;
 			}
 			break;
@@ -195,17 +198,14 @@ FString UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute In
 			switch (InUpgradeAttribute)
 			{
 				case EUpgradeAttribute::Special1:
-					if (!bForEnemy)
-					{
-						return "<UpgradeAttributeText>" + NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial3.1", "PLAYER LEVEL BOOSTS APPLIES TO CLONES.</>").ToString();
-					}
-					return NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial3.2", "<UpgradeAttributeText>RUNS TO PLAYER AT LIGHT SPEED.</>").ToString();
+					if (!bForEnemy) return NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial3.1", "<UpgradeAttributeText>PLAYER LEVEL BOOSTS APPLIES TO CLONES.</>");
+				return NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial3.2", "<UpgradeAttributeText>RUNS TO PLAYER AT LIGHT SPEED.</>");
 				default: break;
 			}
 			break;
 		default: ;
 	}
-	return "";
+	return FText();
 }
 
 void UUpgradeDetailsPanelUI::NativeConstruct()
@@ -226,12 +226,11 @@ void UUpgradeDetailsPanelUI::SetUpgradeText(const bool bIsPlayerUpgrade)
 		else EnemyUpgradeText->SetText(NSLOCTEXT("ST_Localization", "NoAvailableChoice", "No available choice"));
 		return;
 	}
-	FString UpgradeTextString = "";
 	FUpgradeAttributes UpgradeAttributesData = bIsPlayerUpgrade ? UpgradeChoice.PlayerAttributes : UpgradeChoice.EnemyAttributes;
-	for (const TPair<EUpgradeAttribute, float> Attribute : UpgradeAttributesData.UpgradeAttributes) UpgradeTextString += GetUpgradeTextFromSingularAttributeValue(Attribute, !bIsPlayerUpgrade);
-	UpgradeTextString.RemoveFromEnd(TEXT("\n"));
-	if (bIsPlayerUpgrade) PlayerUpgradeText->SetText(FText::FromString(UpgradeTextString));
-	else EnemyUpgradeText->SetText(FText::FromString(UpgradeTextString));
+	TArray<FText> Parts;
+	for (const TPair<EUpgradeAttribute, float> Attribute : UpgradeAttributesData.UpgradeAttributes) Parts.Add(GetUpgradeTextFromSingularAttributeValue(Attribute, !bIsPlayerUpgrade));
+	if (bIsPlayerUpgrade) PlayerUpgradeText->SetText(FText::Join(FText::FromString(TEXT("\n")), Parts));
+	else EnemyUpgradeText->SetText(FText::Join(FText::FromString(TEXT("\n")), Parts));
 }
 
 void UUpgradeDetailsPanelUI::SetUpgradeChoiceBackground()

@@ -1,17 +1,12 @@
 ﻿#include "PlayerDataManager.h"
 
-void UPlayerDataManager::AddRangerGrenadeSpecialStack() { RangerGrenadeSpecialData.AddStack(); }
-
-void UPlayerDataManager::AddRangerShieldSpecialStack() { RangerShieldSpecialData.AddStack(); }
-
-void UPlayerDataManager::AddGuardianTimeStopSpecialStack() { GuardianTimeStopSpecialData.AddStack(); }
-
 void UPlayerDataManager::Reset()
 {
 	TricksterPurpleVariationData = FTricksterPurpleVariationData();
 	RangerGrenadeSpecialData = FRangerGrenadeSpecialData();
 	RangerShieldSpecialData = FRangerShieldSpecialData();
 	GuardianTimeStopSpecialData = FGuardianTimeStopSpecialData();
+	RangerBlueVariationData = FRangerBlueVariationData();
 }
 
 void UPlayerDataManager::Tick(const float InTickTime)
@@ -20,4 +15,5 @@ void UPlayerDataManager::Tick(const float InTickTime)
 	RangerGrenadeSpecialData.TickStackDuration(InTickTime);
 	RangerShieldSpecialData.TickStackDuration(InTickTime);
 	GuardianTimeStopSpecialData.TickStackDuration(InTickTime);
+	RangerBlueVariationData.TickStackDuration(InTickTime);
 }

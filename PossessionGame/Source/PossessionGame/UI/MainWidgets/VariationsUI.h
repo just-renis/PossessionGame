@@ -70,7 +70,7 @@ private:
 	UFUNCTION()
 	void SwitchVariation(const ECharacterType InCharacterName);
 	UFUNCTION()
-	void ToggleDetailsPanel(const bool bState, const EVariation InVariationName, const FString& InVariationDetailsText, const FString& InUnlockDetailsText);
+	void ToggleDetailsPanel(const bool bState, const EVariation InVariationName, const FText& InVariationDetailsText, const FText& InUnlockDetailsText);
 	UFUNCTION()
 	void HideVariationsPanel();
 };

@@ -8,7 +8,7 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
-void UVariationOptionUI::UpdateUnlockProgressText(const TObjectPtr<USaveSlot>& InSaveSlot) { UnlockProgressText = DefaultUnlockText + GetUnlockProgressString(InSaveSlot); }
+void UVariationOptionUI::UpdateUnlockProgressText(const TObjectPtr<USaveSlot>& InSaveSlot) { UnlockProgressText = FText::Format(DefaultUnlockText, FText::FromString(GetUnlockProgressString(InSaveSlot))); }
 
 void UVariationOptionUI::UnlockVariation()
 {
@@ -97,6 +97,6 @@ void UVariationOptionUI::VariationOptionHovered()
 void UVariationOptionUI::VariationOptionUnHovered()
 {
 	if (!VariationOptionBorder) return;
-	(void)ShowDetailsPanel.ExecuteIfBound(false, Variation, "", "");
+	(void)ShowDetailsPanel.ExecuteIfBound(false, Variation, FText(), FText());
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }

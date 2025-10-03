@@ -331,7 +331,7 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 		UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), Damage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 		return;
 	}
-	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), Damage * (bIsCritical ? P_Data->GetCriticalDamage() : 1.f), (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
+	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), Damage * (bIsCritical ? P_GetCriticalDamage() : 1.f), (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 
 void AWeapon::SetWeaponReloadMontageDelegate() { DelegateManager->OnHandsReloadMontageEnd.BindUObject(this, &AWeapon::WeaponReloadMontageFinished); }

@@ -12,7 +12,7 @@ class UImage;
 class UTextBlock;
 class UBorder;
 
-DECLARE_DELEGATE_FourParams(FShowDetailsPanel, const bool, const EVariation, const FString&, const FString&);
+DECLARE_DELEGATE_FourParams(FShowDetailsPanel, const bool, const EVariation, const FText&, const FText&);
 
 UCLASS()
 class POSSESSIONGAME_API UVariationOptionUI : public UUserWidget
@@ -36,9 +36,9 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	ECharacterType CharacterType;
 	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true, MultiLine = true))
-	FString VariationDetailsPanelText;
+	FText VariationDetailsPanelText;
 	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true, MultiLine = true))
-	FString DefaultUnlockText;
+	FText DefaultUnlockText;
 	UPROPERTY(EditAnywhere, Category = "Icon", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> VariationOptionIcon;
 	UPROPERTY(meta = (BindWidget))
@@ -54,7 +54,7 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> SelectAnim;
 	UPROPERTY()
-	FString UnlockProgressText;
+	FText UnlockProgressText;
 
 	FString GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot) const;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

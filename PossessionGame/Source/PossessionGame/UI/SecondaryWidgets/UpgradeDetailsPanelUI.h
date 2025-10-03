@@ -51,9 +51,9 @@ private:
 	FUpgradeChoicePair UpgradeChoice;
 
 	FString ConvertUpgradeAttributeValueToString(const float InValue);
-	FString GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute, const bool bForEnemy);
+	FText GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute, const bool bForEnemy);
 	FString GetRichTextTag(const bool bForEnemy) const;
-	FString GetSpecialUpgradeText(const EUpgradeAttribute InUpgradeAttribute, const bool bForEnemy);
+	FText GetSpecialUpgradeText(const EUpgradeAttribute InUpgradeAttribute, const bool bForEnemy);
 
 	virtual void NativeConstruct() override;
 	void SetUpgradeText(const bool bIsPlayerUpgrade);
