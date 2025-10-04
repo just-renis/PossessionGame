@@ -65,6 +65,7 @@ void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInsta
 	GameInstance = InGameInstance;
 	PlayerLevelData = GameInstance->GetPlayerLevelData();
 	SlotName = InSlotName;
+	UE_LOG(LogTemp, Error, TEXT("SETUP SAVED SLOT: %s"), *InSlotName);
 	if (CharacterChosenAbilities.IsEmpty()) AddDefaultAbilities();
 	GameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
 	#if WITH_EDITOR

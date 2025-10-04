@@ -4,20 +4,22 @@
 #include "PossessionGame/UI/SecondaryWidgets/CloseButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
+#include "PossessionGame/UI/SecondaryWidgets/ModeSelectUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
-void USaveSlotMenuUI::OpenUI(const bool bStoryMode)
-{
-	bEnterStoryMode = bStoryMode;
-	Toggle(true);
-}
+void USaveSlotMenuUI::OpenUI() { Toggle(true); }
 
 void USaveSlotMenuUI::CloseUI()
 {
+	if (bIsModeSelectionOpen)
+	{
+		TriggerSelectionMenuFadeOut();
+		return;
+	}
 	if (bIsConfirmationPanelOpen)
 	{
 		bIsConfirmationPanelOpen = false;
@@ -34,6 +36,7 @@ void USaveSlotMenuUI::NativeConstruct()
 	Super::NativeConstruct();
 	CloseButton->Get()->OnClicked.AddDynamic(this, &USaveSlotMenuUI::CloseUI);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSaveSlotClicked.BindUObject(this, &USaveSlotMenuUI::OpenConfirmationPopup);
+	ModeSelection->GetBackButton()->OnClicked.AddDynamic(this, &USaveSlotMenuUI::TriggerSelectionMenuFadeOut);
 }
 
 void USaveSlotMenuUI::NativeDestruct()
@@ -84,16 +87,6 @@ void USaveSlotMenuUI::OpenConfirmationPopup(const FString& InSlotName, const FSt
 	}
 }
 
-void USaveSlotMenuUI::ResetToDefaultPlayerInputMode() const
-{
-	if (const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController())
-	{
-		PlayerController->SetInputMode(FInputModeGameOnly());
-		PlayerController->DisableInput(PlayerController);
-		PlayerController->bShowMouseCursor = false;
-	}
-}
-
 void USaveSlotMenuUI::ToggleSaveSlots(const bool bState) const
 {
 	SaveSlot1->SetIsEnabled(bState);
@@ -102,50 +95,48 @@ void USaveSlotMenuUI::ToggleSaveSlots(const bool bState) const
 	SaveSlot4->SetIsEnabled(bState);
 }
 
-void USaveSlotMenuUI::LoadLevel() const { (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(PendingLoadLevelData); }
-
 void USaveSlotMenuUI::FadeOutAnimFinished()
 {
 	UnbindFromAnimationFinished(FadeInAnim, FadeInAnimFinishedDelegate);
 	SetVisibility(ESlateVisibility::Collapsed);
 }
 
+void USaveSlotMenuUI::TriggerSelectionMenuFadeOut()
+{
+	if (!ModeSelection) return;
+	ModeSelection->PlayFadeInAnim(false);
+	bIsModeSelectionOpen = false;
+	OpenUI();
+}
+
 void USaveSlotMenuUI::OpenCurrentSaveLevel()
 {
-	ResetToDefaultPlayerInputMode();
+	bIsModeSelectionOpen = true;
+	PlayAnimation(FadeOutAnim);
 	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished())
 	{
-		PlayAnimation(FadeOutAnim);
-		PendingLoadLevelData = FLoadLevelData(false, true, false, FName("TutorialLevel"));
-		GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &USaveSlotMenuUI::LoadLevel, 1.5f);
+		ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, true, false, FName("TutorialLevel")));
 		return;
 	}
 	switch (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCurrentChapter())
 	{
-		case 1: 
-			PlayAnimation(FadeOutAnim);
-			PendingLoadLevelData = FLoadLevelData(false, false, false, bEnterStoryMode ? FName("Level_1") : FName("L_Arena"));
-			GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &USaveSlotMenuUI::LoadLevel, 1.5f);
+		case 1: ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, false, false, FName("Level_1")));
 		default: ;
 	}
 }
 
 void USaveSlotMenuUI::OverwriteSaveAndOpenLevel()
 {
-	ResetToDefaultPlayerInputMode();
 	PlayAnimation(FadeOutAnim);
-	PendingLoadLevelData = FLoadLevelData(false, true, true, FName("TutorialLevel"));
-	GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &USaveSlotMenuUI::LoadLevel, 1.5f);
+	ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, true, true, FName("TutorialLevel")));
 }
 
 void USaveSlotMenuUI::LoadSaveAndOpenLevel()
 {
-	ResetToDefaultPlayerInputMode();
 	GetGameInstance()->GetSubsystem<USaveSlotManager>()->LoadSaveSlot(SaveSlotName);
 	GetGameInstance()->GetSubsystem<USaveSlotManager>()->LoadRunSaveSlot(RunSaveSlotName);
 	PlayAnimation(FadeOutAnim);
-	PendingLoadLevelData = FLoadLevelData(false, false, false, FName("TutorialLevel"));
-	GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &USaveSlotMenuUI::LoadLevel, 1.5f);
+	ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, false, false, FName("TutorialLevel")));
 }
 
 void USaveSlotMenuUI::GoBack() { ConfirmationPopup->PlayPopupFadeInAnim(false); }

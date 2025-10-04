@@ -1,14 +1,14 @@
 ﻿#include "ModeSelectUI.h"
 #include "MainMenuButtonUI.h"
 #include "Components/Button.h"
-#include "PossessionGame/UI/MainWidgets/SaveSlotMenuUI.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
-#include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 TObjectPtr<UButton> UModeSelectUI::GetBackButton() const { return BackButton->Get(); }
 
-void UModeSelectUI::PlayFadeInAnim(const bool bState)
+void UModeSelectUI::PlayFadeInAnim(const bool bState, const FLoadLevelData& InLevelData)
 {
+	if (InLevelData.LevelName != NAME_None) PendingLoadLevelData = InLevelData;
 	PlayAnimation(FadeInAnim, GetAnimationCurrentTime(FadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(bState ? ESound::PanelFadeIn : ESound::PanelFadeOut);
 	if (bState) SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -26,16 +26,31 @@ void UModeSelectUI::NativeConstruct()
 	FadeOutDelegate.BindDynamic(this, &UModeSelectUI::FadeOutAnimFinished);
 }
 
+void UModeSelectUI::DisablePlayerInput() const
+{
+	if (const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		PlayerController->DisableInput(PlayerController);
+		PlayerController->bShowMouseCursor = false;
+	}
+}
+
+void UModeSelectUI::LoadLevel() const { (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(PendingLoadLevelData); }
+
 void UModeSelectUI::OpenStoryMode()
 {
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USaveSlotMenuUI>(EWidget::SaveSlotMenuUI)->OpenUI(true);
+	DisablePlayerInput();
 	PlayFadeInAnim(false);
+	GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &UModeSelectUI::LoadLevel, 1.5f);
 }
 
 void UModeSelectUI::OpenArenaMode()
 {
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USaveSlotMenuUI>(EWidget::SaveSlotMenuUI)->OpenUI(false);
+	DisablePlayerInput();
 	PlayFadeInAnim(false);
+	if (PendingLoadLevelData.LevelName != FName("TutorialLevel")) PendingLoadLevelData.LevelName = FName("L_Arena");
+	GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &UModeSelectUI::LoadLevel, 1.5f);
 }
 
 void UModeSelectUI::FadeOutAnimFinished()

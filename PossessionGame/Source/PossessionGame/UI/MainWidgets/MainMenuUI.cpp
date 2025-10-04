@@ -8,7 +8,6 @@
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/SecondaryWidgets/ConfirmationPopupUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
-#include "PossessionGame/UI/SecondaryWidgets/ModeSelectUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/MetaSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -31,23 +30,10 @@ void UMainMenuUI::OpenUI()
 	Toggle(true);
 }
 
-void UMainMenuUI::CloseUI()
-{
-	if (bIsQuitPopupOpen)
-	{
-		TriggerQuitPopupFadeOut();
-		return;
-	}
-	if (bIsModeSelectionOpen) TriggerSelectionMenuFadeOut();
-}
+void UMainMenuUI::CloseUI() { if (bIsQuitPopupOpen) TriggerQuitPopupFadeOut(); }
 
 void UMainMenuUI::TriggerMainMenuFadeInAnim()
 {
-	if (bIsModeSelectionOpen)
-	{
-		ModeSelection->PlayFadeInAnim(true);
-		return;
-	}
 	UnbindFromAnimationFinished(FirstLaunchAnim, FirstLaunchAnimDelegate);
 	ToggleMenuButtons(true);
 	PlayAnimation(MainMenuFadeInAnim, GetAnimationCurrentTime(MainMenuFadeInAnim));
@@ -85,7 +71,6 @@ void UMainMenuUI::SetupButtons()
 	if (QuitButton) QuitButton->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopupFadeIn);
 	if (QuitConfirmationPopup->GetAcceptButton()) QuitConfirmationPopup->GetAcceptButton()->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::QuitGame);
 	if (QuitConfirmationPopup->GetDeclineButton()) QuitConfirmationPopup->GetDeclineButton()->Get()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerQuitPopupFadeOut);
-	ModeSelection->GetBackButton()->OnClicked.AddDynamic(this, &UMainMenuUI::TriggerSelectionMenuFadeOut);
 }
 
 void UMainMenuUI::TriggerMainMenuFadeOutAnim()
@@ -102,19 +87,9 @@ void UMainMenuUI::ToggleMenuButtons(const bool bState) const
 	if (QuitButton) QuitButton->SetButtonVisibility(bState);
 }
 
-void UMainMenuUI::TriggerSelectionMenuFadeOut()
-{
-	if (!ModeSelection) return;
-	ModeSelection->PlayFadeInAnim(false);
-	bIsModeSelectionOpen = false;
-	TriggerMainMenuFadeInAnim();
-}
-
 void UMainMenuUI::TriggerSelectionMenuFadeIn()
 {
-	if (!ModeSelection) return;
-	ModeSelection->PlayFadeInAnim(true);
-	bIsModeSelectionOpen = true;
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<USaveSlotMenuUI>(EWidget::SaveSlotMenuUI)->OpenUI();
 	TriggerMainMenuFadeOutAnim();
 }
 

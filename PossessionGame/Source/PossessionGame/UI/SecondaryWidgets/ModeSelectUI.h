@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
 #include "ModeSelectUI.generated.h"
 
 class UButton;
@@ -14,8 +15,9 @@ class POSSESSIONGAME_API UModeSelectUI : public UUserWidget
 public:
 	TObjectPtr<UButton> GetBackButton() const;
 	
-	void PlayFadeInAnim(const bool bState);
+	void PlayFadeInAnim(const bool bState, const FLoadLevelData& InLevelData = FLoadLevelData());
 private:
+	FLoadLevelData PendingLoadLevelData;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> StoryModeButton;
 	UPROPERTY(meta = (BindWidget))
@@ -26,8 +28,12 @@ private:
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeOutDelegate;
+	UPROPERTY()
+	FTimerHandle LoadLevelHandle;
 
 	virtual void NativeConstruct() override;
+	void DisablePlayerInput() const;
+	void LoadLevel() const;
 	UFUNCTION()
 	void OpenStoryMode();
 	UFUNCTION()

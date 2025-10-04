@@ -29,6 +29,6 @@ void AMarker::BeginPlay()
 
 void AMarker::UpdateMarker() const
 {
-	if (!PlayerController) return;
+	if (!PlayerController || !PlayerController->GetPawn() || !Marker) return;
 	Marker->UpdateMarkerText(FMath::Sqrt(FVector::DistSquared(GetActorLocation(), PlayerController->GetPawn()->GetActorLocation())) * 0.01f);
 }

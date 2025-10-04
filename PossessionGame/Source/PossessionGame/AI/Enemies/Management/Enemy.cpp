@@ -1245,7 +1245,7 @@ void AEnemy::P_Crouch()
 
 void AEnemy::P_AddXp(const int32 InXp) const
 {
-	if (DelegateManager->RequestIsArenaMode.Execute()) return;
+	if (DelegateManager->RequestIsArenaMode.IsBound() && DelegateManager->RequestIsArenaMode.Execute()) return;
 	GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddXp(InXp);
 	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetXp(), GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCurrentLevelNeededXp());
 }

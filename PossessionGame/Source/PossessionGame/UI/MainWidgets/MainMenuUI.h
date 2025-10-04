@@ -4,7 +4,6 @@
 #include "Blueprint/UserWidget.h"
 #include "MainMenuUI.generated.h"
 
-class UModeSelectUI;
 class UInvalidationBox;
 class UMainMenuButtonUI;
 class UConfirmationPopupUI;
@@ -20,7 +19,6 @@ public:
 	void TriggerMainMenuFadeInAnim();
 private:
 	bool bIsQuitPopupOpen = false;
-	bool bIsModeSelectionOpen = false;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UMainMenuButtonUI> PlayButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
@@ -33,8 +31,6 @@ private:
 	TObjectPtr<UInvalidationBox> MainMenuInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> BlackScreenInv;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UModeSelectUI> ModeSelection;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> MainMenuFadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -49,8 +45,6 @@ private:
 	void SetupButtons();
 	void TriggerMainMenuFadeOutAnim();
 	void ToggleMenuButtons(const bool bState) const;
-	UFUNCTION()
-	void TriggerSelectionMenuFadeOut();
 	UFUNCTION()
 	void TriggerSelectionMenuFadeIn();
 	UFUNCTION()
