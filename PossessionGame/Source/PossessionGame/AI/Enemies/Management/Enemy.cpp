@@ -35,6 +35,7 @@
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/DeathScreenUI.h"
+#include "PossessionGame/UI/MainWidgets/DemoEndUI.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
@@ -1029,7 +1030,8 @@ void AEnemy::P_InitiateDeathEvents()
 	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeepFps);
 	DelegateManager->OnPlayerDeath.Broadcast();
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor::Black, false, true);
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UDeathScreenUI>(EWidget::DeathMenuUI)->OpenUI();
+	if (!DelegateManager->RequestIsArenaMode.Execute()) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UDeathScreenUI>(EWidget::DeathMenuUI)->OpenUI();
+	else GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UDemoEndUI>(EWidget::DemoEndUI);
 }
 
 void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
@@ -1237,6 +1239,7 @@ void AEnemy::P_Crouch()
 
 void AEnemy::P_AddXp(const int32 InXp) const
 {
+	if (DelegateManager->RequestIsArenaMode.Execute()) return;
 	GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddXp(InXp);
 	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetXp(), GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCurrentLevelNeededXp());
 }

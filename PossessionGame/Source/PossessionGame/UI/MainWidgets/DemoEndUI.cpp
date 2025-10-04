@@ -31,6 +31,9 @@ FString UDemoEndUI::GetConvertedNumber(const int32 InNumber)
 void UDemoEndUI::NativeConstruct()
 {
 	Super::NativeConstruct();
+	bIsArenaMode = GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsArenaMode.Execute();
+	ChapterCompletedText->SetText(bIsArenaMode ? NSLOCTEXT("ST_Localization", "Arena", "Arena") : NSLOCTEXT("ST_Localization", "ChapterCompleted", "Chapter Completed"));
+	if (bIsArenaMode) RankBonusBox->SetVisibility(ESlateVisibility::Hidden);
 	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeInFinished);
 	BindToAnimationFinished(FadeInAnim, FadeFinishedDelegate);
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 0.25f, FLinearColor::Black, false, true);
@@ -54,9 +57,12 @@ void UDemoEndUI::SetupRankUI()
 	if (!TimeText || !CoinsAmountText) return;
 	RunEndTime = GetGameInstance()->GetSubsystem<UDelegateManager>()->OnRunFinished.Execute();
 	SetRankTexture();
-	const int32 CoinsAmount = GetRankCoinsAmount();
-	CoinsAmountText->SetText(FText::AsNumber(CoinsAmount));
-	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddCurrencyAmount(CoinsAmount);
+	if (!bIsArenaMode)
+	{
+		const int32 CoinsAmount = GetRankCoinsAmount();
+		CoinsAmountText->SetText(FText::AsNumber(CoinsAmount));
+		GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddCurrencyAmount(CoinsAmount);
+	}
 	const int32 Hours = RunEndTime / 3600;
 	const int32 Minutes = RunEndTime % 3600 / 60;
 	const int32 Seconds = RunEndTime % 60;
@@ -68,14 +74,27 @@ void UDemoEndUI::SetRankTexture()
 	if (!RankImage || Ranks.IsEmpty()) return;
 	for (const FRunTimeRankData RankData : Ranks)
 	{
-		if (RunEndTime <= RankData.TimeInSecondsMax)
+		if (bIsArenaMode)
 		{
-			RankImage->SetBrushFromAtlasInterface(RankData.RankTexture);
-			RankImage->SetDesiredSizeOverride(FVector2D(200.f));
-			return;
+			if (RunEndTime >= RankData.ArenaTimeInSecondsMin)
+			{
+				RankImage->SetBrushFromAtlasInterface(RankData.RankTexture);
+				RankImage->SetDesiredSizeOverride(FVector2D(200.f));
+				return;
+			}
+		}
+		else
+		{
+			if (RunEndTime <= RankData.TimeInSecondsMax)
+			{
+				RankImage->SetBrushFromAtlasInterface(RankData.RankTexture);
+				RankImage->SetDesiredSizeOverride(FVector2D(200.f));
+				return;
+			}
 		}
 	}
 	RankImage->SetBrushFromAtlasInterface(Ranks.Last().RankTexture);
+	RankImage->SetDesiredSizeOverride(FVector2D(200.f));
 }
 
 void UDemoEndUI::FadeInFinished()
@@ -107,7 +126,7 @@ void UDemoEndUI::Replay()
 {
 	if (bAlreadyClickedButton) return;
 	bAlreadyClickedButton = true;
-	LevelNameToLoad = FName("Level_1");
+	LevelNameToLoad = bIsArenaMode ? FName("L_Arena") : FName("Level_1");
 	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeOutToNextLevel);
 	PlayAnimation(FadeOutAnim);
 	BindToAnimationFinished(FadeOutAnim, FadeFinishedDelegate);

@@ -118,5 +118,6 @@ enum class ESound : uint16
 	WardenBeamFire,
 	WardenShoot,
 	ArenaModeRestSoundTrack,
-	ArenaModeBattleSoundTrack
+	ArenaModeBattleSoundTrack,
+	JumpPadActivate
 };

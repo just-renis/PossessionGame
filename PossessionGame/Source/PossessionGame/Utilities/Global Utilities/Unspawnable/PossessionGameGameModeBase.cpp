@@ -31,6 +31,8 @@ int32 APossessionGameGameModeBase::GetRunFinishedTime() const { return FMath::Fl
 void APossessionGameGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+	bIsArenaMode = GetWorld()->GetMapName().Contains("Arena");
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsArenaMode.BindUObject(this, &APossessionGameGameModeBase::GetIsArenaMode);
 	InitAfterPSOPrecache();
 }
 

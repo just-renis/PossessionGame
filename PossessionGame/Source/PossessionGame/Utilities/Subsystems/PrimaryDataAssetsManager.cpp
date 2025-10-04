@@ -607,6 +607,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_WardenSpawn", ESound::WardenSpawn);
 	SoundMap.Add("PA_WardenBeamFire", ESound::WardenBeamFire);
 	SoundMap.Add("PA_WardenShoot", ESound::WardenShoot);
+	SoundMap.Add("PA_JumpPadActivate", ESound::JumpPadActivate);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

@@ -27,9 +27,11 @@ class POSSESSIONGAME_API APossessionGameGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 public:
 	bool GetIsDebugModeEnabled() const { return bToggleDebugMode; }
+	bool GetIsArenaMode() const { return bIsArenaMode; }
 	
 	TArray<TSubclassOf<APrefab>>* GetPrefabsByCategory(const EPrefabCategory Category);
 private:
+	bool bIsArenaMode = false;
 	float RunStartTime;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	bool bToggleDebugMode = false;

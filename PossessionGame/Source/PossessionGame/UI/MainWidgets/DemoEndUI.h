@@ -14,6 +14,8 @@ struct FRunTimeRankData
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
+	int32 ArenaTimeInSecondsMin = 0;
+	UPROPERTY(EditAnywhere)
 	int32 TimeInSecondsMax = 0;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UTexture2D> RankTexture;
@@ -25,6 +27,7 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	GENERATED_BODY()
 
 	bool bAlreadyClickedButton = false;
+	bool bIsArenaMode = false;
 	int32 RunEndTime;
 	FName LevelNameToLoad;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -37,6 +40,10 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	TObjectPtr<UImage> RankImage;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TimeText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidget> RankBonusBox;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ChapterCompletedText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CoinsAmountText;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
