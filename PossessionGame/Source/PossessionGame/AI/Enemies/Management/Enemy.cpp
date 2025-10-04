@@ -239,6 +239,12 @@ void AEnemy::AI_SetupUpgradesAppliance()
 	CurrentHp = MaxHp;
 }
 
+void AEnemy::AI_TriggerVectorBlastSpecialImpactVfx()
+{
+	if (!VectorBlastSpecialImpactVfx) AssetsManager->AttachVfx(EVfx::GuardianVectorBlastUpgrade, [this]() -> bool { return GetIsAlive(); }, &VectorBlastSpecialImpactVfx, GetMesh(), FName("DeathSocket"));
+	else VectorBlastSpecialImpactVfx->Activate();
+}
+
 /*void AEnemy::AI_SetupShootLogic()
 {
 	AI->GetStateTreeData().OnStateTreeEvent.BindUObject(this, &AEnemy::AI_FinishShootLogicByEvent);

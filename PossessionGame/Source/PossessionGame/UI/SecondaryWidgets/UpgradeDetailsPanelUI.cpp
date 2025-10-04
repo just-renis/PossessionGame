@@ -16,6 +16,12 @@ void UUpgradeDetailsPanelUI::SetButtonVisibility(const bool bState) const
 	UpgradeChoiceButton->SetIsEnabled(bState);
 }
 
+void UUpgradeDetailsPanelUI::SetButtonState(const bool bState) const
+{
+	if (!UpgradeChoiceButton) return;
+	UpgradeChoiceButton->SetIsEnabled(bState);
+}
+
 void UUpgradeDetailsPanelUI::Setup(const EUpgrade InUpgradeName, const FUpgradeChoicePair& InUpgradeChoicePair)
 {
 	UpgradeName = InUpgradeName;

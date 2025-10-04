@@ -81,8 +81,7 @@ public:
 	void AI_SetupUpgradesAppliance();
 	//void AI_SetupShootLogic();
 	virtual void AI_CancelShooting() {}
-
-	virtual FLinearColor GetDamageNumberColor() const { return DamageNumberColor; }
+	void AI_TriggerVectorBlastSpecialImpactVfx();
 
 	void P_ApplyUpgradeOnSelection();
 	void P_UseAbility(const int32 AbilityIndex);
@@ -92,6 +91,8 @@ public:
 	void P_SetFov(const float InFov);
 	void P_IncreaseMovementSpeed(const float InPercentage);
 	void P_ResetMovementSpeed();
+
+	virtual FLinearColor GetDamageNumberColor() const { return DamageNumberColor; }
 
 	void SetIsAbilityInAction(const bool bState) { bIsAbilityInAction = bState; }
 	void SetIsActionInMotion(const bool bState);
@@ -322,6 +323,8 @@ private:
 	TObjectPtr<UNiagaraComponent> LevelUpVfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> RunVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> VectorBlastSpecialImpactVfx;
 	UPROPERTY()
 	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
 	UPROPERTY()

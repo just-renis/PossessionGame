@@ -52,6 +52,7 @@ enum class EVfx : uint16
 	GuardianMuzzle,
 	GuardianBulletImpact,
 	GuardianDeathElectrification,
+	GuardianVectorBlastUpgrade,
 	AI_GuardianShield,
 	PlayerGuardianShield,
 	MinionBossMuzzle,

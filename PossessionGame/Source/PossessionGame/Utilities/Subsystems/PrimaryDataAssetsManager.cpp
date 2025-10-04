@@ -679,6 +679,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_GuardianBulletImpact", EVfx::GuardianBulletImpact);
 	VfxsMap.Add("PA_GuardianMuzzle", EVfx::GuardianMuzzle);
 	VfxsMap.Add("PA_GuardianDeathElectrification", EVfx::GuardianDeathElectrification);
+	VfxsMap.Add("PA_GuardianVectorBlastUpgrade", EVfx::GuardianVectorBlastUpgrade);
 	VfxsMap.Add("PA_AIGuardianShield", EVfx::AI_GuardianShield);
 	VfxsMap.Add("PA_PlayerGuardianShield", EVfx::PlayerGuardianShield);
 	VfxsMap.Add("PA_MinionBossBulletTrail", EVfx::MinionBossBulletTrail);

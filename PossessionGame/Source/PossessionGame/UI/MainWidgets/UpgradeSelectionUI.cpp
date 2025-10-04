@@ -65,9 +65,9 @@ void UUpgradeSelectionUI::GoBack()
 	if (!bChoicesOpen) return;
 	PlayAnimByOptionSelected(true);
 	bChoicesOpen = false;
-	UpgradeChoice1->SetButtonVisibility(false);
-	UpgradeChoice2->SetButtonVisibility(false);
-	UpgradeChoice3->SetButtonVisibility(false);
+	UpgradeChoice1->SetButtonState(false);
+	UpgradeChoice2->SetButtonState(false);
+	UpgradeChoice3->SetButtonState(false);
 	BackButton->SetButtonVisibility(false);
 }
 
@@ -264,6 +264,9 @@ void UUpgradeSelectionUI::UpgradeSelectionPanelFadeOutFinished()
 
 void UUpgradeSelectionUI::GoBackAnimFinished()
 {
+	UpgradeChoice1->SetButtonVisibility(false);
+	UpgradeChoice2->SetButtonVisibility(false);
+	UpgradeChoice3->SetButtonVisibility(false);
 	switch (OptionSelected)
 	{
 		case 0: UnbindFromAnimationFinished(UpgradeSelectFirstAnim, GoBackAnimFinishedDelegate); break;
