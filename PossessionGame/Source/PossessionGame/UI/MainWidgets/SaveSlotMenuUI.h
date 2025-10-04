@@ -14,6 +14,7 @@ class POSSESSIONGAME_API USaveSlotMenuUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void OpenUI();
+	void PlayBlackFadeOutAnim();
 	UFUNCTION()
 	void CloseUI();
 private:
@@ -41,6 +42,8 @@ private:
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeOutAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> BlackFadeOutAnim;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeInAnimFinishedDelegate;
 

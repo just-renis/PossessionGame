@@ -13,6 +13,8 @@
 
 void USaveSlotMenuUI::OpenUI() { Toggle(true); }
 
+void USaveSlotMenuUI::PlayBlackFadeOutAnim() { PlayAnimation(BlackFadeOutAnim); }
+
 void USaveSlotMenuUI::CloseUI()
 {
 	if (bIsModeSelectionOpen)
@@ -22,7 +24,6 @@ void USaveSlotMenuUI::CloseUI()
 	}
 	if (bIsConfirmationPanelOpen)
 	{
-		bIsConfirmationPanelOpen = false;
 		ToggleSaveSlots(true);
 		GoBack();
 		return;
@@ -36,7 +37,9 @@ void USaveSlotMenuUI::NativeConstruct()
 	Super::NativeConstruct();
 	CloseButton->Get()->OnClicked.AddDynamic(this, &USaveSlotMenuUI::CloseUI);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSaveSlotClicked.BindUObject(this, &USaveSlotMenuUI::OpenConfirmationPopup);
+	ModeSelection->SetParentWidget(this);
 	ModeSelection->GetBackButton()->OnClicked.AddDynamic(this, &USaveSlotMenuUI::TriggerSelectionMenuFadeOut);
+	
 }
 
 void USaveSlotMenuUI::NativeDestruct()
@@ -52,7 +55,11 @@ void USaveSlotMenuUI::Toggle(const bool bState)
 		FadeInAnimFinishedDelegate.BindDynamic(this, &USaveSlotMenuUI::FadeOutAnimFinished);
 		BindToAnimationFinished(FadeInAnim, FadeInAnimFinishedDelegate);
 	}
-	else SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	else
+	{
+		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		ToggleSaveSlots(true);
+	}
 	PlayAnimation(FadeInAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 	GetWorld()->GetSubsystem<UWidgetManager>()->SetCurrentStateOfUI(bState ? EWidget::SaveSlotMenuUI : EWidget::MainMenuUI);
 }
@@ -116,11 +123,14 @@ void USaveSlotMenuUI::OpenCurrentSaveLevel()
 	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished())
 	{
 		ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, true, false, FName("TutorialLevel")));
+		GoBack();
 		return;
 	}
 	switch (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCurrentChapter())
 	{
-		case 1: ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, false, false, FName("Level_1")));
+		case 1:
+			ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, false, false, FName("Level_1")));
+			GoBack();
 		default: ;
 	}
 }
@@ -129,6 +139,7 @@ void USaveSlotMenuUI::OverwriteSaveAndOpenLevel()
 {
 	PlayAnimation(FadeOutAnim);
 	ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, true, true, FName("TutorialLevel")));
+	GoBack();
 }
 
 void USaveSlotMenuUI::LoadSaveAndOpenLevel()
@@ -137,6 +148,11 @@ void USaveSlotMenuUI::LoadSaveAndOpenLevel()
 	GetGameInstance()->GetSubsystem<USaveSlotManager>()->LoadRunSaveSlot(RunSaveSlotName);
 	PlayAnimation(FadeOutAnim);
 	ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, false, false, FName("TutorialLevel")));
+	GoBack();
 }
 
-void USaveSlotMenuUI::GoBack() { ConfirmationPopup->PlayPopupFadeInAnim(false); }
+void USaveSlotMenuUI::GoBack()
+{
+	bIsConfirmationPanelOpen = false;
+	ConfirmationPopup->PlayPopupFadeInAnim(false);
+}

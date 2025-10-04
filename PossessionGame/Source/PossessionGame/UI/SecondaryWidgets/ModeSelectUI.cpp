@@ -1,6 +1,7 @@
 ﻿#include "ModeSelectUI.h"
 #include "MainMenuButtonUI.h"
 #include "Components/Button.h"
+#include "PossessionGame/UI/MainWidgets/SaveSlotMenuUI.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -42,6 +43,7 @@ void UModeSelectUI::OpenStoryMode()
 {
 	DisablePlayerInput();
 	PlayFadeInAnim(false);
+	ParentWidget->PlayBlackFadeOutAnim();
 	GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &UModeSelectUI::LoadLevel, 1.5f);
 }
 
@@ -49,6 +51,7 @@ void UModeSelectUI::OpenArenaMode()
 {
 	DisablePlayerInput();
 	PlayFadeInAnim(false);
+	ParentWidget->PlayBlackFadeOutAnim();
 	if (PendingLoadLevelData.LevelName != FName("TutorialLevel")) PendingLoadLevelData.LevelName = FName("L_Arena");
 	GetWorld()->GetTimerManager().SetTimer(LoadLevelHandle, this, &UModeSelectUI::LoadLevel, 1.5f);
 }

@@ -5,6 +5,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
 #include "ModeSelectUI.generated.h"
 
+class USaveSlotMenuUI;
 class UButton;
 class UMainMenuButtonUI;
 
@@ -16,6 +17,7 @@ public:
 	TObjectPtr<UButton> GetBackButton() const;
 	
 	void PlayFadeInAnim(const bool bState, const FLoadLevelData& InLevelData = FLoadLevelData());
+	void SetParentWidget(const TObjectPtr<USaveSlotMenuUI>& InParentWidget) { ParentWidget = InParentWidget; }
 private:
 	FLoadLevelData PendingLoadLevelData;
 	UPROPERTY(meta = (BindWidget))
@@ -26,6 +28,8 @@ private:
 	TObjectPtr<UMainMenuButtonUI> BackButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
+	UPROPERTY()
+	TObjectPtr<USaveSlotMenuUI> ParentWidget;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeOutDelegate;
 	UPROPERTY()
