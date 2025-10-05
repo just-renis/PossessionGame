@@ -3,6 +3,30 @@
 #include "PossessionGame/Enums/EGraphicsQuality.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
+EGraphicsQuality USettingsQualityUI::SetAndGetAppliedQuality()
+{
+	AppliedQuality = TemporalQuality;
+	return AppliedQuality;
+}
+
+void USettingsQualityUI::UpdateQuality(const uint8 InQualityInt)
+{
+	TemporalQuality = GetQualityEnum(InQualityInt);
+	SetQualityText();
+}
+
+void USettingsQualityUI::UpdateDefaultQuality(const uint8 InQualityInt)
+{
+	AppliedQuality = GetQualityEnum(InQualityInt);
+	UpdateQuality(InQualityInt);
+}
+
+void USettingsQualityUI::UpdateQuality()
+{
+	TemporalQuality = AppliedQuality;
+	SetQualityText();
+}
+
 EGraphicsQuality USettingsQualityUI::GetQualityEnum(const uint8 InValue)
 {
 	EGraphicsQuality Quality;
@@ -52,15 +76,8 @@ void USettingsQualityUI::OnRightArrowClicked()
 	}
 }
 
-EGraphicsQuality USettingsQualityUI::SetAndGetAppliedQuality()
+void USettingsQualityUI::SetQualityText() const
 {
-	AppliedQuality = TemporalQuality;
-	return AppliedQuality;
-}
-
-void USettingsQualityUI::UpdateQuality(const uint8 InQualityInt)
-{
-	TemporalQuality = GetQualityEnum(InQualityInt);
 	switch (TemporalQuality)
 	{
 		case EGraphicsQuality::Low: Text->SetText(NSLOCTEXT("ST_Localization", "Low", "Low")); break;
@@ -70,16 +87,4 @@ void USettingsQualityUI::UpdateQuality(const uint8 InQualityInt)
 		case EGraphicsQuality::Ultra: Text->SetText(NSLOCTEXT("ST_Localization", "Ultra", "Ultra")); break;
 		case EGraphicsQuality::Custom: Text->SetText(NSLOCTEXT("ST_Localization", "Custom", "Custom"));
 	}
-}
-
-void USettingsQualityUI::UpdateDefaultQuality(const uint8 InQualityInt)
-{
-	AppliedQuality = GetQualityEnum(InQualityInt);
-	UpdateQuality(InQualityInt);
-}
-
-void USettingsQualityUI::UpdateQuality()
-{
-	TemporalQuality = AppliedQuality;
-	if (Text) Text->SetText(FText::FromString(UEnum::GetValueAsString(AppliedQuality).Replace(TEXT("EGraphicsQuality::"), TEXT(""))));
 }

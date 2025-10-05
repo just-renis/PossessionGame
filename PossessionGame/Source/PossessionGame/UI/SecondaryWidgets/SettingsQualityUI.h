@@ -32,4 +32,5 @@ private:
 	virtual void NativeConstruct() override;
 	virtual void OnLeftArrowClicked() override;
 	virtual void OnRightArrowClicked() override;
+	void SetQualityText() const;
 };
