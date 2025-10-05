@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "WaveManagerHUD.generated.h"
 
+class UDelegateManager;
 enum class EGameMode : uint8;
 class UProgressBar;
 class UInvalidationBox;
@@ -50,6 +51,10 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> MiniPopupText;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> TimerText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidget> TimerBoxInv;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> AnnouncementInv;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> ObjectivePanelFadeInAnim;
@@ -66,11 +71,19 @@ private:
 	UPROPERTY()
 	FTimerHandle AnnouncementHandle;
 	UPROPERTY()
+	FTimerHandle TimerUpdateHandle;
+	UPROPERTY()
 	FWidgetAnimationDynamicEvent OnObjectivePanelAnimEnd;
+	UPROPERTY()
+	TObjectPtr<UDelegateManager> DelegateManager;
+
+	FString GetConvertedNumber(const int32 InNumber);
 
 	virtual void NativeConstruct() override;
 	void HideWaveCompletedAnnouncement() const;
 	void TriggerMiniPopup(const FText& InText);
+	void UpdateTimerText();
+	virtual void NativeDestruct() override;
 	UFUNCTION()
 	void OpenUpgradeSelection();
 };

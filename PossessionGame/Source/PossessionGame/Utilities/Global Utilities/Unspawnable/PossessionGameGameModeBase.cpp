@@ -34,6 +34,7 @@ void APossessionGameGameModeBase::BeginPlay()
 	bIsArenaMode = GetWorld()->GetMapName().Contains("Arena");
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsArenaMode.BindUObject(this, &APossessionGameGameModeBase::GetIsArenaMode);
 	InitAfterPSOPrecache();
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestCurrentTimer.BindUObject(this, &APossessionGameGameModeBase::GetRunFinishedTime);
 }
 
 void APossessionGameGameModeBase::LoadSettingsData()

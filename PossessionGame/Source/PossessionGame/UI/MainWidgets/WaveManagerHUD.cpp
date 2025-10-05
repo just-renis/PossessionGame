@@ -1,5 +1,4 @@
 #include "WaveManagerHUD.h"
-
 #include "UpgradeSelectionUI.h"
 #include "Animation/WidgetAnimation.h"
 #include "Components/InvalidationBox.h"
@@ -100,11 +99,23 @@ void UWaveManagerHUD::ToggleFinishOffEnemiesText(const bool bState)
 	if (FinishOfEnemiesText) FinishOfEnemiesText->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
+FString UWaveManagerHUD::GetConvertedNumber(const int32 InNumber)
+{
+	if (InNumber < 10) return TEXT("0") + FString::FromInt(InNumber);
+	return FString::FromInt(InNumber);
+}
+
 void UWaveManagerHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
 	OnObjectivePanelAnimEnd.BindUFunction(this, "OpenUpgradeSelection");
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestMiniPopup.BindUObject(this, &UWaveManagerHUD::TriggerMiniPopup);
+	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	DelegateManager->RequestMiniPopup.BindUObject(this, &UWaveManagerHUD::TriggerMiniPopup);
+	if (DelegateManager->RequestIsArenaMode.IsBound() && DelegateManager->RequestIsArenaMode.Execute())
+	{
+		TimerBoxInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		GetWorld()->GetTimerManager().SetTimer(TimerUpdateHandle, this, &UWaveManagerHUD::UpdateTimerText, 0.5f, true);
+	}
 }
 
 void UWaveManagerHUD::HideWaveCompletedAnnouncement() const { if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::Collapsed); }
@@ -113,6 +124,23 @@ void UWaveManagerHUD::TriggerMiniPopup(const FText& InText)
 {
 	MiniPopupText->SetText(InText);
 	PlayAnimation(MiniPopupAnim);
+}
+
+void UWaveManagerHUD::UpdateTimerText()
+{
+	if (!DelegateManager->RequestCurrentTimer.IsBound()) return;
+	const int32 Time = DelegateManager->RequestCurrentTimer.Execute();
+	const int32 Hours = Time / 3600;
+	const int32 Minutes = Time % 3600 / 60;
+	const int32 Seconds = Time % 60;
+	TimerText->SetText(FText::FromString(GetConvertedNumber(Hours) + TEXT(":") + GetConvertedNumber(Minutes) + TEXT(":") + GetConvertedNumber(Seconds)));
+}
+
+void UWaveManagerHUD::NativeDestruct()
+{
+	GetWorld()->GetTimerManager().ClearTimer(AnnouncementHandle);
+	GetWorld()->GetTimerManager().ClearTimer(TimerUpdateHandle);
+	Super::NativeDestruct();
 }
 
 void UWaveManagerHUD::OpenUpgradeSelection()
