@@ -33,7 +33,8 @@ void UDemoEndUI::NativeConstruct()
 	Super::NativeConstruct();
 	bIsArenaMode = GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsArenaMode.Execute();
 	ChapterCompletedText->SetText(bIsArenaMode ? NSLOCTEXT("ST_Localization", "Arena", "Arena") : NSLOCTEXT("ST_Localization", "ChapterCompleted", "Chapter Completed"));
-	if (bIsArenaMode) RankBonusBox->SetVisibility(ESlateVisibility::Hidden);
+	if (bIsArenaMode) RankBonusBox->SetVisibility(ESlateVisibility::Collapsed);
+	else HighScoreEndTimeText->SetVisibility(ESlateVisibility::Collapsed);
 	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeInFinished);
 	BindToAnimationFinished(FadeInAnim, FadeFinishedDelegate);
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 0.25f, FLinearColor::Black, false, true);
@@ -63,11 +64,12 @@ void UDemoEndUI::SetupRankUI()
 		CoinsAmountText->SetText(FText::AsNumber(CoinsAmount));
 		GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddCurrencyAmount(CoinsAmount);
 	}
-	//else GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()
-	const int32 Hours = RunEndTime / 3600;
-	const int32 Minutes = RunEndTime % 3600 / 60;
-	const int32 Seconds = RunEndTime % 60;
-	TimeText->SetText(FText::FromString(NSLOCTEXT("ST_Localization", "Time", "Time").ToString() + TEXT(" ") + GetConvertedNumber(Hours) + TEXT(":") + GetConvertedNumber(Minutes) + TEXT(":") + GetConvertedNumber(Seconds)));
+	else
+	{
+		GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddArenaStats(RunEndTime);
+		SetTimeText(HighScoreEndTimeText, GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetArenaMaxTimeSurvivedSeconds(), NSLOCTEXT("ST_Localization", "HighScore", "High Score"));
+	}
+	SetTimeText(TimeText, RunEndTime, NSLOCTEXT("ST_Localization", "Time", "Time"));
 }
 
 void UDemoEndUI::SetRankTexture()
@@ -96,6 +98,14 @@ void UDemoEndUI::SetRankTexture()
 	}
 	RankImage->SetBrushFromAtlasInterface(Ranks.Last().RankTexture);
 	RankImage->SetDesiredSizeOverride(FVector2D(200.f));
+}
+
+void UDemoEndUI::SetTimeText(const TObjectPtr<UTextBlock>& InTextBlock, const int32 InTime, const FText& InText)
+{
+	const int32 Hours = InTime / 3600;
+	const int32 Minutes = InTime % 3600 / 60;
+	const int32 Seconds = InTime % 60;
+	InTextBlock->SetText(FText::FromString(InText.ToString() + TEXT(" ") + GetConvertedNumber(Hours) + TEXT(":") + GetConvertedNumber(Minutes) + TEXT(":") + GetConvertedNumber(Seconds)));
 }
 
 void UDemoEndUI::FadeInFinished()

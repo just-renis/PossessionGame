@@ -41,6 +41,8 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TimeText;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> HighScoreEndTimeText;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidget> RankBonusBox;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ChapterCompletedText;
@@ -64,6 +66,7 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	void PauseGame() const;
 	void SetupRankUI();
 	void SetRankTexture();
+	void SetTimeText(const TObjectPtr<UTextBlock>& InTextBlock, const int32 InTime, const FText& InText);
 	UFUNCTION()
 	void FadeInFinished();
 	UFUNCTION()

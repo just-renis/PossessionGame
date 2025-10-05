@@ -65,7 +65,6 @@ void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInsta
 	GameInstance = InGameInstance;
 	PlayerLevelData = GameInstance->GetPlayerLevelData();
 	SlotName = InSlotName;
-	UE_LOG(LogTemp, Error, TEXT("SETUP SAVED SLOT: %s"), *InSlotName);
 	if (CharacterChosenAbilities.IsEmpty()) AddDefaultAbilities();
 	GameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
 	#if WITH_EDITOR
@@ -112,7 +111,8 @@ void USaveSlot::AddShownExplanation(const EExplanation InExplanationName)
 
 void USaveSlot::AddArenaStats(const int32 InSurviveTime)
 {
-	ArenaMaxTimeSurvivedSeconds = InSurviveTime;
+	if (InSurviveTime > ArenaMaxTimeSurvivedSeconds) ArenaMaxTimeSurvivedSeconds = InSurviveTime;
+	SaveSlot();
 }
 
 void USaveSlot::UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation) { VariationUnlockData.UpdateSelectedVariation(InCharacter, InVariation); }
