@@ -76,6 +76,10 @@ void UWaveManagerHUD::UpdateObjective(const EGameMode InGameMode, const int32 In
 		case EGameMode::BossMode: 
 			ObjectiveTitleText->SetText(FText::FromString(NSLOCTEXT("ST_Localization", "Objectives", "Objectives").ToString() + TEXT("4")));
 			ObjectiveText->SetText(NSLOCTEXT("ST_Localization", "KillTheBoss", "Kill the boss"));
+			break;
+		case EGameMode::ArenaMode: 
+			ObjectiveTitleText->SetText(NSLOCTEXT("ST_Localization", "Arena", "Arena"));
+			ObjectiveText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "Wave", "Wave {0}"), InData));
 		default: ;
 	}
 }
@@ -83,7 +87,8 @@ void UWaveManagerHUD::UpdateObjective(const EGameMode InGameMode, const int32 In
 void UWaveManagerHUD::UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective, const bool bShowUpgradeSelection)
 {
 	if (!ObjectiveProgressText) return;
-	ObjectiveProgressText->SetText(FText::FromString(FString::FromInt(InObjectiveProgress) + " / " + FString::FromInt(InObjective)));
+	if (InObjective == -1) ObjectiveProgressText->SetText(FText::FromString(FString::FromInt(InObjectiveProgress)));
+	else ObjectiveProgressText->SetText(FText::FromString(FString::FromInt(InObjectiveProgress) + " / " + FString::FromInt(InObjective)));
 	if (InObjectiveProgress != InObjective) return;
 	PlayAnimation(ObjectiveCompletedFadeInAnim);
 	if (bShowUpgradeSelection) BindToAnimationFinished(ObjectiveCompletedFadeInAnim, OnObjectivePanelAnimEnd);

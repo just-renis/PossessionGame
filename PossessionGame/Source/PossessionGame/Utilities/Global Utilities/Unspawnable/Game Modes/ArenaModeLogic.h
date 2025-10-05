@@ -35,4 +35,5 @@ class POSSESSIONGAME_API UArenaModeLogic : public UGameModeBaseLogic
 	virtual void HandleSpawning() override;
 	void WaveCompleted();
 	void AfterSpawnEnemyCallback();
+	virtual void FadeInObjectivePanel() const override;
 };

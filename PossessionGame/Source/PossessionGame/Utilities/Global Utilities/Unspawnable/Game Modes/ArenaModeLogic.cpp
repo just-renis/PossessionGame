@@ -1,5 +1,6 @@
 ﻿#include "ArenaModeLogic.h"
 #include "PossessionGame/Data Assets/Game Modes/ArenaModeData.h"
+#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -93,6 +94,7 @@ void UArenaModeLogic::HandleSpawning()
 void UArenaModeLogic::WaveCompleted()
 {
 	if (!WaveManagerHUD) return;
+	WaveManagerHUD->UpdateObjective(EGameMode::ArenaMode, CurrentWave);
 	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "WaveCompleted", "Wave Completed"));
 	PlaySound(ESound::WaveCompleted);
 	bWaveNotStarted = true;
@@ -104,4 +106,11 @@ void UArenaModeLogic::AfterSpawnEnemyCallback()
 	bAsyncLoadInProcess = false;
 	AliveEnemiesAmount++;
 	EnemiesLeftToKill--;
+}
+
+void UArenaModeLogic::FadeInObjectivePanel() const
+{
+	if (!WaveManagerHUD) return;
+	WaveManagerHUD->UpdateObjective(EGameMode::ArenaMode, 1);
+	Super::FadeInObjectivePanel();
 }
