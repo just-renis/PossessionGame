@@ -32,6 +32,7 @@ public:
 	int32 GetCurrencyAmount() const { return CurrencyAmount; }
 	int32 GetSkillPoints() const;
 	int32 GetCurrentChapter() const { return CurrentChapter; }
+	int32 GetArenaMaxTimeSurvivedSeconds() const { return ArenaMaxTimeSurvivedSeconds; }
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	FCharacterAbilities GetCharacterChosenAbilities(const ECharacterType InCharacter);
 	FCharacterAbilities GetCharacterUnlockedAbilities(const ECharacterType InCharacter);
@@ -46,6 +47,7 @@ public:
 	void UnlockVariation(const EVariation InVariationUnlockName);
 	void AddChosenAbilities(const ECharacterType InCharacter, const int32 InFirstAbilityIndex, const int32 InSecondAbilityIndex);
 	void AddShownExplanation(const EExplanation InExplanationName);
+	void AddArenaStats(const int32 InSurviveTime);
 private:
 	UPROPERTY()
 	bool bTutorialFinished = false;
@@ -59,6 +61,8 @@ private:
 	int32 SaveVersion = 1;
 	UPROPERTY()
 	int32 CurrentChapter = 1;
+	UPROPERTY()
+	int32 ArenaMaxTimeSurvivedSeconds = 0;
 	UPROPERTY()
 	FString SlotName;
 	UPROPERTY(Transient)

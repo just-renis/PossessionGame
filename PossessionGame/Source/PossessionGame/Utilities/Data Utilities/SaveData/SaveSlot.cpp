@@ -110,6 +110,11 @@ void USaveSlot::AddShownExplanation(const EExplanation InExplanationName)
 	if (bTutorialFinished) SaveSlot();
 }
 
+void USaveSlot::AddArenaStats(const int32 InSurviveTime)
+{
+	ArenaMaxTimeSurvivedSeconds = InSurviveTime;
+}
+
 void USaveSlot::UpdateSelectedVariation(const ECharacterType InCharacter, const EVariation InVariation) { VariationUnlockData.UpdateSelectedVariation(InCharacter, InVariation); }
 
 void USaveSlot::VersionMigration()

@@ -63,6 +63,7 @@ void UDemoEndUI::SetupRankUI()
 		CoinsAmountText->SetText(FText::AsNumber(CoinsAmount));
 		GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddCurrencyAmount(CoinsAmount);
 	}
+	//else GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()
 	const int32 Hours = RunEndTime / 3600;
 	const int32 Minutes = RunEndTime % 3600 / 60;
 	const int32 Seconds = RunEndTime % 60;
