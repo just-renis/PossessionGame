@@ -107,6 +107,7 @@ void USaveSlotMenuUI::ToggleSaveSlots(const bool bState) const
 void USaveSlotMenuUI::OpenCurrentSaveLevel()
 {
 	bIsModeSelectionOpen = true;
+	CloseButton->SetVisibility(ESlateVisibility::Collapsed);
 	PlayAnimation(FadeOutAnim);
 	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished())
 	{
@@ -125,6 +126,7 @@ void USaveSlotMenuUI::OpenCurrentSaveLevel()
 
 void USaveSlotMenuUI::OverwriteSaveAndOpenLevel()
 {
+	CloseButton->SetVisibility(ESlateVisibility::Collapsed);
 	PlayAnimation(FadeOutAnim);
 	ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, true, true, FName("TutorialLevel")));
 	GoBack();
@@ -132,6 +134,7 @@ void USaveSlotMenuUI::OverwriteSaveAndOpenLevel()
 
 void USaveSlotMenuUI::LoadSaveAndOpenLevel()
 {
+	CloseButton->SetVisibility(ESlateVisibility::Collapsed);
 	GetGameInstance()->GetSubsystem<USaveSlotManager>()->LoadSaveSlot(SaveSlotName);
 	GetGameInstance()->GetSubsystem<USaveSlotManager>()->LoadRunSaveSlot(RunSaveSlotName);
 	PlayAnimation(FadeOutAnim);
@@ -141,7 +144,6 @@ void USaveSlotMenuUI::LoadSaveAndOpenLevel()
 
 void USaveSlotMenuUI::GoBack()
 {
-	CloseButton->SetVisibility(ESlateVisibility::Collapsed);
 	bIsConfirmationPanelOpen = false;
 	ConfirmationPopup->PlayPopupFadeInAnim(false);
 }

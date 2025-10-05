@@ -10,6 +10,7 @@ class UNiagaraSystem;
 UENUM()
 enum class EUserParamType : uint8
 {
+	Bool,
 	Int,
 	Float,
 	Vector,
@@ -35,6 +36,8 @@ struct FNiagaraUserParam
 
 	UPROPERTY(EditDefaultsOnly)
 	EUserParamType ParamType = EUserParamType::Float;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Bool", EditConditionHides))
+	bool bBoolValue = false;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Int", EditConditionHides))
 	int32 IntValue = 0;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Float", EditConditionHides))
