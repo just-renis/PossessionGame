@@ -603,6 +603,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_VectorBlastBounce", ESound::VectorBlastBounce);
 	SoundMap.Add("PA_VectorBlastHit", ESound::VectorBlastHit);
 	SoundMap.Add("PA_VectorBlastLaunch", ESound::VectorBlastLaunch);
+	SoundMap.Add("PA_VectorBlastSpecialImpactUpgrade", ESound::VectorBlastSpecialImpactUpgrade);
 	SoundMap.Add("PA_WardenDeath", ESound::WardenDeath);
 	SoundMap.Add("PA_WardenSpawn", ESound::WardenSpawn);
 	SoundMap.Add("PA_WardenBeamFire", ESound::WardenBeamFire);

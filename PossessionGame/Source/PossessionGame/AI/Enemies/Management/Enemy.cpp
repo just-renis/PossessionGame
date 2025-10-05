@@ -78,6 +78,10 @@ AEnemy::AEnemy()
 	Sounds.Add(ESound::EmpEffectApplied, CreateDefaultSubobject<UAudioComponent>(TEXT("empEffectAppliedSound")));
 	Sounds[ESound::EmpEffectApplied]->SetAutoActivate(false);
 	Sounds[ESound::EmpEffectApplied]->SetupAttachment(GetMesh());
+	VectorBlastSpecialImpactUpgrade = CreateDefaultSubobject<UAudioComponent>(FName("VectorBlastSpecialImpactUpgrade"));
+	VectorBlastSpecialImpactUpgrade->SetAutoActivate(false);
+	VectorBlastSpecialImpactUpgrade->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::VectorBlastSpecialImpactUpgrade, VectorBlastSpecialImpactUpgrade);
 }
 
 bool AEnemy::GetIsHijackAble() const { return AI_Data->GetIsPossessable(); }
@@ -239,8 +243,9 @@ void AEnemy::AI_SetupUpgradesAppliance()
 	CurrentHp = MaxHp;
 }
 
-void AEnemy::AI_TriggerVectorBlastSpecialImpactVfx()
+void AEnemy::AI_TriggerVectorBlastSpecialImpact()
 {
+	PlaySound(ESound::VectorBlastSpecialImpactUpgrade);
 	if (!VectorBlastSpecialImpactVfx) AssetsManager->AttachVfx(EVfx::GuardianVectorBlastUpgrade, [this]() -> bool { return GetIsAlive(); }, &VectorBlastSpecialImpactVfx, GetMesh(), FName("DeathSocket"));
 	else VectorBlastSpecialImpactVfx->Activate();
 }

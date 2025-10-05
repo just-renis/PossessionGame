@@ -94,7 +94,7 @@ FText UAudioSettingsUI::GetLanguageNameByCode(const FString& InCode)
 //	if (InCode.Equals("pl-PL")) return NSLOCTEXT("ST_Localization", "Polish", "Polish");
 	if (InCode.Equals("ru-RU")) return NSLOCTEXT("ST_Localization", "Russian", "Russian");
 //	if (InCode.Equals("uk-UA")) return NSLOCTEXT("ST_Localization", "Ukrainian", "Ukrainian");
-	if (InCode.Equals("zh-Hans-CN")) return NSLOCTEXT("ST_Localization", "Simplified Chinese", "Simplified Chinese");
+	if (InCode.Equals("zh-Hans-CN")) return NSLOCTEXT("ST_Localization", "Chinese S", "Chinese S");
 	return NSLOCTEXT("ST_Localization", "English", "English");
 }
 

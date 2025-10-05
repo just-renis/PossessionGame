@@ -39,7 +39,6 @@ void USaveSlotMenuUI::NativeConstruct()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSaveSlotClicked.BindUObject(this, &USaveSlotMenuUI::OpenConfirmationPopup);
 	ModeSelection->SetParentWidget(this);
 	ModeSelection->GetBackButton()->OnClicked.AddDynamic(this, &USaveSlotMenuUI::TriggerSelectionMenuFadeOut);
-	
 }
 
 void USaveSlotMenuUI::NativeDestruct()
@@ -52,11 +51,14 @@ void USaveSlotMenuUI::Toggle(const bool bState)
 {
 	if (!bState)
 	{
-		FadeInAnimFinishedDelegate.BindDynamic(this, &USaveSlotMenuUI::FadeOutAnimFinished);
-		BindToAnimationFinished(FadeInAnim, FadeInAnimFinishedDelegate);
+		CloseButton->SetVisibility(ESlateVisibility::Collapsed);
+		FadeOutAnimFinishedDelegate.BindDynamic(this, &USaveSlotMenuUI::FadeOutAnimFinished);
+		BindToAnimationFinished(FadeInAnim, FadeOutAnimFinishedDelegate);
 	}
 	else
 	{
+		FadeInAnimFinishedDelegate.BindDynamic(this, &USaveSlotMenuUI::FadeInAnimFinished);
+		BindToAnimationFinished(FadeInAnim, FadeInAnimFinishedDelegate);
 		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		ToggleSaveSlots(true);
 	}
@@ -102,20 +104,6 @@ void USaveSlotMenuUI::ToggleSaveSlots(const bool bState) const
 	SaveSlot4->SetIsEnabled(bState);
 }
 
-void USaveSlotMenuUI::FadeOutAnimFinished()
-{
-	UnbindFromAnimationFinished(FadeInAnim, FadeInAnimFinishedDelegate);
-	SetVisibility(ESlateVisibility::Collapsed);
-}
-
-void USaveSlotMenuUI::TriggerSelectionMenuFadeOut()
-{
-	if (!ModeSelection) return;
-	ModeSelection->PlayFadeInAnim(false);
-	bIsModeSelectionOpen = false;
-	OpenUI();
-}
-
 void USaveSlotMenuUI::OpenCurrentSaveLevel()
 {
 	bIsModeSelectionOpen = true;
@@ -153,6 +141,27 @@ void USaveSlotMenuUI::LoadSaveAndOpenLevel()
 
 void USaveSlotMenuUI::GoBack()
 {
+	CloseButton->SetVisibility(ESlateVisibility::Collapsed);
 	bIsConfirmationPanelOpen = false;
 	ConfirmationPopup->PlayPopupFadeInAnim(false);
+}
+
+void USaveSlotMenuUI::FadeInAnimFinished()
+{
+	UnbindFromAnimationFinished(FadeInAnim, FadeInAnimFinishedDelegate);
+	CloseButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+}
+
+void USaveSlotMenuUI::FadeOutAnimFinished()
+{
+	UnbindFromAnimationFinished(FadeInAnim, FadeOutAnimFinishedDelegate);
+	SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void USaveSlotMenuUI::TriggerSelectionMenuFadeOut()
+{
+	if (!ModeSelection) return;
+	ModeSelection->PlayFadeInAnim(false);
+	bIsModeSelectionOpen = false;
+	OpenUI();
 }

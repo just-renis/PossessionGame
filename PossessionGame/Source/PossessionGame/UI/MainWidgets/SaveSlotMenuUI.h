@@ -46,6 +46,8 @@ private:
 	TObjectPtr<UWidgetAnimation> BlackFadeOutAnim;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeInAnimFinishedDelegate;
+	UPROPERTY()
+	FWidgetAnimationDynamicEvent FadeOutAnimFinishedDelegate;
 
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
@@ -60,6 +62,8 @@ private:
 	void LoadSaveAndOpenLevel();
 	UFUNCTION()
 	void GoBack();
+	UFUNCTION()
+	void FadeInAnimFinished();
 	UFUNCTION()
 	void FadeOutAnimFinished();
 	UFUNCTION()

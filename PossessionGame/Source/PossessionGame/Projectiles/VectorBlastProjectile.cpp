@@ -62,7 +62,7 @@ void AVectorBlastProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 		PlaySound(ESound::VectorBlastHit);
 		DealDamageToSentientActor(true, OtherActor, Hit);
 		if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::GuardianAbility3, EUpgradeAttribute::Special1)) return;
-		Cast<AEnemy>(OtherActor)->AI_TriggerVectorBlastSpecialImpactVfx();
+		Cast<AEnemy>(OtherActor)->AI_TriggerVectorBlastSpecialImpact();
 		if (const TObjectPtr<AActor> ClosestEnemy = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetClosestEnemy(GetActorLocation(), OtherActor))
 		{
 			UGameplayStatics::ApplyDamage(ClosestEnemy, Damage, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());

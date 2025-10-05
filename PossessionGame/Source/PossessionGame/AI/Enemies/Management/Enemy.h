@@ -81,7 +81,7 @@ public:
 	void AI_SetupUpgradesAppliance();
 	//void AI_SetupShootLogic();
 	virtual void AI_CancelShooting() {}
-	void AI_TriggerVectorBlastSpecialImpactVfx();
+	void AI_TriggerVectorBlastSpecialImpact();
 
 	void P_ApplyUpgradeOnSelection();
 	void P_UseAbility(const int32 AbilityIndex);
@@ -162,6 +162,8 @@ protected:
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
 	TObjectPtr<UEnhancedPlayerInput> P_InputManager;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> VectorBlastSpecialImpactUpgrade;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 

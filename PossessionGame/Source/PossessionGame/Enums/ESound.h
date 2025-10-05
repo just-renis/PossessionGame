@@ -113,6 +113,7 @@ enum class ESound : uint16
 	VectorBlastBounce,
 	VectorBlastHit,
 	VectorBlastLaunch,
+	VectorBlastSpecialImpactUpgrade,
 	WardenDeath,
 	WardenSpawn,
 	WardenBeamFire,

@@ -16,5 +16,5 @@ public:
 private:
 	bool bIsGodModeEnabled = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	float PossessionBarCooldown = 45.f;
+	float PossessionBarCooldown = 100.f;
 };
