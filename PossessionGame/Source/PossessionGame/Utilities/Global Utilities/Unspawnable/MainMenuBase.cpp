@@ -9,6 +9,12 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
+void AMainMenuBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+	Cast<UPossessionGameInstance>(GetGameInstance())->InitGameInstanceManagers();
+}
+
 void AMainMenuBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -33,7 +39,6 @@ void AMainMenuBase::LoadSettingsData() const
 
 void AMainMenuBase::InitAfterPSOPrecache() const
 {
-	Cast<UPossessionGameInstance>(GetGameInstance())->InitGameInstanceManagers();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ChangeMusicPlayerState.ExecuteIfBound(true);
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UMainMenuUI>(EWidget::MainMenuUI)->OpenUI();

@@ -17,6 +17,7 @@ class POSSESSIONGAME_API AMainMenuBase : public AGameModeBase
 	UPROPERTY(EditAnywhere, Category = "Widget Manager", meta = (AllowPrivateAccess = true))
 	TMap<EWidget, TSubclassOf<UUserWidget>> WidgetClasses;
 
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void BeginPlay() override;
 	void LoadSettingsData() const;
 	void InitAfterPSOPrecache() const;
