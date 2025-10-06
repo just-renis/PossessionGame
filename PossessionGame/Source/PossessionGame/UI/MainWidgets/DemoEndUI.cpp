@@ -46,7 +46,7 @@ void UDemoEndUI::NativeConstruct()
 		BindToAnimationFinished(FadeInAnim, FadeFinishedDelegate);
 		PlayAnimation(FadeInAnim);
 	}
-	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 0.25f, FLinearColor::Black, false, true);
+	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, bIsArenaMode ? 1.f : 0.25f, FLinearColor::Black, false, true);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = true;
 	PlayerController->SetInputMode(FInputModeGameAndUI());
