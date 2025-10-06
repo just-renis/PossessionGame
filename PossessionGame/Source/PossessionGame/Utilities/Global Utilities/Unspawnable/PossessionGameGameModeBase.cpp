@@ -37,6 +37,12 @@ void APossessionGameGameModeBase::BeginPlay()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestCurrentTimer.BindUObject(this, &APossessionGameGameModeBase::GetRunFinishedTime);
 }
 
+void APossessionGameGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+	Cast<UPossessionGameInstance>(GetGameInstance())->InitGameInstanceManagers();
+}
+
 void APossessionGameGameModeBase::LoadSettingsData()
 {
 	const FString SettingsSlot = "SettingsSlot";
@@ -73,7 +79,6 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	WidgetManager->Init(WidgetClasses);
 	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0) WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init(nullptr);
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
-	GameInstance->InitGameInstanceManagers();
 	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
 	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);

@@ -63,6 +63,7 @@ private:
 	int32 GetRunFinishedTime() const;
 
 	virtual void BeginPlay() override;
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	void LoadSettingsData();
 	void SpawnArtifact() const;
 	void InitAfterPSOPrecache();

@@ -743,9 +743,7 @@ void UPrimaryDataAssetsManager::SetupVfx(const FVfxContainer& InVfxData, TFuncti
 	{
 		switch (Param.Value.ParamType)
 		{
-			case EUserParamType::Bool:
-				UE_LOG(LogTemp, Error,TEXT("SET KILL PARITCLES TO TRUE : %s %i"), *Param.Key.ToString(), Param.Value.bBoolValue)
-				InVfxComponent->SetBoolParameter(Param.Key, Param.Value.bBoolValue); break;
+			case EUserParamType::Bool: InVfxComponent->SetBoolParameter(Param.Key, Param.Value.bBoolValue); break;
 			case EUserParamType::Int: InVfxComponent->SetIntParameter(Param.Key, Param.Value.IntValue); break;
 			case EUserParamType::Float: InVfxComponent->SetFloatParameter(Param.Key, Param.Value.FloatValue); break;
 			case EUserParamType::Vector: InVfxComponent->SetVectorParameter(Param.Key, Param.Value.VectorValue); break;
