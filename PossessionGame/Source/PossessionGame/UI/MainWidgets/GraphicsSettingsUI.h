@@ -25,6 +25,7 @@ private:
 	int32 ResolutionIndex = -1;
 	int32 CurrentAntiAliasingMethod = 4;
 	FIntPoint Resolution;
+	EWindowMode::Type CurrentScreenMode;
 	EWindowMode::Type ScreenMode;
 	TArray<FIntPoint> SupportedResolutions;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
@@ -55,7 +56,7 @@ private:
 	TObjectPtr<USliderUI> BrightnessSlider;
 
 	uint8 GetGlobalGraphicsQuality();
-	FText GetFixedScreenMode() const;
+	FText GetFixedScreenMode(const EWindowMode::Type InScreenMode) const;
 	FText GetAntiAliasingMethodName() const;
 
 	virtual void NativeConstruct() override;

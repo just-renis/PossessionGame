@@ -316,11 +316,11 @@ private:
 	UPROPERTY()
 	TObjectPtr<UPossessionGameInstance> GameInstance;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> EmpAffected;
+	TObjectPtr<UNiagaraComponent> EmpAffectedVfx;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> PoisonSlowAffected;
+	TObjectPtr<UNiagaraComponent> PoisonSlowAffectedVfx;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> HijackViable;
+	TObjectPtr<UNiagaraComponent> HijackViableVfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> LevelUpVfx;
 	UPROPERTY()

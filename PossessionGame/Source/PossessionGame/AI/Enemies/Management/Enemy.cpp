@@ -329,12 +329,8 @@ void AEnemy::SetHijackOutline(const bool bState)
 	bHijackOutlineState = bState;
 	if (bState)
 	{
-		if (!HijackViable) AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && bHijackOutlineState; }, &HijackViable, GetMesh(), FName("RootSocket"));
-		else
-		{
-			if (HijackViable->IsActive()) HijackViable->Deactivate();
-			HijackViable->Activate();
-		}
+		if (!HijackViableVfx) AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && bHijackOutlineState; }, &HijackViableVfx, GetMesh(), FName("RootSocket"));
+		else HijackViableVfx->Activate(true);
 	}
 	else DisableHijackViableVfx();
 	GetMesh()->SetOverlayMaterial(bState ? HijackOutlineMaterial : nullptr);
@@ -738,17 +734,17 @@ void AEnemy::DisableAllVfxAfterPossession() { DisableHijackViableVfx(); }
 
 void AEnemy::DestroyAIVfxs()
 {
-	if (EmpAffected)
+	if (EmpAffectedVfx)
 	{
-		EmpAffected->DeactivateImmediate();
-		EmpAffected->DestroyComponent();
-		EmpAffected = nullptr;
+		EmpAffectedVfx->DeactivateImmediate();
+		EmpAffectedVfx->DestroyComponent();
+		EmpAffectedVfx = nullptr;
 	}
-	if (PoisonSlowAffected)
+	if (PoisonSlowAffectedVfx)
 	{
-		PoisonSlowAffected->DeactivateImmediate();
-		PoisonSlowAffected->DestroyComponent();
-		PoisonSlowAffected = nullptr;
+		PoisonSlowAffectedVfx->DeactivateImmediate();
+		PoisonSlowAffectedVfx->DestroyComponent();
+		PoisonSlowAffectedVfx = nullptr;
 	}
 }
 
@@ -857,7 +853,7 @@ void AEnemy::P_SetupUI()
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
 	P_SetupColorsForUI();
-	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.05f, true);
+	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.015f, true);
 }
 
 void AEnemy::P_HijackEnemy()
@@ -1408,35 +1404,35 @@ void AEnemy::CloseInfoPanel() { /*if (P_HUD) P_HUD->ToggleInfoPanel(false);*/ }
 
 void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 {
-	if (!EmpAffected)
+	if (!EmpAffectedVfx)
 	{
-		AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, &EmpAffected, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(true, InEffectDuration)}});
+		AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, &EmpAffectedVfx, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(true, InEffectDuration)}});
 	}
-	else EmpAffected->Activate(true);
+	else EmpAffectedVfx->Activate(true);
 }
 
 void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
 {
-	if (!PoisonSlowAffected && !bIsPoisonSlowAffected)
+	if (!PoisonSlowAffectedVfx && !bIsPoisonSlowAffected)
 	{
 		bIsPoisonSlowAffected = true;
-		AssetsManager->AttachVfx(EVfx::PoisonSlowAffected, [this]() -> bool { return GetIsAlive() && bIsPoisonSlowAffected; }, &PoisonSlowAffected, GetMesh(), FName("DeathSocket"));
+		AssetsManager->AttachVfx(EVfx::PoisonSlowAffected, [this]() -> bool { return GetIsAlive() && bIsPoisonSlowAffected; }, &PoisonSlowAffectedVfx, GetMesh(), FName("DeathSocket"));
 	}
 	else
 	{
-		if (bState) PoisonSlowAffected->Activate(true);
+		if (bState) PoisonSlowAffectedVfx->Activate(true);
 		else
 		{
 			bIsPoisonSlowAffected = false;
-			PoisonSlowAffected->DeactivateImmediate();
+			PoisonSlowAffectedVfx->DeactivateImmediate();
 		}
 	}
 }
 
 void AEnemy::DisableHijackViableVfx() const
 {
-	if (!HijackViable) return;
-	HijackViable->DeactivateImmediate();
+	if (!HijackViableVfx) return;
+	HijackViableVfx->DeactivateImmediate();
 }
 
 void AEnemy::DisableVfxs() const

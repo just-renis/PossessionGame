@@ -48,8 +48,8 @@ void UGraphicsSettingsUI::UpdateDefaultGraphicsSettings()
 	if (Textures) Textures->UpdateDefaultQuality(GameUserSettings->GetTextureQuality());
 	if (Effects) Effects->UpdateDefaultQuality(GameUserSettings->GetVisualEffectQuality());
 	if (Shading) Shading->UpdateDefaultQuality(GameUserSettings->GetShadingQuality());
-	if (ScreenMode) ScreenMode = GameUserSettings->GetFullscreenMode();
-	if (ScreenModeOption) ScreenModeOption->SetText(GetFixedScreenMode());
+	CurrentScreenMode = ScreenMode = GameUserSettings->GetFullscreenMode();
+	if (ScreenModeOption) ScreenModeOption->SetText(GetFixedScreenMode(CurrentScreenMode));
 	Resolution = GEngine->GetGameUserSettings()->GetDesktopResolution();
 	if (ResolutionOption) ResolutionOption->SetText(FText::FromString(FString::Format(TEXT("{0}x{1}"), {Resolution.X, Resolution.Y})));
 	Vsync = GameUserSettings->IsVSyncEnabled();
@@ -78,6 +78,8 @@ void UGraphicsSettingsUI::SetSavedSettings()
 		BrightnessSlider->SetSliderValue(BrightnessSlider->GetSavedValue());
 		ApplyBrightnessValue(BrightnessSlider->GetSavedValue());
 	}
+	ScreenMode = CurrentScreenMode;
+	if (ScreenModeOption) ScreenModeOption->SetText(GetFixedScreenMode(ScreenMode));
 }
 
 void UGraphicsSettingsUI::ApplySettings()
@@ -97,6 +99,7 @@ void UGraphicsSettingsUI::ApplySettings()
 			GlobalGraphics->SetAndGetAppliedQuality();
 		}
 		GameUserSettings->SetFullscreenMode(ScreenMode);
+		CurrentScreenMode = ScreenMode;
 		GameUserSettings->SetScreenResolution(Resolution);
 		GameUserSettings->SetVSyncEnabled(Vsync);
 		GameUserSettings->SetMotionBlur(MotionBlur);
@@ -125,9 +128,9 @@ uint8 UGraphicsSettingsUI::GetGlobalGraphicsQuality()
 	return Value;
 }
 
-FText UGraphicsSettingsUI::GetFixedScreenMode() const
+FText UGraphicsSettingsUI::GetFixedScreenMode(const EWindowMode::Type InScreenMode) const
 {
-	const FString WindowMode = UEnum::GetValueAsString(ScreenMode).Replace(TEXT("EWindowMode::"), TEXT(""));
+	const FString WindowMode = UEnum::GetValueAsString(InScreenMode).Replace(TEXT("EWindowMode::"), TEXT(""));
 	if (WindowMode.Equals("Windowed")) return NSLOCTEXT("ST_Localization", "Windowed", "Windowed");
 	if (WindowMode.Equals("WindowedFullscreen")) return NSLOCTEXT("ST_Localization", "WindowedFullscreen", "Windowed Fullscreen");
 	return NSLOCTEXT("ST_Localization", "Fullscreen", "Fullscreen");
@@ -172,7 +175,7 @@ void UGraphicsSettingsUI::LowerWindowMode()
 	if (ScreenMode != EWindowMode::Windowed)
 	{
 		ScreenMode = static_cast<EWindowMode::Type>(static_cast<uint8>(ScreenMode) + 1);
-		if (ScreenModeOption) ScreenModeOption->SetText(GetFixedScreenMode());
+		if (ScreenModeOption) ScreenModeOption->SetText(GetFixedScreenMode(ScreenMode));
 	}
 }
 
@@ -181,7 +184,7 @@ void UGraphicsSettingsUI::IncreaseWindowMode()
 	if (ScreenMode != EWindowMode::Fullscreen)
 	{
 		ScreenMode = static_cast<EWindowMode::Type>(static_cast<uint8>(ScreenMode) - 1);
-		if (ScreenModeOption) ScreenModeOption->SetText(GetFixedScreenMode());
+		if (ScreenModeOption) ScreenModeOption->SetText(GetFixedScreenMode(ScreenMode));
 	}
 }
 
