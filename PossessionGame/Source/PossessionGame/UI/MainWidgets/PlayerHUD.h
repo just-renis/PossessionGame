@@ -31,7 +31,6 @@ public:
 	void UpdateAmmoText(const int32 InWeaponAmmo, const int32 InMaxAmmo) const;
 	void UpdateAmmoText(const int32 InFirstWeaponAmmo, const int32 InSecondWeaponAmmo, const int32 InMaxAmmo) const;
 	void UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility);
-	void UpdateFps(const int32 InFps) const;
 	void Reset();
 	void SetColors(const FLinearColor InColor) const;
 	void UpdateHijackIndicator(const bool bState, const FText& InKeyName = FText());
@@ -99,8 +98,6 @@ private:
 	TObjectPtr<UProgressBar> BossHpBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ScreenGlow;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> FpsText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> RunIndicatorInv;
 	UPROPERTY(meta = (BindWidget))

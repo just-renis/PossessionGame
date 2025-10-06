@@ -150,11 +150,8 @@ void AEnemy::SetIsActionInMotion(const bool bState)
 void AEnemy::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (bIsAlive)
-	{
-		if (!bInUpgradeSelection && Abilities.Num() > 0) TickAbilities(DeltaTime);
-		if (P_HUD) P_HUD->UpdateFps(FMath::RoundToInt32(1.f / DeltaTime));
-	}
+	if (!bIsAlive) return;
+	if (!bInUpgradeSelection && Abilities.Num() > 0) TickAbilities(DeltaTime);
 }
 
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

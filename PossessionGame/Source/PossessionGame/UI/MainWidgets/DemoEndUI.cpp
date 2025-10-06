@@ -33,15 +33,23 @@ void UDemoEndUI::NativeConstruct()
 	Super::NativeConstruct();
 	bIsArenaMode = GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsArenaMode.Execute();
 	ChapterCompletedText->SetText(bIsArenaMode ? NSLOCTEXT("ST_Localization", "Arena", "Arena") : NSLOCTEXT("ST_Localization", "ChapterCompleted", "Chapter Completed"));
-	if (bIsArenaMode) RankBonusBox->SetVisibility(ESlateVisibility::Collapsed);
-	else HighScoreEndTimeText->SetVisibility(ESlateVisibility::Collapsed);
 	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeInFinished);
-	BindToAnimationFinished(FadeInAnim, FadeFinishedDelegate);
+	if (bIsArenaMode)
+	{
+		RankBonusBox->SetVisibility(ESlateVisibility::Collapsed);
+		BindToAnimationFinished(FadeInArenaAnim, FadeFinishedDelegate);
+		PlayAnimation(FadeInArenaAnim);
+	}
+	else
+	{
+		HighScoreEndTimeText->SetVisibility(ESlateVisibility::Collapsed);
+		BindToAnimationFinished(FadeInAnim, FadeFinishedDelegate);
+		PlayAnimation(FadeInAnim);
+	}
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 0.25f, FLinearColor::Black, false, true);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = true;
 	PlayerController->SetInputMode(FInputModeGameAndUI());
-	PlayAnimation(FadeInAnim);
 	GetWorld()->GetTimerManager().SetTimer(PauseHandle, this, &UDemoEndUI::PauseGame, 0.25f);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerHUD>(EWidget::PlayerHUD)->PlayFadeOutAnim(true);
 	SetupRankUI();
@@ -120,7 +128,7 @@ void UDemoEndUI::FadeInFinished()
 		ReplayButton->SetButtonVisibility(true);
 		ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Replay);
 	}
-	UnbindFromAnimationFinished(FadeInAnim, FadeFinishedDelegate);
+	UnbindFromAnimationFinished(bIsArenaMode ? FadeInArenaAnim : FadeInAnim, FadeFinishedDelegate);
 }
 
 void UDemoEndUI::ReturnToMainMenu()

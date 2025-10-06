@@ -52,6 +52,8 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeOutAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> FadeInArenaAnim;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeFinishedDelegate;
 	UPROPERTY()

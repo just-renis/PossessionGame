@@ -67,12 +67,6 @@ void UPlayerHUD::UpdateAmmoText(const int32 InFirstWeaponAmmo, const int32 InSec
 
 void UPlayerHUD::UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility) { if (GetAbilityPanel()) GetAbilityPanel()->UpdateAbilityUI(InAbility); }
 
-void UPlayerHUD::UpdateFps(const int32 InFps) const
-{
-	if (!FpsText) return;
-	FpsText->SetText(FText::FromString(FString::Format(TEXT("FPS: {0}"), {InFps})));
-}
-
 void UPlayerHUD::Reset()
 {
 	if (XpBar) XpBar->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
