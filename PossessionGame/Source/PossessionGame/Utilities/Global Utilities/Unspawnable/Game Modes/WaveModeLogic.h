@@ -32,7 +32,7 @@ class POSSESSIONGAME_API UWaveModeLogic : public UGameModeBaseLogic
 	virtual void FadeInObjectivePanel() const override;
 	void InitiateNextWave();
 	void StartCountdown() const;
-	void StartWave() const;
+	void StartWave();
 	void SetupNextWave();
 	void WaveCompleted();
 	void AfterSpawnEnemyCallback();

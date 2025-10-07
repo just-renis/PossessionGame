@@ -34,7 +34,11 @@ void UHandsAnimInstance::PlayMontage(const EHandsAnimState InState, const float 
     {
         LoadMontageIfNotLoaded(InState);
         Montage_Play(Montages.Find(InState)->Get(), GlobalPlayRate, EMontagePlayReturnType::MontageLength, InStartPosition);
-        if (InState == EHandsAnimState::Reload) bIsReloading = true;
+        if (InState == EHandsAnimState::Reload)
+        {
+            bIsReloading = true;
+            Proprietor->SetIsActionInMotion(true);
+        }
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontage"), *UEnum::GetValueAsString(WeaponName), *UEnum::GetValueAsString(InState));
 }
@@ -80,6 +84,7 @@ void UHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupt
     if (ReloadMontage && InMontage == ReloadMontage->Get())
     {
         bIsReloading = false;
+        Proprietor->SetIsActionInMotion(false);
         (void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHandsReloadMontageEnd.ExecuteIfBound();
         (void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerReloadMontageEnd.ExecuteIfBound();
         return;

@@ -12,7 +12,6 @@ class POSSESSIONGAME_API UHackTerminalModeLogic : public UGameModeBaseLogic
 {
 	GENERATED_BODY()
 
-	bool bIsHackFinished = false;
 	int32 TerminalsHackedAmount = 0;
 	float TerminalHackProgress = 0.f;
 	float TerminalHackRequired;

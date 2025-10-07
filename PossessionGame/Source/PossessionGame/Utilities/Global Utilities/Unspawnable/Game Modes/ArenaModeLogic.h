@@ -28,7 +28,7 @@ class POSSESSIONGAME_API UArenaModeLogic : public UGameModeBaseLogic
 	void InitiateNextWave();
 	void SetupNextWave();
 	void UpdateCountdown();
-	void StartWave() const;
+	void StartWave();
 	void StartCountdown() const;
 	virtual void SetupTimers() override;
 	virtual void SetupWaveManagerUI() override;

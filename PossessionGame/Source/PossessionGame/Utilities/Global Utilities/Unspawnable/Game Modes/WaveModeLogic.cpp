@@ -44,7 +44,7 @@ void UWaveModeLogic::HandleSpawning()
 	if (EnemiesLeftToKill > 0 && AliveEnemiesAmount < EnemiesOnSceneLimit)
 	{
 		bAsyncLoadInProcess = true;
-		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { AfterSpawnEnemyCallback(); });
+		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { AfterSpawnEnemyCallback(); }, [this] { return bInstanceFinished; });
 	}
 	else if (!bWaveNotStarted && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) WaveCompleted();
 }
@@ -70,8 +70,9 @@ void UWaveModeLogic::InitiateNextWave()
 
 void UWaveModeLogic::StartCountdown() const { if (WaveManagerHUD) WaveManagerHUD->ToggleCountdownText(); }
 
-void UWaveModeLogic::StartWave() const
+void UWaveModeLogic::StartWave()
 {
+	bInstanceFinished = false;
 	PlaySound(ESound::WaveStart);
 	PlaySound(ESound::TaskAnnouncement);
 	if (!WaveManagerHUD) return;
@@ -91,6 +92,7 @@ void UWaveModeLogic::SetupNextWave()
 void UWaveModeLogic::WaveCompleted()
 {
 	if (!WaveManagerHUD) return;
+	bInstanceFinished = true;
 	WaveManagerHUD->UpdateObjectiveProgress(CurrentWave, AmountOfWaves);
 	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "WaveCompleted", "Wave Completed"));
 	PlaySound(ESound::WaveCompleted);

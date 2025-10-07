@@ -57,8 +57,9 @@ void UArenaModeLogic::UpdateCountdown()
 	}
 }
 
-void UArenaModeLogic::StartWave() const
+void UArenaModeLogic::StartWave()
 {
+	bInstanceFinished = false;
 	PlaySound(ESound::WaveStart);
 	PlaySound(ESound::TaskAnnouncement);
 	if (!WaveManagerHUD) return;
@@ -86,7 +87,7 @@ void UArenaModeLogic::HandleSpawning()
 	if (EnemiesLeftToKill > 0 && AliveEnemiesAmount < EnemiesOnSceneLimit)
 	{
 		bAsyncLoadInProcess = true;
-		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { AfterSpawnEnemyCallback(); });
+		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { AfterSpawnEnemyCallback(); }, [this] { return bInstanceFinished; });
 	}
 	else if (!bWaveNotStarted && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) WaveCompleted();
 }
@@ -94,7 +95,8 @@ void UArenaModeLogic::HandleSpawning()
 void UArenaModeLogic::WaveCompleted()
 {
 	if (!WaveManagerHUD) return;
-	WaveManagerHUD->UpdateObjective(EGameMode::ArenaMode, CurrentWave);
+	bInstanceFinished = true;
+	WaveManagerHUD->UpdateObjective(EGameMode::ArenaMode, ++CurrentWave);
 	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "WaveCompleted", "Wave Completed"));
 	PlaySound(ESound::WaveCompleted);
 	bWaveNotStarted = true;

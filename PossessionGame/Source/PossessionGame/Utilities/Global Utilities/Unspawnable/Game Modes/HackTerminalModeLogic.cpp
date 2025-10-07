@@ -32,10 +32,10 @@ void UHackTerminalModeLogic::Finalize()
 void UHackTerminalModeLogic::HandleSpawning()
 {
 	if (bAsyncLoadInProcess) return;
-	if (!bIsHackFinished && AliveEnemiesAmount < EnemiesOnSceneLimit)
+	if (!bInstanceFinished && AliveEnemiesAmount < EnemiesOnSceneLimit)
 	{
 		bAsyncLoadInProcess = true;
-		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, CurrentTerminalRoomMode, [this] { IncreaseAliveEnemiesAmount(); });
+		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, CurrentTerminalRoomMode, [this] { IncreaseAliveEnemiesAmount(); }, [this] { return bInstanceFinished; });
 	}
 }
 
@@ -45,7 +45,7 @@ void UHackTerminalModeLogic::UpdateTaskProgress()
 	if (WaveManagerHUD) WaveManagerHUD->UpdateTaskProgress(TerminalHackProgress, TerminalHackRequired);
 	if (TerminalHackProgress >= TerminalHackRequired)
 	{
-		bIsHackFinished = true;
+		bInstanceFinished = true;
 		if (AliveEnemiesAmount <= 0) FinishTerminalHack();
 		else if (WaveManagerHUD) WaveManagerHUD->ToggleFinishOffEnemiesText(true);
 		GetWorld()->GetTimerManager().ClearTimer(TaskProgressHandle);
@@ -55,7 +55,7 @@ void UHackTerminalModeLogic::UpdateTaskProgress()
 void UHackTerminalModeLogic::UpdateEnemiesAmount()
 {
 	Super::UpdateEnemiesAmount();
-	if (bIsHackFinished && AliveEnemiesAmount <= 0) FinishTerminalHack();
+	if (bInstanceFinished && AliveEnemiesAmount <= 0) FinishTerminalHack();
 }
 
 void UHackTerminalModeLogic::FadeInObjectivePanel() const
@@ -68,7 +68,7 @@ void UHackTerminalModeLogic::FadeInObjectivePanel() const
 
 void UHackTerminalModeLogic::StartTerminalHack()
 {
-	bIsHackFinished = false;
+	bInstanceFinished = false;
 	PlaySound(ESound::GeneratorInitiate);
 	PlaySound(ESound::TaskAnnouncement);
 	if (WaveManagerHUD)

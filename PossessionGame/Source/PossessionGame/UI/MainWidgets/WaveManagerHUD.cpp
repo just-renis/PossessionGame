@@ -116,10 +116,12 @@ void UWaveManagerHUD::NativeConstruct()
 	OnObjectivePanelAnimEnd.BindUFunction(this, "OpenUpgradeSelection");
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->RequestMiniPopup.BindUObject(this, &UWaveManagerHUD::TriggerMiniPopup);
-	if (DelegateManager->RequestIsArenaMode.IsBound() && DelegateManager->RequestIsArenaMode.Execute())
+	GetWorld()->GetTimerManager().SetTimer(TimerUpdateHandle, this, &UWaveManagerHUD::UpdateTimerText, 0.5f, true);
+	if (!(DelegateManager->RequestIsArenaMode.IsBound() && DelegateManager->RequestIsArenaMode.Execute()))
 	{
-		TimerBoxInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		GetWorld()->GetTimerManager().SetTimer(TimerUpdateHandle, this, &UWaveManagerHUD::UpdateTimerText, 0.5f, true);
+		FSlateFontInfo FontInfo = TimerText->GetFont();
+		FontInfo.Size = 24;
+		TimerText->SetFont(FontInfo);
 	}
 }
 

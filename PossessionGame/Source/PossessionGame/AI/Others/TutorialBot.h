@@ -89,6 +89,7 @@ class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 
 	FVector GetSocketLocation(const FName& InName) const;
 	TObjectPtr<UAnimMontage> GetAnimation(const ETutorialBotAnimState InAnimState);
+	virtual TObjectPtr<USkeletalMeshComponent> GetSkeletalMesh() override { return Mesh; }
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

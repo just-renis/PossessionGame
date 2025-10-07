@@ -40,6 +40,11 @@ void APossessionGameGameModeBase::BeginPlay()
 void APossessionGameGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
+	if (const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot(); !SaveSlot)
+	{
+		GetGameInstance()->GetSubsystem<USaveSlotManager>()->LoadSaveSlot(FString("SaveSlot1"));
+		GetGameInstance()->GetSubsystem<USaveSlotManager>()->LoadRunSaveSlot(FString("RunSaveSlot1"));
+	}
 	Cast<UPossessionGameInstance>(GetGameInstance())->InitGameInstanceManagers();
 }
 
@@ -68,9 +73,8 @@ void APossessionGameGameModeBase::SpawnArtifact() const
 
 void APossessionGameGameModeBase::InitAfterPSOPrecache()
 {
-	const TObjectPtr<UPossessionGameInstance> GameInstance = Cast<UPossessionGameInstance>(GetGameInstance());
-	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 	(void)DelegateManager->RequestAddAbilitiesToUpgradePool.ExecuteIfBound(SaveSlot);
 	GetWorld()->GetSubsystem<UMarkerManager>()->Init(MarkerClass, MarkerTypes);
 	LoadSettingsData();
@@ -90,7 +94,7 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	DelegateManager->OnGameModeInitialized.Broadcast();
 	DelegateManager->OnFirstGameModeInitiated.BindUObject(this, &APossessionGameGameModeBase::SetRunStart);
 	DelegateManager->OnRunFinished.BindUObject(this, &APossessionGameGameModeBase::GetRunFinishedTime);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(CharacterToSpawn, EGameMode::None, nullptr);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(CharacterToSpawn, EGameMode::None, nullptr, nullptr);
 }
 
 void APossessionGameGameModeBase::SetRunStart() { RunStartTime = GetWorld()->GetTimeSeconds(); }

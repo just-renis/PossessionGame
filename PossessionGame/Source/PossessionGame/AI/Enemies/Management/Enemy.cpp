@@ -329,7 +329,14 @@ void AEnemy::SetHijackOutline(const bool bState)
 	bHijackOutlineState = bState;
 	if (bState)
 	{
-		if (!HijackViableVfx) AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && bHijackOutlineState; }, &HijackViableVfx, GetMesh(), FName("RootSocket"));
+		if (!HijackViableVfx)
+		{
+			if (!bHijackViableVfxPending)
+			{
+				bHijackViableVfxPending = true;
+				AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && bHijackOutlineState; }, &HijackViableVfx, GetMesh(), FName("RootSocket"));
+			}
+		}
 		else HijackViableVfx->Activate(true);
 	}
 	else DisableHijackViableVfx();
@@ -867,12 +874,12 @@ void AEnemy::P_HijackEnemy()
 		QueryParams.AddIgnoredActor(this);
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_GameTraceChannel5, QueryParams))
 		{
-			P_HijackLogic(Cast<AEnemy>(HitResult.GetActor()));
+			P_HijackLogic(Cast<AEnemy>(HitResult.GetActor()), false);
 		}
 	}
 }
 
-void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy)
+void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bDestroyImmediately)
 {
 	if (!InEnemy || InEnemy->bIsHijacked || !InEnemy->bIsAlive) return;
 	if (!InEnemy->GetIsHijackAble())
@@ -884,6 +891,7 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy)
 	P_StopAllAbilities();
 	DelegateManager->OnEnemyDeath.Unbind();
 	Controller->Possess(InEnemy);
+	if (bDestroyImmediately) Destroy();
 	InitiateDeath();
 }
 
@@ -1090,7 +1098,8 @@ void AEnemy::P_ProcessMeleeAttack()
 		TraceParams.AddIgnoredActor(this);
 		TraceParams.AddIgnoredActor(Actor);
 		if (GetWorld()->LineTraceSingleByChannel(Hit, Origin, Actor->GetActorLocation(), ECC_Visibility, TraceParams)) return;
-		UGameplayStatics::ApplyDamage(Actor, QuickMeleeAttackDamage, GetController(), this, UDamageType::StaticClass());
+		const float TrueQuickMeleeDamage = QuickMeleeAttackDamage + FMath::Min(QuickMeleeAttackDamage * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevel() * 0.1f, 80.f);
+		UGameplayStatics::ApplyDamage(Actor, TrueQuickMeleeDamage, GetController(), this, UDamageType::StaticClass());
 		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
 	}
 }
@@ -1103,13 +1112,13 @@ void AEnemy::P_SetupNavArea()
 
 void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {
-	if (const TObjectPtr<AEnemy> Enemy = AssetsManager->SpawnVariationReplacement(InCharacterType, EWidget::VariationsUI)) P_HijackLogic(Enemy);
+	if (const TObjectPtr<AEnemy> Enemy = AssetsManager->SpawnVariationReplacement(InCharacterType, EWidget::VariationsUI)) P_HijackLogic(Enemy, true);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
 }
 
 void AEnemy::P_OnAbilitiesMenuSelectionEnd()
 {
-	P_HijackLogic(AssetsManager->SpawnVariationReplacement(CharacterName, EWidget::AbilitiesMenuUI));
+	P_HijackLogic(AssetsManager->SpawnVariationReplacement(CharacterName, EWidget::AbilitiesMenuUI), true);
 }
 
 void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName); }
@@ -1145,13 +1154,14 @@ void AEnemy::P_StompImpact(const FVector& InHitLocation)
 	for (const FOverlapResult& Result : Overlaps)
 	{
 		TObjectPtr<AActor> Actor = Result.GetActor();
-		if (!Actor || !Actor->ActorHasTag("AliveEnemy")) return;
+		if (!Actor || !Actor->ActorHasTag("AliveEnemy")) continue;
 		FHitResult Hit;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(this);
 		Params.AddIgnoredActor(Actor);
-		if (GetWorld()->LineTraceSingleByChannel(Hit, InHitLocation, Actor->GetActorLocation(), ECC_Visibility, Params)) return;
-		UGameplayStatics::ApplyDamage(Actor, StompDamage, nullptr, this, UDamageType::StaticClass());
+		if (GetWorld()->LineTraceSingleByChannel(Hit, InHitLocation, Actor->GetActorLocation(), ECC_Visibility, Params)) continue;
+		const float TrueStompDamage = StompDamage + FMath::Min(StompDamage * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevel() * 0.1f, 80.f);
+		UGameplayStatics::ApplyDamage(Actor, TrueStompDamage, nullptr, this, UDamageType::StaticClass());
 		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
 	}
 }
@@ -1413,8 +1423,9 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 
 void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
 {
-	if (!PoisonSlowAffectedVfx && !bIsPoisonSlowAffected)
+	if (!PoisonSlowAffectedVfx)
 	{
+		if (bIsPoisonSlowAffected) return;
 		bIsPoisonSlowAffected = true;
 		AssetsManager->AttachVfx(EVfx::PoisonSlowAffected, [this]() -> bool { return GetIsAlive() && bIsPoisonSlowAffected; }, &PoisonSlowAffectedVfx, GetMesh(), FName("DeathSocket"));
 	}

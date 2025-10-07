@@ -16,6 +16,7 @@ class POSSESSIONGAME_API UGameModeBaseLogic : public UObject
 public:
 	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData);
 protected:
+	bool bInstanceFinished = false;
 	bool bAsyncLoadInProcess = false;
 	int32 AliveEnemiesAmount = 0;
 	int32 EnemiesOnSceneLimit;

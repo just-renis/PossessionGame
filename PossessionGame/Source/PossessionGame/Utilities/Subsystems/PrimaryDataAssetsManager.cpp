@@ -188,13 +188,14 @@ void UPrimaryDataAssetsManager::SpawnVfx(EVfx InVfxName, TFunction<bool()> InCal
 
 void UPrimaryDataAssetsManager::ChangeVfxVariation(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName)
 {
+	if (InVfxComponent) InVfxComponent->DeactivateImmediate();
 	SetupVfx(InVfxData, InCallbackOfDeactivation, InVfxComponent, bDeactivate, InVariationName, TMap<FName, FNiagaraAttribute>());
 }
 
-void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack)
+void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack, TFunction<bool()> InSpawnCallback)
 {
 	if (InCharacter == ECharacterType::Random) InCharacter = GetRandomCharacterToSpawn();
-	!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, InCallBack) : SpawnEnemy(InCharacter, InGameMode, InCallBack);
+	!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, InCallBack, InSpawnCallback) : SpawnEnemy(InCharacter, InGameMode, InCallBack);
 	TotalSpawnedEnemies++;
 	AddSpawnableEnemiesToThePool();
 }
@@ -762,7 +763,7 @@ void UPrimaryDataAssetsManager::SetupVfx(const FVfxContainer& InVfxData, TFuncti
 	}
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack)
+void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack, TFunction<bool()> InSpawnCallback)
 {
 	if (!GetCanAsyncLoadHappen()) return;
 	const FCharacterContainer& CharacterContainer = GetCharacterData(InCharacter);
@@ -812,7 +813,7 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 	for (const FSoftObjectPath& Path : ValidPaths) UE_LOG(LogTemp, Warning, TEXT("Path: %s"), *Path.ToString());
 	TWeakObjectPtr WeakThis(this);
 	TWeakObjectPtr WeakWorld = GetWorld();
-	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, WeakThis, WeakWorld, SingularWeapon, Weapon, InCharacter, InGameMode, InCallBack]
+	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(ValidPaths, [this, WeakThis, WeakWorld, SingularWeapon, Weapon, InCharacter, InGameMode, InCallBack, InSpawnCallback]
 	{
 		if (!WeakThis.IsValid())
 		{
@@ -824,7 +825,11 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 			UE_LOG(LogTemp, Warning, TEXT("World no longer valid during AsyncLoadEnemy callback for character %s"), *UEnum::GetValueAsString(InCharacter));
 			return;
 		}
-		 WeakThis->AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, InCallBack);
+		if (InSpawnCallback)
+		{
+			if (!InSpawnCallback()) WeakThis->AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, InCallBack);
+		}
+		else WeakThis->AsyncLoadEnemyCallback(SingularWeapon, Weapon, InCharacter, InGameMode, InCallBack);
 	});
 	AddAsyncHandle(Handle);
 }
@@ -877,7 +882,7 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 	}
 }
 
-void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode) { RequestSpawnEnemy(InCharacter, InGameMode, nullptr); }
+void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode) { RequestSpawnEnemy(InCharacter, InGameMode, nullptr, nullptr); }
 
 void UPrimaryDataAssetsManager::AddSpawnableEnemiesToThePool()
 {

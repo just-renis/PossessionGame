@@ -233,6 +233,7 @@ private:
 	bool bIsImmortal = false;
 	bool bActionSpeedModified = false;
 	bool bIsPoisonSlowAffected = false;
+	bool bHijackViableVfxPending = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -383,7 +384,7 @@ private:
 	void P_SetupData();
 	void P_SetupUI();
 	void P_HijackEnemy();
-	void P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy);
+	void P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bDestroyImmediately);
 	void P_HijackBarLogic();
 	void P_Rotate(const FInputActionValue& InValue);
 	void P_Reload();
