@@ -233,7 +233,6 @@ private:
 	bool bIsImmortal = false;
 	bool bActionSpeedModified = false;
 	bool bIsPoisonSlowAffected = false;
-	bool bHijackViableVfxPending = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;

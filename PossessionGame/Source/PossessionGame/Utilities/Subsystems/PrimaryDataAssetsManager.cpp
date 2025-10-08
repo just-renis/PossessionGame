@@ -139,7 +139,12 @@ void UPrimaryDataAssetsManager::ConfigureSound(TObjectPtr<UAudioComponent> InAud
 	if (!GetCanAsyncLoadHappen() || !InAudioComp) return;
 	FSoundContainer& SoundData = GetSoundData(InSoundName);
 	if (SoundData.GetSoundContainer()->Sound.IsValid()) SetAndPlaySoundCallback(SoundData, InAudioComp, InCallback, bIsPlayer);
-	else LoadSound3D(SoundData, InAudioComp, InCallback, bIsPlayer);
+	else
+	{
+		if (SoundData.GetIsInLoad()) return;
+		SoundData.SetIsInLoad(true);
+		LoadSound3D(SoundData, InAudioComp, InCallback, bIsPlayer);
+	}
 }
 
 void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool bStoreSoundRef, const bool bIsPlayer)
@@ -147,7 +152,12 @@ void UPrimaryDataAssetsManager::PlaySound2D(const ESound InSoundName, const bool
 	if (!GetCanAsyncLoadHappen()) return;
 	FSoundContainer& SoundData = GetSoundData(InSoundName);
 	if (SoundData.GetSoundContainer()->Sound.IsValid()) SetupSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
-	else LoadSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
+	else
+	{
+		if (SoundData.GetIsInLoad()) return;
+		SoundData.SetIsInLoad(true);
+		LoadSound2D(SoundData, InSoundName, bIsPlayer, bStoreSoundRef);
+	}
 }
 
 void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
@@ -174,6 +184,8 @@ void UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, TFunction<bool()
 	}
 	else if (GetCanAsyncLoadHappen())
 	{
+		if (VfxData.GetIsInLoad()) return;
+		VfxData.SetIsInLoad(true);
 		LoadVfx(VfxData, InVfxName, InCallbackOfDeactivation, InVfxComponent, InAttachTo, InSocketName, bDeactivate, InLocation, InRotation, InAttachType, bAutoDestroy, InVariationName, InAttributes);
 	}
 }
@@ -183,7 +195,12 @@ void UPrimaryDataAssetsManager::SpawnVfx(EVfx InVfxName, TFunction<bool()> InCal
 	if (InVfxName == EVfx::None) return;
 	FVfxContainer& VfxData = GetVfxData(InVfxName);
 	if (VfxData.GetVfxContainer()->GetVfxEffect().IsValid()) SetupVfx(VfxData, InCallbackOfDeactivation, SpawnAndReceiveVfx(InVfxName, InLocation, InRotation), false, InVariationName, InAttributes);
-	else if (GetCanAsyncLoadHappen()) LoadVfx(VfxData, InVfxName, InCallbackOfDeactivation, InLocation, InRotation, InVariationName, InAttributes);
+	else if (GetCanAsyncLoadHappen())
+	{
+		if (VfxData.GetIsInLoad()) return;
+		VfxData.SetIsInLoad(true);
+		LoadVfx(VfxData, InVfxName, InCallbackOfDeactivation, InLocation, InRotation, InVariationName, InAttributes);
+	}
 }
 
 void UPrimaryDataAssetsManager::ChangeVfxVariation(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName)
@@ -280,8 +297,6 @@ void UPrimaryDataAssetsManager::LoadSound3D(FSoundContainer& InSoundData, TObjec
 
 void UPrimaryDataAssetsManager::RequestSoundLoad(FSoundContainer& InSoundData)
 {
-	if (InSoundData.GetIsInLoad()) return;
-	InSoundData.SetIsInLoad(true);
 	if (!GetCanAsyncLoadHappen()) return;
 	TWeakObjectPtr WeakWorld = GetWorld();
 	FSoundContainer* SoundContainer = &InSoundData;
@@ -931,8 +946,6 @@ void UPrimaryDataAssetsManager::LoadVfx(FVfxContainer& InVfxData, const EVfx InV
 
 void UPrimaryDataAssetsManager::RequestVfxLoad(FVfxContainer& InVfxData)
 {
-	if (InVfxData.GetIsInLoad()) return;
-	InVfxData.SetIsInLoad(true);
 	if (!GetCanAsyncLoadHappen()) return;
 	TWeakObjectPtr WeakWorld = GetWorld();
 	FVfxContainer* VfxContainer = &InVfxData;

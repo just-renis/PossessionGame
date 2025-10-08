@@ -258,7 +258,7 @@ void AWeapon::HitScanLogic()
 	const FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
 	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
-	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), nullptr, GetSocketLocation("FpsProjectileSocket"), GetSocketRotation("FpsProjectileSocket"), Proprietor->GetVariation());
+	FpsTrailVfxLogic();
 	FCollisionQueryParams QueryParams;
 	QueryParams.bTraceComplex = false;
 	QueryParams.bReturnPhysicalMaterial = false;
@@ -335,6 +335,11 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 }
 
 void AWeapon::SetWeaponReloadMontageDelegate() { DelegateManager->OnHandsReloadMontageEnd.BindUObject(this, &AWeapon::WeaponReloadMontageFinished); }
+
+void AWeapon::FpsTrailVfxLogic()
+{
+	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), nullptr, GetSocketLocation("FpsProjectileSocket"), GetSocketRotation("FpsProjectileSocket"), Proprietor->GetVariation());
+}
 
 void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
 {

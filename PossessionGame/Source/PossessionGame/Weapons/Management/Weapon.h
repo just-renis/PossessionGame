@@ -149,6 +149,7 @@ protected:
 	virtual void WeaponReloadMontageFinished() {}
 	void SetWeaponReloadMontageDelegate();
 	virtual void MuzzleLogicFromAbility() {}
+	virtual void FpsTrailVfxLogic();
 private:
 	bool bFirstShotWasShot = false;
 	int32 ShootCyclesUntilReload;

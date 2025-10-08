@@ -1,6 +1,9 @@
 #include "TricksterSingularWeapon.h"
+
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
+#include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -51,4 +54,10 @@ void ATricksterSingularWeapon::SetMeshes(EWeapon PrimaryDataAssetName)
 {
 	if (!Mesh->GetSkeletalMeshAsset()) Mesh->SetSkeletalMesh(GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->GetWeaponData(PrimaryDataAssetName)->WeaponMesh.Get());
 	OriginalScale = Mesh->GetRelativeScale3D();
+}
+
+void ATricksterSingularWeapon::FpsTrailVfxLogic()
+{
+	if (!FpsTrailVfx) AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &FpsTrailVfx, GetMesh(), FName("FpsProjectileSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, Proprietor->GetVariation());
+	else FpsTrailVfx->Activate(true);
 }

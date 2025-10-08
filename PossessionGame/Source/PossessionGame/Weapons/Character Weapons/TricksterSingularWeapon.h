@@ -10,6 +10,9 @@ class POSSESSIONGAME_API ATricksterSingularWeapon : public AOneHandedWeapon
 	GENERATED_BODY()
 
 	ATricksterSingularWeapon();
+
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> FpsTrailVfx;
 	
 	virtual void AI_Shoot() override;
 
@@ -20,4 +23,5 @@ class POSSESSIONGAME_API ATricksterSingularWeapon : public AOneHandedWeapon
 
 	virtual void BeginPlay() override;
 	virtual void SetMeshes(EWeapon PrimaryDataAssetName) override;
+	virtual void FpsTrailVfxLogic() override;
 };
