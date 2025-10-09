@@ -14,6 +14,7 @@
 #include "PossessionGame/UI/SecondaryWidgets/CloseButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationCurrencyPanelUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
@@ -24,6 +25,7 @@ void UVariationsUI::OpenUI()
 		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Guardian));
 		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Ranger));
 		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Trickster));
+		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Breacher));
 		bHasAlreadyOpened = true;
 	}
 	Toggle(true);
@@ -42,6 +44,7 @@ void UVariationsUI::NativeConstruct()
 	GuardianCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
 	RangerCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
 	TricksterCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
+	BreacherCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
 	GuardianVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	GuardianVariationGold->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	RangerVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
@@ -49,6 +52,15 @@ void UVariationsUI::NativeConstruct()
 	TricksterVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	TricksterVariationPurple->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	CloseButton->Get()->OnClicked.AddDynamic(this, &UVariationsUI::CloseUI);
+	if (!GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsDemo.Execute())
+	{
+		RightArrowButton->OnClicked.AddDynamic(this, &UVariationsUI::SwitchCharactersSelectionRight);
+		RightArrowButton->OnHovered.AddDynamic(this, &UVariationsUI::RightArrowButtonHovered);
+		RightArrowButton->OnUnhovered.AddDynamic(this, &UVariationsUI::RightArrowButtonUnHovered);
+		LeftArrowButton->OnClicked.AddDynamic(this, &UVariationsUI::SwitchCharactersSelectionLeft);
+		LeftArrowButton->OnHovered.AddDynamic(this, &UVariationsUI::LeftArrowButtonHovered);
+		LeftArrowButton->OnUnhovered.AddDynamic(this, &UVariationsUI::LeftArrowButtonUnHovered);
+	}
 	FadeOutDelegate.BindDynamic(this, &UVariationsUI::HideVariationsPanel);
 }
 
@@ -83,7 +95,8 @@ void UVariationsUI::SetSelectedVariation(const EVariation InVariation)
 		case EVariation::RangerVariationDefault: RangerVariationDefault->SetSelected(true); break;
 		case EVariation::RangerVariationBlue: RangerVariationBlue->SetSelected(true); break;
 		case EVariation::TricksterVariationDefault: TricksterVariationDefault->SetSelected(true); break;
-		case EVariation::TricksterVariationPurple: TricksterVariationPurple->SetSelected(true);
+		case EVariation::TricksterVariationPurple: TricksterVariationPurple->SetSelected(true); break;
+		case EVariation::BreacherVariationDefault: BreacherVariationDefault->SetSelected(true);
 		default: ;
 	}
 }
@@ -108,6 +121,11 @@ void UVariationsUI::SwitchVariation(const ECharacterType InCharacterName)
 			CurrentlySelectedIcon = TricksterCharacterIcon;
 			ActiveWidgetIndex = 2;
 			if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
+			break;
+		case ECharacterType::Breacher:
+			CurrentlySelectedIcon = BreacherCharacterIcon;
+			ActiveWidgetIndex = 3;
+		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
 		default: ;
 	}
 	VariationsSwitcher->SetActiveWidgetIndex(ActiveWidgetIndex);
@@ -139,4 +157,42 @@ void UVariationsUI::HideVariationsPanel()
 {
 	UnbindAllFromAnimationFinished(VariationMenuFadeInAnim);
 	SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UVariationsUI::SwitchCharactersSelectionRight()
+{
+	if (!CharactersSwitcher) return;
+	PlayAnimation(ArrowRightPressAnim);
+	int32 NextActiveIndex = CharactersSwitcher->GetActiveWidgetIndex();
+	if (++NextActiveIndex >= CharactersSwitcher->GetNumWidgets()) NextActiveIndex = 0;
+	CharactersSwitcher->SetActiveWidgetIndex(NextActiveIndex);
+}
+
+void UVariationsUI::SwitchCharactersSelectionLeft()
+{
+	if (!CharactersSwitcher) return;
+	PlayAnimation(ArrowLeftPressAnim);
+	int32 NextActiveIndex = CharactersSwitcher->GetActiveWidgetIndex();
+	if (--NextActiveIndex < 0) NextActiveIndex = CharactersSwitcher->GetNumWidgets() - 1;
+	CharactersSwitcher->SetActiveWidgetIndex(NextActiveIndex);
+}
+
+void UVariationsUI::LeftArrowButtonHovered()
+{
+	PlayAnimation(ArrowLeftHoverAnim, GetAnimationCurrentTime(ArrowLeftHoverAnim));
+}
+
+void UVariationsUI::LeftArrowButtonUnHovered()
+{
+	PlayAnimation(ArrowLeftHoverAnim, GetAnimationCurrentTime(ArrowLeftHoverAnim), 1, EUMGSequencePlayMode::Reverse);
+}
+
+void UVariationsUI::RightArrowButtonHovered()
+{
+	PlayAnimation(ArrowRightHoverAnim, GetAnimationCurrentTime(ArrowRightHoverAnim));
+}
+
+void UVariationsUI::RightArrowButtonUnHovered()
+{
+	PlayAnimation(ArrowRightHoverAnim, GetAnimationCurrentTime(ArrowRightHoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }

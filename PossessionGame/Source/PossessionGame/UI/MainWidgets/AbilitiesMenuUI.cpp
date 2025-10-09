@@ -26,6 +26,7 @@ TObjectPtr<UTexture2D> UAbilitiesMenuUI::GetAbilityIcon(const ECharacterType InC
 		case ECharacterType::Guardian: return GuardianCharacterAbilities->GetAbilityIcon(InAbilityIndex);
 		case ECharacterType::Ranger: return RangerCharacterAbilities->GetAbilityIcon(InAbilityIndex);
 		case ECharacterType::Trickster: return TricksterCharacterAbilities->GetAbilityIcon(InAbilityIndex); 
+		case ECharacterType::Breacher: return BreacherCharacterAbilities->GetAbilityIcon(InAbilityIndex); 
 		default: ;
 	}
 	return nullptr;
@@ -51,6 +52,7 @@ void UAbilitiesMenuUI::OpenUI()
 	GuardianCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	RangerCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	TricksterCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
+	BreacherCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	FirstTimeOpenInstance = false;
 	TriggerSwitchOnTheFirstOpen();
 }
@@ -67,6 +69,7 @@ void UAbilitiesMenuUI::CloseUI()
 	GuardianCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	RangerCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	TricksterCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
+	BreacherCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	SaveSlot->SaveSlot();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestAddAbilitiesToUpgradePool.ExecuteIfBound(SaveSlot);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAbilitiesMenuSelectionEnd.ExecuteIfBound();
@@ -81,9 +84,11 @@ void UAbilitiesMenuUI::NativeConstruct()
 	GuardianCharacterAbilities->SetAbilitiesIconData();
 	RangerCharacterAbilities->SetAbilitiesIconData();
 	TricksterCharacterAbilities->SetAbilitiesIconData();
+	BreacherCharacterAbilities->SetAbilitiesIconData();
 	GuardianCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	RangerCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	TricksterCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
+	BreacherCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 }
 
 void UAbilitiesMenuUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -136,6 +141,10 @@ void UAbilitiesMenuUI::SwitchCharacterAbilities(const ECharacterType InCharacter
 		case ECharacterType::Trickster:
 			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Trickster, TricksterCharacterIcon);
 			ActiveWidgetIndex = 2;
+			break;
+		case ECharacterType::Breacher:
+			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Breacher, BreacherCharacterIcon);
+			ActiveWidgetIndex = 3;
 		default: ;
 	}
 	bWaitingForSwitch = true;
@@ -153,6 +162,15 @@ void UAbilitiesMenuUI::SetupButtons()
 	FirstAbilityResetButton->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::FirstSlotResetClicked);
 	SecondAbilityResetButton->GetButton()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::SecondSlotResetClicked);
 	CloseButton->Get()->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::CloseUI);
+	if (!GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsDemo.Execute())
+	{
+		RightArrowButton->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::SwitchCharactersSelectionRight);
+		RightArrowButton->OnHovered.AddDynamic(this, &UAbilitiesMenuUI::RightArrowButtonHovered);
+		RightArrowButton->OnUnhovered.AddDynamic(this, &UAbilitiesMenuUI::RightArrowButtonUnHovered);
+		LeftArrowButton->OnClicked.AddDynamic(this, &UAbilitiesMenuUI::SwitchCharactersSelectionLeft);
+		LeftArrowButton->OnHovered.AddDynamic(this, &UAbilitiesMenuUI::LeftArrowButtonHovered);
+		LeftArrowButton->OnUnhovered.AddDynamic(this, &UAbilitiesMenuUI::LeftArrowButtonUnHovered);
+	}
 }
 
 void UAbilitiesMenuUI::OpenUnlockAbilityPopup(const int32 InAbilityIndex)
@@ -181,7 +199,8 @@ void UAbilitiesMenuUI::UpdateAbilityIcon() const
 	{
 		case ECharacterType::Guardian: GuardianCharacterAbilities->SetAbilitiesIconData(); break;
 		case ECharacterType::Ranger: RangerCharacterAbilities->SetAbilitiesIconData(); break;
-		case ECharacterType::Trickster: TricksterCharacterAbilities->SetAbilitiesIconData(); 
+		case ECharacterType::Trickster: TricksterCharacterAbilities->SetAbilitiesIconData(); break;
+		case ECharacterType::Breacher: BreacherCharacterAbilities->SetAbilitiesIconData(); 
 		default: ;
 	}
 }
@@ -200,7 +219,8 @@ void UAbilitiesMenuUI::FirstSlotResetClicked()
 	{
 		case ECharacterType::Guardian: GuardianCharacterAbilities->ResetFirstAbilitySlot(); break;
 		case ECharacterType::Ranger: RangerCharacterAbilities->ResetFirstAbilitySlot(); break;
-		case ECharacterType::Trickster: TricksterCharacterAbilities->ResetFirstAbilitySlot();
+		case ECharacterType::Trickster: TricksterCharacterAbilities->ResetFirstAbilitySlot(); break;
+		case ECharacterType::Breacher: BreacherCharacterAbilities->ResetFirstAbilitySlot();
 		default: ;
 	}
 }
@@ -211,7 +231,8 @@ void UAbilitiesMenuUI::SecondSlotResetClicked()
 	{
 		case ECharacterType::Guardian: GuardianCharacterAbilities->ResetSecondAbilitySlot(); break;
 		case ECharacterType::Ranger: RangerCharacterAbilities->ResetSecondAbilitySlot(); break;
-		case ECharacterType::Trickster: TricksterCharacterAbilities->ResetSecondAbilitySlot();
+		case ECharacterType::Trickster: TricksterCharacterAbilities->ResetSecondAbilitySlot(); break;
+		case ECharacterType::Breacher: BreacherCharacterAbilities->ResetSecondAbilitySlot();
 		default: ;
 	}
 }
@@ -230,4 +251,42 @@ void UAbilitiesMenuUI::FadeOutUnlockAbilityPopup()
 {
 	UnlockAbilityPopup->PlayPopupFadeInAnim(false);
 	bIsAbilityUnlockPopupOpened = false;
+}
+
+void UAbilitiesMenuUI::SwitchCharactersSelectionRight()
+{
+	if (!CharactersSwitcher) return;
+	PlayAnimation(ArrowRightPressAnim);
+	int32 NextActiveIndex = CharactersSwitcher->GetActiveWidgetIndex();
+	if (++NextActiveIndex >= CharactersSwitcher->GetNumWidgets()) NextActiveIndex = 0;
+	CharactersSwitcher->SetActiveWidgetIndex(NextActiveIndex);
+}
+
+void UAbilitiesMenuUI::SwitchCharactersSelectionLeft()
+{
+	if (!CharactersSwitcher) return;
+	PlayAnimation(ArrowLeftPressAnim);
+	int32 NextActiveIndex = CharactersSwitcher->GetActiveWidgetIndex();
+	if (--NextActiveIndex < 0) NextActiveIndex = CharactersSwitcher->GetNumWidgets() - 1;
+	CharactersSwitcher->SetActiveWidgetIndex(NextActiveIndex);
+}
+
+void UAbilitiesMenuUI::LeftArrowButtonHovered()
+{
+	PlayAnimation(ArrowLeftHoverAnim, GetAnimationCurrentTime(ArrowLeftHoverAnim));
+}
+
+void UAbilitiesMenuUI::LeftArrowButtonUnHovered()
+{
+	PlayAnimation(ArrowLeftHoverAnim, GetAnimationCurrentTime(ArrowLeftHoverAnim), 1, EUMGSequencePlayMode::Reverse);
+}
+
+void UAbilitiesMenuUI::RightArrowButtonHovered()
+{
+	PlayAnimation(ArrowRightHoverAnim, GetAnimationCurrentTime(ArrowRightHoverAnim));
+}
+
+void UAbilitiesMenuUI::RightArrowButtonUnHovered()
+{
+	PlayAnimation(ArrowRightHoverAnim, GetAnimationCurrentTime(ArrowRightHoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }

@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "VariationsUI.generated.h"
 
+class UButton;
 enum class ECharacterType : uint8;
 class UVariationCurrencyPanelUI;
 enum class EVariation : uint8;
@@ -32,11 +33,19 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> TricksterCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationCharacterIconUI> BreacherCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> VariationsSwitcher;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> CharactersSwitcher;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationUnlockDetailsUI> VariationDetailsPanel;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationUnlockDetailsUI> UnlockDetailsPanel;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> RightArrowButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> LeftArrowButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationOptionUI> GuardianVariationDefault;
 	UPROPERTY(meta = (BindWidget))
@@ -50,9 +59,19 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationOptionUI> TricksterVariationPurple;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> BreacherVariationDefault;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCloseButtonUI> CloseButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> VariationMenuFadeInAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ArrowLeftHoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ArrowLeftPressAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ArrowRightHoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ArrowRightPressAnim;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TMap<EVariation, int32> UnlockPrices;
 	UPROPERTY()
@@ -73,4 +92,16 @@ private:
 	void ToggleDetailsPanel(const bool bState, const EVariation InVariationName, const FText& InVariationDetailsText, const FText& InUnlockDetailsText);
 	UFUNCTION()
 	void HideVariationsPanel();
+	UFUNCTION()
+	void SwitchCharactersSelectionRight();
+	UFUNCTION()
+	void SwitchCharactersSelectionLeft();
+	UFUNCTION()
+	void LeftArrowButtonHovered();
+	UFUNCTION()
+	void LeftArrowButtonUnHovered();
+	UFUNCTION()
+	void RightArrowButtonHovered();
+	UFUNCTION()
+	void RightArrowButtonUnHovered();
 };

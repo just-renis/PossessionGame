@@ -24,6 +24,7 @@ void UPossessionGameInstance::Init()
 	GetSubsystem<USaveSlotManager>()->LoadMetaSaveSlot("MetaSaveSlot");
 	GetSubsystem<UDelegateManager>()->LoadLevel.BindUObject(this, &UPossessionGameInstance::OpenLevel);
 	GetSubsystem<UDelegateManager>()->RequestAddAbilitiesToUpgradePool.BindUObject(this, &UPossessionGameInstance::AddAvailableUpgrades);
+	GetSubsystem<UDelegateManager>()->RequestIsDemo.BindUObject(this, &UPossessionGameInstance::IsDemo);
 	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
 	if (GetSubsystem<USaveSlotManager>()->GetMetaSaveSlot()->GetIsFirstLaunch())
 	{
@@ -58,7 +59,7 @@ void UPossessionGameInstance::AddAvailableUpgrades(const TObjectPtr<USaveSlot>& 
 {
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	TArray<EUpgrade> AvailableUpgrades;
-	TArray AvailableCharacters = { ECharacterType::Ranger, ECharacterType::Guardian, ECharacterType::Trickster };
+	TArray AvailableCharacters = { ECharacterType::Ranger, ECharacterType::Guardian, ECharacterType::Trickster/*, ECharacterType::Breacher*/ };
 	for (int32 i = 0; i < AvailableCharacters.Num(); i++)
 	{
 		const ECharacterType CharacterType = AvailableCharacters[i];

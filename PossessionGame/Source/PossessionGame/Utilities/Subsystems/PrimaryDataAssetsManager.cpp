@@ -114,6 +114,7 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FCharacterPairWrapper({ ECharacterType::Guardian, EVfxType::Spawn }), EVfx::GuardianSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Ranger, EVfxType::Spawn }), EVfx::RangerSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Trickster, EVfxType::Spawn }), EVfx::TricksterSpawn },
+	//	{FCharacterPairWrapper({ ECharacterType::Breacher, EVfxType::Spawn }), EVfx::TricksterSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Minion, EVfxType::Spawn }), EVfx::MinionSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Warden, EVfxType::Spawn }), EVfx::WardenSpawn },
 		{FCharacterPairWrapper({ ECharacterType::MinionBoss, EVfxType::Spawn }), EVfx::MinionBossSpawn }
@@ -423,6 +424,7 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 		case ECharacterType::Ranger: return EPoolObject::RangerProjectile;
 		case ECharacterType::Minion: return EPoolObject::MinionProjectile;
 		case ECharacterType::Trickster: return EPoolObject::TricksterProjectile;
+		case ECharacterType::Breacher: return EPoolObject::BreacherProjectile;
 		case ECharacterType::Spy: return EPoolObject::SpyProjectile;
 		case ECharacterType::Tank: return EPoolObject::TankProjectile;
 		case ECharacterType::Guardian: return EPoolObject::GuardianProjectile;
@@ -451,6 +453,7 @@ EWeapon UPrimaryDataAssetsManager::GetWeaponByCharacter(const ECharacterType InC
 		case ECharacterType::Ranger: return EWeapon::RangerWeapon;
 		case ECharacterType::Spy: return EWeapon::SpyWeapon;
 		case ECharacterType::Trickster: return EWeapon::TricksterWeapon;
+		case ECharacterType::Breacher: return EWeapon::BreacherWeapon;
 		case ECharacterType::Samurai: return EWeapon::SamuraiWeapon;
 		case ECharacterType::Guardian: return EWeapon::GuardianWeapon;
 		case ECharacterType::MinionBoss: return EWeapon::MinionBossHandWeapon;
@@ -501,6 +504,7 @@ void UPrimaryDataAssetsManager::SetupWeaponsPrimaryAssets()
 	WeaponsMap.Add("PA_GuardianSingularWeapon", EWeapon::GuardianSingularWeapon);
 	WeaponsMap.Add("PA_MinionBossHandWeapon", EWeapon::MinionBossHandWeapon);
 	WeaponsMap.Add("PA_WardenBlasterWeapon", EWeapon::WardenBlasterWeapon);
+	WeaponsMap.Add("PA_BreacherWeapon", EWeapon::BreacherWeapon);
 	FillContainers(WeaponsMap, WeaponContainers, "Weapon");
 	WeaponsMap.Empty();
 }
@@ -634,6 +638,7 @@ void UPrimaryDataAssetsManager::SetupCharactersPrimaryAssets()
 	TMap<FName, ECharacterType> CharactersMap;
 	CharactersMap.Add("PA_Spy", ECharacterType::Spy);
 	CharactersMap.Add("PA_Trickster", ECharacterType::Trickster);
+	CharactersMap.Add("PA_Breacher", ECharacterType::Breacher);
 	CharactersMap.Add("PA_Tank", ECharacterType::Tank);
 	CharactersMap.Add("PA_Ranger", ECharacterType::Ranger);
 	CharactersMap.Add("PA_Minion", ECharacterType::Minion);

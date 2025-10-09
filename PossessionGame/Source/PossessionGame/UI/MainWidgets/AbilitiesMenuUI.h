@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "AbilitiesMenuUI.generated.h"
 
+class UButton;
 class UCloseButtonUI;
 class UWidgetSwitcher;
 class UCharacterAbilitiesUI;
@@ -63,11 +64,21 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCharacterAbilitiesUI> TricksterCharacterAbilities;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCharacterAbilitiesUI> BreacherCharacterAbilities;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> GuardianCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> RangerCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> TricksterCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationCharacterIconUI> BreacherCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> CharactersSwitcher;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> LeftArrowButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> RightArrowButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAbilityResetButtonUI> FirstAbilityResetButton;
 	UPROPERTY(meta = (BindWidget))
@@ -80,6 +91,14 @@ private:
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> CharacterTransitionAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ArrowLeftHoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ArrowLeftPressAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ArrowRightHoverAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> ArrowRightPressAnim;
 	UPROPERTY()
 	FCurrentlySelectedCharacter CurrentlySelectedCharacter;
 	UPROPERTY()
@@ -106,4 +125,16 @@ private:
 	void UnlockAbility();
 	UFUNCTION()
 	void FadeOutUnlockAbilityPopup();
+	UFUNCTION()
+	void SwitchCharactersSelectionRight();
+	UFUNCTION()
+	void SwitchCharactersSelectionLeft();
+	UFUNCTION()
+	void LeftArrowButtonHovered();
+	UFUNCTION()
+	void LeftArrowButtonUnHovered();
+	UFUNCTION()
+	void RightArrowButtonHovered();
+	UFUNCTION()
+	void RightArrowButtonUnHovered();
 };

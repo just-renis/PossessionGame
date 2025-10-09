@@ -7,6 +7,7 @@ FVariationUnlockData::FVariationUnlockData()
 	SelectedVariations.Add(ECharacterType::Guardian, EVariation::GuardianVariationDefault);
 	SelectedVariations.Add(ECharacterType::Ranger, EVariation::RangerVariationDefault);
 	SelectedVariations.Add(ECharacterType::Trickster, EVariation::TricksterVariationDefault);
+	SelectedVariations.Add(ECharacterType::Breacher, EVariation::BreacherVariationDefault);
 	VariationUnlocks.Add(EVariation::GuardianVariationGold, FVariationUnlockGoal(10));
 	VariationUnlocks.Add(EVariation::RangerVariationBlue, FVariationUnlockGoal(15));
 	VariationUnlocks.Add(EVariation::TricksterVariationPurple, FVariationUnlockGoal(800));

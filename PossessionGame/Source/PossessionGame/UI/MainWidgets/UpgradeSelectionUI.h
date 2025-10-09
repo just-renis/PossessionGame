@@ -51,6 +51,8 @@ private:
 	TObjectPtr<UTexture2D> TricksterIconTexture;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> GuardianIconTexture;
+	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> BreacherIconTexture;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UUpgradeCardUI> CardOption1;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))

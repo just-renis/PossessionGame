@@ -140,4 +140,5 @@ void USaveSlot::AddDefaultAbilities()
 	AddChosenAbilities(ECharacterType::Ranger, 0, -1);
 	AddChosenAbilities(ECharacterType::Guardian, 0, -1);
 	AddChosenAbilities(ECharacterType::Trickster, 0, -1);
+//	AddChosenAbilities(ECharacterType::Breacher, 0, -1);
 }

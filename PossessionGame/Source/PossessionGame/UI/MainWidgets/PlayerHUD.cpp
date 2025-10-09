@@ -135,16 +135,25 @@ void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
 			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetAsCurrent();
 			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (BreacherAbilitiesPanel) BreacherAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			break;
 		case ECharacterType::Trickster:
 			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetAsCurrent();
 			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (BreacherAbilitiesPanel) BreacherAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			break;
+		case ECharacterType::Breacher:
+			if (BreacherAbilitiesPanel) BreacherAbilitiesPanel->SetAsCurrent();
+			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			break;
 		default:
 			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetAsCurrent();
 			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+			if (BreacherAbilitiesPanel) BreacherAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	SetCurrentCrosshair();
 }
@@ -157,16 +166,25 @@ void UPlayerHUD::SetCurrentCrosshair() const
 			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			if (TricksterCrosshair) TricksterCrosshair->SetVisibility(ESlateVisibility::Collapsed);
 			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+			if (BreacherCrosshair) BreacherCrosshair->SetVisibility(ESlateVisibility::Collapsed);
 			break;
 		case ECharacterType::Trickster:
-			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::Collapsed);
 			if (TricksterCrosshair) TricksterCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::Collapsed);
 			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+			if (BreacherCrosshair) BreacherCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+			break;
+		case ECharacterType::Breacher:
+			if (BreacherCrosshair) BreacherCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (TricksterCrosshair) TricksterCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::Collapsed);
 			break;
 		default:
+			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::Collapsed);
 			if (TricksterCrosshair) TricksterCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			if (BreacherCrosshair) BreacherCrosshair->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
 

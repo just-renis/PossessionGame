@@ -4,7 +4,6 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "Ranger.generated.h"
 
-class ARangerMine;
 class USphereComponent;
 class UNiagaraComponent;
 

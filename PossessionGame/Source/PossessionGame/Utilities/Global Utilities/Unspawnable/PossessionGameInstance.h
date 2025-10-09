@@ -35,7 +35,6 @@ class POSSESSIONGAME_API UPossessionGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 public:
-	bool IsDemo() const { return bIsDemo; }
 	bool IsPlayerTakenDamageEffectsEnabled() const { return bPlayerTakenDamageEffectsEnabled; }
 	bool GetIsMainMenuLaunchedOnce() const { return bMainMenuLaunchedOnce; }
 	bool GetUseCustomLevel() const { return bUseCustomLevel; }
@@ -66,6 +65,8 @@ private:
 	TArray<FSpawnableEnemyByTotalAmount> SpawnableEnemiesByTotalAmount;
 	UPROPERTY()
 	FTimerHandle TickHandle;
+	
+	bool IsDemo() const { return bIsDemo; }
 
 	virtual void Init() override;
 	void Tick() const;

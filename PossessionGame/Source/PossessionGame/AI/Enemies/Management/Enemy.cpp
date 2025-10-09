@@ -1373,9 +1373,9 @@ void AEnemy::Landed(const FHitResult& Hit)
 	{
 		bIsStomping = false;
 		AssetsManager->PlaySound2D(ESound::PlayerStompLand);
-		AssetsManager->SpawnVfx(EVfx::PlayerStomp, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetSocketLocation("StompSocket"));
+		AssetsManager->SpawnVfx(EVfx::PlayerStomp, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetSocketLocation("RootSocket"));
 		GetCharacterMovement()->AirControl = 1.f;
-		P_StompImpact(GetSocketLocation("StompSocket"));
+		P_StompImpact(GetSocketLocation("RootSocket"));
 		P_MakeCameraShake(StompCameraShake);
 	}
 }

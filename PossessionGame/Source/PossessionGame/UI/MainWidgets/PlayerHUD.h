@@ -62,6 +62,8 @@ private:
 	TObjectPtr<UAbilitiesPanelUI> TricksterAbilitiesPanel;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UAbilitiesPanelUI> GuardianAbilitiesPanel;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	TObjectPtr<UAbilitiesPanelUI> BreacherAbilitiesPanel;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DamageNumberText;
 	UPROPERTY(meta = (BindWidget))
@@ -74,6 +76,8 @@ private:
 	TObjectPtr<UCrosshairUI> TricksterCrosshair;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCrosshairUI> GuardianCrosshair;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCrosshairUI> BreacherCrosshair;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> DamageTickInv;
 	UPROPERTY(meta = (BindWidget))

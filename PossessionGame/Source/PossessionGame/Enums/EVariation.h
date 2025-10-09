@@ -12,5 +12,6 @@ enum class EVariation : uint8
 	TricksterVariationPurple,
 	SecretCrateRewardHealth,
 	SecretCrateRewardDamage,
-	SecretCrateRewardXp
+	SecretCrateRewardXp,
+	BreacherVariationDefault
 };
