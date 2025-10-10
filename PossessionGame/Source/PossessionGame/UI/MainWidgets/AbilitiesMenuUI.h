@@ -66,6 +66,14 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCharacterAbilitiesUI> BreacherCharacterAbilities;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCharacterAbilitiesUI> WraithCharacterAbilities;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCharacterAbilitiesUI> TankCharacterAbilities;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCharacterAbilitiesUI> SpyCharacterAbilities;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCharacterAbilitiesUI> SamuraiCharacterAbilities;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> GuardianCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> RangerCharacterIcon;
@@ -73,6 +81,14 @@ private:
 	TObjectPtr<UVariationCharacterIconUI> TricksterCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> BreacherCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationCharacterIconUI> WraithCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationCharacterIconUI> TankCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationCharacterIconUI> SpyCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationCharacterIconUI> SamuraiCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> CharactersSwitcher;
 	UPROPERTY(meta = (BindWidget))

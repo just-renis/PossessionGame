@@ -26,6 +26,10 @@ void UVariationsUI::OpenUI()
 		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Ranger));
 		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Trickster));
 		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Breacher));
+		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Wraith));
+		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Tank));
+		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Spy));
+		SetSelectedVariation(SaveSlot->GetSelectedVariation(ECharacterType::Samurai));
 		bHasAlreadyOpened = true;
 	}
 	Toggle(true);
@@ -45,12 +49,21 @@ void UVariationsUI::NativeConstruct()
 	RangerCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
 	TricksterCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
 	BreacherCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
+	WraithCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
+	TankCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
+	SpyCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
+	SamuraiCharacterIcon->OnVariationClicked.BindUObject(this, &UVariationsUI::SwitchVariation);
 	GuardianVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	GuardianVariationGold->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	RangerVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	RangerVariationBlue->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	TricksterVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	TricksterVariationPurple->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	BreacherVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	WraithVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	TankVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	SpyVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	SamuraiVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	CloseButton->Get()->OnClicked.AddDynamic(this, &UVariationsUI::CloseUI);
 	if (!GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsDemo.Execute())
 	{
@@ -96,7 +109,11 @@ void UVariationsUI::SetSelectedVariation(const EVariation InVariation)
 		case EVariation::RangerVariationBlue: RangerVariationBlue->SetSelected(true); break;
 		case EVariation::TricksterVariationDefault: TricksterVariationDefault->SetSelected(true); break;
 		case EVariation::TricksterVariationPurple: TricksterVariationPurple->SetSelected(true); break;
-		case EVariation::BreacherVariationDefault: BreacherVariationDefault->SetSelected(true);
+		case EVariation::BreacherVariationDefault: BreacherVariationDefault->SetSelected(true); break;
+		case EVariation::WraithVariationDefault: WraithVariationDefault->SetSelected(true); break;
+		case EVariation::TankVariationDefault: TankVariationDefault->SetSelected(true); break;
+		case EVariation::SpyVariationDefault: SpyVariationDefault->SetSelected(true); break;
+		case EVariation::SamuraiVariationDefault: SamuraiVariationDefault->SetSelected(true);
 		default: ;
 	}
 }
@@ -126,6 +143,27 @@ void UVariationsUI::SwitchVariation(const ECharacterType InCharacterName)
 			CurrentlySelectedIcon = BreacherCharacterIcon;
 			ActiveWidgetIndex = 3;
 		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
+			break;
+		case ECharacterType::Wraith:
+			CurrentlySelectedIcon = WraithCharacterIcon;
+			ActiveWidgetIndex = 4;
+		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
+			break;
+		case ECharacterType::Tank:
+			CurrentlySelectedIcon = TankCharacterIcon;
+			ActiveWidgetIndex = 5;
+		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
+			break;
+		case ECharacterType::Spy:
+			CurrentlySelectedIcon = SpyCharacterIcon;
+			ActiveWidgetIndex = 6;
+		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
+			break;
+		case ECharacterType::Samurai:
+			CurrentlySelectedIcon = SamuraiCharacterIcon;
+			ActiveWidgetIndex = 7;
+		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
+			break;
 		default: ;
 	}
 	VariationsSwitcher->SetActiveWidgetIndex(ActiveWidgetIndex);

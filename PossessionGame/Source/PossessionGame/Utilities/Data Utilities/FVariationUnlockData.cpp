@@ -8,6 +8,10 @@ FVariationUnlockData::FVariationUnlockData()
 	SelectedVariations.Add(ECharacterType::Ranger, EVariation::RangerVariationDefault);
 	SelectedVariations.Add(ECharacterType::Trickster, EVariation::TricksterVariationDefault);
 	SelectedVariations.Add(ECharacterType::Breacher, EVariation::BreacherVariationDefault);
+	SelectedVariations.Add(ECharacterType::Wraith, EVariation::WraithVariationDefault);
+	SelectedVariations.Add(ECharacterType::Tank, EVariation::TankVariationDefault);
+	SelectedVariations.Add(ECharacterType::Spy, EVariation::SpyVariationDefault);
+	SelectedVariations.Add(ECharacterType::Samurai, EVariation::SamuraiVariationDefault);
 	VariationUnlocks.Add(EVariation::GuardianVariationGold, FVariationUnlockGoal(10));
 	VariationUnlocks.Add(EVariation::RangerVariationBlue, FVariationUnlockGoal(15));
 	VariationUnlocks.Add(EVariation::TricksterVariationPurple, FVariationUnlockGoal(800));

@@ -27,6 +27,10 @@ TObjectPtr<UTexture2D> UAbilitiesMenuUI::GetAbilityIcon(const ECharacterType InC
 		case ECharacterType::Ranger: return RangerCharacterAbilities->GetAbilityIcon(InAbilityIndex);
 		case ECharacterType::Trickster: return TricksterCharacterAbilities->GetAbilityIcon(InAbilityIndex); 
 		case ECharacterType::Breacher: return BreacherCharacterAbilities->GetAbilityIcon(InAbilityIndex); 
+		case ECharacterType::Wraith: return WraithCharacterAbilities->GetAbilityIcon(InAbilityIndex);
+		case ECharacterType::Tank: return TankCharacterAbilities->GetAbilityIcon(InAbilityIndex);
+		case ECharacterType::Spy: return SpyCharacterAbilities->GetAbilityIcon(InAbilityIndex);
+		case ECharacterType::Samurai: return SamuraiCharacterAbilities->GetAbilityIcon(InAbilityIndex);
 		default: ;
 	}
 	return nullptr;
@@ -145,6 +149,22 @@ void UAbilitiesMenuUI::SwitchCharacterAbilities(const ECharacterType InCharacter
 		case ECharacterType::Breacher:
 			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Breacher, BreacherCharacterIcon);
 			ActiveWidgetIndex = 3;
+			break;
+		case ECharacterType::Wraith:
+			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Wraith, WraithCharacterIcon);
+			ActiveWidgetIndex = 4;
+			break;
+		case ECharacterType::Tank:
+			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Tank, TankCharacterIcon);
+			ActiveWidgetIndex = 5;
+			break;
+		case ECharacterType::Spy:
+			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Spy, SpyCharacterIcon);
+			ActiveWidgetIndex = 6;
+			break;
+		case ECharacterType::Samurai:
+			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Samurai, SamuraiCharacterIcon);
+			ActiveWidgetIndex = 7;
 		default: ;
 	}
 	bWaitingForSwitch = true;
@@ -200,7 +220,11 @@ void UAbilitiesMenuUI::UpdateAbilityIcon() const
 		case ECharacterType::Guardian: GuardianCharacterAbilities->SetAbilitiesIconData(); break;
 		case ECharacterType::Ranger: RangerCharacterAbilities->SetAbilitiesIconData(); break;
 		case ECharacterType::Trickster: TricksterCharacterAbilities->SetAbilitiesIconData(); break;
-		case ECharacterType::Breacher: BreacherCharacterAbilities->SetAbilitiesIconData(); 
+		case ECharacterType::Breacher: BreacherCharacterAbilities->SetAbilitiesIconData(); break;
+		case ECharacterType::Wraith: WraithCharacterAbilities->SetAbilitiesIconData(); break;
+		case ECharacterType::Tank: TankCharacterAbilities->SetAbilitiesIconData(); break;
+		case ECharacterType::Spy: SpyCharacterAbilities->SetAbilitiesIconData(); break;
+		case ECharacterType::Samurai: SamuraiCharacterAbilities->SetAbilitiesIconData();
 		default: ;
 	}
 }
@@ -220,7 +244,11 @@ void UAbilitiesMenuUI::FirstSlotResetClicked()
 		case ECharacterType::Guardian: GuardianCharacterAbilities->ResetFirstAbilitySlot(); break;
 		case ECharacterType::Ranger: RangerCharacterAbilities->ResetFirstAbilitySlot(); break;
 		case ECharacterType::Trickster: TricksterCharacterAbilities->ResetFirstAbilitySlot(); break;
-		case ECharacterType::Breacher: BreacherCharacterAbilities->ResetFirstAbilitySlot();
+		case ECharacterType::Breacher: BreacherCharacterAbilities->ResetFirstAbilitySlot(); break;
+		case ECharacterType::Wraith: WraithCharacterAbilities->ResetFirstAbilitySlot(); break;
+		case ECharacterType::Tank: TankCharacterAbilities->ResetFirstAbilitySlot(); break;
+		case ECharacterType::Spy: SpyCharacterAbilities->ResetFirstAbilitySlot(); break;
+		case ECharacterType::Samurai: SamuraiCharacterAbilities->ResetFirstAbilitySlot();
 		default: ;
 	}
 }
@@ -232,7 +260,11 @@ void UAbilitiesMenuUI::SecondSlotResetClicked()
 		case ECharacterType::Guardian: GuardianCharacterAbilities->ResetSecondAbilitySlot(); break;
 		case ECharacterType::Ranger: RangerCharacterAbilities->ResetSecondAbilitySlot(); break;
 		case ECharacterType::Trickster: TricksterCharacterAbilities->ResetSecondAbilitySlot(); break;
-		case ECharacterType::Breacher: BreacherCharacterAbilities->ResetSecondAbilitySlot();
+		case ECharacterType::Breacher: BreacherCharacterAbilities->ResetSecondAbilitySlot(); break;
+		case ECharacterType::Wraith: WraithCharacterAbilities->ResetSecondAbilitySlot(); break;
+		case ECharacterType::Tank: TankCharacterAbilities->ResetSecondAbilitySlot(); break;
+		case ECharacterType::Spy: SpyCharacterAbilities->ResetSecondAbilitySlot(); break;
+		case ECharacterType::Samurai: SamuraiCharacterAbilities->ResetSecondAbilitySlot();
 		default: ;
 	}
 }

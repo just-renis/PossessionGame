@@ -64,6 +64,14 @@ private:
 	TObjectPtr<UAbilitiesPanelUI> GuardianAbilitiesPanel;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	TObjectPtr<UAbilitiesPanelUI> BreacherAbilitiesPanel;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	TObjectPtr<UAbilitiesPanelUI> WraithAbilitiesPanel;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	TObjectPtr<UAbilitiesPanelUI> TankAbilitiesPanel;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	TObjectPtr<UAbilitiesPanelUI> SpyAbilitiesPanel;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	TObjectPtr<UAbilitiesPanelUI> SamuraiAbilitiesPanel;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DamageNumberText;
 	UPROPERTY(meta = (BindWidget))
@@ -78,6 +86,14 @@ private:
 	TObjectPtr<UCrosshairUI> GuardianCrosshair;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCrosshairUI> BreacherCrosshair;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCrosshairUI> WraithCrosshair;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCrosshairUI> TankCrosshair;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCrosshairUI> SpyCrosshair;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCrosshairUI> SamuraiCrosshair;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> DamageTickInv;
 	UPROPERTY(meta = (BindWidget))
@@ -180,6 +196,8 @@ private:
 	void UpdatePressToHijackKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const;
 	void PlayAnnouncement(const FText& InText);
 	void SetDamageNumber(float InDamage, const FLinearColor InColor);
+	void CollapseAllAbilitiesPanels() const;
+	void CollapseAllCrosshairs() const;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };

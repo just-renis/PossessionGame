@@ -35,6 +35,14 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> BreacherCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationCharacterIconUI> WraithCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationCharacterIconUI> TankCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationCharacterIconUI> SpyCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationCharacterIconUI> SamuraiCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> VariationsSwitcher;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> CharactersSwitcher;
@@ -60,6 +68,14 @@ private:
 	TObjectPtr<UVariationOptionUI> TricksterVariationPurple;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationOptionUI> BreacherVariationDefault;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> WraithVariationDefault;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> TankVariationDefault;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> SpyVariationDefault;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> SamuraiVariationDefault;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCloseButtonUI> CloseButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))

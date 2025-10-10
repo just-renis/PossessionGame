@@ -97,6 +97,10 @@ TObjectPtr<UTexture2D>& UUpgradeSelectionUI::GetCharacterUpgradeIcon(const EChar
 		case ECharacterType::Ranger: return RangerIconTexture;
 		case ECharacterType::Trickster: return TricksterIconTexture;
 		case ECharacterType::Breacher: return BreacherIconTexture;
+		case ECharacterType::Wraith: return WraithIconTexture;
+		case ECharacterType::Tank: return TankIconTexture;
+		case ECharacterType::Spy: return SpyIconTexture;
+		case ECharacterType::Samurai: return SamuraiIconTexture;
 		default: ;
 	}
 	return GuardianIconTexture;

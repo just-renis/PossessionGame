@@ -42,10 +42,6 @@ private:
 	bool bChoicesOpen = false;
 	int32 OptionSelected = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UTexture2D> PlayerIconTexture;
-	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UTexture2D> EnemyIconTexture;
-	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> RangerIconTexture;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> TricksterIconTexture;
@@ -53,6 +49,14 @@ private:
 	TObjectPtr<UTexture2D> GuardianIconTexture;
 	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> BreacherIconTexture;
+	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> WraithIconTexture;
+	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> TankIconTexture;
+	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> SpyIconTexture;
+	UPROPERTY(EditDefaultsOnly, Category = "UI Assets", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> SamuraiIconTexture;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))
 	TObjectPtr<UUpgradeCardUI> CardOption1;
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = true))

@@ -13,5 +13,9 @@ enum class EVariation : uint8
 	SecretCrateRewardHealth,
 	SecretCrateRewardDamage,
 	SecretCrateRewardXp,
-	BreacherVariationDefault
+	BreacherVariationDefault,
+	WraithVariationDefault,
+	TankVariationDefault,
+	SpyVariationDefault,
+	SamuraiVariationDefault
 };

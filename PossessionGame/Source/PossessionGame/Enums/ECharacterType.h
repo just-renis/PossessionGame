@@ -13,5 +13,6 @@ enum class ECharacterType : uint8
 	Guardian,
 	MinionBoss,
 	Warden,
-	Breacher
+	Breacher,
+	Wraith
 };

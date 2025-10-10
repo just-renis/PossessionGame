@@ -16,5 +16,6 @@ enum class EWeapon : uint8
 	GuardianSingularWeapon,
 	MinionBossHandWeapon,
 	WardenBlasterWeapon,
-	BreacherWeapon
+	BreacherWeapon,
+	WraithWeapon
 };

@@ -126,65 +126,34 @@ void UPlayerHUD::UpdateReceiveDamageInv()
 void UPlayerHUD::SetCharacterType(const ECharacterType InCharacterType)
 {
 	CharacterType = InCharacterType;
-	RangerAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
-	TricksterAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
-	GuardianAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
+	CollapseAllAbilitiesPanels();
 	switch (InCharacterType)
 	{
-		case ECharacterType::Ranger:
-			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetAsCurrent();
-			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (BreacherAbilitiesPanel) BreacherAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			break;
-		case ECharacterType::Trickster:
-			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetAsCurrent();
-			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (BreacherAbilitiesPanel) BreacherAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			break;
-		case ECharacterType::Breacher:
-			if (BreacherAbilitiesPanel) BreacherAbilitiesPanel->SetAsCurrent();
-			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			break;
-		default:
-			if (GuardianAbilitiesPanel) GuardianAbilitiesPanel->SetAsCurrent();
-			if (RangerAbilitiesPanel) RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (TricksterAbilitiesPanel) TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
-			if (BreacherAbilitiesPanel) BreacherAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+		case ECharacterType::Ranger: RangerAbilitiesPanel->SetAsCurrent(); break;
+		case ECharacterType::Trickster: TricksterAbilitiesPanel->SetAsCurrent(); break;
+		case ECharacterType::Breacher: BreacherAbilitiesPanel->SetAsCurrent(); break;
+		case ECharacterType::Wraith: WraithAbilitiesPanel->SetAsCurrent(); break;
+		case ECharacterType::Tank: TankAbilitiesPanel->SetAsCurrent(); break;
+		case ECharacterType::Spy: SpyAbilitiesPanel->SetAsCurrent(); break;
+		case ECharacterType::Samurai: SamuraiAbilitiesPanel->SetAsCurrent(); break;
+		default: GuardianAbilitiesPanel->SetAsCurrent();
 	}
 	SetCurrentCrosshair();
 }
 
 void UPlayerHUD::SetCurrentCrosshair() const
 {
+	CollapseAllCrosshairs();
 	switch(CharacterType)
 	{
-		case ECharacterType::Ranger:
-			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			if (TricksterCrosshair) TricksterCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			if (BreacherCrosshair) BreacherCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			break;
-		case ECharacterType::Trickster:
-			if (TricksterCrosshair) TricksterCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			if (BreacherCrosshair) BreacherCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			break;
-		case ECharacterType::Breacher:
-			if (BreacherCrosshair) BreacherCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			if (TricksterCrosshair) TricksterCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			break;
-		default:
-			if (GuardianCrosshair) GuardianCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			if (RangerCrosshair) RangerCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			if (TricksterCrosshair) TricksterCrosshair->SetVisibility(ESlateVisibility::Collapsed);
-			if (BreacherCrosshair) BreacherCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+		case ECharacterType::Ranger: RangerCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible); break;
+		case ECharacterType::Trickster: TricksterCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible); break;
+		case ECharacterType::Breacher: BreacherCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible); break;
+		case ECharacterType::Wraith: WraithCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible); break;
+		case ECharacterType::Tank: TankCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible); break;
+		case ECharacterType::Spy: SpyCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible); break;
+		case ECharacterType::Samurai: SamuraiCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible); break;
+		default: GuardianCrosshair->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
 
@@ -220,8 +189,13 @@ TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
 	switch (CharacterType)
 	{
 		case ECharacterType::Ranger: return RangerAbilitiesPanel;
-		case ECharacterType::Guardian: return GuardianAbilitiesPanel;
-		default: return TricksterAbilitiesPanel;
+		case ECharacterType::Trickster: return TricksterAbilitiesPanel;
+		case ECharacterType::Breacher: return BreacherAbilitiesPanel;
+		case ECharacterType::Wraith: return WraithAbilitiesPanel;
+		case ECharacterType::Tank: return TankAbilitiesPanel;
+		case ECharacterType::Spy: return SpyAbilitiesPanel;
+		case ECharacterType::Samurai: return SamuraiAbilitiesPanel;
+		default: return GuardianAbilitiesPanel;
 	}
 }
 
@@ -331,6 +305,38 @@ void UPlayerHUD::SetDamageNumber(float InDamage, const FLinearColor InColor)
 	DamageNumberText->SetColorAndOpacity(InColor);
 	DamageNumberText->SetText(FText::Format(FText::FromString("-{0}"), FText::AsNumber(FMath::RoundToInt(InDamage))));
 	PlayAnimation(DamageReceivedAnim);
+}
+
+void UPlayerHUD::CollapseAllAbilitiesPanels() const
+{
+	RangerAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
+	TricksterAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
+	GuardianAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
+	BreacherAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
+	WraithAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
+	TankAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
+	SpyAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
+	SamuraiAbilitiesPanel->UnbindOnKeyBindChangeDelegate();
+	RangerAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+	TricksterAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+	GuardianAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+	BreacherAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+	WraithAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+	TankAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+	SpyAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+	SamuraiAbilitiesPanel->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UPlayerHUD::CollapseAllCrosshairs() const
+{
+	RangerCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+	TricksterCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+	GuardianCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+	BreacherCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+	WraithCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+	TankCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+	SpyCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+	SamuraiCrosshair->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 template<typename T>

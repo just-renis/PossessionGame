@@ -68,4 +68,4 @@ void ASamuraiWeapon::PlayHandsAndWeaponMontage(EHandsAnimState HandsState, EWeap
 	AnimInstance->PlayMontage(WeaponState, StartSeconds);
 }
 
-void ASamuraiWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, const bool bFromFirstWeapon) { Super::ShootProjectile(EPoolObject::ArrowProjectile, false); }
+void ASamuraiWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, const bool bFromFirstWeapon) { Super::ShootProjectile(EPoolObject::SamuraiProjectile, false); }
