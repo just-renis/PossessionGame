@@ -10,11 +10,11 @@ class POSSESSIONGAME_API ASpy : public AEnemy, public IConcealable
 {
 	GENERATED_BODY()
 public:
-	bool GetXRayState() { return bXRayEnabled; }
+	bool GetXRayState() const { return bXRayEnabled; }
 	
-	virtual void SetConceal(bool bState) override;
-	void SetXRayState(bool bState) { bXRayEnabled = bState; }
-	void StopConcealingAbility(bool bIsPlayer = true);
+	virtual void SetConceal(const bool bState) override;
+	void SetXRayState(const bool bState) { bXRayEnabled = bState; }
+	void StopConcealingAbility(const bool bIsPlayer = true);
 private:
 	bool bXRayEnabled = false;
 	

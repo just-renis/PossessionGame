@@ -10,7 +10,7 @@
 #include "PossessionGame/Weapons/Character Weapons/SpyWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
-void ASpy::SetConceal(bool bState)
+void ASpy::SetConceal(const bool bState)
 {
 	Cast<ASpyWeapon>(Weapon)->SetConceal(bState);
 	GetMesh()->SetScalarParameterValueOnMaterials("Opacity", bState ? 0.2f : 1.f);
@@ -56,7 +56,8 @@ void ASpy::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ASpy::StopConcealingAbility(bool bIsPlayer)
+void ASpy::StopConcealingAbility(const bool bIsPlayer)
 {
+	if (Abilities.IsEmpty()) return;
 	bIsPlayer ? Abilities[0]->P_StopAbility() : Abilities[0]->AI_StopAbility();
 }

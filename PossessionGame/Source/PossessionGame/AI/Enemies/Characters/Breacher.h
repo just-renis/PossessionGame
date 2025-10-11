@@ -11,5 +11,7 @@ class POSSESSIONGAME_API ABreacher : public AEnemy
 
 	virtual void AI_SetupWeapon() override;
 
+	virtual void P_Setup() override;
+
 	virtual void BeginPlay() override;
 };

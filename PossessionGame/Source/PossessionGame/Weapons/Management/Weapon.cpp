@@ -67,6 +67,7 @@ void AWeapon::P_Reload(const int32 InOtherAmmoSource)
 
 void AWeapon::P_Shoot()
 {
+	UE_LOG(LogTemp, Error, TEXT("P_SHOOT"));
 	MuzzleFlashLogic();
 	MakeShootingCameraShake();
 	CurrentAmmo--;
