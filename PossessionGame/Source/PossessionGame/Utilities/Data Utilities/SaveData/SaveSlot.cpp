@@ -65,7 +65,7 @@ void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInsta
 	GameInstance = InGameInstance;
 	PlayerLevelData = GameInstance->GetPlayerLevelData();
 	SlotName = InSlotName;
-	if (CharacterChosenAbilities.IsEmpty()) AddDefaultAbilities();
+	AddDefaultAbilities();
 	GameInstance->GetSubsystem<UDelegateManager>()->OnVariationSelection.AddUObject(this, &USaveSlot::UpdateSelectedVariation);
 	#if WITH_EDITOR
 		if (GameInstance->GetUseCustomLevel()) CurrentLevel = GameInstance->GetPlayerLevel();
@@ -137,8 +137,8 @@ void USaveSlot::VersionMigration()
 
 void USaveSlot::AddDefaultAbilities()
 {
-	AddChosenAbilities(ECharacterType::Ranger, 0, -1);
-	AddChosenAbilities(ECharacterType::Guardian, 0, -1);
-	AddChosenAbilities(ECharacterType::Trickster, 0, -1);
-//	AddChosenAbilities(ECharacterType::Breacher, 0, -1);
+	if (GetCharacterChosenAbilities(ECharacterType::Ranger).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Ranger, 0, -1);
+	if (GetCharacterChosenAbilities(ECharacterType::Guardian).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Guardian, 0, -1);
+	if (GetCharacterChosenAbilities(ECharacterType::Trickster).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Trickster, 0, -1);
+	if (GetCharacterChosenAbilities(ECharacterType::Breacher).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Breacher, 0, -1);
 }

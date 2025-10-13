@@ -12,5 +12,6 @@ enum class EUpgrade : uint8
 	TricksterAbility3,
 	GuardianAbility1,
 	GuardianAbility2,
-	GuardianAbility3
+	GuardianAbility3,
+	BreacherAbility1
 };

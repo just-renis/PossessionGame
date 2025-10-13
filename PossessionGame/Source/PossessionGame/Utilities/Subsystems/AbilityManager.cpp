@@ -1,4 +1,6 @@
 #include "AbilityManager.h"
+
+#include "PossessionGame/Abilities/Characters/Breacher/BreacherAbility1.h"
 #include "PossessionGame/Abilities/Characters/Guardian/GuardianAbility1.h"
 #include "PossessionGame/Abilities/Characters/Guardian/GuardianAbility2.h"
 #include "PossessionGame/Abilities/Characters/Guardian/GuardianAbility3.h"
@@ -29,10 +31,7 @@ TObjectPtr<UAbility> UAbilityManager::GetAbility(const TObjectPtr<AActor>& InPro
 {
     if (FCharacterAbilitiesClasses* CharacterAbilitiesClasses = AbilitiesForCharacters.Find(InCharacterName))
     {
-        if (const FAbilityClass* AbilityClass = CharacterAbilitiesClasses->AbilitiesClasses.Find(InAbilityIndex))
-        {
-            return NewObject<UAbility>(InProprietor, *AbilityClass->AbilityClass);
-        }
+        if (const FAbilityClass* AbilityClass = CharacterAbilitiesClasses->AbilitiesClasses.Find(InAbilityIndex)) return NewObject<UAbility>(InProprietor, *AbilityClass->AbilityClass);
     }
     return nullptr;
 }
@@ -60,6 +59,7 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::MinionBoss, 0, EAbility::MinionBossAbility1, UMinionBossAbility1::StaticClass());
     AddAbility(ECharacterType::MinionBoss, 1, EAbility::MinionBossAbility2, UMinionBossAbility2::StaticClass());
     AddAbility(ECharacterType::Warden, 0, EAbility::WardenAbility1, UWardenAbility1::StaticClass());
+    AddAbility(ECharacterType::Breacher, 0, EAbility::BreacherAbility1, UBreacherAbility1::StaticClass());
 }
 
 void UAbilityManager::AddAbility(const ECharacterType InCharacterName, const int32 InAbilityIndex, const EAbility InAbilityName, const TSubclassOf<UAbility>& InAbilityClass)
