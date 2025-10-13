@@ -63,8 +63,24 @@ void UWeaponAnimInstance::SetGlobalPlayRate(const float InPlayRate)
 
 void UWeaponAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
 {
-    if (bIsInterrupted || !Montages.Contains(EWeaponAnimState::Reload)) return;
-    if (Montage == Montages.Find(EWeaponAnimState::Reload)->Get()) bIsReloading = false;
+            UE_LOG(LogTemp, Error, TEXT("OnMontageEnd 0"));
+    const TObjectPtr<UAnimMontage>* ReloadMontage = Montages.Find(EWeaponAnimState::Reload);
+    if (ReloadMontage && Montage == ReloadMontage->Get())
+    {
+        bIsReloading = false;
+        return;
+    }
+            UE_LOG(LogTemp, Error, TEXT("OnMontageEnd 1"));
+    const TObjectPtr<UAnimMontage>* ShootMontage = Montages.Find(EWeaponAnimState::Shoot);
+    if (ShootMontage && Montage == ShootMontage->Get())
+    {
+            UE_LOG(LogTemp, Error, TEXT("STOP MTICKING 0"));
+        if (const TObjectPtr<USkeletalMeshComponent> Mesh = GetSkelMeshComponent())
+        {
+            UE_LOG(LogTemp, Error, TEXT("STOP MTICKING"));
+            Mesh->SetComponentTickEnabled(true);
+        }
+    }
 }
 
 void UWeaponAnimInstance::NativeBeginPlay()

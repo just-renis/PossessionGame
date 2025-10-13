@@ -10,8 +10,9 @@ UCLASS()
 class POSSESSIONGAME_API UBreacherAbility1 : public UAbility
 {
 	GENERATED_BODY()
-
-	
+public:
+	virtual void P_Execute() override;
+private:
 	UPROPERTY()
 	TObjectPtr<ABreacher> Proprietor;
 
