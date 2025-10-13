@@ -13,7 +13,6 @@ class POSSESSIONGAME_API UWeaponAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
-	bool GetIsReloading() { return bIsReloading; }
 	bool IsPlaying(EWeaponAnimState State);
 	bool IsMontageExisting(EWeaponAnimState State);
 	float GetMontageLength(EWeaponAnimState State);
@@ -33,7 +32,6 @@ protected:
 	UFUNCTION()
 	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted);
 private:
-	bool bIsReloading = false;
 	float GlobalPlayRate = 1.f;
 	EWeapon WeaponName;
 	UPROPERTY()

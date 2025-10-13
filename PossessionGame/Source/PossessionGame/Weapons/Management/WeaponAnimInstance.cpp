@@ -40,7 +40,6 @@ void UWeaponAnimInstance::PlayMontage(EWeaponAnimState State, float StartPositio
     {
         LoadMontageIfNotLoaded(State);
         Montage_Play(Montages.Find(State)->Get(), GlobalPlayRate, EMontagePlayReturnType::MontageLength, StartPosition);
-        if (State == EWeaponAnimState::Reload) bIsReloading = true;
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontage"), *UEnum::GetValueAsString(WeaponName), *UEnum::GetValueAsString(State));
 }
@@ -63,23 +62,10 @@ void UWeaponAnimInstance::SetGlobalPlayRate(const float InPlayRate)
 
 void UWeaponAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
 {
-            UE_LOG(LogTemp, Error, TEXT("OnMontageEnd 0"));
-    const TObjectPtr<UAnimMontage>* ReloadMontage = Montages.Find(EWeaponAnimState::Reload);
-    if (ReloadMontage && Montage == ReloadMontage->Get())
-    {
-        bIsReloading = false;
-        return;
-    }
-            UE_LOG(LogTemp, Error, TEXT("OnMontageEnd 1"));
     const TObjectPtr<UAnimMontage>* ShootMontage = Montages.Find(EWeaponAnimState::Shoot);
     if (ShootMontage && Montage == ShootMontage->Get())
     {
-            UE_LOG(LogTemp, Error, TEXT("STOP MTICKING 0"));
-        if (const TObjectPtr<USkeletalMeshComponent> Mesh = GetSkelMeshComponent())
-        {
-            UE_LOG(LogTemp, Error, TEXT("STOP MTICKING"));
-            Mesh->SetComponentTickEnabled(true);
-        }
+        if (const TObjectPtr<USkeletalMeshComponent> Mesh = GetSkelMeshComponent()) Mesh->SetComponentTickEnabled(true);
     }
 }
 
@@ -87,6 +73,7 @@ void UWeaponAnimInstance::NativeBeginPlay()
 {
     Super::NativeBeginPlay();
     AssetsManager = GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
+    OnMontageBlendingOut.AddDynamic(this, &UWeaponAnimInstance::OnMontageEnd);
 }
 
 void UWeaponAnimInstance::LoadMontageIfNotLoaded(EWeaponAnimState State)
