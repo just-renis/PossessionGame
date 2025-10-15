@@ -182,7 +182,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		return;
 	}
 	if (!ProjectileData.bIsProjectileDealingDamageItself) return;
-	if (OtherActor->ActorHasTag("BreacherBarrel"))
+	if (ProjectileData.bIsPlayerProjectile && OtherActor->ActorHasTag("BreacherBarrel"))
 	{
 		Cast<ABreacherBarrel>(OtherActor)->Explode();
 		return;
@@ -193,14 +193,12 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		return;
 	}
 	if (!OtherActor->ActorHasTag("Enemy")) return;
-	const bool bIsPlayerProjectile = Mesh->GetCollisionObjectType() == ECC_GameTraceChannel1;
-	if (bIsPlayerProjectile)
+	if (ProjectileData.bIsPlayerProjectile)
 	{
-		DealDamageToSentientActor(bIsPlayerProjectile, OtherActor, Hit);
+		DealDamageToSentientActor(ProjectileData.bIsPlayerProjectile, OtherActor, Hit);
 		return;
 	}
-	const bool bIsEnemyProjectile = Mesh->GetCollisionObjectType() == ECC_GameTraceChannel2;
-	if (bIsEnemyProjectile && Cast<AEnemy>(OtherActor)->GetIsHijacked()) DealDamageToSentientActor(bIsPlayerProjectile, OtherActor, Hit);
+	if (!ProjectileData.bIsPlayerProjectile && Cast<AEnemy>(OtherActor)->GetIsHijacked()) DealDamageToSentientActor(ProjectileData.bIsPlayerProjectile, OtherActor, Hit);
 }
 
 EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.DamageReason; }

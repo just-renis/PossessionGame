@@ -1,5 +1,4 @@
 ﻿#include "BreacherBarrel.h"
-
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
@@ -12,10 +11,9 @@
 
 void ABreacherBarrel::Explode()
 {
-	UE_LOG(LogTemp, Error, TEXT("EXPLODE"));
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::BreacherAbility1, EUpgradeAttribute::Size, true);
-	const float DamageIncrease = Data->GetDamage() * RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::DamagePercentage, true) * 0.01f;
+	const float DamageIncrease = Data->GetDamage() * RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility1, EUpgradeAttribute::DamagePercentage, true) * 0.01f;
 	float NormalDamage = Data->GetDamage() + DamageIncrease;
 	float MinimumDamage = Data->GetRadiusMinimumDamage() + DamageIncrease;
 	const float InnerRadius = Data->GetDamageInnerRadius() + Data->GetDamageInnerRadius() * RadiusIncrease * 0.01f;
@@ -23,9 +21,8 @@ void ABreacherBarrel::Explode()
 	const float LevelDamageBoost = Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
 	NormalDamage += LevelDamageBoost;
 	MinimumDamage += LevelDamageBoost;
-	DrawDebugSphere(GetWorld(), GetActorLocation(), OuterRadius, 32, FColor::Green, false, 3.f);
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
-	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
+	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray{ Proprietor }, this, nullptr, ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::BreacherBarrelExplosion, nullptr, GetActorLocation());
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::BreacherBarrel, this);
 }

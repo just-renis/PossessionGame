@@ -11,6 +11,7 @@ class POSSESSIONGAME_API AThrowable : public APoolObject
 {
 	GENERATED_BODY()
 public:
+	void Initialize(const TObjectPtr<AActor>& InProprietor);
 	virtual void Throw();
 	virtual void Disable(const bool bHide) override;
 protected:
@@ -20,6 +21,8 @@ protected:
 	TObjectPtr<UThrowableData> Data;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
+	UPROPERTY()
+	TObjectPtr<AActor> Proprietor;
 
 	virtual void OnImpact(const FHitResult& Hit);
 	UFUNCTION()

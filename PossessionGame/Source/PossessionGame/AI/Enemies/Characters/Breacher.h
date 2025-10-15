@@ -9,7 +9,7 @@ class POSSESSIONGAME_API ABreacher : public AEnemy
 {
 	GENERATED_BODY()
 public:
-	void P_ThrowBarrel() const;
+	void P_ThrowBarrel();
 private:
 	virtual void AI_SetupWeapon() override;
 

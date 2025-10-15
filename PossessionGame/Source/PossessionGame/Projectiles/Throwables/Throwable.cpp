@@ -1,6 +1,8 @@
 ﻿#include "Throwable.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 
+void AThrowable::Initialize(const TObjectPtr<AActor>& InProprietor) { Proprietor = InProprietor; }
+
 void AThrowable::Throw()
 {
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
