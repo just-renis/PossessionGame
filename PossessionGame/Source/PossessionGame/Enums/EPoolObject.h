@@ -25,5 +25,6 @@ enum class EPoolObject : uint8
 	WardenProjectile,
 	BreacherProjectile,
 	WraithProjectile,
-	SamuraiProjectile
+	SamuraiProjectile,
+	BreacherBarrel
 };

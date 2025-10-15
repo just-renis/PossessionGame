@@ -11,6 +11,7 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfxType.h"
+#include "PossessionGame/Projectiles/Throwables/BreacherBarrel.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
@@ -271,6 +272,7 @@ void AWeapon::HitScanLogic()
 			HitResult.TraceStart = StartLocation;
 			DealPointDamage(HitResult);
 		}
+		else if (HitResult.GetActor()->ActorHasTag("BreacherBarrel")) Cast<ABreacherBarrel>(HitResult.GetActor())->Explode();
 	}
 }
 

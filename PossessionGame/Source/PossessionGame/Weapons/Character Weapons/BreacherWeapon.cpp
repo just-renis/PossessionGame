@@ -14,6 +14,20 @@ void ABreacherWeapon::P_Shoot()
 	Super::P_Shoot();
 }
 
+void ABreacherWeapon::P_Reload(const int32 InOtherAmmoSource)
+{
+	//AssetsManager->PlaySound2D(ESound::RangerReload);
+	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
+	if (AnimInstance) AnimInstance->PlayMontage(EWeaponAnimState::Reload);
+	Super::P_Reload(InOtherAmmoSource);
+}
+
+void ABreacherWeapon::P_Setup()
+{
+	Super::P_Setup();
+	Mesh->SetComponentTickEnabled(true);
+}
+
 void ABreacherWeapon::BeginPlay()
 {
 	Name = EWeapon::BreacherWeapon;

@@ -150,6 +150,7 @@ void ARanger::P_ThrowMine() const
 {
 	const TObjectPtr<ARangerMine> Mine = Cast<ARangerMine>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnRangerMineFromPool(Weapon->GetHandsSocketLocation(FName("MineSocket")), Weapon->GetHandsSocketRotation(FName("MineSocket"))));
 	if (!Mine) return;
+	Mine->Init();
 	AssetsManager->PlaySound2D(ESound::RangerThrowMine);
 	Mine->Throw(2000.f);
 }

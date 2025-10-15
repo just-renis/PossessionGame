@@ -12,6 +12,7 @@ class POSSESSIONGAME_API AThrowable : public APoolObject
 	GENERATED_BODY()
 public:
 	virtual void Throw(const float InImpulseForce);
+	virtual void Disable(const bool bHide) override;
 protected:
 	AThrowable();
 	

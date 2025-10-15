@@ -60,15 +60,6 @@ void UWeaponAnimInstance::SetGlobalPlayRate(const float InPlayRate)
     if (const TObjectPtr<UAnimMontage> CurrentMontage = GetCurrentActiveMontage()) Montage_SetPlayRate(CurrentMontage, GlobalPlayRate);
 }
 
-void UWeaponAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
-{
-    const TObjectPtr<UAnimMontage>* ShootMontage = Montages.Find(EWeaponAnimState::Shoot);
-    if (ShootMontage && Montage == ShootMontage->Get())
-    {
-        if (const TObjectPtr<USkeletalMeshComponent> Mesh = GetSkelMeshComponent()) Mesh->SetComponentTickEnabled(true);
-    }
-}
-
 void UWeaponAnimInstance::NativeBeginPlay()
 {
     Super::NativeBeginPlay();

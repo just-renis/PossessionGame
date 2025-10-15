@@ -18,6 +18,7 @@
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/UpgradeManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
+#include "Throwables/BreacherBarrel.h"
 
 AProjectile::AProjectile()
 {
@@ -181,6 +182,11 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		return;
 	}
 	if (!ProjectileData.bIsProjectileDealingDamageItself) return;
+	if (OtherActor->ActorHasTag("BreacherBarrel"))
+	{
+		Cast<ABreacherBarrel>(OtherActor)->Explode();
+		return;
+	}
 	if (OtherActor->ActorHasTag("Destructible"))
 	{
 		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());

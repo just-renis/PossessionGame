@@ -30,7 +30,7 @@ protected:
 	TMap<EWeaponAnimState, TObjectPtr<UAnimMontage>> Montages;
 	
 	UFUNCTION()
-	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted);
+	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted) {}
 private:
 	float GlobalPlayRate = 1.f;
 	EWeapon WeaponName;
