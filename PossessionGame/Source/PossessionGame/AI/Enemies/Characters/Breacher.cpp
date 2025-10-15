@@ -22,18 +22,13 @@ void ABreacher::P_Setup()
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ABreacher::SetIsActionInMotion);
 }
 
-void ABreacher::P_InitiateThrowBarrel()
-{
-	GetWorldTimerManager().SetTimer(ThrowBarrelHandle, this, &ABreacher::P_ThrowBarrel, 0.1f, false);
-}
-
 void ABreacher::P_ThrowBarrel() const
 {
 	const TObjectPtr<ABreacherBarrel> Barrel = Cast<ABreacherBarrel>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::BreacherBarrel, Weapon->GetHandsSocketLocation(FName("BarrelSocket")), Weapon->GetHandsSocketRotation(FName("BarrelSocket"))));
 	if (!Barrel) return;
 	Barrel->Init(true);
 	//AssetsManager->PlaySound2D(ESound::RangerThrowMine);
-	Barrel->Throw(2000.f);
+	Barrel->Throw(3000.f);
 }
 
 void ABreacher::BeginPlay()

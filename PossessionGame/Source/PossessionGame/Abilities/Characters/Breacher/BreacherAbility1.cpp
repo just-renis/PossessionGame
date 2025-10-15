@@ -8,7 +8,7 @@ void UBreacherAbility1::P_Execute()
 {
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::BreacherThrow);
-	Proprietor->P_InitiateThrowBarrel();
+	Proprietor->P_ThrowBarrel();
 //	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianOverChargeStart);
 	Super::P_Execute();
 }
