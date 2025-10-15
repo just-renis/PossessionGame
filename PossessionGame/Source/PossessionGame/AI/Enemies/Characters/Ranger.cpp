@@ -152,7 +152,7 @@ void ARanger::P_ThrowMine() const
 	if (!Mine) return;
 	Mine->Init();
 	AssetsManager->PlaySound2D(ESound::RangerThrowMine);
-	Mine->Throw(2000.f);
+	Mine->Throw();
 }
 
 void ARanger::BeginPlay()

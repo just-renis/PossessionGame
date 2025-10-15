@@ -1,13 +1,13 @@
 ﻿#include "Throwable.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 
-void AThrowable::Throw(const float InImpulseForce)
+void AThrowable::Throw()
 {
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Mesh->SetSimulatePhysics(true); 
 	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector, false);
 	Mesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-	Mesh->AddImpulse((-GetActorRightVector() + GetActorForwardVector() * 0.3f).GetSafeNormal() * InImpulseForce, NAME_None, true);
+	Mesh->AddImpulse((-GetActorRightVector() + GetActorForwardVector() * 0.3f).GetSafeNormal() * Data->GetImpulseForce(), NAME_None, true);
 	if (Data->GetNeedsOnHitEvent()) Mesh->OnComponentHit.AddDynamic(this, &AThrowable::OnHit);
 }
 

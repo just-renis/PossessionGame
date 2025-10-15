@@ -11,6 +11,7 @@ class POSSESSIONGAME_API UThrowableData : public UDataAsset
 public:
 	bool GetNeedsOnHitEvent() const { return bNeedsOnHitEvent; }
 	float GetDamage() const { return Damage; }
+	float GetImpulseForce() const { return ImpulseForce; }
 	float GetRadiusMinimumDamage() const { return RadiusMinimumDamage; }
 	float GetDamageInnerRadius() const { return DamageInnerRadius; }
 	float GetDamageOuterRadius() const { return DamageOuterRadius; }
@@ -20,6 +21,8 @@ private:
 	bool bNeedsOnHitEvent = false;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	float Damage = 0.f;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	float ImpulseForce = 0.f;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	bool bIsDealingRadiusDamage = false;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bIsDealingRadiusDamage", EditConditionHides, AllowPrivateAccess = true))

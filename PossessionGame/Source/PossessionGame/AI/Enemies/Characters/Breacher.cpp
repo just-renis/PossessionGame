@@ -28,7 +28,7 @@ void ABreacher::P_ThrowBarrel() const
 	if (!Barrel) return;
 	Barrel->Init(true);
 	//AssetsManager->PlaySound2D(ESound::RangerThrowMine);
-	Barrel->Throw(3000.f);
+	Barrel->Throw();
 }
 
 void ABreacher::BeginPlay()
