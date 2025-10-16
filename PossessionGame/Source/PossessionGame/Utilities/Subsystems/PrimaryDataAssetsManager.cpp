@@ -108,7 +108,7 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::WardenProjectile, EVfxType::Trail }), EVfx::WardenBlasterProjectile },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Muzzle }), EVfx::MinionBossMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::CloneProjectile, EVfxType::Impact }), EVfx::CloneBulletImpact },
-		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Trail }), EVfx::BreacherBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::FpsTrail }), EVfx::BreacherBulletFpsTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Muzzle }), EVfx::BreacherMuzzle }
 	};
 	CharacterVfxCombinationsMap =
@@ -754,7 +754,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_LevelUpEffect", EVfx::LevelUpEffect);
 	VfxsMap.Add("PA_BreacherBarrelExplosion", EVfx::BreacherBarrelExplosion);
 	VfxsMap.Add("PA_BreacherMuzzle", EVfx::BreacherMuzzle);
-	VfxsMap.Add("PA_BreacherBulletTrail", EVfx::BreacherBulletTrail);
+	VfxsMap.Add("PA_BreacherBulletFpsTrail", EVfx::BreacherBulletFpsTrail);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
