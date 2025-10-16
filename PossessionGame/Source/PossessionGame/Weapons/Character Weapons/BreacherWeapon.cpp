@@ -47,21 +47,18 @@ void ABreacherWeapon::BeginPlay()
 
 void ABreacherWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, bool bFromFirstWeapon)
 {
-	UE_LOG(LogTemp, Error, TEXT("SHOOT PROJECTILE 0"));
 	FProjectileData* ProjectileData = GetProjectileData(InProjectileName);
 	if (!ProjectileData) return;
-	UE_LOG(LogTemp, Error, TEXT("SHOOT PROJECTILE 1"));
 	ProjectileData->SetProprietor(Proprietor);
 	const FName& ProjectileSocketName = InProjectileSocketName == NAME_None ? ProjectileData->ProjectileSocketName : InProjectileSocketName;
 	const FVector BaseLocation = GetSocketLocation(ProjectileSocketName);
 	const FRotator BaseRotation = GetSocketRotation(ProjectileSocketName);
 	for (int32 i = 0; i < 8; i++)
 	{
-	UE_LOG(LogTemp, Error, TEXT("SHOOT PROJECTILE YES: %i"), i);
 		const float YawOffset = FMath::RandRange(-ProjectileData->GetCalcSpread(), ProjectileData->GetCalcSpread());
 		const float PitchOffset = FMath::RandRange(-ProjectileData->GetCalcSpread(), ProjectileData->GetCalcSpread());
 		const FRotator SpreadRotation = (BaseRotation + FRotator(PitchOffset, YawOffset, 0.f)).GetNormalized();
-		DrawDebugLine( GetWorld(), BaseLocation, BaseLocation + SpreadRotation.Vector() * 1500.f, FColor::Red, false, 3.f);
+		DrawDebugLine(GetWorld(), BaseLocation, BaseLocation + SpreadRotation.Vector() * 1500.f, FColor::Red, false, 3.f);
 		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, BaseLocation, SpreadRotation)->Init(*ProjectileData, BaseRotation);
 	}
 }
