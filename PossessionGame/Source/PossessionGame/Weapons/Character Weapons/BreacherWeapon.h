@@ -14,4 +14,5 @@ class POSSESSIONGAME_API ABreacherWeapon : public AOneHandedWeapon
 	virtual void P_Setup() override;
 
 	virtual void BeginPlay() override;
+	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, bool bFromFirstWeapon) override;
 };

@@ -1,4 +1,5 @@
 ﻿#include "BreacherBarrel.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
@@ -25,6 +26,7 @@ void ABreacherBarrel::Explode()
 	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray{ Proprietor }, this, nullptr, ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::BreacherBarrelExplosion, nullptr, GetActorLocation());
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::BreacherBarrel, this);
+	PlaySound(ESound::BreacherBarrelExplosion);
 }
 
 void ABreacherBarrel::Disable(const bool bHide)
@@ -33,8 +35,22 @@ void ABreacherBarrel::Disable(const bool bHide)
 	Super::Disable(bHide);
 }
 
+ABreacherBarrel::ABreacherBarrel()
+{
+	ExplodeSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ExplodeSfx"));
+	ExplodeSfx->SetAutoActivate(false);
+	ExplodeSfx->SetupAttachment(Mesh);
+	Sounds.Add(ESound::BreacherBarrelExplosion, ExplodeSfx);
+}
+
 void ABreacherBarrel::BeginPlay()
 {
 	Super::BeginPlay();
 	Tags.Add(FName("BreacherBarrel"));
+}
+
+void ABreacherBarrel::PlaySound(const ESound InSoundName)
+{
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() :
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], TFunction<bool()>(), InSoundName);
 }

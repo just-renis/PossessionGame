@@ -27,7 +27,7 @@ void AGuardianSingularWeapon::P_Shoot()
 		MuzzleFlashLogic();
 		MakeShootingCameraShake();
 		ShootTimer = 0.f;
-		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::GuardianProjectile, false);
+		ShootProjectile(EPoolObject::GuardianProjectile, false);
 	}
 }
 

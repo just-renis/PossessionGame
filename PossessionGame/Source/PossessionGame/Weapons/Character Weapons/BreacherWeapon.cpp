@@ -1,5 +1,7 @@
 ﻿#include "BreacherWeapon.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
@@ -13,7 +15,12 @@ void ABreacherWeapon::P_Shoot()
 		Mesh->SetComponentTickEnabled(true);
 		AnimInstance->PlayMontage(EWeaponAnimState::Shoot);
 	}
-	Super::P_Shoot();
+	MuzzleFlashLogic();
+	MakeShootingCameraShake();
+	CurrentAmmo--;
+	ShootTimer = 0.f;
+	ShootProjectile(EPoolObject::BreacherProjectile, false, NAME_None, true);
+	P_UpdateAmmoTextHUD();
 }
 
 void ABreacherWeapon::P_Reload(const int32 InOtherAmmoSource)
@@ -36,4 +43,25 @@ void ABreacherWeapon::BeginPlay()
 	Super::BeginPlay();
 	AnimInstance = Cast<UWeaponAnimInstance>(Mesh->GetAnimInstance());
 	AnimInstance->SetWeaponName(Name);
+}
+
+void ABreacherWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, bool bFromFirstWeapon)
+{
+	UE_LOG(LogTemp, Error, TEXT("SHOOT PROJECTILE 0"));
+	FProjectileData* ProjectileData = GetProjectileData(InProjectileName);
+	if (!ProjectileData) return;
+	UE_LOG(LogTemp, Error, TEXT("SHOOT PROJECTILE 1"));
+	ProjectileData->SetProprietor(Proprietor);
+	const FName& ProjectileSocketName = InProjectileSocketName == NAME_None ? ProjectileData->ProjectileSocketName : InProjectileSocketName;
+	const FVector BaseLocation = GetSocketLocation(ProjectileSocketName);
+	const FRotator BaseRotation = GetSocketRotation(ProjectileSocketName);
+	for (int32 i = 0; i < 8; i++)
+	{
+	UE_LOG(LogTemp, Error, TEXT("SHOOT PROJECTILE YES: %i"), i);
+		const float YawOffset = FMath::RandRange(-ProjectileData->GetCalcSpread(), ProjectileData->GetCalcSpread());
+		const float PitchOffset = FMath::RandRange(-ProjectileData->GetCalcSpread(), ProjectileData->GetCalcSpread());
+		const FRotator SpreadRotation = (BaseRotation + FRotator(PitchOffset, YawOffset, 0.f)).GetNormalized();
+		DrawDebugLine( GetWorld(), BaseLocation, BaseLocation + SpreadRotation.Vector() * 1500.f, FColor::Red, false, 3.f);
+		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, BaseLocation, SpreadRotation)->Init(*ProjectileData, BaseRotation);
+	}
 }
