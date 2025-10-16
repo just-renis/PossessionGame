@@ -89,5 +89,7 @@ enum class EVfx : uint16
 	WardenDeathElectrification,
 	RunEffect,
 	LevelUpEffect,
-	BreacherBarrelExplosion
+	BreacherBarrelExplosion,
+	BreacherMuzzle,
+	BreacherBulletTrail
 };

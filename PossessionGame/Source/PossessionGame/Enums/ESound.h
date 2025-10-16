@@ -120,5 +120,11 @@ enum class ESound : uint16
 	WardenShoot,
 	ArenaModeRestSoundTrack,
 	ArenaModeBattleSoundTrack,
-	JumpPadActivate
+	JumpPadActivate,
+	BreacherShoot,
+	BreacherReload,
+	BreacherThrowBarrel,
+	BreacherSpawn,
+	BreacherDeath,
+	BreacherOnHijack
 };

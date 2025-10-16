@@ -11,7 +11,15 @@ class POSSESSIONGAME_API ABreacher : public AEnemy
 public:
 	void P_ThrowBarrel();
 private:
+	ABreacher();
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> DeathSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> SpawnSfx;
+	
 	virtual void AI_SetupWeapon() override;
+	virtual void AI_TriggerDeathVoiceLine() override;
 
 	virtual void P_Setup() override;
 

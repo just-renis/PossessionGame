@@ -107,17 +107,19 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Trail }), EVfx::MinionBossBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::WardenProjectile, EVfxType::Trail }), EVfx::WardenBlasterProjectile },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Muzzle }), EVfx::MinionBossMuzzle },
-		{FPoolObjectPairWrapper({ EPoolObject::CloneProjectile, EVfxType::Impact }), EVfx::CloneBulletImpact }
+		{FPoolObjectPairWrapper({ EPoolObject::CloneProjectile, EVfxType::Impact }), EVfx::CloneBulletImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Trail }), EVfx::BreacherBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Muzzle }), EVfx::BreacherMuzzle }
 	};
 	CharacterVfxCombinationsMap =
 	{
 		{FCharacterPairWrapper({ ECharacterType::Guardian, EVfxType::Spawn }), EVfx::GuardianSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Ranger, EVfxType::Spawn }), EVfx::RangerSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Trickster, EVfxType::Spawn }), EVfx::TricksterSpawn },
-	//	{FCharacterPairWrapper({ ECharacterType::Breacher, EVfxType::Spawn }), EVfx::TricksterSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Minion, EVfxType::Spawn }), EVfx::MinionSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Warden, EVfxType::Spawn }), EVfx::WardenSpawn },
 		{FCharacterPairWrapper({ ECharacterType::MinionBoss, EVfxType::Spawn }), EVfx::MinionBossSpawn }
+	//	{FCharacterPairWrapper({ ECharacterType::Breacher, EVfxType::Spawn }), EVfx::BreacherSpawn }
 	};
 	PrimaryInit();
 }
@@ -633,6 +635,12 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_WardenBeamFire", ESound::WardenBeamFire);
 	SoundMap.Add("PA_WardenShoot", ESound::WardenShoot);
 	SoundMap.Add("PA_JumpPadActivate", ESound::JumpPadActivate);
+	SoundMap.Add("PA_BreacherOnHijack", ESound::BreacherOnHijack);
+	SoundMap.Add("PA_BreacherDeath", ESound::BreacherDeath);
+	SoundMap.Add("PA_BreacherSpawn", ESound::BreacherSpawn);
+	SoundMap.Add("PA_BreacherShoot", ESound::BreacherShoot);
+	SoundMap.Add("PA_BreacherReload", ESound::BreacherReload);
+	SoundMap.Add("PA_BreacherThrowBarrel", ESound::BreacherThrowBarrel);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -745,6 +753,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_RunEffect", EVfx::RunEffect);
 	VfxsMap.Add("PA_LevelUpEffect", EVfx::LevelUpEffect);
 	VfxsMap.Add("PA_BreacherBarrelExplosion", EVfx::BreacherBarrelExplosion);
+	VfxsMap.Add("PA_BreacherMuzzle", EVfx::BreacherMuzzle);
+	VfxsMap.Add("PA_BreacherBulletTrail", EVfx::BreacherBulletTrail);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

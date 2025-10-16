@@ -1,10 +1,12 @@
 ﻿#include "BreacherWeapon.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
 void ABreacherWeapon::P_Shoot()
 {
+	AssetsManager->PlaySound2D(ESound::BreacherShoot);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
 	if (AnimInstance)
 	{
@@ -16,7 +18,7 @@ void ABreacherWeapon::P_Shoot()
 
 void ABreacherWeapon::P_Reload(const int32 InOtherAmmoSource)
 {
-	//AssetsManager->PlaySound2D(ESound::RangerReload);
+	AssetsManager->PlaySound2D(ESound::BreacherReload);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
 	if (AnimInstance) AnimInstance->PlayMontage(EWeaponAnimState::Reload);
 	Super::P_Reload(InOtherAmmoSource);
