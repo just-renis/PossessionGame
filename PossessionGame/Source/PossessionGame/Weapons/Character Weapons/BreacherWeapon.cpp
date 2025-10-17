@@ -58,7 +58,6 @@ void ABreacherWeapon::ShootProjectile(const EPoolObject InProjectileName, const 
 		const float YawOffset = FMath::RandRange(-ProjectileData->GetCalcSpread(), ProjectileData->GetCalcSpread());
 		const float PitchOffset = FMath::RandRange(-ProjectileData->GetCalcSpread(), ProjectileData->GetCalcSpread());
 		const FRotator SpreadRotation = (BaseRotation + FRotator(PitchOffset, YawOffset, 0.f)).GetNormalized();
-		DrawDebugLine(GetWorld(), BaseLocation, BaseLocation + SpreadRotation.Vector() * 1500.f, FColor::Red, false, 3.f);
 		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, BaseLocation, SpreadRotation)->Init(*ProjectileData, BaseRotation);
 	}
 }
