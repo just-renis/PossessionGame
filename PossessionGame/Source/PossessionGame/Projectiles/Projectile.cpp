@@ -41,13 +41,12 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	ProjectileData = InProjectileData;
 	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
 	SetupData(ProjectileData.bIsPlayerProjectile, InWhich);
-	if (!bHasBeenPooled)
+	if (!BulletTrailComponent)
 	{
 		if (const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail); VfxName != EVfx::None)
 		{
 			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), nullptr, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, ProjectileData.GetProprietor()->GetVariation(), Attributes);
 		}
-		bHasBeenPooled = true;
 	}
 	else
 	{
@@ -108,13 +107,9 @@ void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const F
 		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
 	}
 	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, true);
-	if (!bHasBeenPooled)
-	{
-		AssetsManager->AttachVfx(EVfx::CloneBullet, nullptr, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
-		bHasBeenPooled = true;
-	}
 	SetDirection(Rotation.Vector());
-	if (BulletTrailComponent) BulletTrailComponent->Activate();
+	if (!BulletTrailComponent) AssetsManager->AttachVfx(EVfx::CloneBullet, nullptr, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
+	else BulletTrailComponent->Activate(true);
 	MovementComponent->SetComponentTickEnabled(true);
 	MovementComponent->Activate();
 }

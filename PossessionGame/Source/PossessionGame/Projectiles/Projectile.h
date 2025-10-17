@@ -60,7 +60,6 @@ protected:
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
-	bool bHasBeenPooled = false;
 	FVector StartLocation;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
