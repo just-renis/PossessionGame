@@ -1,11 +1,12 @@
 #include "Tank.h"
-
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
 #include "InputMappingContext.h"
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/TankWeapon.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
@@ -16,6 +17,18 @@ void ATank::P_Shoot()
 {
 	if (bIsInputLocked || !Weapon->P_CanShoot()) return;
 	Weapon->P_Shoot();
+}
+
+ATank::ATank()
+{
+	SpawnSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("SpawnSfx"));
+	SpawnSfx->SetAutoActivate(false);
+	SpawnSfx->SetupAttachment(GetMesh());
+	DeathSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("DeathSfx"));
+	DeathSfx->SetAutoActivate(false);
+	DeathSfx->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::BreacherSpawn, SpawnSfx);
+	Sounds.Add(ESound::BreacherDeath, DeathSfx);
 }
 
 void ATank::AI_ReloadLogic() { if (!bIsActionInMotion && Weapon->GetIsReloadEnabled()) AI_Reload(); }
@@ -36,6 +49,8 @@ void ATank::AI_SetupWeapon()
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::TankWeapon, GetMesh());
 	Super::AI_SetupWeapon();
 }
+
+void ATank::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::TankOnHijack); }
 
 bool ATank::P_GetIsLeftOrRightInputNotPressed()
 {
@@ -74,6 +89,7 @@ void ATank::P_ToggleChargeMinigun(const bool bState)
 	{
 		if (!Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp) && !Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot))
 		{
+			AssetsManager->PlaySound2D(ESound::TankWeaponChargeUp);
 			Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::ChargeUp);
 		}
 	}
@@ -83,6 +99,7 @@ void ATank::P_ToggleChargeMinigun(const bool bState)
 
 void ATank::P_StopChargingMinigun()
 {
+	AssetsManager->PlaySound2D(ESound::TankWeaponChargeDown);
 	if (Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp)) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::ChargeUp);
 	else if (P_GetIsLeftOrRightInputNotPressed()) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::Shoot);
 }
@@ -92,7 +109,7 @@ void ATank::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.57647f, 0.584
 void ATank::P_StopMinigun()
 {
 	if (Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp)) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::ChargeUp);
-	else Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::Shoot, 0.1f);
+	else Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::Shoot);
 	//SetInitialWalkSpeed(true);
 }
 

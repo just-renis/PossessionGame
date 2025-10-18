@@ -1,6 +1,7 @@
 #include "TankWeapon.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Animation Instances/Weapons/TankWeaponAnimInstance.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
@@ -20,6 +21,7 @@ void ATankWeapon::P_Shoot()
 {
 	if (AnimInstance->IsPlaying(EWeaponAnimState::Shoot))
 	{
+		AssetsManager->PlaySound2D(ESound::TankShoot);
 		Super::P_Shoot();
 		if (CurrentAmmo <= 0) (void)OnAmmoEnded.ExecuteIfBound();
 	}

@@ -127,5 +127,11 @@ enum class ESound : uint16
 	BreacherSpawn,
 	BreacherDeath,
 	BreacherOnHijack,
-	BreacherBarrelExplosion
+	BreacherBarrelExplosion,
+	TankShoot,
+	TankSpawn,
+	TankDeath,
+	TankOnHijack,
+	TankWeaponChargeUp,
+	TankWeaponChargeDown
 };

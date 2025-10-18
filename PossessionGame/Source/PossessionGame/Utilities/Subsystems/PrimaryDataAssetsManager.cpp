@@ -643,6 +643,12 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_BreacherReload", ESound::BreacherReload);
 	SoundMap.Add("PA_BreacherThrowBarrel", ESound::BreacherThrowBarrel);
 	SoundMap.Add("PA_BreacherBarrelExplosion", ESound::BreacherBarrelExplosion);
+	SoundMap.Add("PA_TankDeath", ESound::TankDeath);
+	SoundMap.Add("PA_TankShoot", ESound::TankShoot);
+	SoundMap.Add("PA_TankSpawn", ESound::TankSpawn);
+	SoundMap.Add("PA_TankOnHijack", ESound::TankOnHijack);
+	SoundMap.Add("PA_TankWeaponChargeDown", ESound::TankWeaponChargeDown);
+	SoundMap.Add("PA_TankWeaponChargeUp", ESound::TankWeaponChargeUp);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

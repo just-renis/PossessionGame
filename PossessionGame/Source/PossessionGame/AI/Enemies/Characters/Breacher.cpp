@@ -1,5 +1,4 @@
 ﻿#include "Breacher.h"
-
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWeapon.h"

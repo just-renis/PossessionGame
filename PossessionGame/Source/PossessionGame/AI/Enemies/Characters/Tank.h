@@ -11,10 +11,18 @@ class POSSESSIONGAME_API ATank : public AEnemy
 public:
 	virtual void P_Shoot() override;
 private:
+	ATank();
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> DeathSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> SpawnSfx;
+	
 	virtual void AI_ReloadLogic() override;
 	virtual void AI_SetCanShoot(const bool bState) override;
 	virtual void AI_PlayShootMontage() override;
 	virtual void AI_SetupWeapon() override;
+	virtual void AI_TriggerDeathVoiceLine() override;
 
 	bool P_GetIsLeftOrRightInputNotPressed();
 	
