@@ -1,6 +1,7 @@
 #include "AbilityManager.h"
 
 #include "PossessionGame/Abilities/Characters/Breacher/BreacherAbility1.h"
+#include "PossessionGame/Abilities/Characters/Breacher/BreacherAbility2.h"
 #include "PossessionGame/Abilities/Characters/Guardian/GuardianAbility1.h"
 #include "PossessionGame/Abilities/Characters/Guardian/GuardianAbility2.h"
 #include "PossessionGame/Abilities/Characters/Guardian/GuardianAbility3.h"
@@ -60,6 +61,7 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::MinionBoss, 1, EAbility::MinionBossAbility2, UMinionBossAbility2::StaticClass());
     AddAbility(ECharacterType::Warden, 0, EAbility::WardenAbility1, UWardenAbility1::StaticClass());
     AddAbility(ECharacterType::Breacher, 0, EAbility::BreacherAbility1, UBreacherAbility1::StaticClass());
+    AddAbility(ECharacterType::Breacher, 1, EAbility::BreacherAbility2, UBreacherAbility2::StaticClass());
 }
 
 void UAbilityManager::AddAbility(const ECharacterType InCharacterName, const int32 InAbilityIndex, const EAbility InAbilityName, const TSubclassOf<UAbility>& InAbilityClass)

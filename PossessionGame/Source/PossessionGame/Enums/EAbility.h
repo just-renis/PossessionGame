@@ -19,5 +19,6 @@ enum class EAbility : uint8
     MinionBossAbility1,
     MinionBossAbility2,
     WardenAbility1,
-    BreacherAbility1
+    BreacherAbility1,
+    BreacherAbility2
 };

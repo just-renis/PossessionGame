@@ -37,7 +37,8 @@ void UUpgradeManager::Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpg
 		{EAbility::GuardianAbility1, EUpgrade::GuardianAbility1},
 		{EAbility::GuardianAbility2, EUpgrade::GuardianAbility2},
 		{EAbility::GuardianAbility3, EUpgrade::GuardianAbility3},
-		{EAbility::BreacherAbility1, EUpgrade::BreacherAbility1}
+		{EAbility::BreacherAbility1, EUpgrade::BreacherAbility1},
+		{EAbility::BreacherAbility2, EUpgrade::BreacherAbility2}
 	};
 	RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 }

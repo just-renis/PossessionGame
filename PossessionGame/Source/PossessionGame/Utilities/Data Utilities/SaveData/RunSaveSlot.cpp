@@ -154,6 +154,7 @@ EUpgrade URunSaveSlot::GetUpgradeByAbilityName(const EAbility InAbilityName)
 		case EAbility::TricksterAbility2: return EUpgrade::TricksterAbility2;
 		case EAbility::TricksterAbility3: return EUpgrade::TricksterAbility3;
 		case EAbility::BreacherAbility1: return EUpgrade::BreacherAbility1;
+		case EAbility::BreacherAbility2: return EUpgrade::BreacherAbility2;
 		default: ;
 	}
 	return EUpgrade::None;
