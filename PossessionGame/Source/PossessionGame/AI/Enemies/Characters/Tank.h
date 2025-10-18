@@ -22,7 +22,7 @@ private:
 	virtual void P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
 	virtual void P_SetupLeftClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
 	virtual void P_Destroy() override;
-	void P_ToggleChargeMinigun(bool bState);
+	void P_ToggleChargeMinigun(const bool bState);
 	void P_StopChargingMinigun();
 	virtual void P_SetupColorsForUI() override;
 	UFUNCTION()

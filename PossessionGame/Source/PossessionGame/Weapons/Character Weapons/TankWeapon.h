@@ -20,6 +20,8 @@ public:
 	virtual void P_Reload(int32 OtherAmmoSource) override;
 	virtual void P_SetupTransfer(bool bSetToFirstHand) override;
 private:
+	virtual void P_Setup() override;
+	
 	virtual void BeginPlay() override;
 	virtual void DetachWeapon() override {}
 };

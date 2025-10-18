@@ -8,6 +8,7 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/TankWeapon.h"
+#include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
@@ -45,6 +46,7 @@ void ATank::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
+	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ATank::SetIsActionInMotion);
 }
 
 void ATank::P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
@@ -65,12 +67,15 @@ void ATank::P_Destroy()
 	Weapon->AttachToSocket(GetMesh());
 }
 
-void ATank::P_ToggleChargeMinigun(bool bState)
+void ATank::P_ToggleChargeMinigun(const bool bState)
 {
 	if (Weapon->GetCurrentAmmoAmount() <= 0) return;
 	if (bState)
 	{
-		if (!Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp) && !Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot)) Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::ChargeUp);
+		if (!Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp) && !Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot))
+		{
+			Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::ChargeUp);
+		}
 	}
 	else P_StopChargingMinigun();
 	//if (P_GetIsLeftOrRightInputNotPressed() || bState) SetInitialWalkSpeed(!bState);
@@ -79,7 +84,7 @@ void ATank::P_ToggleChargeMinigun(bool bState)
 void ATank::P_StopChargingMinigun()
 {
 	if (Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp)) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::ChargeUp);
-	else if (P_GetIsLeftOrRightInputNotPressed()) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::Shoot, 0.1f);
+	else if (P_GetIsLeftOrRightInputNotPressed()) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::Shoot);
 }
 
 void ATank::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.57647f, 0.58431f, 0.56078f)); }

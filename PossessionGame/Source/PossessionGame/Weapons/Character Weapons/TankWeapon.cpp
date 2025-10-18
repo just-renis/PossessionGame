@@ -1,6 +1,7 @@
 #include "TankWeapon.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Weapons/Animation Instances/Weapons/TankWeaponAnimInstance.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
@@ -36,11 +37,17 @@ void ATankWeapon::P_SetupTransfer(bool bSetToFirstHand)
 	AnimInstance->StopAllMontages(0.f);
 }
 
+void ATankWeapon::P_Setup()
+{
+	Super::P_Setup();
+	Mesh->SetComponentTickEnabled(true);
+}
+
 void ATankWeapon::BeginPlay()
 {
 	Name = EWeapon::TankWeapon;
 	Super::BeginPlay();
 	SetWeaponReloadMontageDelegate();
-	AnimInstance = Cast<UWeaponAnimInstance>(Mesh->GetAnimInstance());
+	AnimInstance = Cast<UTankWeaponAnimInstance>(Mesh->GetAnimInstance());
 	AnimInstance->SetWeaponName(Name);
 }
