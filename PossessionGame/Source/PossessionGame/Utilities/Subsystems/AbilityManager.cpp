@@ -13,6 +13,8 @@
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility1.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility2.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility3.h"
+#include "PossessionGame/Abilities/Characters/Tank/TankAbility1.h"
+#include "PossessionGame/Abilities/Characters/Tank/TankAbility2.h"
 #include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility1.h"
 #include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility2.h"
 #include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility3.h"
@@ -62,6 +64,8 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::Warden, 0, EAbility::WardenAbility1, UWardenAbility1::StaticClass());
     AddAbility(ECharacterType::Breacher, 0, EAbility::BreacherAbility1, UBreacherAbility1::StaticClass());
     AddAbility(ECharacterType::Breacher, 1, EAbility::BreacherAbility2, UBreacherAbility2::StaticClass());
+    AddAbility(ECharacterType::Tank, 0, EAbility::TankAbility1, UTankAbility1::StaticClass());
+    AddAbility(ECharacterType::Tank, 1, EAbility::TankAbility2, UTankAbility2::StaticClass());
 }
 
 void UAbilityManager::AddAbility(const ECharacterType InCharacterName, const int32 InAbilityIndex, const EAbility InAbilityName, const TSubclassOf<UAbility>& InAbilityClass)

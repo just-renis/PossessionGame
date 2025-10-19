@@ -141,4 +141,5 @@ void USaveSlot::AddDefaultAbilities()
 	if (GetCharacterChosenAbilities(ECharacterType::Guardian).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Guardian, 0, -1);
 	if (GetCharacterChosenAbilities(ECharacterType::Trickster).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Trickster, 0, -1);
 	if (GetCharacterChosenAbilities(ECharacterType::Breacher).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Breacher, 0, -1);
+	if (GetCharacterChosenAbilities(ECharacterType::Tank).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Tank, 0, -1);
 }
