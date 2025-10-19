@@ -119,8 +119,8 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FCharacterPairWrapper({ ECharacterType::Trickster, EVfxType::Spawn }), EVfx::TricksterSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Minion, EVfxType::Spawn }), EVfx::MinionSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Warden, EVfxType::Spawn }), EVfx::WardenSpawn },
-		{FCharacterPairWrapper({ ECharacterType::MinionBoss, EVfxType::Spawn }), EVfx::MinionBossSpawn }
-	//	{FCharacterPairWrapper({ ECharacterType::Breacher, EVfxType::Spawn }), EVfx::BreacherSpawn }
+		{FCharacterPairWrapper({ ECharacterType::MinionBoss, EVfxType::Spawn }), EVfx::MinionBossSpawn },
+		{FCharacterPairWrapper({ ECharacterType::Breacher, EVfxType::Spawn }), EVfx::BreacherSpawn }
 	};
 	PrimaryInit();
 }
@@ -764,6 +764,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_BreacherMuzzle", EVfx::BreacherMuzzle);
 	VfxsMap.Add("PA_BreacherBulletTrail", EVfx::BreacherBulletTrail);
 	VfxsMap.Add("PA_BreacherBulletImpact", EVfx::BreacherBulletImpact);
+	VfxsMap.Add("PA_BreacherSpawn", EVfx::BreacherSpawn);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
