@@ -59,13 +59,14 @@ void UPossessionGameInstance::AddAvailableUpgrades(const TObjectPtr<USaveSlot>& 
 {
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	TArray<EUpgrade> AvailableUpgrades;
-	TArray AvailableCharacters = { ECharacterType::Ranger, ECharacterType::Guardian, ECharacterType::Trickster/*, ECharacterType::Breacher*/ };
+	// By chapter division needs to be done for each character upgrades to appear in appropriate chapter.
+	TArray AvailableCharacters = { ECharacterType::Ranger, ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Breacher, ECharacterType::Tank, ECharacterType::Spy, ECharacterType::Samurai, ECharacterType::Wraith };
 	for (int32 i = 0; i < AvailableCharacters.Num(); i++)
 	{
 		const ECharacterType CharacterType = AvailableCharacters[i];
-		const TArray<int32>& ChosenAbilities = InSaveSlot->GetCharacterChosenAbilities(CharacterType).Abilities;
 		const FCharacterUpgrades* UpgradeList = ExistingUpgrades.Find(CharacterType);
 		if (UpgradeList == nullptr) continue;
+		const TArray<int32>& ChosenAbilities = InSaveSlot->GetCharacterChosenAbilities(CharacterType).Abilities;
 		for (int32 j = 0; j < ChosenAbilities.Num(); j++)
 		{
 			const int32 AbilityIndex = ChosenAbilities[j];
