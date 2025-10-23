@@ -469,6 +469,7 @@ void AEnemy::P_Setup()
 {
 	GetMesh()->SetComponentTickEnabled(false);
 	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f);
+	DelegateManager->RequestCurrentCharacter.BindUObject(this, &AEnemy::GetCharacterName);
 	DelegateManager->ApplyUpgradeOnSelection.BindUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->RequestTriggerCameraShake.BindUObject(this, &AEnemy::P_MakeCameraShake);

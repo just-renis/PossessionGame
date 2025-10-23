@@ -158,6 +158,11 @@ void UDemoEndUI::FadeOutToNextLevel()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, true, LevelNameToLoad));
 }
 
+void UDemoEndUI::FadeOutToNextChapter()
+{
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, false, LevelNameToLoad));
+}
+
 void UDemoEndUI::GoToNextChapter()
 {
 	if (bAlreadyClickedButton) return;
@@ -170,7 +175,7 @@ void UDemoEndUI::GoToNextChapter()
 	RunSaveSlot->SetCurrentChapterAndCharacter(RunSaveSlot->GetCurrentChapter() + 1, Character);
 	bAlreadyClickedButton = true;
 	LevelNameToLoad = bIsArenaMode ? FName("L_Arena") : FName("C2_Level1");
-	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeOutToNextLevel);
+	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeOutToNextChapter);
 	PlayAnimation(FadeOutAnim);
 	BindToAnimationFinished(FadeOutAnim, FadeFinishedDelegate);
 }

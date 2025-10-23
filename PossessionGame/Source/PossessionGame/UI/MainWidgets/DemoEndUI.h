@@ -78,5 +78,7 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	UFUNCTION()
 	void FadeOutToNextLevel();
 	UFUNCTION()
+	void FadeOutToNextChapter();
+	UFUNCTION()
 	void GoToNextChapter();
 };

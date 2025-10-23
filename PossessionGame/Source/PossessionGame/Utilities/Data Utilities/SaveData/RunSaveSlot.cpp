@@ -127,7 +127,7 @@ void URunSaveSlot::AddSecretCrateBoost(const EVariation InVariation, const int32
 
 void URunSaveSlot::SetCurrentChapterAndCharacter(const int32 InCurrentChapter, const ECharacterType InCurrentCharacter)
 {
-	CurrentChapter = InCurrentChapter;
+	CurrentChapter = InCurrentChapter > 2 ? 2 : InCurrentChapter;
 	CurrentCharacter = InCurrentCharacter;
 	SaveSlot();
 }

@@ -14,7 +14,6 @@ void UGameModeBaseLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, con
 	WaveManager = InWaveManager;
 	EnemiesOnSceneLimit = InGameModeData->GetEnemiesOnSceneLimit();
 	SpawnRate = InGameModeData->GetSpawnRate();
-	UE_LOG(LogTemp, Error, TEXT("SPAWBN RATE: %f"), SpawnRate);
 	WaveManager->GetDelegateManager()->OnPlayerDeath.AddUObject(this, &UGameModeBaseLogic::FadeOutObjectivePanel);
 }
 

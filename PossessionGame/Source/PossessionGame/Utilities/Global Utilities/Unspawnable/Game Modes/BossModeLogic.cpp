@@ -32,8 +32,7 @@ void UBossModeLogic::HandleSpawning()
 	if (bAsyncLoadInProcess) return;
  	if (bIsBossAlive && AliveEnemiesAmount < EnemiesOnSceneLimit)
 	{
-		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, EGameMode::BossModeEnemy, [this] { IncreaseAliveEnemiesAmount(); },
-			[this] { UE_LOG(LogTemp, Error, TEXT("bISBossAlive: %i"), bIsBossAlive); return bIsBossAlive; });
+		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, EGameMode::BossModeEnemy, [this] { IncreaseAliveEnemiesAmount(); }, [this] { return !bIsBossAlive; });
 	}
 }
 
