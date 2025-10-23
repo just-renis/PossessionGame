@@ -125,6 +125,13 @@ void URunSaveSlot::AddSecretCrateBoost(const EVariation InVariation, const int32
 	BoostAmount += InPercentage;
 }
 
+void URunSaveSlot::SetCurrentChapterAndCharacter(const int32 InCurrentChapter, const ECharacterType InCurrentCharacter)
+{
+	CurrentChapter = InCurrentChapter;
+	CurrentCharacter = InCurrentCharacter;
+	SaveSlot();
+}
+
 float URunSaveSlot::GetUpgradeAttributeValuesForEnemy(const EPoolObject InPoolObject, const EUpgradeAttribute InUpgradeAttribute, const bool bForAbilityOnly)
 {
 	TArray<EUpgrade> Upgrades = GetUpgradesByPoolObjectName(InPoolObject, bForAbilityOnly);

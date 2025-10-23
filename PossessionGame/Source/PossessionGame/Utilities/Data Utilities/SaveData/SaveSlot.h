@@ -31,7 +31,6 @@ public:
 	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
 	int32 GetCurrencyAmount() const { return CurrencyAmount; }
 	int32 GetSkillPoints() const;
-	int32 GetCurrentChapter() const { return CurrentChapter; }
 	int32 GetArenaMaxTimeSurvivedSeconds() const { return ArenaMaxTimeSurvivedSeconds; }
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	FCharacterAbilities GetCharacterChosenAbilities(const ECharacterType InCharacter);
@@ -59,8 +58,6 @@ private:
 	int32 CurrencyAmount = 0;
 	UPROPERTY()
 	int32 SaveVersion = 1;
-	UPROPERTY()
-	int32 CurrentChapter = 1;
 	UPROPERTY()
 	int32 ArenaMaxTimeSurvivedSeconds = 0;
 	UPROPERTY()

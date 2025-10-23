@@ -75,6 +75,7 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 {
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	(void)DelegateManager->RequestAddAbilitiesToUpgradePool.ExecuteIfBound(SaveSlot);
 	GetWorld()->GetSubsystem<UMarkerManager>()->Init(MarkerClass, MarkerTypes);
 	LoadSettingsData();
@@ -94,7 +95,11 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	DelegateManager->OnGameModeInitialized.Broadcast();
 	DelegateManager->OnFirstGameModeInitiated.BindUObject(this, &APossessionGameGameModeBase::SetRunStart);
 	DelegateManager->OnRunFinished.BindUObject(this, &APossessionGameGameModeBase::GetRunFinishedTime);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(CharacterToSpawn, EGameMode::None, nullptr, nullptr);
+	if (!bIsArenaMode && RunSaveSlot->GetCurrentChapter() > 1)
+	{
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(RunSaveSlot->GetCurrentCharacter(), EGameMode::None, nullptr, nullptr);
+	}
+	else GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(CharacterToSpawn, EGameMode::None, nullptr, nullptr);
 }
 
 void APossessionGameGameModeBase::SetRunStart() { RunStartTime = GetWorld()->GetTimeSeconds(); }

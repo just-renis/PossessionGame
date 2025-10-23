@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -126,7 +127,8 @@ void UDemoEndUI::FadeInFinished()
 	if (ReplayButton)
 	{
 		ReplayButton->SetButtonVisibility(true);
-		ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Replay);
+		if (!GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsDemo.Execute()) ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::GoToNextChapter);
+		else ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Replay);
 	}
 	UnbindFromAnimationFinished(bIsArenaMode ? FadeInArenaAnim : FadeInAnim, FadeFinishedDelegate);
 }
@@ -154,4 +156,21 @@ void UDemoEndUI::Replay()
 void UDemoEndUI::FadeOutToNextLevel()
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->LoadLevel.ExecuteIfBound(FLoadLevelData(false, false, true, LevelNameToLoad));
+}
+
+void UDemoEndUI::GoToNextChapter()
+{
+	if (bAlreadyClickedButton) return;
+	ECharacterType Character = ECharacterType::Guardian;
+	if (GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestCurrentCharacter.IsBound())
+	{
+		Character = GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestCurrentCharacter.Execute();
+	}
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	RunSaveSlot->SetCurrentChapterAndCharacter(RunSaveSlot->GetCurrentChapter() + 1, Character);
+	bAlreadyClickedButton = true;
+	LevelNameToLoad = bIsArenaMode ? FName("L_Arena") : FName("C2_Level1");
+	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeOutToNextLevel);
+	PlayAnimation(FadeOutAnim);
+	BindToAnimationFinished(FadeOutAnim, FadeFinishedDelegate);
 }

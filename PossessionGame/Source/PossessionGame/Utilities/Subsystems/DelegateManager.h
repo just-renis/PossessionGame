@@ -38,6 +38,7 @@ DECLARE_DELEGATE_RetVal(bool, FRequestIsTimeStopUsed);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsArenaMode);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsDemo);
 DECLARE_DELEGATE_RetVal(int32, FRequestCurrentTimer);
+DECLARE_DELEGATE_RetVal(ECharacterType, FRequestCurrentCharacter);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FRequestTriggerCameraShake, const ECameraShake);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const FRuntimeUpgradeData&);
@@ -121,6 +122,7 @@ public:
 	FRequestIsArenaMode RequestIsArenaMode;
 	FRequestIsDemo RequestIsDemo;
 	FRequestCurrentTimer RequestCurrentTimer;
+	FRequestCurrentCharacter RequestCurrentCharacter;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FRequestTriggerCameraShake RequestTriggerCameraShake;
 	FOnEnemyDeath OnEnemyDeath;

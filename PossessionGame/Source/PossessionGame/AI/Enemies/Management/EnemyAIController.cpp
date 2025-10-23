@@ -91,7 +91,6 @@ void AEnemyAIController::AdjustCustomFocus() const
 		if (Proprietor->GetMoveMode() != EMoveMode::Walk || TargetLocation.ContainsNaN()) Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("CONTROL RIG LOCATION: %s"), *TargetLocation.ToString())
 			Proprietor->GetAnimInstance()->SetIsControlRigEnabled(true);
 			Proprietor->GetAnimInstance()->SetLookAtLocation(TargetLocation);
 			CustomFocusToLocation(TargetLocation);

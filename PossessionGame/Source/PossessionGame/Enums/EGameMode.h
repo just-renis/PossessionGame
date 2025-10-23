@@ -13,6 +13,7 @@ enum class EGameMode : uint8
     HackTerminalModeRoom3,
     ChargeTerminalMode,
     BossMode,
+    BossModeEnemy,
     MiniBossSpawn,
     ArenaMode
 };

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "PossessionGame/Data Assets/Upgrades/UpgradeData.h"
+#include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Utilities/Data Utilities/FSpecialUpgradesContainer.h"
 #include "RunSaveSlot.generated.h"
 
@@ -56,6 +57,8 @@ public:
 	int32 GetSecretBoost(const EVariation InVariation);
 	int32 GetCurrentLevel(const EUpgrade InUpgradeName);
 	int32 GetCurrentLevelSumOfCharacterAbilities(const ECharacterType InCharacterName);
+	int32 GetCurrentChapter() const { return CurrentChapter; }
+	ECharacterType GetCurrentCharacter() const { return CurrentCharacter; }
 	FString GetSlotName() { return SlotName; }
 	TSet<int32> GetUpgradeChoicesIds(const EUpgrade InUpgradeName);
 	TArray<EUpgrade>& GetAvailableUpgrades() { return AvailableUpgrades; }
@@ -65,11 +68,16 @@ public:
 	void SaveSlot();
 	void SetupSlot(const TObjectPtr<UGameInstance>& InGameInstance, const FString& InSlotName);
 	void AddSecretCrateBoost(const EVariation InVariation, const int32 InPercentage);
+	void SetCurrentChapterAndCharacter(const int32 InCurrentChapter, const ECharacterType InCurrentCharacter);
 private:
 	UPROPERTY()
 	int32 SaveVersion = 1;
 	UPROPERTY()
+	int32 CurrentChapter = 1;
+	UPROPERTY()
 	FString SlotName;
+	UPROPERTY()
+	ECharacterType CurrentCharacter;
 	UPROPERTY()
 	TArray<EUpgrade> AvailableUpgrades;
 	UPROPERTY()

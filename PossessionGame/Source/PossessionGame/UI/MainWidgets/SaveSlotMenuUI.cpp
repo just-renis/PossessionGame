@@ -6,6 +6,7 @@
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/ModeSelectUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -115,10 +116,14 @@ void USaveSlotMenuUI::OpenCurrentSaveLevel()
 		GoBack();
 		return;
 	}
-	switch (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCurrentChapter())
+	switch (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentChapter())
 	{
 		case 1:
 			ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, false, false, FName("Level_1")));
+			GoBack();
+			break;
+		case 2:
+			ModeSelection->PlayFadeInAnim(true, FLoadLevelData(false, false, false, FName("C2_Level1")));
 			GoBack();
 		default: ;
 	}
