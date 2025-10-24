@@ -25,6 +25,7 @@ class POSSESSIONGAME_API AWeapon : public AActor, public IDamageReasonProvider
 {
 	GENERATED_BODY()
 public:
+	int32 HitCount = 0;
 	AWeapon();
 
 	bool GetIsReloadEnabled() const { return bIsReloadEnabled; }

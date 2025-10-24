@@ -186,6 +186,7 @@ protected:
 	virtual void P_Setup();
 	virtual void P_Shoot();
 	virtual void P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent);
+	virtual void P_SetupShiftInput(const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent);
 	virtual void P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) {}
 	virtual void P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent);
 	virtual void P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) {}

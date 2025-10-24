@@ -89,7 +89,8 @@ void ATank::P_ToggleChargeMinigun(const bool bState)
 	{
 		if (!Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp) && !Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot))
 		{
-			AssetsManager->PlaySound2D(ESound::TankWeaponChargeUp);
+			AssetsManager->RemoveStoredSound(ESound::TankWeaponChargeDown);
+			AssetsManager->PlaySound2D(ESound::TankWeaponChargeUp, true);
 			Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::ChargeUp);
 		}
 	}
@@ -99,7 +100,8 @@ void ATank::P_ToggleChargeMinigun(const bool bState)
 
 void ATank::P_StopChargingMinigun()
 {
-	AssetsManager->PlaySound2D(ESound::TankWeaponChargeDown);
+	AssetsManager->RemoveStoredSound(ESound::TankWeaponChargeUp);
+	AssetsManager->PlaySound2D(ESound::TankWeaponChargeDown, true);
 	if (Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp)) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::ChargeUp);
 	else if (P_GetIsLeftOrRightInputNotPressed()) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::Shoot);
 }

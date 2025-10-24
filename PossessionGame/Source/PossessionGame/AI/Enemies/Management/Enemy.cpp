@@ -170,8 +170,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Move);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Started, this, &AEnemy::P_Jump);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Rotate);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleRun, true);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &AEnemy::P_ToggleRun, false);
+		P_SetupShiftInput(EnhancedInputComponent);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &AEnemy::P_HijackEnemy);
 		P_SetupLeftClickInput(EnhancedInputComponent);
 		if (bCanReload) EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(9).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Reload);
@@ -519,6 +518,12 @@ void AEnemy::P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> Lef
 	P_SetupLeftClickInputStartedState(LeftClickInputComponent);
 	P_SetupLeftClickInputTriggeredState(LeftClickInputComponent);
 	P_SetupLeftClickInputCompletedState(LeftClickInputComponent);
+}
+
+void AEnemy::P_SetupShiftInput(const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent)
+{
+	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleRun, true);
+	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &AEnemy::P_ToggleRun, false);
 }
 
 void AEnemy::P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)

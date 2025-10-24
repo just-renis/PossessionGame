@@ -263,6 +263,7 @@ void AWeapon::HitScanLogic()
 	FCollisionQueryParams QueryParams;
 	QueryParams.bTraceComplex = false;
 	QueryParams.bReturnPhysicalMaterial = false;
+	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 3.f);
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, QueryParams))
 	{
 		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), nullptr, HitResult.Location, HitResult.ImpactNormal.Rotation(), Proprietor->GetVariation());
