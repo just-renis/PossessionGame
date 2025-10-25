@@ -20,6 +20,8 @@ class POSSESSIONGAME_API UChapterLaunchUI : public UUserWidget
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeInAnimFinishedDelegate;
 
+	FText GetChapterName(const int32 InCurrentChapter);
+
 	virtual void NativeConstruct() override;
 	void SetTexts(const FText& InChapterText, const FText& InTitleText) const;
 	UFUNCTION()

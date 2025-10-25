@@ -68,7 +68,6 @@ void ATutorialBot::BeginPlay()
 		Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 		SetupDialogue("BodySocket");
 		SetControlRigState(true);
-		UE_LOG(LogTemp, Error, TEXT("CURRENT CHAPTER: %i"), GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentChapter());
 		if (!bIsArenaMode && CurrentChapter > 1)
 		{
 			if (Collision) Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -79,9 +78,9 @@ void ATutorialBot::BeginPlay()
 			TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "AbilitiesTabletSocket");
 			SetTabletVisibility(true);
 			SetupAndPlayNextAnimation(ETutorialBotAnimState::TabletHolding);
+			GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitialized.AddUObject(this, &ATutorialBot::SpawnMarker);
 		}
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateClosed.BindUObject(this, &ATutorialBot::MoveToNextLocation);
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitialized.AddUObject(this, &ATutorialBot::SpawnMarker);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.AddUObject(this, &ATutorialBot::SetArtifactCollected);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialBotTipDialogue.BindUObject(this, &ATutorialBot::SetExpressionAndPlayAnimation);
 		EnableCheckDistanceToTarget();
