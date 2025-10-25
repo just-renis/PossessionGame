@@ -19,9 +19,19 @@ void ATerminal::BeginPlay()
 	DelegateManager->OnGameModeInitiator.AddUObject(this, &ATerminal::EnableTerminal);
 }
 
+void ATerminal::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorldTimerManager().ClearTimer(ValveRotationHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
 void ATerminal::Interact()
 {
 	if (!GetIsInteractable()) return;
+	if (bIsValve)
+	{
+		GetWorldTimerManager().SetTimer(ValveRotationHandle, this, &ATerminal::ProcessRotationOfValve, 1.f / 36.f, true);
+	}
 	DelegateManager->SendHackTerminalRoomMode.Broadcast(RoomMode);
 	GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
 	DelegateManager->OnTerminalInteraction.RemoveAll(this);
@@ -56,4 +66,10 @@ void ATerminal::ToggleInteractableWidget(const bool bState)
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		FadeOutInteractableUI();
 	}
+}
+
+void ATerminal::ProcessRotationOfValve()
+{
+	Mesh->AddLocalRotation(FRotator(0.f, 10.f, 0.f));
+	if (++RotationTimes >= 36) GetWorldTimerManager().ClearTimer(ValveRotationHandle);
 }
