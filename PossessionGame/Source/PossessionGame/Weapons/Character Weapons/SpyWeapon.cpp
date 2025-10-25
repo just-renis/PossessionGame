@@ -1,6 +1,7 @@
 #include "SpyWeapon.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
+#include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
 void ASpyWeapon::P_Shoot()
 {
@@ -16,14 +17,22 @@ void ASpyWeapon::P_Shoot()
 void ASpyWeapon::P_Reload(int32 OtherAmmoSource)
 {
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
+	if (AnimInstance) AnimInstance->PlayMontage(EWeaponAnimState::Reload);
 	Super::P_Reload(OtherAmmoSource);
+}
+
+void ASpyWeapon::P_Setup()
+{
+	Super::P_Setup();
+	Mesh->SetComponentTickEnabled(true);
 }
 
 void ASpyWeapon::BeginPlay()
 {
 	Name = EWeapon::SpyWeapon;
 	Super::BeginPlay();
-	SetWeaponReloadMontageDelegate();
+	AnimInstance = Cast<UWeaponAnimInstance>(Mesh->GetAnimInstance());
+	AnimInstance->SetWeaponName(Name);
 }
 
 void ASpyWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, const bool bFromFirstWeapon)

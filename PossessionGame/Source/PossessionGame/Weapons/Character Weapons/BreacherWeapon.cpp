@@ -10,11 +10,7 @@ void ABreacherWeapon::P_Shoot()
 {
 	AssetsManager->PlaySound2D(ESound::BreacherShoot);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
-	if (AnimInstance)
-	{
-		Mesh->SetComponentTickEnabled(true);
-		AnimInstance->PlayMontage(EWeaponAnimState::Shoot);
-	}
+	if (AnimInstance) AnimInstance->PlayMontage(EWeaponAnimState::Shoot);
 	MuzzleFlashLogic();
 	MakeShootingCameraShake();
 	CurrentAmmo--;

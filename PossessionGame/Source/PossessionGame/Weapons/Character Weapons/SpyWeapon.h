@@ -20,6 +20,7 @@ private:
 	
 	virtual void P_Shoot() override;
 	virtual void P_Reload(int32 OtherAmmoSource) override;
+	virtual void P_Setup() override;
 	
 	virtual void BeginPlay() override;
 	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, const bool bFromFirstWeapon) override;
