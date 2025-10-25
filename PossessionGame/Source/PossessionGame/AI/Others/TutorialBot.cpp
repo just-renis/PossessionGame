@@ -9,6 +9,7 @@
 #include "PossessionGame/Enums/ETutorialBotAnimState.h"
 #include "PossessionGame/Enums/ETutorialBotExpression.h"
 #include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/TutorialDialogue.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -48,7 +49,8 @@ void ATutorialBot::BeginPlay()
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
 	bIsTutorialFinished = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHijack.BindUObject(this, &ATutorialBot::SetPlayerRef);
-	CurrentGameState = bIsArenaMode ? EGameState::ArenaMode : EGameState::PreGame;
+	const int32 CurrentChapter = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentChapter();
+	CurrentGameState = bIsArenaMode ? EGameState::ArenaMode : (CurrentChapter > 1 ? EGameState::DuringGame : EGameState::PreGame);
 	if (!bIsTutorialFinished)
 	{
 		TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "TutorialTabletSocket");
@@ -64,11 +66,20 @@ void ATutorialBot::BeginPlay()
 	else
 	{
 		Mesh->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
-		TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "AbilitiesTabletSocket");
 		SetupDialogue("BodySocket");
 		SetControlRigState(true);
-		SetTabletVisibility(true);
-		SetupAndPlayNextAnimation(ETutorialBotAnimState::TabletHolding);
+		UE_LOG(LogTemp, Error, TEXT("CURRENT CHAPTER: %i"), GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentChapter());
+		if (!bIsArenaMode && CurrentChapter > 1)
+		{
+			if (Collision) Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			SetupAndPlayNextAnimation(ETutorialBotAnimState::Idle);
+		}
+		else
+		{
+			TabletMesh->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, "AbilitiesTabletSocket");
+			SetTabletVisibility(true);
+			SetupAndPlayNextAnimation(ETutorialBotAnimState::TabletHolding);
+		}
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateClosed.BindUObject(this, &ATutorialBot::MoveToNextLocation);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitialized.AddUObject(this, &ATutorialBot::SpawnMarker);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.AddUObject(this, &ATutorialBot::SetArtifactCollected);
