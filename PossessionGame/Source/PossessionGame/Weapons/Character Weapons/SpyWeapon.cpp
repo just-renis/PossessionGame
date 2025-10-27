@@ -6,12 +6,7 @@
 void ASpyWeapon::P_Shoot()
 {
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
-//	PlaySound(ESound::TricksterShoot);
-	MuzzleFlashLogic();
-	MakeShootingCameraShake();
-	CurrentAmmo--;
-	ShootTimer = 0.f;
-	bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::SpyProjectile, false, NAME_None, true);
+	Super::P_Shoot();
 }
 
 void ASpyWeapon::P_Reload(int32 OtherAmmoSource)
