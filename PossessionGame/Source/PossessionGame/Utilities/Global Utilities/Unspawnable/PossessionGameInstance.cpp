@@ -45,13 +45,10 @@ void UPossessionGameInstance::Shutdown()
 
 void UPossessionGameInstance::OpenLevel(const FLoadLevelData InLoadLevelData) const
 {
+	GetSubsystem<UPlayerDataManager>()->Reset();
 	if (InLoadLevelData.bSaveSlot) GetSubsystem<USaveSlotManager>()->GetSaveSlot()->SaveSlot();
 	else if (InLoadLevelData.bResetSaveSlot) GetSubsystem<USaveSlotManager>()->ResetSaveSlot();
-	if (InLoadLevelData.bResetRunData)
-	{
-		GetSubsystem<UPlayerDataManager>()->Reset();
-		GetSubsystem<USaveSlotManager>()->ResetRunSaveSlot();
-	}
+	if (InLoadLevelData.bResetRunData) GetSubsystem<USaveSlotManager>()->ResetRunSaveSlot();
 	UGameplayStatics::OpenLevel(GetWorld(), InLoadLevelData.LevelName);
 }
 

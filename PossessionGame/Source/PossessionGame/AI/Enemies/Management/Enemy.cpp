@@ -504,7 +504,7 @@ void AEnemy::P_Setup()
 
 void AEnemy::P_Shoot()
 {
-	if (bIsInputLocked || bIsActionInMotion || !bCanShoot || bIsSliding) return;
+	if (bIsInputLocked || bIsActionInMotion || !bCanShoot) return;
 	if (Weapon->P_CanShoot())
 	{
 		if (bIsRunning) P_ToggleRun(false);
