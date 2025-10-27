@@ -508,6 +508,7 @@ void AEnemy::P_Shoot()
 	if (Weapon->P_CanShoot())
 	{
 		if (bIsRunning) P_ToggleRun(false);
+		if (bIsSliding) Weapon->GetHandsAnimInstance()->StopMontage(EHandsAnimState::Slide, 0.f);
 		Weapon->P_Shoot();
 	}
 	else if (Weapon->P_CanReload() && Weapon->GetCurrentAmmoAmount() <= 0) Weapon->P_Reload();
@@ -1284,6 +1285,7 @@ void AEnemy::P_InitiateSlide()
 void AEnemy::P_EndSlide()
 {
 	Camera->SetRelativeLocation(FVector(0.f, 0.f, DefaultCameraZ));
+	Weapon->GetHandsAnimInstance()->StopMontage(EHandsAnimState::Slide, 0.1f);
 	bIsSliding = false;
 	AddActorWorldOffset(FVector(0.f, 0.f, GetDefaultHalfHeight() - SlideHeight));
 	GetCapsuleComponent()->SetCapsuleHalfHeight(GetDefaultHalfHeight());

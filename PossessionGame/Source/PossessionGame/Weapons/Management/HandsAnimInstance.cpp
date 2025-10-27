@@ -49,7 +49,7 @@ void UHandsAnimInstance::PlayMontageWithHold(const EHandsAnimState InState, cons
     {
         LoadMontageIfNotLoaded(InState);
         PlayMontage(InState);
-        GetWorld()->GetTimerManager().SetTimer(MontageWithHoldHandle, this, &UHandsAnimInstance::MontageWithHoldEnd, InHoldTime, false);
+        if (InHoldTime > 0.f) GetWorld()->GetTimerManager().SetTimer(MontageWithHoldHandle, this, &UHandsAnimInstance::MontageWithHoldEnd, InHoldTime, false);
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontageWithHold"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
 }
@@ -87,6 +87,18 @@ void UHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupt
         Proprietor->SetIsActionInMotion(false);
         (void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHandsReloadMontageEnd.ExecuteIfBound();
         (void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerReloadMontageEnd.ExecuteIfBound();
+        return;
+    }
+    const TObjectPtr<UAnimMontage>* ShootMontage = Montages.Find(EHandsAnimState::Shoot);
+    UE_LOG(LogTemp, Error, TEXT("SHOOT ENDED 0"));
+    if (ShootMontage && InMontage == ShootMontage->Get())
+    {
+    UE_LOG(LogTemp, Error, TEXT("SHOOT ENDED 1"));
+        if (Proprietor->GetIsSliding())
+        {
+    UE_LOG(LogTemp, Error, TEXT("Play with hold slide"));
+            PlayMontageWithHold(EHandsAnimState::Slide, -1.f);
+        }
         return;
     }
     const TObjectPtr<UAnimMontage>* QuickMeleeMontage = Montages.Find(EHandsAnimState::QuickMelee);

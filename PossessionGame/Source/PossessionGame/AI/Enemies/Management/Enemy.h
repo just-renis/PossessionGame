@@ -55,6 +55,7 @@ public:
 	bool GetIsActionSpeedModified() const { return bActionSpeedModified; }
 	bool GetIsHijackAble() const;
 	bool CanAbilityBeExecuted(const int32 AbilityIndex);
+	bool GetIsSliding() const { return bIsSliding; }
 	float GetActionSpeed() const { return ActionSpeed; }
 	float GetDamageReduction() const { return DamageReduction; }
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
