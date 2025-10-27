@@ -20,11 +20,6 @@ class POSSESSIONGAME_API ASamurai : public AEnemy
 	virtual void AI_SetupWeapon() override;
 
 	virtual void P_Setup() override;
-	virtual void P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
-	virtual void P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override {}
-	virtual void P_SetupLeftClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
-	//virtual void P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent) override;
-	void P_SetBowStretchingState(EPlayerInputState bState);
 	virtual void P_SetupColorsForUI() override;
 
 	virtual void BeginPlay() override;
