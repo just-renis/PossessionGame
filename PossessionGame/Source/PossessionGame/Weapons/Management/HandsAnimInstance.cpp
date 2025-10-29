@@ -90,15 +90,9 @@ void UHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupt
         return;
     }
     const TObjectPtr<UAnimMontage>* ShootMontage = Montages.Find(EHandsAnimState::Shoot);
-    UE_LOG(LogTemp, Error, TEXT("SHOOT ENDED 0"));
     if (ShootMontage && InMontage == ShootMontage->Get())
     {
-    UE_LOG(LogTemp, Error, TEXT("SHOOT ENDED 1"));
-        if (Proprietor->GetIsSliding())
-        {
-    UE_LOG(LogTemp, Error, TEXT("Play with hold slide"));
-            PlayMontageWithHold(EHandsAnimState::Slide, -1.f);
-        }
+        if (Proprietor->GetIsSliding()) PlayMontageWithHold(EHandsAnimState::Slide, -1.f);
         return;
     }
     const TObjectPtr<UAnimMontage>* QuickMeleeMontage = Montages.Find(EHandsAnimState::QuickMelee);

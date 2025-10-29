@@ -105,7 +105,7 @@ void ARanger::AI_DestroyGrenadeTrigger() const
 
 void ARanger::AI_TryTriggeringGrenade()
 {
-	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload)) return;
+	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload) || bIsActionInMotion) return;
 	if (AI->GetStateTreeData().GetIsTargetInMySight())
 	{
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerLaunchGrenade);

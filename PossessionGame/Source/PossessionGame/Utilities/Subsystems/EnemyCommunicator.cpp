@@ -23,7 +23,7 @@ FVector UEnemyCommunicator::GetPointLocation(ECharacterType InCharacterType, FVe
 			AvailableKeys.Add(Entry.Key);
 		}
 	}
-	if (AvailableKeys.IsEmpty()) return FVector(NAN, NAN, NAN);
+	if (AvailableKeys.IsEmpty()) return GetTargetLocation();
 	PointsAroundTarget[KeyIndex].bIsOccupied = true;
 	return PointsAroundTarget[KeyIndex].Location;
 }

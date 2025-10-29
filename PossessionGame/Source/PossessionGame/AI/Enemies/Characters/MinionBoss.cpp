@@ -264,15 +264,12 @@ void AMinionBoss::DealLaserDamageToPlayer() const { if (Player) Player->ReceiveD
 void AMinionBoss::SetMoveDirectlyToPlayer()
 {
 	bIsMoveDirectlyToPlayerTriggered = true;
-	if (!GetIsAbilityInAction())
-	{
-		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
-	}
+	if (!bIsAbilityInAction && !bIsActionInMotion) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
 }
 
 void AMinionBoss::OnPlayerEnterStompTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!AI || bAffectedByEmp || OtherActor->ActorHasTag("AliveEnemy")) return;
+	if (!AI || bAffectedByEmp || OtherActor->ActorHasTag("AliveEnemy") || bIsActionInMotion) return;
 	if (bIsMoveDirectlyToPlayerTriggered) ResetMoveDirectlyToPlayer();
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
 	ToggleStompTrigger(false);

@@ -53,7 +53,6 @@ void AEnemyAIController::SetupStateTree()
 		StateTreeData.SetEQSTargetRef(EQSTarget);
 		StateTreeData.SetStateTreeRef(StateTree);
 		StateTree->StartLogic();
-	//	Proprietor->AI_SetupShootLogic();
 	}
 }
 
@@ -173,6 +172,5 @@ void AEnemyAIController::StopStateTreeLogic(const bool bNeedCleanup) const
 		if (bNeedCleanup) StateTree->Cleanup();
 	}
 }
-
 
 void AEnemyAIController::OnLostSightOfPawn() { SetIsTargetInMySight(false); }

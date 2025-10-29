@@ -144,7 +144,9 @@ void AEnemy::P_ResetMovementSpeed() { SetMaxWalkSpeed(EMoveMode::Walk); }
 void AEnemy::SetIsActionInMotion(const bool bState)
 {
 	bIsActionInMotion = bState;
-	if (AI) AI->GetStateTreeData().SetIsActionInMotion(bState);
+	if (!AI) return;
+	AI->GetStateTreeData().SetIsActionInMotion(bState);
+	AI_SetupShootLogic();
 }
 
 void AEnemy::Tick(const float DeltaTime)
@@ -246,16 +248,15 @@ void AEnemy::AI_TriggerVectorBlastSpecialImpact()
 	else VectorBlastSpecialImpactVfx->Activate();
 }
 
-/*void AEnemy::AI_SetupShootLogic()
+void AEnemy::AI_SetupShootLogic()
 {
-	AI->GetStateTreeData().OnStateTreeEvent.BindUObject(this, &AEnemy::AI_FinishShootLogicByEvent);
 	GetWorld()->GetTimerManager().SetTimer(AI_ShootLogicHandle, this, &AEnemy::AI_MainShootLogic, GetWeapon()->GetShootCooldown(), true);
 	if (!GetWeapon()->GetIsFirstShotWasShot())
 	{
 		GetWeapon()->SetFirstShotWasShot();
 		AI_MainShootLogic();
 	}
-}*/
+}
 
 void AEnemy::InitiateDeath()
 {
@@ -393,7 +394,8 @@ void AEnemy::AI_Setup()
 	AI_SetupAbilities();
 	AI_SetupData();
 	if (Weapon && Weapon->GetIsReloadEnabled()) AI->SetReloadDelay(AnimInstance->GetMontageLength(EEnemyAnimState::Reload));
-	//AI_SetupShootLogic();
+	AI->GetStateTreeData().OnStateTreeEvent.BindUObject(this, &AEnemy::AI_FinishShootLogicByEvent);
+	AI_SetupShootLogic();
 }
 
 void AEnemy::AI_SetupWeapon()
@@ -814,19 +816,19 @@ void AEnemy::AI_SetCharacterMovementSpeed() const { AnimInstance->SetSpeed(GetCh
 
 void AEnemy::AI_DisableDamageTakenRedFlash() const { if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 0.f); }
 
-/*void AEnemy::AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent)
+void AEnemy::AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent)
 {
-//	AI->GetStateTreeData().OnStateTreeEvent.Unbind();
-//	GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
+	//AI->GetStateTreeData().OnStateTreeEvent.Unbind();
+	GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
 	AI_CancelShooting();
 }
 
 void AEnemy::AI_MainShootLogic()
 {
 	if (GetIsActionInMotion() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
-	if (/bIsWeaponMontageOnly ? !GetWeapon()->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot) : /!GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) AI_InitiateShooting();
+	if (!GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) AI_InitiateShooting();
 	if (!GetIsActionSpeedModified() || GetWeapon()->AI_CanShoot()) AI_ShootLogic();
-}*/
+}
 
 bool AEnemy::CanJumpInternal_Implementation() const
 {

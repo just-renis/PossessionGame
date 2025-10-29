@@ -80,7 +80,7 @@ public:
 	virtual void AI_Disable();
 	void AI_StopAbility(const int32 InIndex);
 	void AI_SetupUpgradesAppliance();
-	//void AI_SetupShootLogic();
+	void AI_SetupShootLogic();
 	virtual void AI_CancelShooting() {}
 	void AI_TriggerVectorBlastSpecialImpact();
 
@@ -379,8 +379,8 @@ private:
 	void AI_ClearShootPause();
 	void AI_SetCharacterMovementSpeed() const;
 	void AI_DisableDamageTakenRedFlash() const;
-	//void AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent);
-	//void AI_MainShootLogic();
+	void AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent);
+	void AI_MainShootLogic();
 	
 	void P_SetupData();
 	void P_SetupUI();
