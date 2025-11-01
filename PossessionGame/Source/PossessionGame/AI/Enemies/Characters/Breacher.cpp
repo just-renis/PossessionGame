@@ -31,6 +31,7 @@ void ABreacher::P_Setup()
 
 void ABreacher::P_StopBash()
 {
+	bBashHappened = false;
 	BashCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetIsActionInMotion(false);
 	SetMaxWalkSpeed(EMoveMode::Walk);
@@ -83,8 +84,13 @@ void ABreacher::BeginPlay()
 void ABreacher::OnBashCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag("AliveEnemy")) return;
+	if (!bBashHappened)
+	{
+		AssetsManager->PlaySound2D(ESound::BreacherBashImpact);
+		bBashHappened = true;
+	}
 	FVector HitDirection = (OtherActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 	HitDirection.Z = 0.f; 
-	Cast<AEnemy>(OtherActor)->ReceiveStunEffect(BashStunDuration, HitDirection);
+	Cast<AEnemy>(OtherActor)->ReceiveStunEffect(BashStunDuration, BashDamage, HitDirection);
 	DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + HitDirection * 300.f, FColor::Red, false, 2.f, 0, 2.f);
 }

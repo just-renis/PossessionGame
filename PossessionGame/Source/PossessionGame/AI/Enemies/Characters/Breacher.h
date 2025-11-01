@@ -17,10 +17,13 @@ private:
 	ABreacher();
 
 	FTimerHandle StopDashHandle;
+	bool bBashHappened = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
 	float BashStunDuration = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
 	float BashStrength = 1000.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
+	float BashDamage = 40.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCapsuleComponent> BashCollision;
 	UPROPERTY()

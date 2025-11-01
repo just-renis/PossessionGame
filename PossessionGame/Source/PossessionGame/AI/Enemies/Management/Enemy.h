@@ -112,7 +112,7 @@ public:
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
 	void SetMovementSpeedMultiplier(const float InMultiplier);
-	void ReceiveStunEffect(const float InEffectDuration, FVector InHitDirection);
+	void ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection);
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -236,6 +236,7 @@ private:
 	bool bIsImmortal = false;
 	bool bActionSpeedModified = false;
 	bool bIsPoisonSlowAffected = false;
+	bool bHijackVfxAttachRequested = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -246,6 +247,8 @@ private:
 	float MovementSpeedMultiplier = 1.f;
 	float AdditionalActionSpeedValue = 0.f;
 	int32 OverlappingPoisonAreas = 0;
+	FTimerHandle EmpEffectApplyHandle;
+	FTimerHandle StunEffectApplyHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Explosion Radius From Emp Upgrade", meta = (AllowPrivateAccess = true))
 	float ExplosionRadiusFromEmpUpgradeInMetres = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Destroy After Seconds", meta = (AllowPrivateAccess = true))
@@ -455,4 +458,6 @@ private:
 	void SetupMeshOptimization() const;
 	void AddAdditionalActionSpeed(const float InValue, const float InDuration);
 	void ResetAdditionalActionSpeed();
+	void ApplyEmpEffect(const float InEffectDuration);
+	void ApplyStunEffect(const float InEffectDuration) const;
 };

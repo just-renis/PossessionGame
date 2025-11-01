@@ -312,41 +312,30 @@ void AEnemy::StopSound(const ESound InSoundName)
 
 void AEnemy::SetEmpEffect(const float InEffectDuration)
 {
-	UE_LOG(LogTemp, Error, TEXT("EMP EFFECT 0"));
 	if (!AnimInstance) return;
-	UE_LOG(LogTemp, Error, TEXT("EMP EFFECT 1"));
 	AnimInstance->ClearMontageWithHoldHandle();
 	AnimInstance->StopAllMontages(0.f);
 	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
-	bAffectedByEmp = true;
-	PlayEmpAffectedVfx(InEffectDuration);
-	PlaySound(ESound::EmpEffectApplied, true);
-	UE_LOG(LogTemp, Error, TEXT("EMP EFFECT 2"));
-	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
+	FTimerDelegate TimerDel;
+	TimerDel.BindLambda([this, InEffectDuration] { ApplyEmpEffect(InEffectDuration); });
+	GetWorldTimerManager().SetTimer(EmpEffectApplyHandle, TimerDel, 0.05f, false);
 }
 
 void AEnemy::SetHijackOutline(const bool bState)
 {
 	bHijackOutlineState = bState;
+	GetMesh()->SetOverlayMaterial(bState ? HijackOutlineMaterial : nullptr);
 	if (bState)
 	{
 		if (!HijackableVfx)
 		{
-			UE_LOG(LogTemp, Error, TEXT("ATTACH HIJACK"));
+			if (bHijackVfxAttachRequested) return;
+			bHijackVfxAttachRequested = true;
 			AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && bHijackOutlineState; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
 		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("ACTIVATE HIJACK"));
-			HijackableVfx->Activate(true);
-		}
+		else HijackableVfx->Activate(true);
 	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("DISABLE HIJACK"));
-		DisableHijackViableVfx();
-	}
-	GetMesh()->SetOverlayMaterial(bState ? HijackOutlineMaterial : nullptr);
+	else DisableHijackViableVfx();
 }
 
 void AEnemy::SetUnHijackOutline(const bool bState) const
@@ -379,7 +368,7 @@ void AEnemy::SetMovementSpeedMultiplier(const float InMultiplier)
 	SetMaxWalkSpeed(CurrentMoveMode);
 }
 
-void AEnemy::ReceiveStunEffect(const float InEffectDuration, FVector InHitDirection)
+void AEnemy::ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection)
 {
 	if (AnimInstance)
 	{
@@ -389,9 +378,13 @@ void AEnemy::ReceiveStunEffect(const float InEffectDuration, FVector InHitDirect
 	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
 	InHitDirection.Z = 0.f;
 	GetCharacterMovement()->StopMovementImmediately();
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
+	ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage);
 	LaunchCharacter(InHitDirection * (AI_Data ? AI_Data->GetBashImpulseForce() : 5000.f), true, true);
-	AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
-	UE_LOG(LogTemp, Error, TEXT("CHARACTER %s RECEIVED STUN EFFECT"), *GetName());
+	FTimerDelegate TimerDel;
+	TimerDel.BindLambda([this, InEffectDuration] { ApplyStunEffect(InEffectDuration); });
+	GetWorldTimerManager().SetTimer(StunEffectApplyHandle, TimerDel, 0.05f, false);
+	ApplyStunEffect(InEffectDuration);
 }
 
 void AEnemy::AI_SetupAbilities()
@@ -1535,4 +1528,17 @@ void AEnemy::ResetAdditionalActionSpeed()
 	ActionSpeed -= AdditionalActionSpeedValue;
 	AdditionalActionSpeedValue = 0.f;
 	SetActionSpeed(ActionSpeed, false);
+}
+
+void AEnemy::ApplyEmpEffect(const float InEffectDuration)
+{
+	bAffectedByEmp = true;
+	PlayEmpAffectedVfx(InEffectDuration);
+	PlaySound(ESound::EmpEffectApplied, true);
+	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
+}
+
+void AEnemy::ApplyStunEffect(const float InEffectDuration) const
+{
+	AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
 }
