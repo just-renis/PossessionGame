@@ -12,5 +12,6 @@ enum class EEnemyAnimState : uint8
 	EmpRecover,
 	Stomp,
 	ShootLaser,
-	StopLaser
+	StopLaser,
+	StunEffect
 };

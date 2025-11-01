@@ -312,15 +312,16 @@ void AEnemy::StopSound(const ESound InSoundName)
 
 void AEnemy::SetEmpEffect(const float InEffectDuration)
 {
+	UE_LOG(LogTemp, Error, TEXT("EMP EFFECT 0"));
 	if (!AnimInstance) return;
-	if (bAffectedByEmp)
-	{
-		AnimInstance->ClearMontageWithHoldHandle();
-		AnimInstance->StopAllMontages(0.f);
-	}
+	UE_LOG(LogTemp, Error, TEXT("EMP EFFECT 1"));
+	AnimInstance->ClearMontageWithHoldHandle();
+	AnimInstance->StopAllMontages(0.f);
+	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
 	bAffectedByEmp = true;
 	PlayEmpAffectedVfx(InEffectDuration);
 	PlaySound(ESound::EmpEffectApplied, true);
+	UE_LOG(LogTemp, Error, TEXT("EMP EFFECT 2"));
 	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
 }
 
@@ -329,13 +330,22 @@ void AEnemy::SetHijackOutline(const bool bState)
 	bHijackOutlineState = bState;
 	if (bState)
 	{
-		if (!HijackViableVfx)
+		if (!HijackableVfx)
 		{
-			AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && bHijackOutlineState; }, &HijackViableVfx, GetMesh(), FName("RootSocket"));
+			UE_LOG(LogTemp, Error, TEXT("ATTACH HIJACK"));
+			AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && bHijackOutlineState; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
 		}
-		else HijackViableVfx->Activate(true);
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("ACTIVATE HIJACK"));
+			HijackableVfx->Activate(true);
+		}
 	}
-	else DisableHijackViableVfx();
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("DISABLE HIJACK"));
+		DisableHijackViableVfx();
+	}
 	GetMesh()->SetOverlayMaterial(bState ? HijackOutlineMaterial : nullptr);
 }
 
@@ -367,6 +377,21 @@ void AEnemy::SetMovementSpeedMultiplier(const float InMultiplier)
 {
 	MovementSpeedMultiplier = InMultiplier;
 	SetMaxWalkSpeed(CurrentMoveMode);
+}
+
+void AEnemy::ReceiveStunEffect(const float InEffectDuration, FVector InHitDirection)
+{
+	if (AnimInstance)
+	{
+		AnimInstance->ClearMontageWithHoldHandle();
+		AnimInstance->StopAllMontages(0.f);
+	}
+	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
+	InHitDirection.Z = 0.f;
+	GetCharacterMovement()->StopMovementImmediately();
+	LaunchCharacter(InHitDirection * (AI_Data ? AI_Data->GetBashImpulseForce() : 5000.f), true, true);
+	AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
+	UE_LOG(LogTemp, Error, TEXT("CHARACTER %s RECEIVED STUN EFFECT"), *GetName());
 }
 
 void AEnemy::AI_SetupAbilities()
@@ -825,7 +850,7 @@ void AEnemy::AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent)
 
 void AEnemy::AI_MainShootLogic()
 {
-	if (GetIsActionInMotion() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
+	if (!AI || GetIsActionInMotion() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
 	if (!GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) AI_InitiateShooting();
 	if (!GetIsActionSpeedModified() || GetWeapon()->AI_CanShoot()) AI_ShootLogic();
 }
@@ -1448,8 +1473,8 @@ void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
 
 void AEnemy::DisableHijackViableVfx() const
 {
-	if (!HijackViableVfx) return;
-	HijackViableVfx->DeactivateImmediate();
+	if (!HijackableVfx) return;
+	HijackableVfx->DeactivateImmediate();
 }
 
 void AEnemy::DisableVfxs() const

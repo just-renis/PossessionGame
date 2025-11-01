@@ -112,6 +112,7 @@ public:
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
 	void SetMovementSpeedMultiplier(const float InMultiplier);
+	void ReceiveStunEffect(const float InEffectDuration, FVector InHitDirection);
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -322,7 +323,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> PoisonSlowAffectedVfx;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> HijackViableVfx;
+	TObjectPtr<UNiagaraComponent> HijackableVfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> LevelUpVfx;
 	UPROPERTY()
