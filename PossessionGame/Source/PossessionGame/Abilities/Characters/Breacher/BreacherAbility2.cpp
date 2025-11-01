@@ -7,7 +7,7 @@
 void UBreacherAbility2::P_Execute()
 {
 	Proprietor->SetIsActionInMotion(true);
-	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::BreacherBash);
+	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontageWithHold(EHandsAnimState::BreacherBash, -1.f);
 	Proprietor->P_Bash();
 	Super::P_Execute();
 }

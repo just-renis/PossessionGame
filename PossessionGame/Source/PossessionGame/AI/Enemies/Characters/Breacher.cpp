@@ -1,9 +1,11 @@
 ﻿#include "Breacher.h"
 #include "MinionBoss.h"
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Projectiles/Throwables/BreacherBarrel.h"
@@ -31,10 +33,20 @@ void ABreacher::P_Setup()
 
 void ABreacher::P_StopBash()
 {
-	bBashHappened = false;
-	BashCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	if (GetWeapon()->GetHandsAnimInstance()) GetWeapon()->GetHandsAnimInstance()->StopMontage(EHandsAnimState::BreacherBash, 0.f);
 	SetIsActionInMotion(false);
 	SetMaxWalkSpeed(EMoveMode::Walk);
+}
+
+void ABreacher::P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (!OtherActor || OtherActor == this) return;
+	GetWorldTimerManager().ClearTimer(StopBashHandle);
+	P_StopBash();
+	AssetsManager->PlaySound2D(ESound::BreacherBashImpact);
+	GetCapsuleComponent()->OnComponentHit.RemoveAll(this);
+	BashCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	BashCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ABreacher::P_ThrowBarrel()
@@ -49,14 +61,16 @@ void ABreacher::P_ThrowBarrel()
 
 void ABreacher::P_Bash()
 {
-	BashCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABreacher::P_BashHit);
+	if (!BashVfx) AssetsManager->AttachVfx(EVfx::BreacherBash, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &BashVfx, GetMesh(), FName("DeathSocket"));
+	else BashVfx->Activate();
 	AssetsManager->PlaySound2D(ESound::BreacherBash);
 	FVector DashDirection = FVector(GetVelocity().X, GetVelocity().Y, 0.f).GetSafeNormal();
 	if (DashDirection.IsNearlyZero()) DashDirection = GetActorForwardVector();
 	DashDirection.Z = 0.f;
 	GetCharacterMovement()->StopMovementImmediately();
 	LaunchCharacter(DashDirection * BashStrength, true, true);
-	GetWorldTimerManager().SetTimer(StopDashHandle, this, &ABreacher::P_StopBash, 0.2f, false);
+	GetWorldTimerManager().SetTimer(StopBashHandle, this, &ABreacher::P_StopBash, 0.2f, false);
 }
 
 ABreacher::ABreacher()
@@ -83,12 +97,7 @@ void ABreacher::BeginPlay()
 
 void ABreacher::OnBashCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!OtherActor->ActorHasTag("AliveEnemy")) return;
-	if (!bBashHappened)
-	{
-		AssetsManager->PlaySound2D(ESound::BreacherBashImpact);
-		bBashHappened = true;
-	}
+	if (OtherActor == this || !OtherActor->ActorHasTag("AliveEnemy")) return;
 	FVector HitDirection = (OtherActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 	HitDirection.Z = 0.f; 
 	Cast<AEnemy>(OtherActor)->ReceiveStunEffect(BashStunDuration, BashDamage, HitDirection);

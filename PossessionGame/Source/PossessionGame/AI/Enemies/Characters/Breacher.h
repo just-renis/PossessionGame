@@ -16,8 +16,7 @@ public:
 private:
 	ABreacher();
 
-	FTimerHandle StopDashHandle;
-	bool bBashHappened = false;
+	FTimerHandle StopBashHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
 	float BashStunDuration = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
@@ -30,12 +29,16 @@ private:
 	TObjectPtr<UAudioComponent> DeathSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> SpawnSfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> BashVfx;
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_TriggerDeathVoiceLine() override;
 
 	virtual void P_Setup() override;
 	void P_StopBash();
+	UFUNCTION()
+	void P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	virtual void BeginPlay() override;
 	UFUNCTION()

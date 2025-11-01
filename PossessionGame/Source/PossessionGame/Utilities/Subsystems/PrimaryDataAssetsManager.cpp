@@ -769,6 +769,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_BreacherBulletTrail", EVfx::BreacherBulletTrail);
 	VfxsMap.Add("PA_BreacherBulletImpact", EVfx::BreacherBulletImpact);
 	VfxsMap.Add("PA_BreacherSpawn", EVfx::BreacherSpawn);
+	VfxsMap.Add("PA_BreacherBash", EVfx::BreacherBash);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
