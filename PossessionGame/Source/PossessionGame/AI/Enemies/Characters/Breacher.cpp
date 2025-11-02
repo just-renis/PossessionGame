@@ -5,7 +5,6 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
-#include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Projectiles/Throwables/BreacherBarrel.h"
@@ -33,18 +32,18 @@ void ABreacher::P_Setup()
 
 void ABreacher::P_StopBash()
 {
-	if (GetWeapon()->GetHandsAnimInstance()) GetWeapon()->GetHandsAnimInstance()->StopMontage(EHandsAnimState::BreacherBash, 0.f);
+	GetCapsuleComponent()->OnComponentHit.RemoveAll(this);
 	SetIsActionInMotion(false);
 	SetMaxWalkSpeed(EMoveMode::Walk);
 }
 
 void ABreacher::P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (!OtherActor || OtherActor == this) return;
+	if (!OtherActor || OtherActor == this || FMath::Abs(Hit.Normal.Z) > 0.5f) return;
+	P_MakeCameraShake(BashCameraShake);
 	GetWorldTimerManager().ClearTimer(StopBashHandle);
 	P_StopBash();
 	AssetsManager->PlaySound2D(ESound::BreacherBashImpact);
-	GetCapsuleComponent()->OnComponentHit.RemoveAll(this);
 	BashCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	BashCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
@@ -65,9 +64,9 @@ void ABreacher::P_Bash()
 	if (!BashVfx) AssetsManager->AttachVfx(EVfx::BreacherBash, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &BashVfx, GetMesh(), FName("DeathSocket"));
 	else BashVfx->Activate();
 	AssetsManager->PlaySound2D(ESound::BreacherBash);
-	FVector DashDirection = FVector(GetVelocity().X, GetVelocity().Y, 0.f).GetSafeNormal();
-	if (DashDirection.IsNearlyZero()) DashDirection = GetActorForwardVector();
+	FVector DashDirection = GetActorForwardVector();
 	DashDirection.Z = 0.f;
+	DashDirection.Normalize();
 	GetCharacterMovement()->StopMovementImmediately();
 	LaunchCharacter(DashDirection * BashStrength, true, true);
 	GetWorldTimerManager().SetTimer(StopBashHandle, this, &ABreacher::P_StopBash, 0.2f, false);

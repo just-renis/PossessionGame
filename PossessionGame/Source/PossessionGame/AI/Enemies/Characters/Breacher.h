@@ -25,6 +25,8 @@ private:
 	float BashDamage = 40.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCapsuleComponent> BashCollision;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> BashCameraShake;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DeathSfx;
 	UPROPERTY()

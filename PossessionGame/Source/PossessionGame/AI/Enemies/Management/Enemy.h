@@ -200,6 +200,7 @@ protected:
 	virtual void P_InitiateJump();
 	virtual void P_InitiateStomp();
 	virtual void P_ShowReceivedDamageNumber(const float InDamage);
+	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	float ReceiveDefaultMovementSpeed() const;
@@ -400,7 +401,6 @@ private:
 	void P_StopAllAbilities();
 	void P_HandleEscapeClick();
 	void P_TriggerGlitchingEffect() const;
-	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
 	void P_MakeCameraShake(const ECameraShake InCameraShakeName) const;
 	void P_HandlingDamageTaken();
 	void P_TriggerTakeDamageEffects() const;
