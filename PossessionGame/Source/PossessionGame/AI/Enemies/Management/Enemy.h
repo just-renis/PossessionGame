@@ -325,6 +325,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> EmpAffectedVfx;
 	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> StunAffectedVfx;
+	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> PoisonSlowAffectedVfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> HijackableVfx;
@@ -459,5 +461,6 @@ private:
 	void AddAdditionalActionSpeed(const float InValue, const float InDuration);
 	void ResetAdditionalActionSpeed();
 	void ApplyEmpEffect(const float InEffectDuration);
-	void ApplyStunEffect(const float InEffectDuration) const;
+	void ApplyStunEffect(const float InEffectDuration);
+	void PlayStunAffectedVfx(const float InEffectDuration);
 };

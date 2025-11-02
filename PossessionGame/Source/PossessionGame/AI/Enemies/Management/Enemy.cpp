@@ -781,6 +781,12 @@ void AEnemy::DestroyAIVfxs()
 		PoisonSlowAffectedVfx->DestroyComponent();
 		PoisonSlowAffectedVfx = nullptr;
 	}
+	if (StunAffectedVfx)
+	{
+		StunAffectedVfx->DeactivateImmediate();
+		StunAffectedVfx->DestroyComponent();
+		StunAffectedVfx = nullptr;
+	}
 }
 
 void AEnemy::AI_SetupData()
@@ -1538,7 +1544,17 @@ void AEnemy::ApplyEmpEffect(const float InEffectDuration)
 	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
 }
 
-void AEnemy::ApplyStunEffect(const float InEffectDuration) const
+void AEnemy::ApplyStunEffect(const float InEffectDuration)
 {
+	PlayStunAffectedVfx(InEffectDuration);
 	AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
+}
+
+void AEnemy::PlayStunAffectedVfx(const float InEffectDuration)
+{
+	if (!StunAffectedVfx)
+	{
+		AssetsManager->AttachVfx(EVfx::Stunned, [this]() -> bool { return GetIsAlive(); }, &StunAffectedVfx, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(true, InEffectDuration)}});
+	}
+	else StunAffectedVfx->Activate(true);
 }
