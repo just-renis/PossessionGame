@@ -95,5 +95,7 @@ enum class EVfx : uint16
 	BreacherBulletImpact,
 	BreacherSpawn,
 	BreacherBash,
+	BreacherDynamiteExplosion,
+	BreacherDynamiteImpact,
 	Stunned
 };

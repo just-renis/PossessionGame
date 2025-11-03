@@ -39,6 +39,7 @@ void UUpgradeManager::Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpg
 		{EAbility::GuardianAbility3, EUpgrade::GuardianAbility3},
 		{EAbility::BreacherAbility1, EUpgrade::BreacherAbility1},
 		{EAbility::BreacherAbility2, EUpgrade::BreacherAbility2},
+		{EAbility::BreacherAbility3, EUpgrade::BreacherAbility3},
 		{EAbility::TankAbility1, EUpgrade::TankAbility1},
 		{EAbility::TankAbility2, EUpgrade::TankAbility2}
 	};

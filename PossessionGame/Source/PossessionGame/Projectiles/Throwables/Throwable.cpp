@@ -1,5 +1,7 @@
 ﻿#include "Throwable.h"
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 void AThrowable::Initialize(const TObjectPtr<AActor>& InProprietor) { Proprietor = InProprietor; }
 
@@ -10,7 +12,7 @@ void AThrowable::Throw()
 	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector, false);
 	Mesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 	Mesh->AddImpulse((-GetActorRightVector() + GetActorForwardVector() * 0.3f).GetSafeNormal() * Data->GetImpulseForce(), NAME_None, true);
-	if (Data->GetNeedsOnHitEvent()) Mesh->OnComponentHit.AddDynamic(this, &AThrowable::OnHit);
+	SetupOnHitEvent();
 }
 
 void AThrowable::Disable(const bool bHide)
@@ -34,7 +36,10 @@ void AThrowable::OnImpact(const FHitResult& Hit)
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-void AThrowable::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void AThrowable::PlaySound(const ESound InSoundName)
 {
-	if (FMath::IsNearlyEqual(Hit.ImpactNormal.Z, 1.f, 0.1f)) OnImpact(Hit);
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() :
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], TFunction<bool()>(), InSoundName);
 }
+
+void AThrowable::SetupOnHitEvent() { if (Data->GetNeedsOnHitEvent()) Mesh->OnComponentHit.AddDynamic(this, &AThrowable::OnHit); }

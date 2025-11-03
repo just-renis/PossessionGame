@@ -8,6 +8,7 @@
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Projectiles/Throwables/BreacherBarrel.h"
+#include "PossessionGame/Projectiles/Throwables/BreacherDynamite.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -70,6 +71,16 @@ void ABreacher::P_Bash()
 	GetCharacterMovement()->StopMovementImmediately();
 	LaunchCharacter(DashDirection * BashStrength, true, true);
 	GetWorldTimerManager().SetTimer(StopBashHandle, this, &ABreacher::P_StopBash, 0.2f, false);
+}
+
+void ABreacher::P_ThrowDynamite()
+{
+	const TObjectPtr<ABreacherDynamite> Dynamite = Cast<ABreacherDynamite>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::BreacherDynamite, Weapon->GetHandsSocketLocation(FName("BarrelSocket")), Weapon->GetHandsSocketRotation(FName("BarrelSocket"))));
+	if (!Dynamite) return;
+	Dynamite->Initialize(this);
+	Dynamite->Init(true);
+	AssetsManager->PlaySound2D(ESound::BreacherThrowBarrel);
+	Dynamite->Throw();
 }
 
 ABreacher::ABreacher()

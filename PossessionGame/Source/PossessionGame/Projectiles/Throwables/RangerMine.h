@@ -42,8 +42,6 @@ private:
 	TObjectPtr<UAudioComponent> ExplosionSfx;
 	UPROPERTY()
 	FTimerHandle ExplosionHandle;
-	UPROPERTY()
-	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 	
 	float UpgradeAppliance() const;
 
@@ -51,8 +49,8 @@ private:
 	virtual void OnImpact(const FHitResult& Hit) override;
 	void DealAreaDamage();
 	void Explode();
-	void PlaySound(const ESound InSoundName);
 	void ChangeRadiusVfx(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttributeName);
+	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
 	UFUNCTION()
 	void TriggeredCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

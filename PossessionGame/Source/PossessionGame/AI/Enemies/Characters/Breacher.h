@@ -13,6 +13,7 @@ class POSSESSIONGAME_API ABreacher : public AEnemy
 public:
 	void P_ThrowBarrel();
 	void P_Bash();
+	void P_ThrowDynamite();
 private:
 	ABreacher();
 

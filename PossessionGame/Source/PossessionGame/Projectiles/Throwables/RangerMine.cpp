@@ -109,11 +109,6 @@ void ARangerMine::Explode()
 	bInExplosionProcess = false;
 }
 
-void ARangerMine::PlaySound(const ESound InSoundName)
-{
-	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], TFunction<bool()>(), InSoundName);
-}
-
 void ARangerMine::ChangeRadiusVfx(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttributeName)
 {
 	if (RadiusVfx)
@@ -122,6 +117,11 @@ void ARangerMine::ChangeRadiusVfx(const EUpgrade InUpgradeName, const EUpgradeAt
 		RadiusVfx = nullptr;
 	}
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineSpecialRadius, [this]() -> bool { return bAlreadyLanded; }, &RadiusVfx, Mesh);
+}
+
+void ARangerMine::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (FMath::IsNearlyEqual(Hit.ImpactNormal.Z, 1.f, 0.1f)) OnImpact(Hit);
 }
 
 void ARangerMine::TriggeredCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

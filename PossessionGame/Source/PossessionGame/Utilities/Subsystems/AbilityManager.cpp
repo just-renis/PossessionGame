@@ -1,7 +1,7 @@
 #include "AbilityManager.h"
-
 #include "PossessionGame/Abilities/Characters/Breacher/BreacherAbility1.h"
 #include "PossessionGame/Abilities/Characters/Breacher/BreacherAbility2.h"
+#include "PossessionGame/Abilities/Characters/Breacher/BreacherAbility3.h"
 #include "PossessionGame/Abilities/Characters/Guardian/GuardianAbility1.h"
 #include "PossessionGame/Abilities/Characters/Guardian/GuardianAbility2.h"
 #include "PossessionGame/Abilities/Characters/Guardian/GuardianAbility3.h"
@@ -64,6 +64,7 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::Warden, 0, EAbility::WardenAbility1, UWardenAbility1::StaticClass());
     AddAbility(ECharacterType::Breacher, 0, EAbility::BreacherAbility1, UBreacherAbility1::StaticClass());
     AddAbility(ECharacterType::Breacher, 1, EAbility::BreacherAbility2, UBreacherAbility2::StaticClass());
+    AddAbility(ECharacterType::Breacher, 2, EAbility::BreacherAbility3, UBreacherAbility3::StaticClass());
     AddAbility(ECharacterType::Tank, 0, EAbility::TankAbility1, UTankAbility1::StaticClass());
     AddAbility(ECharacterType::Tank, 1, EAbility::TankAbility2, UTankAbility2::StaticClass());
 }

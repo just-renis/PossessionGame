@@ -48,9 +48,3 @@ void ABreacherBarrel::BeginPlay()
 	Super::BeginPlay();
 	Tags.Add(FName("BreacherBarrel"));
 }
-
-void ABreacherBarrel::PlaySound(const ESound InSoundName)
-{
-	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() :
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], TFunction<bool()>(), InSoundName);
-}

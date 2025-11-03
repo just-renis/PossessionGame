@@ -129,7 +129,7 @@ enum class ESound : uint16
 	BreacherOnHijack,
 	BreacherBarrelExplosion,
 	BreacherDynamiteStick,
-	BreacherDynamiteExplode,
+	BreacherDynamiteExplosion,
 	BreacherBash,
 	BreacherBashImpact,
 	TankShoot,

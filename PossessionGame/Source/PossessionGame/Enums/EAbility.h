@@ -21,6 +21,7 @@ enum class EAbility : uint8
     WardenAbility1,
     BreacherAbility1,
     BreacherAbility2,
+    BreacherAbility3,
     TankAbility1,
     TankAbility2
 };

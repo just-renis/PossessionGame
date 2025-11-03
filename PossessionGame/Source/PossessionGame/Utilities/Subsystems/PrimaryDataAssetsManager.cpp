@@ -644,7 +644,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_BreacherThrowBarrel", ESound::BreacherThrowBarrel);
 	SoundMap.Add("PA_BreacherBarrelExplosion", ESound::BreacherBarrelExplosion);
 	SoundMap.Add("PA_BreacherDynamiteStick", ESound::BreacherDynamiteStick);
-	SoundMap.Add("PA_BreacherDynamiteExplode", ESound::BreacherDynamiteExplode);
+	SoundMap.Add("PA_BreacherDynamiteExplosion", ESound::BreacherDynamiteExplosion);
 	SoundMap.Add("PA_BreacherBash", ESound::BreacherBash);
 	SoundMap.Add("PA_BreacherBashImpact", ESound::BreacherBashImpact);
 	SoundMap.Add("PA_TankDeath", ESound::TankDeath);
@@ -770,6 +770,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_BreacherBulletImpact", EVfx::BreacherBulletImpact);
 	VfxsMap.Add("PA_BreacherSpawn", EVfx::BreacherSpawn);
 	VfxsMap.Add("PA_BreacherBash", EVfx::BreacherBash);
+	VfxsMap.Add("PA_BreacherDynamiteExplosion", EVfx::BreacherDynamiteExplosion);
+	VfxsMap.Add("PA_BreacherDynamiteImpact", EVfx::BreacherDynamiteImpact);
 	VfxsMap.Add("PA_Stunned", EVfx::Stunned);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
