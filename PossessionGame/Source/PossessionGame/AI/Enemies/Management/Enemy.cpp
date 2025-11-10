@@ -558,6 +558,7 @@ void AEnemy::P_Destroy()
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();
 	Weapon->SetToOriginalSettings();
+	Weapon->DestroyThis();
 	GetMesh()->SetCollisionProfileName("Enemy");
 	NavAreaModifier->Destroy();
 	if (bPlayerDied)
@@ -925,8 +926,8 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bDestro
 	P_StopAllAbilities();
 	DelegateManager->OnEnemyDeath.Unbind();
 	Controller->Possess(InEnemy);
-	if (bDestroyImmediately) Destroy();
 	InitiateDeath();
+	if (bDestroyImmediately) Destroy();
 }
 
 void AEnemy::P_HijackBarLogic()

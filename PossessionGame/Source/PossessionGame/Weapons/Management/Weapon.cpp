@@ -317,6 +317,7 @@ void AWeapon::MuzzleFlashLogic()
 
 void AWeapon::DisableHandsMesh() const
 {
+	HandsMesh->SetWorldScale3D(FVector(1.f));
 	HandsMesh->SetHiddenInGame(true);
 	HandsMesh->SetAnimInstanceClass(nullptr);
 }

@@ -59,6 +59,7 @@ void UExplanationUI::ShowExplanation()
 	{
 		PageText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "PageDisplay", "Page {0} / {1}"), FText::AsNumber(CurrentPage + 1), FText::AsNumber(CurrentExplanationData.GetPageAmount())));
 		ExplanationText->SetText(CurrentExplanationData.GetExplanationText(CurrentPage));
+		ChangeButtonsStates(0);
 		if (const TObjectPtr<UTexture2D> HighLightTexture = CurrentExplanationData.GetHighlightTexture(CurrentPage)) Highlight->SetTexture(HighLightTexture);
 	}
 }
@@ -69,7 +70,7 @@ void UExplanationUI::SetCurrentExplanation(const EExplanation InExplanationName)
 	else CurrentExplanationData = FExplanationData();
 	PreviousPage = -1;
 	CurrentPage = 0;
-	ChangeButtonsStates(CurrentExplanationData.GetPageAmount() > 1);
+	ChangeButtonsStates(0);
 	ShowExplanation();
 	PlayExplanationAnim(InExplanationName);
 }
@@ -80,7 +81,7 @@ void UExplanationUI::PlayExplanationAnim(const EExplanation InExplanationName)
 	{
 		case EExplanation::FpsUI: case EExplanation::VariationDetailsUI: PlayAnimation(FpsFadeInAnim); break;
 		case EExplanation::AbilitiesUI: case EExplanation::SecretUI: case EExplanation::UpgradeUI: case EExplanation::UpgradeChoiceUI: case EExplanation::VariationMainUI:
-			PlayAnimation(AbilitiesUpgradeVariationFadeInAnim);
+		PlayAnimation(AbilitiesUpgradeVariationFadeInAnim);
 	}
 }
 
@@ -101,11 +102,11 @@ void UExplanationUI::CloseExplanationLogic()
 	}
 }
 
-void UExplanationUI::ChangeButtonsStates(const bool bState) const
+void UExplanationUI::ChangeButtonsStates(const int32 InCurrentPage) const
 {
-	BackButton->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
-	NextPageButton->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
-	if (bState) FinishButton->SetVisibility(ESlateVisibility::Hidden);
+	BackButton->SetVisibility(InCurrentPage ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
+	NextPageButton->SetVisibility(InCurrentPage >= CurrentExplanationData.GetPageAmount() ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
+	if (CurrentExplanationData.GetPageAmount() > 1) FinishButton->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UExplanationUI::NextPage()

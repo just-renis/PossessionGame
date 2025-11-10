@@ -14,7 +14,7 @@ void UInteractableUI::PlayFadeInAnim(const bool bState)
 void UInteractableUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	UpdateInteractableText("Interact", GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Interact"));
+	UpdateInteractableText(FName("Interact"), GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Interact"));
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.AddUObject(this, &UInteractableUI::UpdateInteractableText);
 }
 

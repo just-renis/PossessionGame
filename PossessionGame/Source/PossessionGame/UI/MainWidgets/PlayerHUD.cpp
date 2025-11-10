@@ -83,7 +83,7 @@ void UPlayerHUD::UpdateHijackIndicator(const bool bState, const FText& InKeyName
 {
 	if (HijackChargedImage) HijackChargedImage->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	if (HijackIndicatorCharged)	HijackIndicatorCharged->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	UpdatePressToHijackKeyBind(FName(), InKeyName);
+	UpdatePressToHijackKeyBind(FName("Hijack"), InKeyName);
 	if (bState)
 	{
 		AssetsManager->PlaySound2D(ESound::ReadyToHijack);
