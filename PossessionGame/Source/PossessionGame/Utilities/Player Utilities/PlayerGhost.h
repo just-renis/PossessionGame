@@ -5,6 +5,7 @@
 #include "InputActionValue.h"
 #include "PlayerGhost.generated.h"
 
+class AEnemy;
 class ATutorialDrone;
 class UDelegateManager;
 class UPlayerGhostUI;
@@ -20,12 +21,14 @@ class POSSESSIONGAME_API APlayerGhost : public ACharacter
 public:
 	APlayerGhost();
 private:
+	FTimerHandle DetectIfPointingAtEnemyHandle;
+	FTimerHandle CheckHandle;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> Camera;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
 	UPROPERTY()
-	FTimerHandle CheckHandle;
+	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
 
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -37,4 +40,5 @@ private:
 	void CheckIfPlayerFallOutOfWorld();
 	void SetupUserSettings() const;
 	void ToggleTimeDilation();
+	void DetectIfPointingAtEnemy();
 };

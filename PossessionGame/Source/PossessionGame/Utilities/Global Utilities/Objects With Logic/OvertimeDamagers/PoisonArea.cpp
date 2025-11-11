@@ -1,4 +1,6 @@
 ﻿#include "PoisonArea.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EUpgrade.h"
@@ -21,7 +23,7 @@ void APoisonArea::DealOvertimeDamage()
 	for (int32 i = 0; i < Targets.Num(); i++)
 	{
 		if (!Targets[i]) continue;
-		Targets[i]->ReceiveDamage(Damage, DamageReason);
+		UGameplayStatics::ApplyDamage(Targets[i], Damage, nullptr, this, UDamageType::StaticClass());
 	}
 }
 

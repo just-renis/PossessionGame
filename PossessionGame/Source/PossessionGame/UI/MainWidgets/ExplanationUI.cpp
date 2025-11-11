@@ -59,7 +59,7 @@ void UExplanationUI::ShowExplanation()
 	{
 		PageText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "PageDisplay", "Page {0} / {1}"), FText::AsNumber(CurrentPage + 1), FText::AsNumber(CurrentExplanationData.GetPageAmount())));
 		ExplanationText->SetText(CurrentExplanationData.GetExplanationText(CurrentPage));
-		ChangeButtonsStates(0);
+		ChangeButtonsStates(CurrentPage);
 		if (const TObjectPtr<UTexture2D> HighLightTexture = CurrentExplanationData.GetHighlightTexture(CurrentPage)) Highlight->SetTexture(HighLightTexture);
 	}
 }
@@ -70,7 +70,8 @@ void UExplanationUI::SetCurrentExplanation(const EExplanation InExplanationName)
 	else CurrentExplanationData = FExplanationData();
 	PreviousPage = -1;
 	CurrentPage = 0;
-	ChangeButtonsStates(0);
+	ChangeButtonsStates(CurrentPage);
+	if (CurrentExplanationData.GetPageAmount() > 1) FinishButton->SetVisibility(ESlateVisibility::Hidden);
 	ShowExplanation();
 	PlayExplanationAnim(InExplanationName);
 }
@@ -105,16 +106,16 @@ void UExplanationUI::CloseExplanationLogic()
 void UExplanationUI::ChangeButtonsStates(const int32 InCurrentPage) const
 {
 	BackButton->SetVisibility(InCurrentPage ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
-	NextPageButton->SetVisibility(InCurrentPage >= CurrentExplanationData.GetPageAmount() ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
-	if (CurrentExplanationData.GetPageAmount() > 1) FinishButton->SetVisibility(ESlateVisibility::Hidden);
+	NextPageButton->SetVisibility(InCurrentPage >= CurrentExplanationData.GetPageAmount() - 1 ? ESlateVisibility::Hidden : ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UExplanationUI::NextPage()
 {
-	if (CurrentPage + 1 >= CurrentExplanationData.GetPageAmount()) return;
+	if (CurrentPage + 1 > CurrentExplanationData.GetPageAmount()) return;
 	PreviousPage = CurrentPage;
 	PlayAnimation(BackNextTextAnim);
 	if (++CurrentPage + 1 == CurrentExplanationData.GetPageAmount()) FinishButton->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	ChangeButtonsStates(CurrentPage);
 	ShowExplanation();
 }
 
@@ -124,6 +125,7 @@ void UExplanationUI::BackPage()
 	PreviousPage = CurrentPage;
 	PlayAnimation(BackNextTextAnim);
 	CurrentPage--;
+	ChangeButtonsStates(CurrentPage);
 	ShowExplanation();
 }
 

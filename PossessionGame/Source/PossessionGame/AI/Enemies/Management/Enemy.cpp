@@ -650,9 +650,9 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	else if (PointDamageEvent)
 	{
 		const bool bIsCritical = PointDamageEvent->HitInfo.BoneName.IsEqual(FName("head"));
-		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? CriticalDamageNumberColor : DamageNumberColor, Damage, PointDamageEvent->HitInfo.Location, GetActorForwardVector());
+		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? CriticalDamageNumberColor : GetDamageNumberColor(), Damage, PointDamageEvent->HitInfo.Location, GetActorForwardVector());
 	}
-	else (void)DelegateManager->ShowDamageNumber.ExecuteIfBound(DamageNumberColor, Damage, GetActorLocation(), GetActorForwardVector());
+	else (void)DelegateManager->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), Damage, GetActorLocation(), GetActorForwardVector());
 	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None);
 	return Damage;
 }
@@ -756,6 +756,7 @@ void AEnemy::DestroyAI()
 		AI->DestroyThis();
 		AI->UnPossess();
 		AI->Destroy();
+		AI = nullptr;
 	}
 }
 
@@ -848,7 +849,6 @@ void AEnemy::AI_DisableDamageTakenRedFlash() const { if (MI_MeshBaseMaterial) MI
 
 void AEnemy::AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent)
 {
-	//AI->GetStateTreeData().OnStateTreeEvent.Unbind();
 	GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
 	AI_CancelShooting();
 }
@@ -1456,7 +1456,8 @@ void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
 {
 	if (!PoisonSlowAffectedVfx)
 	{
-		if (bIsPoisonSlowAffected) return;
+		if (bPoisonSlowVfxAttachRequested) return;
+		bPoisonSlowVfxAttachRequested = true;
 		bIsPoisonSlowAffected = true;
 		AssetsManager->AttachVfx(EVfx::PoisonSlowAffected, [this]() -> bool { return GetIsAlive() && bIsPoisonSlowAffected; }, &PoisonSlowAffectedVfx, GetMesh(), FName("DeathSocket"));
 	}

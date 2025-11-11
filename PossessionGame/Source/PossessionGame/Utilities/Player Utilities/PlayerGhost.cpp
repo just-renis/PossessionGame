@@ -37,6 +37,7 @@ void APlayerGhost::BeginPlay()
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI)->PlayStartupAnimation();
 	}
 	else GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UChapterLaunchUI>(EWidget::ChapterLaunchUI);
+	GetWorldTimerManager().SetTimer(DetectIfPointingAtEnemyHandle, this, &APlayerGhost::DetectIfPointingAtEnemy, 0.015f, true);
 }
 
 void APlayerGhost::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -64,6 +65,7 @@ void APlayerGhost::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void APlayerGhost::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorld()->GetTimerManager().ClearTimer(CheckHandle);
+	GetWorld()->GetTimerManager().ClearTimer(DetectIfPointingAtEnemyHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -130,4 +132,31 @@ void APlayerGhost::ToggleTimeDilation()
 {
 	if (!FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), Cast<UPossessionGameInstance>(GetGameInstance())->GetGlobalTimeDilation(), 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Cast<UPossessionGameInstance>(GetGameInstance())->GetGlobalTimeDilation());
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
+}
+
+void APlayerGhost::DetectIfPointingAtEnemy()
+{
+	FHitResult HitResult;
+	const FVector StartLocation = Camera->GetComponentLocation();
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_Visibility))
+	{
+		const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
+		if (Enemy && Enemy->GetIsAlive())
+		{
+			if (Enemy != CurrentLookedAtEnemy)
+			{
+				if (CurrentLookedAtEnemy) CurrentLookedAtEnemy->SetHijackOutline(false);
+				if (Enemy->GetIsHijackAble()) Enemy->SetHijackOutline(true);
+				else Enemy->SetUnHijackOutline(true);
+				CurrentLookedAtEnemy = Enemy;
+			}
+			return;
+		}
+	}
+	if (CurrentLookedAtEnemy)
+	{
+		CurrentLookedAtEnemy->SetHijackOutline(false);
+		CurrentLookedAtEnemy->SetUnHijackOutline(false);
+		CurrentLookedAtEnemy = nullptr;
+	}
 }

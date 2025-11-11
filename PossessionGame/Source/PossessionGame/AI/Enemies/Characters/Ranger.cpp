@@ -245,9 +245,9 @@ float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 	else if (PointDamageEvent)
 	{
 		const bool bIsCritical = PointDamageEvent->HitInfo.BoneName.IsEqual(FName("head"));
-		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? CriticalDamageNumberColor : DamageNumberColor, Damage, PointDamageEvent->HitInfo.Location, GetActorForwardVector());
+		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? CriticalDamageNumberColor : GetDamageNumberColor(), Damage, PointDamageEvent->HitInfo.Location, GetActorForwardVector());
 	}
-	else (void)DelegateManager->ShowDamageNumber.ExecuteIfBound(DamageNumberColor, Damage, GetActorLocation(), GetActorForwardVector());
+	else (void)DelegateManager->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), Damage, GetActorLocation(), GetActorForwardVector());
 	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None);
 	return Damage;
 }

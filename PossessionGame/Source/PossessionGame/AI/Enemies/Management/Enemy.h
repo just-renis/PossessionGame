@@ -238,6 +238,7 @@ private:
 	bool bActionSpeedModified = false;
 	bool bIsPoisonSlowAffected = false;
 	bool bHijackVfxAttachRequested = false;
+	bool bPoisonSlowVfxAttachRequested = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;

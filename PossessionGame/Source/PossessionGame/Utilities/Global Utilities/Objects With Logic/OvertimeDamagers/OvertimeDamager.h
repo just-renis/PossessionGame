@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "PossessionGame/Interfaces/DamageReasonProvider.h"
 #include "OvertimeDamager.generated.h"
 
 enum class EDamageReason : uint8;
@@ -8,7 +9,7 @@ class AEnemy;
 class USphereComponent;
 
 UCLASS()
-class POSSESSIONGAME_API AOvertimeDamager : public AActor
+class POSSESSIONGAME_API AOvertimeDamager : public AActor, public IDamageReasonProvider
 {
 	GENERATED_BODY()
 public:
@@ -32,6 +33,8 @@ private:
 	FTimerHandle DamageOvertimeHandle;
 	UPROPERTY()
 	FTimerHandle DestroyThisHandle;
+	
+	virtual EDamageReason GetDamageReason() const override { return DamageReason; }
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyThis();
