@@ -83,6 +83,8 @@ public:
 	void AI_SetupShootLogic();
 	virtual void AI_CancelShooting() {}
 	void AI_TriggerVectorBlastSpecialImpact();
+	void AI_SetupRespawn(const float InHpPercentage);
+	void AI_ProcessSpawnEffects();
 
 	void P_ApplyUpgradeOnSelection();
 	void P_UseAbility(const int32 AbilityIndex);
@@ -393,7 +395,7 @@ private:
 	void P_SetupData();
 	void P_SetupUI();
 	void P_HijackEnemy();
-	void P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bDestroyImmediately);
+	void P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy);
 	void P_HijackBarLogic();
 	void P_Rotate(const FInputActionValue& InValue);
 	void P_Reload();
@@ -442,7 +444,6 @@ private:
 	void ChangeXRayState(const bool bState) const;
 	void SetupUserSettings() const;
 	void ClearTimers();
-	void ProcessSpawnEffects();
 	void ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage) const;
 	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;
 	virtual void Landed(const FHitResult& Hit) override;

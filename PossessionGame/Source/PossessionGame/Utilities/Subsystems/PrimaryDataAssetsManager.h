@@ -182,6 +182,7 @@ public:
 	void SpawnVfx(EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EVariation InVariationName = EVariation::Default, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
 	void ChangeVfxVariation(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName);
 	void RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack, TFunction<bool()> InSpawnCallback);
+	void RequestSpawnEnemy(const ECharacterType InCharacter, const FVector& InLocation, const float InHpPercentage);
 	void Init(const bool bIsTutorialFinished, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount);
 	void SetupSpawnLocations();
 	void PlaySoundAtLocation(const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer = true, const bool bStoreSoundRef = false);

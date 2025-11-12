@@ -248,6 +248,33 @@ void AEnemy::AI_TriggerVectorBlastSpecialImpact()
 	else VectorBlastSpecialImpactVfx->Activate();
 }
 
+void AEnemy::AI_SetupRespawn(const float InHpPercentage)
+{
+	MaxHp = AI_Data->GetMaxHp() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
+	CurrentHp = MaxHp * InHpPercentage;
+	MeshBaseMaterialCondenseValue = 0.4f;
+	MeshEmissiveMaterialOpacityValue = 0.5f;
+	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
+	{
+		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+	}
+	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
+	if (MI_MeshEmissiveMaterial) MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
+}
+
+void AEnemy::AI_ProcessSpawnEffects()
+{
+	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetMesh()->GetSocketLocation("SpawnSocket"));
+	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
+	{
+		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+	}
+	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", 0.7f);
+	GetWorldTimerManager().SetTimer(SpawnCondenseMaterialsProcessHandle, this, &AEnemy::SpawnCondenseMaterialsProcess, 0.05f, true);
+}
+
 void AEnemy::AI_SetupShootLogic()
 {
 	GetWorld()->GetTimerManager().SetTimer(AI_ShootLogicHandle, this, &AEnemy::AI_MainShootLogic, GetWeapon()->GetShootCooldown(), true);
@@ -430,7 +457,7 @@ void AEnemy::AI_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 	if (!AI_Data) AI_Data = AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->AI_Data.LoadSynchronous();
 }
 
-void AEnemy::AI_SetController() { AI = Cast<AEnemyAIController>(GetController()); }
+void AEnemy::AI_SetController() { if (GetController()) AI = Cast<AEnemyAIController>(GetController()); }
 
 void AEnemy::AI_PlayShootMontage()
 {
@@ -518,7 +545,6 @@ void AEnemy::P_Setup()
 	P_SetupUI();
 	P_SetupAbilities();
 	if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
-	(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
 	DelegateManager->OnEnemyDeath.BindUObject(this, &AEnemy::P_OnEnemyDeathEvents);
 }
 
@@ -677,7 +703,6 @@ void AEnemy::BeginPlay()
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
 	SetMesh(CharacterName);
 	SetupMeshOptimization();
-	ProcessSpawnEffects();
 	SetAnimInstance();
 	Tags.Add("Enemy");
 	Tags.Add("AliveEnemy");
@@ -873,10 +898,11 @@ bool AEnemy::CanJumpInternal_Implementation() const
 void AEnemy::P_SetupData()
 {
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
+	const float HpPercentage = CurrentHp / AI_Data->GetMaxHp();
 	MaxHp = P_Data->GetMaxHp();
 	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelHpIncrease() * 0.01f;
 	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardHealth) * 0.01f;
-	CurrentHp = MaxHp;
+	CurrentHp = MaxHp * HpPercentage;
 	bIsHijacked = true;
 	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 	bCanShoot = true;
@@ -909,12 +935,12 @@ void AEnemy::P_HijackEnemy()
 		QueryParams.AddIgnoredActor(this);
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_GameTraceChannel5, QueryParams))
 		{
-			P_HijackLogic(Cast<AEnemy>(HitResult.GetActor()), false);
+			P_HijackLogic(Cast<AEnemy>(HitResult.GetActor()));
 		}
 	}
 }
 
-void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bDestroyImmediately)
+void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy)
 {
 	if (!InEnemy || InEnemy->bIsHijacked || !InEnemy->bIsAlive) return;
 	if (!InEnemy->GetIsHijackAble())
@@ -924,10 +950,12 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bDestro
 		return;
 	}
 	P_StopAllAbilities();
+	const FVector SpawnLocation = GetActorLocation();
 	DelegateManager->OnEnemyDeath.Unbind();
 	Controller->Possess(InEnemy);
 	InitiateDeath();
-	if (bDestroyImmediately) Destroy();
+	Destroy();
+	AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp);
 }
 
 void AEnemy::P_HijackBarLogic()
@@ -980,7 +1008,7 @@ void AEnemy::P_ToggleRun(const bool bState)
 
 void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue)
 {
-	HijackBarTimer += InHijackTimeValue * (GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished() ? 1.f : 2.f);
+//	HijackBarTimer += InHijackTimeValue * (GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished() ? 1.f : 2.f);
 	P_AddXp(InXp);
 }
 
@@ -1142,13 +1170,13 @@ void AEnemy::P_SetupNavArea()
 
 void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {
-	if (const TObjectPtr<AEnemy> Enemy = AssetsManager->SpawnVariationReplacement(InCharacterType, EWidget::VariationsUI)) P_HijackLogic(Enemy, true);
+	if (const TObjectPtr<AEnemy> Enemy = AssetsManager->SpawnVariationReplacement(InCharacterType, EWidget::VariationsUI)) P_HijackLogic(Enemy);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
 }
 
 void AEnemy::P_OnAbilitiesMenuSelectionEnd()
 {
-	P_HijackLogic(AssetsManager->SpawnVariationReplacement(CharacterName, EWidget::AbilitiesMenuUI), true);
+	P_HijackLogic(AssetsManager->SpawnVariationReplacement(CharacterName, EWidget::AbilitiesMenuUI));
 }
 
 void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName); }
@@ -1362,18 +1390,6 @@ void AEnemy::ClearTimers()
 	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
 	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
 	GetWorldTimerManager().ClearTimer(ActionSpeedHandle);
-}
-
-void AEnemy::ProcessSpawnEffects()
-{
-	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetMesh()->GetSocketLocation("SpawnSocket"));
-	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
-	{
-		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
-		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
-	}
-	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", 0.7f);
-	GetWorldTimerManager().SetTimer(SpawnCondenseMaterialsProcessHandle, this, &AEnemy::SpawnCondenseMaterialsProcess, 0.05f, true);
 }
 
 void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage) const

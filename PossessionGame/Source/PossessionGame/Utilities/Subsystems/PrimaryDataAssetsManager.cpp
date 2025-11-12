@@ -221,6 +221,11 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 	AddSpawnableEnemiesToThePool();
 }
 
+void UPrimaryDataAssetsManager::RequestSpawnEnemy(const ECharacterType InCharacter, const FVector& InLocation, const float InHpPercentage)
+{
+	GetWorld()->SpawnActor<AEnemy>(LoadedEnemies[InCharacter], InLocation, FRotator::ZeroRotator)->AI_SetupRespawn(InHpPercentage);
+}
+
 void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount)
 {
 	bTutorialIsFinished = bIsTutorialFinished;
@@ -929,6 +934,7 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 			if (const TObjectPtr<AEnemy> Enemy = Location->SpawnEnemy(LoadedEnemies[InCharacter]))
 			{
 				Enemy->AI_SetupUpgradesAppliance();
+				Enemy->AI_ProcessSpawnEffects();
 				if (InCallBack) InCallBack();
 				break;
 			}
