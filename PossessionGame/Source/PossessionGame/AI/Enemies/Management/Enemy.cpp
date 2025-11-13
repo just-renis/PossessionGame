@@ -942,20 +942,15 @@ void AEnemy::P_HijackEnemy()
 
 void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy)
 {
-	if (!InEnemy || InEnemy->bIsHijacked || !InEnemy->bIsAlive) return;
+	if (!InEnemy || InEnemy->bIsHijacked || !InEnemy->bIsAlive || HijackDelayHandle.IsValid()) return;
 	if (!InEnemy->GetIsHijackAble())
 	{
 		AssetsManager->PlaySound2D(ESound::NotSelectable);
 		if (P_HUD) P_HUD->ShowMinorAnnouncement(NSLOCTEXT("ST_Localization", "HijackUnavailable", "Hijack Unavailable"));
 		return;
 	}
-	P_StopAllAbilities();
-	const FVector SpawnLocation = GetActorLocation();
-	DelegateManager->OnEnemyDeath.Unbind();
-	Controller->Possess(InEnemy);
-	InitiateDeath();
-	Destroy();
-	AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp);
+	HijackTarget = InEnemy;
+	GetWorldTimerManager().SetTimer(HijackDelayHandle, this, &AEnemy::P_TryToFinishHijackProcess, HijackDelay);
 }
 
 void AEnemy::P_HijackBarLogic()
@@ -1353,6 +1348,28 @@ void AEnemy::P_SetupSuperJump()
 	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
 	P_EndSlide();
 	GetCharacterMovement()->JumpZVelocity = JumpVelocity * 2.f;
+}
+
+void AEnemy::P_TryToFinishHijackProcess()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	const FVector StartLocation = Camera->GetComponentLocation();
+	QueryParams.AddIgnoredActor(this);
+	UE_LOG(LogTemp, Error, TEXT("TRY HIJACKING?"));
+	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_GameTraceChannel5, QueryParams))
+	{
+		if (HitResult.GetActor() != HijackTarget) return;
+		UE_LOG(LogTemp, Error, TEXT("TRY HIJACKING COMPLETED"));
+		P_StopAllAbilities();
+		const FVector SpawnLocation = GetActorLocation();
+		DelegateManager->OnEnemyDeath.Unbind();
+		Controller->Possess(HijackTarget);
+		InitiateDeath();
+		Destroy();
+		AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp);
+	}
 }
 
 void AEnemy::TickAbilities(const float InDeltaTime)

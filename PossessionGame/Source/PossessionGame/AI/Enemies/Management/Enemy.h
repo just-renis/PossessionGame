@@ -251,10 +251,31 @@ private:
 	float MovementSpeedMultiplier = 1.f;
 	float AdditionalActionSpeedValue = 0.f;
 	int32 OverlappingPoisonAreas = 0;
+	FTimerHandle AI_ClearShootPauseHandle;
+	FTimerHandle AI_TriggerDeathVoiceLineHandle;
+	FTimerHandle AI_SetCharacterMovementSpeedHandle;
+	FTimerHandle AI_PlaySpawnSoundHandle;
+	FTimerHandle AI_HideHpBarHandle;
+	FTimerHandle AI_DamageTakenEffectHandle;
+	FTimerHandle AI_ShootLogicHandle;
+	FTimerHandle P_DetectIfPlayerPointingAtOutlineObjectsHandle;
+	FTimerHandle P_TriggerCriticalDamageIndicatorHandle;
+	FTimerHandle P_DeathHandle;
+	FTimerHandle P_ContinuousFovChangeHandle;
+	FTimerHandle P_ControlLogicHandle;
+	FTimerHandle P_SlideEndHandle;
+	FTimerHandle DestroyHandle;
+	FTimerHandle CheckIfFallOutOfWorldHandle;
+	FTimerHandle DestroyCondenseMaterialsProcessHandle;
+	FTimerHandle SpawnCondenseMaterialsProcessHandle;
+	FTimerHandle ActionSpeedHandle;
 	FTimerHandle EmpEffectApplyHandle;
 	FTimerHandle StunEffectApplyHandle;
+	FTimerHandle HijackDelayHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Explosion Radius From Emp Upgrade", meta = (AllowPrivateAccess = true))
 	float ExplosionRadiusFromEmpUpgradeInMetres = 5.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack Delay", meta = (AllowPrivateAccess = true))
+	float HijackDelay = 0.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Destroy After Seconds", meta = (AllowPrivateAccess = true))
 	float DestroyAfter = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
@@ -344,41 +365,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager;
 	UPROPERTY()
-	FTimerHandle AI_ClearShootPauseHandle;
-	UPROPERTY()
-	FTimerHandle AI_TriggerDeathVoiceLineHandle;
-	UPROPERTY()
-	FTimerHandle AI_SetCharacterMovementSpeedHandle;
-	UPROPERTY()
-	FTimerHandle AI_PlaySpawnSoundHandle;
-	UPROPERTY()
-	FTimerHandle AI_HideHpBarHandle;
-	UPROPERTY()
-	FTimerHandle AI_DamageTakenEffectHandle;
-	UPROPERTY()
-	FTimerHandle AI_ShootLogicHandle;
-	UPROPERTY()
-	FTimerHandle P_DetectIfPlayerPointingAtOutlineObjectsHandle;
-	UPROPERTY()
-	FTimerHandle P_TriggerCriticalDamageIndicatorHandle;
-	UPROPERTY()
-	FTimerHandle P_DeathHandle;
-	UPROPERTY()
-	FTimerHandle P_ContinuousFovChangeHandle;
-	UPROPERTY()
-	FTimerHandle P_ControlLogicHandle;
-	UPROPERTY()
-	FTimerHandle P_SlideEndHandle;
-	UPROPERTY()
-	FTimerHandle DestroyHandle;
-	UPROPERTY()
-	FTimerHandle CheckIfFallOutOfWorldHandle;
-	UPROPERTY()
-	FTimerHandle DestroyCondenseMaterialsProcessHandle;
-	UPROPERTY()
-	FTimerHandle SpawnCondenseMaterialsProcessHandle;
-	UPROPERTY()
-	FTimerHandle ActionSpeedHandle;
+	TObjectPtr<AEnemy> HijackTarget;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
@@ -436,6 +423,7 @@ private:
 	void P_InitiateSlide();
 	void P_EndSlide();
 	void P_SetupSuperJump();
+	void P_TryToFinishHijackProcess();
 
 	virtual bool CanJumpInternal_Implementation() const override;
 
