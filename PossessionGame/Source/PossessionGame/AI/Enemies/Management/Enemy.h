@@ -272,6 +272,7 @@ private:
 	FTimerHandle EmpEffectApplyHandle;
 	FTimerHandle StunEffectApplyHandle;
 	FTimerHandle HijackDelayHandle;
+	FTimerHandle HijackFovChangeHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Explosion Radius From Emp Upgrade", meta = (AllowPrivateAccess = true))
 	float ExplosionRadiusFromEmpUpgradeInMetres = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack Delay", meta = (AllowPrivateAccess = true))
@@ -382,7 +383,7 @@ private:
 	void P_SetupData();
 	void P_SetupUI();
 	void P_HijackEnemy();
-	void P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy);
+	void P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bInstantHijack);
 	void P_HijackBarLogic();
 	void P_Rotate(const FInputActionValue& InValue);
 	void P_Reload();
@@ -424,6 +425,7 @@ private:
 	void P_EndSlide();
 	void P_SetupSuperJump();
 	void P_TryToFinishHijackProcess();
+	void P_ChangeFovWhileHijackingProcess();
 
 	virtual bool CanJumpInternal_Implementation() const override;
 

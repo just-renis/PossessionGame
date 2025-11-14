@@ -45,6 +45,7 @@ public:
 	void ShowMinorAnnouncement(const FText& InText);
 	void ShowOutOfAmmo();
 	void SetAbilityIcon(const int32 InAbilityIndex, const int32 InAbilityIconIndex);
+	void PlayHijackAnim(const bool bState) { PlayAnimation(HijackInitiateAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse); }
 private:
 	bool bIsHidden = false;
 	float StepHpPercentage;
@@ -170,6 +171,8 @@ private:
 	TObjectPtr<UWidgetAnimation> OutOfAmmoAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> DamageReceivedAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> HijackInitiateAnim;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
 	UPROPERTY()

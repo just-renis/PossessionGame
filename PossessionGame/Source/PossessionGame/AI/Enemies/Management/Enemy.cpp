@@ -922,6 +922,7 @@ void AEnemy::P_SetupUI()
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
 	P_SetupColorsForUI();
+	P_HUD->PlayHijackAnim(false);
 	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.015f, true);
 }
 
@@ -936,12 +937,12 @@ void AEnemy::P_HijackEnemy()
 		QueryParams.AddIgnoredActor(this);
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_GameTraceChannel5, QueryParams))
 		{
-			P_HijackLogic(Cast<AEnemy>(HitResult.GetActor()));
+			P_HijackLogic(Cast<AEnemy>(HitResult.GetActor()), false);
 		}
 	}
 }
 
-void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy)
+void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bInstantHijack)
 {
 	if (!InEnemy || InEnemy->bIsHijacked || !InEnemy->bIsAlive || HijackDelayHandle.IsValid()) return;
 	if (!InEnemy->GetIsHijackAble())
@@ -950,10 +951,23 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy)
 		if (P_HUD) P_HUD->ShowMinorAnnouncement(NSLOCTEXT("ST_Localization", "HijackUnavailable", "Hijack Unavailable"));
 		return;
 	}
-	HijackTarget = InEnemy;
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->OpenUI();
-	bIsInputLocked = true;
-	GetWorldTimerManager().SetTimer(HijackDelayHandle, this, &AEnemy::P_TryToFinishHijackProcess, HijackDelay);
+	if (bInstantHijack)
+	{
+		P_StopAllAbilities();
+		DelegateManager->OnEnemyDeath.Unbind();
+		if (Controller) Controller->Possess(InEnemy);
+		InitiateDeath();
+		Destroy();
+	}
+	else
+	{
+		HijackTarget = InEnemy;
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->OpenUI();
+		bIsInputLocked = true;
+		if (P_HUD) P_HUD->PlayHijackAnim(true);
+		GetWorldTimerManager().SetTimer(HijackDelayHandle, this, &AEnemy::P_TryToFinishHijackProcess, HijackDelay);
+		GetWorldTimerManager().SetTimer(HijackFovChangeHandle, this, &AEnemy::P_ChangeFovWhileHijackingProcess, 0.01f, true);
+	}
 }
 
 void AEnemy::P_HijackBarLogic()
@@ -1168,13 +1182,13 @@ void AEnemy::P_SetupNavArea()
 
 void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {
-	if (const TObjectPtr<AEnemy> Enemy = AssetsManager->SpawnVariationReplacement(InCharacterType, EWidget::VariationsUI)) P_HijackLogic(Enemy);
+	if (const TObjectPtr<AEnemy> Enemy = AssetsManager->SpawnVariationReplacement(InCharacterType, EWidget::VariationsUI)) P_HijackLogic(Enemy, true);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
 }
 
 void AEnemy::P_OnAbilitiesMenuSelectionEnd()
 {
-	P_HijackLogic(AssetsManager->SpawnVariationReplacement(CharacterName, EWidget::AbilitiesMenuUI));
+	P_HijackLogic(AssetsManager->SpawnVariationReplacement(CharacterName, EWidget::AbilitiesMenuUI), true);
 }
 
 void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName); }
@@ -1364,6 +1378,16 @@ void AEnemy::P_TryToFinishHijackProcess()
 	Destroy();
 	AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
+}
+
+void AEnemy::P_ChangeFovWhileHijackingProcess()
+{
+	Camera->SetFieldOfView(Camera->FieldOfView + 2.f);
+	if (Camera->FieldOfView >= 110.f)
+	{
+		Camera->FieldOfView = 110.f;
+		GetWorldTimerManager().ClearTimer(HijackFovChangeHandle);
+	}
 }
 
 void AEnemy::TickAbilities(const float InDeltaTime)
