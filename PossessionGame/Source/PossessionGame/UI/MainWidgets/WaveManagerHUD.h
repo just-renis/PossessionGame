@@ -27,7 +27,10 @@ public:
 	void UpdateObjective(const EGameMode InGameMode, const int32 InData) const;
 	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective, const bool bShowUpgradeSelection = false);
 	void ToggleFinishOffEnemiesText(const bool bState);
+	void PlayHijackInitiateAnim(const bool bIsForward) { PlayAnimation(HijackInitiateAnim, 0, 1, bIsForward ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse); }
 private:
+	FTimerHandle AnnouncementHandle;
+	FTimerHandle TimerUpdateHandle;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CountdownText;
 	UPROPERTY(meta = (BindWidget))
@@ -68,10 +71,8 @@ private:
 	TObjectPtr<UWidgetAnimation> FinishOffEnemiesFadeInAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> MiniPopupAnim;
-	UPROPERTY()
-	FTimerHandle AnnouncementHandle;
-	UPROPERTY()
-	FTimerHandle TimerUpdateHandle;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> HijackInitiateAnim;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent OnObjectivePanelAnimEnd;
 	UPROPERTY()

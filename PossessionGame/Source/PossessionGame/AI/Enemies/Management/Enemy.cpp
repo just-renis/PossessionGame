@@ -42,6 +42,7 @@
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
+#include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/UI/SecondaryWidgets/AIHpBarUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
@@ -961,12 +962,16 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bInstan
 	}
 	else
 	{
+		P_AddAndSetHijackPulse(1.f);
+		AssetsManager->PlaySound2D(ESound::HijackInProgress);
 		HijackTarget = InEnemy;
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->OpenUI();
 		bIsInputLocked = true;
 		if (P_HUD) P_HUD->PlayHijackAnim(true);
-		GetWorldTimerManager().SetTimer(HijackDelayHandle, this, &AEnemy::P_TryToFinishHijackProcess, HijackDelay);
-		GetWorldTimerManager().SetTimer(HijackFovChangeHandle, this, &AEnemy::P_ChangeFovWhileHijackingProcess, 0.01f, true);
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(true);
+		GetWorldTimerManager().SetTimer(HijackDelayHandle, this, &AEnemy::P_FinishHijackProcess, HijackDelay);
+		GetWorldTimerManager().SetTimer(HijackFovChangeHandle, this, &AEnemy::P_ChangeFovWhileHijackingProcess, 0.02f, true);
+		GetWorldTimerManager().SetTimer(HijackLockInToTargetHandle, this, &AEnemy::P_LockInToTargetLogic, 0.02f, true);
 	}
 }
 
@@ -1367,9 +1372,10 @@ void AEnemy::P_SetupSuperJump()
 	GetCharacterMovement()->JumpZVelocity = JumpVelocity * 2.f;
 }
 
-void AEnemy::P_TryToFinishHijackProcess()
+void AEnemy::P_FinishHijackProcess()
 {
 	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
+	GetWorldTimerManager().ClearTimer(HijackLockInToTargetHandle);
 	P_StopAllAbilities();
 	const FVector SpawnLocation = GetActorLocation();
 	DelegateManager->OnEnemyDeath.Unbind();
@@ -1378,16 +1384,30 @@ void AEnemy::P_TryToFinishHijackProcess()
 	Destroy();
 	AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(false);
+	P_AddAndSetHijackPulse(0.f);
 }
 
 void AEnemy::P_ChangeFovWhileHijackingProcess()
 {
-	Camera->SetFieldOfView(Camera->FieldOfView + 2.f);
-	if (Camera->FieldOfView >= 110.f)
+	Camera->SetFieldOfView(Camera->FieldOfView - 0.4f);
+	if (Camera->FieldOfView <= 80.f)
 	{
-		Camera->FieldOfView = 110.f;
+		Camera->FieldOfView = 80.f;
 		GetWorldTimerManager().ClearTimer(HijackFovChangeHandle);
 	}
+}
+
+void AEnemy::P_AddAndSetHijackPulse(const float InValue)
+{
+	if (!MID_HijackPulse) MID_HijackPulse = UMaterialInstanceDynamic::Create(MI_HijackPulse, this);
+	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::HijackPulse, MID_HijackPulse, InValue);
+}
+
+void AEnemy::P_LockInToTargetLogic() const
+{
+	if (!HijackTarget || !Camera) return;
+	Camera->SetWorldRotation((HijackTarget->GetActorLocation() - Camera->GetComponentLocation()).Rotation());
 }
 
 void AEnemy::TickAbilities(const float InDeltaTime)

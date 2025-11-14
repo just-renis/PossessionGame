@@ -273,6 +273,7 @@ private:
 	FTimerHandle StunEffectApplyHandle;
 	FTimerHandle HijackDelayHandle;
 	FTimerHandle HijackFovChangeHandle;
+	FTimerHandle HijackLockInToTargetHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Explosion Radius From Emp Upgrade", meta = (AllowPrivateAccess = true))
 	float ExplosionRadiusFromEmpUpgradeInMetres = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack Delay", meta = (AllowPrivateAccess = true))
@@ -335,6 +336,8 @@ private:
 	TObjectPtr<UMaterialInterface> HijackOutlineMaterial;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> UnHijackOutlineMaterial;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_HijackPulse;
 	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
@@ -367,6 +370,8 @@ private:
 	TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager;
 	UPROPERTY()
 	TObjectPtr<AEnemy> HijackTarget;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_HijackPulse;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
@@ -424,8 +429,10 @@ private:
 	void P_InitiateSlide();
 	void P_EndSlide();
 	void P_SetupSuperJump();
-	void P_TryToFinishHijackProcess();
+	void P_FinishHijackProcess();
 	void P_ChangeFovWhileHijackingProcess();
+	void P_AddAndSetHijackPulse(const float InValue);
+	void P_LockInToTargetLogic() const;
 
 	virtual bool CanJumpInternal_Implementation() const override;
 
