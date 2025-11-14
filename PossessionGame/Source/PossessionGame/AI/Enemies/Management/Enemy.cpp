@@ -36,6 +36,7 @@
 #include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/DeathScreenUI.h"
 #include "PossessionGame/UI/MainWidgets/DemoEndUI.h"
+#include "PossessionGame/UI/MainWidgets/HijackUI.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
@@ -950,6 +951,8 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy)
 		return;
 	}
 	HijackTarget = InEnemy;
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->OpenUI();
+	bIsInputLocked = true;
 	GetWorldTimerManager().SetTimer(HijackDelayHandle, this, &AEnemy::P_TryToFinishHijackProcess, HijackDelay);
 }
 
@@ -966,7 +969,7 @@ void AEnemy::P_HijackBarLogic()
 
 void AEnemy::P_Rotate(const FInputActionValue& InValue)
 {
-	if (!Controller) return;
+	if (!Controller || bIsInputLocked) return;
 	const FVector2D RotationVector = InValue.Get<FVector2D>();
 	const FVector2D MouseSensitivity = GlobalSettingsManager->GetMouseSensitivity();
 	AddControllerYawInput(RotationVector.X * MouseSensitivity.X);
@@ -1352,24 +1355,15 @@ void AEnemy::P_SetupSuperJump()
 
 void AEnemy::P_TryToFinishHijackProcess()
 {
-	FHitResult HitResult;
-	FCollisionQueryParams QueryParams;
-	const FVector StartLocation = Camera->GetComponentLocation();
-	QueryParams.AddIgnoredActor(this);
-	UE_LOG(LogTemp, Error, TEXT("TRY HIJACKING?"));
 	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + Camera->GetForwardVector() * 15000.f, ECC_GameTraceChannel5, QueryParams))
-	{
-		if (HitResult.GetActor() != HijackTarget) return;
-		UE_LOG(LogTemp, Error, TEXT("TRY HIJACKING COMPLETED"));
-		P_StopAllAbilities();
-		const FVector SpawnLocation = GetActorLocation();
-		DelegateManager->OnEnemyDeath.Unbind();
-		Controller->Possess(HijackTarget);
-		InitiateDeath();
-		Destroy();
-		AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp);
-	}
+	P_StopAllAbilities();
+	const FVector SpawnLocation = GetActorLocation();
+	DelegateManager->OnEnemyDeath.Unbind();
+	if (Controller) Controller->Possess(HijackTarget);
+	InitiateDeath();
+	Destroy();
+	AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
 }
 
 void AEnemy::TickAbilities(const float InDeltaTime)

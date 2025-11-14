@@ -25,7 +25,6 @@ float ARangerShield::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 {
 	if (bIsPlayerObject && GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::RangerAbility2, EUpgradeAttribute::Special1))
 	{
-		UE_LOG(LogTemp, Error, TEXT("ADDED STACK"));
 		GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddRangerShieldSpecialStack();
 	}
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
