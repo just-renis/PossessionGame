@@ -27,12 +27,10 @@ protected:
 	virtual void AddTarget(const TObjectPtr<AEnemy>& InTarget);
 	virtual void RemoveTarget(const TObjectPtr<AEnemy>& InTarget);
 private:
+	FTimerHandle DamageOvertimeHandle;
+	FTimerHandle DestroyThisHandle;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USphereComponent> Radius;
-	UPROPERTY()
-	FTimerHandle DamageOvertimeHandle;
-	UPROPERTY()
-	FTimerHandle DestroyThisHandle;
 	
 	virtual EDamageReason GetDamageReason() const override { return DamageReason; }
 

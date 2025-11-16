@@ -7,6 +7,7 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 #include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -21,6 +22,7 @@ void UPossessionGameInstance::InitGameInstanceManagers()
 void UPossessionGameInstance::Init()
 {
 	Super::Init();
+	GetSubsystem<UGlobalSettingsManager>()->SetCodexData(CodexData);
 	GetSubsystem<USaveSlotManager>()->LoadMetaSaveSlot("MetaSaveSlot");
 	GetSubsystem<UDelegateManager>()->LoadLevel.BindUObject(this, &UPossessionGameInstance::OpenLevel);
 	GetSubsystem<UDelegateManager>()->RequestAddAbilitiesToUpgradePool.BindUObject(this, &UPossessionGameInstance::AddAvailableUpgrades);

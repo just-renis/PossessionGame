@@ -185,6 +185,8 @@ protected:
 	virtual void AI_TriggerDeathVoiceLine() {}
 	virtual void AI_PlaySpawnSound() {}
 	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage);
+	virtual void AI_Destroy();
+	virtual void AI_DestroyVfxs();
 
 	virtual void P_SetupAbilities();
 	virtual void P_Setup();
@@ -217,11 +219,9 @@ protected:
 	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
-	virtual void DestroyAI();
 	virtual void DestroyThis();
 	virtual void DisableAllVfxAfterPossession();
 	virtual void SetMoveMode(const EMoveMode InMoveMode) { CurrentMoveMode = InMoveMode; }
-	virtual void DestroyAIVfxs();
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanHijackOtherEnemy = false;
@@ -241,6 +241,7 @@ private:
 	bool bIsPoisonSlowAffected = false;
 	bool bHijackVfxAttachRequested = false;
 	bool bPoisonSlowVfxAttachRequested = false;
+	bool bIsInvincible = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -274,10 +275,13 @@ private:
 	FTimerHandle HijackDelayHandle;
 	FTimerHandle HijackFovChangeHandle;
 	FTimerHandle HijackLockInToTargetHandle;
+	FTimerHandle HijackInvincibilityDelayHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Explosion Radius From Emp Upgrade", meta = (AllowPrivateAccess = true))
 	float ExplosionRadiusFromEmpUpgradeInMetres = 5.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack Delay", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
 	float HijackDelay = 0.5f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
+	float InvincibilityDelay = 0.3f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Destroy After Seconds", meta = (AllowPrivateAccess = true))
 	float DestroyAfter = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
@@ -365,6 +369,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> VectorBlastSpecialImpactVfx;
 	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> HijackLineVfx;
+	UPROPERTY()
 	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
 	UPROPERTY()
 	TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager;
@@ -433,6 +439,7 @@ private:
 	void P_ChangeFovWhileHijackingProcess();
 	void P_AddAndSetHijackPulse(const float InValue);
 	void P_LockInToTargetLogic() const;
+	void P_TurnOffInvincibility();
 
 	virtual bool CanJumpInternal_Implementation() const override;
 
