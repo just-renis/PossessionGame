@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GlobalSettingsManager.generated.h"
 
+class UCodexData;
 class UDelegateManager;
 
 UCLASS()
@@ -15,13 +16,17 @@ public:
 	FText GetKeyBindText(const FName& InKeyName) const;
 	FText* GetKeyDisplayName(const FKey& InKeyName);
 	FText* GetLocalizedMappingName(const FString& InMappingName);
+	TObjectPtr<UCodexData> GetCodexData() const { return CodexData; }
 
 	void ToggleGodModeEnabled() { bIsGodModeEnabled = !bIsGodModeEnabled; }
 	void SetMouseHorizontalSensitivity(const float InValue) { MouseSensitivity.X = InValue; }
 	void SetMouseVerticalSensitivity(const float InValue) { MouseSensitivity.Y = InValue; }
+	void SetCodexData(const TObjectPtr<UCodexData>& InCodexData) { CodexData = InCodexData; }
 private:
 	bool bIsGodModeEnabled = false;
 	FVector2D MouseSensitivity = FVector2D(1.f, 1.f);
+	UPROPERTY()
+	TObjectPtr<UCodexData> CodexData;
 	UPROPERTY()
 	TMap<FKey, FText> CustomKeyDisplayNames = {
 		{ EKeys::LeftMouseButton, NSLOCTEXT("ST_Localization", "M1", "M1") },

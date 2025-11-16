@@ -36,14 +36,14 @@ void AMinion::AI_PlayDeathElectrification()
 	AssetsManager->AttachVfx(EVfx::MinionDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
 }
 
+void AMinion::AI_Destroy()
+{
+	Super::AI_Destroy();
+	(void)DelegateManager->OnTutorialMinionDeath.ExecuteIfBound();
+}
+
 void AMinion::BeginPlay()
 {
 	CharacterName = ECharacterType::Minion;
 	Super::BeginPlay();
-}
-
-void AMinion::DestroyAI()
-{
-	Super::DestroyAI();
-	(void)DelegateManager->OnTutorialMinionDeath.ExecuteIfBound();
 }

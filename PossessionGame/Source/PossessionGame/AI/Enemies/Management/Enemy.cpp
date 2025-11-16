@@ -206,7 +206,8 @@ void AEnemy::PossessedBy(AController* NewController)
 		Super::PossessedBy(NewController);
 		if (Cast<APlayerController>(NewController))
 		{
-			Abilities.Empty();
+			bIsInvincible = true;
+			GetWorldTimerManager().SetTimer(HijackInvincibilityDelayHandle, this, &AEnemy::P_TurnOffInvincibility, InvincibilityDelay);
 			DisableAllVfxAfterPossession();
 			bIsActionInMotion = false;
 			P_TriggerGlitchingEffect();
@@ -298,7 +299,7 @@ void AEnemy::InitiateDeath()
 	{
 		AI_PlayDeathSound();
 		AI_PlayDeathExplosion();
-		DestroyAI();
+		AI_Destroy();
 		if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
 		DelegateManager->OnEnemyDeathOccurred.Broadcast(this);
 		(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
@@ -496,6 +497,47 @@ void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float I
 	GetWorldTimerManager().SetTimer(AI_HideHpBarHandle, this, &AEnemy::AI_HideHpBar, 2.f, false);
 }
 
+void AEnemy::AI_Destroy()
+{
+	AI_DestroyHpBar();
+	AI_DestroyVfxs();
+	if (AI)
+	{
+		GetWorld()->GetSubsystem<UEnemyCommunicator>()->RemoveEnemy(this);
+		DelegateManager->OnXRayThroughWallsChange.RemoveAll(this);
+		ChangeXRayState(false);
+		AI_StopAllAbilities();
+		GetMesh()->SetAnimInstanceClass(nullptr);
+		GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
+		AI->DestroyThis();
+		AI->UnPossess();
+		AI->Destroy();
+		AI = nullptr;
+	}
+}
+
+void AEnemy::AI_DestroyVfxs()
+{
+	if (EmpAffectedVfx)
+	{
+		EmpAffectedVfx->DeactivateImmediate();
+		EmpAffectedVfx->DestroyComponent();
+		EmpAffectedVfx = nullptr;
+	}
+	if (PoisonSlowAffectedVfx)
+	{
+		PoisonSlowAffectedVfx->DeactivateImmediate();
+		PoisonSlowAffectedVfx->DestroyComponent();
+		PoisonSlowAffectedVfx = nullptr;
+	}
+	if (StunAffectedVfx)
+	{
+		StunAffectedVfx->DeactivateImmediate();
+		StunAffectedVfx->DestroyComponent();
+		StunAffectedVfx = nullptr;
+	}
+}
+
 void AEnemy::P_SetupAbilities()
 {
 	TArray<int32> ChosenAbilities = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCharacterChosenAbilities(CharacterName).Abilities;
@@ -530,7 +572,7 @@ void AEnemy::P_Setup()
 	Tags.Remove("AliveEnemy");
 	Tags.Add("Player");
 	P_ReceiveCurrentlySelectedVariation();
-	DestroyAI();
+	AI_Destroy();
 	GetMesh()->SetCollisionProfileName("Player");
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetTarget(this);
 	P_LoadDataIfNotLoaded(CharacterName);
@@ -614,7 +656,7 @@ void AEnemy::P_SetupCharacterMovement() const
 	GetCharacterMovement()->AirControl = AirControl;
 	GetCharacterMovement()->MaxAcceleration = MaxAcceleration;
 	GetCharacterMovement()->BrakingFrictionFactor = BrakingFrictionFactor;
-	GetCharacterMovement()->GetCharacterOwner()->JumpMaxCount = MaxJumpAmount;
+	if (GetCharacterMovement()->GetCharacterOwner()) GetCharacterMovement()->GetCharacterOwner()->JumpMaxCount = MaxJumpAmount;
 	GetCharacterMovement()->bUseRVOAvoidance = false;
 }
 
@@ -658,6 +700,7 @@ void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShak
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (bIsInvincible) return 0.f;
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) * DamageReduction;
 	const FRadialDamageEvent* RadialDamageEvent = nullptr;
 	const FPointDamageEvent* PointDamageEvent = nullptr;
@@ -768,25 +811,6 @@ void AEnemy::HandleDeactivation()
 
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->CharacterMesh.Get()); }
 
-void AEnemy::DestroyAI()
-{
-	AI_DestroyHpBar();
-	DestroyAIVfxs();
-	if (AI)
-	{
-		GetWorld()->GetSubsystem<UEnemyCommunicator>()->RemoveEnemy(this);
-		DelegateManager->OnXRayThroughWallsChange.RemoveAll(this);
-		ChangeXRayState(false);
-		AI_StopAllAbilities();
-		GetMesh()->SetAnimInstanceClass(nullptr);
-		GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
-		AI->DestroyThis();
-		AI->UnPossess();
-		AI->Destroy();
-		AI = nullptr;
-	}
-}
-
 void AEnemy::DestroyThis()
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
@@ -796,35 +820,17 @@ void AEnemy::DestroyThis()
 
 void AEnemy::DisableAllVfxAfterPossession() { DisableHijackViableVfx(); }
 
-void AEnemy::DestroyAIVfxs()
-{
-	if (EmpAffectedVfx)
-	{
-		EmpAffectedVfx->DeactivateImmediate();
-		EmpAffectedVfx->DestroyComponent();
-		EmpAffectedVfx = nullptr;
-	}
-	if (PoisonSlowAffectedVfx)
-	{
-		PoisonSlowAffectedVfx->DeactivateImmediate();
-		PoisonSlowAffectedVfx->DestroyComponent();
-		PoisonSlowAffectedVfx = nullptr;
-	}
-	if (StunAffectedVfx)
-	{
-		StunAffectedVfx->DeactivateImmediate();
-		StunAffectedVfx->DestroyComponent();
-		StunAffectedVfx = nullptr;
-	}
-}
-
 void AEnemy::AI_SetupData()
 {
 	CurrentHp = MaxHp = AI_Data->GetMaxHp();
 	SetMaxWalkSpeed(EMoveMode::Walk);
 }
 
-void AEnemy::AI_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->AI_StopAbility(); }
+void AEnemy::AI_StopAllAbilities()
+{
+	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->AI_StopAbility();
+	Abilities.Empty();
+}
 
 void AEnemy::AI_SetupHpBar()
 {
@@ -968,6 +974,7 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bInstan
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->OpenUI();
 		bIsInputLocked = true;
 		if (P_HUD) P_HUD->PlayHijackAnim(true);
+		AssetsManager->AttachVfx(EVfx::HijackLine, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &HijackLineVfx, GetCamera());
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(true);
 		GetWorldTimerManager().SetTimer(HijackDelayHandle, this, &AEnemy::P_FinishHijackProcess, HijackDelay);
 		GetWorldTimerManager().SetTimer(HijackFovChangeHandle, this, &AEnemy::P_ChangeFovWhileHijackingProcess, 0.02f, true);
@@ -1409,6 +1416,8 @@ void AEnemy::P_LockInToTargetLogic() const
 	if (!HijackTarget || !Camera) return;
 	Camera->SetWorldRotation((HijackTarget->GetActorLocation() - Camera->GetComponentLocation()).Rotation());
 }
+
+void AEnemy::P_TurnOffInvincibility() { bIsInvincible = false; }
 
 void AEnemy::TickAbilities(const float InDeltaTime)
 {

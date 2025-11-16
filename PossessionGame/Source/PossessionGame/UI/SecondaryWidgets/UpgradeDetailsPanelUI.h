@@ -6,6 +6,8 @@
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "UpgradeDetailsPanelUI.generated.h"
 
+enum class EUpgradeType : uint8;
+enum class EAbility : uint8;
 class URichTextBlock;
 enum class EUpgradeAttribute : uint8;
 class UButton;
@@ -51,10 +53,13 @@ private:
 	UPROPERTY()
 	FUpgradeChoicePair UpgradeChoice;
 
-	FString ConvertUpgradeAttributeValueToString(const float InValue);
+	ECharacterType GetCharacterByUpgradeName() const;
+	EAbility GetAbilityByUpgradeName() const;
+	FString SanitizeFloatValueToString(const float InValue);
 	FText GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute, const bool bForEnemy);
 	FString GetRichTextTag(const bool bForEnemy) const;
 	FText GetSpecialUpgradeText(const EUpgradeAttribute InUpgradeAttribute, const bool bForEnemy);
+	FString GetUpgradeChangeString(const float InCurrentValueFromUpgrades, const float InBaseValue, const float InUpgradeValue, const EUpgradeType InUpgradeType, const bool bIsTimeUpgrade);
 
 	virtual void NativeConstruct() override;
 	void SetUpgradeText(const bool bIsPlayerUpgrade);

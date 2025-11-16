@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGameInstance.generated.h"
 
+class UCodexData;
 enum class EUpgrade : uint8;
 class USaveSlot;
 struct FLoadLevelData;
@@ -53,6 +54,8 @@ private:
 	bool bIsDemo = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Game Data", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerLevelData> PlayerLevelData;
+	UPROPERTY(EditAnywhere, Category = "Game Data", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCodexData> CodexData;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	float GlobalTimeDilation = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))

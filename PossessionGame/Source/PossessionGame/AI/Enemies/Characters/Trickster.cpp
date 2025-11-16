@@ -133,6 +133,15 @@ void ATrickster::AI_DestroyPoisonGrenadeTrigger()
 	}
 }
 
+void ATrickster::AI_DestroyVfxs()
+{
+	Super::AI_DestroyVfxs();
+	if (!AI_CloneAbilityRunVfx) return;
+	AI_CloneAbilityRunVfx->DeactivateImmediate();
+	AI_CloneAbilityRunVfx->DestroyComponent();
+	AI_CloneAbilityRunVfx = nullptr;
+}
+
 void ATrickster::AI_OnPlayerEnterPoisonGrenadeTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (bAffectedByEmp || !OtherActor->ActorHasTag("Player")) return;
@@ -204,13 +213,4 @@ void ATrickster::SetMoveMode(const EMoveMode InMoveMode)
 		PlaySound(ESound::TricksterCloneDash, true);
 		AI_CloneAbilityRunVfx->Activate();
 	}
-}
-
-void ATrickster::DestroyAIVfxs()
-{
-	Super::DestroyAIVfxs();
-	if (!AI_CloneAbilityRunVfx) return;
-	AI_CloneAbilityRunVfx->DeactivateImmediate();
-	AI_CloneAbilityRunVfx->DestroyComponent();
-	AI_CloneAbilityRunVfx = nullptr;
 }

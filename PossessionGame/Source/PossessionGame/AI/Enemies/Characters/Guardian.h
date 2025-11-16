@@ -20,7 +20,7 @@ public:
 	void AI_ToggleMeshShieldAbilityState(const bool bState);
 
 	void P_LaunchVectorBlast();
-	
+
 	void SetCustomTimeDilation(const float InDilation);
 	void ToggleShield(const bool bState);
 	void SetReflectDamageState(const bool bState) { bReflectDamageEnabled = bState; }
