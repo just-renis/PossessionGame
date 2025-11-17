@@ -5,12 +5,14 @@
 #include "PossessionGame/Data Assets/Base Data Assets/CharacterData.h"
 #include "PossessionGame/Data Assets/Base Data Assets/CodexData.h"
 #include "PossessionGame/Data Assets/Base Data Assets/CodexProjectileData.h"
+#include "PossessionGame/Data Assets/Base Data Assets/DestructibleData.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EAbility.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EUpgradeType.h"
+#include "PossessionGame/Enums/EUpgradeUnit.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
@@ -90,100 +92,40 @@ FString UUpgradeDetailsPanelUI::SanitizeFloatValueToString(const float InValue)
 	return FloatValueString;
 }
 
+FString UUpgradeDetailsPanelUI::GetUpgradeUnitString(const EUpgradeUnit InUpgradeUnit)
+{
+	switch (InUpgradeUnit)
+	{
+		case EUpgradeUnit::None: return FString("");
+		case EUpgradeUnit::Seconds: return FString("s");
+		case EUpgradeUnit::MetresPerSecond: return FString("m/s");
+		case EUpgradeUnit::Metres: return FString("m");
+		case EUpgradeUnit::Scale: return FString("X");
+		case EUpgradeUnit::Percentage: return FString("%");
+	}
+	return FString();
+}
+
 FText UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute, const bool bForEnemy)
 {
 	if (InAttribute.Key == EUpgradeAttribute::None) return FText();
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
-	const FString AttributeValue = SanitizeFloatValueToString(InAttribute.Value);
-	const ECharacterType CharacterName = GetCharacterByUpgradeName();
 	const TObjectPtr<UCodexData> CodexData = GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetCodexData();
-	const int32 FlatHealth = CodexData->GetCharacterData(false, CharacterName)->GetMaxHp() + RunSaveSlot->GetHpUpgradesForEnemy(CharacterName);
-	FString AbilityCooldownSecsString = "";
-	FString AbilityDurationString = "";
-	FString AbilityChargesAmountString = "";
-	FString DamageIncreaseString = "+" + AttributeValue + "%";
-	FString FlatDamageString = "+" + AttributeValue;
-	FString ProjectilesAmountString = "";
-	FString SizeString = "";
-	FString EffectDurationString = "";
-	FString ReduceDamageTakenString = "";
-	FString CloneAmountString = "";
-	FString CapString = "";
-	FString ProjectileSpeedString = "";
-	if (const TObjectPtr<UAbilityData> AbilityData = CodexData->GetAbilityData(!bForEnemy, GetAbilityByUpgradeName()))
-	{
-		if (InAttribute.Key == EUpgradeAttribute::AbilityCooldownReduction)
-		{
-			const float CurrentValueFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::AbilityCooldownReduction, !bForEnemy);
-			AbilityCooldownSecsString = GetUpgradeChangeString(CurrentValueFromUpgrades, AbilityData->GetCooldownSecs(), InAttribute.Value, EUpgradeType::Reduction, true);
-		}
-		if (InAttribute.Key == EUpgradeAttribute::AbilityDuration)
-		{
-			const float CurrentValueFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::AbilityDuration, !bForEnemy);
-			AbilityDurationString = GetUpgradeChangeString(CurrentValueFromUpgrades, AbilityData->GetAbilityDuration(), InAttribute.Value, EUpgradeType::Increase, true);
-		}
-		if (InAttribute.Key == EUpgradeAttribute::AbilityChargesAmount)
-		{
-			const float CurrentValueFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::AbilityChargesAmount, !bForEnemy);
-			AbilityChargesAmountString = GetUpgradeChangeString(CurrentValueFromUpgrades, AbilityData->GetChargesAmount(), InAttribute.Value, EUpgradeType::Addition, false);
-		}
-	}
-	if (!bForEnemy)
-	{
-		if (UpgradeName == EUpgrade::RangerAbility3 && InAttribute.Key == EUpgradeAttribute::DamagePercentage)
-		{
-			const TObjectPtr<UThrowableData> MineData = CodexData->GetThrowableData(!bForEnemy, EPoolObject::RangerMine);
-			
-			const float CurrentAmountFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatDamage, !bForEnemy);
-			const float CurrentPercentageFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::DamagePercentage, !bForEnemy);
-		
-			const float CurrentAmount = MineData->GetDamage() + CurrentAmountFromUpgrades;
-			const float NextAmount = MineData->GetDamage() + InAttribute.Value + CurrentAmountFromUpgrades;
-			const float CurrentPercentage = MineData->GetDamage() * (1.f + CurrentPercentageFromUpgrades * 0.01f);
-			const float NextPercentage = MineData->GetDamage() * (1.f + (InAttribute.Value + CurrentPercentageFromUpgrades) * 0.01f);
-			FlatDamageString = SanitizeFloatValueToString(CurrentAmount) + "->" + SanitizeFloatValueToString(NextAmount);
-			DamageIncreaseString = SanitizeFloatValueToString(CurrentPercentage) + "->" + SanitizeFloatValueToString(NextPercentage);
-		}
-		else if (UpgradeName == EUpgrade::RangerAbility1)
-		{
-			const TObjectPtr<UCodexProjectileData> ProjectileData = CodexData->GetProjectileData(!bForEnemy, EPoolObject::RangerGrenadeLauncherProjectile);
-
-			const float CurrentAmountFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatDamage, !bForEnemy);
-			const float CurrentPercentageFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::DamagePercentage, !bForEnemy);
-		
-			const float CurrentAmount = ProjectileData->GetDamage() + CurrentAmountFromUpgrades;
-			const float NextAmount = ProjectileData->GetDamage() + InAttribute.Value + CurrentAmountFromUpgrades;
-			const float CurrentPercentage = ProjectileData->GetDamage() * (1.f + CurrentPercentageFromUpgrades * 0.01f);
-			const float NextPercentage = ProjectileData->GetDamage() * (1.f + (InAttribute.Value + CurrentPercentageFromUpgrades) * 0.01f);
-		
-			FlatDamageString = SanitizeFloatValueToString(CurrentAmount) + "->" + SanitizeFloatValueToString(NextAmount);
-			DamageIncreaseString = SanitizeFloatValueToString(CurrentPercentage) + "->" + SanitizeFloatValueToString(NextPercentage);
-		}
-	}
 	switch (InAttribute.Key)
 	{
-		// DONE
-		case EUpgradeAttribute::FlatHealth: return FText::FromString(GetRichTextTag(bForEnemy) + FString::FormatAsNumber(FlatHealth) + "->" + FString::FormatAsNumber(FlatHealth + static_cast<int32>(InAttribute.Value)) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "FlatHealth", "HEALTH").ToString() + "</>");
-		case EUpgradeAttribute::AbilityCooldownReduction: return FText::FromString(GetRichTextTag(bForEnemy) + AbilityCooldownSecsString + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityCooldown", "ABILITY COOLDOWN").ToString() + "</>");
-		case EUpgradeAttribute::AbilityChargesAmount: return FText::FromString(GetRichTextTag(bForEnemy) + AbilityChargesAmountString + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityCharges", "ABILITY CHARGES").ToString() + "</>");
-		case EUpgradeAttribute::AbilityDuration: return FText::FromString(GetRichTextTag(bForEnemy) + AbilityDurationString + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "AbilityDuration", "ABILITY DURATION").ToString() + "</>");
-		case EUpgradeAttribute::FlatDamage: return FText::FromString(GetRichTextTag(bForEnemy) + FlatDamageString + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Damage", "DAMAGE").ToString() + "</>");
-		case EUpgradeAttribute::DamagePercentage: return FText::FromString(GetRichTextTag(bForEnemy) + DamageIncreaseString + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Damage", "DAMAGE").ToString() + "</>");
-
-		case EUpgradeAttribute::ProjectilesAmount: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Projectiles", "PROJECTILES").ToString() + "</>");
-
-		case EUpgradeAttribute::Size: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Area", "AREA").ToString() + "</>");
-
-		case EUpgradeAttribute::EffectDuration: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "EffectDuration", "EFFECT DURATION").ToString() + "</>");
-
-		case EUpgradeAttribute::ReduceDamageTaken: return FText::FromString(GetRichTextTag(bForEnemy) + "-" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "DamageTaken", "DAMAGE TAKEN").ToString() + "</>");
-
-		case EUpgradeAttribute::CloneAmount: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "CloneAmount", "CLONE AMOUNT").ToString() + "</>");
-
-		case EUpgradeAttribute::Cap: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Cap", "CAP").ToString() + "</>");
-
-		case EUpgradeAttribute::ProjectileSpeed: return FText::FromString(GetRichTextTag(bForEnemy) + "+" + AttributeValue + "%</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "ProjectileSpeed", "PROJECTILE SPEED").ToString() + "</>");
-
+		case EUpgradeAttribute::FlatHealth: return FText::FromString(GetRichTextTag(bForEnemy) + GetHealthUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "FlatHealth", "HEALTH").ToString() + "</>");
+		case EUpgradeAttribute::AbilityCooldownReduction: return FText::FromString(GetRichTextTag(bForEnemy) + GetAbilityUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Cooldown", "COOLDOWN").ToString() + "</>");
+		case EUpgradeAttribute::AbilityChargesAmount: return FText::FromString(GetRichTextTag(bForEnemy) + GetAbilityUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Charges", "CHARGES").ToString() + "</>");
+		case EUpgradeAttribute::AbilityDuration: return FText::FromString(GetRichTextTag(bForEnemy) + GetAbilityUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Duration", "DURATION").ToString() + "</>");
+		case EUpgradeAttribute::FlatDamage: return FText::FromString(GetRichTextTag(bForEnemy) + (bForEnemy ? "+" + SanitizeFloatValueToString(InAttribute.Value) : GetDamageUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute)) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Damage", "DAMAGE").ToString() + "</>");
+		case EUpgradeAttribute::DamagePercentage: return FText::FromString(GetRichTextTag(bForEnemy) + (bForEnemy ? "+" + SanitizeFloatValueToString(InAttribute.Value) + "%" : GetDamageUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute)) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Damage", "DAMAGE").ToString() + "</>");
+		case EUpgradeAttribute::ProjectilesAmount: return FText::FromString(GetRichTextTag(bForEnemy) + GetProjectileAmountUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Projectiles", "PROJECTILES").ToString() + "</>");
+		case EUpgradeAttribute::ProjectileSpeed: return FText::FromString(GetRichTextTag(bForEnemy) + GetProjectileSpeedUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "ProjectileSpeed", "PROJECTILE SPEED").ToString() + "</>");
+		case EUpgradeAttribute::Cap: return FText::FromString(GetRichTextTag(bForEnemy) + GetCapUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Cap", "CAP").ToString() + "</>");
+		case EUpgradeAttribute::CloneAmount: return FText::FromString(GetRichTextTag(bForEnemy) + GetCloneAmountUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "CloneAmount", "CLONE AMOUNT").ToString() + "</>");
+		case EUpgradeAttribute::Size: return FText::FromString(GetRichTextTag(bForEnemy) + GetSizeUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Area", "AREA").ToString() + "</>");
+		case EUpgradeAttribute::EffectDuration: return FText::FromString(GetRichTextTag(bForEnemy) + GetEffectDurationUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "EffectDuration", "EFFECT DURATION").ToString() + "</>");
+		case EUpgradeAttribute::ReduceDamageTaken: return FText::FromString(GetRichTextTag(bForEnemy) + GetDamageReductionUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "DamageTaken", "DAMAGE TAKEN").ToString() + "</>");
 		default: return GetSpecialUpgradeText(InAttribute.Key, bForEnemy);
 	}
 }
@@ -333,7 +275,7 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 	return FText();
 }
 
-FString UUpgradeDetailsPanelUI::GetUpgradeChangeString(const float InCurrentValueFromUpgrades, const float InBaseValue, const float InUpgradeValue, const EUpgradeType InUpgradeType, const bool bIsTimeUpgrade)
+FString UUpgradeDetailsPanelUI::GetUpgradeChangeString(const float InCurrentValueFromUpgrades, const float InBaseValue, const float InUpgradeValue, const EUpgradeType InUpgradeType, const EUpgradeUnit InUpgradeUnit)
 {
 	float CurrentChange = 0.f;
 	float NextChange = 0.f;
@@ -352,7 +294,278 @@ FString UUpgradeDetailsPanelUI::GetUpgradeChangeString(const float InCurrentValu
 			NextChange = InBaseValue / (1.f + (InUpgradeValue + InCurrentValueFromUpgrades) * 0.01f);
 			break;
 	}
-	return SanitizeFloatValueToString(CurrentChange) + (bIsTimeUpgrade ? "s->" : "->") + SanitizeFloatValueToString(NextChange) + (bIsTimeUpgrade ? "s" : "");
+	switch (InUpgradeUnit)
+	{
+		case EUpgradeUnit::MetresPerSecond: case EUpgradeUnit::Metres:
+			CurrentChange *= 0.01f;
+			NextChange *= 0.01f;
+			break;
+		case EUpgradeUnit::Percentage:
+			CurrentChange *= 100.f;
+			NextChange *= 100.f;
+			break;
+		default: break;
+	}
+	return SanitizeFloatValueToString(CurrentChange) + GetUpgradeUnitString(InUpgradeUnit) + "->" + SanitizeFloatValueToString(NextChange) + GetUpgradeUnitString(InUpgradeUnit);
+}
+
+FString UUpgradeDetailsPanelUI::GetHealthUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	if (bForPlayer)
+	{
+		if (const TObjectPtr<UCharacterData> CharacterData = InCodexData->GetCharacterData(bForPlayer, GetCharacterByUpgradeName()))
+		{
+			return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatHealth, bForPlayer),
+			CharacterData->GetMaxHp(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+		}
+	}
+	else
+	{
+		if (const TObjectPtr<UDestructibleData> DestructibleData = InCodexData->GetDestructibleData(bForPlayer, EPoolObject::RangerShield))
+		{
+			return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatHealth, bForPlayer),
+			DestructibleData->GetHp(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+		}
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GetAbilityUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	if (const TObjectPtr<UAbilityData> AbilityData = InCodexData->GetAbilityData(bForPlayer, GetAbilityByUpgradeName()))
+	{
+		switch (InAttribute.Key)
+		{
+		case EUpgradeAttribute::AbilityCooldownReduction:
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::AbilityCooldownReduction, bForPlayer),
+				AbilityData->GetCooldownSecs(), InAttribute.Value, EUpgradeType::Reduction, EUpgradeUnit::Seconds);
+			case EUpgradeAttribute::AbilityDuration:
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::AbilityDuration, bForPlayer),
+				AbilityData->GetAbilityDuration(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::Seconds);
+			case EUpgradeAttribute::AbilityChargesAmount:
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::AbilityChargesAmount, bForPlayer),
+				AbilityData->GetChargesAmount(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+			default: return FString();
+		}
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GetDamageUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	switch (UpgradeName)
+	{
+		case EUpgrade::RangerAbility1: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::RangerGrenadeLauncherProjectile);
+		case EUpgrade::RangerAbility3: return GetThrowableDamageUpgradeString(InCodexData, InRunSaveSlot, bForPlayer, InAttribute);
+		case EUpgrade::TricksterAbility1: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TricksterPoisonProjectile);
+		case EUpgrade::TricksterAbility3: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::CloneProjectile);
+		case EUpgrade::GuardianAbility3: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::VectorBlastProjectile);
+		default: return FString();
+	}
+}
+
+FString UUpgradeDetailsPanelUI::GetThrowableDamageUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	switch (UpgradeName)
+	{
+		case EUpgrade::RangerAbility3: return GetThrowableDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::RangerMine);
+		default: return FString();
+	}
+}
+
+FString UUpgradeDetailsPanelUI::GetProjectileAmountUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	switch (UpgradeName)
+	{
+		case EUpgrade::RangerAbility1: return GetProjectileAmountByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::RangerGrenadeLauncherProjectile);
+		case EUpgrade::TricksterAbility1: return GetProjectileAmountByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TricksterPoisonProjectile);
+		case EUpgrade::TricksterAbility2: return GetProjectileAmountByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TricksterEmpProjectile);
+		case EUpgrade::GuardianAbility3: return GetProjectileAmountByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::VectorBlastProjectile);
+		default: return FString();
+	}
+}
+
+FString UUpgradeDetailsPanelUI::GetProjectileSpeedUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	switch (UpgradeName)
+	{
+		case EUpgrade::GuardianAbility3: return GetProjectileSpeedByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::VectorBlastProjectile);
+		default: return FString();
+	}
+}
+
+FString UUpgradeDetailsPanelUI::GetCloneAmountUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	switch (UpgradeName)
+	{
+		case EUpgrade::TricksterAbility3: return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::CloneAmount, bForPlayer),
+		1, InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+		default: return FString();
+	}
+}
+
+FString UUpgradeDetailsPanelUI::GetCapUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	switch (UpgradeName)
+	{
+		case EUpgrade::RangerAbility3: return GetCapUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::RangerMine);
+		default: return FString();
+	}
+}
+
+FString UUpgradeDetailsPanelUI::GetSizeUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	switch (UpgradeName)
+	{
+		case EUpgrade::RangerAbility2: return GetSizeUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::RangerShield);
+		case EUpgrade::RangerAbility3: return GetSizeUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::RangerMine);
+		default: return FString();
+	}
+}
+
+FString UUpgradeDetailsPanelUI::GetEffectDurationUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	switch (UpgradeName)
+	{
+		case EUpgrade::RangerAbility2: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::RangerShield);
+		case EUpgrade::TricksterAbility1: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TricksterPoisonProjectile);
+		case EUpgrade::TricksterAbility2: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TricksterEmpProjectile);
+		case EUpgrade::GuardianAbility3: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::VectorBlastProjectile);
+		default: return FString();
+	}
+}
+
+FString UUpgradeDetailsPanelUI::GetDamageReductionUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	switch (UpgradeName)
+	{
+		case EUpgrade::GuardianAbility1:
+			if (const TObjectPtr<UAbilityData> AbilityData = InCodexData->GetAbilityData(bForPlayer, GetAbilityByUpgradeName()))
+			{
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::ReduceDamageTaken, bForPlayer),
+				AbilityData->GetBaseDamageReduction(), InAttribute.Value, EUpgradeType::Reduction, EUpgradeUnit::Percentage);
+			}
+			break;
+		case EUpgrade::RangerAbility2:
+			if (const TObjectPtr<UDestructibleData> DestructibleData = InCodexData->GetDestructibleData(bForPlayer, EPoolObject::RangerShield))
+			{
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::ReduceDamageTaken, bForPlayer),
+				DestructibleData->GetDamageReduction(), InAttribute.Value, EUpgradeType::Reduction, EUpgradeUnit::Percentage);
+			}
+			break;
+		default: return FString();
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GetProjectileAmountByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InProjectileName)
+{
+	if (const TObjectPtr<UCodexProjectileData> ProjectileData = InCodexData->GetProjectileData(bForPlayer, InProjectileName))
+	{
+		return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::ProjectilesAmount, bForPlayer),
+		ProjectileData->GetAmount(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GetProjectileSpeedByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InProjectileName)
+{
+	if (const TObjectPtr<UCodexProjectileData> ProjectileData = InCodexData->GetProjectileData(bForPlayer, InProjectileName))
+	{
+		return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::ProjectileSpeed, bForPlayer),
+		ProjectileData->GetSpeed(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::MetresPerSecond);
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GetProjectileDamageByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InProjectileName)
+{
+	if (const TObjectPtr<UCodexProjectileData> ProjectileData = InCodexData->GetProjectileData(bForPlayer, InProjectileName))
+	{
+		switch (InAttribute.Key)
+		{
+			case EUpgradeAttribute::DamagePercentage:
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::DamagePercentage, bForPlayer),
+				ProjectileData->GetDamage(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::None);
+			case EUpgradeAttribute::FlatDamage:
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatDamage, bForPlayer),
+				ProjectileData->GetDamage(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+			default: return FString();
+		}
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GetThrowableDamageByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InThrowableName)
+{
+	if (const TObjectPtr<UThrowableData> MineData = InCodexData->GetThrowableData(bForPlayer, InThrowableName))
+	{
+		switch (InAttribute.Key)
+		{
+			case EUpgradeAttribute::DamagePercentage:
+				return 	GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::DamagePercentage, bForPlayer),
+				MineData->GetDamage(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::None);
+			case EUpgradeAttribute::FlatDamage:
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatDamage, bForPlayer),
+				MineData->GetDamage(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+			default: return FString();
+		}
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GetCapUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName)
+{
+	if (const TObjectPtr<UThrowableData> MineData = InCodexData->GetThrowableData(bForPlayer, InObjectName))
+	{
+		return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::Cap, bForPlayer),
+		MineData->GetCap(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GetSizeUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName)
+{
+	switch (InObjectName)
+	{
+		case EPoolObject::RangerShield:
+			return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::Size, bForPlayer),
+			1.f, InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::Scale);
+		case EPoolObject::RangerMine:
+			if (const TObjectPtr<UThrowableData> ThrowableData = InCodexData->GetThrowableData(bForPlayer, InObjectName))
+			{
+				return 	GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::Size, bForPlayer),
+				ThrowableData->GetDamageOuterRadius(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::Metres);
+			}
+			break;
+		default: return FString();
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GetEffectUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName)
+{
+	switch (InObjectName)
+	{
+		case EPoolObject::RangerShield:
+			if (const TObjectPtr<UDestructibleData> DestructibleData = InCodexData->GetDestructibleData(bForPlayer, InObjectName))
+			{
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::EffectDuration, bForPlayer),
+				DestructibleData->GetLifeSpan(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::Seconds);
+			}
+			break;
+		case EPoolObject::TricksterPoisonProjectile:
+		case EPoolObject::TricksterEmpProjectile:
+		case EPoolObject::VectorBlastProjectile:
+			if (const TObjectPtr<UCodexProjectileData> ProjectileData = InCodexData->GetProjectileData(bForPlayer, InObjectName))
+			{
+				return 	GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::EffectDuration, bForPlayer),
+				ProjectileData->GetEffectDuration(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::Seconds);
+			}
+			break;
+		default: return FString();
+	}
+	return FString();
 }
 
 void UUpgradeDetailsPanelUI::NativeConstruct()

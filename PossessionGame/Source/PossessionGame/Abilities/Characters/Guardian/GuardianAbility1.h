@@ -18,7 +18,6 @@ public:
 	virtual void P_StopAbility() override;
 private:
 	bool bReflectDamageEnabled = false;
-	float BaseDamageReduction = 0.8f;
 	float TotalDamageReduction;
 	UPROPERTY()
 	TObjectPtr<AGuardian> Proprietor;

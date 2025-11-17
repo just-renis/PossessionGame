@@ -23,7 +23,7 @@ protected:
 	bool bIsPlayerObject;
 	float LifeSpan;
 	float Hp;
-	float DamageReduction = 1.f;
+	float DamageReduction;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UDestructibleData> Data;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

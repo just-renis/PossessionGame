@@ -6,6 +6,10 @@
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "UpgradeDetailsPanelUI.generated.h"
 
+enum class EUpgradeUnit : uint8;
+enum class EPoolObject : uint8;
+class URunSaveSlot;
+class UCodexData;
 enum class EUpgradeType : uint8;
 enum class EAbility : uint8;
 class URichTextBlock;
@@ -56,10 +60,29 @@ private:
 	ECharacterType GetCharacterByUpgradeName() const;
 	EAbility GetAbilityByUpgradeName() const;
 	FString SanitizeFloatValueToString(const float InValue);
+	FString GetUpgradeUnitString(const EUpgradeUnit InUpgradeUnit);
 	FText GetUpgradeTextFromSingularAttributeValue(const TPair<EUpgradeAttribute, float> InAttribute, const bool bForEnemy);
 	FString GetRichTextTag(const bool bForEnemy) const;
 	FText GetSpecialUpgradeText(const EUpgradeAttribute InUpgradeAttribute, const bool bForEnemy);
-	FString GetUpgradeChangeString(const float InCurrentValueFromUpgrades, const float InBaseValue, const float InUpgradeValue, const EUpgradeType InUpgradeType, const bool bIsTimeUpgrade);
+	FString GetUpgradeChangeString(const float InCurrentValueFromUpgrades, const float InBaseValue, const float InUpgradeValue, const EUpgradeType InUpgradeType, const EUpgradeUnit InUpgradeUnit);
+	FString GetHealthUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetAbilityUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetDamageUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetThrowableDamageUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetProjectileAmountUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetProjectileSpeedUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetCloneAmountUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetCapUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetSizeUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetEffectDurationUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetDamageReductionUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetProjectileAmountByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InProjectileName);
+	FString GetProjectileSpeedByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InProjectileName);
+	FString GetProjectileDamageByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InProjectileName);
+	FString GetThrowableDamageByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InThrowableName);
+	FString GetCapUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName);
+	FString GetSizeUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName);
+	FString GetEffectUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName);
 
 	virtual void NativeConstruct() override;
 	void SetUpgradeText(const bool bIsPlayerUpgrade);

@@ -107,5 +107,5 @@ void ARangerShield::SetUpgradesApplication()
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	Hp = Data->GetHp() + RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::RangerAbility2, EUpgradeAttribute::FlatHealth, bIsPlayerObject);
 	const float ReductionIncrease = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::RangerAbility2, EUpgradeAttribute::ReduceDamageTaken, bIsPlayerObject);
-	DamageReduction = 1.f / (1.f + ReductionIncrease * 0.01f);
+	DamageReduction = Data->GetDamageReduction() / (1.f + ReductionIncrease * 0.01f);
 }

@@ -15,6 +15,7 @@ public:
 	int32 GetAbilityIndex() const { return AbilityIndex; }
 	int32 GetChargesAmount() const { return ChargesAmount; }
 	float GetAbilityDuration() const { return AbilityDuration; }
+	float GetBaseDamageReduction() const { return BaseDamageReduction; }
 	float GetCooldownSecs() const { return CooldownSecs; }
 	EAbility GetAbilityName() const { return AbilityName; }
 private:
@@ -24,6 +25,10 @@ private:
 	bool bHasDuration = false;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "bHasDuration", EditConditionHides))
 	float AbilityDuration;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bHasDamageReduction = false;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bHasDamageReduction", EditConditionHides))
+	float BaseDamageReduction;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 AbilityIndex;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

@@ -14,6 +14,7 @@ public:
 	bool GetIsLifeSpanImmediatelyAdded() const { return bIsLifeSpanImmediatelyAdded; }
 	bool GetIsAffectedByPhysics() const { return bIsAffectedByPhysics; }
 	float GetLifeSpan() const { return LifeSpan; }
+	float GetDamageReduction() const { return DamageReduction; }
 	float GetHp() const { return Hp; }
 	EPoolObject GetObjectName() const { return ObjectName; }
 private:
@@ -23,6 +24,8 @@ private:
 	bool bIsAffectedByPhysics;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float LifeSpan;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	float DamageReduction;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float Hp;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

@@ -17,7 +17,7 @@ void UGuardianAbility1::AI_Execute()
 {
 	Proprietor->SetFirstAbilityUsageState(true);
 	const float ReductionIncrease = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::ReduceDamageTaken, IsProprietorPossessed());
-	TotalDamageReduction = BaseDamageReduction / (1.f + ReductionIncrease * 0.01f);
+	TotalDamageReduction = Data->GetBaseDamageReduction() / (1.f + ReductionIncrease * 0.01f);
 	Proprietor->SetDamageReduction(TotalDamageReduction);
 	Proprietor->PlaySound(ESound::GuardianOverChargeStart);
 	Proprietor->AI_ToggleShieldVfx(true);
@@ -42,7 +42,7 @@ void UGuardianAbility1::P_Execute()
 	Proprietor->P_SetFov(95.f);
 	Cast<AGuardianWeapon>(Proprietor->GetWeapon())->ToggleHandsMeshAbilityState(true);
 	const float ReductionIncrease = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::ReduceDamageTaken, IsProprietorPossessed());
-	TotalDamageReduction = BaseDamageReduction / (1.f + ReductionIncrease * 0.01f);
+	TotalDamageReduction = Data->GetBaseDamageReduction() / (1.f + ReductionIncrease * 0.01f);
 	Proprietor->SetDamageReduction(TotalDamageReduction);
 	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianOverChargeStart);
 	Proprietor->ToggleShield(true);

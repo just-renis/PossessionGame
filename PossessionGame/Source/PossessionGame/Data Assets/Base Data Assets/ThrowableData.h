@@ -10,6 +10,7 @@ class POSSESSIONGAME_API UThrowableData : public UDataAsset
 	GENERATED_BODY()
 public:
 	bool GetNeedsOnHitEvent() const { return bNeedsOnHitEvent; }
+	int32 GetCap() const { return Cap; }
 	float GetDamage() const { return Damage; }
 	float GetImpulseForce() const { return ImpulseForce; }
 	float GetRadiusMinimumDamage() const { return RadiusMinimumDamage; }
@@ -19,6 +20,8 @@ public:
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	bool bNeedsOnHitEvent = false;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	int32 Cap = 3;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	float Damage = 0.f;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
