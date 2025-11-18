@@ -311,7 +311,7 @@ FString UUpgradeDetailsPanelUI::GetUpgradeChangeString(const float InCurrentValu
 
 FString UUpgradeDetailsPanelUI::GetHealthUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
 {
-	if (bForPlayer)
+	if (!bForPlayer)
 	{
 		if (const TObjectPtr<UCharacterData> CharacterData = InCodexData->GetCharacterData(bForPlayer, GetCharacterByUpgradeName()))
 		{
@@ -419,6 +419,7 @@ FString UUpgradeDetailsPanelUI::GetSizeUpgradeString(const TObjectPtr<UCodexData
 	{
 		case EUpgrade::RangerAbility2: return GetSizeUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::RangerShield);
 		case EUpgrade::RangerAbility3: return GetSizeUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::RangerMine);
+		case EUpgrade::TricksterAbility1: return GetSizeUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TricksterPoisonProjectile);
 		default: return FString();
 	}
 }
@@ -534,8 +535,15 @@ FString UUpgradeDetailsPanelUI::GetSizeUpgradeByName(const TObjectPtr<UCodexData
 		case EPoolObject::RangerMine:
 			if (const TObjectPtr<UThrowableData> ThrowableData = InCodexData->GetThrowableData(bForPlayer, InObjectName))
 			{
-				return 	GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::Size, bForPlayer),
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::Size, bForPlayer),
 				ThrowableData->GetDamageOuterRadius(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::Metres);
+			}
+			break;
+		case EPoolObject::TricksterPoisonProjectile:
+			if (const TObjectPtr<UCodexProjectileData> ProjectileData = InCodexData->GetProjectileData(bForPlayer, InObjectName))
+			{
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::Size, bForPlayer),
+				ProjectileData->GetDamageOuterRadius(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::Metres);
 			}
 			break;
 		default: return FString();

@@ -42,20 +42,6 @@ void UWaveManagerHUD::PlayAnnouncementAnim(const FText& InAnnouncementText)
 
 void UWaveManagerHUD::PlayCountdownAnim() { PlayAnimation(CountdownAnnouncementAnim); }
 
-void UWaveManagerHUD::UpdateTaskProgress(const float InProgress, const float InMaxProgress) const
-{
-	if (!TaskProgressBar || !TaskProgressPercentageText) return;
-	TaskProgressBar->SetPercent(InProgress / InMaxProgress);
-	TaskProgressPercentageText->SetText(FText::FromString(FString::FormatAsNumber(InProgress / InMaxProgress * 100.f) + "%"));
-}
-
-void UWaveManagerHUD::ToggleTaskProgress(const bool bState, const EGameMode InGameMode) const
-{
-	if (!TaskProgressInv || !TaskText) return;
-	TaskProgressInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	TaskText->SetText(InGameMode == EGameMode::HackTerminalsMode ? NSLOCTEXT("ST_Localization", "TerminalHackProgress", "Terminal Hack Progress") : NSLOCTEXT("ST_Localization", "ChargeTerminalProgress", "Charge Terminal Progress"));
-}
-
 void UWaveManagerHUD::UpdateObjective(const EGameMode InGameMode, const int32 InData) const
 {
 	if (!ObjectiveText || !ObjectiveTitleText) return;

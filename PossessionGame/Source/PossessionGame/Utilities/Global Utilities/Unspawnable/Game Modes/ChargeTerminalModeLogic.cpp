@@ -15,7 +15,7 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 	WaveManager->GetDelegateManager()->OnUsbInserted.AddUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
 	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.BindUObject(this, &UChargeTerminalModeLogic::InitiateNextCharge);
 	PlaySound(ESound::TaskAnnouncement);
-	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Warden, EGameMode::MiniBossSpawn, [this]
+	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Warden, EGameMode::MiniBossSpawn, [this](const float)
 	{
 		IncreaseAliveEnemiesAmount();
 		GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
@@ -32,7 +32,6 @@ void UChargeTerminalModeLogic::Finalize()
 		WaveManagerHUD->ToggleFinishOffEnemiesText(false);
 	}
 	WaveManager->GetDelegateManager()->StartForceFieldDissolve.Broadcast(0);
-	ResetTaskProgress();
 	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.Unbind();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	WaveManager->GetDelegateManager()->OnUsbInserted.RemoveAll(this);
@@ -42,7 +41,7 @@ void UChargeTerminalModeLogic::Finalize()
 void UChargeTerminalModeLogic::HandleSpawning()
 {
 	if (bAsyncLoadInProcess) return;
-	if (!bIsTerminalCharged && !bIsUsbRequirementFilled && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this] { IncreaseAliveEnemiesAmount(); }, [this] { return bInstanceFinished; });
+	if (!bIsTerminalCharged && !bIsUsbRequirementFilled && AliveEnemiesAmount < EnemiesOnSceneLimit) WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this](const float) { IncreaseAliveEnemiesAmount(); }, [this] { return bInstanceFinished; });
 }
 
 void UChargeTerminalModeLogic::UpdateEnemiesAmount()
@@ -98,6 +97,6 @@ void UChargeTerminalModeLogic::InitiateNextCharge()
 	bInstanceFinished = false;
 	WaveManagerHUD->UpdateObjectiveProgress(ChargeAmount, Data->GetChargeAmountRequired(), true);
 	WaveManagerHUD->ToggleFinishOffEnemiesText(false);
-	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Warden, EGameMode::MiniBossSpawn, [this] { IncreaseAliveEnemiesAmount(); }, nullptr);
+	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Warden, EGameMode::MiniBossSpawn, [this](const float) { IncreaseAliveEnemiesAmount(); }, nullptr);
 	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
 }

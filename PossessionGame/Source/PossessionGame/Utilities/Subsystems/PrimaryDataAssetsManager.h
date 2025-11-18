@@ -181,7 +181,7 @@ public:
 	void AttachVfx(const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo = nullptr, const FName InSocketName = NAME_None, const bool bDeactivate = false, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EAttachLocation::Type InAttachType = EAttachLocation::SnapToTarget, const bool bAutoDestroy = false, const EVariation InVariationName = EVariation::Default, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
 	void SpawnVfx(EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator, const EVariation InVariationName = EVariation::Default, const TMap<FName, FNiagaraAttribute>& InAttributes = TMap<FName, FNiagaraAttribute>());
 	void ChangeVfxVariation(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName);
-	void RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack, TFunction<bool()> InSpawnCallback);
+	void RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack, TFunction<bool()> InSpawnCallback);
 	void RequestSpawnEnemy(const ECharacterType InCharacter, const FVector& InLocation, const float InHpPercentage);
 	void Init(const bool bIsTutorialFinished, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount);
 	void SetupSpawnLocations();
@@ -235,9 +235,9 @@ private:
 	void SetupVfxsPrimaryAssets();
 	void SetAndPlaySoundCallback(const FSoundContainer& SoundData, const TObjectPtr<UAudioComponent>& InAudioComp, TFunction<bool()> InCallback, const bool bIsPlayer);
 	void SetupVfx(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes);
-	void AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack, TFunction<bool()> InSpawnCallback);
-	void AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack);
-	void SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, TFunction<void()> InCallBack);
+	void AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack, TFunction<bool()> InSpawnCallback);
+	void AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack);
+	void SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack);
 	void SpawnTutorialEnemy(const ECharacterType InCharacter, const EGameMode InGameMode);
 	void AddSpawnableEnemiesToThePool();
 	void ClearBeforeInit();

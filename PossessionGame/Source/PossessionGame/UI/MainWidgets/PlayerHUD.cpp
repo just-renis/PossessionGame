@@ -37,11 +37,11 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 			XpBar->SetPercent(InCurrent / InMax);
 		break;
 		case EUIBar::Boss:
-			if (!BossHpBar || !BossHpWhiteBar) return;
-			BossStepHpPercentage = (BossHpBar->GetPercent() - Progress) * 0.1f;
-			BossHpWhiteBar->SetPercent(BossHpBar->GetPercent());
-			BossHpBar->SetPercent(Progress);
-			GetWorld()->GetTimerManager().SetTimer(UpdateBossWhiteHpBarHandle, this, &UPlayerHUD::UpdateBossWhiteHpBar, 0.02f, true);
+			if (!GlobalHpBar || !GlobalHpWhiteBar) return;
+			GlobalStepHpPercentage = (GlobalHpBar->GetPercent() - Progress) * 0.1f;
+			GlobalHpWhiteBar->SetPercent(GlobalHpBar->GetPercent());
+			GlobalHpBar->SetPercent(Progress);
+			GetWorld()->GetTimerManager().SetTimer(UpdateGlobalWhiteHpBarHandle, this, &UPlayerHUD::UpdateGlobalWhiteHpBar, 0.02f, true);
 		default: ;
 	}
 }
@@ -206,9 +206,9 @@ void UPlayerHUD::NativeConstruct()
 	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnPlayerDamageDealt.BindUObject(this, &UPlayerHUD::ShowDamageTick);
 	DelegateManager->OnLevelUp.AddUObject(this, &UPlayerHUD::LevelUp);
-	DelegateManager->OnBossDamaged.BindUObject(this, &UPlayerHUD::UpdateBossHpBar);
-	DelegateManager->OnBossSpawn.BindUObject(this, &UPlayerHUD::EnableBossHpBar);
-	DelegateManager->OnBossDeath.AddUObject(this, &UPlayerHUD::DisableBossHpBar);
+	DelegateManager->UpdateGlobalHpBar.BindUObject(this, &UPlayerHUD::UpdateGlobalHpBar);
+	DelegateManager->OnGlobalHpBarSpawn.BindUObject(this, &UPlayerHUD::EnableGlobalHpBar);
+	DelegateManager->OnBossDeath.AddUObject(this, &UPlayerHUD::DisableGlobalHpBar);
 	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerHUD::UpdatePressToHijackKeyBind);
 	DelegateManager->OnOutOfAmmo.BindUObject(this, &UPlayerHUD::ShowOutOfAmmo);
 	DelegateManager->RequirePlayerAnnouncementInfo.BindUObject(this, &UPlayerHUD::PlayAnnouncement);
@@ -242,23 +242,23 @@ void UPlayerHUD::PlayLevelUpAnim()
 
 void UPlayerHUD::SetLevelText(const int32 InLevel) const { if (LevelNumberText) LevelNumberText->SetText(FText::FromString(FString::FromInt(InLevel))); }
 
-void UPlayerHUD::UpdateBossHpBar(const float InCurrent, const float InMax)
+void UPlayerHUD::UpdateGlobalHpBar(const float InCurrent, const float InMax)
 {
-	if (!BossHpBarInv) return;
+	if (!GlobalHpBarInv) return;
 	UpdateProgressBar(EUIBar::Boss, InCurrent, InMax);
 }
 
-void UPlayerHUD::EnableBossHpBar(const EEnemyHpBar InHpBarType) const
+void UPlayerHUD::EnableGlobalHpBar(const EEnemyHpBar InHpBarType) const
 {
-	if (!BossHpBarInv || !BossHpBar) return;
-	FProgressBarStyle CurrentStyle = BossHpBar->GetWidgetStyle();
+	if (!GlobalHpBarInv || !GlobalHpBar) return;
+	FProgressBarStyle CurrentStyle = GlobalHpBar->GetWidgetStyle();
 	CurrentStyle.FillImage.SetResourceObject(EnemyHpBars[InHpBarType]);
-	BossHpBar->SetWidgetStyle(CurrentStyle);
-	BossHpBar->SetPercent(1.f);
-	BossHpBarInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	GlobalHpBar->SetWidgetStyle(CurrentStyle);
+	GlobalHpBar->SetPercent(1.f);
+	GlobalHpBarInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
-void UPlayerHUD::DisableBossHpBar() const { if (BossHpBarInv) BossHpBarInv->SetVisibility(ESlateVisibility::Collapsed); }
+void UPlayerHUD::DisableGlobalHpBar() const { if (GlobalHpBarInv) GlobalHpBarInv->SetVisibility(ESlateVisibility::Collapsed); }
 
 void UPlayerHUD::UpdateWhiteHpBar()
 {
@@ -272,16 +272,16 @@ void UPlayerHUD::UpdateWhiteHpBar()
 	HpWhiteBar->SetPercent(NewPercentage);
 }
 
-void UPlayerHUD::UpdateBossWhiteHpBar()
+void UPlayerHUD::UpdateGlobalWhiteHpBar()
 {
-	if (!BossHpWhiteBar || !BossHpBar) return;
-	float NewPercentage = BossHpWhiteBar->GetPercent() - BossStepHpPercentage;
-	if (NewPercentage <= BossHpBar->GetPercent())
+	if (!GlobalHpWhiteBar || !GlobalHpBar) return;
+	float NewPercentage = GlobalHpWhiteBar->GetPercent() - GlobalStepHpPercentage;
+	if (NewPercentage <= GlobalHpBar->GetPercent())
 	{
-		NewPercentage = BossHpBar->GetPercent();
-		GetWorld()->GetTimerManager().ClearTimer(UpdateBossWhiteHpBarHandle);
+		NewPercentage = GlobalHpBar->GetPercent();
+		GetWorld()->GetTimerManager().ClearTimer(UpdateGlobalWhiteHpBarHandle);
 	}
-	BossHpWhiteBar->SetPercent(NewPercentage);
+	GlobalHpWhiteBar->SetPercent(NewPercentage);
 }
 
 void UPlayerHUD::UpdatePressToHijackKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const

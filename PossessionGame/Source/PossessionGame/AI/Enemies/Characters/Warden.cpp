@@ -67,7 +67,7 @@ void AWarden::BeginPlay()
 	CharacterName = ECharacterType::Warden;
 	Super::BeginPlay();
 	bCanShoot = true;
-	(void)DelegateManager->OnBossSpawn.ExecuteIfBound(EEnemyHpBar::Warden);
+	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Warden);
 	BeamWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("BeamWeaponSocket"));
 	AssetsManager->AttachVfx(EVfx::WardenBeamShot, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &BeamVfx, BeamWeapon, FName("BeamSocket"), true);
 	GetWorldTimerManager().SetTimer(BeamTriggerHandle, this, &AWarden::TryTriggeringBeamShot, 1.f, true);
@@ -112,7 +112,7 @@ void AWarden::InitiateDeath()
 void AWarden::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
 {
 	Super::ReceiveDamage(InDamage, InDamageReason);
-	(void)DelegateManager->OnBossDamaged.ExecuteIfBound(CurrentHp, MaxHp);
+	(void)DelegateManager->UpdateGlobalHpBar.ExecuteIfBound(CurrentHp, MaxHp);
 }
 
 void AWarden::TriggerBeam()

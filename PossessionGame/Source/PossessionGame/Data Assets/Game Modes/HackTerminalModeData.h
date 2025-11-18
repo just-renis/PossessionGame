@@ -10,10 +10,10 @@ class POSSESSIONGAME_API UHackTerminalModeData : public UGameModeData
 	GENERATED_BODY()
 public:
 	int32 GetTerminalsAmountToHack() const { return TerminalsAmountToHack; }
-	float GetTerminalHackRequired() const { return TerminalHackRequired; }
+	float GetEnemiesHpPool() const { return EnemiesHpPool; }
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	int32 TerminalsAmountToHack = 3;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	float TerminalHackRequired = 5.f;
+	float EnemiesHpPool = 3000.f;
 };

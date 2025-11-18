@@ -1,5 +1,6 @@
 ﻿#include "HackTerminalModeLogic.h"
 #include "PossessionGame/Data Assets/Game Modes/HackTerminalModeData.h"
+#include "PossessionGame/Enums/EEnemyHpBar.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -10,21 +11,22 @@ void UHackTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager,
 {
 	Super::Init(InWaveManager, InGameModeData);
 	Data = Cast<UHackTerminalModeData>(InGameModeData);
-	SetData();
+	ReservedEnemiesHpPool = UnreservedEnemiesHpPool = Data->GetEnemiesHpPool();
 	SetupWaveManagerUI();
 	PlaySound(ESound::GeneratorDisableAnnouncement);
 	WaveManager->GetDelegateManager()->OnHackModeStart.Broadcast();
 	WaveManager->GetDelegateManager()->OnTerminalInteraction.AddUObject(this, &UHackTerminalModeLogic::StartTerminalHack);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UHackTerminalModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->SendHackTerminalRoomMode.AddUObject(this, &UHackTerminalModeLogic::SetTerminalRoomMode);
+	WaveManager->GetDelegateManager()->HackTerminalSubtractHp.BindUObject(this, &UHackTerminalModeLogic::UpdateHpPoolBar);
 }
 
 void UHackTerminalModeLogic::Finalize()
 {
-	ResetTaskProgress();
 	WaveManager->GetDelegateManager()->OnTerminalInteraction.RemoveAll(this);
 	WaveManager->GetDelegateManager()->SendHackTerminalRoomMode.RemoveAll(this);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
+	WaveManager->GetDelegateManager()->HackTerminalSubtractHp.Unbind();
 	GetWorld()->GetTimerManager().ClearTimer(SpawnHandle);
 	Super::Finalize();
 }
@@ -35,20 +37,17 @@ void UHackTerminalModeLogic::HandleSpawning()
 	if (!bInstanceFinished && AliveEnemiesAmount < EnemiesOnSceneLimit)
 	{
 		bAsyncLoadInProcess = true;
-		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, CurrentTerminalRoomMode, [this] { IncreaseAliveEnemiesAmount(); }, [this] { return bInstanceFinished; });
-	}
-}
-
-void UHackTerminalModeLogic::UpdateTaskProgress()
-{
-	TerminalHackProgress += 0.5f;
-	if (WaveManagerHUD) WaveManagerHUD->UpdateTaskProgress(TerminalHackProgress, TerminalHackRequired);
-	if (TerminalHackProgress >= TerminalHackRequired)
-	{
-		bInstanceFinished = true;
-		if (AliveEnemiesAmount <= 0) FinishTerminalHack();
-		else if (WaveManagerHUD) WaveManagerHUD->ToggleFinishOffEnemiesText(true);
-		GetWorld()->GetTimerManager().ClearTimer(TaskProgressHandle);
+		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, CurrentTerminalRoomMode,
+		[this](const float OutEnemyMaxHp)
+		{
+			IncreaseAliveEnemiesAmount();
+			ReservedEnemiesHpPool -= OutEnemyMaxHp;
+			if (ReservedEnemiesHpPool <= 0.f)
+			{
+				UnreservedEnemiesHpPool -= ReservedEnemiesHpPool;
+				StopSpawning();
+			}
+		}, [this] { return bInstanceFinished; });
 	}
 }
 
@@ -71,20 +70,17 @@ void UHackTerminalModeLogic::StartTerminalHack()
 	bInstanceFinished = false;
 	PlaySound(ESound::GeneratorInitiate);
 	PlaySound(ESound::TaskAnnouncement);
-	if (WaveManagerHUD)
-	{
-		WaveManagerHUD->ToggleTaskProgress(true, WaveManager->GetCurrentGameMode());
-		WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "HackInitiated", "Hack Initiated"));
-	}
+	(void)WaveManager->GetDelegateManager()->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::HackTerminalBar);
+	if (WaveManagerHUD) WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "HackInitiated", "Hack Initiated"));
 	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UHackTerminalModeLogic::HandleSpawning, SpawnRate, true);
-	GetWorld()->GetTimerManager().SetTimer(TaskProgressHandle, this, &UHackTerminalModeLogic::UpdateTaskProgress, 0.5f, true);
 }
 
 void UHackTerminalModeLogic::FinishTerminalHack()
 {
 	PlaySound(ESound::GeneratorCompleted);
+	UnreservedEnemiesHpPool = ReservedEnemiesHpPool = Data->GetEnemiesHpPool();
+	WaveManager->GetDelegateManager()->OnBossDeath.Broadcast();
 	WaveManager->GetDelegateManager()->OnTerminalHackRoomFinish.Broadcast(CurrentTerminalRoomMode);
-	TerminalHackProgress = 0.f;
 	if (++TerminalsHackedAmount >= Data->GetTerminalsAmountToHack()) Finalize();
 	else
 	{
@@ -98,4 +94,16 @@ void UHackTerminalModeLogic::FinishTerminalHack()
 	GetWorld()->GetTimerManager().SetTimer(OpenUpgradeSelectionHandle, this, &UHackTerminalModeLogic::ShowUpgradeSelection, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 
-void UHackTerminalModeLogic::SetData() { TerminalHackRequired = Data->GetTerminalHackRequired(); }
+void UHackTerminalModeLogic::StopSpawning()
+{
+	bInstanceFinished = true;
+	ReservedEnemiesHpPool = 0.f;
+	if (AliveEnemiesAmount <= 0) FinishTerminalHack();
+	else if (WaveManagerHUD) WaveManagerHUD->ToggleFinishOffEnemiesText(true);
+}
+
+void UHackTerminalModeLogic::UpdateHpPoolBar(const float InHp)
+{
+	UnreservedEnemiesHpPool -= InHp;
+	(void)WaveManager->GetDelegateManager()->UpdateGlobalHpBar.ExecuteIfBound(UnreservedEnemiesHpPool, Data->GetEnemiesHpPool());
+}

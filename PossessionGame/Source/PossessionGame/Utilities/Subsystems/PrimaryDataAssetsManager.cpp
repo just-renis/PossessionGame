@@ -213,7 +213,7 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const FVfxContainer& InVfxDat
 	SetupVfx(InVfxData, InCallbackOfDeactivation, InVfxComponent, bDeactivate, InVariationName, TMap<FName, FNiagaraAttribute>());
 }
 
-void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack, TFunction<bool()> InSpawnCallback)
+void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack, TFunction<bool()> InSpawnCallback)
 {
 	if (InCharacter == ECharacterType::Random) InCharacter = GetRandomCharacterToSpawn();
 	!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, InCallBack, InSpawnCallback) : SpawnEnemy(InCharacter, InGameMode, InCallBack);
@@ -779,7 +779,6 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_BreacherDynamiteExplosion", EVfx::BreacherDynamiteExplosion);
 	VfxsMap.Add("PA_BreacherDynamiteImpact", EVfx::BreacherDynamiteImpact);
 	VfxsMap.Add("PA_Stunned", EVfx::Stunned);
-	VfxsMap.Add("PA_HijackLine", EVfx::HijackLine);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
@@ -824,7 +823,7 @@ void UPrimaryDataAssetsManager::SetupVfx(const FVfxContainer& InVfxData, TFuncti
 	}
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack, TFunction<bool()> InSpawnCallback)
+void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack, TFunction<bool()> InSpawnCallback)
 {
 	if (!GetCanAsyncLoadHappen()) return;
 	const FCharacterContainer& CharacterContainer = GetCharacterData(InCharacter);
@@ -895,15 +894,9 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 	AddAsyncHandle(Handle);
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void()> InCallBack)
+void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack)
 {
 	const TObjectPtr<UWeaponManager> WeaponManager = GetGameInstance()->GetSubsystem<UWeaponManager>();
-	if (!WeaponManager)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("WeaponManager subsystem is null."));
-		if (InCallBack) InCallBack();
-		return;
-	}
 	UObject* EnemyClass = GetCharacterData(InCharacter).GetCharacterContainer()->CharacterClass.ToSoftObjectPath().TryLoad();
 	if (!EnemyClass) UE_LOG(LogTemp, Warning, TEXT("Failed to load character class for %s"), *UEnum::GetValueAsString(InCharacter));
 	LoadedEnemies.Add(InCharacter, Cast<UClass>(EnemyClass));
@@ -919,7 +912,7 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularW
 	SpawnEnemy(InCharacter, InGameMode, InCallBack);
 }
 
-void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, TFunction<void()> InCallBack)
+void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack)
 {
 	FGameModeSpawnLocations* SpawnLocationsByGameMode = SpawnLocations.Find(InCurrentGameMode);
 	if (!SpawnLocationsByGameMode) return;
@@ -937,7 +930,7 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 			{
 				Enemy->AI_SetupUpgradesAppliance();
 				Enemy->AI_ProcessSpawnEffects();
-				if (InCallBack) InCallBack();
+				if (InCallBack) InCallBack(Enemy->GetCurrentHp());
 				break;
 			}
 		}

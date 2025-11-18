@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/Enums/ESound.h"
 #include "DelegateManager.generated.h"
 
 enum class ECameraShake : uint8;
@@ -16,6 +15,7 @@ enum class EUpgrade : uint8;
 enum class ECharacterType : uint8;
 enum class EVariation : uint8;
 enum class EWidget : uint8;
+enum class ESound : uint16;
 struct FRuntimeUpgradeData;
 class USaveSlot;
 
@@ -39,6 +39,7 @@ DECLARE_DELEGATE_RetVal(bool, FRequestIsArenaMode);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsDemo);
 DECLARE_DELEGATE_RetVal(int32, FRequestCurrentTimer);
 DECLARE_DELEGATE_RetVal(ECharacterType, FRequestCurrentCharacter);
+DECLARE_DELEGATE_RetVal(EGameMode, FRequestCurrentGameMode);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FRequestTriggerCameraShake, const ECameraShake);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const FRuntimeUpgradeData&);
@@ -54,11 +55,12 @@ DECLARE_DELEGATE_OneParam(FRequestAddAbilitiesToUpgradePool, const TObjectPtr<US
 DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FRequestMinorAnnouncement, const FText&);
 DECLARE_DELEGATE_OneParam(FRequestRangerMineRemoval, const TObjectPtr<ARangerMine>&);
-DECLARE_DELEGATE_OneParam(FOnBossSpawn, const EEnemyHpBar);
+DECLARE_DELEGATE_OneParam(FOnGlobalHpBarSpawn, const EEnemyHpBar);
 DECLARE_DELEGATE_OneParam(FRequestMiniPopup, const FText&);
+DECLARE_DELEGATE_OneParam(FHackTerminalSubtractHp, const float);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const int32, const float);
-DECLARE_DELEGATE_TwoParams(FOnBossDamaged, const float, const float);
+DECLARE_DELEGATE_TwoParams(FUpdateGlobalHpBar, const float, const float);
 DECLARE_DELEGATE_TwoParams(FOnSaveSlotClicked, const FString&, const FString&);
 DECLARE_DELEGATE_TwoParams(FOnMusicSoundtrackChangeRequired, const ESound, const bool);
 DECLARE_DELEGATE_TwoParams(FOnTutorialBotTipDialogue, const ETutorialBotAnimState, const ETutorialBotExpression);
@@ -123,10 +125,11 @@ public:
 	FRequestIsDemo RequestIsDemo;
 	FRequestCurrentTimer RequestCurrentTimer;
 	FRequestCurrentCharacter RequestCurrentCharacter;
+	FRequestCurrentGameMode RequestCurrentGameMode;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FRequestTriggerCameraShake RequestTriggerCameraShake;
 	FOnEnemyDeath OnEnemyDeath;
-	FOnBossDamaged OnBossDamaged;
+	FUpdateGlobalHpBar UpdateGlobalHpBar;
 	FOnUpgradeCardSelected OnUpgradeCardSelected;
 	FRequirePlayerAnnouncementInfo RequirePlayerAnnouncementInfo;
 	FChangeMusicPlayerState ChangeMusicPlayerState;
@@ -140,8 +143,9 @@ public:
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
 	FRequestMinorAnnouncement RequestMinorAnnouncement;
 	FRequestRangerMineRemoval RequestRangerMineRemoval;
-	FOnBossSpawn OnBossSpawn;
+	FOnGlobalHpBarSpawn OnGlobalHpBarSpawn;
 	FRequestMiniPopup RequestMiniPopup;
+	FHackTerminalSubtractHp HackTerminalSubtractHp;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;

@@ -172,7 +172,7 @@ void AMinionBoss::BeginPlay()
 	Super::BeginPlay();
 	LaserCollision->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionBeginOverlap);
 	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
-	(void)DelegateManager->OnBossSpawn.ExecuteIfBound(EEnemyHpBar::MinionBoss);
+	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::MinionBoss);
 	GetWorld()->GetTimerManager().SetTimer(MoveDirectlyToPlayerHandle, this, &AMinionBoss::SetMoveDirectlyToPlayer, MoveDirectlyToPlayerInterval, false);
 }
 
@@ -243,7 +243,7 @@ void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDama
 {
 	Super::ReceiveDamage(InDamage, InDamageReason);
 	if (FMath::RandRange(1, 10) >= 9) PlaySound(ESound::MinionBossTakeDamage);
-	(void)DelegateManager->OnBossDamaged.ExecuteIfBound(CurrentHp, MaxHp);
+	(void)DelegateManager->UpdateGlobalHpBar.ExecuteIfBound(CurrentHp, MaxHp);
 }
 
 void AMinionBoss::CheckDistanceOfLaserEyeTrigger()

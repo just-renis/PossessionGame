@@ -34,7 +34,6 @@ protected:
 	virtual void SetupTimers() {}
 	virtual void Finalize();
 	void PlaySound(const ESound InSoundName) const;
-	virtual void ResetTaskProgress() const;
 	void IncreaseAliveEnemiesAmount();
 	void FadeOutObjectivePanel() const;
 	virtual void HandleSpawning() {}

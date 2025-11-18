@@ -49,7 +49,7 @@ public:
 private:
 	bool bIsHidden = false;
 	float StepHpPercentage;
-	float BossStepHpPercentage;
+	float GlobalStepHpPercentage;
 	ECharacterType CharacterType;
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Hp Bars Data", meta = (AllowPrivateAccess = true))
 	TMap<EEnemyHpBar, TObjectPtr<UTexture2D>> EnemyHpBars;
@@ -114,9 +114,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HpWhiteBar;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> BossHpWhiteBar;
+	TObjectPtr<UProgressBar> GlobalHpWhiteBar;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> BossHpBar;
+	TObjectPtr<UProgressBar> GlobalHpBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ScreenGlow;
 	UPROPERTY(meta = (BindWidget))
@@ -124,7 +124,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> BossHpBarInv;
+	TObjectPtr<UInvalidationBox> GlobalHpBarInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> PressKeyBindText;
 	UPROPERTY(meta = (BindWidget))
@@ -182,7 +182,7 @@ private:
 	UPROPERTY()
 	FTimerHandle UpdateWhiteHpBarHandle;
 	UPROPERTY()
-	FTimerHandle UpdateBossWhiteHpBarHandle;
+	FTimerHandle UpdateGlobalWhiteHpBarHandle;
 
 	TObjectPtr<UAbilitiesPanelUI> GetAbilityPanel();
 	
@@ -191,11 +191,11 @@ private:
 	void LevelUp(const int32 InLevel);
 	void PlayLevelUpAnim();
 	void SetLevelText(const int32 InLevel) const;
-	void UpdateBossHpBar(const float InCurrent, const float InMax);
-	void EnableBossHpBar(const EEnemyHpBar InHpBarType) const;
-	void DisableBossHpBar() const;
+	void UpdateGlobalHpBar(const float InCurrent, const float InMax);
+	void EnableGlobalHpBar(const EEnemyHpBar InHpBarType) const;
+	void DisableGlobalHpBar() const;
 	void UpdateWhiteHpBar();
-	void UpdateBossWhiteHpBar();
+	void UpdateGlobalWhiteHpBar();
 	void UpdatePressToHijackKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const;
 	void PlayAnnouncement(const FText& InText);
 	void SetDamageNumber(float InDamage, const FLinearColor InColor);

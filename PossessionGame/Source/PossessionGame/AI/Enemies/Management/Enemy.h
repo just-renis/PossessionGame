@@ -58,6 +58,7 @@ public:
 	bool GetIsSliding() const { return bIsSliding; }
 	float GetActionSpeed() const { return ActionSpeed; }
 	float GetDamageReduction() const { return DamageReduction; }
+	float GetCurrentHp() const { return CurrentHp; }
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
 	EVariation GetVariation() const { return Variation; }
@@ -368,8 +369,6 @@ private:
 	TObjectPtr<UNiagaraComponent> RunVfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> VectorBlastSpecialImpactVfx;
-	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> HijackLineVfx;
 	UPROPERTY()
 	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
 	UPROPERTY()

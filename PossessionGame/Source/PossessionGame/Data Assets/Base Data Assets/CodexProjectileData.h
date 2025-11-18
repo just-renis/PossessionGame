@@ -11,7 +11,6 @@ class POSSESSIONGAME_API UCodexProjectileData : public UDataAsset
 public:
 	int32 GetAmount() const { return Amount; }
 	float GetDamage() const { return Damage; }
-	float GetOvertimeAreaSize() const { return OvertimeAreaSize; }
 	float GetEffectDuration() const { return EffectDuration; }
 	float GetSpeed() const { return Speed; }
 	float GetDamageInnerRadius() const { return DamageInnerRadius; }
@@ -21,10 +20,6 @@ private:
 	int32 Amount = 1;
 	UPROPERTY(EditAnywhere)
 	float Damage = 0.f;
-	UPROPERTY(EditAnywhere)
-	bool bProjectileDealsOvertimeDamage = false;
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "bProjectileDealsOvertimeDamage", EditConditionHides))
-	float OvertimeAreaSize = 0.f;
 	UPROPERTY(EditAnywhere)
 	bool bProjectileHasEffectDuration = false;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "bProjectileHasEffectDuration", EditConditionHides))

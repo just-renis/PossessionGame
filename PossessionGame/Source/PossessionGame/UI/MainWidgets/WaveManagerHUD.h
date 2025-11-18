@@ -22,8 +22,6 @@ public:
 	void PlayObjectivePanelFadeInAnim(const bool bState);
 	void PlayAnnouncementAnim(const FText& InAnnouncementText);
 	void PlayCountdownAnim();
-	void UpdateTaskProgress(const float InProgress, const float InMaxProgress) const;
-	void ToggleTaskProgress(const bool bState, const EGameMode InGameMode) const;
 	void UpdateObjective(const EGameMode InGameMode, const int32 InData) const;
 	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective, const bool bShowUpgradeSelection = false);
 	void ToggleFinishOffEnemiesText(const bool bState);
@@ -42,15 +40,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FinishOfEnemiesText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> TaskText;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> TaskProgressPercentageText;
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> AnnouncementText;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UProgressBar> TaskProgressBar;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> TaskProgressInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> MiniPopupText;
 	UPROPERTY(meta = (BindWidget))

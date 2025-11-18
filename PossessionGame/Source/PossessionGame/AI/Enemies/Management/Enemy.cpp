@@ -88,7 +88,11 @@ AEnemy::AEnemy()
 
 bool AEnemy::GetIsHijackAble() const { return AI_Data->GetIsPossessable(); }
 
-bool AEnemy::CanAbilityBeExecuted(const int32 AbilityIndex) { return Abilities[AbilityIndex]->CanExecute(); }
+bool AEnemy::CanAbilityBeExecuted(const int32 AbilityIndex)
+{
+	if (Abilities.IsEmpty()) return false;
+	return Abilities[AbilityIndex]->CanExecute();
+}
 
 void AEnemy::AI_InitiateShooting() { if (CurrentMoveMode != EMoveMode::Run && !AnimInstance->IsPlaying(EEnemyAnimState::Reload)) AI_PlayShootMontage(); }
 
@@ -255,6 +259,7 @@ void AEnemy::AI_SetupRespawn(const float InHpPercentage)
 {
 	MaxHp = AI_Data->GetMaxHp() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
 	CurrentHp = MaxHp * InHpPercentage;
+	UE_LOG(LogTemp, Error, TEXT("AI_SetupRespawn PERCENTAGE: %f"), InHpPercentage);
 	MeshBaseMaterialCondenseValue = 0.4f;
 	MeshEmissiveMaterialOpacityValue = 0.5f;
 	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
@@ -487,10 +492,14 @@ void AEnemy::AI_PlayDeathSound() { PlaySound(ESound::MechanicalDeath); }
 
 void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
 {
+	if (DelegateManager->RequestCurrentGameMode.IsBound() && DelegateManager->RequestCurrentGameMode.Execute() == EGameMode::HackTerminalsMode)
+	{
+		(void)DelegateManager->HackTerminalSubtractHp.ExecuteIfBound(InDamage + (CurrentHp <= 0.f ? CurrentHp : 0.f));
+	}
 	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 1.f);
 	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.02f, false);
 	ProcessDamageReason(InDamageReason, InDamage);
-	if (CurrentHp <= 0 || !AI_HpBar || !AI_HpBarComponent) return;
+	if (CurrentHp <= 0.f || !AI_HpBar || !AI_HpBarComponent) return;
     AI_HpBarComponent->SetVisibility(true);
 	AI_HpBarComponent->SetComponentTickEnabled(true);
 	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
@@ -906,11 +915,12 @@ bool AEnemy::CanJumpInternal_Implementation() const
 void AEnemy::P_SetupData()
 {
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
-	const float HpPercentage = CurrentHp / AI_Data->GetMaxHp();
+	const float HpPercentage = CurrentHp / (AI_Data->GetMaxHp() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName));
 	MaxHp = P_Data->GetMaxHp();
 	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelHpIncrease() * 0.01f;
 	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardHealth) * 0.01f;
 	CurrentHp = MaxHp * HpPercentage;
+	UE_LOG(LogTemp, Error, TEXT("P_SetupData PERCENTAGE: %f"), HpPercentage);
 	bIsHijacked = true;
 	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 	bCanShoot = true;
@@ -974,7 +984,6 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bInstan
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->OpenUI();
 		bIsInputLocked = true;
 		if (P_HUD) P_HUD->PlayHijackAnim(true);
-		AssetsManager->AttachVfx(EVfx::HijackLine, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &HijackLineVfx, GetCamera());
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(true);
 		GetWorldTimerManager().SetTimer(HijackDelayHandle, this, &AEnemy::P_FinishHijackProcess, HijackDelay);
 		GetWorldTimerManager().SetTimer(HijackFovChangeHandle, this, &AEnemy::P_ChangeFovWhileHijackingProcess, 0.02f, true);
@@ -1250,6 +1259,10 @@ void AEnemy::P_StompImpact(const FVector& InHitLocation)
 
 void AEnemy::P_Death()
 {
+	UE_LOG(LogTemp, Error, TEXT("P_DEATH"));
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
+	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
+	GetWorldTimerManager().ClearTimer(HijackLockInToTargetHandle);
 	if (!bPlayerDied) AssetsManager->PlaySound2D(ESound::PlayerDeath);
 	bPlayerDied = true;
 	if (AssetsManager->IsAsyncLoadingFinished()) P_InitiateDeathEvents();
@@ -1381,6 +1394,7 @@ void AEnemy::P_SetupSuperJump()
 
 void AEnemy::P_FinishHijackProcess()
 {
+	UE_LOG(LogTemp, Error, TEXT("P_FinishHijackProcess"));
 	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
 	GetWorldTimerManager().ClearTimer(HijackLockInToTargetHandle);
 	P_StopAllAbilities();

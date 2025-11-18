@@ -43,13 +43,6 @@ void UGameModeBaseLogic::Finalize()
 
 void UGameModeBaseLogic::PlaySound(const ESound InSoundName) const { WaveManager->GetAssetsManager()->PlaySound2D(InSoundName); }
 
-void UGameModeBaseLogic::ResetTaskProgress() const
-{
-	if (!WaveManagerHUD) return;
-	WaveManagerHUD->ToggleTaskProgress(false, WaveManager->GetCurrentGameMode());
-	WaveManagerHUD->UpdateTaskProgress(0.f, 1.f);
-}
-
 void UGameModeBaseLogic::IncreaseAliveEnemiesAmount()
 {
 	bAsyncLoadInProcess = false;

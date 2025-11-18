@@ -13,24 +13,21 @@ class POSSESSIONGAME_API UHackTerminalModeLogic : public UGameModeBaseLogic
 	GENERATED_BODY()
 
 	int32 TerminalsHackedAmount = 0;
-	float TerminalHackProgress = 0.f;
-	float TerminalHackRequired;
+	float UnreservedEnemiesHpPool;
+	float ReservedEnemiesHpPool;
 	EGameMode CurrentTerminalRoomMode;
-	UPROPERTY()
-	TObjectPtr<UHackTerminalModeData> Data;
-	UPROPERTY()
 	FTimerHandle OpenUpgradeSelectionHandle;
 	UPROPERTY()
-	FTimerHandle TaskProgressHandle;
+	TObjectPtr<UHackTerminalModeData> Data;
 
 	void SetTerminalRoomMode(const EGameMode InTerminalRoomMode) { CurrentTerminalRoomMode = InTerminalRoomMode; }
 	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData) override;
 	virtual void Finalize() override;
 	virtual void HandleSpawning() override;
-	virtual void UpdateTaskProgress() override;
 	virtual void UpdateEnemiesAmount() override;
 	virtual void FadeInObjectivePanel() const override;
 	void StartTerminalHack();
 	void FinishTerminalHack();
-	void SetData();
+	void StopSpawning();
+	void UpdateHpPoolBar(const float InHp);
 };
