@@ -79,6 +79,7 @@ DECLARE_MULTICAST_DELEGATE(FDespawnPlayerClones);
 DECLARE_MULTICAST_DELEGATE(FOnUsbInserted);
 DECLARE_MULTICAST_DELEGATE(FOnUsbCollected);
 DECLARE_MULTICAST_DELEGATE(FOnArtifactCollected);
+DECLARE_MULTICAST_DELEGATE(FOnDetonateDynamites);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelUp, const int32);
@@ -165,6 +166,7 @@ public:
 	FOnUsbInserted OnUsbInserted;
 	FOnUsbCollected OnUsbCollected;
 	FOnArtifactCollected OnArtifactCollected;
+	FOnDetonateDynamites OnDetonateDynamites;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnConcealAbilityChange OnConcealAbilityChange;
 	FOnLevelUp OnLevelUp;

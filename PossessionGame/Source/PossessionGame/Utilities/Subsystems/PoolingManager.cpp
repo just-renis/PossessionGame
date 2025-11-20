@@ -2,6 +2,7 @@
 #include "DelegateManager.h"
 #include "SaveSlotManager.h"
 #include "PossessionGame/Enums/EUpgrade.h"
+#include "PossessionGame/Projectiles/Throwables/BreacherDynamite.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Projectiles/Throwables/RangerMine.h"
@@ -18,6 +19,23 @@ bool UPoolingManager::CanRangerThrowMine()
 		if (!RangerExistingMines[i]->GetInExplosionProcess())
 		{
 			RangerMineIndexToUse = i;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UPoolingManager::CanBreacherThrowDynamite()
+{
+	BreacherDynamiteIndexToUse = -1;
+	const int32 CapFromUpgrade = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::BreacherAbility3, EUpgradeAttribute::Cap, true);
+	BreacherDynamiteAmountCap = DefaultBreacherDynamiteAmountCap + CapFromUpgrade;
+	if (BreacherExistingDynamites.Num() < BreacherDynamiteAmountCap) return true;
+	for (int32 i = 0; i < BreacherExistingDynamites.Num(); i++)
+	{
+		if (!BreacherExistingDynamites[i]->GetInExplosionProcess())
+		{
+			BreacherDynamiteIndexToUse = i;
 			return true;
 		}
 	}
@@ -62,6 +80,28 @@ TObjectPtr<APoolObject> UPoolingManager::SpawnRangerMineFromPool(const FVector& 
 	return RangerMine;
 }
 
+TObjectPtr<APoolObject> UPoolingManager::SpawnBreacherDynamiteFromPool(const FVector& InLocation, const FRotator& InRotation)
+{
+	TObjectPtr<APoolObject> BreacherDynamite;
+	if (BreacherExistingDynamites.Num() < BreacherDynamiteAmountCap) BreacherDynamiteIndexToUse = -1;
+	if (BreacherDynamiteIndexToUse != -1)
+	{
+		ReturnBreacherDynamiteToPool(BreacherExistingDynamites[BreacherDynamiteIndexToUse]);
+		BreacherExistingDynamites[BreacherDynamiteIndexToUse]->Disable(true);
+		BreacherExistingDynamites.RemoveAt(BreacherDynamiteIndexToUse);
+		BreacherDynamite = Pool[EPoolObject::BreacherDynamite].Objects.Pop();
+	}
+	if (!BreacherDynamite)
+	{
+		if (Pool[EPoolObject::BreacherDynamite].Objects.IsEmpty()) AllocatePoolObject(EPoolObject::BreacherDynamite);
+		BreacherDynamite = Pool[EPoolObject::BreacherDynamite].Objects.Pop();
+	}
+	BreacherDynamite->Init();
+	BreacherDynamite->SetActorLocationAndRotation(InLocation, InRotation);
+	BreacherExistingDynamites.Add(Cast<ABreacherDynamite>(BreacherDynamite));
+	return BreacherDynamite;
+}
+
 void UPoolingManager::Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& InPoolMap)
 {
 	for (TTuple<EPoolObject, TSubclassOf<APoolObject>>& Element : InPoolMap)
@@ -83,6 +123,12 @@ void UPoolingManager::ReturnRangerMineToPool(const TObjectPtr<APoolObject>& InPo
 {
 	InPoolObject->Disable();
 	Pool[EPoolObject::RangerMine].Objects.Add(InPoolObject);
+}
+
+void UPoolingManager::ReturnBreacherDynamiteToPool(const TObjectPtr<APoolObject>& InPoolObject)
+{
+	InPoolObject->Disable();
+	Pool[EPoolObject::BreacherDynamite].Objects.Add(InPoolObject);
 }
 
 void UPoolingManager::AllocatePoolObject(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation)

@@ -40,10 +40,12 @@ private:
 
 	virtual void P_Setup() override;
 	void P_StopBash();
+	virtual void P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent) override;
 	UFUNCTION()
 	void P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	virtual void BeginPlay() override;
+	void DetonateDynamites();
 	UFUNCTION()
 	void OnBashCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

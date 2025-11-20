@@ -7,6 +7,7 @@
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -25,6 +26,7 @@ ABreacherDynamite::ABreacherDynamite()
 
 void ABreacherDynamite::Explode()
 {
+	bInExplosionProcess = true;
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::BreacherAbility3, EUpgradeAttribute::Size, true);
 	const float DamageIncrease = Data->GetDamage() * RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility3, EUpgradeAttribute::DamagePercentage, true) * 0.01f;
@@ -38,14 +40,22 @@ void ABreacherDynamite::Explode()
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
 	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray{ Proprietor }, this, nullptr, ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::BreacherDynamiteExplosion, nullptr, GetActorLocation());
-	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::BreacherDynamite, this);
 	PlaySound(ESound::BreacherDynamiteExplosion);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.RemoveAll(this);
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnBreacherDynamiteToPool(this);
+	bInExplosionProcess = false;
 }
 
 void ABreacherDynamite::Throw()
 {
 	Super::Throw();
 	GetWorldTimerManager().SetTimer(StickHandle, this, &ABreacherDynamite::PerformStickTrace, 0.05f, true);
+}
+
+void ABreacherDynamite::Init(const bool bInIsPlayerObject)
+{
+	Super::Init(bInIsPlayerObject);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.AddUObject(this, &ABreacherDynamite::Explode);
 }
 
 void ABreacherDynamite::PerformStickTrace()

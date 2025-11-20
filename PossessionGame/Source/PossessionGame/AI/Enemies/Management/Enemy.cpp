@@ -188,14 +188,14 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(11).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 0);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(12).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 1);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(13).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 2);
-	//			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &AEnemy::P_Stomp); //- 19 reserved was stomp, -14 right click reserved.
+		P_SetupRightClickInput(EnhancedInputComponent);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &AEnemy::P_HandleEscapeClick);
 		#if WITH_EDITOR
 			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &AEnemy::ToggleTimeDilation);
 		#endif
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &AEnemy::P_TryInteracting);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack);
-		
+		//- 19 reserved was stomp, -14 right click reserved.
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::OpenInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_Crouch);
@@ -259,7 +259,6 @@ void AEnemy::AI_SetupRespawn(const float InHpPercentage)
 {
 	MaxHp = AI_Data->GetMaxHp() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
 	CurrentHp = MaxHp * InHpPercentage;
-	UE_LOG(LogTemp, Error, TEXT("AI_SetupRespawn PERCENTAGE: %f"), InHpPercentage);
 	MeshBaseMaterialCondenseValue = 0.4f;
 	MeshEmissiveMaterialOpacityValue = 0.5f;
 	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
@@ -613,22 +612,22 @@ void AEnemy::P_Shoot()
 	else if (Weapon->P_CanReload() && Weapon->GetCurrentAmmoAmount() <= 0) Weapon->P_Reload();
 }
 
-void AEnemy::P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
+void AEnemy::P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
 {
-	P_SetupLeftClickInputStartedState(LeftClickInputComponent);
-	P_SetupLeftClickInputTriggeredState(LeftClickInputComponent);
-	P_SetupLeftClickInputCompletedState(LeftClickInputComponent);
+	P_SetupLeftClickInputStartedState(InEnhancedInputComponent);
+	P_SetupLeftClickInputTriggeredState(InEnhancedInputComponent);
+	P_SetupLeftClickInputCompletedState(InEnhancedInputComponent);
 }
 
-void AEnemy::P_SetupShiftInput(const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent)
+void AEnemy::P_SetupShiftInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
 {
-	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleRun, true);
-	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &AEnemy::P_ToggleRun, false);
+	InEnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleRun, true);
+	InEnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &AEnemy::P_ToggleRun, false);
 }
 
-void AEnemy::P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
+void AEnemy::P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
 {
-	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Shoot);
+	InEnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Shoot);
 }
 
 void AEnemy::P_Destroy()
@@ -920,7 +919,6 @@ void AEnemy::P_SetupData()
 	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelHpIncrease() * 0.01f;
 	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardHealth) * 0.01f;
 	CurrentHp = MaxHp * HpPercentage;
-	UE_LOG(LogTemp, Error, TEXT("P_SetupData PERCENTAGE: %f"), HpPercentage);
 	bIsHijacked = true;
 	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 	bCanShoot = true;
@@ -1259,7 +1257,6 @@ void AEnemy::P_StompImpact(const FVector& InHitLocation)
 
 void AEnemy::P_Death()
 {
-	UE_LOG(LogTemp, Error, TEXT("P_DEATH"));
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
 	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
 	GetWorldTimerManager().ClearTimer(HijackLockInToTargetHandle);
@@ -1394,7 +1391,6 @@ void AEnemy::P_SetupSuperJump()
 
 void AEnemy::P_FinishHijackProcess()
 {
-	UE_LOG(LogTemp, Error, TEXT("P_FinishHijackProcess"));
 	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
 	GetWorldTimerManager().ClearTimer(HijackLockInToTargetHandle);
 	P_StopAllAbilities();

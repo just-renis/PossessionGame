@@ -42,4 +42,4 @@ void AThrowable::PlaySound(const ESound InSoundName)
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], TFunction<bool()>(), InSoundName);
 }
 
-void AThrowable::SetupOnHitEvent() { if (Data->GetNeedsOnHitEvent()) Mesh->OnComponentHit.AddDynamic(this, &AThrowable::OnHit); }
+void AThrowable::SetupOnHitEvent() { if (Data->GetNeedsOnHitEvent() && !Mesh->OnComponentHit.IsBound()) Mesh->OnComponentHit.AddDynamic(this, &AThrowable::OnHit); }

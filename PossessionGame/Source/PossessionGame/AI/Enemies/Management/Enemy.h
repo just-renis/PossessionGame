@@ -192,11 +192,12 @@ protected:
 	virtual void P_SetupAbilities();
 	virtual void P_Setup();
 	virtual void P_Shoot();
-	virtual void P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent);
-	virtual void P_SetupShiftInput(const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent);
-	virtual void P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) {}
-	virtual void P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent);
-	virtual void P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) {}
+	virtual void P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent);
+	virtual void P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent) {}
+	virtual void P_SetupShiftInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent);
+	virtual void P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent) {}
+	virtual void P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent);
+	virtual void P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent) {}
 	virtual void P_Destroy();
 	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
 	void P_SetupCharacterMovement() const;

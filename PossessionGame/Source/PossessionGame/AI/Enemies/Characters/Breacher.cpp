@@ -1,4 +1,7 @@
 ﻿#include "Breacher.h"
+
+#include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
 #include "MinionBoss.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
@@ -38,6 +41,11 @@ void ABreacher::P_StopBash()
 	SetMaxWalkSpeed(EMoveMode::Walk);
 }
 
+void ABreacher::P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
+{
+	InEnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &ABreacher::DetonateDynamites);
+}
+
 void ABreacher::P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (!OtherActor || OtherActor == this || FMath::Abs(Hit.Normal.Z) > 0.5f) return;
@@ -75,7 +83,7 @@ void ABreacher::P_Bash()
 
 void ABreacher::P_ThrowDynamite()
 {
-	const TObjectPtr<ABreacherDynamite> Dynamite = Cast<ABreacherDynamite>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::BreacherDynamite, Weapon->GetHandsSocketLocation(FName("BarrelSocket")), Weapon->GetHandsSocketRotation(FName("BarrelSocket"))));
+	const TObjectPtr<ABreacherDynamite> Dynamite = Cast<ABreacherDynamite>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnBreacherDynamiteFromPool(Weapon->GetHandsSocketLocation(FName("BarrelSocket")), Weapon->GetHandsSocketRotation(FName("BarrelSocket"))));
 	if (!Dynamite) return;
 	Dynamite->Initialize(this);
 	Dynamite->Init(true);
@@ -103,6 +111,11 @@ void ABreacher::BeginPlay()
 	CharacterName = ECharacterType::Breacher;
 	Super::BeginPlay();
 	BashCollision->OnComponentBeginOverlap.AddDynamic(this, &ABreacher::OnBashCollisionBeginOverlap);
+}
+
+void ABreacher::DetonateDynamites()
+{
+	DelegateManager->OnDetonateDynamites.Broadcast();
 }
 
 void ABreacher::OnBashCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

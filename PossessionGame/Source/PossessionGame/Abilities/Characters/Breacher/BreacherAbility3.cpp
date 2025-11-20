@@ -1,11 +1,18 @@
 ﻿#include "BreacherAbility3.h"
 #include "PossessionGame/AI/Enemies/Characters/Breacher.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
 void UBreacherAbility3::P_Execute()
 {
+	if (!GetWorld()->GetSubsystem<UPoolingManager>()->CanBreacherThrowDynamite())
+	{
+		DelegateManager->RequestMinorAnnouncement.ExecuteIfBound(NSLOCTEXT("ST_Localization", "DynamiteDetonationInProgress", "Dynamite Detonation in Progress"));
+		return;
+	}
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::BreacherThrow);
 	Proprietor->P_ThrowDynamite();
