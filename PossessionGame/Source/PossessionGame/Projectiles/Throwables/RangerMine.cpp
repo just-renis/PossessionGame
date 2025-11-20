@@ -4,6 +4,7 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
+#include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
@@ -104,8 +105,8 @@ void ARangerMine::DealAreaDamage()
 void ARangerMine::Explode()
 {
 	DealAreaDamage();
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestRangerMineRemoval.ExecuteIfBound(this);
-	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnRangerMineToPool(this);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestObjectWithCapRemoval.ExecuteIfBound(EPoolObject::RangerMine, this);
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::RangerMine, this);
 	bInExplosionProcess = false;
 }
 

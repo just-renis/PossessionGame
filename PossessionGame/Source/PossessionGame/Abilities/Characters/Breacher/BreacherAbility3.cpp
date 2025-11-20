@@ -8,7 +8,7 @@
 
 void UBreacherAbility3::P_Execute()
 {
-	if (!GetWorld()->GetSubsystem<UPoolingManager>()->CanBreacherThrowDynamite())
+	if (!GetWorld()->GetSubsystem<UPoolingManager>()->CanObjectBeThrown(EPoolObject::BreacherDynamite))
 	{
 		DelegateManager->RequestMinorAnnouncement.ExecuteIfBound(NSLOCTEXT("ST_Localization", "DynamiteDetonationInProgress", "Dynamite Detonation in Progress"));
 		return;

@@ -42,7 +42,8 @@ void ABreacherDynamite::Explode()
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::BreacherDynamiteExplosion, nullptr, GetActorLocation());
 	PlaySound(ESound::BreacherDynamiteExplosion);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.RemoveAll(this);
-	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnBreacherDynamiteToPool(this);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestObjectWithCapRemoval.ExecuteIfBound(EPoolObject::BreacherDynamite, this);
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::BreacherDynamite, this);
 	bInExplosionProcess = false;
 }
 

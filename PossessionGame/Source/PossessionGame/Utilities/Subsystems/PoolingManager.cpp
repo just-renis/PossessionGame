@@ -1,42 +1,28 @@
 ﻿#include "PoolingManager.h"
 #include "DelegateManager.h"
 #include "SaveSlotManager.h"
+#include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EUpgrade.h"
-#include "PossessionGame/Projectiles/Throwables/BreacherDynamite.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Projectiles/Throwables/RangerMine.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 
-bool UPoolingManager::CanRangerThrowMine()
+bool UPoolingManager::CanObjectBeThrown(const EPoolObject InObjectName)
 {
-	RangerMineIndexToUse = -1;
-	const int32 CapFromUpgrade = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::Cap, true);
-	RangerMineAmountCap = DefaultRangerMineAmountCap + CapFromUpgrade;
-	if (RangerExistingMines.Num() < RangerMineAmountCap) return true;
-	for (int32 i = 0; i < RangerExistingMines.Num(); i++)
+	if (FExistingObjectsWithCapData* Data = ExistingObjectsWithCap.Find(InObjectName))
 	{
-		if (!RangerExistingMines[i]->GetInExplosionProcess())
+		Data->IndexToUse = -1;
+		const int32 CapFromUpgrade = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(GetUpgradeFromPoolObjectName(InObjectName), EUpgradeAttribute::Cap, true);
+		Data->AmountCap = Data->DefaultAmountCap + CapFromUpgrade;
+		if (Data->Objects.Num() < Data->AmountCap) return true;
+		for (int32 i = 0; i < Data->Objects.Num(); i++)
 		{
-			RangerMineIndexToUse = i;
-			return true;
-		}
-	}
-	return false;
-}
-
-bool UPoolingManager::CanBreacherThrowDynamite()
-{
-	BreacherDynamiteIndexToUse = -1;
-	const int32 CapFromUpgrade = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::BreacherAbility3, EUpgradeAttribute::Cap, true);
-	BreacherDynamiteAmountCap = DefaultBreacherDynamiteAmountCap + CapFromUpgrade;
-	if (BreacherExistingDynamites.Num() < BreacherDynamiteAmountCap) return true;
-	for (int32 i = 0; i < BreacherExistingDynamites.Num(); i++)
-	{
-		if (!BreacherExistingDynamites[i]->GetInExplosionProcess())
-		{
-			BreacherDynamiteIndexToUse = i;
-			return true;
+			if (!Data->Objects[i]->GetInExplosionProcess())
+			{
+				Data->IndexToUse = i;
+				return true;
+			}
 		}
 	}
 	return false;
@@ -58,59 +44,46 @@ TObjectPtr<APoolObject> UPoolingManager::SpawnObjectFromPool(const EPoolObject I
 	return PoolObject;
 }
 
-TObjectPtr<APoolObject> UPoolingManager::SpawnRangerMineFromPool(const FVector& InLocation, const FRotator& InRotation)
+TObjectPtr<APoolObject> UPoolingManager::SpawnObjectWithCapFromPool(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation)
 {
-	TObjectPtr<APoolObject> RangerMine;
-	if (RangerExistingMines.Num() < RangerMineAmountCap) RangerMineIndexToUse = -1;
-	if (RangerMineIndexToUse != -1)
+	if (FExistingObjectsWithCapData* Data = ExistingObjectsWithCap.Find(InObjectName))
 	{
-		ReturnRangerMineToPool(RangerExistingMines[RangerMineIndexToUse]);
-		RangerExistingMines[RangerMineIndexToUse]->Disable(true);
-		RangerExistingMines.RemoveAt(RangerMineIndexToUse);
-		RangerMine = Pool[EPoolObject::RangerMine].Objects.Pop();
+		TObjectPtr<AThrowable> Object;
+		if (Data->Objects.Num() < Data->AmountCap) Data->IndexToUse = -1;
+		if (Data->IndexToUse != -1)
+		{
+			ReturnObjectToPool(InObjectName, Data->Objects[Data->IndexToUse]);
+			Data->Objects[Data->IndexToUse]->Disable(true);
+			Data->Objects.RemoveAt(Data->IndexToUse);
+			Object = Cast<AThrowable>(Pool[InObjectName].Objects.Pop());
+		}
+		if (!Object)
+		{
+			if (Pool[InObjectName].Objects.IsEmpty()) AllocatePoolObject(InObjectName);
+			Object = Cast<AThrowable>(Pool[InObjectName].Objects.Pop());
+		}
+		Object->Init();
+		Object->SetActorLocationAndRotation(InLocation, InRotation);
+		Data->Objects.Add(Object);
+		return Object;
 	}
-	if (!RangerMine)
-	{
-		if (Pool[EPoolObject::RangerMine].Objects.IsEmpty()) AllocatePoolObject(EPoolObject::RangerMine);
-		RangerMine = Pool[EPoolObject::RangerMine].Objects.Pop();
-	}
-	RangerMine->Init();
-    RangerMine->SetActorLocationAndRotation(InLocation, InRotation);
-	RangerExistingMines.Add(Cast<ARangerMine>(RangerMine));
-	return RangerMine;
+	return nullptr;
 }
 
-TObjectPtr<APoolObject> UPoolingManager::SpawnBreacherDynamiteFromPool(const FVector& InLocation, const FRotator& InRotation)
+void UPoolingManager::Init(const TMap<EPoolObject, TSubclassOf<APoolObject>>& InPoolMap, const TMap<EPoolObject, TObjectPtr<UThrowableData>>& InThrowableData)
 {
-	TObjectPtr<APoolObject> BreacherDynamite;
-	if (BreacherExistingDynamites.Num() < BreacherDynamiteAmountCap) BreacherDynamiteIndexToUse = -1;
-	if (BreacherDynamiteIndexToUse != -1)
+	for (const TPair<EPoolObject, TObjectPtr<UThrowableData>>& Element : InThrowableData)
 	{
-		ReturnBreacherDynamiteToPool(BreacherExistingDynamites[BreacherDynamiteIndexToUse]);
-		BreacherExistingDynamites[BreacherDynamiteIndexToUse]->Disable(true);
-		BreacherExistingDynamites.RemoveAt(BreacherDynamiteIndexToUse);
-		BreacherDynamite = Pool[EPoolObject::BreacherDynamite].Objects.Pop();
+		ExistingObjectsWithCap.Add(Element.Key);
+		ExistingObjectsWithCap[Element.Key].AmountCap = ExistingObjectsWithCap[Element.Key].DefaultAmountCap = Element.Value->GetCap();
 	}
-	if (!BreacherDynamite)
-	{
-		if (Pool[EPoolObject::BreacherDynamite].Objects.IsEmpty()) AllocatePoolObject(EPoolObject::BreacherDynamite);
-		BreacherDynamite = Pool[EPoolObject::BreacherDynamite].Objects.Pop();
-	}
-	BreacherDynamite->Init();
-	BreacherDynamite->SetActorLocationAndRotation(InLocation, InRotation);
-	BreacherExistingDynamites.Add(Cast<ABreacherDynamite>(BreacherDynamite));
-	return BreacherDynamite;
-}
-
-void UPoolingManager::Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& InPoolMap)
-{
-	for (TTuple<EPoolObject, TSubclassOf<APoolObject>>& Element : InPoolMap)
+	for (const TPair<EPoolObject, TSubclassOf<APoolObject>>& Element : InPoolMap)
 	{
 		Pool.Add(Element.Key);
 		Pool[Element.Key].ObjectClass = Element.Value;
 	}
 	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.BindUObject(this, &UPoolingManager::SpawnDamageNumber);
-	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestRangerMineRemoval.BindUObject(this, &UPoolingManager::RemoveRangerMineFromExistingMines);
+	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestObjectWithCapRemoval.BindUObject(this, &UPoolingManager::RemoveExistingObject);
 }
 
 void UPoolingManager::ReturnObjectToPool(const EPoolObject InObjectName, const TObjectPtr<APoolObject>& InPoolObject)
@@ -119,16 +92,14 @@ void UPoolingManager::ReturnObjectToPool(const EPoolObject InObjectName, const T
 	Pool[InObjectName].Objects.Add(InPoolObject);
 }
 
-void UPoolingManager::ReturnRangerMineToPool(const TObjectPtr<APoolObject>& InPoolObject)
+EUpgrade UPoolingManager::GetUpgradeFromPoolObjectName(const EPoolObject InObjectName)
 {
-	InPoolObject->Disable();
-	Pool[EPoolObject::RangerMine].Objects.Add(InPoolObject);
-}
-
-void UPoolingManager::ReturnBreacherDynamiteToPool(const TObjectPtr<APoolObject>& InPoolObject)
-{
-	InPoolObject->Disable();
-	Pool[EPoolObject::BreacherDynamite].Objects.Add(InPoolObject);
+	switch (InObjectName)
+	{
+		case EPoolObject::RangerMine: return EUpgrade::RangerAbility3;
+		case EPoolObject::BreacherDynamite: return EUpgrade::BreacherAbility3;
+		default: return EUpgrade::None;
+	}
 }
 
 void UPoolingManager::AllocatePoolObject(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation)
@@ -139,4 +110,9 @@ void UPoolingManager::AllocatePoolObject(const EPoolObject InObjectName, const F
 void UPoolingManager::SpawnDamageNumber(const FLinearColor InColor, const float InDamage, const FVector& InLocation, const FVector& InForwardActor)
 {
 	SpawnObjectFromPool(EPoolObject::DamageNumber, InLocation + InForwardActor * 25.f, FRotator::ZeroRotator)->Init(InDamage, InColor);
+}
+
+void UPoolingManager::RemoveExistingObject(const EPoolObject InObjectName, const TObjectPtr<AThrowable>& InObject)
+{
+	if (FExistingObjectsWithCapData* Data = ExistingObjectsWithCap.Find(InObjectName)) Data->Objects.Remove(InObject);
 }

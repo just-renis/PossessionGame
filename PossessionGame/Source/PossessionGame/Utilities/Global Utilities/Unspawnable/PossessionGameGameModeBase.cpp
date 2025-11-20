@@ -86,7 +86,7 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
 	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
-	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects);
+	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects, ThrowablesData);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->Init(PostProcessMaterials);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = false;

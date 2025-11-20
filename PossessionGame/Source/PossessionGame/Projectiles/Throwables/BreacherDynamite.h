@@ -11,14 +11,11 @@ class POSSESSIONGAME_API ABreacherDynamite : public AThrowable
 {
 	GENERATED_BODY()
 public:
-	bool GetInExplosionProcess() const { return bInExplosionProcess; }
-	
 	virtual void Throw() override;
 	virtual void Init(const bool bInIsPlayerObject) override;
 private:
 	ABreacherDynamite();
 
-	bool bInExplosionProcess = false;
 	FTimerHandle StickHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Dynamite", meta = (AllowPrivateAccess = true))
 	FVector StickingBounds;

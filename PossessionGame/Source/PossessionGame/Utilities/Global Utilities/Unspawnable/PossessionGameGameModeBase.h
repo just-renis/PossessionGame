@@ -5,6 +5,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FPrefabCategoryData.h"
 #include "PossessionGameGameModeBase.generated.h"
 
+class UThrowableData;
 class USaveSlot;
 enum class ECharacterType : uint8;
 enum class EMarkerType : uint8;
@@ -51,6 +52,8 @@ private:
 	TMap<EPostProcessMaterial, TObjectPtr<UMaterialInterface>> PostProcessMaterials;
 	UPROPERTY(EditAnywhere, Category = "Pooling Manager", meta = (AllowPrivateAccess = true))
 	TMap<EPoolObject, TSubclassOf<APoolObject>> PoolObjects;
+	UPROPERTY(EditAnywhere, Category = "Pooling Manager", meta = (AllowPrivateAccess = true))
+	TMap<EPoolObject, TObjectPtr<UThrowableData>> ThrowablesData;
 	UPROPERTY(EditAnywhere, Category = "Widget Manager", meta = (AllowPrivateAccess = true))
 	TMap<EWidget, TSubclassOf<UUserWidget>> WidgetClasses;
 	UPROPERTY(EditAnywhere, Category = "Upgrades", meta = (AllowPrivateAccess = true))

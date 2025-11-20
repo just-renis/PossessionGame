@@ -4,9 +4,10 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "PoolingManager.generated.h"
 
-class ABreacherDynamite;
-class ARangerMine;
+class UThrowableData;
+class AThrowable;
 enum class EPoolObject : uint8;
+enum class EUpgrade : uint8;
 class APoolObject;
 
 USTRUCT()
@@ -20,37 +21,38 @@ struct POSSESSIONGAME_API FObjectPoolData
 	TArray<TObjectPtr<APoolObject>> Objects;
 };
 
+USTRUCT()
+struct POSSESSIONGAME_API FExistingObjectsWithCapData
+{
+	GENERATED_BODY()
+
+	int32 IndexToUse = -1;
+	int32 DefaultAmountCap = 1;
+	int32 AmountCap = 1;
+	UPROPERTY()
+	TArray<TObjectPtr<AThrowable>> Objects;
+};
+
 UCLASS()
 class POSSESSIONGAME_API UPoolingManager : public UWorldSubsystem
 {
 	GENERATED_BODY()
 public:
-	bool CanRangerThrowMine();
-	bool CanBreacherThrowDynamite();
+	bool CanObjectBeThrown(const EPoolObject InObjectName);
 	TObjectPtr<APoolObject> SpawnObjectFromPool(const EPoolObject InObjectName, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator);
-	TObjectPtr<APoolObject> SpawnRangerMineFromPool(const FVector& InLocation, const FRotator& InRotation);
-	TObjectPtr<APoolObject> SpawnBreacherDynamiteFromPool(const FVector& InLocation, const FRotator& InRotation);
+	TObjectPtr<APoolObject> SpawnObjectWithCapFromPool(const EPoolObject InObjectName, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator);
 	
-	void Init(TMap<EPoolObject, TSubclassOf<APoolObject>>& InPoolMap);
+	void Init(const TMap<EPoolObject, TSubclassOf<APoolObject>>& InPoolMap, const TMap<EPoolObject, TObjectPtr<UThrowableData>>& InThrowableData = {});
 	void ReturnObjectToPool(const EPoolObject InObjectName, const TObjectPtr<APoolObject>& InPoolObject);
-	void ReturnRangerMineToPool(const TObjectPtr<APoolObject>& InPoolObject);
-	void ReturnBreacherDynamiteToPool(const TObjectPtr<APoolObject>& InPoolObject);
 private:
-	int32 RangerMineIndexToUse = -1;
-	int32 DefaultRangerMineAmountCap = 3;
-	int32 RangerMineAmountCap = 3;
-	int32 BreacherDynamiteIndexToUse = -1;
-	int32 DefaultBreacherDynamiteAmountCap = 1;
-	int32 BreacherDynamiteAmountCap = 1;
 	UPROPERTY()
 	TMap<EPoolObject, FObjectPoolData> Pool;
 	UPROPERTY()
-	TArray<TObjectPtr<ARangerMine>> RangerExistingMines;
-	UPROPERTY()
-	TArray<TObjectPtr<ABreacherDynamite>> BreacherExistingDynamites;
+	TMap<EPoolObject, FExistingObjectsWithCapData> ExistingObjectsWithCap;
+
+	EUpgrade GetUpgradeFromPoolObjectName(const EPoolObject InObjectName);
 
 	void AllocatePoolObject(const EPoolObject InObjectName, const FVector& InLocation = FVector::ZeroVector, const FRotator& InRotation = FRotator::ZeroRotator);
 	void SpawnDamageNumber(const FLinearColor InColor, const float InDamage, const FVector& InLocation, const FVector& InForwardActor);
-	void RemoveRangerMineFromExistingMines(const TObjectPtr<ARangerMine>& InRangerMine) { RangerExistingMines.Remove(InRangerMine); }
-	void RemoveBreacherDynamiteFromExistingDynamites(const TObjectPtr<ABreacherDynamite>& InBreacherDynamite) { BreacherExistingDynamites.Remove(InBreacherDynamite); }
+	void RemoveExistingObject(const EPoolObject InObjectName, const TObjectPtr<AThrowable>& InObject);
 };

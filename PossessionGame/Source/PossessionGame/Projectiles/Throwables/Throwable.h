@@ -12,6 +12,8 @@ class POSSESSIONGAME_API AThrowable : public APoolObject
 {
 	GENERATED_BODY()
 public:
+	bool GetInExplosionProcess() const { return bInExplosionProcess; }
+	
 	void Initialize(const TObjectPtr<AActor>& InProprietor);
 	virtual void Throw();
 	virtual void Disable(const bool bHide) override;
@@ -20,6 +22,7 @@ public:
 protected:
 	AThrowable();
 	
+	bool bInExplosionProcess = false;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UThrowableData> Data;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
