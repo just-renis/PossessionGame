@@ -1,10 +1,30 @@
 ﻿#include "BreacherWeapon.h"
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
+
+ABreacherWeapon::ABreacherWeapon()
+{
+	Sounds.Add(ESound::BreacherShoot, CreateDefaultSubobject<UAudioComponent>(TEXT("ShootSound")));
+	Sounds[ESound::BreacherShoot]->SetAutoActivate(false);
+	Sounds[ESound::BreacherShoot]->SetupAttachment(Mesh);
+}
+
+void ABreacherWeapon::AI_Reload()
+{
+	Super::AI_Reload();
+}
+
+void ABreacherWeapon::AI_Shoot()
+{
+	PlaySound(ESound::BreacherShoot, true);
+	Super::AI_Shoot();
+	ShootProjectile(EPoolObject::BreacherProjectile, false, NAME_None, true);
+}
 
 void ABreacherWeapon::P_Shoot()
 {

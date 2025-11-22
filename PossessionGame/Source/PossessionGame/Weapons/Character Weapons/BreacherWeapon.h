@@ -8,6 +8,11 @@ UCLASS()
 class POSSESSIONGAME_API ABreacherWeapon : public AOneHandedWeapon
 {
 	GENERATED_BODY()
+	
+	ABreacherWeapon();
+
+	virtual void AI_Reload() override;
+	virtual void AI_Shoot() override;
 
 	virtual void P_Shoot() override;
 	virtual void P_Reload(const int32 InOtherAmmoSource) override;
