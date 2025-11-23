@@ -23,6 +23,15 @@ struct POSSESSIONGAME_API FSpawnableEnemyByTotalAmount
 };
 
 USTRUCT()
+struct POSSESSIONGAME_API FSpawnableEnemiesByChapter
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<FSpawnableEnemyByTotalAmount> Enemies;
+};
+
+USTRUCT()
 struct FCharacterUpgrades
 {
 	GENERATED_BODY()
@@ -48,6 +57,7 @@ public:
 private:
 	bool bMainMenuLaunchedOnce = false;
 	float TickTime = 0.1f;
+	FTimerHandle TickHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	bool bPlayerTakenDamageEffectsEnabled = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Demo", meta = (AllowPrivateAccess = true))
@@ -65,9 +75,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrades Data", meta = (AllowPrivateAccess = true))
 	TMap<ECharacterType, FCharacterUpgrades> ExistingUpgrades;
 	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
-	TArray<FSpawnableEnemyByTotalAmount> SpawnableEnemiesByTotalAmount;
-	UPROPERTY()
-	FTimerHandle TickHandle;
+	TMap<int32, FSpawnableEnemiesByChapter> SpawnableEnemiesByChapter;
 	
 	bool IsDemo() const { return bIsDemo; }
 

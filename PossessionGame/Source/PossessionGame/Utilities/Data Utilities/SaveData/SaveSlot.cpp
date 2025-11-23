@@ -42,6 +42,14 @@ int32 USaveSlot::GetSkillPoints() const { return GetPlayerLevel() - CharacterUnl
 
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
 
+ECharacterType USaveSlot::GetRandomSpawnableCharacter()
+{
+	const int32 TargetIndex = FMath::RandRange(0, SpawnableCharacters.Num() - 1);
+	int32 CurrentIndex = 0;
+	for (const ECharacterType EnemyType : SpawnableCharacters) if (CurrentIndex++ == TargetIndex) return EnemyType;
+	return ECharacterType::Minion;
+}
+
 FCharacterAbilities USaveSlot::GetCharacterChosenAbilities(const ECharacterType InCharacter)
 {
 	if (const FCharacterAbilities* CharacterAbilities = CharacterChosenAbilities.Find(InCharacter)) return *CharacterAbilities;
@@ -58,6 +66,12 @@ void USaveSlot::AddCurrencyAmount(const int32 InCurrencyAmount)
 {
 	CurrencyAmount += InCurrencyAmount;
 	SaveSlot();
+}
+
+void USaveSlot::AddSpawnableCharacter(const TObjectPtr<UDelegateManager>& InDelegateManager, const ECharacterType InCharacterName)
+{
+	SpawnableCharacters.Add(InCharacterName);
+	(void)InDelegateManager->RequestAddAbilitiesToUpgradePool.ExecuteIfBound(this);
 }
 
 void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName)

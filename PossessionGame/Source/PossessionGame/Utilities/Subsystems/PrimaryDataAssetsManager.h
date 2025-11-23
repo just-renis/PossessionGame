@@ -9,11 +9,11 @@
 #include "PossessionGame/Utilities/Data Utilities/FAsyncHandle.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/FTFunctionCallback.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PrimaryDataAssetsManager.generated.h"
 
 class ATrickster;
 enum class EWidget : uint8;
-struct FSpawnableEnemyByTotalAmount;
 enum class EGameMode : uint8;
 class ASpawnLocation;
 class AEnemy;
@@ -183,7 +183,7 @@ public:
 	void ChangeVfxVariation(const FVfxContainer& InVfxData, TFunction<bool()> InCallbackOfDeactivation, const TObjectPtr<UNiagaraComponent>& InVfxComponent, const bool bDeactivate, const EVariation InVariationName);
 	void RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack, TFunction<bool()> InSpawnCallback);
 	void RequestSpawnEnemy(const ECharacterType InCharacter, const FVector& InLocation, const float InHpPercentage);
-	void Init(const bool bIsTutorialFinished, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount);
+	void Init(const bool bIsTutorialFinished, const TMap<int32, FSpawnableEnemiesByChapter>& InSpawnableEnemiesByChapter);
 	void SetupSpawnLocations();
 	void PlaySoundAtLocation(const ESound InSoundName, const FVector& InLocation, const bool bIsPlayer = true, const bool bStoreSoundRef = false);
 	void RequestSpawnClone(const ECharacterType InCharacterName, const TObjectPtr<ATrickster>& InOwner, const int32 InAmount);
@@ -206,9 +206,7 @@ private:
 	UPROPERTY()
 	TArray<FAsyncHandle> AsyncHandles;
 	UPROPERTY()
-	TSet<ECharacterType> EnemyTypes;
-	UPROPERTY()
-	TArray<FSpawnableEnemyByTotalAmount> SpawnableEnemiesByTotalAmount;
+	TMap<int32, FSpawnableEnemiesByChapter> SpawnableEnemiesByChapter;
 	UPROPERTY()
 	TMap<FPoolObjectPairWrapper, EVfx> ProjectileVfxCombinationsMap;
 	UPROPERTY()
@@ -226,7 +224,6 @@ private:
 	TObjectPtr<UNiagaraComponent> SpawnAndReceiveVfx(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
 	EWeapon GetWeaponByCharacter(const ECharacterType InCharacter);
 	EWeapon GetSingularWeapon(const EWeapon InWeapon);
-	ECharacterType GetRandomCharacterToSpawn();
 
 	void PrimaryInit();
 	void SetupWeaponsPrimaryAssets();

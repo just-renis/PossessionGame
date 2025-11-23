@@ -65,3 +65,16 @@ TObjectPtr<UCodexProjectileData> UCodexData::GetProjectileData(const bool bIsPla
 	}
 	return nullptr;
 }
+
+TObjectPtr<UMiscData> UCodexData::GetMiscData(const bool bIsPlayer, const EUpgrade InUpgradeName)
+{
+	if (bIsPlayer)
+	{
+		if (const TObjectPtr<UMiscData>* Data = PlayerMiscData.Find(InUpgradeName)) return *Data;
+	}
+	else
+	{
+		if (const TObjectPtr<UMiscData>* Data = EnemyMiscData.Find(InUpgradeName)) return *Data;
+	}
+	return nullptr;
+}

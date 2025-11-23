@@ -2,10 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Utilities/Data Utilities/FCharacterAbilities.h"
 #include "PossessionGame/Utilities/Data Utilities/FVariationUnlockData.h"
 #include "SaveSlot.generated.h"
 
+class UDelegateManager;
 enum class EExplanation : uint8;
 enum class EVariation : uint8;
 class UPlayerLevelData;
@@ -33,12 +35,15 @@ public:
 	int32 GetSkillPoints() const;
 	int32 GetArenaMaxTimeSurvivedSeconds() const { return ArenaMaxTimeSurvivedSeconds; }
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
+	ECharacterType GetRandomSpawnableCharacter();
 	FCharacterAbilities GetCharacterChosenAbilities(const ECharacterType InCharacter);
 	FCharacterAbilities GetCharacterUnlockedAbilities(const ECharacterType InCharacter);
 	FString GetSlotName() { return SlotName; }
+	TArray<ECharacterType> GetAvailableCharacters() const { return SpawnableCharacters.Array(); }
 	
 	void AddCurrencyAmount(const int32 InCurrencyAmount);
 	void SetTutorialFinished() { bTutorialFinished = true; }
+	void AddSpawnableCharacter(const TObjectPtr<UDelegateManager>& InDelegateManager, const ECharacterType InCharacterName);
 	void SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName);
 	void AddXp(const int32 InXp);
 	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);
@@ -68,6 +73,8 @@ private:
 	TObjectPtr<UPossessionGameInstance> GameInstance;
 	UPROPERTY()
 	FVariationUnlockData VariationUnlockData;
+	UPROPERTY()
+	TSet<ECharacterType> SpawnableCharacters;
 	UPROPERTY()
 	TSet<EExplanation> ShownExplanations;
 	UPROPERTY()

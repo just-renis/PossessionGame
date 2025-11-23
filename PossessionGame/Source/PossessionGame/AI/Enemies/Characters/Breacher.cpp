@@ -1,5 +1,4 @@
 ﻿#include "Breacher.h"
-
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "MinionBoss.h"
@@ -9,12 +8,15 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EMoveMode.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Projectiles/Throwables/BreacherBarrel.h"
 #include "PossessionGame/Projectiles/Throwables/BreacherDynamite.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -67,7 +69,7 @@ void ABreacher::P_ThrowBarrel()
 	Barrel->Throw();
 }
 
-void ABreacher::P_Bash()
+void ABreacher::P_Bash(const float InImpulseStrength)
 {
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABreacher::P_BashHit);
 	if (!BashVfx) AssetsManager->AttachVfx(EVfx::BreacherBash, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &BashVfx, GetMesh(), FName("DeathSocket"));
@@ -77,7 +79,7 @@ void ABreacher::P_Bash()
 	DashDirection.Z = 0.f;
 	DashDirection.Normalize();
 	GetCharacterMovement()->StopMovementImmediately();
-	LaunchCharacter(DashDirection * BashStrength, true, true);
+	LaunchCharacter(DashDirection * InImpulseStrength * 1000.f, true, true);
 	GetWorldTimerManager().SetTimer(StopBashHandle, this, &ABreacher::P_StopBash, 0.2f, false);
 }
 
@@ -122,7 +124,14 @@ void ABreacher::OnBashCollisionBeginOverlap(UPrimitiveComponent* OverlappedCompo
 {
 	if (OtherActor == this || !OtherActor->ActorHasTag("AliveEnemy")) return;
 	FVector HitDirection = (OtherActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	HitDirection.Z = 0.f; 
+	HitDirection.Z = 0.f;
+	float BashDamage = DefaultBashDamage;
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	UE_LOG(LogTemp, Error, TEXT("FLAT DAMAGE %f"), RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, false));
+	BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, false);
+	const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::DamagePercentage, false);
+	BashDamage += DefaultBashDamage * DamagePercentage * 0.01f;
+	UE_LOG(LogTemp, Error, TEXT("BASH DAMAGE: %f"), BashDamage);
 	Cast<AEnemy>(OtherActor)->ReceiveStunEffect(BashStunDuration, BashDamage, HitDirection);
 	DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + HitDirection * 300.f, FColor::Red, false, 2.f, 0, 2.f);
 }

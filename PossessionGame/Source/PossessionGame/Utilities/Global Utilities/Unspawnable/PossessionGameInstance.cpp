@@ -16,7 +16,7 @@ void UPossessionGameInstance::InitGameInstanceManagers()
 {
 	GetTimerManager().SetTimer(TickHandle, this, &UPossessionGameInstance::Tick, 0.2f, true);
 	if (!GetSubsystem<USaveSlotManager>()->GetSaveSlot()) return;
-	GetSubsystem<UPrimaryDataAssetsManager>()->Init(GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished(), SpawnableEnemiesByTotalAmount);
+	GetSubsystem<UPrimaryDataAssetsManager>()->Init(GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished(), SpawnableEnemiesByChapter);
 }
 
 void UPossessionGameInstance::Init()
@@ -58,8 +58,7 @@ void UPossessionGameInstance::AddAvailableUpgrades(const TObjectPtr<USaveSlot>& 
 {
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	TArray<EUpgrade> AvailableUpgrades;
-	// By chapter division needs to be done for each character upgrades to appear in appropriate chapter.
-	TArray AvailableCharacters = { ECharacterType::Ranger, ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Breacher, ECharacterType::Tank, ECharacterType::Spy, ECharacterType::Samurai, ECharacterType::Wraith };
+	TArray AvailableCharacters = GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetAvailableCharacters();
 	for (int32 i = 0; i < AvailableCharacters.Num(); i++)
 	{
 		const ECharacterType CharacterType = AvailableCharacters[i];

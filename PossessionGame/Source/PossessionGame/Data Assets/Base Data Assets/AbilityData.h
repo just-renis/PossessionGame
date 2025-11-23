@@ -11,13 +11,14 @@ class POSSESSIONGAME_API UAbilityData : public UDataAsset
 {
 	GENERATED_BODY()
 public:
+	EAbility GetAbilityName() const { return AbilityName; }
 	bool GetIsAbilityWithDuration() const { return bHasDuration; }
-	int32 GetAbilityIndex() const { return AbilityIndex; }
-	int32 GetChargesAmount() const { return ChargesAmount; }
 	float GetAbilityDuration() const { return AbilityDuration; }
 	float GetBaseDamageReduction() const { return BaseDamageReduction; }
 	float GetCooldownSecs() const { return CooldownSecs; }
-	EAbility GetAbilityName() const { return AbilityName; }
+	float GetImpulseStrength() const { return ImpulseStrength; }
+	int32 GetAbilityIndex() const { return AbilityIndex; }
+	int32 GetChargesAmount() const { return ChargesAmount; }
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EAbility AbilityName;
@@ -29,6 +30,10 @@ private:
 	bool bHasDamageReduction = false;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "bHasDamageReduction", EditConditionHides))
 	float BaseDamageReduction;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bHasImpulseStrength = false;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bHasImpulseStrength", EditConditionHides))
+	float ImpulseStrength = 10.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 AbilityIndex;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

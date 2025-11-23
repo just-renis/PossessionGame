@@ -75,6 +75,7 @@ private:
 	void AI_SetupUpgradesAppliance();
 	
 	virtual float P_UpgradeDamageAppliance() { return 0.f; }
+	float P_CalculateByRangeDamage(const FHitResult& InHit);
 
 	void P_SetupLevelUpAppliance(const int32 InLevel);
 	void P_SetupUpgradesAppliance();

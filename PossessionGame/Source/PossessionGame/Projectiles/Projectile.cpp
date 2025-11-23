@@ -146,13 +146,15 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 {
 	if (!bIsPlayerProjectile)
 	{
+		Damage *= P_CalculateByRangeDamage(Hit);
 		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
 		return;
 	}
 	const bool bIsCritical = Hit.BoneName.IsEqual(FName("head"));
-	const float DamageAfterCritical = ProjectileData.GetProprietor() ? Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f) : Damage;
+	float DamageAfterCritical = ProjectileData.GetProprietor() ? Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f) : Damage;
 	FHitResult ModifiableHit = Hit;
 	ModifiableHit.TraceStart = StartLocation;
+	DamageAfterCritical *= P_CalculateByRangeDamage(ModifiableHit);
 	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAfterCritical, (ModifiableHit.Location - GetActorLocation()).GetSafeNormal() * 2.f, ModifiableHit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
 	if (ProjectileData.GetProprietor()) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 }
@@ -184,6 +186,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	}
 	if (OtherActor->ActorHasTag("Destructible"))
 	{
+		Damage *= P_CalculateByRangeDamage(Hit);
 		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
 		return;
 	}
@@ -205,6 +208,17 @@ void AProjectile::AI_SetupUpgradesAppliance()
 	const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage, false);
 	Damage += DefaultDamage * DamagePercentage * 0.01f;
 	Damage += AI_UpgradeDamageAppliance();
+}
+
+float AProjectile::P_CalculateByRangeDamage(const FHitResult& InHit)
+{
+	const TObjectPtr<AEnemy> Proprietor = ProjectileData.GetProprietor();
+	if (!Proprietor) return 1.f;
+	const TObjectPtr<AWeapon> Weapon = Proprietor->GetWeapon();
+	if (!Weapon) return 1.f;
+	const TObjectPtr<UPlayerWeaponData> PlayerWeaponData = Weapon->GetPlayerData();
+	if (!PlayerWeaponData) return 1.f;
+	return PlayerWeaponData->GetDamageMultiplierFromRange(FVector::Distance(StartLocation, InHit.Location) * 0.01f);
 }
 
 void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)

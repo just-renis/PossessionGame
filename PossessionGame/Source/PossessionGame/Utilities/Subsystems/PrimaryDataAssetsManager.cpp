@@ -3,6 +3,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraSystem.h"
 #include "PoolingManager.h"
+#include "SaveSlotManager.h"
 #include "TutorialManager.h"
 #include "WeaponManager.h"
 #include "Components/AudioComponent.h"
@@ -17,9 +18,12 @@
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Projectiles/Projectile.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/SpawnLocation.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
 bool UPrimaryDataAssetsManager::IsAsyncLoadingFinished()
 {
@@ -215,7 +219,7 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const FVfxContainer& InVfxDat
 
 void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack, TFunction<bool()> InSpawnCallback)
 {
-	if (InCharacter == ECharacterType::Random) InCharacter = GetRandomCharacterToSpawn();
+	if (InCharacter == ECharacterType::Random) InCharacter = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetRandomSpawnableCharacter();
 	!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, InCallBack, InSpawnCallback) : SpawnEnemy(InCharacter, InGameMode, InCallBack);
 	TotalSpawnedEnemies++;
 	AddSpawnableEnemiesToThePool();
@@ -226,7 +230,7 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(const ECharacterType InCharact
 	GetWorld()->SpawnActor<AEnemy>(LoadedEnemies[InCharacter], InLocation, FRotator::ZeroRotator)->AI_SetupRespawn(InHpPercentage);
 }
 
-void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TArray<FSpawnableEnemyByTotalAmount>& InSpawnableEnemiesByTotalAmount)
+void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TMap<int32, FSpawnableEnemiesByChapter>& InSpawnableEnemiesByChapter)
 {
 	bTutorialIsFinished = bIsTutorialFinished;
 	ClearBeforeInit();
@@ -234,8 +238,8 @@ void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TArra
 	if (!bTutorialIsFinished) GetWorld()->GetSubsystem<UTutorialManager>()->SpawnTutorialEnemy.BindUObject(this, &UPrimaryDataAssetsManager::SpawnTutorialEnemy);
 	if (bIsInitialized) return;
 	bIsInitialized = true;
-	SpawnableEnemiesByTotalAmount = InSpawnableEnemiesByTotalAmount;
-	if (SpawnableEnemiesByTotalAmount.Num() < 1) EnemyTypes.Add(ECharacterType::Ranger);
+	SpawnableEnemiesByChapter = InSpawnableEnemiesByChapter;
+	if (SpawnableEnemiesByChapter.IsEmpty()) GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddSpawnableCharacter(GetGameInstance()->GetSubsystem<UDelegateManager>(), ECharacterType::Minion);
 	else AddSpawnableEnemiesToThePool();
 }
 
@@ -482,14 +486,6 @@ EWeapon UPrimaryDataAssetsManager::GetSingularWeapon(const EWeapon InWeapon)
 		case EWeapon::GuardianWeapon: return EWeapon::GuardianSingularWeapon;
 		default: return EWeapon::None;
 	}
-}
-
-ECharacterType UPrimaryDataAssetsManager::GetRandomCharacterToSpawn()
-{
-	const int32 TargetIndex = FMath::RandRange(0, EnemyTypes.Num() - 1);
-	int32 CurrentIndex = 0;
-	for (const ECharacterType EnemyType : EnemyTypes) if (CurrentIndex++ == TargetIndex) return EnemyType;
-	return ECharacterType::Minion;
 }
 
 void UPrimaryDataAssetsManager::PrimaryInit()
@@ -941,10 +937,13 @@ void UPrimaryDataAssetsManager::SpawnTutorialEnemy(const ECharacterType InCharac
 
 void UPrimaryDataAssetsManager::AddSpawnableEnemiesToThePool()
 {
-	while (NextSpawnableEnemyIndex < SpawnableEnemiesByTotalAmount.Num() && SpawnableEnemiesByTotalAmount[NextSpawnableEnemyIndex].SpawnThreshold <= TotalSpawnedEnemies)
+	if (FSpawnableEnemiesByChapter* EnemiesByChapter = SpawnableEnemiesByChapter.Find(GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentChapter()))
 	{
-		EnemyTypes.Add(SpawnableEnemiesByTotalAmount[NextSpawnableEnemyIndex].Character);
-		NextSpawnableEnemyIndex++;
+		while (NextSpawnableEnemyIndex < EnemiesByChapter->Enemies.Num() && EnemiesByChapter->Enemies[NextSpawnableEnemyIndex].SpawnThreshold <= TotalSpawnedEnemies)
+		{
+			GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddSpawnableCharacter(GetGameInstance()->GetSubsystem<UDelegateManager>(), EnemiesByChapter->Enemies[NextSpawnableEnemyIndex].Character);
+			NextSpawnableEnemyIndex++;
+		}
 	}
 }
 
@@ -952,7 +951,6 @@ void UPrimaryDataAssetsManager::ClearBeforeInit()
 {
 	TotalSpawnedEnemies = 0;
 	NextSpawnableEnemyIndex = 0;
-	EnemyTypes.Empty();
 	bCanAsyncLoadHappen = true;
 	bIsCloneSpawnInProcess = false;
 	for (TPair<ESound, FSoundContainer>& SoundContainer : SoundContainers) SoundContainer.Value.ResetLoadVariables();

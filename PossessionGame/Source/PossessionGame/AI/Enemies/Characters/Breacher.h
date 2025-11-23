@@ -12,7 +12,7 @@ class POSSESSIONGAME_API ABreacher : public AEnemy
 	GENERATED_BODY()
 public:
 	void P_ThrowBarrel();
-	void P_Bash();
+	void P_Bash(const float InImpulseStrength);
 	void P_ThrowDynamite();
 private:
 	ABreacher();
@@ -21,9 +21,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
 	float BashStunDuration = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
-	float BashStrength = 1000.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
-	float BashDamage = 40.f;
+	float DefaultBashDamage = 40.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCapsuleComponent> BashCollision;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))

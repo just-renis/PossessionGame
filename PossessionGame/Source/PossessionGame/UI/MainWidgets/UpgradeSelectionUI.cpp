@@ -84,6 +84,9 @@ FText UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 		case EUpgrade::GuardianAbility1: return NSLOCTEXT("ST_Localization", "ShieldUpgrade", "SHIELD");
 		case EUpgrade::GuardianAbility2: return NSLOCTEXT("ST_Localization", "TimeStopUpgrade", "TIME STOP");
 		case EUpgrade::GuardianAbility3: return NSLOCTEXT("ST_Localization", "VectorBlastUpgrade", "VECTOR BLAST");
+		case EUpgrade::BreacherAbility1: return NSLOCTEXT("ST_Localization", "BarrelUpgrade", "BARREL");
+		case EUpgrade::BreacherAbility2: return NSLOCTEXT("ST_Localization", "BashUpgrade", "BASH");
+		case EUpgrade::BreacherAbility3: return NSLOCTEXT("ST_Localization", "DynamiteUpgrade", "DYNAMITE");
 		default: ;
 	}
 	return FText::GetEmpty();

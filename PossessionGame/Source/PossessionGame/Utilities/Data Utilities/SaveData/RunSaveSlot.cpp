@@ -83,7 +83,7 @@ int32 URunSaveSlot::GetCurrentLevelSumOfCharacterAbilities(const ECharacterType 
 		case ECharacterType::Ranger: return GetCurrentLevel(EUpgrade::RangerAbility1) + GetCurrentLevel(EUpgrade::RangerAbility2) + GetCurrentLevel(EUpgrade::RangerAbility3);
 		case ECharacterType::Trickster: return GetCurrentLevel(EUpgrade::TricksterAbility1) + GetCurrentLevel(EUpgrade::TricksterAbility2) + GetCurrentLevel(EUpgrade::TricksterAbility3);
 		case ECharacterType::Guardian: return GetCurrentLevel(EUpgrade::GuardianAbility1) + GetCurrentLevel(EUpgrade::GuardianAbility2) + GetCurrentLevel(EUpgrade::GuardianAbility3);
-	//	case ECharacterType::Breacher: return GetCurrentLevel(EUpgrade::GuardianAbility1) + GetCurrentLevel(EUpgrade::GuardianAbility2) + GetCurrentLevel(EUpgrade::GuardianAbility3);
+		case ECharacterType::Breacher: return GetCurrentLevel(EUpgrade::BreacherAbility1) + GetCurrentLevel(EUpgrade::BreacherAbility2) + GetCurrentLevel(EUpgrade::BreacherAbility3);
 		default: ;
 	}
 	return 0;
@@ -178,6 +178,8 @@ EUpgrade URunSaveSlot::GetUpgradeByPoolObjectName(const EPoolObject InPoolObject
 		case EPoolObject::TricksterPoisonProjectile: return EUpgrade::TricksterAbility1;
 		case EPoolObject::TricksterEmpProjectile: return EUpgrade::TricksterAbility2;
 		case EPoolObject::CloneProjectile: return EUpgrade::TricksterAbility3;
+		case EPoolObject::BreacherBarrel: return EUpgrade::BreacherAbility1;
+		case EPoolObject::BreacherDynamite: return EUpgrade::BreacherAbility3;
 		default: ;
 	}
 	return EUpgrade::None;
@@ -191,6 +193,7 @@ TArray<EUpgrade> URunSaveSlot::GetUpgradesByPoolObjectName(const EPoolObject InP
 		{
 			case EPoolObject::RangerGrenadeLauncherProjectile: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2, EUpgrade::RangerAbility3 });
 			case EPoolObject::TricksterEmpProjectile: case EPoolObject::TricksterPoisonProjectile: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
+			case EPoolObject::BreacherBarrel: case EPoolObject::BreacherDynamite: return TArray({ EUpgrade::BreacherAbility1, EUpgrade::BreacherAbility2, EUpgrade::BreacherAbility3 });
 			default: ;
 		}
 	}
@@ -201,6 +204,7 @@ TArray<EUpgrade> URunSaveSlot::GetUpgradesByPoolObjectName(const EPoolObject InP
 			case EPoolObject::GuardianProjectile: return TArray({ EUpgrade::GuardianAbility1, EUpgrade::GuardianAbility2, EUpgrade::GuardianAbility3 });
 			case EPoolObject::RangerProjectile: case EPoolObject::RangerGrenadeLauncherProjectile: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2, EUpgrade::RangerAbility3 });
 			case EPoolObject::TricksterProjectile: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
+			case EPoolObject::BreacherProjectile: return TArray({ EUpgrade::BreacherAbility1, EUpgrade::BreacherAbility2, EUpgrade::BreacherAbility3 });
 			default: ;
 		}
 	}
@@ -214,7 +218,7 @@ TArray<EUpgrade> URunSaveSlot::GetHpUpgradesByCharacterName(const ECharacterType
 		case ECharacterType::Guardian: return TArray({ EUpgrade::GuardianAbility1, EUpgrade::GuardianAbility2, EUpgrade::GuardianAbility3 });
 		case ECharacterType::Trickster: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
 		case ECharacterType::Ranger: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2, EUpgrade::RangerAbility3 });
-		//case ECharacterType::Breacher: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2, EUpgrade::RangerAbility3 });
+		case ECharacterType::Breacher: return TArray({ EUpgrade::BreacherAbility1, EUpgrade::BreacherAbility2, EUpgrade::BreacherAbility3 });
 		default: ;
 	}
 	return {};

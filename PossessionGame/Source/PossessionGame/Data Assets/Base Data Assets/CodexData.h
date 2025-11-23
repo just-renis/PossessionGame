@@ -4,6 +4,8 @@
 #include "Engine/DataAsset.h"
 #include "CodexData.generated.h"
 
+enum class EUpgrade : uint8;
+class UMiscData;
 class UCharacterData;
 class UCodexProjectileData;
 class UThrowableData;
@@ -23,6 +25,7 @@ public:
 	TObjectPtr<UDestructibleData> GetDestructibleData(const bool bIsPlayer, const EPoolObject InDestructibleName);
 	TObjectPtr<UThrowableData> GetThrowableData(const bool bIsPlayer, const EPoolObject InThrowableName);
 	TObjectPtr<UCodexProjectileData> GetProjectileData(const bool bIsPlayer, const EPoolObject InProjectileName);
+	TObjectPtr<UMiscData> GetMiscData(const bool bIsPlayer, const EUpgrade InUpgradeName);
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TMap<ECharacterType, TObjectPtr<UCharacterData>> EnemyCharactersHp;
@@ -44,4 +47,8 @@ private:
 	TMap<EPoolObject, TObjectPtr<UCodexProjectileData>> EnemyProjectilesData;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TMap<EPoolObject, TObjectPtr<UCodexProjectileData>> PlayerProjectilesData;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TMap<EUpgrade, TObjectPtr<UMiscData>> EnemyMiscData;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TMap<EUpgrade, TObjectPtr<UMiscData>> PlayerMiscData;
 };
