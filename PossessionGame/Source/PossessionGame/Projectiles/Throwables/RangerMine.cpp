@@ -86,9 +86,9 @@ void ARangerMine::DealAreaDamage()
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	const bool bIsSpecialUpgradeAvailable1 = RunSaveSlot->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1);
 	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::Size, true);
-	const float DamageIncrease = Data->GetDamage() * RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::DamagePercentage, true) * 0.01f;
-	float NormalDamage = (Data->GetDamage() + DamageIncrease) * (bIsSpecialUpgradeAvailable1 ? SpecialUpgradeDamageMultiplier : 1.f);
-	float MinimumDamage = Data->GetRadiusMinimumDamage() + DamageIncrease;
+	const float DamageFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::FlatDamage, true);
+	float NormalDamage = (Data->GetDamage() + DamageFromUpgrades) * (bIsSpecialUpgradeAvailable1 ? SpecialUpgradeDamageMultiplier : 1.f);
+	float MinimumDamage = Data->GetRadiusMinimumDamage() + DamageFromUpgrades;
 	const float InnerRadius = Data->GetDamageInnerRadius() + Data->GetDamageInnerRadius() * RadiusIncrease * 0.01f;
 	const float OuterRadius = Data->GetDamageOuterRadius() + Data->GetDamageOuterRadius() * RadiusIncrease * 0.01f;
 	const float LevelDamageBoost = Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;

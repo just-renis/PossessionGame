@@ -29,9 +29,9 @@ void ABreacherDynamite::Explode()
 	bInExplosionProcess = true;
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::BreacherAbility3, EUpgradeAttribute::Size, true);
-	const float DamageIncrease = Data->GetDamage() * RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility3, EUpgradeAttribute::DamagePercentage, true) * 0.01f;
-	float NormalDamage = Data->GetDamage() + DamageIncrease;
-	float MinimumDamage = Data->GetRadiusMinimumDamage() + DamageIncrease;
+	const float DamageFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility3, EUpgradeAttribute::FlatDamage, true);
+	float NormalDamage = Data->GetDamage() + DamageFromUpgrades;
+	float MinimumDamage = Data->GetRadiusMinimumDamage() + DamageFromUpgrades;
 	const float InnerRadius = Data->GetDamageInnerRadius() + Data->GetDamageInnerRadius() * RadiusIncrease * 0.01f;
 	const float OuterRadius = Data->GetDamageOuterRadius() + Data->GetDamageOuterRadius() * RadiusIncrease * 0.01f;
 	const float LevelDamageBoost = Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;

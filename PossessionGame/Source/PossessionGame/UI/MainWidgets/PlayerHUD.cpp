@@ -258,7 +258,11 @@ void UPlayerHUD::EnableGlobalHpBar(const EEnemyHpBar InHpBarType) const
 	GlobalHpBarInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
-void UPlayerHUD::DisableGlobalHpBar() const { if (GlobalHpBarInv) GlobalHpBarInv->SetVisibility(ESlateVisibility::Collapsed); }
+void UPlayerHUD::DisableGlobalHpBar() const
+{
+	if (GlobalHpBarInv) GlobalHpBarInv->SetVisibility(ESlateVisibility::Collapsed);
+	ResetGlobalHpBar();
+}
 
 void UPlayerHUD::UpdateWhiteHpBar()
 {
@@ -337,6 +341,14 @@ void UPlayerHUD::CollapseAllCrosshairs() const
 	TankCrosshair->SetVisibility(ESlateVisibility::Collapsed);
 	SpyCrosshair->SetVisibility(ESlateVisibility::Collapsed);
 	SamuraiCrosshair->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UPlayerHUD::ResetGlobalHpBar() const
+{
+	if (!GlobalHpBar || !GlobalHpWhiteBar) return;
+	UE_LOG(LogTemp, Error, TEXT("RESET GLOVAL"));
+	GlobalHpWhiteBar->SetPercent(1.f);
+	GlobalHpBar->SetPercent(1.f);
 }
 
 template<typename T>

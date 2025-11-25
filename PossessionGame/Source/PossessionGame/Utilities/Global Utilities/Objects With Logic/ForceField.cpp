@@ -68,7 +68,7 @@ void AForceField::StartDissolveForceField(const int32 InIndex)
 void AForceField::AppearForceField(const EGameMode InGameMode)
 {
 	if (TerminalRoomMode != InGameMode) return;
-	ForceField->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ForceField->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	StartDeploymentOfForceField();
 }
 
@@ -112,7 +112,7 @@ void AForceField::DeployOnTerminalHackInitiation(const EGameMode InTerminalRoomM
 {
 	if (TerminalRoomMode != InTerminalRoomMode) return;
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->SendHackTerminalRoomMode.RemoveAll(this);
-	ForceField->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	ForceField->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	StartDeploymentOfForceField();
 }
 

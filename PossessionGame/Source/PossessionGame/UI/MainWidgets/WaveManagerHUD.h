@@ -46,8 +46,6 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TimerText;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UWidget> TimerBoxInv;
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> AnnouncementInv;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> ObjectivePanelFadeInAnim;

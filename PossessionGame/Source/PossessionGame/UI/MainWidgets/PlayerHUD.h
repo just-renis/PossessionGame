@@ -51,6 +51,8 @@ private:
 	float StepHpPercentage;
 	float GlobalStepHpPercentage;
 	ECharacterType CharacterType;
+	FTimerHandle UpdateWhiteHpBarHandle;
+	FTimerHandle UpdateGlobalWhiteHpBarHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Hp Bars Data", meta = (AllowPrivateAccess = true))
 	TMap<EEnemyHpBar, TObjectPtr<UTexture2D>> EnemyHpBars;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -179,10 +181,6 @@ private:
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_HijackProgress;
-	UPROPERTY()
-	FTimerHandle UpdateWhiteHpBarHandle;
-	UPROPERTY()
-	FTimerHandle UpdateGlobalWhiteHpBarHandle;
 
 	TObjectPtr<UAbilitiesPanelUI> GetAbilityPanel();
 	
@@ -201,6 +199,7 @@ private:
 	void SetDamageNumber(float InDamage, const FLinearColor InColor);
 	void CollapseAllAbilitiesPanels() const;
 	void CollapseAllCrosshairs() const;
+	void ResetGlobalHpBar() const;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };

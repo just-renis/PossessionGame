@@ -231,8 +231,6 @@ void AProjectile::P_SetupUpgradesAppliance()
 {
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, true);
-	const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage, true);
-	Damage += DefaultDamage * DamagePercentage * 0.01f;
 	Damage += P_UpgradeDamageAppliance();
 }
 

@@ -61,7 +61,7 @@ void ABreacher::P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPri
 
 void ABreacher::P_ThrowBarrel()
 {
-	const TObjectPtr<ABreacherBarrel> Barrel = Cast<ABreacherBarrel>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::BreacherBarrel, Weapon->GetHandsSocketLocation(FName("BarrelSocket")), Weapon->GetHandsSocketRotation(FName("BarrelSocket"))));
+	const TObjectPtr<ABreacherBarrel> Barrel = Cast<ABreacherBarrel>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectWithCapFromPool(EPoolObject::BreacherBarrel, Weapon->GetHandsSocketLocation(FName("BarrelSocket")), Weapon->GetHandsSocketRotation(FName("BarrelSocket"))));
 	if (!Barrel) return;
 	Barrel->Initialize(this);
 	Barrel->Init(true);
@@ -127,11 +127,7 @@ void ABreacher::OnBashCollisionBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	HitDirection.Z = 0.f;
 	float BashDamage = DefaultBashDamage;
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
-	UE_LOG(LogTemp, Error, TEXT("FLAT DAMAGE %f"), RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, false));
-	BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, false);
-	const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::DamagePercentage, false);
-	BashDamage += DefaultBashDamage * DamagePercentage * 0.01f;
-	UE_LOG(LogTemp, Error, TEXT("BASH DAMAGE: %f"), BashDamage);
+	BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, true);
 	Cast<AEnemy>(OtherActor)->ReceiveStunEffect(BashStunDuration, BashDamage, HitDirection);
 	DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + HitDirection * 300.f, FColor::Red, false, 2.f, 0, 2.f);
 }

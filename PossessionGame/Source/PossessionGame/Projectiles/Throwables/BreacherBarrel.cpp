@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -14,9 +15,9 @@ void ABreacherBarrel::Explode()
 {
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::BreacherAbility1, EUpgradeAttribute::Size, true);
-	const float DamageIncrease = Data->GetDamage() * RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility1, EUpgradeAttribute::DamagePercentage, true) * 0.01f;
-	float NormalDamage = Data->GetDamage() + DamageIncrease;
-	float MinimumDamage = Data->GetRadiusMinimumDamage() + DamageIncrease;
+	const float DamageFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility1, EUpgradeAttribute::FlatDamage, true);
+	float NormalDamage = Data->GetDamage() + DamageFromUpgrades;
+	float MinimumDamage = Data->GetRadiusMinimumDamage() + DamageFromUpgrades;
 	const float InnerRadius = Data->GetDamageInnerRadius() + Data->GetDamageInnerRadius() * RadiusIncrease * 0.01f;
 	const float OuterRadius = Data->GetDamageOuterRadius() + Data->GetDamageOuterRadius() * RadiusIncrease * 0.01f;
 	const float LevelDamageBoost = Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
@@ -25,6 +26,7 @@ void ABreacherBarrel::Explode()
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
 	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray{ Proprietor }, this, nullptr, ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::BreacherBarrelExplosion, nullptr, GetActorLocation());
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestObjectWithCapRemoval.ExecuteIfBound(EPoolObject::BreacherBarrel, this);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::BreacherBarrel, this);
 	PlaySound(ESound::BreacherBarrelExplosion);
 }
@@ -33,6 +35,12 @@ void ABreacherBarrel::Disable(const bool bHide)
 {
 	Mesh->SetSimulatePhysics(false);
 	Super::Disable(bHide);
+}
+
+void ABreacherBarrel::Init(const bool bInIsPlayerObject)
+{
+	bIsAlreadyExploding = false;
+	Super::Init(bInIsPlayerObject);
 }
 
 ABreacherBarrel::ABreacherBarrel()
@@ -47,4 +55,12 @@ void ABreacherBarrel::BeginPlay()
 {
 	Super::BeginPlay();
 	Tags.Add(FName("BreacherBarrel"));
+}
+
+float ABreacherBarrel::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (bIsAlreadyExploding) return 0.f;
+	bIsAlreadyExploding = true;
+	Explode();
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
