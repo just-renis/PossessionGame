@@ -10,7 +10,7 @@ void UBreacherAbility1::P_Execute()
 {
 	if (!GetWorld()->GetSubsystem<UPoolingManager>()->CanObjectBeThrown(EPoolObject::BreacherBarrel))
 	{
-		DelegateManager->RequestMinorAnnouncement.ExecuteIfBound(NSLOCTEXT("ST_Localization", "BarrelDetonationInProgress", "Barrel Detonation in Progress"));
+		DelegateManager->RequestMinorAnnouncement.ExecuteIfBound(NSLOCTEXT("ST_Localization", "BarrelDetonationInProgress", "Barrel Detonation in Progress"), ESound::NotSelectable);
 		return;
 	}
 	Proprietor->SetIsActionInMotion(true);

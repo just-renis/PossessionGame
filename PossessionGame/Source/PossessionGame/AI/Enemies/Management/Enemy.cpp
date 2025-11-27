@@ -970,8 +970,7 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bInstan
 	if (!InEnemy || InEnemy->bIsHijacked || !InEnemy->bIsAlive || HijackDelayHandle.IsValid()) return;
 	if (!InEnemy->GetIsHijackAble())
 	{
-		AssetsManager->PlaySound2D(ESound::NotSelectable);
-		if (P_HUD) P_HUD->ShowMinorAnnouncement(NSLOCTEXT("ST_Localization", "HijackUnavailable", "Hijack Unavailable"));
+		if (P_HUD) P_HUD->ShowMinorAnnouncement(NSLOCTEXT("ST_Localization", "HijackUnavailable", "Hijack Unavailable"), ESound::NotSelectable);
 		return;
 	}
 	if (bInstantHijack)

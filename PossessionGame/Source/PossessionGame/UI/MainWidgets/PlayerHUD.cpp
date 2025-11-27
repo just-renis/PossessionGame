@@ -166,12 +166,15 @@ void UPlayerHUD::ToggleInfoPanel(const bool bState) const
 	InfoPanelInv->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
-void UPlayerHUD::ShowMinorAnnouncement(const FText& InText)
+void UPlayerHUD::ShowMinorAnnouncement(const FText& InText, const ESound InSound)
 {
-	if (!MinorAnnouncementInv || !MinorAnnouncementText) return;
+	if (!MinorAnnouncementInv || !MinorAnnouncementText || !bDisplayMinorAnnouncementAvailable) return;
+	AssetsManager->PlaySound2D(InSound);
+	bDisplayMinorAnnouncementAvailable = false;
 	MinorAnnouncementText->SetText(InText);
 	PlayAnimation(MinorAnnouncementAnim);
 	MinorAnnouncementInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	GetWorld()->GetTimerManager().SetTimer(MinorAnnouncementDisplayHandle, this, &UPlayerHUD::EnableMinorAnnouncementDisplayAvailability, MinorAnnouncementDisplayCooldown);
 }
 
 void UPlayerHUD::ShowOutOfAmmo()

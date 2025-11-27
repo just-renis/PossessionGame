@@ -14,7 +14,7 @@ void UTricksterAbility3::P_Execute()
 {
 	if (!GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetIsEnemiesAvailable())
 	{
-		DelegateManager->RequestMinorAnnouncement.ExecuteIfBound(NSLOCTEXT("ST_Localization", "NoTargetsAvailable", "No Targets Available"));
+		DelegateManager->RequestMinorAnnouncement.ExecuteIfBound(NSLOCTEXT("ST_Localization", "NoTargetsAvailable", "No Targets Available"), ESound::NotSelectable);
 		return;
 	}
 	Proprietor->SetIsActionInMotion(true);

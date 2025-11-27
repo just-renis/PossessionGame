@@ -54,7 +54,6 @@ DECLARE_DELEGATE_OneParam(FOnHijack, const TObjectPtr<AActor>&);
 DECLARE_DELEGATE_OneParam(FLoadLevel, const FLoadLevelData);
 DECLARE_DELEGATE_OneParam(FRequestAddAbilitiesToUpgradePool, const TObjectPtr<USaveSlot>&);
 DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
-DECLARE_DELEGATE_OneParam(FRequestMinorAnnouncement, const FText&);
 DECLARE_DELEGATE_OneParam(FOnGlobalHpBarSpawn, const EEnemyHpBar);
 DECLARE_DELEGATE_OneParam(FRequestMiniPopup, const FText&);
 DECLARE_DELEGATE_OneParam(FHackTerminalSubtractHp, const float);
@@ -66,6 +65,7 @@ DECLARE_DELEGATE_TwoParams(FOnMusicSoundtrackChangeRequired, const ESound, const
 DECLARE_DELEGATE_TwoParams(FOnTutorialBotTipDialogue, const ETutorialBotAnimState, const ETutorialBotExpression);
 DECLARE_DELEGATE_TwoParams(FOnPlayerDamageTaken, float, const FLinearColor);
 DECLARE_DELEGATE_TwoParams(FRequestObjectWithCapRemoval, const EPoolObject, const TObjectPtr<AThrowable>&);
+DECLARE_DELEGATE_TwoParams(FRequestMinorAnnouncement, const FText&, const ESound);
 DECLARE_DELEGATE_RetVal_TwoParams(bool, FRequestSpecialUpgradeAvailability, const EUpgrade, const EUpgradeAttribute);
 DECLARE_DELEGATE_ThreeParams(FOnAbilityUse, const int32, const bool, const bool);
 DECLARE_DELEGATE_FourParams(FShowDamageNumber, const FLinearColor, const float, const FVector&, const FVector&);
@@ -143,7 +143,6 @@ public:
 	FLoadLevel LoadLevel;
 	FRequestAddAbilitiesToUpgradePool RequestAddAbilitiesToUpgradePool;
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
-	FRequestMinorAnnouncement RequestMinorAnnouncement;
 	FOnGlobalHpBarSpawn OnGlobalHpBarSpawn;
 	FRequestMiniPopup RequestMiniPopup;
 	FHackTerminalSubtractHp HackTerminalSubtractHp;
@@ -153,6 +152,7 @@ public:
 	FOnTutorialBotTipDialogue OnTutorialBotTipDialogue;
 	FOnPlayerDamageTaken OnPlayerDamageTaken;
 	FRequestObjectWithCapRemoval RequestObjectWithCapRemoval;
+	FRequestMinorAnnouncement RequestMinorAnnouncement;
 	FRequestSpecialUpgradeAvailability RequestSpecialUpgradeAvailability;
 	FOnAbilityUse OnAbilityUse;
 	FShowDamageNumber ShowDamageNumber;

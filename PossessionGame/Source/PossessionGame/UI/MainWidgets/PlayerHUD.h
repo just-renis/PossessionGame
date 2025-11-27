@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PlayerHUD.generated.h"
 
+enum class ESound : uint16;
 enum class EEnemyHpBar : uint8;
 class UPrimaryDataAssetsManager;
 class UInfoPanelUI;
@@ -42,20 +43,23 @@ public:
 	void SetCharacterType(const ECharacterType InCharacterType);
 	void SetCurrentCrosshair() const;
 	void ToggleInfoPanel(const bool bState) const;
-	void ShowMinorAnnouncement(const FText& InText);
+	void ShowMinorAnnouncement(const FText& InText, const ESound InSound);
 	void ShowOutOfAmmo();
 	void SetAbilityIcon(const int32 InAbilityIndex, const int32 InAbilityIconIndex);
 	void PlayHijackAnim(const bool bState) { PlayAnimation(HijackInitiateAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse); }
 private:
 	bool bIsHidden = false;
 	bool bDisplayOutOfAmmoAvailable = true;
+	bool bDisplayMinorAnnouncementAvailable = true;
 	float StepHpPercentage;
 	float GlobalStepHpPercentage;
+	float MinorAnnouncementDisplayCooldown = 0.3f;
 	float OutOfAmmoDisplayCooldown = 0.5f;
 	ECharacterType CharacterType;
 	FTimerHandle UpdateWhiteHpBarHandle;
 	FTimerHandle UpdateGlobalWhiteHpBarHandle;
 	FTimerHandle OutOfAmmoDisplayHandle;
+	FTimerHandle MinorAnnouncementDisplayHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Hp Bars Data", meta = (AllowPrivateAccess = true))
 	TMap<EEnemyHpBar, TObjectPtr<UTexture2D>> EnemyHpBars;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -188,6 +192,7 @@ private:
 	TObjectPtr<UAbilitiesPanelUI> GetAbilityPanel();
 	
 	void EnableOutOfAmmoDisplayAvailability() { bDisplayOutOfAmmoAvailable = true; }
+	void EnableMinorAnnouncementDisplayAvailability() { bDisplayMinorAnnouncementAvailable = true; }
 	virtual void NativeConstruct() override;
 	void ShowDamageTick(const bool bIsCritical);
 	void LevelUp();
