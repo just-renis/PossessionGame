@@ -225,7 +225,7 @@ void AWeapon::P_Setup()
 	TotalAmmo = P_Data->GetTotalAmmo();
 	HitScanDamage = DefaultHitScanDamage = P_Data->GetHitScanDamage();
 	P_VariationHitScanDamageAppliance();
-	HitScanDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
+	HitScanDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f;
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
 	DelegateManager->OnLevelUp.AddUObject(this, &AWeapon::P_SetupLevelUpAppliance);
@@ -345,11 +345,7 @@ void AWeapon::FpsTrailVfxLogic()
 	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), nullptr, GetSocketLocation("FpsProjectileSocket"), GetSocketRotation("FpsProjectileSocket"), Proprietor->GetVariation());
 }
 
-void AWeapon::P_SetupLevelUpAppliance(const int32 InLevel)
-{
-	HitScanDamage -= DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
-	HitScanDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
-}
+void AWeapon::P_SetupLevelUpAppliance() { HitScanDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelUpDamageIncrease() * 0.01f; }
 
 void AWeapon::SetupHandsOptimization() const
 {

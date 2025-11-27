@@ -104,7 +104,7 @@ void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const F
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	if (RunSaveSlot->IsSpecialUpgradeAvailable(EUpgrade::TricksterAbility3, EUpgradeAttribute::Special1))
 	{
-		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
+		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f;
 	}
 	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, true);
 	SetDirection(Rotation.Vector());
@@ -221,11 +221,7 @@ float AProjectile::P_CalculateByRangeDamage(const FHitResult& InHit)
 	return PlayerWeaponData->GetDamageMultiplierFromRange(FVector::Distance(StartLocation, InHit.Location) * 0.01f);
 }
 
-void AProjectile::P_SetupLevelUpAppliance(const int32 InLevel)
-{
-	Damage -= DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
-	Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
-}
+void AProjectile::P_SetupLevelUpAppliance() { Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelUpDamageIncrease() * 0.01f; }
 
 void AProjectile::P_SetupUpgradesAppliance()
 {
@@ -252,7 +248,7 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 	{
 		P_SetupUpgradesAppliance();
 		P_VariationDamageAppliance();
-		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f;
+		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f;
 		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}

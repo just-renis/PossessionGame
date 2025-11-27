@@ -30,15 +30,27 @@ bool USaveSlot::UnlockAbility(const ECharacterType InCharacter, const int32 InAb
 
 int32 USaveSlot::GetCurrentLevelNeededXp() const { return PlayerLevelData->GetXpNeeded(CurrentLevel); }
 
-int32 USaveSlot::GetLevelDamageIncrease(const int32 InLevel) const { return PlayerLevelData->GetDamageIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
+int32 USaveSlot::GetLevelDamageBoost() const { return PlayerLevelData->GetDamageIncrease(CurrentLevel); }
 
-int32 USaveSlot::GetLevelHpIncrease(const int32 InLevel) const { return PlayerLevelData->GetHpIncrease(InLevel == -1 ? CurrentLevel : InLevel); }
+int32 USaveSlot::GetLevelHpBoost() const { return PlayerLevelData->GetHpIncrease(CurrentLevel); }
 
 int32 USaveSlot::GetVariationUnlockProgress(const EVariation InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockProgress(InVariationUnlockName); }
 
 int32 USaveSlot::GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockRequirement(InVariationUnlockName); }
 
 int32 USaveSlot::GetSkillPoints() const { return GetPlayerLevel() - CharacterUnlockedAbilities.Num(); }
+
+int32 USaveSlot::GetLevelUpDamageIncrease() const
+{
+	const int32 Value = PlayerLevelData->GetDamageIncrease(CurrentLevel) - PlayerLevelData->GetDamageIncrease(CurrentLevel - 1);
+	return Value > 0 ? Value : 0;
+}
+
+int32 USaveSlot::GetLevelUpHpIncrease() const
+{
+	const int32 Value = PlayerLevelData->GetHpIncrease(CurrentLevel) - PlayerLevelData->GetHpIncrease(CurrentLevel - 1);
+	return Value > 0 ? Value : 0;
+}
 
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
 
@@ -94,7 +106,8 @@ void USaveSlot::AddXp(const int32 InXp)
 	{
 		GameInstance->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::LevelUp);
 		CurrentXp -= GetCurrentLevelNeededXp();
-		GameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast(++CurrentLevel);
+		CurrentLevel++;
+		GameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast();
 	}
 }
 

@@ -157,8 +157,8 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 					if (!bForEnemy)
 					{
 						return FText::Format(NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.1",
-							"<UpgradeAttributeText>WHILE ACTIVE, YOU REFLECT</>{0}{1}<UpgradeAttributeText>OF THE DAMAGE.</>"),
-							FText::FromString(GetRichTextTag(false)), FText::FromString(" 50% </>"));
+						"<UpgradeAttributeText>WHILE ACTIVE, YOU REFLECT</>{0}{1}<UpgradeAttributeText>OF THE DAMAGE.</>"),
+						FText::FromString(GetRichTextTag(false)), FText::FromString(" 50% </>"));
 					}
 					return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.2", "<UpgradeAttributeText>GUARDIAN TAKES NO DAMAGE ON FIRST HIT.</>");
 				default: break;
@@ -170,12 +170,12 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 					if (!bForEnemy)
 					{
 						return FText::Format(NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.1",
-							"<UpgradeAttributeText>FOR EACH ENEMY KILLED WHILE ABILITY ACTIVE</>{0}{1}<UpgradeAttributeText>MORE DAMAGE FOR</>{2}{3}<UpgradeAttributeText>SECS.</>"),
-							FText::FromString(GetRichTextTag(false)), FText::FromString(" 5% </>"), FText::FromString(GetRichTextTag(false)), FText::FromString(" 20 </>"));
+						"<UpgradeAttributeText>FOR EACH ENEMY KILLED WHILE ABILITY ACTIVE</>{0}{1}<UpgradeAttributeText>MORE DAMAGE FOR</>{2}{3}<UpgradeAttributeText>SECS.</>"),
+						FText::FromString(GetRichTextTag(false)), FText::FromString(" 5% </>"), FText::FromString(GetRichTextTag(false)), FText::FromString(" 20 </>"));
 					}
 					return FText::Format(NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial2.2",
-						"<UpgradeAttributeText>WHEN ABILITY ENDS, ALL ENEMIES RECEIVE</>{0}{1}<UpgradeAttributeText>ACTION SPEED FOR</>{2}{3}<UpgradeAttributeText>SECS.</>"),
-						FText::FromString(GetRichTextTag(true)), FText::FromString(" 50% </>"), FText::FromString(GetRichTextTag(true)), FText::FromString(" 5 </>"));
+					"<UpgradeAttributeText>WHEN ABILITY ENDS, ALL ENEMIES RECEIVE</>{0}{1}<UpgradeAttributeText>ACTION SPEED FOR</>{2}{3}<UpgradeAttributeText>SECS.</>"),
+					FText::FromString(GetRichTextTag(true)), FText::FromString(" 50% </>"), FText::FromString(GetRichTextTag(true)), FText::FromString(" 5 </>"));
 				default: break;
 			}
 			break;
@@ -185,8 +185,8 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy) return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.1", "<UpgradeAttributeText>EACH ENEMY HIT PASSES DAMAGE TO THE CLOSEST ENEMY.</>");
 					return FText::Format(NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial3.2",
-						"<UpgradeAttributeText>PROJECTILES BOUNCE</>{0}{1}<UpgradeAttributeText>TIMES.</>"),
-						FText::FromString(GetRichTextTag(true)), FText::FromString(" 2 </>"));
+					"<UpgradeAttributeText>PROJECTILES BOUNCE</>{0}{1}<UpgradeAttributeText>TIMES.</>"),
+					FText::FromString(GetRichTextTag(true)), FText::FromString(" 2 </>"));
 				default: break;
 			}
 			break;
@@ -197,12 +197,12 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 					if (!bForEnemy)
 					{
 						return FText::Format(NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.1",
-							"<UpgradeAttributeText>AFTER USING GRENADE LAUNCHER</>{0}{1}<UpgradeAttributeText>DAMAGE FOR</>{2}{3}<UpgradeAttributeText>SECS.</>"),
-							FText::FromString(GetRichTextTag(false)), FText::FromString(" +10% </>"), FText::FromString(GetRichTextTag(false)), FText::FromString(" 15 </>"));
+						"<UpgradeAttributeText>AFTER USING GRENADE LAUNCHER</>{0}{1}<UpgradeAttributeText>DAMAGE FOR</>{2}{3}<UpgradeAttributeText>SECS.</>"),
+						FText::FromString(GetRichTextTag(false)), FText::FromString(" +10% </>"), FText::FromString(GetRichTextTag(false)), FText::FromString(" 15 </>"));
 					}
 					return FText::Format(NSLOCTEXT("ST_Localization", "RangerAbilitySpecial1.2",
-						"<UpgradeAttributeText>EACH RANGER UPGRADE GIVES</>{0}{1}<UpgradeAttributeText>DAMAGE</>{2}{3}<UpgradeAttributeText>COOLDOWN.</>"),
-						FText::FromString(GetRichTextTag(true)), FText::FromString(" +10% </>"), FText::FromString(GetRichTextTag(true)), FText::FromString(" -10% </>"));
+					"<UpgradeAttributeText>EACH RANGER UPGRADE GIVES</>{0}{1}<UpgradeAttributeText>DAMAGE</>{2}{3}<UpgradeAttributeText>COOLDOWN.</>"),
+					FText::FromString(GetRichTextTag(true)), FText::FromString(" +10% </>"), FText::FromString(GetRichTextTag(true)), FText::FromString(" -10% </>"));
 				default: break;
 			}
 			break;
@@ -213,8 +213,8 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 					if (!bForEnemy)
 					{
 						return FText::Format(NSLOCTEXT("ST_Localization", "RangerAbilitySpecial2.1",
-							"<UpgradeAttributeText>EACH HIT TO SHIELD RAISES PLAYER DAMAGE BY</>{0}{1}<UpgradeAttributeText>DAMAGE</>{2}{3}<UpgradeAttributeText>SECS.</>"),
-							FText::FromString(GetRichTextTag(false)), FText::FromString(" 1% </>"), FText::FromString(GetRichTextTag(false)), FText::FromString(" 15 </>"));
+						"<UpgradeAttributeText>EACH HIT TO SHIELD RAISES PLAYER DAMAGE BY</>{0}{1}<UpgradeAttributeText>DAMAGE</>{2}{3}<UpgradeAttributeText>SECS.</>"),
+						FText::FromString(GetRichTextTag(false)), FText::FromString(" 1% </>"), FText::FromString(GetRichTextTag(false)), FText::FromString(" 15 </>"));
 					}
 					return FText();
 				default: break;
@@ -227,10 +227,10 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 					if (!bForEnemy)
 					{
 						return FText::Format(NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.1",
-							"<UpgradeAttributeText>MINE DAMAGE INCREASES NEAR IT'S CENTER UP TO</>{0}{1}<UpgradeAttributeText>.</>"),
-							FText::FromString(GetRichTextTag(false)), FText::FromString(" 2X </>"));
+						"<UpgradeAttributeText>MINE DAMAGE INCREASES NEAR IT'S CENTER UP TO</>{0}{1}<UpgradeAttributeText>.</>"),
+						FText::FromString(GetRichTextTag(false)), FText::FromString(" 2X </>"));
 					}
-				return NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.2", "<UpgradeAttributeText>THE CLOSER DAMAGE IS TO RANGER, THE LESS DAMAGE RANGER TAKES.</>");
+					return NSLOCTEXT("ST_Localization", "RangerAbilitySpecial3.2", "<UpgradeAttributeText>THE CLOSER DAMAGE IS TO RANGER, THE LESS DAMAGE RANGER TAKES.</>");
 				default: break;
 			}
 			break;
@@ -241,10 +241,10 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 					if (!bForEnemy)
 					{
 						return FText::Format(NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.1",
-							"<UpgradeAttributeText>ENEMIES IN POISON SMOKE ARE</>{0}{1}<UpgradeAttributeText>SLOWER.</>"),
-							FText::FromString(GetRichTextTag(false)), FText::FromString(" 3X </>"));
+						"<UpgradeAttributeText>ENEMIES IN POISON SMOKE ARE</>{0}{1}<UpgradeAttributeText>SLOWER.</>"),
+						FText::FromString(GetRichTextTag(false)), FText::FromString(" 3X </>"));
 					}
-				return FText::Format(NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.2",
+					return FText::Format(NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial1.2",
 					"<UpgradeAttributeText>PLAYER IN POISON SMOKE IS</>{0}{1}<UpgradeAttributeText>SLOWER.</>"),
 					FText::FromString(GetRichTextTag(true)), FText::FromString(" 2X </>"));
 				default: break;
@@ -257,10 +257,10 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 					if (!bForEnemy)
 					{
 						return FText::Format(NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial2.1",
-							"<UpgradeAttributeText>KILLED ENEMY AFFECTED BY EMP EXPLODES AND DEALS</>{0}{1}<UpgradeAttributeText>OF THEIR MAX HP DAMAGE TO OTHER ENEMIES.</>"),
-							FText::FromString(GetRichTextTag(false)), FText::FromString(" 25% </>"));
+						"<UpgradeAttributeText>KILLED ENEMY AFFECTED BY EMP EXPLODES AND DEALS</>{0}{1}<UpgradeAttributeText>OF THEIR MAX HP DAMAGE TO OTHER ENEMIES.</>"),
+						FText::FromString(GetRichTextTag(false)), FText::FromString(" 25% </>"));
 					}
-				return NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial2.2", "<UpgradeAttributeText>TRICKSTER IS IMMUNE TO EMP.</>");
+					return NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial2.2", "<UpgradeAttributeText>TRICKSTER IS IMMUNE TO EMP.</>");
 				default: break;
 			}
 			break;
@@ -269,7 +269,41 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 			{
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy) return NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial3.1", "<UpgradeAttributeText>PLAYER LEVEL BOOSTS APPLIES TO CLONES.</>");
-				return NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial3.2", "<UpgradeAttributeText>RUNS TO PLAYER AT LIGHT SPEED.</>");
+					return NSLOCTEXT("ST_Localization", "TricksterAbilitySpecial3.2", "<UpgradeAttributeText>RUNS TO PLAYER AT LIGHT SPEED.</>");
+				default: break;
+			}
+			break;
+		case EUpgrade::BreacherAbility1:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return FText::Format(NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial3.2",
+						"<UpgradeAttributeText>THIRD BARREL THROWN DEALS</>{0}{1}<UpgradeAttributeText>MORE DAMAGE.</>"),
+						FText::FromString(GetRichTextTag(false)), FText::FromString(" 3X </>"));
+					}
+					return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial1.2", "<UpgradeAttributeText>BREACHER .</>");
+				default: break;
+			}
+			break;
+		case EUpgrade::BreacherAbility2:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy) return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial2.1", "<UpgradeAttributeText>PLAYER LEVEL BOOSTS APPLIES TO CLONES.</>");
+					return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial2.2", "<UpgradeAttributeText>RUNS TO PLAYER AT LIGHT SPEED.</>");
+				default: break;
+			}
+			break;
+		case EUpgrade::BreacherAbility3:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy) return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial3.1", "<UpgradeAttributeText>EXPLOSION TRIGGER TWICE.</>");
+					return FText::Format(NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial3.2",
+					"<UpgradeAttributeText>BREACHER TAKES</>{0}{1}<UpgradeAttributeText>LESS DAMAGE FROM EXPLOSIONS.</>"),
+					FText::FromString(GetRichTextTag(true)), FText::FromString(" 50% </>"));
 				default: break;
 			}
 			break;
@@ -475,7 +509,7 @@ FString UUpgradeDetailsPanelUI::GetMiscDamageUpgradeString(const TObjectPtr<UCod
 		switch (InAttribute.Key)
 		{
 			case EUpgradeAttribute::FlatDamage: return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatDamage, bForPlayer),
-			MiscData->GetDamage() + MiscData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f, InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+			MiscData->GetDamage() + MiscData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f, InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
 			case EUpgradeAttribute::DamagePercentage: return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::DamagePercentage, bForPlayer),
 			MiscData->GetDamage(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::None);
 			default: return FString();
@@ -515,7 +549,7 @@ FString UUpgradeDetailsPanelUI::GetProjectileDamageByName(const TObjectPtr<UCode
 				ProjectileData->GetDamage(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::None);
 			case EUpgradeAttribute::FlatDamage:
 				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatDamage, bForPlayer),
-				ProjectileData->GetDamage() + ProjectileData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f, InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+				ProjectileData->GetDamage() + ProjectileData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f, InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
 			default: return FString();
 		}
 	}
@@ -533,7 +567,7 @@ FString UUpgradeDetailsPanelUI::GetThrowableDamageByName(const TObjectPtr<UCodex
 				ThrowableData->GetDamage(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::None);
 			case EUpgradeAttribute::FlatDamage:
 				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatDamage, bForPlayer),
-				ThrowableData->GetDamage() + ThrowableData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease() * 0.01f, InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+				ThrowableData->GetDamage() + ThrowableData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f, InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
 			default: return FString();
 		}
 	}

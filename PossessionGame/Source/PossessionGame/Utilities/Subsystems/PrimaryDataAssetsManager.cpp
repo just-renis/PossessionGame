@@ -227,7 +227,7 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 
 void UPrimaryDataAssetsManager::RequestSpawnEnemy(const ECharacterType InCharacter, const FVector& InLocation, const float InHpPercentage)
 {
-	GetWorld()->SpawnActor<AEnemy>(LoadedEnemies[InCharacter], InLocation, FRotator::ZeroRotator)->AI_SetupRespawn(InHpPercentage);
+	GetWorld()->SpawnActor<AEnemy>(LoadedEnemies[InCharacter], InLocation, FRotator::ZeroRotator)->AI_SetRespawnRequest(InHpPercentage);
 }
 
 void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TMap<int32, FSpawnableEnemiesByChapter>& InSpawnableEnemiesByChapter)

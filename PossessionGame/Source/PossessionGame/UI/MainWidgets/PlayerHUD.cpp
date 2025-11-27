@@ -176,10 +176,12 @@ void UPlayerHUD::ShowMinorAnnouncement(const FText& InText)
 
 void UPlayerHUD::ShowOutOfAmmo()
 {
-	if (!OutOfAmmoInv) return;
+	if (!OutOfAmmoInv || !bDisplayOutOfAmmoAvailable) return;
+	bDisplayOutOfAmmoAvailable = false;
 	PlayAnimation(OutOfAmmoAnim);
 	AssetsManager->PlaySound2D(ESound::OutOfAmmo);
 	OutOfAmmoInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	GetWorld()->GetTimerManager().SetTimer(OutOfAmmoDisplayHandle, this, &UPlayerHUD::EnableOutOfAmmoDisplayAvailability, OutOfAmmoDisplayCooldown);
 }
 
 void UPlayerHUD::SetAbilityIcon(const int32 InAbilityIndex, const int32 InAbilityIconIndex) { GetAbilityPanel()->SetAbilityIcon(InAbilityIndex, InAbilityIconIndex); }
@@ -216,7 +218,7 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->OnPlayerDamageTaken.BindUObject(this, &UPlayerHUD::SetDamageNumber);
 	if (HijackProgressBar) MID_HijackProgress = HijackProgressBar->GetDynamicMaterial();
 	UpdateHijackIndicator(false);
-	SetLevelText(GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevel());
+	SetLevelText();
 }
 
 void UPlayerHUD::ShowDamageTick(const bool bIsCritical)
@@ -227,10 +229,10 @@ void UPlayerHUD::ShowDamageTick(const bool bIsCritical)
 	PlayAnimation(DamageTickFadeOut);
 }
 
-void UPlayerHUD::LevelUp(const int32 InLevel)
+void UPlayerHUD::LevelUp()
 {
 	PlayLevelUpAnim();
-	SetLevelText(InLevel);
+	SetLevelText();
 }
 
 void UPlayerHUD::PlayLevelUpAnim()
@@ -240,7 +242,7 @@ void UPlayerHUD::PlayLevelUpAnim()
 	PlayAnimation(LevelUpAnim);
 }
 
-void UPlayerHUD::SetLevelText(const int32 InLevel) const { if (LevelNumberText) LevelNumberText->SetText(FText::FromString(FString::FromInt(InLevel))); }
+void UPlayerHUD::SetLevelText() const { if (LevelNumberText) LevelNumberText->SetText(FText::FromString(FString::FromInt(GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevel()))); }
 
 void UPlayerHUD::UpdateGlobalHpBar(const float InCurrent, const float InMax)
 {
@@ -346,9 +348,16 @@ void UPlayerHUD::CollapseAllCrosshairs() const
 void UPlayerHUD::ResetGlobalHpBar() const
 {
 	if (!GlobalHpBar || !GlobalHpWhiteBar) return;
-	UE_LOG(LogTemp, Error, TEXT("RESET GLOVAL"));
 	GlobalHpWhiteBar->SetPercent(1.f);
 	GlobalHpBar->SetPercent(1.f);
+}
+
+void UPlayerHUD::NativeDestruct()
+{
+	GetWorld()->GetTimerManager().ClearTimer(OutOfAmmoDisplayHandle);
+	GetWorld()->GetTimerManager().ClearTimer(UpdateWhiteHpBarHandle);
+	GetWorld()->GetTimerManager().ClearTimer(UpdateGlobalWhiteHpBarHandle);
+	Super::NativeDestruct();
 }
 
 template<typename T>

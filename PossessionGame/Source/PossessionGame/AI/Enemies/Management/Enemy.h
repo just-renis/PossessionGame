@@ -84,8 +84,9 @@ public:
 	void AI_SetupShootLogic();
 	virtual void AI_CancelShooting() {}
 	void AI_TriggerVectorBlastSpecialImpact();
-	void AI_SetupRespawn(const float InHpPercentage);
+	void AI_SetupRespawn();
 	void AI_ProcessSpawnEffects();
+	void AI_SetRespawnRequest(const float InHpPercentage);
 
 	void P_ApplyUpgradeOnSelection();
 	void P_UseAbility(const int32 AbilityIndex);
@@ -244,6 +245,7 @@ private:
 	bool bHijackVfxAttachRequested = false;
 	bool bPoisonSlowVfxAttachRequested = false;
 	bool bIsInvincible = false;
+	bool bAIRespawnRequested = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -253,6 +255,7 @@ private:
 	float ActionSpeed = 1.f;
 	float MovementSpeedMultiplier = 1.f;
 	float AdditionalActionSpeedValue = 0.f;
+	float SavedRespawnHpPercentage = 1.f;
 	int32 OverlappingPoisonAreas = 0;
 	FTimerHandle AI_ClearShootPauseHandle;
 	FTimerHandle AI_TriggerDeathVoiceLineHandle;
@@ -261,6 +264,7 @@ private:
 	FTimerHandle AI_HideHpBarHandle;
 	FTimerHandle AI_DamageTakenEffectHandle;
 	FTimerHandle AI_ShootLogicHandle;
+	FTimerHandle AI_RespawnTimerHandle;
 	FTimerHandle P_DetectIfPlayerPointingAtOutlineObjectsHandle;
 	FTimerHandle P_TriggerCriticalDamageIndicatorHandle;
 	FTimerHandle P_DeathHandle;
@@ -422,7 +426,7 @@ private:
 	void P_ReceiveCurrentlySelectedVariation();
 	void P_Jump();
 	void P_Stomp();
-	void P_SetupLevelUpAppliance(const int32 InLevel);
+	void P_SetupLevelUpAppliance();
 	void P_StompImpact(const FVector& InHitLocation);
 	void P_Death();
 	void P_ControlLogic();

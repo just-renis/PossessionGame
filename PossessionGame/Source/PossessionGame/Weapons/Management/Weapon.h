@@ -157,7 +157,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
 	
-	void P_SetupLevelUpAppliance(const int32 InLevel);
+	void P_SetupLevelUpAppliance();
 	virtual void P_VariationHitScanDamageAppliance() {}
 
 	virtual EDamageReason GetDamageReason() const override { return P_Data->GetDamageReason(); } // It does not matter from which data i will get damage reason, since it would be the same.

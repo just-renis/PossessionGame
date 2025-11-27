@@ -255,10 +255,11 @@ void AEnemy::AI_TriggerVectorBlastSpecialImpact()
 	else VectorBlastSpecialImpactVfx->Activate();
 }
 
-void AEnemy::AI_SetupRespawn(const float InHpPercentage)
+void AEnemy::AI_SetupRespawn()
 {
+	if (!bAIRespawnRequested) return;
 	MaxHp = AI_Data->GetMaxHp() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
-	CurrentHp = MaxHp * InHpPercentage;
+	CurrentHp = MaxHp * SavedRespawnHpPercentage;
 	MeshBaseMaterialCondenseValue = 0.4f;
 	MeshEmissiveMaterialOpacityValue = 0.5f;
 	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
@@ -280,6 +281,12 @@ void AEnemy::AI_ProcessSpawnEffects()
 	}
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", 0.7f);
 	GetWorldTimerManager().SetTimer(SpawnCondenseMaterialsProcessHandle, this, &AEnemy::SpawnCondenseMaterialsProcess, 0.05f, true);
+}
+
+void AEnemy::AI_SetRespawnRequest(const float InHpPercentage)
+{
+	bAIRespawnRequested = true;
+	SavedRespawnHpPercentage = InHpPercentage;
 }
 
 void AEnemy::AI_SetupShootLogic()
@@ -767,6 +774,7 @@ void AEnemy::BeginPlay()
 	DelegateManager->AddActionSpeedBoost.AddUObject(this, &AEnemy::AddAdditionalActionSpeed);
 	AI_Setup();
 	SetInputState(false);
+	GetWorldTimerManager().SetTimer(AI_RespawnTimerHandle, this, &AEnemy::AI_SetupRespawn, 0.05f);
 }
 
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -916,7 +924,7 @@ void AEnemy::P_SetupData()
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
 	const float HpPercentage = CurrentHp / (AI_Data->GetMaxHp() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName));
 	MaxHp = P_Data->GetMaxHp();
-	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelHpIncrease() * 0.01f;
+	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelHpBoost() * 0.01f;
 	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardHealth) * 0.01f;
 	CurrentHp = MaxHp * HpPercentage;
 	bIsHijacked = true;
@@ -1228,12 +1236,12 @@ void AEnemy::P_Stomp()
 	P_InitiateStomp();
 }
 
-void AEnemy::P_SetupLevelUpAppliance(const int32 InLevel)
+void AEnemy::P_SetupLevelUpAppliance()
 {
 	if (!LevelUpVfx) AssetsManager->AttachVfx(EVfx::LevelUpEffect, [this]() -> bool { return GetIsAlive(); }, &LevelUpVfx, GetMesh(), FName("DeathSocket"));
 	else LevelUpVfx->Activate();
-	MaxHp -= MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel - 1) * 0.01f;
-	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageIncrease(InLevel) * 0.01f;
+	MaxHp += P_Data->GetMaxHp() * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelUpHpIncrease() * 0.01f;
+	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
 }
 
 void AEnemy::P_StompImpact(const FVector& InHitLocation)

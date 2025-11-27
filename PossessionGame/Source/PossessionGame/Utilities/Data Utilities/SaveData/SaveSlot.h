@@ -27,13 +27,15 @@ public:
 	int32 GetXp() const { return CurrentXp; }
 	int32 GetPlayerLevel() const { return CurrentLevel; }
 	int32 GetCurrentLevelNeededXp() const;
-	int32 GetLevelDamageIncrease(const int32 InLevel = -1) const;
-	int32 GetLevelHpIncrease(const int32 InLevel = -1) const;
+	int32 GetLevelDamageBoost() const;
+	int32 GetLevelHpBoost() const;
 	int32 GetVariationUnlockProgress(const EVariation InVariationUnlockName) const;
 	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
 	int32 GetCurrencyAmount() const { return CurrencyAmount; }
 	int32 GetSkillPoints() const;
 	int32 GetArenaMaxTimeSurvivedSeconds() const { return ArenaMaxTimeSurvivedSeconds; }
+	int32 GetLevelUpDamageIncrease() const;
+	int32 GetLevelUpHpIncrease() const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	ECharacterType GetRandomSpawnableCharacter();
 	FCharacterAbilities GetCharacterChosenAbilities(const ECharacterType InCharacter);

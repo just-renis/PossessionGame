@@ -48,11 +48,14 @@ public:
 	void PlayHijackAnim(const bool bState) { PlayAnimation(HijackInitiateAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse); }
 private:
 	bool bIsHidden = false;
+	bool bDisplayOutOfAmmoAvailable = true;
 	float StepHpPercentage;
 	float GlobalStepHpPercentage;
+	float OutOfAmmoDisplayCooldown = 0.5f;
 	ECharacterType CharacterType;
 	FTimerHandle UpdateWhiteHpBarHandle;
 	FTimerHandle UpdateGlobalWhiteHpBarHandle;
+	FTimerHandle OutOfAmmoDisplayHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Hp Bars Data", meta = (AllowPrivateAccess = true))
 	TMap<EEnemyHpBar, TObjectPtr<UTexture2D>> EnemyHpBars;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -184,11 +187,12 @@ private:
 
 	TObjectPtr<UAbilitiesPanelUI> GetAbilityPanel();
 	
+	void EnableOutOfAmmoDisplayAvailability() { bDisplayOutOfAmmoAvailable = true; }
 	virtual void NativeConstruct() override;
 	void ShowDamageTick(const bool bIsCritical);
-	void LevelUp(const int32 InLevel);
+	void LevelUp();
 	void PlayLevelUpAnim();
-	void SetLevelText(const int32 InLevel) const;
+	void SetLevelText() const;
 	void UpdateGlobalHpBar(const float InCurrent, const float InMax);
 	void EnableGlobalHpBar(const EEnemyHpBar InHpBarType) const;
 	void DisableGlobalHpBar() const;
@@ -200,6 +204,7 @@ private:
 	void CollapseAllAbilitiesPanels() const;
 	void CollapseAllCrosshairs() const;
 	void ResetGlobalHpBar() const;
+	virtual void NativeDestruct() override;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };

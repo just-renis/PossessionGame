@@ -123,5 +123,9 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 
 void UMinionBossAbility2::ReceivePlayerPosition()
 {
-	PlayerLocationAtInitiation = Proprietor->GetAI()->GetStateTreeData().GetTarget()->GetActorLocation();
+	const TObjectPtr<AEnemyAIController> AI = Proprietor->GetAI();
+	if (!AI) return;
+	const TObjectPtr<AActor> Target = AI->GetStateTreeData().GetTarget();
+	if (!Target) return;
+	PlayerLocationAtInitiation = Target->GetActorLocation();
 }
