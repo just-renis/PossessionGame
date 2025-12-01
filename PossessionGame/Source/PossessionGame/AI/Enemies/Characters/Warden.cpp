@@ -74,19 +74,9 @@ void AWarden::BeginPlay()
 	BeamCollision->OnComponentBeginOverlap.AddDynamic(this, &AWarden::OnBeamCollisionBeginOverlap);
 }
 
-void AWarden::SetEmpEffect(const float InEffectDuration)
-{
-	switch (GetAI()->GetCurrentStateTreeEvent())
-	{
-		case EStateTreeEvent::WardenBeamShot: AI_StopAbility(0); break;
-		default: ;
-	}
-	Super::SetEmpEffect(InEffectDuration);
-}
-
 void AWarden::TryTriggeringBeamShot()
 {
-	if (!CanAbilityBeExecuted(0) || GetIsAbilityInAction() || !AI) return;
+	if (!CanAbilityBeExecuted(0) || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef()) return;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::WardenBeamShot);
 }
 

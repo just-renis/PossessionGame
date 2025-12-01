@@ -58,7 +58,7 @@ void UPossessionGameInstance::AddAvailableUpgrades(const TObjectPtr<USaveSlot>& 
 {
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	TArray<EUpgrade> AvailableUpgrades;
-	TArray AvailableCharacters = GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetAvailableCharacters();
+	TArray AvailableCharacters = bSpawnCharactersFromSaveEnabled ? GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetAvailableCharacters() : OnlyCharactersToSpawn;
 	for (int32 i = 0; i < AvailableCharacters.Num(); i++)
 	{
 		const ECharacterType CharacterType = AvailableCharacters[i];

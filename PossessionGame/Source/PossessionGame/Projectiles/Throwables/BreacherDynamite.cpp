@@ -24,9 +24,23 @@ ABreacherDynamite::ABreacherDynamite()
 	Sounds.Add(ESound::BreacherDynamiteStick, StickSfx);
 }
 
-void ABreacherDynamite::Explode()
+void ABreacherDynamite::PrimaryExplode()
 {
 	bInExplosionProcess = true;
+	SavedSpecialExplosionLocation = GetActorLocation();
+	Explode();
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.RemoveAll(this);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestObjectWithCapRemoval.ExecuteIfBound(EPoolObject::BreacherDynamite, this);
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::BreacherDynamite, this);
+	bInExplosionProcess = false;
+	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility3, EUpgradeAttribute::Special1))
+	{
+		GetWorldTimerManager().SetTimer(SpecialExplosionDelayHandle, this, &ABreacherDynamite::Explode, SpecialExplosionDelay);
+	}
+}
+
+void ABreacherDynamite::Explode()
+{
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::BreacherAbility3, EUpgradeAttribute::Size, true);
 	const float DamageFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility3, EUpgradeAttribute::FlatDamage, true);
@@ -37,14 +51,10 @@ void ABreacherDynamite::Explode()
 	const float LevelDamageBoost = Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f;
 	NormalDamage += LevelDamageBoost;
 	MinimumDamage += LevelDamageBoost;
-	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
+	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, SavedSpecialExplosionLocation, InnerRadius, OuterRadius,
 	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray{ Proprietor }, this, nullptr, ECC_GameTraceChannel4);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::BreacherDynamiteExplosion, nullptr, GetActorLocation());
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::BreacherDynamiteExplosion, nullptr, SavedSpecialExplosionLocation);
 	PlaySound(ESound::BreacherDynamiteExplosion);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.RemoveAll(this);
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestObjectWithCapRemoval.ExecuteIfBound(EPoolObject::BreacherDynamite, this);
-	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::BreacherDynamite, this);
-	bInExplosionProcess = false;
 }
 
 void ABreacherDynamite::Throw()
@@ -56,7 +66,7 @@ void ABreacherDynamite::Throw()
 void ABreacherDynamite::Init(const bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.AddUObject(this, &ABreacherDynamite::Explode);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.AddUObject(this, &ABreacherDynamite::PrimaryExplode);
 }
 
 void ABreacherDynamite::PerformStickTrace()

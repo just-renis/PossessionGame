@@ -116,7 +116,7 @@ void ATrickster::AI_PlayDeathElectrification()
 
 void ATrickster::AI_TryTriggeringPoisonGrenadeLaunch()
 {
-	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload) || bIsActionInMotion) return;
+	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload) || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
 	if (AI->GetStateTreeData().GetIsTargetInMySight())
 	{
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::TricksterLaunchPoisonGrenade);
@@ -187,11 +187,6 @@ void ATrickster::InitiateDeath()
 void ATrickster::SetEmpEffect(const float InEffectDuration)
 {
 	if (DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility2, EUpgradeAttribute::Special1)) return;
-	switch (GetAI()->GetCurrentStateTreeEvent())
-	{
-		case EStateTreeEvent::TricksterLaunchPoisonGrenade: AI_StopAbility(0); break;
-		default: ;
-	}
 	Super::SetEmpEffect(InEffectDuration);
 }
 

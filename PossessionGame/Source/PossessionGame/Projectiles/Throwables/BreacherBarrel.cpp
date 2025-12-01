@@ -16,8 +16,10 @@ void ABreacherBarrel::Explode()
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::BreacherAbility1, EUpgradeAttribute::Size, true);
 	const float DamageFromUpgrades = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility1, EUpgradeAttribute::FlatDamage, true);
-	float NormalDamage = Data->GetDamage() + DamageFromUpgrades;
-	float MinimumDamage = Data->GetRadiusMinimumDamage() + DamageFromUpgrades;
+	const bool bIsTripleDamageChanceEnabled = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility1, EUpgradeAttribute::Special1);
+	const bool bIsTripleDamageRolled = bIsTripleDamageChanceEnabled ? FMath::RandRange(1, 10) < 4 : false;
+	float NormalDamage = (Data->GetDamage() + DamageFromUpgrades) * (bIsTripleDamageRolled ? 3.f : 1.f);
+	float MinimumDamage = (Data->GetRadiusMinimumDamage() + DamageFromUpgrades) * (bIsTripleDamageRolled ? 3.f : 1.f);
 	const float InnerRadius = Data->GetDamageInnerRadius() + Data->GetDamageInnerRadius() * RadiusIncrease * 0.01f;
 	const float OuterRadius = Data->GetDamageOuterRadius() + Data->GetDamageOuterRadius() * RadiusIncrease * 0.01f;
 	const float LevelDamageBoost = Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f;

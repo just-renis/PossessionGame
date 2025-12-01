@@ -91,7 +91,6 @@ enum class ESound : uint16
 	PanelFadeIn,
 	PanelFadeOut,
 	NotSelectable,
-	OutOfAmmo,
 	FinishOffEnemies,
 	AbilityReset,
 	AbilitySelect,

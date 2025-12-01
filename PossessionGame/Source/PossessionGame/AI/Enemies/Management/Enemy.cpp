@@ -88,10 +88,10 @@ AEnemy::AEnemy()
 
 bool AEnemy::GetIsHijackAble() const { return AI_Data->GetIsPossessable(); }
 
-bool AEnemy::CanAbilityBeExecuted(const int32 AbilityIndex)
+bool AEnemy::CanAbilityBeExecuted(const int32 AbilityIndex) const
 {
-	if (Abilities.IsEmpty()) return false;
-	return Abilities[AbilityIndex]->CanExecute();
+	if (const TObjectPtr<UAbility> Ability = Abilities.FindRef(AbilityIndex)) return Ability->CanExecute();
+	return false;
 }
 
 void AEnemy::AI_InitiateShooting() { if (CurrentMoveMode != EMoveMode::Run && !AnimInstance->IsPlaying(EEnemyAnimState::Reload)) AI_PlayShootMontage(); }
@@ -108,26 +108,29 @@ void AEnemy::AI_ReloadLogic()
 	AI_Reload();
 }
 
-void AEnemy::AI_UseAbility(const int32 AbilityIndex) { if (AbilityIndex < Abilities.Num()) Abilities[AbilityIndex]->AI_Execute(); }
+void AEnemy::AI_UseAbility(const int32 InAbilityIndex) const
+{
+	if (const TObjectPtr<UAbility> Ability = Abilities.FindRef(InAbilityIndex)) Ability->AI_Execute();
+}
 
 void AEnemy::AI_SetMoveMode(const EMoveMode InMoveMode) { SetMaxWalkSpeed(InMoveMode); }
 
 void AEnemy::AI_SetShootPause()
 {
 	bShootPauseActive = true;
-	GetWorldTimerManager().SetTimer(AI_ClearShootPauseHandle, this, &AEnemy::AI_ClearShootPause, AI_Data->GetShootPause(), false);
+	GetWorldTimerManager().SetTimer(AI_ClearShootPauseHandle, this, &AEnemy::AI_ClearShootPause, AI_GetShootPause(), false);
 }
 
 void AEnemy::P_ApplyUpgradeOnSelection()
 {
 	bInUpgradeSelection = false;
-	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->SetupUpgradeAppliance();
+	for (const TPair<int32, TObjectPtr<UAbility>> Ability : Abilities) Ability.Value->SetupUpgradeAppliance();
 }
 
-void AEnemy::P_UseAbility(const int32 AbilityIndex)
+void AEnemy::P_UseAbility(const int32 InAbilityIndex)
 {
-	if (bIsInputLocked) return;
-	if (!bIsActionInMotion && AbilityIndex < Abilities.Num() && Abilities[AbilityIndex]->CanExecute()) Abilities[AbilityIndex]->P_InitiateExecute();
+	if (bIsInputLocked || bIsActionInMotion) return;
+	if (const TObjectPtr<UAbility> Ability = Abilities.FindRef(InAbilityIndex); Ability->CanExecute()) Ability->P_InitiateExecute();
 }
 
 void AEnemy::P_UpdateAmmoHUD(const int32 WeaponAmmo) const { if (P_HUD) P_HUD->UpdateAmmoText(WeaponAmmo); }
@@ -158,8 +161,8 @@ void AEnemy::SetIsActionInMotion(const bool bState)
 void AEnemy::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (!bIsAlive) return;
-	if (!bInUpgradeSelection && Abilities.Num() > 0) TickAbilities(DeltaTime);
+	if (!bIsAlive || bInUpgradeSelection || Abilities.IsEmpty()) return;
+	TickAbilities(DeltaTime);
 }
 
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -240,7 +243,7 @@ void AEnemy::AI_SetCanShoot(const bool bState)
 
 void AEnemy::AI_Disable() { if (AI) AI->StopLogic(true); }
 
-void AEnemy::AI_StopAbility(const int32 InIndex) { if (Abilities.IsValidIndex(InIndex)) Abilities[InIndex]->AI_StopAbility(); }
+void AEnemy::AI_StopAbility(const int32 InIndex) const { if (const TObjectPtr<UAbility> Ability = Abilities.FindRef(InIndex)) Ability->AI_StopAbility(); }
 
 void AEnemy::AI_SetupUpgradesAppliance()
 {
@@ -353,6 +356,7 @@ void AEnemy::StopSound(const ESound InSoundName)
 
 void AEnemy::SetEmpEffect(const float InEffectDuration)
 {
+	AI_StopAbilitiesEvents();
 	if (!AnimInstance) return;
 	AnimInstance->ClearMontageWithHoldHandle();
 	AnimInstance->StopAllMontages(0.f);
@@ -411,6 +415,7 @@ void AEnemy::SetMovementSpeedMultiplier(const float InMultiplier)
 
 void AEnemy::ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection)
 {
+	AI_StopAbilitiesEvents();
 	if (AnimInstance)
 	{
 		AnimInstance->ClearMontageWithHoldHandle();
@@ -428,6 +433,8 @@ void AEnemy::ReceiveStunEffect(const float InEffectDuration, const float InDamag
 	ApplyStunEffect(InEffectDuration);
 }
 
+float AEnemy::AI_GetShootPause() { return AI_Data->GetShootPause(); }
+
 void AEnemy::AI_SetupAbilities()
 {
 	const TMap<EAbility, TSoftObjectPtr<UAbilityData>> AbilitiesData = AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->AI_Abilities_Data;
@@ -438,7 +445,7 @@ void AEnemy::AI_SetupAbilities()
 		if (TObjectPtr<UAbility> Ability = AbilityManager->GetAbility(this, CharacterName, LoadedAbilityData->GetAbilityIndex()))
 		{
 			Ability->Setup(this, LoadedAbilityData, DelegateManager);
-			Abilities.Add(Ability);
+			Abilities.Add(LoadedAbilityData->GetAbilityIndex(), Ability);
 		}
 	}
 }
@@ -565,7 +572,7 @@ void AEnemy::P_SetupAbilities()
 			if (P_HUD) P_HUD->SetAbilityIcon(i, ChosenAbilities[i]);
 			Ability->Setup(this, AbilityData[AbilityManager->GetAbilityName(CharacterName, ChosenAbilities[i])].LoadSynchronous(), DelegateManager);
 			Ability->SetAbilityIndex(i);
-			Abilities.Add(Ability);
+			Abilities.Add(ChosenAbilities[i], Ability);
 		}
 	}
 }
@@ -844,7 +851,7 @@ void AEnemy::AI_SetupData()
 
 void AEnemy::AI_StopAllAbilities()
 {
-	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->AI_StopAbility();
+	for (const TPair<int32, TObjectPtr<UAbility>> Ability : Abilities) Ability.Value->AI_StopAbility();
 	Abilities.Empty();
 }
 
@@ -907,6 +914,21 @@ void AEnemy::AI_MainShootLogic()
 	if (!AI || GetIsActionInMotion() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
 	if (!GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) AI_InitiateShooting();
 	if (!GetIsActionSpeedModified() || GetWeapon()->AI_CanShoot()) AI_ShootLogic();
+}
+
+void AEnemy::AI_StopAbilitiesEvents()
+{
+	switch (GetAI()->GetCurrentStateTreeEvent())
+	{
+		case EStateTreeEvent::WardenBeamShot: AI_StopAbility(0); break;
+		case EStateTreeEvent::MinionBossStomp: AI_StopAbility(0); break;
+		case EStateTreeEvent::MinionBossLaserEye: AI_StopAbility(1); break;
+		case EStateTreeEvent::RangerLaunchGrenade: AI_StopAbility(0); break;
+		case EStateTreeEvent::RangerDeployShield: AI_StopAbility(1); break;
+		case EStateTreeEvent::TricksterLaunchPoisonGrenade: AI_StopAbility(0); break;
+		case EStateTreeEvent::BreacherBash: AI_StopAbility(0); break;
+		default: ;
+	}
 }
 
 bool AEnemy::CanJumpInternal_Implementation() const
@@ -1060,10 +1082,11 @@ void AEnemy::P_ToggleGodMode()
 
 void AEnemy::P_UpdateAbilitiesUI()
 {
-	for (int32 i = 0; i < Abilities.Num(); i++) if (bIsHijacked) P_HUD->UpdateAbilityUI(Abilities[i]);
+	if (!bIsHijacked || !P_HUD) return;
+	for (TPair<int32, TObjectPtr<UAbility>> Ability : Abilities) P_HUD->UpdateAbilityUI(Ability.Value);
 }
 
-void AEnemy::P_StopAllAbilities() { for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->P_StopAbility(); }
+void AEnemy::P_StopAllAbilities() { for (const TPair<int32, TObjectPtr<UAbility>> Ability : Abilities) Ability.Value->P_StopAbility(); }
 
 void AEnemy::P_HandleEscapeClick()
 {
@@ -1438,7 +1461,7 @@ void AEnemy::P_TurnOffInvincibility() { bIsInvincible = false; }
 
 void AEnemy::TickAbilities(const float InDeltaTime)
 {
-	for (int32 i = 0; i < Abilities.Num(); i++) Abilities[i]->Tick(InDeltaTime);
+	for (const TPair<int32, TObjectPtr<UAbility>> Ability : Abilities) Ability.Value->Tick(InDeltaTime);
 	P_UpdateAbilitiesUI();
 }
 

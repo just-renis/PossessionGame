@@ -10,5 +10,6 @@ enum class EStateTreeEvent : uint8
     RangerLaunchGrenade,
     RangerDeployShield,
     TricksterLaunchPoisonGrenade,
-    WardenBeamShot
+    WardenBeamShot,
+    BreacherBash
 };

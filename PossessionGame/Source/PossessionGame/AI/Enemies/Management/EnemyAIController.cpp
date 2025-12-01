@@ -49,6 +49,7 @@ void AEnemyAIController::SetupStateTree()
 {
 	if (StateTree)
 	{
+		UE_LOG(LogTemp, Error, TEXT("SETUP STATE TREE"));
 		StateTreeData.SetWeaponRef(Proprietor->GetWeapon());
 		StateTreeData.SetEQSTargetRef(EQSTarget);
 		StateTreeData.SetStateTreeRef(StateTree);

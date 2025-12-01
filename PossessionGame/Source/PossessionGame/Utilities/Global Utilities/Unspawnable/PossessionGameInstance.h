@@ -48,9 +48,11 @@ public:
 	bool IsPlayerTakenDamageEffectsEnabled() const { return bPlayerTakenDamageEffectsEnabled; }
 	bool GetIsMainMenuLaunchedOnce() const { return bMainMenuLaunchedOnce; }
 	bool GetUseCustomLevel() const { return bUseCustomLevel; }
+	bool GetSpawnCharactersFromSaveEnabled() const { return bSpawnCharactersFromSaveEnabled; }
 	float GetGlobalTimeDilation() const { return GlobalTimeDilation; }
 	int32 GetPlayerLevel() const { return PlayerLevel; }
 	TObjectPtr<UPlayerLevelData> GetPlayerLevelData() const { return PlayerLevelData; }
+	TArray<ECharacterType> GetSpawnableCharacters() const { return OnlyCharactersToSpawn; }
 	
 	void InitGameInstanceManagers();
 	void SetMainMenuLaunchedOnce() { bMainMenuLaunchedOnce = true;}
@@ -60,6 +62,10 @@ private:
 	FTimerHandle TickHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
 	bool bPlayerTakenDamageEffectsEnabled = true;
+	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (AllowPrivateAccess = true))
+	bool bSpawnCharactersFromSaveEnabled = true;
+	UPROPERTY(EditDefaultsOnly, Category = "Editor Only Variables", meta = (EditCondition = "!bSpawnCharactersFromSaveEnabled", EditConditionHides))
+	TArray<ECharacterType> OnlyCharactersToSpawn;
 	UPROPERTY(EditDefaultsOnly, Category = "Demo", meta = (AllowPrivateAccess = true))
 	bool bIsDemo = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Game Data", meta = (AllowPrivateAccess = true))

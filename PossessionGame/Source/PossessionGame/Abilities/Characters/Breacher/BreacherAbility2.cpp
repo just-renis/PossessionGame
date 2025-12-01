@@ -1,11 +1,19 @@
 ﻿#include "BreacherAbility2.h"
 #include "PossessionGame/AI/Enemies/Characters/Breacher.h"
+#include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Data Assets/Base Data Assets/AbilityData.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
+
+void UBreacherAbility2::AI_Execute()
+{
+	Proprietor->SetIsActionInMotion(true);
+	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Bash);
+	Super::AI_Execute();
+}
 
 void UBreacherAbility2::P_Execute()
 {
@@ -20,3 +28,9 @@ void UBreacherAbility2::P_Execute()
 bool UBreacherAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void UBreacherAbility2::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ABreacher>(AbilityProprietor); }
+
+void UBreacherAbility2::CooldownLogic(const float InDeltaTime)
+{
+	Super::CooldownLogic(InDeltaTime);
+	if (!Proprietor->GetIsHijacked() && CurrentChargesAmount > 0) Proprietor->AI_EnableTriggeringBash();
+}

@@ -13,5 +13,6 @@ enum class EEnemyAnimState : uint8
 	Stomp,
 	ShootLaser,
 	StopLaser,
-	StunEffect
+	StunEffect,
+	Bash
 };

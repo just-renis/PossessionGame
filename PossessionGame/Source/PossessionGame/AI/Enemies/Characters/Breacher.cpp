@@ -5,9 +5,12 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EMoveMode.h"
+#include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Projectiles/Throwables/BreacherBarrel.h"
@@ -21,6 +24,8 @@
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
+float ABreacher::AI_GetShootPause() { return Super::AI_GetShootPause() * (bAI_ShootSpeedDoubled ? 0.5f : 1.f); }
+
 void ABreacher::AI_SetupWeapon()
 {
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::BreacherWeapon, GetMesh());
@@ -29,8 +34,19 @@ void ABreacher::AI_SetupWeapon()
 
 void ABreacher::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::BreacherOnHijack); }
 
+void ABreacher::AI_TryTriggeringBash()
+{
+	UE_LOG(LogTemp, Error, TEXT("AI_TryTriggeringBash 0"));
+	if (!CanAbilityBeExecuted(1) || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	UE_LOG(LogTemp, Error, TEXT("AI_TryTriggeringBash 1"));
+	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::BreacherBash);
+	GetWorld()->GetTimerManager().ClearTimer(AI_TriggerBashHandle);
+}
+
 void ABreacher::P_Setup()
 {
+	GetWorldTimerManager().ClearTimer(AI_TriggerBashHandle);
+	bImmuneToExplosions = false;
 	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ABreacher::SetIsActionInMotion);
@@ -57,6 +73,12 @@ void ABreacher::P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPri
 	AssetsManager->PlaySound2D(ESound::BreacherBashImpact);
 	BashCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	BashCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ABreacher::AI_EnableTriggeringBash()
+{
+	UE_LOG(LogTemp, Error, TEXT("AI_EnableTriggeringBash"));
+	GetWorldTimerManager().SetTimer(AI_TriggerBashHandle, this, &ABreacher::AI_TryTriggeringBash, 1.f, true);
 }
 
 void ABreacher::P_ThrowBarrel()
@@ -108,16 +130,27 @@ ABreacher::ABreacher()
 	BashCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+float ABreacher::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (bImmuneToExplosions && DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) return 0.f;
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
 void ABreacher::BeginPlay()
 {
 	CharacterName = ECharacterType::Breacher;
 	Super::BeginPlay();
+	bImmuneToExplosions = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility3, EUpgradeAttribute::Special1);
+	bAI_ShootSpeedDoubled = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility1, EUpgradeAttribute::Special1);
 	BashCollision->OnComponentBeginOverlap.AddDynamic(this, &ABreacher::OnBashCollisionBeginOverlap);
 }
 
-void ABreacher::DetonateDynamites()
+void ABreacher::DetonateDynamites() { DelegateManager->OnDetonateDynamites.Broadcast(); }
+
+void ABreacher::InitiateDeath()
 {
-	DelegateManager->OnDetonateDynamites.Broadcast();
+	GetWorld()->GetTimerManager().ClearTimer(AI_TriggerBashHandle);
+	Super::InitiateDeath();
 }
 
 void ABreacher::OnBashCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

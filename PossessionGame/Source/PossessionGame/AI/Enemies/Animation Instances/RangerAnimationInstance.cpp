@@ -27,6 +27,7 @@ void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInter
 	{
 		Proprietor->SetIsActionInMotion(false);
 		(void)Cast<ARangerAIController>(Proprietor->GetAI())->OnGrenadeLaunchFinished.ExecuteIfBound();
+		return;
 	}
 	const TObjectPtr<UAnimMontage>* DeployShieldMontage = Montages.Find(EEnemyAnimState::DeployShield);
 	if (DeployShieldMontage && Montage == DeployShieldMontage->Get())

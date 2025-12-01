@@ -43,7 +43,6 @@ private:
 	virtual void AI_PlayDeathElectrification() override;
 
 	virtual void BeginPlay() override;
-	virtual void SetEmpEffect(const float InEffectDuration) override;
 	void TryTriggeringBeamShot();
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DisableBeamCollision();

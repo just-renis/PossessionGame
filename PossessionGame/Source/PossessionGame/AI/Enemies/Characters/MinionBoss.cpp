@@ -44,6 +44,7 @@ void AMinionBoss::EnableDistanceCheckForLaserEye() { GetWorld()->GetTimerManager
 
 void AMinionBoss::OnLaserFinish()
 {
+	if (!AI->GetStateTreeData().GetStateTreeRef()) return;
 	SetIsActionInMotion(false);
 	SetIsAbilityInAction(false);
 	if (bIsMoveDirectlyToPlayerTriggered) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
@@ -52,6 +53,7 @@ void AMinionBoss::OnLaserFinish()
 
 void AMinionBoss::OnStompFinish()
 {
+	if (!AI->GetStateTreeData().GetStateTreeRef()) return;
 	SetIsActionInMotion(false);
 	SetIsAbilityInAction(false);
 	if (bIsMoveDirectlyToPlayerTriggered) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
@@ -111,6 +113,7 @@ TObjectPtr<AWeapon>& AMinionBoss::GetWeapon() { return Weapons[0]; }
 
 void AMinionBoss::AI_SetupWeapon()
 {
+	if (!AI) return;
 	for (int32 i = 0; i < 4; i++)
 	{
 		Weapons.Add(GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::MinionBossHandWeapon, GetMesh(), FName("AIWeaponSocket" + FString::FromInt(i + 1))));
@@ -220,17 +223,6 @@ void AMinionBoss::ToggleStompTrigger(const bool bState) const
 	if (StompTrigger) StompTrigger->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
 }
 
-void AMinionBoss::SetEmpEffect(const float InEffectDuration)
-{
-	switch (GetAI()->GetCurrentStateTreeEvent())
-	{
-		case EStateTreeEvent::MinionBossStomp: AI_StopAbility(0); break;
-		case EStateTreeEvent::MinionBossLaserEye: AI_StopAbility(1); break;
-		default: ;
-	}
-	Super::SetEmpEffect(InEffectDuration);
-}
-
 void AMinionBoss::EmpEffectEnded()
 {
 	Super::EmpEffectEnded();
@@ -248,7 +240,7 @@ void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDama
 
 void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 {
-	if (!AI || bIsAbilityInAction || bAffectedByEmp) return;
+	if (!AI || bIsAbilityInAction || bAffectedByEmp || !AI->GetStateTreeData().GetStateTreeRef()) return;
 	const TObjectPtr<AActor> Target = AI->GetStateTreeData().GetTarget();
 	if (!Target) return;
 	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) >= FMath::Square(1000.f))
@@ -263,13 +255,14 @@ void AMinionBoss::DealLaserDamageToPlayer() const { if (Player) Player->ReceiveD
 
 void AMinionBoss::SetMoveDirectlyToPlayer()
 {
+	if (!AI->GetStateTreeData().GetStateTreeRef()) return;
 	bIsMoveDirectlyToPlayerTriggered = true;
 	if (!bIsAbilityInAction && !bIsActionInMotion) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
 }
 
 void AMinionBoss::OnPlayerEnterStompTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!AI || bAffectedByEmp || OtherActor->ActorHasTag("AliveEnemy") || bIsActionInMotion) return;
+	if (!AI || bAffectedByEmp || OtherActor->ActorHasTag("AliveEnemy") || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
 	if (bIsMoveDirectlyToPlayerTriggered) ResetMoveDirectlyToPlayer();
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
 	ToggleStompTrigger(false);

@@ -19,8 +19,9 @@ void FStateTreeData::TriggerEvent(const EStateTreeEvent InEventName) const
 		case EStateTreeEvent::TricksterLaunchPoisonGrenade: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Trickster.LaunchPoisonGrenade")); break;
 		case EStateTreeEvent::MinionBossStomp: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MinionBoss.Stomp")); break;
 		case EStateTreeEvent::MinionBossLaserEye: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MinionBoss.LaserEye")); break;
-		case EStateTreeEvent::MinionBossMoveDirectlyToPlayer: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MinionBoss.MoveDirectlyToPlayer"));
-		case EStateTreeEvent::WardenBeamShot: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Warden.BeamShot"));
+		case EStateTreeEvent::MinionBossMoveDirectlyToPlayer: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MinionBoss.MoveDirectlyToPlayer")); break;
+		case EStateTreeEvent::WardenBeamShot: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Warden.BeamShot")); break;
+		case EStateTreeEvent::BreacherBash: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Breacher.Bash"));
 		default: ;
 	}
 }

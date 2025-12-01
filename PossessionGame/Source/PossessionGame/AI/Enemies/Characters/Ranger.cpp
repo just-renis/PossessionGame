@@ -105,7 +105,7 @@ void ARanger::AI_DestroyGrenadeTrigger() const
 
 void ARanger::AI_TryTriggeringGrenade()
 {
-	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload) || bIsActionInMotion) return;
+	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload) || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
 	if (AI->GetStateTreeData().GetIsTargetInMySight())
 	{
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerLaunchGrenade);
@@ -115,6 +115,7 @@ void ARanger::AI_TryTriggeringGrenade()
 
 void ARanger::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
 {
+	if (!AI || !AI->GetStateTreeData().GetStateTreeRef()) return;
 	if (CanAbilityBeExecuted(1) && !bAffectedByEmp && !bIsActionInMotion && CurrentHp <= MaxHp * 0.5f) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerDeployShield);
 	Super::AI_ReceivedDamage(InDamageReason, InDamage);
 }
@@ -189,17 +190,6 @@ void ARanger::InitiateDeath()
 {
 	AI_DestroyGrenadeTrigger();
 	Super::InitiateDeath();
-}
-
-void ARanger::SetEmpEffect(const float InEffectDuration)
-{
-	switch (GetAI()->GetCurrentStateTreeEvent())
-	{
-		case EStateTreeEvent::RangerLaunchGrenade: AI_StopAbility(0); break;
-		case EStateTreeEvent::RangerDeployShield: AI_StopAbility(1); break;
-		default: ;
-	}
-	Super::SetEmpEffect(InEffectDuration);
 }
 
 void ARanger::EmpEffectEnded()

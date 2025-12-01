@@ -182,7 +182,7 @@ void UPlayerHUD::ShowOutOfAmmo()
 	if (!OutOfAmmoInv || !bDisplayOutOfAmmoAvailable) return;
 	bDisplayOutOfAmmoAvailable = false;
 	PlayAnimation(OutOfAmmoAnim);
-	AssetsManager->PlaySound2D(ESound::OutOfAmmo);
+	AssetsManager->PlaySound2D(ESound::NotSelectable);
 	OutOfAmmoInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	GetWorld()->GetTimerManager().SetTimer(OutOfAmmoDisplayHandle, this, &UPlayerHUD::EnableOutOfAmmoDisplayAvailability, OutOfAmmoDisplayCooldown);
 }

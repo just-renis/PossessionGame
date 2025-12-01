@@ -219,7 +219,7 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const FVfxContainer& InVfxDat
 
 void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack, TFunction<bool()> InSpawnCallback)
 {
-	if (InCharacter == ECharacterType::Random) InCharacter = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetRandomSpawnableCharacter();
+	if (InCharacter == ECharacterType::Random) InCharacter = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetRandomSpawnableCharacter(Cast<UPossessionGameInstance>(GetGameInstance()));
 	!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, InCallBack, InSpawnCallback) : SpawnEnemy(InCharacter, InGameMode, InCallBack);
 	TotalSpawnedEnemies++;
 	AddSpawnableEnemiesToThePool();
@@ -608,7 +608,6 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_PanelFadeIn", ESound::PanelFadeIn);
 	SoundMap.Add("PA_PanelFadeOut", ESound::PanelFadeOut);
 	SoundMap.Add("PA_NotSelectable", ESound::NotSelectable);
-	SoundMap.Add("PA_OutOfAmmo", ESound::OutOfAmmo);
 	SoundMap.Add("PA_FinishOffEnemies", ESound::FinishOffEnemies);
 	SoundMap.Add("PA_AbilityReset", ESound::AbilityReset);
 	SoundMap.Add("PA_AbilitySelect", ESound::AbilitySelect);

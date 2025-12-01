@@ -11,6 +11,8 @@ class POSSESSIONGAME_API UBreacherAbility2 : public UAbility
 {
 	GENERATED_BODY()
 public:
+	virtual void AI_Execute() override;
+	
 	virtual void P_Execute() override;
 private:
 	UPROPERTY()
@@ -19,4 +21,5 @@ private:
 	virtual bool IsProprietorPossessed() override;
 	
 	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) override;
+	virtual void CooldownLogic(const float InDeltaTime) override;
 };

@@ -213,7 +213,7 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 					if (!bForEnemy)
 					{
 						return FText::Format(NSLOCTEXT("ST_Localization", "RangerAbilitySpecial2.1",
-						"<UpgradeAttributeText>EACH HIT TO SHIELD RAISES PLAYER DAMAGE BY</>{0}{1}<UpgradeAttributeText>DAMAGE</>{2}{3}<UpgradeAttributeText>SECS.</>"),
+						"<UpgradeAttributeText>EACH HIT TO SHIELD RAISES PLAYER DAMAGE BY</>{0}{1}<UpgradeAttributeText>DAMAGE FOR</>{2}{3}<UpgradeAttributeText>SECS.</>"),
 						FText::FromString(GetRichTextTag(false)), FText::FromString(" 1% </>"), FText::FromString(GetRichTextTag(false)), FText::FromString(" 15 </>"));
 					}
 					return FText();
@@ -279,11 +279,11 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return FText::Format(NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial3.2",
-						"<UpgradeAttributeText>THIRD BARREL THROWN DEALS</>{0}{1}<UpgradeAttributeText>MORE DAMAGE.</>"),
-						FText::FromString(GetRichTextTag(false)), FText::FromString(" 3X </>"));
+						return FText::Format(NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial1.1",
+						"<UpgradeAttributeText>BARREL HAS</>{0}{1}<UpgradeAttributeText>TO DEAL</>{2}{3}<UpgradeAttributeText>DAMAGE.</>"),
+						FText::FromString(GetRichTextTag(false)), FText::FromString(" 30% </>"), FText::FromString(GetRichTextTag(false)), FText::FromString(" 3X </>"));
 					}
-					return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial1.2", "<UpgradeAttributeText>BREACHER .</>");
+					return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial1.2", "<UpgradeAttributeText>BREACHER SHOOTS TWICE AS FAST.</>");
 				default: break;
 			}
 			break;
@@ -300,10 +300,13 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 			switch (InUpgradeAttribute)
 			{
 				case EUpgradeAttribute::Special1:
-					if (!bForEnemy) return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial3.1", "<UpgradeAttributeText>EXPLOSION TRIGGER TWICE.</>");
-					return FText::Format(NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial3.2",
-					"<UpgradeAttributeText>BREACHER TAKES</>{0}{1}<UpgradeAttributeText>LESS DAMAGE FROM EXPLOSIONS.</>"),
-					FText::FromString(GetRichTextTag(true)), FText::FromString(" 50% </>"));
+					if (!bForEnemy)
+					{
+						return FText::Format(NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial3.1",
+						"<UpgradeAttributeText>EXPLOSION TRIGGER TWICE AFTER</>{0}{1}<UpgradeAttributeText>SEC.</>"),
+						FText::FromString(GetRichTextTag(false)), FText::FromString(" 0.3 </>"));
+					}
+					return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial3.2", "<UpgradeAttributeText>BREACHER IMMUNE TO EXPLOSIONS.</>");
 				default: break;
 			}
 			break;

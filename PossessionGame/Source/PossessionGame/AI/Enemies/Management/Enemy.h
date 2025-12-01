@@ -54,7 +54,7 @@ public:
 	bool GetIsHijackActionViable() const { return bCanHijackOtherEnemy; }
 	bool GetIsActionSpeedModified() const { return bActionSpeedModified; }
 	bool GetIsHijackAble() const;
-	bool CanAbilityBeExecuted(const int32 AbilityIndex);
+	bool CanAbilityBeExecuted(const int32 AbilityIndex) const;
 	bool GetIsSliding() const { return bIsSliding; }
 	float GetActionSpeed() const { return ActionSpeed; }
 	float GetDamageReduction() const { return DamageReduction; }
@@ -74,12 +74,12 @@ public:
 	virtual void AI_InitiateShooting();
 	virtual void AI_ShootLogic();
 	virtual void AI_ReloadLogic();
-	void AI_UseAbility(const int32 AbilityIndex);
+	void AI_UseAbility(const int32 InAbilityIndex) const;
 	void AI_SetMoveMode(const EMoveMode InMoveMode);
 	void AI_SetShootPause();
 	virtual void AI_SetCanShoot(const bool bState);
 	virtual void AI_Disable();
-	void AI_StopAbility(const int32 InIndex);
+	void AI_StopAbility(const int32 InIndex) const;
 	void AI_SetupUpgradesAppliance();
 	void AI_SetupShootLogic();
 	virtual void AI_CancelShooting() {}
@@ -89,7 +89,7 @@ public:
 	void AI_SetRespawnRequest(const float InHpPercentage);
 
 	void P_ApplyUpgradeOnSelection();
-	void P_UseAbility(const int32 AbilityIndex);
+	void P_UseAbility(const int32 InAbilityIndex);
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo) const;
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo, const int32 MaxAmmo) const;
 	void P_UpdateAmmoHUD(const int32 FirstWeaponAmmo, const int32 SecondWeaponAmmo, const int32 MaxAmmo) const;
@@ -116,7 +116,7 @@ public:
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
 	void SetMovementSpeedMultiplier(const float InMultiplier);
-	void ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection);
+	virtual void ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection);
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -157,7 +157,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<AWeapon> Weapon;
 	UPROPERTY()
-	TArray<TObjectPtr<UAbility>> Abilities;
+	TMap<int32, TObjectPtr<UAbility>> Abilities;
 	UPROPERTY()
 	TObjectPtr<UAICharacterData> AI_Data;
 	UPROPERTY()
@@ -172,6 +172,8 @@ protected:
 	TObjectPtr<UAudioComponent> VectorBlastSpecialImpactUpgrade;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
+	
+	virtual float AI_GetShootPause();
 
 	virtual void AI_SetupAbilities();
 	virtual void AI_Setup();
@@ -394,6 +396,7 @@ private:
 	void AI_DisableDamageTakenRedFlash() const;
 	void AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent);
 	void AI_MainShootLogic();
+	void AI_StopAbilitiesEvents();
 	
 	void P_SetupData();
 	void P_SetupUI();

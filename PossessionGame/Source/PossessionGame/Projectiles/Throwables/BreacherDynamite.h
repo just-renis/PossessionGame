@@ -16,7 +16,10 @@ public:
 private:
 	ABreacherDynamite();
 
+	float SpecialExplosionDelay = 0.3f;
 	FTimerHandle StickHandle;
+	FTimerHandle SpecialExplosionDelayHandle;
+	FVector SavedSpecialExplosionLocation;
 	UPROPERTY(EditDefaultsOnly, Category = "Dynamite", meta = (AllowPrivateAccess = true))
 	FVector StickingBounds;
 	UPROPERTY()
@@ -24,6 +27,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> StickSfx;
 
+	void PrimaryExplode();
 	void Explode();
 	void PerformStickTrace();
 };

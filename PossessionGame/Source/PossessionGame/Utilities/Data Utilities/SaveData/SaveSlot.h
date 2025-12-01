@@ -37,7 +37,7 @@ public:
 	int32 GetLevelUpDamageIncrease() const;
 	int32 GetLevelUpHpIncrease() const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
-	ECharacterType GetRandomSpawnableCharacter();
+	ECharacterType GetRandomSpawnableCharacter(const TObjectPtr<UPossessionGameInstance>& InGameInstance) const;
 	FCharacterAbilities GetCharacterChosenAbilities(const ECharacterType InCharacter);
 	FCharacterAbilities GetCharacterUnlockedAbilities(const ECharacterType InCharacter);
 	FString GetSlotName() { return SlotName; }

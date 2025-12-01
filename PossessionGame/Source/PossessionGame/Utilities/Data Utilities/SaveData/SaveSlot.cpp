@@ -54,12 +54,10 @@ int32 USaveSlot::GetLevelUpHpIncrease() const
 
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
 
-ECharacterType USaveSlot::GetRandomSpawnableCharacter()
+ECharacterType USaveSlot::GetRandomSpawnableCharacter(const TObjectPtr<UPossessionGameInstance>& InGameInstance) const
 {
-	const int32 TargetIndex = FMath::RandRange(0, SpawnableCharacters.Num() - 1);
-	int32 CurrentIndex = 0;
-	for (const ECharacterType EnemyType : SpawnableCharacters) if (CurrentIndex++ == TargetIndex) return EnemyType;
-	return ECharacterType::Minion;
+	TArray SpawnableCharactersArray = InGameInstance->GetSpawnCharactersFromSaveEnabled() ? SpawnableCharacters.Array() : InGameInstance->GetSpawnableCharacters();
+	return SpawnableCharactersArray.IsEmpty() ? ECharacterType::Minion : SpawnableCharactersArray[FMath::RandRange(0, SpawnableCharactersArray.Num() - 1)];
 }
 
 FCharacterAbilities USaveSlot::GetCharacterChosenAbilities(const ECharacterType InCharacter)
