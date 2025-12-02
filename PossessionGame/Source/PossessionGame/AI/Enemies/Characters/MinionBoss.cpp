@@ -169,6 +169,12 @@ void AMinionBoss::AI_PlayDeathSound()
 	PlaySound(ESound::MinionBossDeath);
 }
 
+void AMinionBoss::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
+{
+	if (bHitByOtherAI) return;
+	Super::AI_ReceiveStunEffect(bHitByOtherAI, InEffectDuration, InDamage, InHitDirection);
+}
+
 void AMinionBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::MinionBoss;

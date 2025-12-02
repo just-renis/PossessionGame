@@ -76,6 +76,7 @@ private:
 	virtual void AI_PlayDeathElectrification() override;
 	virtual void AI_PlaySpawnSound() override;
 	virtual void AI_PlayDeathSound() override;
+	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

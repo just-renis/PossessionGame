@@ -7,8 +7,7 @@ void UBreacherAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsI
 	const TObjectPtr<UAnimMontage>* BashMontage = Montages.Find(EEnemyAnimState::Bash);
 	if (BashMontage && InMontage == BashMontage->Get())
 	{
-		UE_LOG(LogTemp, Error, TEXT("FINISHED BASH"));
-		Proprietor->SetIsActionInMotion(false);
+		Proprietor->GetAnimInstance()->SetIsControlRigEnabled(true);
 		(void)Cast<ABreacherAIController>(Proprietor->GetAI())->OnBashFinished.ExecuteIfBound();
 	}
 }

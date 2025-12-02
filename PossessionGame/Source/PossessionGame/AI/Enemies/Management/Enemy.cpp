@@ -121,6 +121,99 @@ void AEnemy::AI_SetShootPause()
 	GetWorldTimerManager().SetTimer(AI_ClearShootPauseHandle, this, &AEnemy::AI_ClearShootPause, AI_GetShootPause(), false);
 }
 
+void AEnemy::AI_SetCanShoot(const bool bState)
+{
+	bCanShoot = bState;
+	if (!bCanShoot)
+	{
+		Weapon->SubtractShootCycleUntilReload();
+		Weapon->GetShootCyclesUntilReload() <= 0 ? AI_ReloadLogic() : AI_SetShootPause();
+	}
+}
+
+void AEnemy::AI_Disable() { if (AI) AI->StopLogic(true); }
+
+void AEnemy::AI_StopAbility(const int32 InIndex) const { if (const TObjectPtr<UAbility> Ability = Abilities.FindRef(InIndex)) Ability->AI_StopAbility(); }
+
+void AEnemy::AI_SetupUpgradesAppliance()
+{
+	MaxHp += GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
+	CurrentHp = MaxHp;
+}
+
+void AEnemy::AI_SetupShootLogic()
+{
+	GetWorld()->GetTimerManager().SetTimer(AI_ShootLogicHandle, this, &AEnemy::AI_MainShootLogic, GetWeapon()->GetShootCooldown(), true);
+	if (!GetWeapon()->GetIsFirstShotWasShot())
+	{
+		GetWeapon()->SetFirstShotWasShot();
+		AI_MainShootLogic();
+	}
+}
+
+void AEnemy::AI_TriggerVectorBlastSpecialImpact()
+{
+	PlaySound(ESound::VectorBlastSpecialImpactUpgrade);
+	if (!VectorBlastSpecialImpactVfx) AssetsManager->AttachVfx(EVfx::GuardianVectorBlastUpgrade, [this]() -> bool { return GetIsAlive(); }, &VectorBlastSpecialImpactVfx, GetMesh(), FName("DeathSocket"));
+	else VectorBlastSpecialImpactVfx->Activate();
+}
+
+void AEnemy::AI_SetupRespawn()
+{
+	if (!bAIRespawnRequested) return;
+	MaxHp = AI_Data->GetMaxHp() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
+	CurrentHp = MaxHp * SavedRespawnHpPercentage;
+	MeshBaseMaterialCondenseValue = 0.4f;
+	MeshEmissiveMaterialOpacityValue = 0.5f;
+	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
+	{
+		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+	}
+	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
+	if (MI_MeshEmissiveMaterial) MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
+}
+
+void AEnemy::AI_ProcessSpawnEffects()
+{
+	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetMesh()->GetSocketLocation("SpawnSocket"));
+	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
+	{
+		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+	}
+	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", 0.7f);
+	GetWorldTimerManager().SetTimer(SpawnCondenseMaterialsProcessHandle, this, &AEnemy::SpawnCondenseMaterialsProcess, 0.05f, true);
+}
+
+void AEnemy::AI_SetRespawnRequest(const float InHpPercentage)
+{
+	bAIRespawnRequested = true;
+	SavedRespawnHpPercentage = InHpPercentage;
+}
+
+void AEnemy::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
+{
+	AI_StopAbilitiesEvents();
+	if (AnimInstance)
+	{
+		AnimInstance->ClearMontageWithHoldHandle();
+		AnimInstance->StopAllMontages(0.f);
+	}
+	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
+	InHitDirection.Z = 0.f;
+	GetCharacterMovement()->StopMovementImmediately();
+	if (!bHitByOtherAI)
+	{
+		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
+		ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage);
+	}
+	LaunchCharacter(InHitDirection * (AI_Data ? AI_Data->GetBashImpulseForce() : 5000.f), true, true);
+	FTimerDelegate TimerDel;
+	TimerDel.BindLambda([this, InEffectDuration] { ApplyStunEffect(InEffectDuration); });
+	GetWorldTimerManager().SetTimer(StunEffectApplyHandle, TimerDel, 0.05f, false);
+}
+
 void AEnemy::P_ApplyUpgradeOnSelection()
 {
 	bInUpgradeSelection = false;
@@ -150,12 +243,30 @@ void AEnemy::P_IncreaseMovementSpeed(const float InPercentage) { SetMaxWalkSpeed
 
 void AEnemy::P_ResetMovementSpeed() { SetMaxWalkSpeed(EMoveMode::Walk); }
 
+void AEnemy::P_ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection)
+{
+	if (AnimInstance)
+	{
+		AnimInstance->ClearMontageWithHoldHandle();
+		AnimInstance->StopAllMontages(0.f);
+	}
+	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
+	InHitDirection.Z = 0.f;
+	GetCharacterMovement()->StopMovementImmediately();
+	ReceiveDamage(InDamage, EDamageReason::None);
+	LaunchCharacter(InHitDirection * (P_Data ? P_Data->GetBashImpulseForce() : 5000.f), true, true);
+	FTimerDelegate TimerDel;
+	TimerDel.BindLambda([this, InEffectDuration] { ApplyStunEffect(InEffectDuration); });
+	GetWorldTimerManager().SetTimer(StunEffectApplyHandle, TimerDel, 0.05f, false);
+	ApplyStunEffect(InEffectDuration);
+}
+
 void AEnemy::SetIsActionInMotion(const bool bState)
 {
 	bIsActionInMotion = bState;
 	if (!AI) return;
 	AI->GetStateTreeData().SetIsActionInMotion(bState);
-	AI_SetupShootLogic();
+	if (!bState) AI_SetupShootLogic();
 }
 
 void AEnemy::Tick(const float DeltaTime)
@@ -228,77 +339,6 @@ void AEnemy::PossessedBy(AController* NewController)
 			(void)DelegateManager->OnHijack.ExecuteIfBound(this);
 			SetInputState(false);
 		}
-	}
-}
-
-void AEnemy::AI_SetCanShoot(const bool bState)
-{
-	bCanShoot = bState;
-	if (!bCanShoot)
-	{
-		Weapon->SubtractShootCycleUntilReload();
-		Weapon->GetShootCyclesUntilReload() <= 0 ? AI_ReloadLogic() : AI_SetShootPause();
-	}
-}
-
-void AEnemy::AI_Disable() { if (AI) AI->StopLogic(true); }
-
-void AEnemy::AI_StopAbility(const int32 InIndex) const { if (const TObjectPtr<UAbility> Ability = Abilities.FindRef(InIndex)) Ability->AI_StopAbility(); }
-
-void AEnemy::AI_SetupUpgradesAppliance()
-{
-	MaxHp += GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
-	CurrentHp = MaxHp;
-}
-
-void AEnemy::AI_TriggerVectorBlastSpecialImpact()
-{
-	PlaySound(ESound::VectorBlastSpecialImpactUpgrade);
-	if (!VectorBlastSpecialImpactVfx) AssetsManager->AttachVfx(EVfx::GuardianVectorBlastUpgrade, [this]() -> bool { return GetIsAlive(); }, &VectorBlastSpecialImpactVfx, GetMesh(), FName("DeathSocket"));
-	else VectorBlastSpecialImpactVfx->Activate();
-}
-
-void AEnemy::AI_SetupRespawn()
-{
-	if (!bAIRespawnRequested) return;
-	MaxHp = AI_Data->GetMaxHp() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
-	CurrentHp = MaxHp * SavedRespawnHpPercentage;
-	MeshBaseMaterialCondenseValue = 0.4f;
-	MeshEmissiveMaterialOpacityValue = 0.5f;
-	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
-	{
-		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
-		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
-	}
-	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
-	if (MI_MeshEmissiveMaterial) MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
-}
-
-void AEnemy::AI_ProcessSpawnEffects()
-{
-	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetMesh()->GetSocketLocation("SpawnSocket"));
-	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
-	{
-		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
-		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
-	}
-	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", 0.7f);
-	GetWorldTimerManager().SetTimer(SpawnCondenseMaterialsProcessHandle, this, &AEnemy::SpawnCondenseMaterialsProcess, 0.05f, true);
-}
-
-void AEnemy::AI_SetRespawnRequest(const float InHpPercentage)
-{
-	bAIRespawnRequested = true;
-	SavedRespawnHpPercentage = InHpPercentage;
-}
-
-void AEnemy::AI_SetupShootLogic()
-{
-	GetWorld()->GetTimerManager().SetTimer(AI_ShootLogicHandle, this, &AEnemy::AI_MainShootLogic, GetWeapon()->GetShootCooldown(), true);
-	if (!GetWeapon()->GetIsFirstShotWasShot())
-	{
-		GetWeapon()->SetFirstShotWasShot();
-		AI_MainShootLogic();
 	}
 }
 
@@ -411,26 +451,6 @@ void AEnemy::SetMovementSpeedMultiplier(const float InMultiplier)
 {
 	MovementSpeedMultiplier = InMultiplier;
 	SetMaxWalkSpeed(CurrentMoveMode);
-}
-
-void AEnemy::ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection)
-{
-	AI_StopAbilitiesEvents();
-	if (AnimInstance)
-	{
-		AnimInstance->ClearMontageWithHoldHandle();
-		AnimInstance->StopAllMontages(0.f);
-	}
-	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
-	InHitDirection.Z = 0.f;
-	GetCharacterMovement()->StopMovementImmediately();
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
-	ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage);
-	LaunchCharacter(InHitDirection * (AI_Data ? AI_Data->GetBashImpulseForce() : 5000.f), true, true);
-	FTimerDelegate TimerDel;
-	TimerDel.BindLambda([this, InEffectDuration] { ApplyStunEffect(InEffectDuration); });
-	GetWorldTimerManager().SetTimer(StunEffectApplyHandle, TimerDel, 0.05f, false);
-	ApplyStunEffect(InEffectDuration);
 }
 
 float AEnemy::AI_GetShootPause() { return AI_Data->GetShootPause(); }
@@ -843,6 +863,17 @@ void AEnemy::DestroyThis()
 
 void AEnemy::DisableAllVfxAfterPossession() { DisableHijackViableVfx(); }
 
+void AEnemy::ClearTimers()
+{
+	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
+	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
+	GetWorldTimerManager().ClearTimer(P_ControlLogicHandle);
+	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
+	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
+	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
+	GetWorldTimerManager().ClearTimer(ActionSpeedHandle);
+}
+
 void AEnemy::AI_SetupData()
 {
 	CurrentHp = MaxHp = AI_Data->GetMaxHp();
@@ -916,9 +947,10 @@ void AEnemy::AI_MainShootLogic()
 	if (!GetIsActionSpeedModified() || GetWeapon()->AI_CanShoot()) AI_ShootLogic();
 }
 
-void AEnemy::AI_StopAbilitiesEvents()
+void AEnemy::AI_StopAbilitiesEvents() const
 {
-	switch (GetAI()->GetCurrentStateTreeEvent())
+	if (!AI) return;
+	switch (AI->GetCurrentStateTreeEvent())
 	{
 		case EStateTreeEvent::WardenBeamShot: AI_StopAbility(0); break;
 		case EStateTreeEvent::MinionBossStomp: AI_StopAbility(0); break;
@@ -1485,17 +1517,6 @@ void AEnemy::SetupUserSettings() const
 	if (!UserSettings->IsMappingContextRegistered(PlayerMappingContext)) UserSettings->RegisterInputMappingContext(PlayerMappingContext);
 }
 
-void AEnemy::ClearTimers()
-{
-	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
-	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
-	GetWorldTimerManager().ClearTimer(P_ControlLogicHandle);
-	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
-	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
-	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
-	GetWorldTimerManager().ClearTimer(ActionSpeedHandle);
-}
-
 void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage) const
 {
 	switch (InDamageReason)
@@ -1668,8 +1689,15 @@ void AEnemy::ApplyEmpEffect(const float InEffectDuration)
 
 void AEnemy::ApplyStunEffect(const float InEffectDuration)
 {
-	PlayStunAffectedVfx(InEffectDuration);
-	AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
+	if (!bIsHijacked)
+	{
+		PlayStunAffectedVfx(InEffectDuration);
+		AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
+	}
+	else
+	{
+		// HANDS ANIMINSTANCE AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
+	}
 }
 
 void AEnemy::PlayStunAffectedVfx(const float InEffectDuration)

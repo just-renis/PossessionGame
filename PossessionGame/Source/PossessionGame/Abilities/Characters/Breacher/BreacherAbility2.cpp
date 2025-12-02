@@ -10,8 +10,8 @@
 
 void UBreacherAbility2::AI_Execute()
 {
-	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Bash);
+	Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
 	Super::AI_Execute();
 }
 

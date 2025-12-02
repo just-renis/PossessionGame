@@ -20,15 +20,20 @@ private:
 	ABreacher();
 
 	FTimerHandle AI_TriggerBashHandle;
+	FTimerHandle AI_TriggerBashImpulse;
 	FTimerHandle StopBashHandle;
 	bool bImmuneToExplosions = false;
 	bool bAI_ShootSpeedDoubled = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
-	float BashStunDuration = 2.f;
+	float AI_BashImpulse = 10.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
-	float DefaultBashDamage = 40.f;
+	float AI_DefaultBashDamage = 10.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UCapsuleComponent> BashCollision;
+	float AI_BashStunDuration = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
+	float P_BashStunDuration = 2.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
+	float P_DefaultBashDamage = 40.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> BashCameraShake;
 	UPROPERTY()
@@ -43,9 +48,11 @@ private:
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_TriggerDeathVoiceLine() override;
 	void AI_TryTriggeringBash();
+	void AI_Bash();
+	UFUNCTION()
+	void AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	virtual void P_Setup() override;
-	void P_StopBash();
 	virtual void P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent) override;
 	UFUNCTION()
 	void P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
@@ -54,7 +61,7 @@ private:
 
 	virtual void BeginPlay() override;
 	void DetonateDynamites();
-	virtual void InitiateDeath() override;
-	UFUNCTION()
-	void OnBashCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void ClearTimers() override;
+	void StopBash();
+	void TriggerBashOverlap();
 };

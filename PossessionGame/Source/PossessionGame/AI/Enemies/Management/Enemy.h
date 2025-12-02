@@ -87,6 +87,7 @@ public:
 	void AI_SetupRespawn();
 	void AI_ProcessSpawnEffects();
 	void AI_SetRespawnRequest(const float InHpPercentage);
+	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection);
 
 	void P_ApplyUpgradeOnSelection();
 	void P_UseAbility(const int32 InAbilityIndex);
@@ -96,6 +97,7 @@ public:
 	void P_SetFov(const float InFov);
 	void P_IncreaseMovementSpeed(const float InPercentage);
 	void P_ResetMovementSpeed();
+	virtual void P_ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection);
 
 	virtual FLinearColor GetDamageNumberColor() const { return DamageNumberColor; }
 
@@ -116,7 +118,6 @@ public:
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
 	void SetMovementSpeedMultiplier(const float InMultiplier);
-	virtual void ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection);
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -217,6 +218,7 @@ protected:
 
 	void SetCurrentHp(const float NewCurrentHp) { CurrentHp = NewCurrentHp; }
 	void SetMaxHp(const float NewMaxHp) { MaxHp = NewMaxHp; }
+	virtual void SetMoveMode(const EMoveMode InMoveMode) { CurrentMoveMode = InMoveMode; }
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void SetAnimInstance();
@@ -226,7 +228,7 @@ protected:
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
 	virtual void DestroyThis();
 	virtual void DisableAllVfxAfterPossession();
-	virtual void SetMoveMode(const EMoveMode InMoveMode) { CurrentMoveMode = InMoveMode; }
+	virtual void ClearTimers();
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanHijackOtherEnemy = false;
@@ -396,7 +398,7 @@ private:
 	void AI_DisableDamageTakenRedFlash() const;
 	void AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent);
 	void AI_MainShootLogic();
-	void AI_StopAbilitiesEvents();
+	void AI_StopAbilitiesEvents() const;
 	
 	void P_SetupData();
 	void P_SetupUI();
@@ -454,7 +456,6 @@ private:
 	void SetupStimuliSource();
 	void ChangeXRayState(const bool bState) const;
 	void SetupUserSettings() const;
-	void ClearTimers();
 	void ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage) const;
 	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;
 	virtual void Landed(const FHitResult& Hit) override;

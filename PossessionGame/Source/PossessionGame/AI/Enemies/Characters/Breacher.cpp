@@ -23,63 +23,9 @@
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
+#include "Engine/OverlapResult.h"
 
-float ABreacher::AI_GetShootPause() { return Super::AI_GetShootPause() * (bAI_ShootSpeedDoubled ? 0.5f : 1.f); }
-
-void ABreacher::AI_SetupWeapon()
-{
-	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::BreacherWeapon, GetMesh());
-	Super::AI_SetupWeapon();
-}
-
-void ABreacher::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::BreacherOnHijack); }
-
-void ABreacher::AI_TryTriggeringBash()
-{
-	UE_LOG(LogTemp, Error, TEXT("AI_TryTriggeringBash 0"));
-	if (!CanAbilityBeExecuted(1) || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef()) return;
-	UE_LOG(LogTemp, Error, TEXT("AI_TryTriggeringBash 1"));
-	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::BreacherBash);
-	GetWorld()->GetTimerManager().ClearTimer(AI_TriggerBashHandle);
-}
-
-void ABreacher::P_Setup()
-{
-	GetWorldTimerManager().ClearTimer(AI_TriggerBashHandle);
-	bImmuneToExplosions = false;
-	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
-	Super::P_Setup();
-	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ABreacher::SetIsActionInMotion);
-}
-
-void ABreacher::P_StopBash()
-{
-	GetCapsuleComponent()->OnComponentHit.RemoveAll(this);
-	SetIsActionInMotion(false);
-	SetMaxWalkSpeed(EMoveMode::Walk);
-}
-
-void ABreacher::P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
-{
-	InEnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &ABreacher::DetonateDynamites);
-}
-
-void ABreacher::P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	if (!OtherActor || OtherActor == this || FMath::Abs(Hit.Normal.Z) > 0.5f) return;
-	P_MakeCameraShake(BashCameraShake);
-	GetWorldTimerManager().ClearTimer(StopBashHandle);
-	P_StopBash();
-	AssetsManager->PlaySound2D(ESound::BreacherBashImpact);
-	BashCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	BashCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
-void ABreacher::AI_EnableTriggeringBash()
-{
-	UE_LOG(LogTemp, Error, TEXT("AI_EnableTriggeringBash"));
-	GetWorldTimerManager().SetTimer(AI_TriggerBashHandle, this, &ABreacher::AI_TryTriggeringBash, 1.f, true);
-}
+void ABreacher::AI_EnableTriggeringBash() { GetWorldTimerManager().SetTimer(AI_TriggerBashHandle, this, &ABreacher::AI_TryTriggeringBash, 1.f, true); }
 
 void ABreacher::P_ThrowBarrel()
 {
@@ -102,7 +48,7 @@ void ABreacher::P_Bash(const float InImpulseStrength)
 	DashDirection.Normalize();
 	GetCharacterMovement()->StopMovementImmediately();
 	LaunchCharacter(DashDirection * InImpulseStrength * 1000.f, true, true);
-	GetWorldTimerManager().SetTimer(StopBashHandle, this, &ABreacher::P_StopBash, 0.2f, false);
+	GetWorldTimerManager().SetTimer(StopBashHandle, this, &ABreacher::StopBash, 0.2f, false);
 }
 
 void ABreacher::P_ThrowDynamite()
@@ -125,9 +71,68 @@ ABreacher::ABreacher()
 	DeathSfx->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::BreacherSpawn, SpawnSfx);
 	Sounds.Add(ESound::BreacherDeath, DeathSfx);
-	BashCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("BashCollision"));
-	BashCollision->SetupAttachment(GetMesh());
-	BashCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+float ABreacher::AI_GetShootPause() { return Super::AI_GetShootPause() * (bAI_ShootSpeedDoubled ? 0.5f : 1.f); }
+
+void ABreacher::AI_SetupWeapon()
+{
+	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::BreacherWeapon, GetMesh());
+	Super::AI_SetupWeapon();
+}
+
+void ABreacher::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::BreacherOnHijack); }
+
+void ABreacher::AI_TryTriggeringBash()
+{
+	if (!CanAbilityBeExecuted(1) || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
+	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::BreacherBash);
+	GetWorldTimerManager().SetTimer(AI_TriggerBashImpulse, this, &ABreacher::AI_Bash, 1.f);
+	GetWorldTimerManager().ClearTimer(AI_TriggerBashHandle);
+}
+
+void ABreacher::AI_Bash()
+{
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABreacher::AI_BashHit);
+	AssetsManager->PlaySound2D(ESound::BreacherBash);
+	FVector DashDirection = GetActorForwardVector();
+	DashDirection.Z = 0.f;
+	DashDirection.Normalize();
+	GetCharacterMovement()->StopMovementImmediately();
+	LaunchCharacter(DashDirection * AI_BashImpulse * 1000.f, true, true);
+	GetWorldTimerManager().SetTimer(StopBashHandle, this, &ABreacher::StopBash, 0.25f, false);
+}
+
+void ABreacher::AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (!OtherActor || OtherActor == this || FMath::Abs(Hit.Normal.Z) > 0.5f) return;
+	GetWorldTimerManager().ClearTimer(StopBashHandle);
+	StopBash();
+	AssetsManager->PlaySound2D(ESound::BreacherBashImpact);
+	TriggerBashOverlap();
+}
+
+void ABreacher::P_Setup()
+{
+	bImmuneToExplosions = false;
+	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
+	Super::P_Setup();
+	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ABreacher::SetIsActionInMotion);
+}
+
+void ABreacher::P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
+{
+	InEnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &ABreacher::DetonateDynamites);
+}
+
+void ABreacher::P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (!OtherActor || OtherActor == this || FMath::Abs(Hit.Normal.Z) > 0.5f) return;
+	P_MakeCameraShake(BashCameraShake);
+	GetWorldTimerManager().ClearTimer(StopBashHandle);
+	StopBash();
+	AssetsManager->PlaySound2D(ESound::BreacherBashImpact);
+	TriggerBashOverlap();
 }
 
 float ABreacher::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -142,25 +147,63 @@ void ABreacher::BeginPlay()
 	Super::BeginPlay();
 	bImmuneToExplosions = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility3, EUpgradeAttribute::Special1);
 	bAI_ShootSpeedDoubled = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility1, EUpgradeAttribute::Special1);
-	BashCollision->OnComponentBeginOverlap.AddDynamic(this, &ABreacher::OnBashCollisionBeginOverlap);
 }
 
 void ABreacher::DetonateDynamites() { DelegateManager->OnDetonateDynamites.Broadcast(); }
 
-void ABreacher::InitiateDeath()
+void ABreacher::ClearTimers()
 {
-	GetWorld()->GetTimerManager().ClearTimer(AI_TriggerBashHandle);
-	Super::InitiateDeath();
+	Super::ClearTimers();
+	GetWorldTimerManager().ClearTimer(AI_TriggerBashImpulse);
+	GetWorldTimerManager().ClearTimer(AI_TriggerBashHandle);
+	GetWorldTimerManager().ClearTimer(StopBashHandle);
 }
 
-void ABreacher::OnBashCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ABreacher::StopBash()
 {
-	if (OtherActor == this || !OtherActor->ActorHasTag("AliveEnemy")) return;
-	FVector HitDirection = (OtherActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	HitDirection.Z = 0.f;
-	float BashDamage = DefaultBashDamage;
-	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
-	BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, true);
-	Cast<AEnemy>(OtherActor)->ReceiveStunEffect(BashStunDuration, BashDamage, HitDirection);
-	DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + HitDirection * 300.f, FColor::Red, false, 2.f, 0, 2.f);
+	GetCapsuleComponent()->OnComponentHit.RemoveAll(this);
+	SetIsActionInMotion(false);
+	SetMaxWalkSpeed(EMoveMode::Walk);
+}
+
+void ABreacher::TriggerBashOverlap()
+{
+	TArray<FOverlapResult> OverlapResults;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	DrawDebugCapsule(GetWorld(), GetActorLocation() + GetActorForwardVector() * 35.f, 107.f, 64.f, FQuat::Identity, FColor::Green, false, 5.f);
+	if (GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation() + GetActorForwardVector() * 35.f, FQuat::Identity, ECC_Pawn, FCollisionShape::MakeCapsule(64.f, 107.f), Params))
+	{
+		TSet<TObjectPtr<AActor>> HitActors;
+		for (FOverlapResult OverlapResult : OverlapResults)
+		{
+			TObjectPtr<AActor> HitActor = OverlapResult.GetActor();
+			if (!HitActor || HitActors.Contains(HitActor)) continue;
+			HitActors.Add(HitActor);
+			UE_LOG(LogTemp, Error, TEXT("OVERLAP %s HIT %s"), *GetName(), *OverlapResult.GetActor()->GetName());
+			if (bIsHijacked)
+			{
+				if (HitActor == this || !HitActor->ActorHasTag("AliveEnemy")) return;
+				FVector HitDirection = (HitActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+				HitDirection.Z = 0.f;
+				float BashDamage = P_DefaultBashDamage;
+				const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+				BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, true);
+				Cast<AEnemy>(HitActor)->AI_ReceiveStunEffect(false, P_BashStunDuration, BashDamage, HitDirection);
+			}
+			else
+			{
+				const bool bIsPlayerGotHit = HitActor->ActorHasTag("Player");
+				const bool bIsEnemyGotHit = HitActor->ActorHasTag("AliveEnemy");
+				if (HitActor == this || (!bIsPlayerGotHit && !bIsEnemyGotHit)) return;
+				FVector HitDirection = (HitActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+				HitDirection.Z = 0.f;
+				float BashDamage = AI_DefaultBashDamage;
+				const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+				BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, false);
+				if (bIsPlayerGotHit) Cast<AEnemy>(HitActor)->P_ReceiveStunEffect(AI_BashStunDuration, BashDamage, HitDirection);
+				else Cast<AEnemy>(HitActor)->AI_ReceiveStunEffect(true, AI_BashStunDuration, 0.f, HitDirection);
+			}
+		}
+	}
 }

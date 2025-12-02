@@ -62,6 +62,12 @@ void AWarden::AI_PlayDeathElectrification()
 	AssetsManager->AttachVfx(EVfx::WardenDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
 }
 
+void AWarden::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
+{
+	if (bHitByOtherAI) return;
+	Super::AI_ReceiveStunEffect(bHitByOtherAI, InEffectDuration, InDamage, InHitDirection);
+}
+
 void AWarden::BeginPlay()
 {
 	CharacterName = ECharacterType::Warden;

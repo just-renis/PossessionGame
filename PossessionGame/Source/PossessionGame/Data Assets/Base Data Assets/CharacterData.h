@@ -12,6 +12,7 @@ public:
 	virtual float GetMaxHp() { return MaxHp; }
 	float GetMaxWalkSpeed() const { return MaxWalkSpeed; }
 	float GetMaxRunSpeed() const { return MaxRunSpeed; }
+	float GetBashImpulseForce() const { return BashImpulseForce; }
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float MaxHp;
@@ -19,4 +20,6 @@ private:
 	float MaxWalkSpeed;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float MaxRunSpeed;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	float BashImpulseForce = 8000.f;
 };
