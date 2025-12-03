@@ -30,6 +30,9 @@ public:
 	FStateTreeData& GetStateTreeData() { return StateTreeData; }
 	FOnEqsTargetUpdate& GetEqsTargetUpdateDelegate() { return OnEqsTargetUpdate; }
 
+	void SetStateTreeCurrentEvent(const EStateTreeEvent InCurrentStateTreeEvent) { CurrentStateTreeEvent = InCurrentStateTreeEvent; }
+	void SetControlRigAvailabilityToggle(const bool bState) { bIsControlRigAvailableToToggle = bState; }
+	void SetEQSTargetLocation(const FVector& InLocation) const { EQSTarget->SetActorLocation(InLocation); }
 	void SetShootCooldown(const float InValue);
 	void SetReloadDelay(const float InValue);
 	virtual void DestroyThis();
@@ -37,10 +40,8 @@ public:
 	void SetupStateTree();
 	void SetMoveMode(const EMoveMode InMoveMode) const;
 	virtual void SetupAI();
-	void SetEQSTargetLocation(const FVector& InLocation) const { EQSTarget->SetActorLocation(InLocation); }
 	void ResumeLogic() const;
 	void StopLogic(const bool bNeedCleanup);
-	void SetStateTreeCurrentEvent(const EStateTreeEvent InCurrentStateTreeEvent) { CurrentStateTreeEvent = InCurrentStateTreeEvent; }
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStateTreeComponent> StateTree;
@@ -54,6 +55,7 @@ protected:
 	UFUNCTION()
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 private:
+	bool bIsControlRigAvailableToToggle = true;
 	EStateTreeEvent CurrentStateTreeEvent;
 	FOnEqsTargetUpdate OnEqsTargetUpdate;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

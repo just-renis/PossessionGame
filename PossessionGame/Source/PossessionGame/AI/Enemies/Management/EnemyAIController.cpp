@@ -87,10 +87,10 @@ void AEnemyAIController::AdjustCustomFocus() const
 	if (!Proprietor->GetIsActionInMotion())
 	{
 		const FVector TargetLocation = EnemyCommunicator->GetTargetLocation();
-		if (Proprietor->GetMoveMode() != EMoveMode::Walk || TargetLocation.ContainsNaN()) Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
+		if ((Proprietor->GetMoveMode() != EMoveMode::Walk || TargetLocation.ContainsNaN()) && bIsControlRigAvailableToToggle) Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
 		else
 		{
-			Proprietor->GetAnimInstance()->SetIsControlRigEnabled(true);
+			if (bIsControlRigAvailableToToggle) Proprietor->GetAnimInstance()->SetIsControlRigEnabled(true);
 			Proprietor->GetAnimInstance()->SetLookAtLocation(TargetLocation);
 			CustomFocusToLocation(TargetLocation);
 		}
