@@ -178,36 +178,6 @@ void UUpgradeSelectionUI::PlayAnimByOptionSelected(const bool bIncludeBindToFini
 	}
 }
 
-void UUpgradeSelectionUI::AdjustNeededCounts(int32& InNeededCommon, int32& InNeededRare, int32& InNeededLegendary, const FRuntimeUpgradeData& InUpgradeData)
-{
-	const int32 CommonCap = InUpgradeData.GetMaxRarityChoicesCount(EUpgradeChoice::Common);
-	const int32 RareCap = InUpgradeData.GetMaxRarityChoicesCount(EUpgradeChoice::Rare);
-	const int32 LegendaryCap = InUpgradeData.GetMaxRarityChoicesCount(EUpgradeChoice::Legendary);
-	InNeededCommon = FMath::Min(1, CommonCap);
-	InNeededRare = FMath::Min(1, RareCap);
-	InNeededLegendary = FMath::Min(1, LegendaryCap);
-	int32 Available = 3 - (InNeededCommon + InNeededRare + InNeededLegendary);
-	if (Available <= 0) return;
-	while (Available > 0 && InNeededRare < RareCap) { ++InNeededRare; --Available; }
-	while (Available > 0 && InNeededCommon < CommonCap) { ++InNeededCommon; --Available; }
-	while (Available > 0 && InNeededLegendary < LegendaryCap) { ++InNeededLegendary; --Available; }
-}
-
-void UUpgradeSelectionUI::FillUpgrades(const FRuntimeUpgradeData& InUpgradeData, TArray<FUpgradeChoicePair>& OutChosen, const EUpgradeChoice InRarity, const int32 InCount)
-{
-	TArray<FUpgradeChoicePair> LocalChosen;
-	for (int32 i = 0; i < InCount; i++)
-	{
-		FUpgradeChoicePair Pair = InUpgradeData.GetRandomUpgradeChoice(InRarity, LocalChosen);
-		if (!Pair.IsEmpty())
-		{
-			OutChosen.Add(Pair);
-			LocalChosen.Add(Pair);
-		}
-		else break;
-	}
-}
-
 void UUpgradeSelectionUI::SetupUpgradeChoices(const FRuntimeUpgradeData& InUpgradeData)
 {
 	if (const FCachedPairs* CachedPairsData = CachedPairs.Find(InUpgradeData.GetUpgradeName()))
@@ -220,14 +190,20 @@ void UUpgradeSelectionUI::SetupUpgradeChoices(const FRuntimeUpgradeData& InUpgra
 		else UpgradeChoice3->Setup(InUpgradeData.GetUpgradeName());
 		return;
 	}
-	int32 NeededCommon = 1;
-	int32 NeededRare = 1;
-	int32 NeededLegend = 1;
-	AdjustNeededCounts(NeededCommon, NeededRare, NeededLegend, InUpgradeData);
 	TArray<FUpgradeChoicePair> Chosen;
-	FillUpgrades(InUpgradeData, Chosen, EUpgradeChoice::Legendary, NeededLegend);
-	FillUpgrades(InUpgradeData, Chosen, EUpgradeChoice::Rare, NeededRare);
-	FillUpgrades(InUpgradeData, Chosen, EUpgradeChoice::Common, NeededCommon);
+	TMap<int32, EUpgradeChoice> AvailableUpgradeChoices = { { 0, EUpgradeChoice::Common }, { 1, EUpgradeChoice::Rare }, { 2, EUpgradeChoice::Legendary} };
+	while (Chosen.Num() != 3)
+	{
+		if (AvailableUpgradeChoices.IsEmpty()) break;
+		TArray<int32> Keys;
+		AvailableUpgradeChoices.GetKeys(Keys);
+		const int32 RandomKeyIndex = FMath::RandRange(0, Keys.Num() - 1);
+		const int32 ChosenKey = Keys[RandomKeyIndex];
+		const EUpgradeChoice ChosenValue = AvailableUpgradeChoices[ChosenKey];
+		FUpgradeChoicePair Pair = InUpgradeData.GetRandomUpgradeChoice(ChosenValue, Chosen);
+		if (!Pair.IsEmpty()) Chosen.Add(Pair);
+		else AvailableUpgradeChoices.Remove(ChosenKey);
+	}
 	CachedPairs.Add(InUpgradeData.GetUpgradeName(), FCachedPairs(Chosen));
 	if (Chosen.IsValidIndex(0)) UpgradeChoice1->Setup(InUpgradeData.GetUpgradeName(), Chosen[0]);
 	else UpgradeChoice1->Setup(InUpgradeData.GetUpgradeName());

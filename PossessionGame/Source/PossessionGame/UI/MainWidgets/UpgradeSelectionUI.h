@@ -107,8 +107,6 @@ private:
 	virtual void NativeConstruct() override;
 	void OpenUpgradeChoicesPanel(const FRuntimeUpgradeData& InUpgradeData);
 	void PlayAnimByOptionSelected(const bool bIncludeBindToFinish);
-	void AdjustNeededCounts(int32& InNeededCommon, int32& InNeededRare, int32& InNeededLegendary, const FRuntimeUpgradeData& InUpgradeData);
-	void FillUpgrades(const FRuntimeUpgradeData& InUpgradeData, TArray<FUpgradeChoicePair>& OutChosen, const EUpgradeChoice InRarity, const int32 InCount);
 	void SetupUpgradeChoices(const FRuntimeUpgradeData& InUpgradeData);
 	UFUNCTION()
 	void TriggerSelectAnimForFirstOption();
