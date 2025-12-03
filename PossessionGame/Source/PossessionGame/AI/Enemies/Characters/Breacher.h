@@ -4,8 +4,6 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "Breacher.generated.h"
 
-class UCapsuleComponent;
-
 UCLASS()
 class POSSESSIONGAME_API ABreacher : public AEnemy
 {
@@ -30,6 +28,16 @@ private:
 	float AI_DefaultBashDamage = 10.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
 	float AI_BashStunDuration = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
+	float AI_BashStartInAnimation = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
+	float AI_BashDuration = 0.25f;
+	UPROPERTY(EditDefaultsOnly, Category = "Bash Overlap Sweep", meta = (AllowPrivateAccess = true))
+	float AI_BashCapsuleHalfHeight = 107.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Bash Overlap Sweep", meta = (AllowPrivateAccess = true))
+	float AI_BashCapsuleRadius = 64.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Bash Overlap Sweep", meta = (AllowPrivateAccess = true))
+	float AI_BashCapsuleForwardUnits = 35.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
 	float P_BashStunDuration = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))

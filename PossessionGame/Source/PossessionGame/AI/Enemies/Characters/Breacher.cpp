@@ -87,7 +87,7 @@ void ABreacher::AI_TryTriggeringBash()
 {
 	if (!CanAbilityBeExecuted(1) || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::BreacherBash);
-	GetWorldTimerManager().SetTimer(AI_TriggerBashImpulse, this, &ABreacher::AI_Bash, 1.f);
+	GetWorldTimerManager().SetTimer(AI_TriggerBashImpulse, this, &ABreacher::AI_Bash, AI_BashStartInAnimation);
 	GetWorldTimerManager().ClearTimer(AI_TriggerBashHandle);
 }
 
@@ -100,7 +100,7 @@ void ABreacher::AI_Bash()
 	DashDirection.Normalize();
 	GetCharacterMovement()->StopMovementImmediately();
 	LaunchCharacter(DashDirection * AI_BashImpulse * 1000.f, true, true);
-	GetWorldTimerManager().SetTimer(StopBashHandle, this, &ABreacher::StopBash, 0.25f, false);
+	GetWorldTimerManager().SetTimer(StopBashHandle, this, &ABreacher::StopBash, AI_BashDuration, false);
 }
 
 void ABreacher::AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -171,8 +171,7 @@ void ABreacher::TriggerBashOverlap()
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
-	DrawDebugCapsule(GetWorld(), GetActorLocation() + GetActorForwardVector() * 35.f, 107.f, 64.f, FQuat::Identity, FColor::Green, false, 5.f);
-	if (GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation() + GetActorForwardVector() * 35.f, FQuat::Identity, ECC_Pawn, FCollisionShape::MakeCapsule(64.f, 107.f), Params))
+	if (GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation() + GetActorForwardVector() * AI_BashCapsuleForwardUnits, FQuat::Identity, ECC_Pawn, FCollisionShape::MakeCapsule(AI_BashCapsuleRadius, AI_BashCapsuleHalfHeight), Params))
 	{
 		TSet<TObjectPtr<AActor>> HitActors;
 		for (FOverlapResult OverlapResult : OverlapResults)
@@ -180,7 +179,6 @@ void ABreacher::TriggerBashOverlap()
 			TObjectPtr<AActor> HitActor = OverlapResult.GetActor();
 			if (!HitActor || HitActors.Contains(HitActor)) continue;
 			HitActors.Add(HitActor);
-			UE_LOG(LogTemp, Error, TEXT("OVERLAP %s HIT %s"), *GetName(), *OverlapResult.GetActor()->GetName());
 			if (bIsHijacked)
 			{
 				if (HitActor == this || !HitActor->ActorHasTag("AliveEnemy")) return;
