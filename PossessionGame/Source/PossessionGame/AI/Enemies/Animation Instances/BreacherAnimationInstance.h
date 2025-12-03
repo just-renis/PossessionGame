@@ -8,6 +8,11 @@ UCLASS()
 class POSSESSIONGAME_API UBreacherAnimationInstance : public UEnemyAnimationInstance
 {
 	GENERATED_BODY()
+public:
+	void SetIsBashMontagePlaying(const bool bState) { bIsBashMontagePlaying = bState; }
+private:
+	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
+	bool bIsBashMontagePlaying = false;
 
 	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted) override;
 };

@@ -1,4 +1,5 @@
 ﻿#include "BreacherAbility2.h"
+#include "PossessionGame/AI/Enemies/Animation Instances/BreacherAnimationInstance.h"
 #include "PossessionGame/AI/Enemies/Characters/Breacher.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
@@ -13,6 +14,7 @@ void UBreacherAbility2::AI_Execute()
 {
 	Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
 	Proprietor->GetAI()->SetControlRigAvailabilityToggle(false);
+	Cast<UBreacherAnimationInstance>(Proprietor->GetAnimInstance())->SetIsBashMontagePlaying(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Bash);
 	Super::AI_Execute();
 }
