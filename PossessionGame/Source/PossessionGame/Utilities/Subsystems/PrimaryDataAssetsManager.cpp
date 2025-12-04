@@ -647,6 +647,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_BreacherDynamiteExplosion", ESound::BreacherDynamiteExplosion);
 	SoundMap.Add("PA_BreacherBash", ESound::BreacherBash);
 	SoundMap.Add("PA_BreacherBashImpact", ESound::BreacherBashImpact);
+	SoundMap.Add("PA_BreacherBashWindUp", ESound::BreacherBashWindUp);
 	SoundMap.Add("PA_TankDeath", ESound::TankDeath);
 	SoundMap.Add("PA_TankShoot", ESound::TankShoot);
 	SoundMap.Add("PA_TankSpawn", ESound::TankSpawn);

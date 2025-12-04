@@ -109,7 +109,7 @@ void AGuardian::AI_PlayDeathElectrification()
 
 void AGuardian::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
 {
-	if (CanAbilityBeExecuted(0) && !bAffectedByEmp && !bIsActionInMotion && CurrentHp <= MaxHp * 0.8f && CurrentHp > 0) AI_UseAbility(0);
+	if (CanAbilityBeExecuted(0) && !IsActionsDisabled() && !bIsActionInMotion && CurrentHp <= MaxHp * 0.8f && CurrentHp > 0) AI_UseAbility(0);
 	Super::AI_ReceivedDamage(InDamageReason, InDamage);
 }
 

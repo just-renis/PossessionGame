@@ -116,13 +116,13 @@ void ARanger::AI_TryTriggeringGrenade()
 void ARanger::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
 {
 	if (!AI || !AI->GetStateTreeData().GetStateTreeRef()) return;
-	if (CanAbilityBeExecuted(1) && !bAffectedByEmp && !bIsActionInMotion && CurrentHp <= MaxHp * 0.5f) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerDeployShield);
+	if (CanAbilityBeExecuted(1) && !IsActionsDisabled() && !bIsActionInMotion && CurrentHp <= MaxHp * 0.5f) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::RangerDeployShield);
 	Super::AI_ReceivedDamage(InDamageReason, InDamage);
 }
 
 void ARanger::AI_OnPlayerEnterGrenadeTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (bAffectedByEmp || !OtherActor->ActorHasTag("Player")) return;
+	if (IsActionsDisabled() || !OtherActor->ActorHasTag("Player")) return;
 	AI_ToggleGrenadeTrigger(false);
 	GetWorld()->GetTimerManager().SetTimer(TryTriggeringGrenadeHandle, this, &ARanger::AI_TryTriggeringGrenade, 0.1f, true);
 }

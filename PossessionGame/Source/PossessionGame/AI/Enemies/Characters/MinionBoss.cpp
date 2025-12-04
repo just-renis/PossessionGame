@@ -246,7 +246,7 @@ void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDama
 
 void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 {
-	if (!AI || bIsAbilityInAction || bAffectedByEmp || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	if (!AI || bIsAbilityInAction || IsActionsDisabled() || !AI->GetStateTreeData().GetStateTreeRef()) return;
 	const TObjectPtr<AActor> Target = AI->GetStateTreeData().GetTarget();
 	if (!Target) return;
 	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) >= FMath::Square(1000.f))
@@ -268,7 +268,7 @@ void AMinionBoss::SetMoveDirectlyToPlayer()
 
 void AMinionBoss::OnPlayerEnterStompTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!AI || bAffectedByEmp || OtherActor->ActorHasTag("AliveEnemy") || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	if (!AI || IsActionsDisabled() || OtherActor->ActorHasTag("AliveEnemy") || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
 	if (bIsMoveDirectlyToPlayerTriggered) ResetMoveDirectlyToPlayer();
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
 	ToggleStompTrigger(false);
