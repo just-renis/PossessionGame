@@ -585,6 +585,12 @@ void AEnemy::AI_DestroyVfxs()
 		StunAffectedVfx->DestroyComponent();
 		StunAffectedVfx = nullptr;
 	}
+	if (HijackableVfx)
+	{
+		HijackableVfx->DeactivateImmediate();
+		HijackableVfx->DestroyComponent();
+		HijackableVfx = nullptr;
+	}
 }
 
 void AEnemy::P_SetupAbilities()

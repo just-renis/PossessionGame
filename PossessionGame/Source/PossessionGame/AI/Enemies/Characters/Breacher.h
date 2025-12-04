@@ -17,11 +17,12 @@ public:
 private:
 	ABreacher();
 
+	bool bImmuneToExplosions = false;
+	bool bAI_ShootSpeedDoubled = false;
+	bool bIsBashing = false;
 	FTimerHandle AI_TriggerBashHandle;
 	FTimerHandle AI_TriggerBashImpulse;
 	FTimerHandle StopBashHandle;
-	bool bImmuneToExplosions = false;
-	bool bAI_ShootSpeedDoubled = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
 	float AI_BashImpulse = 10.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Bash", meta = (AllowPrivateAccess = true))
@@ -51,11 +52,13 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> BashWindUpSfx;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> BashVfx;
+	TObjectPtr<UNiagaraComponent> AI_BashWindUpFistVfx;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> BashWindUpFistVfx;
+	TObjectPtr<UNiagaraComponent> AI_BashDashVfx;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> BashDashVfx;
+	TObjectPtr<UNiagaraComponent> AI_BashDashTrailVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> P_BashVfx;
 
 	virtual float AI_GetShootPause() override;
 	
@@ -64,7 +67,9 @@ private:
 	void AI_TryTriggeringBash();
 	void AI_Bash();
 	void AI_ActivateBashWindUpVfx();
-	void AI_ActivateBasDashVfx();
+	void AI_ActivateBashDashVfx();
+	void AI_ActivateBashDashTrailVfx();
+	virtual void AI_DestroyVfxs() override;
 	UFUNCTION()
 	void AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
@@ -80,5 +85,4 @@ private:
 	virtual void ClearTimers() override;
 	void StopBash();
 	void TriggerBashOverlap();
-	virtual void DisableAllVfxAfterPossession() override;
 };

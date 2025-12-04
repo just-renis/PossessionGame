@@ -39,9 +39,10 @@ void ABreacher::P_ThrowBarrel()
 
 void ABreacher::P_Bash(const float InImpulseStrength)
 {
+	bIsBashing = true;
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABreacher::P_BashHit);
-	if (!BashVfx) AssetsManager->AttachVfx(EVfx::BreacherBash, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &BashVfx, GetMesh(), FName("DeathSocket"));
-	else BashVfx->Activate();
+	if (!P_BashVfx) AssetsManager->AttachVfx(EVfx::BreacherBash, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &P_BashVfx, GetMesh(), FName("DeathSocket"));
+	else P_BashVfx->Activate();
 	AssetsManager->PlaySound2D(ESound::BreacherBash);
 	FVector DashDirection = GetActorForwardVector();
 	DashDirection.Z = 0.f;
@@ -99,8 +100,10 @@ void ABreacher::AI_TryTriggeringBash()
 
 void ABreacher::AI_Bash()
 {
+	bIsBashing = true;
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABreacher::AI_BashHit);
-	AI_ActivateBasDashVfx();
+	AI_ActivateBashDashVfx();
+	AI_ActivateBashDashTrailVfx();
 	AssetsManager->PlaySound2D(ESound::BreacherBash);
 	FVector DashDirection = GetActorForwardVector();
 	DashDirection.Z = 0.f;
@@ -112,14 +115,43 @@ void ABreacher::AI_Bash()
 
 void ABreacher::AI_ActivateBashWindUpVfx()
 {
-	if (!BashWindUpFistVfx) AssetsManager->AttachVfx(EVfx::BreacherBashWindUpFist, [this]() -> bool { return GetIsAlive() && !bIsHijacked; }, &BashWindUpFistVfx, GetMesh(), FName("RightHandSocket"));
-	else BashWindUpFistVfx->Activate();
+	if (!AI_BashWindUpFistVfx) AssetsManager->AttachVfx(EVfx::BreacherBashWindUpFist, [this]() -> bool { return GetIsAlive() && !bIsHijacked; }, &AI_BashWindUpFistVfx, GetMesh(), FName("RightHandSocket"));
+	else AI_BashWindUpFistVfx->Activate();
 }
 
-void ABreacher::AI_ActivateBasDashVfx()
+void ABreacher::AI_ActivateBashDashVfx()
 {
-	if (!BashDashVfx) AssetsManager->AttachVfx(EVfx::BreacherBashDash, [this]() -> bool { return GetIsAlive() && !bIsHijacked; }, &BashDashVfx, GetMesh(), FName("DeathSocket"));
-	else BashDashVfx->Activate();
+	if (!AI_BashDashVfx) AssetsManager->AttachVfx(EVfx::BreacherBashDash, [this]() -> bool { return GetIsAlive() && !bIsHijacked; }, &AI_BashDashVfx, GetMesh(), FName("DeathSocket"));
+	else AI_BashDashVfx->Activate();
+}
+
+void ABreacher::AI_ActivateBashDashTrailVfx()
+{
+	if (!AI_BashDashTrailVfx) AssetsManager->AttachVfx(EVfx::BreacherBashDashTrail, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsBashing; }, &AI_BashDashTrailVfx, GetMesh(), FName("DeathSocket"));
+	else AI_BashDashTrailVfx->Activate();
+}
+
+void ABreacher::AI_DestroyVfxs()
+{
+	Super::AI_DestroyVfxs();
+	if (AI_BashWindUpFistVfx)
+	{
+		AI_BashWindUpFistVfx->DeactivateImmediate();
+		AI_BashWindUpFistVfx->DestroyComponent();
+		AI_BashWindUpFistVfx = nullptr;
+	}
+	if (AI_BashDashVfx)
+	{
+		AI_BashDashVfx->DeactivateImmediate();
+		AI_BashDashVfx->DestroyComponent();
+		AI_BashDashVfx = nullptr;
+	}
+	if (AI_BashDashTrailVfx)
+	{
+		AI_BashDashTrailVfx->DeactivateImmediate();
+		AI_BashDashTrailVfx->DestroyComponent();
+		AI_BashDashTrailVfx = nullptr;
+	}
 }
 
 void ABreacher::AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -180,6 +212,8 @@ void ABreacher::ClearTimers()
 
 void ABreacher::StopBash()
 {
+	if (AI_BashDashTrailVfx) AI_BashDashTrailVfx->DeactivateImmediate();
+	bIsBashing = false;
 	GetCapsuleComponent()->OnComponentHit.RemoveAll(this);
 	SetIsActionInMotion(false);
 	SetMaxWalkSpeed(EMoveMode::Walk);
@@ -223,10 +257,4 @@ void ABreacher::TriggerBashOverlap()
 			}
 		}
 	}
-}
-
-void ABreacher::DisableAllVfxAfterPossession()
-{
-	Super::DisableAllVfxAfterPossession();
-	if (BashWindUpFistVfx) BashWindUpFistVfx->DeactivateImmediate();
 }
