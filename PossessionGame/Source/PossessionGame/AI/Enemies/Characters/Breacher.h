@@ -50,6 +50,8 @@ private:
 	TObjectPtr<UAudioComponent> SpawnSfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BashVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> BashWindUpFistVfx;
 
 	virtual float AI_GetShootPause() override;
 	
@@ -57,6 +59,7 @@ private:
 	virtual void AI_TriggerDeathVoiceLine() override;
 	void AI_TryTriggeringBash();
 	void AI_Bash();
+	void AI_ActivateBashWindUpVfx();
 	UFUNCTION()
 	void AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
@@ -72,4 +75,5 @@ private:
 	virtual void ClearTimers() override;
 	void StopBash();
 	void TriggerBashOverlap();
+	virtual void DisableAllVfxAfterPossession() override;
 };

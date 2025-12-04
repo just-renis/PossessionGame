@@ -87,6 +87,7 @@ void ABreacher::AI_TryTriggeringBash()
 {
 	if (!CanAbilityBeExecuted(1) || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::BreacherBash);
+	AI_ActivateBashWindUpVfx();
 	GetWorldTimerManager().SetTimer(AI_TriggerBashImpulse, this, &ABreacher::AI_Bash, AI_BashStartInAnimation);
 	GetWorldTimerManager().ClearTimer(AI_TriggerBashHandle);
 }
@@ -101,6 +102,12 @@ void ABreacher::AI_Bash()
 	GetCharacterMovement()->StopMovementImmediately();
 	LaunchCharacter(DashDirection * AI_BashImpulse * 1000.f, true, true);
 	GetWorldTimerManager().SetTimer(StopBashHandle, this, &ABreacher::StopBash, AI_BashDuration, false);
+}
+
+void ABreacher::AI_ActivateBashWindUpVfx()
+{
+	if (!BashWindUpFistVfx) AssetsManager->AttachVfx(EVfx::BreacherBashWindUpFist, [this]() -> bool { return GetIsAlive() && !bIsHijacked; }, &BashWindUpFistVfx, GetMesh(), FName("RightHandSocket"));
+	else BashWindUpFistVfx->Activate();
 }
 
 void ABreacher::AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -204,4 +211,10 @@ void ABreacher::TriggerBashOverlap()
 			}
 		}
 	}
+}
+
+void ABreacher::DisableAllVfxAfterPossession()
+{
+	Super::DisableAllVfxAfterPossession();
+	if (BashWindUpFistVfx) BashWindUpFistVfx->DeactivateImmediate();
 }

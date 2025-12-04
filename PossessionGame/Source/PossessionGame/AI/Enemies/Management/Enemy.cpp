@@ -1613,11 +1613,7 @@ void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
 	}
 }
 
-void AEnemy::DisableHijackViableVfx() const
-{
-	if (!HijackableVfx) return;
-	HijackableVfx->DeactivateImmediate();
-}
+void AEnemy::DisableHijackViableVfx() const { if (HijackableVfx) HijackableVfx->DeactivateImmediate(); }
 
 void AEnemy::DisableVfxs() const
 {
