@@ -144,7 +144,7 @@ void ATrickster::AI_DestroyVfxs()
 
 void ATrickster::AI_OnPlayerEnterPoisonGrenadeTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (bAffectedByEmp || !OtherActor->ActorHasTag("Player")) return;
+	if (IsActionsDisabled() || !OtherActor->ActorHasTag("Player")) return;
 	AI_TogglePoisonGrenadeTrigger(false);
 	GetWorld()->GetTimerManager().SetTimer(TryTriggeringPoisonGrenadeHandle, this, &ATrickster::AI_TryTriggeringPoisonGrenadeLaunch, 0.1f, true);
 }
@@ -184,10 +184,10 @@ void ATrickster::InitiateDeath()
 	Super::InitiateDeath();
 }
 
-void ATrickster::SetEmpEffect(const float InEffectDuration)
+void ATrickster::ReceiveEmpEffect(const float InEffectDuration)
 {
 	if (DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility2, EUpgradeAttribute::Special1)) return;
-	Super::SetEmpEffect(InEffectDuration);
+	Super::ReceiveEmpEffect(InEffectDuration);
 }
 
 void ATrickster::EmpEffectEnded()

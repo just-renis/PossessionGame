@@ -90,7 +90,7 @@ bool AEnemy::GetIsHijackAble() const { return AI_Data->GetIsPossessable(); }
 
 bool AEnemy::CanAbilityBeExecuted(const int32 AbilityIndex) const
 {
-	if (const TObjectPtr<UAbility> Ability = Abilities.FindRef(AbilityIndex)) return Ability->CanExecute();
+	if (const TObjectPtr<UAbility>* Ability = Abilities.Find(AbilityIndex)) return Ability->Get()->CanExecute();
 	return false;
 }
 
@@ -110,7 +110,7 @@ void AEnemy::AI_ReloadLogic()
 
 void AEnemy::AI_UseAbility(const int32 InAbilityIndex) const
 {
-	if (const TObjectPtr<UAbility> Ability = Abilities.FindRef(InAbilityIndex)) Ability->AI_Execute();
+	if (const TObjectPtr<UAbility>* Ability = Abilities.Find(InAbilityIndex)) Ability->Get()->AI_Execute();
 }
 
 void AEnemy::AI_SetMoveMode(const EMoveMode InMoveMode) { SetMaxWalkSpeed(InMoveMode); }
@@ -133,7 +133,7 @@ void AEnemy::AI_SetCanShoot(const bool bState)
 
 void AEnemy::AI_Disable() { if (AI) AI->StopLogic(true); }
 
-void AEnemy::AI_StopAbility(const int32 InIndex) const { if (const TObjectPtr<UAbility> Ability = Abilities.FindRef(InIndex)) Ability->AI_StopAbility(); }
+void AEnemy::AI_StopAbility(const int32 InIndex) const { if (const TObjectPtr<UAbility>* Ability = Abilities.Find(InIndex)) Ability->Get()->AI_StopAbility(); }
 
 void AEnemy::AI_SetupUpgradesAppliance()
 {
@@ -223,7 +223,10 @@ void AEnemy::P_ApplyUpgradeOnSelection()
 void AEnemy::P_UseAbility(const int32 InAbilityIndex)
 {
 	if (bIsInputLocked || bIsActionInMotion) return;
-	if (const TObjectPtr<UAbility> Ability = Abilities.FindRef(InAbilityIndex); Ability->CanExecute()) Ability->P_InitiateExecute();
+	if (const TObjectPtr<UAbility>* Ability = Abilities.Find(InAbilityIndex))
+	{
+		if (Ability->Get()->CanExecute()) Ability->Get()->P_InitiateExecute();
+	}
 }
 
 void AEnemy::P_UpdateAmmoHUD(const int32 WeaponAmmo) const { if (P_HUD) P_HUD->UpdateAmmoText(WeaponAmmo); }
@@ -394,12 +397,14 @@ void AEnemy::StopSound(const ESound InSoundName)
 	Sounds[InSoundName]->Stop();
 }
 
-void AEnemy::SetEmpEffect(const float InEffectDuration)
+void AEnemy::ReceiveEmpEffect(const float InEffectDuration)
 {
 	AI_StopAbilitiesEvents();
-	if (!AnimInstance) return;
-	AnimInstance->ClearMontageWithHoldHandle();
-	AnimInstance->StopAllMontages(0.f);
+	if (AnimInstance)
+	{
+		AnimInstance->ClearMontageWithHoldHandle();
+		AnimInstance->StopAllMontages(0.f);
+	}
 	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
 	FTimerDelegate TimerDel;
 	TimerDel.BindLambda([this, InEffectDuration] { ApplyEmpEffect(InEffectDuration); });
@@ -430,7 +435,9 @@ void AEnemy::SetUnHijackOutline(const bool bState) const
 
 void AEnemy::EmpEffectEnded()
 {
+	UE_LOG(LogTemp, Error, TEXT("EMP EFFECT ENDED"));
 	bAffectedByEmp = false;
+	RemoveDisablingActionEffect();
 	SetIsActionInMotion(false);
 	if (AI) AI->ResumeLogic();
 }
@@ -961,6 +968,20 @@ void AEnemy::AI_StopAbilitiesEvents() const
 		case EStateTreeEvent::BreacherBash: AI_StopAbility(0); break;
 		default: ;
 	}
+}
+
+void AEnemy::AI_DisableActions()
+{
+/*	AI_StopAbilitiesEvents();
+	if (AnimInstance)
+	{
+		AnimInstance->ClearMontageWithHoldHandle();
+		AnimInstance->StopAllMontages(0.f);
+	}
+	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
+//	FTimerDelegate TimerDel;
+	//TimerDel.BindLambda([this, InEffectDuration] { ApplyEmpEffect(InEffectDuration); });
+//	GetWorldTimerManager().SetTimer(EmpEffectApplyHandle, TimerDel, 0.05f, false);*/
 }
 
 bool AEnemy::CanJumpInternal_Implementation() const
@@ -1703,4 +1724,16 @@ void AEnemy::PlayStunAffectedVfx(const float InEffectDuration)
 		AssetsManager->AttachVfx(EVfx::Stunned, [this]() -> bool { return GetIsAlive(); }, &StunAffectedVfx, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(true, InEffectDuration)}});
 	}
 	else StunAffectedVfx->Activate(true);
+}
+
+void AEnemy::RemoveDisablingActionEffect()
+{
+	DisablingActionsEffectsCount--;
+	DisablingActionsEffectsCount = FMath::Max(0, DisablingActionsEffectsCount);
+}
+
+void AEnemy::ApplyDisablingActionEffect()
+{
+	DisablingActionsEffectsCount++;
+	AI_DisableActions();
 }

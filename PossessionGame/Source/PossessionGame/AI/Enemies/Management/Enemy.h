@@ -45,7 +45,7 @@ public:
 	AEnemy();
 
 	bool GetIsAlive() const { return bIsAlive; }
-	bool IsAsyncAssetStillAllowedToBeUsed() const { return bIsAlive && !bAffectedByEmp; }
+	bool IsAsyncAssetStillAllowedToBeUsed() const { return bIsAlive && DisablingActionsEffectsCount == 0; }
 	bool GetIsHijacked() const { return bIsHijacked; }
 	bool GetCanReload() const { return bCanReload; }
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
@@ -110,7 +110,7 @@ public:
 	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason);
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired = false);
 	void StopSound(const ESound InSoundName);
-	virtual void SetEmpEffect(const float InEffectDuration);
+	virtual void ReceiveEmpEffect(const float InEffectDuration);
 	void SetHijackOutline(const bool bState);
 	virtual void SetUnHijackOutline(const bool bState) const;
 	virtual void EmpEffectEnded();
@@ -127,6 +127,7 @@ protected:
 	bool bShootPauseActive = false;
 	bool bIsAbilityInAction = false;
 	bool bAffectedByEmp = false;
+	bool bAffectedByStun = false;
 	float MaxHp;
 	float CurrentHp;
 	float DamageReduction = 1.f;
@@ -174,6 +175,7 @@ protected:
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 	
+	bool IsActionsDisabled() const { return DisablingActionsEffectsCount > 0; }
 	virtual float AI_GetShootPause();
 
 	virtual void AI_SetupAbilities();
@@ -261,6 +263,7 @@ private:
 	float AdditionalActionSpeedValue = 0.f;
 	float SavedRespawnHpPercentage = 1.f;
 	int32 OverlappingPoisonAreas = 0;
+	int32 DisablingActionsEffectsCount = 0;
 	FTimerHandle AI_ClearShootPauseHandle;
 	FTimerHandle AI_TriggerDeathVoiceLineHandle;
 	FTimerHandle AI_SetCharacterMovementSpeedHandle;
@@ -399,6 +402,7 @@ private:
 	void AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent);
 	void AI_MainShootLogic();
 	void AI_StopAbilitiesEvents() const;
+	void AI_DisableActions();
 	
 	void P_SetupData();
 	void P_SetupUI();
@@ -477,4 +481,6 @@ private:
 	void ApplyEmpEffect(const float InEffectDuration);
 	void ApplyStunEffect(const float InEffectDuration);
 	void PlayStunAffectedVfx(const float InEffectDuration);
+	void RemoveDisablingActionEffect();
+	void ApplyDisablingActionEffect();
 };

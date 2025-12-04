@@ -131,6 +131,7 @@ enum class ESound : uint16
 	BreacherDynamiteExplosion,
 	BreacherBash,
 	BreacherBashImpact,
+	BreacherBashWindUp,
 	TankShoot,
 	TankSpawn,
 	TankDeath,

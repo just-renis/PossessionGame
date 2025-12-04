@@ -69,8 +69,12 @@ ABreacher::ABreacher()
 	DeathSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("DeathSfx"));
 	DeathSfx->SetAutoActivate(false);
 	DeathSfx->SetupAttachment(GetMesh());
+	BashWindUpSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("BashWindUpSfx"));
+	BashWindUpSfx->SetAutoActivate(false);
+	BashWindUpSfx->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::BreacherSpawn, SpawnSfx);
 	Sounds.Add(ESound::BreacherDeath, DeathSfx);
+	Sounds.Add(ESound::BreacherBashWindUp, BashWindUpSfx);
 }
 
 float ABreacher::AI_GetShootPause() { return Super::AI_GetShootPause() * (bAI_ShootSpeedDoubled ? 0.5f : 1.f); }
@@ -87,6 +91,7 @@ void ABreacher::AI_TryTriggeringBash()
 {
 	if (!CanAbilityBeExecuted(1) || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::BreacherBash);
+	PlaySound(ESound::BreacherBashWindUp, true);
 	AI_ActivateBashWindUpVfx();
 	GetWorldTimerManager().SetTimer(AI_TriggerBashImpulse, this, &ABreacher::AI_Bash, AI_BashStartInAnimation);
 	GetWorldTimerManager().ClearTimer(AI_TriggerBashHandle);
