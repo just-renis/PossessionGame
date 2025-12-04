@@ -54,6 +54,8 @@ private:
 	TObjectPtr<UNiagaraComponent> BashVfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BashWindUpFistVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> BashDashVfx;
 
 	virtual float AI_GetShootPause() override;
 	
@@ -62,6 +64,7 @@ private:
 	void AI_TryTriggeringBash();
 	void AI_Bash();
 	void AI_ActivateBashWindUpVfx();
+	void AI_ActivateBasDashVfx();
 	UFUNCTION()
 	void AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 

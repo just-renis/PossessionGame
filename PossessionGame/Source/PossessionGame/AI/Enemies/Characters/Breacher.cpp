@@ -100,6 +100,7 @@ void ABreacher::AI_TryTriggeringBash()
 void ABreacher::AI_Bash()
 {
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABreacher::AI_BashHit);
+	AI_ActivateBasDashVfx();
 	AssetsManager->PlaySound2D(ESound::BreacherBash);
 	FVector DashDirection = GetActorForwardVector();
 	DashDirection.Z = 0.f;
@@ -113,6 +114,12 @@ void ABreacher::AI_ActivateBashWindUpVfx()
 {
 	if (!BashWindUpFistVfx) AssetsManager->AttachVfx(EVfx::BreacherBashWindUpFist, [this]() -> bool { return GetIsAlive() && !bIsHijacked; }, &BashWindUpFistVfx, GetMesh(), FName("RightHandSocket"));
 	else BashWindUpFistVfx->Activate();
+}
+
+void ABreacher::AI_ActivateBasDashVfx()
+{
+	if (!BashDashVfx) AssetsManager->AttachVfx(EVfx::BreacherBashDash, [this]() -> bool { return GetIsAlive() && !bIsHijacked; }, &BashDashVfx, GetMesh(), FName("DeathSocket"));
+	else BashDashVfx->Activate();
 }
 
 void ABreacher::AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

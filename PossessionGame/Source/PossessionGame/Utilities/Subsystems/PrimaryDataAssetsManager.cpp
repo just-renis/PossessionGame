@@ -775,6 +775,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_BreacherDynamiteExplosion", EVfx::BreacherDynamiteExplosion);
 	VfxsMap.Add("PA_BreacherDynamiteImpact", EVfx::BreacherDynamiteImpact);
 	VfxsMap.Add("PA_BreacherBashWindUpFist", EVfx::BreacherBashWindUpFist);
+	VfxsMap.Add("PA_BreacherBashDash", EVfx::BreacherBashDash);
 	VfxsMap.Add("PA_Stunned", EVfx::Stunned);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
