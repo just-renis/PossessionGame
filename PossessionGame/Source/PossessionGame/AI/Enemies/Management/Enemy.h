@@ -9,7 +9,6 @@ enum class EStateTreeEvent : uint8;
 struct FInputActionValue;
 class UDelegateManager;
 class UEnhancedPlayerInput;
-enum class EWidget : uint8;
 class UGlobalSettingsManager;
 enum class EVariation : uint8;
 enum class EDamageReason : uint8;

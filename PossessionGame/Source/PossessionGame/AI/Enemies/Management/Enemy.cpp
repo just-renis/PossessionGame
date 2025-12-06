@@ -70,6 +70,7 @@ AEnemy::AEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("camera"));
 	Camera->SetupAttachment(RootComponent);
+	Camera->bUsePawnControlRotation = true;
 	AI_HpBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("AI_HpBar"));
 	AI_HpBarComponent->SetupAttachment(RootComponent);
 	AI_HpBarComponent->SetDrawSize(FVector2D(1920.f, 1080.f));
@@ -1079,9 +1080,7 @@ void AEnemy::P_Rotate(const FInputActionValue& InValue)
 	const FVector2D RotationVector = InValue.Get<FVector2D>();
 	const FVector2D MouseSensitivity = GlobalSettingsManager->GetMouseSensitivity();
 	AddControllerYawInput(RotationVector.X * MouseSensitivity.X);
-	FRotator NewRotation = Camera->GetComponentRotation();
-	NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + RotationVector.Y * MouseSensitivity.Y, -89.f, 89.f);
-	Camera->SetWorldRotation(NewRotation);
+	AddControllerPitchInput(-RotationVector.Y * MouseSensitivity.Y);
 }
 
 void AEnemy::P_Reload() 

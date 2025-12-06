@@ -26,6 +26,7 @@ APlayerGhost::APlayerGhost()
 	PrimaryActorTick.bCanEverTick = true;
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("camera"));
 	Camera->SetupAttachment(RootComponent);
+	Camera->bUsePawnControlRotation = true;
 }
 
 void APlayerGhost::BeginPlay()
@@ -87,9 +88,7 @@ void APlayerGhost::Rotate(const FInputActionValue& InValue)
 	const FVector2D RotationVector = InValue.Get<FVector2D>();
 	const FVector2D MouseSensitivity = GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetMouseSensitivity();
 	AddControllerYawInput(RotationVector.X * MouseSensitivity.X);
-	FRotator NewRotation = Camera->GetComponentRotation();
-	NewRotation.Pitch = FMath::Clamp(NewRotation.Pitch + RotationVector.Y * MouseSensitivity.Y, -89.f, 89.f);
-	Camera->SetWorldRotation(NewRotation);
+	AddControllerPitchInput(-RotationVector.Y * MouseSensitivity.Y);
 }
 
 void APlayerGhost::PossessEnemy()
