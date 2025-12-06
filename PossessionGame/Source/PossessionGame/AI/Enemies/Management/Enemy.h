@@ -206,7 +206,7 @@ protected:
 	virtual void P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent) {}
 	virtual void P_Destroy();
 	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
-	void P_SetupCharacterMovement() const;
+	void P_SetupCharacterMovement();
 	virtual void P_SetupColorsForUI() {}
 	virtual void P_Move(const FInputActionValue& Value);
 	virtual void P_InitiateJump();
@@ -264,6 +264,7 @@ private:
 	float SavedRespawnHpPercentage = 1.f;
 	int32 OverlappingPoisonAreas = 0;
 	int32 DisablingActionsEffectsCount = 0;
+	int32 CurrentJumpCount = 0;
 	FTimerHandle AI_ClearShootPauseHandle;
 	FTimerHandle AI_TriggerDeathVoiceLineHandle;
 	FTimerHandle AI_SetCharacterMovementSpeedHandle;
@@ -317,12 +318,6 @@ private:
 	float GroundFriction = 8.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	int32 MaxJumpAmount = 2;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Crouch", meta = (AllowPrivateAccess = true))
-	bool bCanCrouch = true;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Crouch", meta = (EditConditionHides = "bCanCrouch", AllowPrivateAccess = true))
-	float CrouchHalfHeight = 65.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Crouch", meta = (EditConditionHides = "bCanCrouch", AllowPrivateAccess = true))
-	float MaxWalkSpeedCrouched = 350.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (AllowPrivateAccess = true))
 	bool bCanSlide = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
@@ -442,7 +437,6 @@ private:
 	void P_DetectIfPlayerPointingAtOutlineObjects();
 	void P_TriggerCriticalDamageIndicator() const;
 	void P_ContinuousFovChange();
-	void P_Crouch();
 	void P_AddXp(const int32 InXp) const;
 	void P_ApplySecretBoostHp(const int32 InPercentage);
 	void P_InitiateSlide();
@@ -453,8 +447,6 @@ private:
 	void P_AddAndSetHijackPulse(const float InValue);
 	void P_LockInToTargetLogic() const;
 	void P_TurnOffInvincibility();
-
-	virtual bool CanJumpInternal_Implementation() const override;
 
 	void TickAbilities(const float InDeltaTime);
 	void SetupStimuliSource();

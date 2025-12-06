@@ -2,6 +2,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AJumpPad::AJumpPad()
@@ -22,6 +23,7 @@ AJumpPad::AJumpPad()
 void AJumpPad::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag("Player")) return;
-	Cast<ACharacter>(OtherActor)->LaunchCharacter(LaunchVelocity, true, true);
+	const TObjectPtr<UCharacterMovementComponent> CharacterMovement = Cast<ACharacter>(OtherActor)->GetCharacterMovement();
+	CharacterMovement->AddImpulse(CharacterMovement->Mass * LaunchVelocity);
 	JumpPadActivateSound->Sound ? JumpPadActivateSound->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(JumpPadActivateSound, nullptr, ESound::JumpPadActivate);
 }

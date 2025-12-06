@@ -315,7 +315,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		//- 19 reserved was stomp, -14 right click reserved.
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::OpenInfoPanel);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_Crouch);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_InitiateSlide);
 	}
 	if (!GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialManager();
 }
@@ -701,18 +701,15 @@ void AEnemy::P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName)
 	if (!P_Data) P_Data = AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->P_Data.LoadSynchronous();
 }
 
-void AEnemy::P_SetupCharacterMovement() const
+void AEnemy::P_SetupCharacterMovement()
 {
-	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = bCanCrouch;
-	GetCharacterMovement()->SetCrouchedHalfHeight(CrouchHalfHeight);
-	GetCharacterMovement()->MaxWalkSpeedCrouched = MaxWalkSpeedCrouched;
 	GetCharacterMovement()->GravityScale = GravityScale;
 	GetCharacterMovement()->JumpZVelocity = JumpVelocity;
 	GetCharacterMovement()->AirControl = AirControl;
 	GetCharacterMovement()->MaxAcceleration = MaxAcceleration;
 	GetCharacterMovement()->BrakingFrictionFactor = BrakingFrictionFactor;
-	if (GetCharacterMovement()->GetCharacterOwner()) GetCharacterMovement()->GetCharacterOwner()->JumpMaxCount = MaxJumpAmount;
 	GetCharacterMovement()->bUseRVOAvoidance = false;
+	JumpMaxCount = 50;
 }
 
 void AEnemy::P_Move(const FInputActionValue& Value)
@@ -728,8 +725,9 @@ void AEnemy::P_InitiateJump()
 	if (bIsSliding) P_SetupSuperJump();
 	else GetCharacterMovement()->JumpZVelocity = JumpVelocity;
 	Jump();
+	CurrentJumpCount++;
 	Weapon->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Jump);
-	bIsDoubleJumpOccured = GetCharacterMovement()->GetCharacterOwner()->JumpCurrentCount == 1;
+	bIsDoubleJumpOccured = CurrentJumpCount == 2;
 	AssetsManager->PlaySound2D(bIsDoubleJumpOccured ? ESound::DoubleJump : ESound::Jump);
 }
 
@@ -987,16 +985,6 @@ void AEnemy::AI_DisableActions()
 //	GetWorldTimerManager().SetTimer(EmpEffectApplyHandle, TimerDel, 0.05f, false);*/
 }
 
-bool AEnemy::CanJumpInternal_Implementation() const
-{
-	if (!Super::CanJumpInternal_Implementation())
-	{
-		if (!GetCharacterMovement()->IsFalling() && bIsCrouched) return true;
-		return false;
-	}
-	return true;
-}
-
 void AEnemy::P_SetupData()
 {
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
@@ -1105,12 +1093,6 @@ void AEnemy::P_Reload()
 void AEnemy::P_ToggleRun(const bool bState)
 {
 	if (bIsInputLocked || !bCanRun) return;
-	if (bIsCrouched)
-	{
-		UnCrouch();
-		P_InitiateSlide();
-		return;
-	}
 	bIsRunning = bState;
 	if (bIsRunning)
 	{
@@ -1300,12 +1282,8 @@ void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->Get
 
 void AEnemy::P_Jump()
 {
-	if (bIsInputLocked) return;
-	if (CanJumpInternal_Implementation())
-	{
-		if (bIsCrouched) UnCrouch();
-		P_InitiateJump();
-	}
+	if (bIsInputLocked || CurrentJumpCount >= MaxJumpAmount) return;
+	P_InitiateJump();
 }
 
 void AEnemy::P_Stomp()
@@ -1412,23 +1390,6 @@ void AEnemy::P_ContinuousFovChange()
 	}
 }
 
-void AEnemy::P_Crouch()
-{
-	if (bIsDoubleJumpOccured)
-	{
-		P_Stomp();
-		return;
-	}
-	if (bIsSliding) return;
-	if (bIsRunning && bCanSlide)
-	{
-		P_InitiateSlide();
-		return;
-	}
-	if (CanCrouch()) Crouch(false);
-	else UnCrouch(false);
-}
-
 void AEnemy::P_AddXp(const int32 InXp) const
 {
 	if (DelegateManager->RequestIsArenaMode.IsBound() && DelegateManager->RequestIsArenaMode.Execute()) return;
@@ -1446,6 +1407,12 @@ void AEnemy::P_ApplySecretBoostHp(const int32 InPercentage)
 
 void AEnemy::P_InitiateSlide()
 {
+	if (bIsDoubleJumpOccured)
+	{
+		P_Stomp();
+		return;
+	}
+	if (bIsSliding || !bCanSlide) return;
 	AssetsManager->PlaySound2D(ESound::Slide);
 	Camera->SetRelativeLocation(FVector(0.f, 0.f, SlideCameraZ));
 	bIsSliding = true;
@@ -1568,6 +1535,7 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 void AEnemy::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
+	CurrentJumpCount = 0;
 	bIsDoubleJumpOccured = false;
 	if (bIsStomping)
 	{

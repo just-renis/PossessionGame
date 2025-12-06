@@ -28,7 +28,7 @@ FText UPlayerGhostUI::GetKeyBindText(const int32 InIndex) const
 		case 2: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Melee");
 		case 3: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Run");
 		case 4: case 5: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Jump");
-		case 6: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Crouch / Slide / Stomp");
+		case 6: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Slide / Stomp");
 		case 8: return GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText("Shoot");
 		default: ;
 	}
@@ -71,7 +71,7 @@ void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 		case 3: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "RunHint", "[{0}] to Run"), KeyBindText)); break;
 		case 4: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "JumpHint", "Press [{0}] to Jump"), KeyBindText)); break;
 		case 5: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "DoubleJumpHint", "Double Press [{0}] to Double Jump"), KeyBindText)); break;
-		case 6: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "SlideHint", "Press [{0}] + [{1}] to Slide"), GetKeyBindText(3), KeyBindText)); break;
+		case 6: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "SlideHint", "Press [{0}] to Slide"), KeyBindText)); break;
 		case 7: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "StompHint", "Double Press [{0}] and then [{1}] to Stomp on Button"), GetKeyBindText(4), GetKeyBindText(6))); break;
 		case 8: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "ShootHint", "Press [{0}] to Shoot"), KeyBindText)); break;
 		default: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HijackRobotHint", "Press [{0}] to Hijack a New Robot"), GetKeyBindText(0)));
@@ -104,8 +104,8 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 		case 4: if (InKeyBindName.IsEqual("Run")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "RunHint", "[{0}] to Run"), InKeyBindText)); break;
 		case 5: if (InKeyBindName.IsEqual("Jump")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "JumpHint", "Press [{0}] to Jump"), InKeyBindText)); break;
 		case 6: if (InKeyBindName.IsEqual("Jump")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "DoubleJumpHint", "Double Press [{0}] to Double Jump"), InKeyBindText)); break;
-		case 7: if (InKeyBindName.IsEqual("Crouch / Slide / Stomp")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "SlideHint", "Press [{0}] + [{1}] to Slide"), GlobalSettingsManager->GetKeyBindText("Run"), InKeyBindText)); break;
-		case 8: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "StompHint", "Double Press [{0}] and then [{1}] to Stomp on Button"), GlobalSettingsManager->GetKeyBindText("Jump"), GlobalSettingsManager->GetKeyBindText("Crouch / Slide / Stomp"))); break;
+		case 7: if (InKeyBindName.IsEqual("Slide / Stomp")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "SlideHint", "Press [{0}] to Slide"), InKeyBindText)); break;
+		case 8: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "StompHint", "Double Press [{0}] and then [{1}] to Stomp on Button"), GlobalSettingsManager->GetKeyBindText("Jump"), GlobalSettingsManager->GetKeyBindText("Slide / Stomp"))); break;
 		case 9: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "ShootHint", "Press [{0}] to Shoot"), InKeyBindText)); break;
 		default: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HijackRobotHint", "Press [{0}] to Hijack a New Robot"), GetKeyBindText(0)));
 	}
