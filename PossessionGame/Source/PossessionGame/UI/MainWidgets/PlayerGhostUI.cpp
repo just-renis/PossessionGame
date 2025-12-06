@@ -43,6 +43,7 @@ void UPlayerGhostUI::NativeConstruct()
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnShowPressKeyToContinue.AddUObject(this, &UPlayerGhostUI::ShowPressKey);
 	GetWorld()->GetSubsystem<UTutorialManager>()->TriggerTutorialEnd.BindUObject(this, &UPlayerGhostUI::PlayFadeOutAnim);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnKeyBindChange.AddUObject(this, &UPlayerGhostUI::UpdateKeyBindText);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerGhostTryMoving.BindUObject(this, &UPlayerGhostUI::PlayMovementWarningAnim);
 }
 
 void UPlayerGhostUI::ShowHint()
@@ -61,16 +62,17 @@ void UPlayerGhostUI::SetHintText(const int32 InIndex) const
 	if (!HintInv || !HintText) return;
 	HintInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	const FText KeyBindText = GetKeyBindText(InIndex);
+	if (InIndex == 7) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->SpawnMarkerOnTutorialButton.ExecuteIfBound();
 	switch (InIndex)
 	{
-		case 0: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HijackRobotsHint", "[{0}] to Hijack Robots"), KeyBindText)); break;
+		case 0: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HijackRobotsHint", "Look at Robot and Press [{0}] to Hijack"), KeyBindText)); break;
 		case 1: HintText->SetText(NSLOCTEXT("ST_Localization", "MoveHint", "Move")); break;
 		case 2: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "DoorBreakHint", "Press [{0}] to Break Door"), KeyBindText)); break;
 		case 3: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "RunHint", "[{0}] to Run"), KeyBindText)); break;
 		case 4: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "JumpHint", "Press [{0}] to Jump"), KeyBindText)); break;
 		case 5: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "DoubleJumpHint", "Double Press [{0}] to Double Jump"), KeyBindText)); break;
 		case 6: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "SlideHint", "Press [{0}] + [{1}] to Slide"), GetKeyBindText(3), KeyBindText)); break;
-		case 7: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "StompHint", "Double Press [{0}] and then [{1}] to Stomp"), GetKeyBindText(4), GetKeyBindText(6))); break;
+		case 7: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "StompHint", "Double Press [{0}] and then [{1}] to Stomp on Button"), GetKeyBindText(4), GetKeyBindText(6))); break;
 		case 8: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "ShootHint", "Press [{0}] to Shoot"), KeyBindText)); break;
 		default: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HijackRobotHint", "Press [{0}] to Hijack a New Robot"), GetKeyBindText(0)));
 	}
@@ -97,13 +99,13 @@ void UPlayerGhostUI::UpdateKeyBindText(const FName& InKeyBindName, const FText& 
 	const TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager = GetGameInstance()->GetSubsystem<UGlobalSettingsManager>();
 	switch (CurrentHintIndex)
 	{
-		case 1: if (InKeyBindName.IsEqual("Hijack")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HijackRobotsHint", "[{0}] to Hijack Robots"), InKeyBindText)); break;
+		case 1: if (InKeyBindName.IsEqual("Hijack")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HijackRobotsHint", "Look at Robot and Press [{0}] to Hijack"), InKeyBindText)); break;
 		case 3: if (InKeyBindName.IsEqual("Melee")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "DoorBreakHint", "Press [{0}] to Break Door"), InKeyBindText)); break;
 		case 4: if (InKeyBindName.IsEqual("Run")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "RunHint", "[{0}] to Run"), InKeyBindText)); break;
 		case 5: if (InKeyBindName.IsEqual("Jump")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "JumpHint", "Press [{0}] to Jump"), InKeyBindText)); break;
 		case 6: if (InKeyBindName.IsEqual("Jump")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "DoubleJumpHint", "Double Press [{0}] to Double Jump"), InKeyBindText)); break;
 		case 7: if (InKeyBindName.IsEqual("Crouch / Slide / Stomp")) HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "SlideHint", "Press [{0}] + [{1}] to Slide"), GlobalSettingsManager->GetKeyBindText("Run"), InKeyBindText)); break;
-		case 8: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "StompHint", "Double Press [{0}] and then [{1}] to Stomp"), GlobalSettingsManager->GetKeyBindText("Jump"), GlobalSettingsManager->GetKeyBindText("Crouch / Slide / Stomp"))); break;
+		case 8: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "StompHint", "Double Press [{0}] and then [{1}] to Stomp on Button"), GlobalSettingsManager->GetKeyBindText("Jump"), GlobalSettingsManager->GetKeyBindText("Crouch / Slide / Stomp"))); break;
 		case 9: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "ShootHint", "Press [{0}] to Shoot"), InKeyBindText)); break;
 		default: HintText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HijackRobotHint", "Press [{0}] to Hijack a New Robot"), GetKeyBindText(0)));
 	}
@@ -116,6 +118,14 @@ void UPlayerGhostUI::PlayFadeOutAnim()
 	FadeOutAnimFinishedDelegate.BindDynamic(this, &UPlayerGhostUI::LoadNextLevel);
 	BindToAnimationFinished(FadeOutAnim, FadeOutAnimFinishedDelegate);
 	PlayAnimation(FadeOutAnim);
+}
+
+void UPlayerGhostUI::PlayMovementWarningAnim()
+{
+	if (!bIsMovementWarningDisplayAvailable) return;
+	bIsMovementWarningDisplayAvailable = false;
+	PlayAnimation(MovementWarningAppearAnim);
+	GetWorld()->GetTimerManager().SetTimer(MovementWarningDisplayAvailabilityHandle, this, &UPlayerGhostUI::SetMovementWarningAvailabilityToDisplay, MovementWarningAppearAnim->GetEndTime());
 }
 
 void UPlayerGhostUI::LoadNextLevel()

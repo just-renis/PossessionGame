@@ -10,6 +10,7 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
+#include "PossessionGame/UI/MainWidgets/PlayerGhostNonTutorialUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerGhostUI.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/Utilities/Data Utilities/FLoadLevelData.h"
@@ -36,7 +37,11 @@ void APlayerGhost::BeginPlay()
 	{
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostUI>(EWidget::TutorialUI)->PlayStartupAnimation();
 	}
-	else GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UChapterLaunchUI>(EWidget::ChapterLaunchUI);
+	else
+	{
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UChapterLaunchUI>(EWidget::ChapterLaunchUI);
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerGhostNonTutorialUI>(EWidget::PlayerGhostNonTutorialUI);
+	}
 	GetWorldTimerManager().SetTimer(DetectIfPointingAtEnemyHandle, this, &APlayerGhost::DetectIfPointingAtEnemy, 0.015f, true);
 }
 
@@ -53,6 +58,7 @@ void APlayerGhost::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	}
 	if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &APlayerGhost::Move);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &APlayerGhost::Rotate);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &APlayerGhost::PossessEnemy);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &APlayerGhost::HandleEscapeClick);
@@ -67,6 +73,12 @@ void APlayerGhost::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorld()->GetTimerManager().ClearTimer(CheckHandle);
 	GetWorld()->GetTimerManager().ClearTimer(DetectIfPointingAtEnemyHandle);
 	Super::EndPlay(EndPlayReason);
+}
+
+void APlayerGhost::Move(const FInputActionValue& Value)
+{
+	if (!Controller) return;
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerGhostTryMoving.ExecuteIfBound();
 }
 
 void APlayerGhost::Rotate(const FInputActionValue& InValue)
@@ -91,6 +103,7 @@ void APlayerGhost::PossessEnemy()
 		const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
 		if (Enemy && Enemy->GetIsHijackAble())
 		{
+			(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerGhostDestroy.ExecuteIfBound();
 			Controller->Possess(Enemy);
 			Destroy();
 		}

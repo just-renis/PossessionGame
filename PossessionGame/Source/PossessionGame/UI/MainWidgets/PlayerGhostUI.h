@@ -19,7 +19,9 @@ public:
 	
 	void PlayStartupAnimation();
 private:
+	bool bIsMovementWarningDisplayAvailable = true;
 	int32 CurrentHintIndex = 0;
+	FTimerHandle MovementWarningDisplayAvailabilityHandle;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> HintInv;
 	UPROPERTY(meta = (BindWidget))
@@ -38,11 +40,14 @@ private:
 	TObjectPtr<UWidgetAnimation> PressKeyAppearAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeOutAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> MovementWarningAppearAnim;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeOutAnimFinishedDelegate;
 
 	FText GetKeyBindText(const int32 InIndex) const;
 
+	void SetMovementWarningAvailabilityToDisplay() { bIsMovementWarningDisplayAvailable = true; }
 	virtual void NativeConstruct() override;
 	void ShowHint();
 	void SetHintText(const int32 InIndex) const;
@@ -50,6 +55,7 @@ private:
 	void ShowPressKey(const bool bState);
 	void UpdateKeyBindText(const FName& InKeyBindName, const FText& InKeyBindText) const;
 	void PlayFadeOutAnim();
+	void PlayMovementWarningAnim();
 	UFUNCTION()
 	void LoadNextLevel();
 };

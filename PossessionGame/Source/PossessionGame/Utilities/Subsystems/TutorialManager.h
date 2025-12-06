@@ -44,12 +44,10 @@ private:
 	bool bPressKeyEnabled = false;
 	bool bHijackActionViableState = false;
 	FVector LastPlayerLocation;
+	FTimerHandle TutorialHandle;
+	FTimerHandle MoveTutorialDisappearHandle;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
-	UPROPERTY()
-	FTimerHandle TutorialHandle;
-	UPROPERTY()
-	FTimerHandle MoveTutorialDisappearHandle;
 
 	void SetPressKeyState(const bool bState) { bPressKeyEnabled = bState; }
 	void CheckHijacked();

@@ -1,7 +1,10 @@
 ﻿#include "TutorialButton.h"
 #include "Components/SphereComponent.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 ATutorialButton::ATutorialButton()
 {
@@ -19,6 +22,7 @@ void ATutorialButton::BeginPlay()
 	Super::BeginPlay();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATutorialButton::OverlapOccured);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ATutorialButton::OverlapEnded);
+	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished()) GetGameInstance()->GetSubsystem<UDelegateManager>()->SpawnMarkerOnTutorialButton.BindUObject(this, &ATutorialButton::SpawnMarker);
 }
 
 void ATutorialButton::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -33,6 +37,7 @@ void ATutorialButton::ButtonClicked()
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Mesh->SetRelativeLocation(Mesh->GetRelativeLocation() - FVector(0.f, 0.f, 20.f));
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->StartForceFieldDissolve.Broadcast(ButtonIndex);
+	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished()) GetWorld()->GetSubsystem<UMarkerManager>()->GetTriggerDestroyMarkersDelegate().Broadcast();
 }
 
 void ATutorialButton::StompCheck()
@@ -40,6 +45,8 @@ void ATutorialButton::StompCheck()
 	if (!OverlappedPlayer) return;
 	if (OverlappedPlayer->GetIsStomping()) ButtonClicked();
 }
+
+void ATutorialButton::SpawnMarker() const { GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 70.f); }
 
 void ATutorialButton::OverlapOccured(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

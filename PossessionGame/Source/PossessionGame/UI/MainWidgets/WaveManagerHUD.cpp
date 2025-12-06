@@ -5,8 +5,10 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Enums/EGameMode.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return AnnouncementAnim->GetEndTime(); }
@@ -99,7 +101,8 @@ void UWaveManagerHUD::NativeConstruct()
 	OnObjectivePanelAnimEnd.BindUFunction(this, "OpenUpgradeSelection");
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->RequestMiniPopup.BindUObject(this, &UWaveManagerHUD::TriggerMiniPopup);
-	GetWorld()->GetTimerManager().SetTimer(TimerUpdateHandle, this, &UWaveManagerHUD::UpdateTimerText, 0.5f, true);
+	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished()) GetWorld()->GetTimerManager().SetTimer(TimerUpdateHandle, this, &UWaveManagerHUD::UpdateTimerText, 0.5f, true);
+	else TimerText->SetVisibility(ESlateVisibility::Collapsed);
 	if (!(DelegateManager->RequestIsArenaMode.IsBound() && DelegateManager->RequestIsArenaMode.Execute()))
 	{
 		FSlateFontInfo FontInfo = TimerText->GetFont();

@@ -6,13 +6,8 @@
 #include "PlayerGhost.generated.h"
 
 class AEnemy;
-class ATutorialDrone;
-class UDelegateManager;
-class UPlayerGhostUI;
-class UInputAction;
 class UCameraComponent;
 class UInputMappingContext;
-class UPlayerHUD;
 
 UCLASS()
 class POSSESSIONGAME_API APlayerGhost : public ACharacter
@@ -33,6 +28,7 @@ private:
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void Move(const FInputActionValue& Value);
 	void Rotate(const FInputActionValue& InValue);
 	void PossessEnemy();
 	void RestartLevel() const;

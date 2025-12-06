@@ -11,6 +11,7 @@ void UTutorialManager::Init()
 	(void)OnShowPressKeyToContinue.AddUObject(this, &UTutorialManager::SetPressKeyState);
 	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTutorialMinionDeath.BindUObject(this, &UTutorialManager::MinionDeathOccured);
 	GetWorld()->GetTimerManager().SetTimer(TutorialHandle, this, &UTutorialManager::CheckHijacked, 0.05f, true);
+	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerGhostTryMoving.BindUObject(this, &UTutorialManager::Init);
 }
 
 void UTutorialManager::SetPlayerRef(const TObjectPtr<AEnemy>& InPlayer)

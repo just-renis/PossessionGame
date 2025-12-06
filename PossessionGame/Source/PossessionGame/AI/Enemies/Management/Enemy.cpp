@@ -717,13 +717,10 @@ void AEnemy::P_SetupCharacterMovement() const
 
 void AEnemy::P_Move(const FInputActionValue& Value)
 {
-	if (bIsInputLocked || bIsSliding) return;
+	if (bIsInputLocked || bIsSliding || !Controller) return;
 	const FVector2D MovementVector = Value.Get<FVector2D>();
-	if (Controller)
-	{
-		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-		AddMovementInput(GetActorRightVector(), MovementVector.X);
-	}
+	AddMovementInput(GetActorForwardVector(), MovementVector.Y);
+	AddMovementInput(GetActorRightVector(), MovementVector.X);
 }
 
 void AEnemy::P_InitiateJump()

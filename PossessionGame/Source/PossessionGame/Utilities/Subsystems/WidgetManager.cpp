@@ -42,6 +42,7 @@ int32 UWidgetManager::GetWidgetZOrder(const EWidget InWidgetName)
 		case EWidget::ExplanationUI: return 2;
 		case EWidget::SaveSlotMenuUI: return 3;
 		case EWidget::HijackUI: return 0;
+		case EWidget::PlayerGhostNonTutorialUI: return 0;
 		default: return 5;
 	}
 }
