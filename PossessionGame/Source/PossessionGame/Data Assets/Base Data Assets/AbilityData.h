@@ -17,6 +17,7 @@ public:
 	float GetBaseDamageReduction() const { return BaseDamageReduction; }
 	float GetCooldownSecs() const { return CooldownSecs; }
 	float GetImpulseStrength() const { return ImpulseStrength; }
+	float GetSpecificStrength() const { return SpecificStrength; }
 	int32 GetAbilityIndex() const { return AbilityIndex; }
 	int32 GetChargesAmount() const { return ChargesAmount; }
 private:
@@ -34,6 +35,10 @@ private:
 	bool bHasImpulseStrength = false;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "bHasImpulseStrength", EditConditionHides))
 	float ImpulseStrength = 10.f;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bHasSpecificStrength = false;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bHasSpecificStrength", EditConditionHides))
+	float SpecificStrength = 1.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 AbilityIndex;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

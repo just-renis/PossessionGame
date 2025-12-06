@@ -41,6 +41,11 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	ProjectileData = InProjectileData;
 	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
 	SetupData(ProjectileData.bIsPlayerProjectile, InWhich);
+	if (!ProjectileData.bIsPlayerProjectile && MovementComponent)
+	{
+		MovementComponent->SetComponentTickInterval(1.f / 30.f / TimeDilation);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTimeDilationChanged.AddUObject(this, &AProjectile::AI_TimeDilationChange);
+	}
 	if (!BulletTrailComponent)
 	{
 		if (const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail); VfxName != EVfx::None)
@@ -163,6 +168,7 @@ void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnPr
 
 void AProjectile::DestroyThis()
 {
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTimeDilationChanged.RemoveAll(this);
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	DisableProjectileComponents();
@@ -208,6 +214,12 @@ void AProjectile::AI_SetupUpgradesAppliance()
 	const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage, false);
 	Damage += DefaultDamage * DamagePercentage * 0.01f;
 	Damage += AI_UpgradeDamageAppliance();
+}
+
+void AProjectile::AI_TimeDilationChange(const float InTimeDilation)
+{
+	TimeDilation = InTimeDilation;
+	MovementComponent->SetComponentTickInterval(1.f / 30.f / TimeDilation);
 }
 
 float AProjectile::P_CalculateByRangeDamage(const FHitResult& InHit)

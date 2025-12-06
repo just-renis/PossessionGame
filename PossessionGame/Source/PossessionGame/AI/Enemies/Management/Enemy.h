@@ -261,6 +261,8 @@ private:
 	float MovementSpeedMultiplier = 1.f;
 	float AdditionalActionSpeedValue = 0.f;
 	float SavedRespawnHpPercentage = 1.f;
+	int32 P_FirstSlotAbilityIndex = 0;
+	int32 P_SecondSlotAbilityIndex = 1;
 	int32 OverlappingPoisonAreas = 0;
 	int32 DisablingActionsEffectsCount = 0;
 	int32 CurrentJumpCount = 0;
@@ -397,6 +399,10 @@ private:
 	void AI_MainShootLogic();
 	void AI_StopAbilitiesEvents() const;
 	void AI_DisableActions();
+	void AI_TimeDilationChange(const float InDilation) const;
+
+	int32 P_GetFirstSlotAbilityIndex() const { return P_FirstSlotAbilityIndex; }
+	int32 P_GetSecondSlotAbilityIndex() const { return P_SecondSlotAbilityIndex; }
 	
 	void P_SetupData();
 	void P_SetupUI();

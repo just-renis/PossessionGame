@@ -303,8 +303,8 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		#if WITH_EDITOR
 			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(10).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleGodMode);
 		#endif
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(11).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 0);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(12).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 1);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(11).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, P_GetFirstSlotAbilityIndex());
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(12).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, P_GetSecondSlotAbilityIndex());
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(13).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 2);
 		P_SetupRightClickInput(EnhancedInputComponent);
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &AEnemy::P_HandleEscapeClick);
@@ -328,6 +328,7 @@ void AEnemy::PossessedBy(AController* NewController)
 		Super::PossessedBy(NewController);
 		if (Cast<APlayerController>(NewController))
 		{
+			DelegateManager->OnTimeDilationChanged.RemoveAll(this);
 			bIsInvincible = true;
 			GetWorldTimerManager().SetTimer(HijackInvincibilityDelayHandle, this, &AEnemy::P_TurnOffInvincibility, InvincibilityDelay);
 			DisableAllVfxAfterPossession();
@@ -607,6 +608,8 @@ void AEnemy::P_SetupAbilities()
 			Ability->Setup(this, AbilityData[AbilityManager->GetAbilityName(CharacterName, ChosenAbilities[i])].LoadSynchronous(), DelegateManager);
 			Ability->SetAbilityIndex(i);
 			Abilities.Add(ChosenAbilities[i], Ability);
+			if (i == 0) P_FirstSlotAbilityIndex = ChosenAbilities[i];
+			else P_SecondSlotAbilityIndex = ChosenAbilities[i];
 		}
 	}
 }
@@ -710,7 +713,7 @@ void AEnemy::P_SetupCharacterMovement()
 	GetCharacterMovement()->MaxAcceleration = MaxAcceleration;
 	GetCharacterMovement()->BrakingFrictionFactor = BrakingFrictionFactor;
 	GetCharacterMovement()->bUseRVOAvoidance = false;
-	JumpMaxCount = 50;
+	JumpMaxCount = 50; // Unreal engine stupid "Next Frame Update" movement system on ACharacter forces me to do this.
 }
 
 void AEnemy::P_Move(const FInputActionValue& Value)
@@ -788,7 +791,6 @@ float AEnemy::ReceiveDefaultMovementSpeed() const
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	GetCharacterMovement()->SetComponentTickInterval(1.f / 30.f);
 	GameInstance = Cast<UPossessionGameInstance>(GetWorld()->GetGameInstance());
 	DelegateManager = GameInstance->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
@@ -808,6 +810,7 @@ void AEnemy::BeginPlay()
 	GetWorldTimerManager().SetTimer(AI_PlaySpawnSoundHandle, this, &AEnemy::AI_PlaySpawnSound, 3.f + UKismetMathLibrary::RandomInteger(4), false);
 	DelegateManager->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
 	DelegateManager->AddActionSpeedBoost.AddUObject(this, &AEnemy::AddAdditionalActionSpeed);
+	DelegateManager->OnTimeDilationChanged.AddUObject(this, &AEnemy::AI_TimeDilationChange);
 	AI_Setup();
 	SetInputState(false);
 	GetWorldTimerManager().SetTimer(AI_RespawnTimerHandle, this, &AEnemy::AI_SetupRespawn, 0.05f);
@@ -984,6 +987,13 @@ void AEnemy::AI_DisableActions()
 //	FTimerDelegate TimerDel;
 	//TimerDel.BindLambda([this, InEffectDuration] { ApplyEmpEffect(InEffectDuration); });
 //	GetWorldTimerManager().SetTimer(EmpEffectApplyHandle, TimerDel, 0.05f, false);*/
+}
+
+void AEnemy::AI_TimeDilationChange(const float InDilation) const
+{
+	if (!bIsAlive) return;
+	GetCharacterMovement()->SetComponentTickInterval(1.f / 30.f / InDilation);
+	GetMesh()->SetComponentTickInterval(1.f / 30.f / InDilation);
 }
 
 void AEnemy::P_SetupData()
@@ -1642,6 +1652,7 @@ void AEnemy::SetActionSpeed(const float InSpeed, const bool bIsPoisonToggle)
 
 void AEnemy::SetupMeshOptimization() const
 {
+	GetCharacterMovement()->SetComponentTickInterval(1.f / 30.f);
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 	GetMesh()->bEnableUpdateRateOptimizations = true;
 	GetMesh()->SkipUpdateOverlapsOptimEnabled = true;

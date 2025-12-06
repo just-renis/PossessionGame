@@ -1,18 +1,23 @@
 ﻿#include "GuardianAbility2.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Characters/Guardian.h"
+#include "PossessionGame/Data Assets/Base Data Assets/AbilityData.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 void UGuardianAbility2::P_Execute()
 {
 	Proprietor->SetSecondAbilityUsageState(true);
+	Dilation = Data->GetSpecificStrength() + GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::TimeDilation, true);
 	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::GuardianSlowMotion, true);
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f / Dilation);
 	Proprietor->SetCustomTimeDilation(Dilation);
+	DelegateManager->OnTimeDilationChanged.Broadcast(Dilation);
 	SetTimeStopProcess();
 	Super::P_Execute();
 }
@@ -26,6 +31,7 @@ void UGuardianAbility2::P_StopAbility()
 	GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RemoveStoredSound(ESound::GuardianSlowMotion);
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 	Proprietor->SetCustomTimeDilation(1.f);
+	DelegateManager->OnTimeDilationChanged.Broadcast(1.f);
 	Super::P_StopAbility();
 }
 

@@ -129,6 +129,7 @@ FText UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const TPa
 		case EUpgradeAttribute::EffectDuration: return FText::FromString(GetRichTextTag(bForEnemy) + GetEffectDurationUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "EffectDuration", "EFFECT DURATION").ToString() + "</>");
 		case EUpgradeAttribute::ReduceDamageTaken: return FText::FromString(GetRichTextTag(bForEnemy) + GetDamageReductionUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "DamageTaken", "DAMAGE TAKEN").ToString() + "</>");
 		case EUpgradeAttribute::Impulse: return FText::FromString(GetRichTextTag(bForEnemy) + GetImpulseUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Impulse", "IMPULSE").ToString() + "</>");
+		case EUpgradeAttribute::TimeDilation: return FText::FromString(GetRichTextTag(bForEnemy) + GetTimeDilationUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "TimeDilation", "TIME DILATION").ToString() + "</>");
 		default: return GetSpecialUpgradeText(InAttribute.Key, bForEnemy);
 	}
 }
@@ -501,6 +502,16 @@ FString UUpgradeDetailsPanelUI::GetImpulseUpgradeString(const TObjectPtr<UCodexD
 	{
 		return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::Impulse, bForPlayer),
 		AbilityData->GetImpulseStrength(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::None);
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GetTimeDilationUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	if (const TObjectPtr<UAbilityData> AbilityData = InCodexData->GetAbilityData(bForPlayer, GetAbilityByUpgradeName()))
+	{
+		return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::TimeDilation, bForPlayer),
+		AbilityData->GetSpecificStrength(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::Scale);
 	}
 	return FString();
 }

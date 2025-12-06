@@ -60,19 +60,20 @@ protected:
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
+	float TimeDilation = 1.f;
 	FVector StartLocation;
+	FTimerHandle DestroyHandle;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
 	UPROPERTY()
 	TObjectPtr<UUpgradeManager> UpgradeManager;
-	UPROPERTY()
-	FTimerHandle DestroyHandle;
 
 	virtual EDamageReason GetDamageReason() const override;
 	
 	virtual float AI_UpgradeDamageAppliance() { return 0.f; }
 	
 	void AI_SetupUpgradesAppliance();
+	void AI_TimeDilationChange(const float InTimeDilation);
 	
 	virtual float P_UpgradeDamageAppliance() { return 0.f; }
 	float P_CalculateByRangeDamage(const FHitResult& InHit);
