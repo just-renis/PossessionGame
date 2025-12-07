@@ -20,6 +20,8 @@ private:
 	bool bImmuneToExplosions = false;
 	bool bAI_ShootSpeedDoubled = false;
 	bool bIsBashing = false;
+	bool bIsBashInitiated = false;
+	bool bIsBashTriggerInitiated = false;
 	FTimerHandle AI_TriggerBashHandle;
 	FTimerHandle AI_TriggerBashImpulse;
 	FTimerHandle StopBashHandle;
@@ -70,6 +72,7 @@ private:
 	void AI_ActivateBashDashVfx();
 	void AI_ActivateBashDashTrailVfx();
 	virtual void AI_DestroyVfxs() override;
+	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName) override;
 	UFUNCTION()
 	void AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
@@ -85,4 +88,5 @@ private:
 	virtual void ClearTimers() override;
 	void StopBash();
 	void TriggerBashOverlap();
+	virtual void AllDisablingActionsFinished() override;
 };

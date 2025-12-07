@@ -22,7 +22,7 @@ EStateTreeRunStatus USTTaskShoot::EnterState(FStateTreeExecutionContext& Context
 void USTTaskShoot::ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
 {
 	GetWorld()->GetTimerManager().ClearTimer(ShootLogicHandle);
-	CachedController->GetProprietor()->AI_CancelShooting();
+	//CachedController->GetProprietor()->AI_CancelShooting();
 	CachedController->GetStateTreeData().OnStateTreeEvent.Unbind();
 	Super::ExitState(Context, Transition);
 }
@@ -30,7 +30,7 @@ void USTTaskShoot::ExitState(FStateTreeExecutionContext& Context, const FStateTr
 void USTTaskShoot::FinishTaskByEvent(const EStateTreeEvent InEvent)
 {
 	GetWorld()->GetTimerManager().ClearTimer(ShootLogicHandle);
-	CachedController->GetProprietor()->AI_CancelShooting();
+//	CachedController->GetProprietor()->AI_CancelShooting();
 	CachedController->GetStateTreeData().OnStateTreeEvent.Unbind();
 	FinishTask();
 }

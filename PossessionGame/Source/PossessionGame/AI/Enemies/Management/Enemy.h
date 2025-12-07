@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
+enum class EDisablingEffect : uint8;
 enum class ECameraShake : uint8;
 enum class EStateTreeEvent : uint8;
 struct FInputActionValue;
@@ -55,6 +56,8 @@ public:
 	bool GetIsHijackAble() const;
 	bool CanAbilityBeExecuted(const int32 AbilityIndex) const;
 	bool GetIsSliding() const { return bIsSliding; }
+	bool GetIsAffectedByEmp() const { return bAffectedByEmp; }
+	bool GetIsAffectedByStun() const { return bAffectedByStun; }
 	float GetActionSpeed() const { return ActionSpeed; }
 	float GetDamageReduction() const { return DamageReduction; }
 	float GetCurrentHp() const { return CurrentHp; }
@@ -113,10 +116,12 @@ public:
 	void SetHijackOutline(const bool bState);
 	virtual void SetUnHijackOutline(const bool bState) const;
 	virtual void EmpEffectEnded();
+	virtual void StunEffectEnded();
 	void SetInputState(const bool bState) { bIsInputLocked = bState; }
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
 	void SetMovementSpeedMultiplier(const float InMultiplier);
+	void RemoveDisablingActionEffect();
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -193,6 +198,7 @@ protected:
 	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage);
 	virtual void AI_Destroy();
 	virtual void AI_DestroyVfxs();
+	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName);
 
 	virtual void P_SetupAbilities();
 	virtual void P_Setup();
@@ -230,6 +236,7 @@ protected:
 	virtual void DestroyThis();
 	virtual void DisableAllVfxAfterPossession();
 	virtual void ClearTimers();
+	virtual void AllDisablingActionsFinished();
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanHijackOtherEnemy = false;
@@ -285,8 +292,8 @@ private:
 	FTimerHandle DestroyCondenseMaterialsProcessHandle;
 	FTimerHandle SpawnCondenseMaterialsProcessHandle;
 	FTimerHandle ActionSpeedHandle;
-	FTimerHandle EmpEffectApplyHandle;
-	FTimerHandle StunEffectApplyHandle;
+	FTimerHandle EmpEffectEndHandle;
+	FTimerHandle StunEffectEndHandle;
 	FTimerHandle HijackDelayHandle;
 	FTimerHandle HijackFovChangeHandle;
 	FTimerHandle HijackLockInToTargetHandle;
@@ -398,7 +405,6 @@ private:
 	void AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent);
 	void AI_MainShootLogic();
 	void AI_StopAbilitiesEvents() const;
-	void AI_DisableActions();
 	void AI_TimeDilationChange(const float InDilation) const;
 
 	int32 P_GetFirstSlotAbilityIndex() const { return P_FirstSlotAbilityIndex; }
@@ -478,6 +484,5 @@ private:
 	void ApplyEmpEffect(const float InEffectDuration);
 	void ApplyStunEffect(const float InEffectDuration);
 	void PlayStunAffectedVfx(const float InEffectDuration);
-	void RemoveDisablingActionEffect();
-	void ApplyDisablingActionEffect();
+	void ApplyDisablingActionEffect(const float InEffectDuration, const EDisablingEffect InEffectName);
 };

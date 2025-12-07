@@ -101,18 +101,8 @@ void UEnemyAnimationInstance::SetProprietor() { Proprietor = Cast<AEnemy>(GetOwn
 
 void UEnemyAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState) { Montage_Play(Montages.Find(InState)->Get(), GlobalPlayRate); }
 
-void UEnemyAnimationInstance::MontageWithHoldEnd() // If more such montages will be added then use switch to filter their end.
-{
-    PlayMontage(EEnemyAnimState::EmpRecover);
-}
-
 void UEnemyAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted)
 {
-    if (!bIsInterrupted && Montages.Contains(EEnemyAnimState::EmpRecover) && InMontage == Montages.Find(EEnemyAnimState::EmpRecover)->Get())
-    {
-        Proprietor->EmpEffectEnded();
-        return;
-    }
     if (Montages.Contains(EEnemyAnimState::Shoot) && InMontage == Montages.Find(EEnemyAnimState::Shoot)->Get()) Proprietor->AI_SetCanShoot(false);
 }
 

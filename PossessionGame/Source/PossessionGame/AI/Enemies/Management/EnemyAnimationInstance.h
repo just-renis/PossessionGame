@@ -43,7 +43,7 @@ protected:
 	virtual void AssignOnMontageEnd();
 	void SetProprietor();
 	virtual void InnerPlayMontage(const EEnemyAnimState InState);
-	virtual void MontageWithHoldEnd();
+	virtual void MontageWithHoldEnd() {}
 	UFUNCTION()
 	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted);
 private:

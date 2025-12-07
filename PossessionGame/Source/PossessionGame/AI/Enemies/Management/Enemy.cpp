@@ -25,6 +25,7 @@
 #include "PossessionGame/Destructibles/Destructible.h"
 #include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/EDamageReason.h"
+#include "PossessionGame/Enums/EDisablingEffect.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
@@ -195,13 +196,6 @@ void AEnemy::AI_SetRespawnRequest(const float InHpPercentage)
 
 void AEnemy::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
 {
-	AI_StopAbilitiesEvents();
-	if (AnimInstance)
-	{
-		AnimInstance->ClearMontageWithHoldHandle();
-		AnimInstance->StopAllMontages(0.f);
-	}
-	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
 	InHitDirection.Z = 0.f;
 	GetCharacterMovement()->StopMovementImmediately();
 	if (!bHitByOtherAI)
@@ -210,9 +204,9 @@ void AEnemy::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffect
 		ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage);
 	}
 	LaunchCharacter(InHitDirection * (AI_Data ? AI_Data->GetBashImpulseForce() : 5000.f), true, true);
-	FTimerDelegate TimerDel;
-	TimerDel.BindLambda([this, InEffectDuration] { ApplyStunEffect(InEffectDuration); });
-	GetWorldTimerManager().SetTimer(StunEffectApplyHandle, TimerDel, 0.05f, false);
+	//FTimerDelegate TimerDel;
+	//TimerDel.BindLambda([this, InEffectDuration] { ApplyStunEffect(InEffectDuration); });
+	ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Stun);
 }
 
 void AEnemy::P_ApplyUpgradeOnSelection()
@@ -259,9 +253,9 @@ void AEnemy::P_ReceiveStunEffect(const float InEffectDuration, const float InDam
 	GetCharacterMovement()->StopMovementImmediately();
 	ReceiveDamage(InDamage, EDamageReason::None);
 	LaunchCharacter(InHitDirection * (P_Data ? P_Data->GetBashImpulseForce() : 5000.f), true, true);
-	FTimerDelegate TimerDel;
-	TimerDel.BindLambda([this, InEffectDuration] { ApplyStunEffect(InEffectDuration); });
-	GetWorldTimerManager().SetTimer(StunEffectApplyHandle, TimerDel, 0.05f, false);
+	//FTimerDelegate TimerDel;
+	//TimerDel.BindLambda([this, InEffectDuration] { ApplyStunEffect(InEffectDuration); });
+	//GetWorldTimerManager().SetTimer(StunEffectApplyHandle, TimerDel, 0.05f, false);
 	ApplyStunEffect(InEffectDuration);
 }
 
@@ -401,16 +395,9 @@ void AEnemy::StopSound(const ESound InSoundName)
 
 void AEnemy::ReceiveEmpEffect(const float InEffectDuration)
 {
-	AI_StopAbilitiesEvents();
-	if (AnimInstance)
-	{
-		AnimInstance->ClearMontageWithHoldHandle();
-		AnimInstance->StopAllMontages(0.f);
-	}
-	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
-	FTimerDelegate TimerDel;
-	TimerDel.BindLambda([this, InEffectDuration] { ApplyEmpEffect(InEffectDuration); });
-	GetWorldTimerManager().SetTimer(EmpEffectApplyHandle, TimerDel, 0.05f, false);
+//	FTimerDelegate TimerDel;
+//	TimerDel.BindLambda([this, InEffectDuration] { ApplyEmpEffect(InEffectDuration); });
+	ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Emp);
 }
 
 void AEnemy::SetHijackOutline(const bool bState)
@@ -440,8 +427,13 @@ void AEnemy::EmpEffectEnded()
 	UE_LOG(LogTemp, Error, TEXT("EMP EFFECT ENDED"));
 	bAffectedByEmp = false;
 	RemoveDisablingActionEffect();
-	SetIsActionInMotion(false);
-	if (AI) AI->ResumeLogic();
+}
+
+void AEnemy::StunEffectEnded()
+{
+	UE_LOG(LogTemp, Error, TEXT("STUN EFFECT ENDED"));
+	bAffectedByStun = false;
+	RemoveDisablingActionEffect();
 }
 
 void AEnemy::ChangeOverlappingPoisonAreasInState(const bool bState)
@@ -460,6 +452,14 @@ void AEnemy::SetMovementSpeedMultiplier(const float InMultiplier)
 {
 	MovementSpeedMultiplier = InMultiplier;
 	SetMaxWalkSpeed(CurrentMoveMode);
+}
+
+void AEnemy::RemoveDisablingActionEffect()
+{
+	DisablingActionsEffectsCount--;
+	DisablingActionsEffectsCount = FMath::Max(0, DisablingActionsEffectsCount);
+	UE_LOG(LogTemp, Error, TEXT("RemoveDisablingActionEffect %i"), DisablingActionsEffectsCount);
+	if (DisablingActionsEffectsCount == 0) AllDisablingActionsFinished();
 }
 
 float AEnemy::AI_GetShootPause() { return AI_Data->GetShootPause(); }
@@ -592,6 +592,23 @@ void AEnemy::AI_DestroyVfxs()
 		HijackableVfx->DeactivateImmediate();
 		HijackableVfx->DestroyComponent();
 		HijackableVfx = nullptr;
+	}
+}
+
+void AEnemy::AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName)
+{
+	GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
+	AI_StopAbilitiesEvents();
+	if (AnimInstance)
+	{
+		AnimInstance->ClearMontageWithHoldHandle();
+		AnimInstance->StopAllMontages(0.f);
+	}
+	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
+	switch (InEffectName)
+	{
+		case EDisablingEffect::Emp: ApplyEmpEffect(InEffectDuration); break;
+		case EDisablingEffect::Stun: ApplyStunEffect(InEffectDuration);
 	}
 }
 
@@ -886,6 +903,13 @@ void AEnemy::ClearTimers()
 	GetWorldTimerManager().ClearTimer(ActionSpeedHandle);
 }
 
+void AEnemy::AllDisablingActionsFinished()
+{
+	if (AnimInstance) AnimInstance->PlayMontage(EEnemyAnimState::EmpRecover);
+	SetIsActionInMotion(false);
+	if (AI) AI->ResumeLogic();
+}
+
 void AEnemy::AI_SetupData()
 {
 	CurrentHp = MaxHp = AI_Data->GetMaxHp();
@@ -973,20 +997,6 @@ void AEnemy::AI_StopAbilitiesEvents() const
 		case EStateTreeEvent::BreacherBash: AI_StopAbility(0); break;
 		default: ;
 	}
-}
-
-void AEnemy::AI_DisableActions()
-{
-/*	AI_StopAbilitiesEvents();
-	if (AnimInstance)
-	{
-		AnimInstance->ClearMontageWithHoldHandle();
-		AnimInstance->StopAllMontages(0.f);
-	}
-	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
-//	FTimerDelegate TimerDel;
-	//TimerDel.BindLambda([this, InEffectDuration] { ApplyEmpEffect(InEffectDuration); });
-//	GetWorldTimerManager().SetTimer(EmpEffectApplyHandle, TimerDel, 0.05f, false);*/
 }
 
 void AEnemy::AI_TimeDilationChange(const float InDilation) const
@@ -1683,14 +1693,17 @@ void AEnemy::ApplyEmpEffect(const float InEffectDuration)
 	PlayEmpAffectedVfx(InEffectDuration);
 	PlaySound(ESound::EmpEffectApplied, true);
 	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
+	GetWorldTimerManager().SetTimer(EmpEffectEndHandle, this, &AEnemy::EmpEffectEnded, InEffectDuration);
 }
 
 void AEnemy::ApplyStunEffect(const float InEffectDuration)
 {
 	if (!bIsHijacked)
 	{
+		bAffectedByStun = true;
 		PlayStunAffectedVfx(InEffectDuration);
 		AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
+		GetWorldTimerManager().SetTimer(StunEffectEndHandle, this, &AEnemy::StunEffectEnded, InEffectDuration);
 	}
 	else
 	{
@@ -1707,14 +1720,13 @@ void AEnemy::PlayStunAffectedVfx(const float InEffectDuration)
 	else StunAffectedVfx->Activate(true);
 }
 
-void AEnemy::RemoveDisablingActionEffect()
+void AEnemy::ApplyDisablingActionEffect(const float InEffectDuration, const EDisablingEffect InEffectName)
 {
-	DisablingActionsEffectsCount--;
-	DisablingActionsEffectsCount = FMath::Max(0, DisablingActionsEffectsCount);
-}
-
-void AEnemy::ApplyDisablingActionEffect()
-{
-	DisablingActionsEffectsCount++;
-	AI_DisableActions();
+	switch (InEffectName)
+	{
+		case EDisablingEffect::Emp: if (!bAffectedByEmp) DisablingActionsEffectsCount++; break;
+		case EDisablingEffect::Stun: if (!bAffectedByStun) DisablingActionsEffectsCount++;
+	}
+	UE_LOG(LogTemp, Error, TEXT("ApplyDisablingActionEffect %i"), DisablingActionsEffectsCount);
+	AI_DisableActions(InEffectDuration, InEffectName);
 }

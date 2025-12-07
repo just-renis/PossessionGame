@@ -25,7 +25,11 @@
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "Engine/OverlapResult.h"
 
-void ABreacher::AI_EnableTriggeringBash() { GetWorldTimerManager().SetTimer(AI_TriggerBashHandle, this, &ABreacher::AI_TryTriggeringBash, 1.f, true); }
+void ABreacher::AI_EnableTriggeringBash()
+{
+	if (!IsActionsDisabled()) GetWorldTimerManager().SetTimer(AI_TriggerBashHandle, this, &ABreacher::AI_TryTriggeringBash, 1.f, true);
+	bIsBashTriggerInitiated = true;
+}
 
 void ABreacher::P_ThrowBarrel()
 {
@@ -90,17 +94,21 @@ void ABreacher::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::
 
 void ABreacher::AI_TryTriggeringBash()
 {
-	if (!CanAbilityBeExecuted(1) || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
+	if (!CanAbilityBeExecuted(1) || GetIsActionInMotion() || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
+	UE_LOG(LogTemp, Error, TEXT("AI_TryTriggeringBash"));
+	bIsBashInitiated = true;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::BreacherBash);
 	PlaySound(ESound::BreacherBashWindUp, true);
 	AI_ActivateBashWindUpVfx();
 	GetWorldTimerManager().SetTimer(AI_TriggerBashImpulse, this, &ABreacher::AI_Bash, AI_BashStartInAnimation);
 	GetWorldTimerManager().ClearTimer(AI_TriggerBashHandle);
+	bIsBashTriggerInitiated = false;
 }
 
 void ABreacher::AI_Bash()
 {
 	bIsBashing = true;
+	UE_LOG(LogTemp, Error, TEXT("AI_Bash"));
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABreacher::AI_BashHit);
 	AI_ActivateBashDashVfx();
 	AI_ActivateBashDashTrailVfx();
@@ -115,7 +123,7 @@ void ABreacher::AI_Bash()
 
 void ABreacher::AI_ActivateBashWindUpVfx()
 {
-	if (!AI_BashWindUpFistVfx) AssetsManager->AttachVfx(EVfx::BreacherBashWindUpFist, [this]() -> bool { return GetIsAlive() && !bIsHijacked; }, &AI_BashWindUpFistVfx, GetMesh(), FName("RightHandSocket"));
+	if (!AI_BashWindUpFistVfx) AssetsManager->AttachVfx(EVfx::BreacherBashWindUpFist, [this]() -> bool { return GetIsAlive() && !bIsHijacked; }, &AI_BashWindUpFistVfx, GetMesh(), FName("LeftHandSocket"));
 	else AI_BashWindUpFistVfx->Activate();
 }
 
@@ -154,6 +162,15 @@ void ABreacher::AI_DestroyVfxs()
 	}
 }
 
+void ABreacher::AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName)
+{
+	Super::AI_DisableActions(InEffectDuration, InEffectName);
+	if (!bIsBashInitiated) return;
+	StopBash();
+	GetWorldTimerManager().ClearTimer(AI_TriggerBashImpulse);
+	GetWorldTimerManager().ClearTimer(StopBashHandle);
+}
+
 void ABreacher::AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (!OtherActor || OtherActor == this || FMath::Abs(Hit.Normal.Z) > 0.5f) return;
@@ -169,6 +186,7 @@ void ABreacher::P_Setup()
 	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ABreacher::SetIsActionInMotion);
+	//StopBash();
 }
 
 void ABreacher::P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
@@ -208,14 +226,17 @@ void ABreacher::ClearTimers()
 	GetWorldTimerManager().ClearTimer(AI_TriggerBashImpulse);
 	GetWorldTimerManager().ClearTimer(AI_TriggerBashHandle);
 	GetWorldTimerManager().ClearTimer(StopBashHandle);
+	bIsBashTriggerInitiated = false;
+	UE_LOG(LogTemp, Error, TEXT("ClearTimers"));
 }
 
 void ABreacher::StopBash()
 {
 	if (AI_BashDashTrailVfx) AI_BashDashTrailVfx->DeactivateImmediate();
 	bIsBashing = false;
+	bIsBashInitiated = false;
 	GetCapsuleComponent()->OnComponentHit.RemoveAll(this);
-	SetIsActionInMotion(false);
+	if (!IsActionsDisabled()) SetIsActionInMotion(false);
 	SetMaxWalkSpeed(EMoveMode::Walk);
 }
 
@@ -257,4 +278,10 @@ void ABreacher::TriggerBashOverlap()
 			}
 		}
 	}
+}
+
+void ABreacher::AllDisablingActionsFinished()
+{
+	Super::AllDisablingActionsFinished();
+	if (bIsBashTriggerInitiated) AI_EnableTriggeringBash();
 }
