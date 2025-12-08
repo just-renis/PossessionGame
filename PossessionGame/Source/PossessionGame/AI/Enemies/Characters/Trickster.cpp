@@ -3,6 +3,7 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/StateTreeComponent.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
@@ -116,7 +117,7 @@ void ATrickster::AI_PlayDeathElectrification()
 
 void ATrickster::AI_TryTriggeringPoisonGrenadeLaunch()
 {
-	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload) || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload) || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef() || !AI->GetStateTreeData().GetStateTreeRef()->IsRunning()) return;
 	if (AI->GetStateTreeData().GetIsTargetInMySight())
 	{
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::TricksterLaunchPoisonGrenade);
@@ -124,7 +125,7 @@ void ATrickster::AI_TryTriggeringPoisonGrenadeLaunch()
 	}
 }
 
-void ATrickster::AI_DestroyPoisonGrenadeTrigger()
+void ATrickster::AI_DestroyPoisonGrenadeTrigger() const
 {
 	if (AI_PoisonGrenadeTrigger)
 	{
@@ -190,14 +191,6 @@ void ATrickster::ReceiveEmpEffect(const float InEffectDuration)
 	Super::ReceiveEmpEffect(InEffectDuration);
 }
 
-void ATrickster::EmpEffectEnded()
-{
-	Super::EmpEffectEnded();
-	if (!AI_PoisonGrenadeTrigger || AI_PoisonGrenadeTrigger->GetCollisionEnabled() != ECollisionEnabled::QueryOnly) return;
-	AI_PoisonGrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	AI_PoisonGrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-}
-
 void ATrickster::SetMoveMode(const EMoveMode InMoveMode)
 {
 	Super::SetMoveMode(InMoveMode);
@@ -208,4 +201,12 @@ void ATrickster::SetMoveMode(const EMoveMode InMoveMode)
 		PlaySound(ESound::TricksterCloneDash, true);
 		AI_CloneAbilityRunVfx->Activate();
 	}
+}
+
+void ATrickster::AllDisablingActionsFinished()
+{
+	Super::AllDisablingActionsFinished();
+	if (!AI_PoisonGrenadeTrigger || AI_PoisonGrenadeTrigger->GetCollisionEnabled() != ECollisionEnabled::QueryOnly) return;
+	AI_PoisonGrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AI_PoisonGrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }

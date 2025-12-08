@@ -227,7 +227,11 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 
 void UPrimaryDataAssetsManager::RequestSpawnEnemy(const ECharacterType InCharacter, const FVector& InLocation, const float InHpPercentage)
 {
-	GetWorld()->SpawnActor<AEnemy>(LoadedEnemies[InCharacter], InLocation, FRotator::ZeroRotator)->AI_SetRespawnRequest(InHpPercentage);
+	if (const TObjectPtr<AEnemy> Enemy = GetWorld()->SpawnActor<AEnemy>(LoadedEnemies[InCharacter], InLocation, FRotator::ZeroRotator))
+	{
+		Enemy->AI_SetRespawnRequest(InHpPercentage);
+	}
+	else UE_LOG(LogTemp, Error, TEXT("RequestSpawnEnemy AFTER LEAVING BODY SOMEHOW COULD NOT BE LOADED!!!"));
 }
 
 void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TMap<int32, FSpawnableEnemiesByChapter>& InSpawnableEnemiesByChapter)

@@ -22,6 +22,7 @@ void URangerAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState)
 void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
 {
 	Super::OnMontageEnd(Montage, bIsInterrupted);
+	if (Proprietor->IsActionsDisabled()) return;
 	const TObjectPtr<UAnimMontage>* GrenadeLaunchMontage = Montages.Find(EEnemyAnimState::GrenadeLaunch);
 	if (GrenadeLaunchMontage && Montage == GrenadeLaunchMontage->Get())
 	{

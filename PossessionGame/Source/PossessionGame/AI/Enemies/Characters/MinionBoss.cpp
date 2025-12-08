@@ -172,7 +172,8 @@ void AMinionBoss::AI_PlayDeathSound()
 void AMinionBoss::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
 {
 	if (bHitByOtherAI) return;
-	Super::AI_ReceiveStunEffect(bHitByOtherAI, InEffectDuration, InDamage, InHitDirection);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
+	ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage);
 }
 
 void AMinionBoss::BeginPlay()

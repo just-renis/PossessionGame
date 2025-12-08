@@ -95,7 +95,7 @@ void ABreacher::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::
 void ABreacher::AI_TryTriggeringBash()
 {
 	if (!CanAbilityBeExecuted(1) || GetIsActionInMotion() || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
-	UE_LOG(LogTemp, Error, TEXT("AI_TryTriggeringBash"));
+	UE_LOG(LogTemp, Error, TEXT("AI_TryTriggeringBash %s"), *GetName());
 	bIsBashInitiated = true;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::BreacherBash);
 	PlaySound(ESound::BreacherBashWindUp, true);
@@ -108,7 +108,7 @@ void ABreacher::AI_TryTriggeringBash()
 void ABreacher::AI_Bash()
 {
 	bIsBashing = true;
-	UE_LOG(LogTemp, Error, TEXT("AI_Bash"));
+	UE_LOG(LogTemp, Error, TEXT("AI_Bash %s"), *GetName());
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABreacher::AI_BashHit);
 	AI_ActivateBashDashVfx();
 	AI_ActivateBashDashTrailVfx();
@@ -186,12 +186,21 @@ void ABreacher::P_Setup()
 	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ABreacher::SetIsActionInMotion);
-	//StopBash();
+	P_StopAIBashLogic();
 }
 
 void ABreacher::P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
 {
 	InEnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &ABreacher::DetonateDynamites);
+}
+
+void ABreacher::P_StopAIBashLogic()
+{
+	StopBash();
+	GetWorldTimerManager().ClearTimer(AI_TriggerBashImpulse);
+	GetWorldTimerManager().ClearTimer(AI_TriggerBashHandle);
+	GetWorldTimerManager().ClearTimer(StopBashHandle);
+	bIsBashTriggerInitiated = false;
 }
 
 void ABreacher::P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -227,12 +236,12 @@ void ABreacher::ClearTimers()
 	GetWorldTimerManager().ClearTimer(AI_TriggerBashHandle);
 	GetWorldTimerManager().ClearTimer(StopBashHandle);
 	bIsBashTriggerInitiated = false;
-	UE_LOG(LogTemp, Error, TEXT("ClearTimers"));
 }
 
 void ABreacher::StopBash()
 {
 	if (AI_BashDashTrailVfx) AI_BashDashTrailVfx->DeactivateImmediate();
+	GetCharacterMovement()->StopMovementImmediately();
 	bIsBashing = false;
 	bIsBashInitiated = false;
 	GetCapsuleComponent()->OnComponentHit.RemoveAll(this);

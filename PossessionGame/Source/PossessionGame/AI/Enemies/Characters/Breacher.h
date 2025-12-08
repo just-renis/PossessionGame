@@ -78,6 +78,7 @@ private:
 
 	virtual void P_Setup() override;
 	virtual void P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent) override;
+	void P_StopAIBashLogic();
 	UFUNCTION()
 	void P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	

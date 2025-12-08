@@ -65,7 +65,14 @@ void AWarden::AI_PlayDeathElectrification()
 void AWarden::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
 {
 	if (bHitByOtherAI) return;
-	Super::AI_ReceiveStunEffect(bHitByOtherAI, InEffectDuration, InDamage, InHitDirection);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
+	ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage);
+}
+
+void AWarden::AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName)
+{
+	Super::AI_DisableActions(InEffectDuration, InEffectName);
+	if (BeamVfx && BeamVfx->IsActive()) BeamVfx->DeactivateImmediate(); 
 }
 
 void AWarden::BeginPlay()
@@ -88,6 +95,7 @@ void AWarden::TryTriggeringBeamShot()
 
 void AWarden::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	GetWorldTimerManager().ClearTimer(BeamDisableCollisionHandle);
 	GetWorldTimerManager().ClearTimer(BeamTriggerHandle);
 	Super::EndPlay(EndPlayReason);
 }
@@ -109,6 +117,13 @@ void AWarden::ReceiveDamage(const float InDamage, const EDamageReason InDamageRe
 {
 	Super::ReceiveDamage(InDamage, InDamageReason);
 	(void)DelegateManager->UpdateGlobalHpBar.ExecuteIfBound(CurrentHp, MaxHp);
+}
+
+void AWarden::ClearTimers()
+{
+	Super::ClearTimers();
+	GetWorldTimerManager().ClearTimer(BeamTriggerHandle);
+	GetWorldTimerManager().ClearTimer(BeamDisableCollisionHandle);
 }
 
 void AWarden::TriggerBeam()

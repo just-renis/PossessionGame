@@ -22,6 +22,7 @@ void UTricksterAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState
 void UTricksterAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
 {
 	Super::OnMontageEnd(Montage, bIsInterrupted);
+	if (Proprietor->IsActionsDisabled()) return;
 	const TObjectPtr<UAnimMontage>* PoisonGrenadeLaunchMontage = Montages.Find(EEnemyAnimState::GrenadeLaunch);
 	if (PoisonGrenadeLaunchMontage && Montage == PoisonGrenadeLaunchMontage->Get())
 	{

@@ -58,6 +58,7 @@ public:
 	bool GetIsSliding() const { return bIsSliding; }
 	bool GetIsAffectedByEmp() const { return bAffectedByEmp; }
 	bool GetIsAffectedByStun() const { return bAffectedByStun; }
+	bool IsActionsDisabled() const { return DisablingActionsEffectsCount > 0; }
 	float GetActionSpeed() const { return ActionSpeed; }
 	float GetDamageReduction() const { return DamageReduction; }
 	float GetCurrentHp() const { return CurrentHp; }
@@ -179,7 +180,6 @@ protected:
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 	
-	bool IsActionsDisabled() const { return DisablingActionsEffectsCount > 0; }
 	virtual float AI_GetShootPause();
 
 	virtual void AI_SetupAbilities();
@@ -298,6 +298,7 @@ private:
 	FTimerHandle HijackFovChangeHandle;
 	FTimerHandle HijackLockInToTargetHandle;
 	FTimerHandle HijackInvincibilityDelayHandle;
+	FTimerHandle RecoverFromDisablingEffectHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Explosion Radius From Emp Upgrade", meta = (AllowPrivateAccess = true))
 	float ExplosionRadiusFromEmpUpgradeInMetres = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
@@ -485,4 +486,5 @@ private:
 	void ApplyStunEffect(const float InEffectDuration);
 	void PlayStunAffectedVfx(const float InEffectDuration);
 	void ApplyDisablingActionEffect(const float InEffectDuration, const EDisablingEffect InEffectName);
+	void RecoverFromDisablingEffect();
 };

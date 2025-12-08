@@ -192,9 +192,9 @@ void ARanger::InitiateDeath()
 	Super::InitiateDeath();
 }
 
-void ARanger::EmpEffectEnded()
+void ARanger::AllDisablingActionsFinished()
 {
-	Super::EmpEffectEnded();
+	Super::AllDisablingActionsFinished();
 	if (!AI_GrenadeTrigger || AI_GrenadeTrigger->GetCollisionEnabled() != ECollisionEnabled::QueryOnly) return;
 	AI_GrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AI_GrenadeTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);

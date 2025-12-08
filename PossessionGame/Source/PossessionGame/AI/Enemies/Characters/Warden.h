@@ -14,6 +14,8 @@ public:
 private:
 	AWarden();
 
+	FTimerHandle BeamTriggerHandle;
+	FTimerHandle BeamDisableCollisionHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Beam Weapon", meta = (AllowPrivateAccess = true))
 	float DamageTimeSpan = 0.2f;
 	UPROPERTY(EditDefaultsOnly, Category = "Beam Weapon", meta = (AllowPrivateAccess = true))
@@ -32,16 +34,13 @@ private:
 	TObjectPtr<UAudioComponent> SpawnSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> BeamFireSfx;
-	UPROPERTY()
-	FTimerHandle BeamTriggerHandle;
-	UPROPERTY()
-	FTimerHandle BeamDisableCollisionHandle;
 
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_PlayDeathSound() override;
 	virtual void AI_PlaySpawnSound() override;
 	virtual void AI_PlayDeathElectrification() override;
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
+	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName) override;
 
 	virtual void BeginPlay() override;
 	void TryTriggeringBeamShot();
@@ -49,6 +48,7 @@ private:
 	void DisableBeamCollision();
 	virtual void InitiateDeath() override;
 	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason) override;
+	virtual void ClearTimers() override;
 	UFUNCTION()
 	void OnBeamCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

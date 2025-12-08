@@ -55,6 +55,6 @@ private:
 	void GrenadeMuzzleFlashLogic();
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitiateDeath() override;
-	virtual void EmpEffectEnded() override;
+	virtual void AllDisablingActionsFinished() override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };

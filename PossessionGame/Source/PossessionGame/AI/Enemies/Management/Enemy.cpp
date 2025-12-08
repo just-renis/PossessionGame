@@ -204,8 +204,6 @@ void AEnemy::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffect
 		ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage);
 	}
 	LaunchCharacter(InHitDirection * (AI_Data ? AI_Data->GetBashImpulseForce() : 5000.f), true, true);
-	//FTimerDelegate TimerDel;
-	//TimerDel.BindLambda([this, InEffectDuration] { ApplyStunEffect(InEffectDuration); });
 	ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Stun);
 }
 
@@ -264,6 +262,7 @@ void AEnemy::SetIsActionInMotion(const bool bState)
 	bIsActionInMotion = bState;
 	if (!AI) return;
 	AI->GetStateTreeData().SetIsActionInMotion(bState);
+	UE_LOG(LogTemp, Error, TEXT("SetIsActionInMotion %i"), bState);
 	if (!bState) AI_SetupShootLogic();
 }
 
@@ -393,12 +392,7 @@ void AEnemy::StopSound(const ESound InSoundName)
 	Sounds[InSoundName]->Stop();
 }
 
-void AEnemy::ReceiveEmpEffect(const float InEffectDuration)
-{
-//	FTimerDelegate TimerDel;
-//	TimerDel.BindLambda([this, InEffectDuration] { ApplyEmpEffect(InEffectDuration); });
-	ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Emp);
-}
+void AEnemy::ReceiveEmpEffect(const float InEffectDuration) { ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Emp); }
 
 void AEnemy::SetHijackOutline(const bool bState)
 {
@@ -424,14 +418,12 @@ void AEnemy::SetUnHijackOutline(const bool bState) const
 
 void AEnemy::EmpEffectEnded()
 {
-	UE_LOG(LogTemp, Error, TEXT("EMP EFFECT ENDED"));
 	bAffectedByEmp = false;
 	RemoveDisablingActionEffect();
 }
 
 void AEnemy::StunEffectEnded()
 {
-	UE_LOG(LogTemp, Error, TEXT("STUN EFFECT ENDED"));
 	bAffectedByStun = false;
 	RemoveDisablingActionEffect();
 }
@@ -458,7 +450,6 @@ void AEnemy::RemoveDisablingActionEffect()
 {
 	DisablingActionsEffectsCount--;
 	DisablingActionsEffectsCount = FMath::Max(0, DisablingActionsEffectsCount);
-	UE_LOG(LogTemp, Error, TEXT("RemoveDisablingActionEffect %i"), DisablingActionsEffectsCount);
 	if (DisablingActionsEffectsCount == 0) AllDisablingActionsFinished();
 }
 
@@ -599,7 +590,7 @@ void AEnemy::AI_DisableActions(const float InEffectDuration, const EDisablingEff
 {
 	GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
 	AI_StopAbilitiesEvents();
-	if (AnimInstance)
+	if (AnimInstance && DisablingActionsEffectsCount < 2)
 	{
 		AnimInstance->ClearMontageWithHoldHandle();
 		AnimInstance->StopAllMontages(0.f);
@@ -633,6 +624,8 @@ void AEnemy::P_SetupAbilities()
 
 void AEnemy::P_Setup()
 {
+	if (bAffectedByEmp) EmpEffectEnded();
+	if (bAffectedByStun) StunEffectEnded();
 	GetMesh()->SetComponentTickEnabled(false);
 	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f);
 	DelegateManager->RequestCurrentCharacter.BindUObject(this, &AEnemy::GetCharacterName);
@@ -905,9 +898,10 @@ void AEnemy::ClearTimers()
 
 void AEnemy::AllDisablingActionsFinished()
 {
-	if (AnimInstance) AnimInstance->PlayMontage(EEnemyAnimState::EmpRecover);
-	SetIsActionInMotion(false);
-	if (AI) AI->ResumeLogic();
+	if (bIsHijacked || !AnimInstance) return;
+	UE_LOG(LogTemp, Error, TEXT("EMP RECOVER TRIGGERED"));
+	AnimInstance->PlayMontage(EEnemyAnimState::EmpRecover);
+	GetWorldTimerManager().SetTimer(RecoverFromDisablingEffectHandle, this, &AEnemy::RecoverFromDisablingEffect, AnimInstance->GetMontageLength(EEnemyAnimState::EmpRecover));
 }
 
 void AEnemy::AI_SetupData()
@@ -1164,6 +1158,7 @@ void AEnemy::P_TriggerGlitchingEffect() const { GetWorld()->GetSubsystem<UPostPr
 
 void AEnemy::P_MakeCameraShake(const ECameraShake InCameraShakeName) const
 {
+	UE_LOG(LogTemp, Error, TEXT("P_MakeCameraShake %s"), *UEnum::GetValueAsString(InCameraShakeName));
 	switch (InCameraShakeName)
 	{
 		case ECameraShake::WardenBeam: P_MakeCameraShake(WardenBeamShake); break;
@@ -1692,7 +1687,8 @@ void AEnemy::ApplyEmpEffect(const float InEffectDuration)
 	bAffectedByEmp = true;
 	PlayEmpAffectedVfx(InEffectDuration);
 	PlaySound(ESound::EmpEffectApplied, true);
-	AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
+	UE_LOG(LogTemp, Error, TEXT("ApplyEmpEffect"));
+	if (DisablingActionsEffectsCount < 2) AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
 	GetWorldTimerManager().SetTimer(EmpEffectEndHandle, this, &AEnemy::EmpEffectEnded, InEffectDuration);
 }
 
@@ -1702,7 +1698,7 @@ void AEnemy::ApplyStunEffect(const float InEffectDuration)
 	{
 		bAffectedByStun = true;
 		PlayStunAffectedVfx(InEffectDuration);
-		AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
+		if (DisablingActionsEffectsCount < 2) AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
 		GetWorldTimerManager().SetTimer(StunEffectEndHandle, this, &AEnemy::StunEffectEnded, InEffectDuration);
 	}
 	else
@@ -1717,16 +1713,33 @@ void AEnemy::PlayStunAffectedVfx(const float InEffectDuration)
 	{
 		AssetsManager->AttachVfx(EVfx::Stunned, [this]() -> bool { return GetIsAlive(); }, &StunAffectedVfx, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(true, InEffectDuration)}});
 	}
-	else StunAffectedVfx->Activate(true);
+	else
+	{
+		TMap<FName, FNiagaraAttribute> Attributes;
+		Attributes.Add(FName("Loop Duration"), FNiagaraAttribute(true, InEffectDuration));
+		AssetsManager->UpdateVfxAttributes(StunAffectedVfx, Attributes);
+		StunAffectedVfx->Activate(true);
+	}
 }
 
 void AEnemy::ApplyDisablingActionEffect(const float InEffectDuration, const EDisablingEffect InEffectName)
 {
+	GetWorldTimerManager().ClearTimer(RecoverFromDisablingEffectHandle);
 	switch (InEffectName)
 	{
 		case EDisablingEffect::Emp: if (!bAffectedByEmp) DisablingActionsEffectsCount++; break;
 		case EDisablingEffect::Stun: if (!bAffectedByStun) DisablingActionsEffectsCount++;
 	}
-	UE_LOG(LogTemp, Error, TEXT("ApplyDisablingActionEffect %i"), DisablingActionsEffectsCount);
+	//UE_LOG(LogTemp, Error, TEXT("ApplyDisablingActionEffect %i"), DisablingActionsEffectsCount);
 	AI_DisableActions(InEffectDuration, InEffectName);
+}
+
+void AEnemy::RecoverFromDisablingEffect()
+{
+	SetIsActionInMotion(false);
+	if (AI)
+	{
+		AI->ResumeLogic();
+		UE_LOG(LogTemp, Error, TEXT("RESUME STATE TREE LOGIC"));
+	}
 }

@@ -39,6 +39,9 @@ private:
 	bool bStompIsReady = false;
 	bool bIsMoveDirectlyToPlayerTriggered = false;
 	int32 CurrentWeaponIndex = 0;
+	FTimerHandle CheckLaserEyeDistanceHandle;
+	FTimerHandle DealLaserDamageToPlayerHandle;
+	FTimerHandle MoveDirectlyToPlayerHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompTriggerRadiusInMeters = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
@@ -57,12 +60,6 @@ private:
 	TObjectPtr<UNiagaraComponent> LaserVfx;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
-	UPROPERTY()
-	FTimerHandle CheckLaserEyeDistanceHandle;
-	UPROPERTY()
-	FTimerHandle DealLaserDamageToPlayerHandle;
-	UPROPERTY()
-	FTimerHandle MoveDirectlyToPlayerHandle;
 
 	virtual TObjectPtr<AWeapon>& GetWeapon() override; // For getting singular weapon data only.
 	
