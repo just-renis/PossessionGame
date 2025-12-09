@@ -14,12 +14,15 @@ void UMinionBossAbility1::AI_Execute()
 	Proprietor->PlaySound(ESound::MinionBossStomp, true);
 	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetIsActionMontagePlaying(true);
 	Proprietor->GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::MinionBossStompCrack, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, Proprietor->GetSocketLocation("StompSocket"));
+	//if (!StompVfx) Proprietor->GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::MinionBossStompCrack, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &StompVfx, Proprietor->GetMesh(), FName("StompSocket"));
+	//else StompVfx->Activate(true);
 	GetWorld()->GetTimerManager().SetTimer(StompHandle, this, &UMinionBossAbility1::StompHitTheGround, 1.22f, false);
 	Super::AI_Execute();
 }
 
 void UMinionBossAbility1::AI_StopAbility()
 {
+	//if (StompVfx && StompVfx->IsActive()) StompVfx->DeactivateImmediate();
 	Proprietor->StopSound(ESound::MinionBossStomp);
 	GetWorld()->GetTimerManager().ClearTimer(StompHandle);
 	Super::AI_StopAbility();
@@ -32,11 +35,7 @@ void UMinionBossAbility1::SetProprietor(const TObjectPtr<AEnemy> AbilityPropriet
 void UMinionBossAbility1::CooldownLogic(const float InDeltaTime)
 {
 	Super::CooldownLogic(InDeltaTime);
-	if (CurrentChargesAmount > 0)
-	{
-		if (!Proprietor->GetIsAbilityInAction()) Proprietor->ActivateStompTrigger();
-		else Proprietor->SetIsStompReady(true);
-	}
+	if (CurrentChargesAmount > 0) Proprietor->SetStompAvailability(true);
 }
 
 void UMinionBossAbility1::StompHitTheGround() const

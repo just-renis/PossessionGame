@@ -5,5 +5,8 @@ enum class ECameraShake : uint8
 {
     WardenBeam,
     MinionBossStomp,
-    MinionBossLaser
+    MinionBossLaser,
+    PlayerReceiveDamage,
+    PlayerQuickMelee,
+    PlayerStomp
 };

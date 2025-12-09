@@ -117,7 +117,9 @@ void ATrickster::AI_PlayDeathElectrification()
 
 void ATrickster::AI_TryTriggeringPoisonGrenadeLaunch()
 {
-	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload) || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef() || !AI->GetStateTreeData().GetStateTreeRef()->IsRunning()) return;
+	if (!AI || AnimInstance->IsPlaying(EEnemyAnimState::Reload) || bIsActionInMotion) return;
+	const TObjectPtr<UStateTreeComponent>& StateTree = AI->GetStateTreeData().GetStateTreeRef();
+	if (!StateTree || !StateTree->IsRunning()) return;
 	if (AI->GetStateTreeData().GetIsTargetInMySight())
 	{
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::TricksterLaunchPoisonGrenade);

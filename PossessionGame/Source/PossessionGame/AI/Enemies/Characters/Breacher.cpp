@@ -95,7 +95,6 @@ void ABreacher::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::
 void ABreacher::AI_TryTriggeringBash()
 {
 	if (!CanAbilityBeExecuted(1) || GetIsActionInMotion() || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
-	UE_LOG(LogTemp, Error, TEXT("AI_TryTriggeringBash %s"), *GetName());
 	bIsBashInitiated = true;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::BreacherBash);
 	PlaySound(ESound::BreacherBashWindUp, true);
@@ -108,7 +107,6 @@ void ABreacher::AI_TryTriggeringBash()
 void ABreacher::AI_Bash()
 {
 	bIsBashing = true;
-	UE_LOG(LogTemp, Error, TEXT("AI_Bash %s"), *GetName());
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABreacher::AI_BashHit);
 	AI_ActivateBashDashVfx();
 	AI_ActivateBashDashTrailVfx();

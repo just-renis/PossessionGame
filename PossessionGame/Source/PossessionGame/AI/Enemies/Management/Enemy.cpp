@@ -251,9 +251,6 @@ void AEnemy::P_ReceiveStunEffect(const float InEffectDuration, const float InDam
 	GetCharacterMovement()->StopMovementImmediately();
 	ReceiveDamage(InDamage, EDamageReason::None);
 	LaunchCharacter(InHitDirection * (P_Data ? P_Data->GetBashImpulseForce() : 5000.f), true, true);
-	//FTimerDelegate TimerDel;
-	//TimerDel.BindLambda([this, InEffectDuration] { ApplyStunEffect(InEffectDuration); });
-	//GetWorldTimerManager().SetTimer(StunEffectApplyHandle, TimerDel, 0.05f, false);
 	ApplyStunEffect(InEffectDuration);
 }
 
@@ -262,7 +259,6 @@ void AEnemy::SetIsActionInMotion(const bool bState)
 	bIsActionInMotion = bState;
 	if (!AI) return;
 	AI->GetStateTreeData().SetIsActionInMotion(bState);
-	UE_LOG(LogTemp, Error, TEXT("SetIsActionInMotion %i"), bState);
 	if (!bState) AI_SetupShootLogic();
 }
 
@@ -632,6 +628,7 @@ void AEnemy::P_Setup()
 	DelegateManager->ApplyUpgradeOnSelection.BindUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->RequestTriggerCameraShake.BindUObject(this, &AEnemy::P_MakeCameraShake);
+	DelegateManager->RequestStopCameraShake.BindUObject(this, &AEnemy::P_StopCameraShake);
 	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
 	DelegateManager->OnAbilitiesMenuSelectionEnd.BindUObject(this, &AEnemy::P_OnAbilitiesMenuSelectionEnd);
 	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_SetupLevelUpAppliance);
@@ -757,10 +754,7 @@ void AEnemy::P_InitiateStomp()
 
 void AEnemy::P_ShowReceivedDamageNumber(const float InDamage) { (void)DelegateManager->OnPlayerDamageTaken.ExecuteIfBound(InDamage, FLinearColor::Red); }
 
-void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const
-{
-	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(InCameraShake);
-}
+void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const { UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(InCameraShake); }
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
@@ -899,9 +893,14 @@ void AEnemy::ClearTimers()
 void AEnemy::AllDisablingActionsFinished()
 {
 	if (bIsHijacked || !AnimInstance) return;
-	UE_LOG(LogTemp, Error, TEXT("EMP RECOVER TRIGGERED"));
 	AnimInstance->PlayMontage(EEnemyAnimState::EmpRecover);
 	GetWorldTimerManager().SetTimer(RecoverFromDisablingEffectHandle, this, &AEnemy::RecoverFromDisablingEffect, AnimInstance->GetMontageLength(EEnemyAnimState::EmpRecover));
+}
+
+void AEnemy::RecoverFromDisablingEffect()
+{
+	SetIsActionInMotion(false);
+	if (AI) AI->ResumeLogic();
 }
 
 void AEnemy::AI_SetupData()
@@ -966,6 +965,7 @@ void AEnemy::AI_DisableDamageTakenRedFlash() const { if (MI_MeshBaseMaterial) MI
 
 void AEnemy::AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent)
 {
+	if (InEvent == EStateTreeEvent::MinionBossMoveDirectlyToPlayer) return;
 	GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
 	AI_CancelShooting();
 }
@@ -1156,14 +1156,25 @@ void AEnemy::P_HandleEscapeClick()
 
 void AEnemy::P_TriggerGlitchingEffect() const { GetWorld()->GetSubsystem<UPostProcessManager>()->TriggerGlitchingMaterial(1.25f); }
 
-void AEnemy::P_MakeCameraShake(const ECameraShake InCameraShakeName) const
+void AEnemy::P_MakeCameraShake(const ECameraShake InCameraShakeName)
 {
-	UE_LOG(LogTemp, Error, TEXT("P_MakeCameraShake %s"), *UEnum::GetValueAsString(InCameraShakeName));
 	switch (InCameraShakeName)
 	{
-		case ECameraShake::WardenBeam: P_MakeCameraShake(WardenBeamShake); break;
-		case ECameraShake::MinionBossStomp: P_MakeCameraShake(StompCameraShake); break;
-		case ECameraShake::MinionBossLaser: P_MakeCameraShake(MinionBossLaserShake);
+		case ECameraShake::WardenBeam: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(WardenBeamShake); break;
+		case ECameraShake::MinionBossStomp: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(MinionBossStompCameraShake); break;
+		case ECameraShake::MinionBossLaser: MinionBossLaserShakeInstance = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(MinionBossLaserShake); break;
+		case ECameraShake::PlayerReceiveDamage: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(ReceivingDamageCameraShake); break;
+		case ECameraShake::PlayerQuickMelee: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(QuickMeleeCameraShake); break;
+		case ECameraShake::PlayerStomp: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(StompCameraShake);
+	}
+}
+
+void AEnemy::P_StopCameraShake(const ECameraShake InCameraShakeName) const
+{
+	switch (InCameraShakeName)
+	{
+		case ECameraShake::MinionBossLaser: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StopCameraShake(MinionBossLaserShakeInstance);
+		default: ;
 	}
 }
 
@@ -1177,9 +1188,9 @@ void AEnemy::P_HandlingDamageTaken()
 	if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamage();
 }
 
-void AEnemy::P_TriggerTakeDamageEffects() const
+void AEnemy::P_TriggerTakeDamageEffects()
 {
-	P_MakeCameraShake(ReceivingDamageCameraShake);
+	P_MakeCameraShake(ECameraShake::PlayerReceiveDamage);
 	if (UKismetMathLibrary::RandomInteger(100) >= 75)
 	{
 		AssetsManager->PlaySound2D(ESound::TakeDamageLayer2);
@@ -1244,7 +1255,7 @@ void AEnemy::P_QuickMeleeAttack()
 {
 	if (bIsActionInMotion || bIsInputLocked) return;
 	AssetsManager->PlaySound2D(ESound::QuickMelee);
-	P_MakeCameraShake(QuickMeleeCameraShake);
+	P_MakeCameraShake(ECameraShake::PlayerQuickMelee);
 	bIsActionInMotion = true;
 	GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::QuickMelee);
 	P_ProcessMeleeAttack();
@@ -1558,7 +1569,7 @@ void AEnemy::Landed(const FHitResult& Hit)
 		AssetsManager->SpawnVfx(EVfx::PlayerStomp, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetSocketLocation("RootSocket"));
 		GetCharacterMovement()->AirControl = 1.f;
 		P_StompImpact(GetSocketLocation("RootSocket"));
-		P_MakeCameraShake(StompCameraShake);
+		P_MakeCameraShake(ECameraShake::PlayerStomp);
 	}
 }
 
@@ -1687,7 +1698,6 @@ void AEnemy::ApplyEmpEffect(const float InEffectDuration)
 	bAffectedByEmp = true;
 	PlayEmpAffectedVfx(InEffectDuration);
 	PlaySound(ESound::EmpEffectApplied, true);
-	UE_LOG(LogTemp, Error, TEXT("ApplyEmpEffect"));
 	if (DisablingActionsEffectsCount < 2) AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
 	GetWorldTimerManager().SetTimer(EmpEffectEndHandle, this, &AEnemy::EmpEffectEnded, InEffectDuration);
 }
@@ -1730,16 +1740,5 @@ void AEnemy::ApplyDisablingActionEffect(const float InEffectDuration, const EDis
 		case EDisablingEffect::Emp: if (!bAffectedByEmp) DisablingActionsEffectsCount++; break;
 		case EDisablingEffect::Stun: if (!bAffectedByStun) DisablingActionsEffectsCount++;
 	}
-	//UE_LOG(LogTemp, Error, TEXT("ApplyDisablingActionEffect %i"), DisablingActionsEffectsCount);
 	AI_DisableActions(InEffectDuration, InEffectName);
-}
-
-void AEnemy::RecoverFromDisablingEffect()
-{
-	SetIsActionInMotion(false);
-	if (AI)
-	{
-		AI->ResumeLogic();
-		UE_LOG(LogTemp, Error, TEXT("RESUME STATE TREE LOGIC"));
-	}
 }

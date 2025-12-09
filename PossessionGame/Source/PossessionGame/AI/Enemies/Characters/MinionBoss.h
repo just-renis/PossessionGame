@@ -21,8 +21,6 @@ public:
 	TObjectPtr<UNiagaraComponent> GetLaser() const { return LaserVfx; }
 	TObjectPtr<UNiagaraComponent> GetLaserEyeBall() const { return LaserEyeBallVfx; }
 
-	void SetIsStompReady(const bool bState) { bStompIsReady = bState; }
-	void ActivateStompTrigger();
 	void TriggerStompCameraShake() const;
 	void TriggerLaserCameraShake() const;
 	void EnableLaserEyeBall();
@@ -31,17 +29,19 @@ public:
 	void OnLaserFinish();
 	void OnStompFinish();
 	void ResetMoveDirectlyToPlayer();
+	void SetStompAvailability(const bool bState) { bIsStompAvailable = bState; }
 private:
 	AMinionBoss();
 
 	FStopLaser StopLaser;
 	
-	bool bStompIsReady = false;
 	bool bIsMoveDirectlyToPlayerTriggered = false;
+	bool bIsStompAvailable = false;
 	int32 CurrentWeaponIndex = 0;
 	FTimerHandle CheckLaserEyeDistanceHandle;
 	FTimerHandle DealLaserDamageToPlayerHandle;
 	FTimerHandle MoveDirectlyToPlayerHandle;
+	FTimerHandle TryTriggerStompHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompTriggerRadiusInMeters = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
@@ -52,8 +52,6 @@ private:
 	TObjectPtr<UMaterialInterface> MI_Defeated;
 	UPROPERTY()
 	TArray<TObjectPtr<AWeapon>> Weapons;
-	UPROPERTY()
-	TObjectPtr<USphereComponent> StompTrigger;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> LaserEyeBallVfx;
 	UPROPERTY()
@@ -74,22 +72,20 @@ private:
 	virtual void AI_PlaySpawnSound() override;
 	virtual void AI_PlayDeathSound() override;
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
+	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName) override;
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void HandleDeactivation() override;
 	virtual void DestroyThis() override;
-	void DestroyStompTriggerSphere() const;
 	virtual void InitiateDeath() override;
-	void ToggleStompTrigger(const bool bState) const;
-	virtual void EmpEffectEnded() override;
+	void TryTriggerStomp();
 	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason) override;
 	void CheckDistanceOfLaserEyeTrigger();
 	void DealLaserDamageToPlayer() const;
 	virtual void SetUnHijackOutline(const bool bState) const override {}
 	void SetMoveDirectlyToPlayer();
-	UFUNCTION()
-	void OnPlayerEnterStompTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void ClearTimers() override;
 	UFUNCTION()
 	void OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

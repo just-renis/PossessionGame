@@ -237,6 +237,7 @@ protected:
 	virtual void DisableAllVfxAfterPossession();
 	virtual void ClearTimers();
 	virtual void AllDisablingActionsFinished();
+	virtual void RecoverFromDisablingEffect();
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanHijackOtherEnemy = false;
@@ -344,11 +345,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
-	TSubclassOf<UCameraShakeBase> StompCameraShake;
-	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> WardenBeamShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> MinionBossLaserShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> MinionBossStompCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> StompCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ReceivingDamageCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -393,6 +396,8 @@ private:
 	TObjectPtr<AEnemy> HijackTarget;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_HijackPulse;
+	UPROPERTY()
+	TObjectPtr<UCameraShakeBase> MinionBossLaserShakeInstance;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();
@@ -425,9 +430,10 @@ private:
 	void P_StopAllAbilities();
 	void P_HandleEscapeClick();
 	void P_TriggerGlitchingEffect() const;
-	void P_MakeCameraShake(const ECameraShake InCameraShakeName) const;
+	void P_MakeCameraShake(const ECameraShake InCameraShakeName);
+	void P_StopCameraShake(const ECameraShake InCameraShakeName) const;
 	void P_HandlingDamageTaken();
-	void P_TriggerTakeDamageEffects() const;
+	void P_TriggerTakeDamageEffects();
 	void P_EnableCriticalDamage();
 	void P_ToggleCriticallyDamagedEffects(const float InValue) const;
 	void P_InitiateDeathEvents();
@@ -486,5 +492,4 @@ private:
 	void ApplyStunEffect(const float InEffectDuration);
 	void PlayStunAffectedVfx(const float InEffectDuration);
 	void ApplyDisablingActionEffect(const float InEffectDuration, const EDisablingEffect InEffectName);
-	void RecoverFromDisablingEffect();
 };

@@ -2,8 +2,9 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
+#include "Components/StateTreeComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/OverlapResult.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECameraShake.h"
@@ -17,19 +18,12 @@
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
-void AMinionBoss::ActivateStompTrigger()
-{
-	bStompIsReady = true;
-	if (!bIsAbilityInAction) ToggleStompTrigger(true);
-}
-
 void AMinionBoss::TriggerStompCameraShake() const { (void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::MinionBossStomp); }
 
 void AMinionBoss::TriggerLaserCameraShake() const { (void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::MinionBossLaser); }
 
 void AMinionBoss::EnableLaserEyeBall()
 {
-	ToggleStompTrigger(false);
 	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &LaserEyeBallVfx, GetMesh(), "LaserSocket");
 	else LaserEyeBallVfx->Activate();
 }
@@ -45,18 +39,19 @@ void AMinionBoss::EnableDistanceCheckForLaserEye() { GetWorld()->GetTimerManager
 void AMinionBoss::OnLaserFinish()
 {
 	if (!AI->GetStateTreeData().GetStateTreeRef()) return;
-	SetIsActionInMotion(false);
+	if (!IsActionsDisabled()) SetIsActionInMotion(false);
 	SetIsAbilityInAction(false);
-	if (bIsMoveDirectlyToPlayerTriggered) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
-	if (bStompIsReady) ToggleStompTrigger(true);
+	if (!bIsMoveDirectlyToPlayerTriggered) return;
+	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
 }
 
 void AMinionBoss::OnStompFinish()
 {
 	if (!AI->GetStateTreeData().GetStateTreeRef()) return;
-	SetIsActionInMotion(false);
+	if (!IsActionsDisabled()) SetIsActionInMotion(false);
 	SetIsAbilityInAction(false);
-	if (bIsMoveDirectlyToPlayerTriggered) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
+	if (!bIsMoveDirectlyToPlayerTriggered) return;
+	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
 }
 
 void AMinionBoss::ResetMoveDirectlyToPlayer()
@@ -73,13 +68,6 @@ AMinionBoss::AMinionBoss()
 		AI_HpBarComponent->DestroyComponent();
 		AI_HpBarComponent = nullptr;
 	}
-	StompTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("StompTrigger"));
-	StompTrigger->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
-	StompTrigger->SetCollisionProfileName("TriggerPlayer");
-	StompTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	StompTrigger->CanCharacterStepUpOn = ECB_No;
-	StompTrigger->SetSphereRadius(StompTriggerRadiusInMeters * 100.f);
-	StompTrigger->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnPlayerEnterStompTrigger);
 	LaserCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("laserCollision"));
 	LaserCollision->SetupAttachment(GetMesh());
 	LaserCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -176,6 +164,12 @@ void AMinionBoss::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InE
 	ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage);
 }
 
+void AMinionBoss::AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName)
+{
+	Super::AI_DisableActions(InEffectDuration, InEffectName);
+	(void)DelegateManager->RequestStopCameraShake.ExecuteIfBound(ECameraShake::MinionBossLaser);
+}
+
 void AMinionBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::MinionBoss;
@@ -184,10 +178,12 @@ void AMinionBoss::BeginPlay()
 	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::MinionBoss);
 	GetWorld()->GetTimerManager().SetTimer(MoveDirectlyToPlayerHandle, this, &AMinionBoss::SetMoveDirectlyToPlayer, MoveDirectlyToPlayerInterval, false);
+	GetWorld()->GetTimerManager().SetTimer(TryTriggerStompHandle, this, &AMinionBoss::TryTriggerStomp, 0.2f, true);
 }
 
 void AMinionBoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	GetWorld()->GetTimerManager().ClearTimer(TryTriggerStompHandle);
 	GetWorld()->GetTimerManager().ClearTimer(CheckLaserEyeDistanceHandle);
 	GetWorld()->GetTimerManager().ClearTimer(DealLaserDamageToPlayerHandle);
 	Super::EndPlay(EndPlayReason);
@@ -205,37 +201,32 @@ void AMinionBoss::DestroyThis()
 	Super::DestroyThis();
 }
 
-void AMinionBoss::DestroyStompTriggerSphere() const
-{
-	if (StompTrigger)
-	{
-		StompTrigger->OnComponentBeginOverlap.RemoveAll(this);
-		StompTrigger->DestroyComponent();
-	}
-}
-
 void AMinionBoss::InitiateDeath()
 {
 	GetWorld()->GetTimerManager().ClearTimer(MoveDirectlyToPlayerHandle);
 	if (MI_Defeated) MI_MeshBaseMaterial = UMaterialInstanceDynamic::Create(MI_Defeated, this);
 	(void)StopLaser.ExecuteIfBound();
-	DestroyStompTriggerSphere();
 	GetMesh()->SetMaterial(0, MI_MeshBaseMaterial);
 	Super::InitiateDeath();
 	DelegateManager->OnBossDeath.Broadcast();
 }
 
-void AMinionBoss::ToggleStompTrigger(const bool bState) const
+void AMinionBoss::TryTriggerStomp()
 {
-	if (StompTrigger) StompTrigger->SetCollisionEnabled(bState ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision);
-}
-
-void AMinionBoss::EmpEffectEnded()
-{
-	Super::EmpEffectEnded();
-	if (!StompTrigger || StompTrigger->GetCollisionEnabled() != ECollisionEnabled::QueryOnly) return;
-	StompTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	StompTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	if (!bIsStompAvailable || !AI || IsActionsDisabled() || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompTriggerRadiusInMeters * 100.f), Params);
+	for (const FOverlapResult& Overlap : Overlaps)
+	{
+		TObjectPtr<AActor> Actor = Overlap.GetActor();
+		if (!Actor || !Actor->ActorHasTag("Player")) continue;
+		if (bIsMoveDirectlyToPlayerTriggered) ResetMoveDirectlyToPlayer();
+		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
+		bIsStompAvailable = false;
+		return;
+	}
 }
 
 void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
@@ -247,7 +238,9 @@ void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDama
 
 void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 {
-	if (!AI || bIsAbilityInAction || IsActionsDisabled() || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	if (!AI || bIsAbilityInAction || IsActionsDisabled()) return;
+	const TObjectPtr<UStateTreeComponent>& StateTree = AI->GetStateTreeData().GetStateTreeRef();
+	if (!StateTree || !StateTree->IsRunning()) return;
 	const TObjectPtr<AActor> Target = AI->GetStateTreeData().GetTarget();
 	if (!Target) return;
 	if (FVector::DistSquared(GetActorLocation(), Target->GetActorLocation()) >= FMath::Square(1000.f))
@@ -264,16 +257,17 @@ void AMinionBoss::SetMoveDirectlyToPlayer()
 {
 	if (!AI->GetStateTreeData().GetStateTreeRef()) return;
 	bIsMoveDirectlyToPlayerTriggered = true;
-	if (!bIsAbilityInAction && !bIsActionInMotion) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
+	if (bIsAbilityInAction || bIsActionInMotion) return;
+	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossMoveDirectlyToPlayer);
 }
 
-void AMinionBoss::OnPlayerEnterStompTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AMinionBoss::ClearTimers()
 {
-	if (!AI || IsActionsDisabled() || OtherActor->ActorHasTag("AliveEnemy") || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
-	if (bIsMoveDirectlyToPlayerTriggered) ResetMoveDirectlyToPlayer();
-	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::MinionBossStomp);
-	ToggleStompTrigger(false);
-	bStompIsReady = false;
+	Super::ClearTimers();
+	GetWorld()->GetTimerManager().ClearTimer(TryTriggerStompHandle);
+	GetWorld()->GetTimerManager().ClearTimer(CheckLaserEyeDistanceHandle);
+	GetWorld()->GetTimerManager().ClearTimer(DealLaserDamageToPlayerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(MoveDirectlyToPlayerHandle);
 }
 
 void AMinionBoss::OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

@@ -46,6 +46,7 @@ DECLARE_DELEGATE_RetVal(ECharacterType, FRequestCurrentCharacter);
 DECLARE_DELEGATE_RetVal(EGameMode, FRequestCurrentGameMode);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FRequestTriggerCameraShake, const ECameraShake);
+DECLARE_DELEGATE_OneParam(FRequestStopCameraShake, const ECameraShake);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const FRuntimeUpgradeData&);
 DECLARE_DELEGATE_OneParam(FRequirePlayerAnnouncementInfo, const FText&);
 DECLARE_DELEGATE_OneParam(FChangeMusicPlayerState, const bool);
@@ -137,6 +138,7 @@ public:
 	FRequestCurrentGameMode RequestCurrentGameMode;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FRequestTriggerCameraShake RequestTriggerCameraShake;
+	FRequestStopCameraShake RequestStopCameraShake;
 	FOnEnemyDeath OnEnemyDeath;
 	FUpdateGlobalHpBar UpdateGlobalHpBar;
 	FOnUpgradeCardSelected OnUpgradeCardSelected;

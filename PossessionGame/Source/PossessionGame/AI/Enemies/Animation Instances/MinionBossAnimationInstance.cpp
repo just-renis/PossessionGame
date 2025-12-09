@@ -6,7 +6,6 @@
 void UMinionBossAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
 {
 	Super::OnMontageEnd(Montage, bIsInterrupted);
-	if (Proprietor->IsActionsDisabled()) return;
 	const TObjectPtr<UAnimMontage>* StompMontage = Montages.Find(EEnemyAnimState::Stomp);
 	if (StompMontage && Montage == StompMontage->Get())
 	{
