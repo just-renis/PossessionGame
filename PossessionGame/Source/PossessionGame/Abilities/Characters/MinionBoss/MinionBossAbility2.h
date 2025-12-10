@@ -21,14 +21,11 @@ class POSSESSIONGAME_API UMinionBossAbility2 : public UAbility
 	float PlayerPositionReceiveBeforeLaserActivation = 0.3f;
 	FVector PlayerLocationAtInitiation;
 	FRotator CurrentAngularVelocity = FRotator::ZeroRotator;
+	FTimerHandle ShootLaserHandle;
+	FTimerHandle UpdateLaserLocationHandle;
+	FTimerHandle ReceivePlayerPositionHandle;
 	UPROPERTY()
 	TObjectPtr<AMinionBoss> Proprietor;
-	UPROPERTY()
-	FTimerHandle ShootLaserHandle;
-	UPROPERTY()
-	FTimerHandle UpdateLaserLocationHandle;
-	UPROPERTY()
-	FTimerHandle ReceivePlayerPositionHandle;
 
 	virtual void AI_Execute() override;
 	virtual void AI_StopAbility() override;

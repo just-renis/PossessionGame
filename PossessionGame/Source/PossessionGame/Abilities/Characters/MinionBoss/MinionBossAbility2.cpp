@@ -12,7 +12,7 @@ void UMinionBossAbility2::AI_Execute()
 {
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->SetIsAbilityInAction(true);
-	Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::ShootLaser, 6.f, false);
+	Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::ShootLaser, 7.f, false);
 	Proprietor->PlaySound(ESound::MinionBossLaserEyeCharge, true);
 	Proprietor->EnableLaserEyeBall();
 	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetIsActionMontagePlaying(true);
