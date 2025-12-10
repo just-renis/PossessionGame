@@ -4,6 +4,8 @@
 #include "Throwable.h"
 #include "BreacherBarrel.generated.h"
 
+class UNiagaraComponent;
+
 UCLASS()
 class POSSESSIONGAME_API ABreacherBarrel : public AThrowable
 {
@@ -18,6 +20,8 @@ private:
 	bool bIsAlreadyExploding = false;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> ExplodeSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> SpecialExplodeSfx;
 	
 	virtual void BeginPlay() override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;

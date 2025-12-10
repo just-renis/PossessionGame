@@ -16,6 +16,11 @@ bool UEnemyAnimationInstance::IsPlaying(const EEnemyAnimState InState)
     return false;
 }
 
+bool UEnemyAnimationInstance::IsMontageExisting(const EEnemyAnimState InState) const
+{
+    return AssetsManager->GetCharacterData(Proprietor->GetCharacterName()).GetCharacterContainer()->Montages.Contains(InState);
+}
+
 float UEnemyAnimationInstance::GetMontageLength(const EEnemyAnimState InState) 
 {
     if (IsMontageExisting(InState))
@@ -76,9 +81,10 @@ void UEnemyAnimationInstance::SetGlobalPlayRate(const float InRate)
     SetCurrentPlayRate();
 }
 
-bool UEnemyAnimationInstance::IsMontageExisting(const EEnemyAnimState InState) const
+bool UEnemyAnimationInstance::IsMontage(const EEnemyAnimState InState, const UAnimMontage* InMontage) const
 {
-    return AssetsManager->GetCharacterData(Proprietor->GetCharacterName()).GetCharacterContainer()->Montages.Contains(InState);
+    if (const TObjectPtr<UAnimMontage>* Found = Montages.Find(InState)) return *Found == InMontage;
+    return false;
 }
 
 void UEnemyAnimationInstance::NativeBeginPlay()
@@ -103,7 +109,14 @@ void UEnemyAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState) { 
 
 void UEnemyAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted)
 {
-    if (Montages.Contains(EEnemyAnimState::Shoot) && InMontage == Montages.Find(EEnemyAnimState::Shoot)->Get()) Proprietor->AI_SetCanShoot(false);
+    if (IsMontage(EEnemyAnimState::Shoot, InMontage))
+    {
+        Proprietor->AI_SetCanShoot(false);
+        return;
+    }
+    if (!IsMontage(EEnemyAnimState::StunEffect, InMontage)) return;
+    SetNonBlendableSlotState(false);
+	SetIsControlRigEnabled(true);
 }
 
 void UEnemyAnimationInstance::NativeUpdateAnimation(const float InDeltaSeconds)

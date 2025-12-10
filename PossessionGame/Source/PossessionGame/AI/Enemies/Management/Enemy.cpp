@@ -1708,8 +1708,11 @@ void AEnemy::ApplyStunEffect(const float InEffectDuration)
 	{
 		bAffectedByStun = true;
 		PlayStunAffectedVfx(InEffectDuration);
-		if (DisablingActionsEffectsCount < 2) AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
 		GetWorldTimerManager().SetTimer(StunEffectEndHandle, this, &AEnemy::StunEffectEnded, InEffectDuration);
+		if (!AnimInstance) return;
+		if (DisablingActionsEffectsCount < 2) AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
+		AnimInstance->SetNonBlendableSlotState(true);
+		AnimInstance->SetIsControlRigEnabled(false);
 	}
 	else
 	{

@@ -14,7 +14,7 @@ void UBreacherAbility2::AI_Execute()
 {
 	Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
 	Proprietor->GetAI()->SetControlRigAvailabilityToggle(false);
-	Cast<UBreacherAnimationInstance>(Proprietor->GetAnimInstance())->SetIsBashMontagePlaying(true);
+	Cast<UBreacherAnimationInstance>(Proprietor->GetAnimInstance())->SetNonBlendableSlotState(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Bash);
 	Super::AI_Execute();
 }

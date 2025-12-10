@@ -14,6 +14,6 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	bool bIsActionMontagePlaying = false;
 	
-	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted) override;
+	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted) override;
 	virtual void MontageWithHoldEnd() override;
 };

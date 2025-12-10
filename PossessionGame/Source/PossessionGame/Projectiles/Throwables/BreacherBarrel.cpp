@@ -27,10 +27,10 @@ void ABreacherBarrel::Explode()
 	MinimumDamage += LevelDamageBoost;
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
 	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray{ Proprietor }, this, nullptr, ECC_GameTraceChannel4);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::BreacherBarrelExplosion, nullptr, GetActorLocation());
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(bIsTripleDamageRolled ? EVfx::BreacherSpecialBarrelExplosion : EVfx::BreacherBarrelExplosion, nullptr, GetActorLocation());
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestObjectWithCapRemoval.ExecuteIfBound(EPoolObject::BreacherBarrel, this);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::BreacherBarrel, this);
-	PlaySound(ESound::BreacherBarrelExplosion);
+	PlaySound(bIsTripleDamageRolled ? ESound::BreacherSpecialBarrelExplosion : ESound::BreacherBarrelExplosion);
 }
 
 void ABreacherBarrel::Disable(const bool bHide)
@@ -50,7 +50,11 @@ ABreacherBarrel::ABreacherBarrel()
 	ExplodeSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ExplodeSfx"));
 	ExplodeSfx->SetAutoActivate(false);
 	ExplodeSfx->SetupAttachment(Mesh);
+	SpecialExplodeSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("SpecialExplodeSfx"));
+	SpecialExplodeSfx->SetAutoActivate(false);
+	SpecialExplodeSfx->SetupAttachment(Mesh);
 	Sounds.Add(ESound::BreacherBarrelExplosion, ExplodeSfx);
+	Sounds.Add(ESound::BreacherSpecialBarrelExplosion, ExplodeSfx);
 }
 
 void ABreacherBarrel::BeginPlay()

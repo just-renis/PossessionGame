@@ -12,13 +12,14 @@ void UMinionBossAbility2::AI_Execute()
 {
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->SetIsAbilityInAction(true);
-	Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::ShootLaser, 7.f, false);
+	Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::ShootLaser, LaserBallDuration, false);
 	Proprietor->PlaySound(ESound::MinionBossLaserEyeCharge, true);
 	Proprietor->EnableLaserEyeBall();
 	Cast<UMinionBossAnimationInstance>(Proprietor->GetAnimInstance())->SetIsActionMontagePlaying(true);
 	CurrentRotationSpeed = MinSpeed;
 	GetWorld()->GetTimerManager().SetTimer(ReceivePlayerPositionHandle, this, &UMinionBossAbility2::ReceivePlayerPosition, LaserActivationFromExecution - PlayerPositionReceiveBeforeLaserActivation);
 	GetWorld()->GetTimerManager().SetTimer(ShootLaserHandle, this, &UMinionBossAbility2::ShootLaser, LaserActivationFromExecution);
+	GetWorld()->GetTimerManager().SetTimer(TurnOffLaserHandle, this, &UMinionBossAbility2::TurnOffLaser, LaserDuration);
 }
 
 void UMinionBossAbility2::AI_StopAbility()
@@ -44,26 +45,21 @@ void UMinionBossAbility2::CooldownLogic(const float InDeltaTime)
 
 void UMinionBossAbility2::StopLaser()
 {
-	TurnOffLaser();
+	TurnOffLaserEye();
+	if (TurnOffLaserHandle.IsValid()) TurnOffLaser();
 	GetWorld()->GetTimerManager().ClearTimer(UpdateLaserLocationHandle);
 	bLaserUpdateFirstFrame = true;
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::StopLaser);
 	UseCharge();
 }
 
-void UMinionBossAbility2::TurnOffLaser()
-{
-	GetWorld()->GetTimerManager().ClearTimer(ShootLaserHandle);
-	Proprietor->StopSound(ESound::MinionBossLaserEyeHold);
-	if (Proprietor->GetLaser()) Proprietor->GetLaser()->DeactivateImmediate();
-	if (Proprietor->GetLaserEyeBall()) Proprietor->GetLaserEyeBall()->DeactivateImmediate();
-	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
+void UMinionBossAbility2::TurnOffLaserEye() const { if (Proprietor->GetLaserEyeBall()) Proprietor->GetLaserEyeBall()->DeactivateImmediate(); }
 
 void UMinionBossAbility2::DisableLaser()
 {
 	bIsLaserDisabled = true;
 	TurnOffLaser();
+	TurnOffLaserEye();
 }
 
 void UMinionBossAbility2::ShootLaser()
@@ -128,4 +124,12 @@ void UMinionBossAbility2::ReceivePlayerPosition()
 	const TObjectPtr<AActor> Target = AI->GetStateTreeData().GetTarget();
 	if (!Target) return;
 	PlayerLocationAtInitiation = Target->GetActorLocation();
+}
+
+void UMinionBossAbility2::TurnOffLaser()
+{
+	GetWorld()->GetTimerManager().ClearTimer(ShootLaserHandle);
+	Proprietor->StopSound(ESound::MinionBossLaserEyeHold);
+	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	if (Proprietor->GetLaser()) Proprietor->GetLaser()->DeactivateImmediate();
 }

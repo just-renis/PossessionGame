@@ -3,24 +3,20 @@
 #include "PossessionGame/AI/Enemies/Controllers/MinionBossAIController.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 
-void UMinionBossAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
+void UMinionBossAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted)
 {
-	Super::OnMontageEnd(Montage, bIsInterrupted);
-	const TObjectPtr<UAnimMontage>* StompMontage = Montages.Find(EEnemyAnimState::Stomp);
-	if (StompMontage && Montage == StompMontage->Get())
+	Super::OnMontageEnd(InMontage, bIsInterrupted);
+	if (IsMontage(EEnemyAnimState::Stomp, InMontage))
 	{
 		(void)Cast<AMinionBossAIController>(Proprietor->GetAI())->OnStompFinished.ExecuteIfBound();
 		SetIsActionMontagePlaying(false);
 		Cast<AMinionBoss>(Proprietor)->OnStompFinish();
 		return;
 	}
-	const TObjectPtr<UAnimMontage>* StopLaserMontage = Montages.Find(EEnemyAnimState::StopLaser);
-	if (StopLaserMontage && Montage == StopLaserMontage->Get())
-	{
-		(void)Cast<AMinionBossAIController>(Proprietor->GetAI())->OnLaserEyeFinished.ExecuteIfBound();
-		Cast<AMinionBoss>(Proprietor)->OnLaserFinish();
-		SetIsActionMontagePlaying(false);
-	}
+	if (!IsMontage(EEnemyAnimState::StopLaser, InMontage)) return;
+	(void)Cast<AMinionBossAIController>(Proprietor->GetAI())->OnLaserEyeFinished.ExecuteIfBound();
+	Cast<AMinionBoss>(Proprietor)->OnLaserFinish();
+	SetIsActionMontagePlaying(false);
 }
 
 void UMinionBossAnimationInstance::MontageWithHoldEnd()

@@ -22,6 +22,7 @@ public:
 	void SetLookAtLocation(const FVector& InLookAtLocation) { LookAtLocation = InLookAtLocation; }
 	void SetIsControlRigEnabled(const bool bState) { bIsControlRigEnabled = bState; }
 	void SetMovementPlayRate(const float InRate) { MovementPlayRate = InRate; }
+	void SetNonBlendableSlotState(const bool bState) { bNonBlendableSlot = bState; }
 	void SetDirectionalAngle();
 	void PlayMontage(const EEnemyAnimState InState);
 	void PlayMontageWithHold(const EEnemyAnimState InState, const float InHoldTime, const bool bNeedsToStopAILogic);
@@ -31,12 +32,16 @@ public:
 	void SetGlobalPlayRate(const float InRate);
 protected:
 	EEnemyAnimState MontageStateInHold;
+	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
+	bool bNonBlendableSlot = false;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
 	TMap<EEnemyAnimState, TObjectPtr<UAnimMontage>> Montages;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
+
+	bool IsMontage(const EEnemyAnimState InState, const UAnimMontage* InMontage) const;
 	
 	virtual void NativeBeginPlay() override;
 	virtual void NativeUninitializeAnimation() override;
@@ -48,6 +53,7 @@ protected:
 	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted);
 private:
 	float GlobalPlayRate = 1.f;
+	FTimerHandle MontageWithHoldHandle;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	bool bIsControlRigEnabled = false;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
@@ -60,8 +66,6 @@ private:
 	float MovementPlayRate = 1.f;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	FVector LookAtLocation = FVector::ZeroVector;
-	UPROPERTY()
-	FTimerHandle MontageWithHoldHandle;
 
 	virtual void NativeUpdateAnimation(const float InDeltaSeconds) override;
 	void LoadMontageIfNotLoaded(const EEnemyAnimState InState);

@@ -19,23 +19,19 @@ void URangerAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState)
 	}
 }
 
-void URangerAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
+void URangerAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted)
 {
-	Super::OnMontageEnd(Montage, bIsInterrupted);
+	Super::OnMontageEnd(InMontage, bIsInterrupted);
 	if (Proprietor->IsActionsDisabled()) return;
-	const TObjectPtr<UAnimMontage>* GrenadeLaunchMontage = Montages.Find(EEnemyAnimState::GrenadeLaunch);
-	if (GrenadeLaunchMontage && Montage == GrenadeLaunchMontage->Get())
+	if (IsMontage(EEnemyAnimState::GrenadeLaunch, InMontage))
 	{
 		Proprietor->SetIsActionInMotion(false);
 		(void)Cast<ARangerAIController>(Proprietor->GetAI())->OnGrenadeLaunchFinished.ExecuteIfBound();
 		return;
 	}
-	const TObjectPtr<UAnimMontage>* DeployShieldMontage = Montages.Find(EEnemyAnimState::DeployShield);
-	if (DeployShieldMontage && Montage == DeployShieldMontage->Get())
-	{
-		Proprietor->SetIsActionInMotion(false);
-		(void)Cast<ARangerAIController>(Proprietor->GetAI())->OnDeployShieldFinished.ExecuteIfBound();
-	}
+	if (!IsMontage(EEnemyAnimState::DeployShield, InMontage)) return;
+	Proprietor->SetIsActionInMotion(false);
+	(void)Cast<ARangerAIController>(Proprietor->GetAI())->OnDeployShieldFinished.ExecuteIfBound();
 }
 
 void URangerAnimationInstance::LaunchGrenade() const { if (Proprietor->IsAsyncAssetStillAllowedToBeUsed()) Cast<ARanger>(Proprietor)->AI_LaunchGrenade(); }

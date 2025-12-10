@@ -19,16 +19,12 @@ void UTricksterAnimationInstance::InnerPlayMontage(const EEnemyAnimState InState
 	}
 }
 
-void UTricksterAnimationInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
+void UTricksterAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted)
 {
-	Super::OnMontageEnd(Montage, bIsInterrupted);
-	if (Proprietor->IsActionsDisabled()) return;
-	const TObjectPtr<UAnimMontage>* PoisonGrenadeLaunchMontage = Montages.Find(EEnemyAnimState::GrenadeLaunch);
-	if (PoisonGrenadeLaunchMontage && Montage == PoisonGrenadeLaunchMontage->Get())
-	{
-		Proprietor->SetIsActionInMotion(false);
-		(void)Cast<ATricksterAIController>(Proprietor->GetAI())->OnPoisonGrenadeLaunched.ExecuteIfBound();
-	}
+	Super::OnMontageEnd(InMontage, bIsInterrupted);
+	if (Proprietor->IsActionsDisabled() || !IsMontage(EEnemyAnimState::GrenadeLaunch, InMontage)) return;
+	Proprietor->SetIsActionInMotion(false);
+	(void)Cast<ATricksterAIController>(Proprietor->GetAI())->OnPoisonGrenadeLaunched.ExecuteIfBound();
 }
 
 void UTricksterAnimationInstance::LaunchGrenade() const

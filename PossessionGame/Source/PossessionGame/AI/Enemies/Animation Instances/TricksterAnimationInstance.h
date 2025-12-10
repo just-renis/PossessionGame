@@ -9,13 +9,11 @@ class POSSESSIONGAME_API UTricksterAnimationInstance : public UEnemyAnimationIns
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
 	FTimerHandle TriggerGrenadeProjectionHandle;
-	UPROPERTY()
 	FTimerHandle LaunchGrenadeHandle;
 
 	virtual void InnerPlayMontage(const EEnemyAnimState InState) override;
-	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted) override;
+	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted) override;
 	void LaunchGrenade() const;
 	void TriggerGrenadeProjection() const;
 	virtual void ClearTimers() override;
