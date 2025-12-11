@@ -5,6 +5,7 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Data Assets/Base Data Assets/AbilityData.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -48,7 +49,7 @@ void UBreacherAbility2::Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbi
 
 void UBreacherAbility2::RechargeAbility()
 {
-	UE_LOG(LogTemp, Error, TEXT("RECHARGE ABILTIY"));
+	if (!GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility2, EUpgradeAttribute::Special1)) return;
 	CurrentChargesAmount++;
 	CurrentCooldownSecs = 0.f;
 }

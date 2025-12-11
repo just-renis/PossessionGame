@@ -23,6 +23,8 @@ public:
 private:
 	bool bFirstAbilityFullyCharged = false;
 	bool bSecondAbilityFullyCharged = false;
+	FTimerHandle FirstAbilityHandle;
+	FTimerHandle SecondAbilityHandle;
 	UPROPERTY(EditAnywhere, Category = "Ability Data", meta = (AllowPrivateAccess = true))
 	TMap<int32, TObjectPtr<UTexture2D>> AbilitiesIcons;
 	UPROPERTY(EditDefaultsOnly, Category = "Material", meta = (AllowPrivateAccess = true))
@@ -55,10 +57,6 @@ private:
 	TObjectPtr<UMaterialInstanceDynamic> MI_FirstAbilityRadial;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MI_SecondAbilityRadial;
-	UPROPERTY()
-	FTimerHandle FirstAbilityHandle;
-	UPROPERTY()
-	FTimerHandle SecondAbilityHandle;
 
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;

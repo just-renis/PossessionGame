@@ -33,6 +33,8 @@ void UAbilitiesPanelUI::UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility)
 				if (!bFirstAbilityFullyCharged)
 				{
 					bFirstAbilityFullyCharged = true;
+					GetWorld()->GetTimerManager().ClearTimer(FirstAbilityHandle);
+					StopAnimation(Ability1UseAnim);
 					MI_FirstAbilityRadial->SetScalarParameterValue("Opacity", 0.f);
 					if (FirstAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) FirstAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 					FirstChargesText->SetText(FText::AsNumber(InAbility->GetCurrentCharges()));
@@ -52,6 +54,8 @@ void UAbilitiesPanelUI::UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility)
 				if (!bSecondAbilityFullyCharged)
 				{
 					bSecondAbilityFullyCharged = true;
+					GetWorld()->GetTimerManager().ClearTimer(SecondAbilityHandle);
+					StopAnimation(Ability2UseAnim);
 					MI_SecondAbilityRadial->SetScalarParameterValue("Opacity", 0.f);
 					if (SecondAbilityImage->GetVisibility() != ESlateVisibility::SelfHitTestInvisible) SecondAbilityImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 					SecondChargesText->SetText(FText::AsNumber(InAbility->GetCurrentCharges()));
