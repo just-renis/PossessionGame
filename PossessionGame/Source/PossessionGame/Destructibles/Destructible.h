@@ -19,6 +19,7 @@ public:
 	
 	void HandleDeactivation();
 	virtual void Init(bool bInIsPlayerObject) override;
+	void ReceiveDamage(const float InDamage);
 protected:
 	bool bIsPlayerObject;
 	float LifeSpan;

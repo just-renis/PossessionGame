@@ -292,8 +292,8 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 			switch (InUpgradeAttribute)
 			{
 				case EUpgradeAttribute::Special1:
-					if (!bForEnemy) return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial2.1", "<UpgradeAttributeText>PLAYER LEVEL BOOSTS APPLIES TO CLONES.</>");
-					return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial2.2", "<UpgradeAttributeText>RUNS TO PLAYER AT LIGHT SPEED.</>");
+					if (!bForEnemy) return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial2.1", "<UpgradeAttributeText>KILLING ENEMY WITH BASH, COOLDOWN INSTANTLY RECHARGES.</>");
+					return NSLOCTEXT("ST_Localization", "BreacherAbilitySpecial2.2", "<UpgradeAttributeText>WHILE BASHING IMMUNE TO DAMAGE AND BASH COOLDOWN REDUCED TWICE.</>");
 				default: break;
 			}
 			break;

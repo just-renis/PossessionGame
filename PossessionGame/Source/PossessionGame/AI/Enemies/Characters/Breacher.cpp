@@ -24,6 +24,7 @@
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "Engine/OverlapResult.h"
+#include "PossessionGame/Destructibles/Destructible.h"
 
 void ABreacher::AI_EnableTriggeringBash()
 {
@@ -252,7 +253,10 @@ void ABreacher::TriggerBashOverlap()
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
-	if (GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation() + GetActorForwardVector() * AI_BashCapsuleForwardUnits, FQuat::Identity, ECC_Pawn, FCollisionShape::MakeCapsule(AI_BashCapsuleRadius, AI_BashCapsuleHalfHeight), Params))
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Destructible);
+	if (GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation() + GetActorForwardVector() * AI_BashCapsuleForwardUnits, FQuat::Identity, ObjectQueryParams, FCollisionShape::MakeCapsule(AI_BashCapsuleRadius, AI_BashCapsuleHalfHeight), Params))
 	{
 		TSet<TObjectPtr<AActor>> HitActors;
 		for (FOverlapResult OverlapResult : OverlapResults)
@@ -260,6 +264,11 @@ void ABreacher::TriggerBashOverlap()
 			TObjectPtr<AActor> HitActor = OverlapResult.GetActor();
 			if (!HitActor || HitActors.Contains(HitActor)) continue;
 			HitActors.Add(HitActor);
+			if (HitActor->ActorHasTag("Destructible"))
+			{
+				DealDamageToDestructible(HitActor);
+				return;
+			}
 			if (bIsHijacked)
 			{
 				if (HitActor == this || !HitActor->ActorHasTag("AliveEnemy")) return;
@@ -267,7 +276,7 @@ void ABreacher::TriggerBashOverlap()
 				HitDirection.Z = 0.f;
 				float BashDamage = P_DefaultBashDamage;
 				const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
-				BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, true);
+				BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, bIsHijacked);
 				Cast<AEnemy>(HitActor)->AI_ReceiveStunEffect(false, P_BashStunDuration, BashDamage, HitDirection);
 			}
 			else
@@ -279,7 +288,7 @@ void ABreacher::TriggerBashOverlap()
 				HitDirection.Z = 0.f;
 				float BashDamage = AI_DefaultBashDamage;
 				const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
-				BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, false);
+				BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, bIsHijacked);
 				if (bIsPlayerGotHit) Cast<AEnemy>(HitActor)->P_ReceiveStunEffect(AI_BashStunDuration, BashDamage, HitDirection);
 				else Cast<AEnemy>(HitActor)->AI_ReceiveStunEffect(true, AI_BashStunDuration, 0.f, HitDirection);
 			}
@@ -291,4 +300,12 @@ void ABreacher::AllDisablingActionsFinished()
 {
 	Super::AllDisablingActionsFinished();
 	if (bIsBashTriggerInitiated) AI_EnableTriggeringBash();
+}
+
+void ABreacher::DealDamageToDestructible(const TObjectPtr<AActor>& InDestructible)
+{
+	float BashDamage = P_DefaultBashDamage;
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, bIsHijacked);
+	Cast<ADestructible>(InDestructible)->ReceiveDamage(BashDamage);
 }

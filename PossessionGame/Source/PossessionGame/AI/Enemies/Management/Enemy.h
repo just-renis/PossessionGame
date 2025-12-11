@@ -91,6 +91,7 @@ public:
 	void AI_ProcessSpawnEffects();
 	void AI_SetRespawnRequest(const float InHpPercentage);
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection);
+	virtual void AI_StunEffectEnded();
 
 	void P_ApplyUpgradeOnSelection();
 	void P_UseAbility(const int32 InAbilityIndex);
@@ -101,6 +102,7 @@ public:
 	void P_IncreaseMovementSpeed(const float InPercentage);
 	void P_ResetMovementSpeed();
 	virtual void P_ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection);
+	void P_StunEffectEnded();
 
 	virtual FLinearColor GetDamageNumberColor() const { return DamageNumberColor; }
 
@@ -117,7 +119,6 @@ public:
 	void SetHijackOutline(const bool bState);
 	virtual void SetUnHijackOutline(const bool bState) const;
 	virtual void EmpEffectEnded();
-	virtual void StunEffectEnded();
 	void SetInputState(const bool bState) { bIsInputLocked = bState; }
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
@@ -427,7 +428,7 @@ private:
 	void P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue);
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
-	void P_StopAllAbilities();
+	void P_StopAllAbilities(const bool bDestroy = false);
 	void P_HandleEscapeClick();
 	void P_TriggerGlitchingEffect() const;
 	void P_MakeCameraShake(const ECameraShake InCameraShakeName);

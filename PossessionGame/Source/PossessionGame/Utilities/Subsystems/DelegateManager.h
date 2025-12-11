@@ -37,6 +37,7 @@ DECLARE_DELEGATE(FOnPlayerReloadMontageEnd);
 DECLARE_DELEGATE(FSpawnMarkerOnTutorialButton);
 DECLARE_DELEGATE(FOnPlayerGhostTryMoving);
 DECLARE_DELEGATE(FOnPlayerGhostDestroy);
+DECLARE_DELEGATE(FOnPlayerBashKill);
 DECLARE_DELEGATE_RetVal(int32, FOnRunFinished);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsTimeStopUsed);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsArenaMode);
@@ -129,6 +130,7 @@ public:
 	FSpawnMarkerOnTutorialButton SpawnMarkerOnTutorialButton;
 	FOnPlayerGhostTryMoving OnPlayerGhostTryMoving;
 	FOnPlayerGhostDestroy OnPlayerGhostDestroy;
+	FOnPlayerBashKill OnPlayerBashKill;
 	FOnRunFinished OnRunFinished;
 	FRequestIsTimeStopUsed RequestIsTimeStopUsed;
 	FRequestIsArenaMode RequestIsArenaMode;

@@ -33,6 +33,7 @@ public:
 	virtual void Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager);
 	virtual void SetupUpgradeAppliance(const bool bIsPlayer = true);
 	void SetAbilityIndex(const int32 InAbilityIndex) { AbilityIndex = InAbilityIndex; }
+	virtual void Destroy() {}
 protected:
 	bool bIsAbilityInDuration = false;
 	int32 CurrentChargesAmount = 0;

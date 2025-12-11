@@ -33,6 +33,15 @@ void ADestructible::Init(const bool bInIsPlayerObject)
 	SetUpgradesApplication();
 }
 
+void ADestructible::ReceiveDamage(const float InDamage)
+{
+	Hp -= InDamage;
+	if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, InDamage, GetActorLocation(), GetActorForwardVector());
+	if (Hp > 0) return;
+	if (bIsAffectedByPhysics) HandleDeactivation();
+	else DestroyThis();
+}
+
 float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) * DamageReduction;
@@ -41,10 +50,7 @@ float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 		if (const TObjectPtr<AProjectile> ProjectileCauser = Cast<AProjectile>(DamageCauser))
 		{
 			const bool bIsPlayerProjectile = ProjectileCauser->GetIsPlayerProjectile();
-			if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject))
-			{
-				Hp -= Damage;
-			}
+			if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) Hp -= Damage;
 		}
 		if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, GetActorLocation(), GetActorForwardVector());
 	}

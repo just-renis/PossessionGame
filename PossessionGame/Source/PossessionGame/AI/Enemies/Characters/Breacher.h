@@ -90,4 +90,5 @@ private:
 	void StopBash();
 	void TriggerBashOverlap();
 	virtual void AllDisablingActionsFinished() override;
+	void DealDamageToDestructible(const TObjectPtr<AActor>& InDestructible);
 };

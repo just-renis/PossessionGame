@@ -207,6 +207,12 @@ void AEnemy::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffect
 	ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Stun);
 }
 
+void AEnemy::AI_StunEffectEnded()
+{
+	bAffectedByStun = false;
+	RemoveDisablingActionEffect();
+}
+
 void AEnemy::P_ApplyUpgradeOnSelection()
 {
 	bInUpgradeSelection = false;
@@ -253,6 +259,8 @@ void AEnemy::P_ReceiveStunEffect(const float InEffectDuration, const float InDam
 	LaunchCharacter(InHitDirection * (P_Data ? P_Data->GetBashImpulseForce() : 5000.f), true, true);
 	ApplyStunEffect(InEffectDuration);
 }
+
+void AEnemy::P_StunEffectEnded() { bIsInputLocked = false; }
 
 void AEnemy::SetIsActionInMotion(const bool bState)
 {
@@ -415,12 +423,6 @@ void AEnemy::SetUnHijackOutline(const bool bState) const
 void AEnemy::EmpEffectEnded()
 {
 	bAffectedByEmp = false;
-	RemoveDisablingActionEffect();
-}
-
-void AEnemy::StunEffectEnded()
-{
-	bAffectedByStun = false;
 	RemoveDisablingActionEffect();
 }
 
@@ -621,7 +623,7 @@ void AEnemy::P_SetupAbilities()
 void AEnemy::P_Setup()
 {
 	if (bAffectedByEmp) EmpEffectEnded();
-	if (bAffectedByStun) StunEffectEnded();
+	if (bAffectedByStun) AI_StunEffectEnded();
 	GetMesh()->SetComponentTickEnabled(false);
 	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f);
 	DelegateManager->RequestCurrentCharacter.BindUObject(this, &AEnemy::GetCharacterName);
@@ -1056,7 +1058,7 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bInstan
 	}
 	if (bInstantHijack)
 	{
-		P_StopAllAbilities();
+		P_StopAllAbilities(true);
 		DelegateManager->OnEnemyDeath.Unbind();
 		if (Controller) Controller->Possess(InEnemy);
 		InitiateDeath();
@@ -1137,7 +1139,14 @@ void AEnemy::P_UpdateAbilitiesUI()
 	for (TPair<int32, TObjectPtr<UAbility>> Ability : Abilities) P_HUD->UpdateAbilityUI(Ability.Value);
 }
 
-void AEnemy::P_StopAllAbilities() { for (const TPair<int32, TObjectPtr<UAbility>> Ability : Abilities) Ability.Value->P_StopAbility(); }
+void AEnemy::P_StopAllAbilities(const bool bDestroy)
+{
+	for (const TPair<int32, TObjectPtr<UAbility>> Ability : Abilities)
+	{
+		Ability.Value->P_StopAbility();
+		if (bDestroy) Ability.Value->Destroy();
+	}
+}
 
 void AEnemy::P_HandleEscapeClick()
 {
@@ -1471,7 +1480,7 @@ void AEnemy::P_FinishHijackProcess()
 {
 	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
 	GetWorldTimerManager().ClearTimer(HijackLockInToTargetHandle);
-	P_StopAllAbilities();
+	P_StopAllAbilities(true);
 	const FVector SpawnLocation = GetActorLocation();
 	DelegateManager->OnEnemyDeath.Unbind();
 	if (Controller) Controller->Possess(HijackTarget);
@@ -1553,6 +1562,7 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 			}
 			GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ProgressVariationUnlock(EVariation::GuardianVariationGold, 1); break;
 		case EDamageReason::RangerGrenadeDamage: GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ProgressVariationUnlock(EVariation::RangerVariationBlue, 1); break;
+		case EDamageReason::BreacherBashDamage: (void)DelegateManager->OnPlayerBashKill.ExecuteIfBound(); break;
 		default: ;
 	}
 }
@@ -1708,7 +1718,7 @@ void AEnemy::ApplyStunEffect(const float InEffectDuration)
 	{
 		bAffectedByStun = true;
 		PlayStunAffectedVfx(InEffectDuration);
-		GetWorldTimerManager().SetTimer(StunEffectEndHandle, this, &AEnemy::StunEffectEnded, InEffectDuration);
+		GetWorldTimerManager().SetTimer(StunEffectEndHandle, this, &AEnemy::AI_StunEffectEnded, InEffectDuration);
 		if (!AnimInstance) return;
 		if (DisablingActionsEffectsCount < 2) AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
 		AnimInstance->SetNonBlendableSlotState(true);
@@ -1716,7 +1726,9 @@ void AEnemy::ApplyStunEffect(const float InEffectDuration)
 	}
 	else
 	{
-		// HANDS ANIMINSTANCE AnimInstance->PlayMontageWithHold(EEnemyAnimState::StunEffect, InEffectDuration, true);
+		bIsInputLocked = true;
+		if (Weapon && Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->PlayMontageWithHold(EHandsAnimState::StunEffect, InEffectDuration);
+		GetWorldTimerManager().SetTimer(StunEffectEndHandle, this, &AEnemy::P_StunEffectEnded, InEffectDuration);
 	}
 }
 

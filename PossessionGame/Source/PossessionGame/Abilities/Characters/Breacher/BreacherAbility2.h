@@ -22,4 +22,7 @@ private:
 	
 	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) override;
 	virtual void CooldownLogic(const float InDeltaTime) override;
+	virtual void Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager) override;
+	void RechargeAbility();
+	virtual void Destroy() override;
 };

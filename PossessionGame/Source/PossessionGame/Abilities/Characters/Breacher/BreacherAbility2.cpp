@@ -6,6 +6,7 @@
 #include "PossessionGame/Data Assets/Base Data Assets/AbilityData.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -38,3 +39,18 @@ void UBreacherAbility2::CooldownLogic(const float InDeltaTime)
 	Super::CooldownLogic(InDeltaTime);
 	if (!Proprietor->GetIsHijacked() && CurrentChargesAmount > 0) Proprietor->AI_EnableTriggeringBash();
 }
+
+void UBreacherAbility2::Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
+{
+	Super::Setup(InAbilityOwner, InAbilityData, InDelegateManager);
+	if (InAbilityOwner->GetIsHijacked()) DelegateManager->OnPlayerBashKill.BindUObject(this, &UBreacherAbility2::RechargeAbility);
+}
+
+void UBreacherAbility2::RechargeAbility()
+{
+	UE_LOG(LogTemp, Error, TEXT("RECHARGE ABILTIY"));
+	CurrentChargesAmount++;
+	CurrentCooldownSecs = 0.f;
+}
+
+void UBreacherAbility2::Destroy() { DelegateManager->OnPlayerBashKill.Unbind(); }
