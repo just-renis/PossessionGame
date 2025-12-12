@@ -25,12 +25,12 @@ bool AGuardianWeapon::P_CanShoot() { return !HandsAnimInstance->IsPlaying(EHands
 
 void AGuardianWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(-1); }
 
-void AGuardianWeapon::P_Shoot()
+void AGuardianWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	if (ShootTimer >= GetShootCooldown())
 	{
 		PlayShootMontage();
-		FirstWeapon->P_Shoot();
+		FirstWeapon->P_Shoot(InProjectileName);
 		GetWorldTimerManager().SetTimer(SecondWeaponShotHandle, this, &AGuardianWeapon::ShootSecondWeaponShot, 0.2f / CustomTimeDilation);
 		ShootTimer = 0.f;
 	}
@@ -69,7 +69,7 @@ void AGuardianWeapon::SetCustomDilation(const float InDilation)
 	SecondWeapon->SetCustomDilation(InDilation);
 }
 
-void AGuardianWeapon::ShootSecondWeaponShot() const { SecondWeapon->P_Shoot(); }
+void AGuardianWeapon::ShootSecondWeaponShot() const { SecondWeapon->P_Shoot(EPoolObject::GuardianProjectile); }
 
 void AGuardianWeapon::DestroyThis()
 {

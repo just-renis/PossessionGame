@@ -3,10 +3,10 @@
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
-void ASpyWeapon::P_Shoot()
+void ASpyWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
-	Super::P_Shoot();
+	Super::P_Shoot(InProjectileName);
 }
 
 void ASpyWeapon::P_Reload(int32 OtherAmmoSource)

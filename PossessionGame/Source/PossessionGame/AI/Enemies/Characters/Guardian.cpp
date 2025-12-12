@@ -209,6 +209,8 @@ void AGuardian::P_ShowReceivedDamageNumber(const float InDamage)
 	else Super::P_ShowReceivedDamageNumber(InDamage);
 }
 
+void AGuardian::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::GuardianProjectile); }
+
 float AGuardian::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);

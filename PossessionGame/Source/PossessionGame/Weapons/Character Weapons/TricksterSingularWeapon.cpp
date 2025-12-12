@@ -32,7 +32,7 @@ float ATricksterSingularWeapon::P_ReceiveHitScanDamage()
 	return Super::P_ReceiveHitScanDamage() + DefaultHitScanDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetPoisonAreaStackBoost();
 }
 
-void ATricksterSingularWeapon::P_Shoot()
+void ATricksterSingularWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	if (ShootTimer >= GetShootCooldown())
 	{
@@ -40,7 +40,7 @@ void ATricksterSingularWeapon::P_Shoot()
 		MuzzleFlashLogic();
 		MakeShootingCameraShake();
 		ShootTimer = 0.f;
-		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::TricksterProjectile, false);
+		bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(InProjectileName, false);
 	}
 }
 

@@ -16,7 +16,7 @@
 void ATank::P_Shoot()
 {
 	if (bIsInputLocked || !Weapon->P_CanShoot()) return;
-	Weapon->P_Shoot();
+	Weapon->P_Shoot(EPoolObject::TankProjectile);
 }
 
 ATank::ATank()
@@ -107,6 +107,8 @@ void ATank::P_StopChargingMinigun()
 }
 
 void ATank::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.57647f, 0.58431f, 0.56078f)); }
+
+void ATank::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::TankProjectile); }
 
 void ATank::P_StopMinigun()
 {

@@ -31,6 +31,12 @@ void UBreacherAbility2::P_Execute()
 	Super::P_Execute();
 }
 
+float UBreacherAbility2::AI_SpecialCooldownMultiplier()
+{
+	if (!DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::BreacherAbility2, EUpgradeAttribute::Special1)) return Super::AI_SpecialCooldownMultiplier();
+	return 0.5f;
+}
+
 bool UBreacherAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void UBreacherAbility2::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ABreacher>(AbilityProprietor); }
@@ -49,7 +55,7 @@ void UBreacherAbility2::Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbi
 
 void UBreacherAbility2::RechargeAbility()
 {
-	if (!GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility2, EUpgradeAttribute::Special1)) return;
+	if (!DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::BreacherAbility2, EUpgradeAttribute::Special1)) return;
 	CurrentChargesAmount++;
 	CurrentCooldownSecs = 0.f;
 }

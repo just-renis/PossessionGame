@@ -35,7 +35,7 @@ void URangerAbility1::P_Execute()
 float URangerAbility1::AI_GetCooldownReduction()
 {
 	const float CooldownReduction = Super::AI_GetCooldownReduction();
-	if (!GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::RangerAbility1, EUpgradeAttribute::Special1)) return CooldownReduction;
+	if (!DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::RangerAbility1, EUpgradeAttribute::Special1)) return CooldownReduction;
 	const int32 AbilitiesUpgradesLevel = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentLevelSumOfCharacterAbilities(Proprietor->GetCharacterName());
 	return CooldownReduction + AbilitiesUpgradesLevel * 10.f;
 }

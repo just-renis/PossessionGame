@@ -8,6 +8,7 @@ class USphereComponent;
 class UNiagaraComponent;
 
 DECLARE_DELEGATE(FStopLaser);
+DECLARE_DELEGATE_RetVal(bool, FRequestLaserActivityState);
 
 UCLASS()
 class POSSESSIONGAME_API AMinionBoss : public AEnemy
@@ -17,6 +18,7 @@ public:
 	float GetStompRadius() const { return StompRadiusInMeters * 100.f; }
 	float GetStompDamage() const { return StompDamage; }
 	FStopLaser& GetStopLaserDelegate() { return StopLaser; }
+	FRequestLaserActivityState& GetLaserActivityStateDelegate() { return RequestLaserActivityState; }
 	TObjectPtr<UCapsuleComponent> GetLaserCollision() const { return LaserCollision; }
 	TObjectPtr<UNiagaraComponent> GetLaser() const { return LaserVfx; }
 	TObjectPtr<UNiagaraComponent> GetLaserEyeBall() const { return LaserEyeBallVfx; }
@@ -34,6 +36,7 @@ private:
 	AMinionBoss();
 
 	FStopLaser StopLaser;
+	FRequestLaserActivityState RequestLaserActivityState;
 	
 	bool bIsMoveDirectlyToPlayerTriggered = false;
 	bool bIsStompAvailable = false;
@@ -86,6 +89,7 @@ private:
 	virtual void SetUnHijackOutline(const bool bState) const override {}
 	void SetMoveDirectlyToPlayer();
 	virtual void ClearTimers() override;
+	virtual void ApplyEmpEffect(const float InEffectDuration) override;
 	UFUNCTION()
 	void OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

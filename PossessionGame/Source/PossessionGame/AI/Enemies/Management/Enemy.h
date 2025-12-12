@@ -219,6 +219,7 @@ protected:
 	virtual void P_InitiateStomp();
 	virtual void P_ShowReceivedDamageNumber(const float InDamage);
 	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
+	virtual void P_WeaponShoot() {}
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	float ReceiveDefaultMovementSpeed() const;
@@ -239,6 +240,7 @@ protected:
 	virtual void ClearTimers();
 	virtual void AllDisablingActionsFinished();
 	virtual void RecoverFromDisablingEffect();
+	virtual void ApplyEmpEffect(const float InEffectDuration);
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanHijackOtherEnemy = false;
@@ -489,7 +491,6 @@ private:
 	void SetupMeshOptimization() const;
 	void AddAdditionalActionSpeed(const float InValue, const float InDuration);
 	void ResetAdditionalActionSpeed();
-	void ApplyEmpEffect(const float InEffectDuration);
 	void ApplyStunEffect(const float InEffectDuration);
 	void PlayStunAffectedVfx(const float InEffectDuration);
 	void ApplyDisablingActionEffect(const float InEffectDuration, const EDisablingEffect InEffectName);

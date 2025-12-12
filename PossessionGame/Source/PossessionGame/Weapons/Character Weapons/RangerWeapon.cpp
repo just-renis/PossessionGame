@@ -29,11 +29,11 @@ void ARangerWeapon::AI_Shoot()
 	ShootProjectile(EPoolObject::RangerProjectile, false);
 }
 
-void ARangerWeapon::P_Shoot()
+void ARangerWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	AssetsManager->PlaySound2D(ESound::RangerShoot);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
-	Super::P_Shoot();
+	Super::P_Shoot(InProjectileName);
 }
 
 void ARangerWeapon::P_Reload(int32 OtherAmmoSource)

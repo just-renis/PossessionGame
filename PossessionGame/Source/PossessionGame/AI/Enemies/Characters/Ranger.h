@@ -49,6 +49,7 @@ private:
 	virtual void P_SetupColorsForUI() override;
 	void P_ChangeRangerVariationMuzzle();
 	void P_ThrowMine();
+	virtual void P_WeaponShoot() override;
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

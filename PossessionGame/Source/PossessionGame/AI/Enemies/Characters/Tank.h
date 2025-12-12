@@ -34,6 +34,7 @@ private:
 	void P_ToggleChargeMinigun(const bool bState);
 	void P_StopChargingMinigun();
 	virtual void P_SetupColorsForUI() override;
+	virtual void P_WeaponShoot() override;
 	UFUNCTION()
 	void P_StopMinigun();
 	

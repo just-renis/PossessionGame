@@ -21,6 +21,7 @@ class POSSESSIONGAME_API ASamurai : public AEnemy
 
 	virtual void P_Setup() override;
 	virtual void P_SetupColorsForUI() override;
+	virtual void P_WeaponShoot() override;
 
 	virtual void BeginPlay() override;
 	void SetupSamuraiHat();

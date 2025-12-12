@@ -667,7 +667,7 @@ void AEnemy::P_Shoot()
 	{
 		if (bIsRunning) P_ToggleRun(false);
 		if (bIsSliding) Weapon->GetHandsAnimInstance()->StopMontage(EHandsAnimState::Slide, 0.f);
-		Weapon->P_Shoot();
+		P_WeaponShoot();
 	}
 	else if (Weapon->P_CanReload() && Weapon->GetCurrentAmmoAmount() <= 0) Weapon->P_Reload();
 }
@@ -903,6 +903,15 @@ void AEnemy::RecoverFromDisablingEffect()
 {
 	SetIsActionInMotion(false);
 	if (AI) AI->ResumeLogic();
+}
+
+void AEnemy::ApplyEmpEffect(const float InEffectDuration)
+{
+	bAffectedByEmp = true;
+	PlayEmpAffectedVfx(InEffectDuration);
+	PlaySound(ESound::EmpEffectApplied, true);
+	if (DisablingActionsEffectsCount < 2) AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
+	GetWorldTimerManager().SetTimer(EmpEffectEndHandle, this, &AEnemy::EmpEffectEnded, InEffectDuration);
 }
 
 void AEnemy::AI_SetupData()
@@ -1701,15 +1710,6 @@ void AEnemy::ResetAdditionalActionSpeed()
 	ActionSpeed -= AdditionalActionSpeedValue;
 	AdditionalActionSpeedValue = 0.f;
 	SetActionSpeed(ActionSpeed, false);
-}
-
-void AEnemy::ApplyEmpEffect(const float InEffectDuration)
-{
-	bAffectedByEmp = true;
-	PlayEmpAffectedVfx(InEffectDuration);
-	PlaySound(ESound::EmpEffectApplied, true);
-	if (DisablingActionsEffectsCount < 2) AnimInstance->PlayMontageWithHold(EEnemyAnimState::EmpEffect, InEffectDuration, true);
-	GetWorldTimerManager().SetTimer(EmpEffectEndHandle, this, &AEnemy::EmpEffectEnded, InEffectDuration);
 }
 
 void AEnemy::ApplyStunEffect(const float InEffectDuration)

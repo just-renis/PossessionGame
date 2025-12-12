@@ -48,6 +48,7 @@ protected:
 	TObjectPtr<UDelegateManager> DelegateManager;
 
 	virtual float AI_GetCooldownReduction();
+	virtual float AI_SpecialCooldownMultiplier() { return 1.f; }
 
 	virtual float P_GetCooldownReduction();
 	

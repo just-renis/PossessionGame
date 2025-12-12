@@ -17,9 +17,11 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<ABreacher> Proprietor;
+	
+	virtual float AI_SpecialCooldownMultiplier() override;
 
 	virtual bool IsProprietorPossessed() override;
-	
+
 	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) override;
 	virtual void CooldownLogic(const float InDeltaTime) override;
 	virtual void Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager) override;

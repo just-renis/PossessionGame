@@ -14,7 +14,7 @@ class POSSESSIONGAME_API ABreacherWeapon : public AOneHandedWeapon
 	virtual void AI_Reload() override;
 	virtual void AI_Shoot() override;
 
-	virtual void P_Shoot() override;
+	virtual void P_Shoot(const EPoolObject InProjectileName) override;
 	virtual void P_Reload(const int32 InOtherAmmoSource) override;
 	virtual void P_Setup() override;
 

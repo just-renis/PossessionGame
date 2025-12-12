@@ -2,10 +2,10 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
-void ASamuraiWeapon::P_Shoot()
+void ASamuraiWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	//PlayHandsAndWeaponMontage(EHandsAnimState::Shoot, EWeaponAnimState::Shoot);
-	Super::P_Shoot();
+	Super::P_Shoot(InProjectileName);
 }
 
 void ASamuraiWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(CurrentAmmo); }

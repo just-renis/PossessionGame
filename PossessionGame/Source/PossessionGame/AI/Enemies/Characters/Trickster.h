@@ -21,6 +21,7 @@ public:
 	TArray<FVector> GetAvailableCloneSpawnOffsets(int32 InClonesAmount);
 private:
 	bool bIsCloneEnemyRunUpgradeTaken = false;
+	FTimerHandle TryTriggeringPoisonGrenadeHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade Launcher", meta = (AllowPrivateAccess = true))
 	float PoisonGrenadeTriggerRadiusInMetres = 8.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Clones", meta = (AllowPrivateAccess = true))
@@ -33,8 +34,6 @@ private:
 	TObjectPtr<UNiagaraComponent> AI_CloneAbilityRunVfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> CloneUpgradeDashSound;
-	UPROPERTY()
-	FTimerHandle TryTriggeringPoisonGrenadeHandle;
 	
 	ATrickster();
 	
@@ -51,6 +50,7 @@ private:
 
 	virtual void P_Setup() override;
 	virtual void P_SetupColorsForUI() override;
+	virtual void P_WeaponShoot() override;
 
 	virtual float ReceiveMovementSpeedModification() const override;
 

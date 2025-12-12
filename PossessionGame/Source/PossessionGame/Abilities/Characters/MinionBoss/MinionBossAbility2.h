@@ -13,6 +13,7 @@ class POSSESSIONGAME_API UMinionBossAbility2 : public UAbility
 
 	bool bIsLaserDisabled = false;
 	bool bLaserUpdateFirstFrame = true;
+	bool bIsLaserActive = false;
 	float Acceleration = 0.05f;
 	float MaxSpeed = 15.f;
 	float MinSpeed = 0.5f;
@@ -32,7 +33,8 @@ class POSSESSIONGAME_API UMinionBossAbility2 : public UAbility
 
 	virtual void AI_Execute() override;
 	virtual void AI_StopAbility() override;
-	
+
+	bool GetLaserActivityState() const { return bIsLaserActive; }
 	virtual bool IsProprietorPossessed() override;
 	
 	virtual void SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) override;

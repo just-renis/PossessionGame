@@ -126,6 +126,8 @@ void AWarden::ClearTimers()
 	GetWorldTimerManager().ClearTimer(BeamDisableCollisionHandle);
 }
 
+void AWarden::ApplyEmpEffect(const float InEffectDuration) { Super::ApplyEmpEffect(InEffectDuration * 0.5f); }
+
 void AWarden::TriggerBeam()
 {
 	if (!BeamVfx || !BeamCollision) return;

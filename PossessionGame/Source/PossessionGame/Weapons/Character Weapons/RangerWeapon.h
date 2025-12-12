@@ -23,7 +23,7 @@ private:
 	virtual float P_UpgradeDamageAppliance() override;
 	virtual float P_GetCriticalDamage() override;
 	
-	virtual void P_Shoot() override;
+	virtual void P_Shoot(const EPoolObject InProjectileName) override;
 	virtual void P_Reload(int32 OtherAmmoSource) override;
 	virtual void P_Setup() override;
 
