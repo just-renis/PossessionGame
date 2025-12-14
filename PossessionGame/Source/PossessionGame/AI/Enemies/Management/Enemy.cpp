@@ -356,7 +356,7 @@ void AEnemy::InitiateDeath()
 		AI_PlayDeathSound();
 		AI_PlayDeathExplosion();
 		AI_Destroy();
-		if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
+		if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp());
 		DelegateManager->OnEnemyDeathOccurred.Broadcast(this);
 		(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
 		if (bAffectedByEmp && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility2, EUpgradeAttribute::Special1)) AI_TriggerEmpExplosion();
@@ -656,7 +656,7 @@ void AEnemy::P_Setup()
 	P_InputManager = Cast<UEnhancedPlayerInput>(GetWorld()->GetFirstPlayerController()->PlayerInput);
 	P_SetupUI();
 	P_SetupAbilities();
-	if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), AI_Data->GetPossessionTimeValue());
+	if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp());
 	DelegateManager->OnEnemyDeath.BindUObject(this, &AEnemy::P_OnEnemyDeathEvents);
 }
 
@@ -668,8 +668,11 @@ void AEnemy::P_Shoot()
 		if (bIsRunning) P_ToggleRun(false);
 		if (bIsSliding) Weapon->GetHandsAnimInstance()->StopMontage(EHandsAnimState::Slide, 0.f);
 		P_WeaponShoot();
+		return;
 	}
-	else if (Weapon->P_CanReload() && Weapon->GetCurrentAmmoAmount() <= 0) Weapon->P_Reload();
+	if (Weapon->GetCurrentAmmoAmount() > 0) return;
+	if (Weapon->P_CanReload()) Weapon->P_Reload();
+	else if (P_HUD) P_HUD->ShowOutOfAmmo();
 }
 
 void AEnemy::P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
@@ -1128,11 +1131,7 @@ void AEnemy::P_ToggleRun(const bool bState)
 	if (P_HUD) P_HUD->UpdateRunIndicator(bIsRunning);
 }
 
-void AEnemy::P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue)
-{
-//	HijackBarTimer += InHijackTimeValue * (GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished() ? 1.f : 2.f);
-	P_AddXp(InXp);
-}
+void AEnemy::P_OnEnemyDeathEvents(const int32 InXp) const { P_AddXp(InXp); }
 
 void AEnemy::P_ToggleGodMode()
 {

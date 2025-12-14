@@ -49,8 +49,7 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 void UPlayerHUD::UpdateAmmoText(const int32 InWeaponAmmo) const
 {
 	if (!AmmoText) return;
-	if (InWeaponAmmo == -1) AmmoText->SetText(FText::FromString(TEXT("∞")));
-	else AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0}"), {InWeaponAmmo})));
+	AmmoText->SetText(FText::FromString(FString::Format(TEXT("{0}"), {InWeaponAmmo < 0 ? 0 : InWeaponAmmo})));
 }
 
 void UPlayerHUD::UpdateAmmoText(const int32 InWeaponAmmo, const int32 InMaxAmmo) const
@@ -215,7 +214,6 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->OnGlobalHpBarSpawn.BindUObject(this, &UPlayerHUD::EnableGlobalHpBar);
 	DelegateManager->OnBossDeath.AddUObject(this, &UPlayerHUD::DisableGlobalHpBar);
 	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerHUD::UpdatePressToHijackKeyBind);
-	DelegateManager->OnOutOfAmmo.BindUObject(this, &UPlayerHUD::ShowOutOfAmmo);
 	DelegateManager->RequirePlayerAnnouncementInfo.BindUObject(this, &UPlayerHUD::PlayAnnouncement);
 	DelegateManager->RequestMinorAnnouncement.BindUObject(this, &UPlayerHUD::ShowMinorAnnouncement);
 	DelegateManager->OnPlayerDamageTaken.BindUObject(this, &UPlayerHUD::SetDamageNumber);

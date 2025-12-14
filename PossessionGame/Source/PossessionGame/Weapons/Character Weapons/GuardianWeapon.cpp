@@ -21,9 +21,9 @@ void AGuardianWeapon::ToggleHandsMeshAbilityState(const bool bState) const
 	MI_Hands->SetScalarParameterValue("Width", bState ? 0.2f : 0.f);
 }
 
-bool AGuardianWeapon::P_CanShoot() { return !HandsAnimInstance->IsPlaying(EHandsAnimState::Shoot); }
+bool AGuardianWeapon::P_CanShoot() { return !HandsAnimInstance->IsPlaying(EHandsAnimState::Shoot) && GetCurrentAmmoAmount() > 0; }
 
-void AGuardianWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(-1); }
+void AGuardianWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(CurrentAmmo); }
 
 void AGuardianWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
@@ -31,6 +31,8 @@ void AGuardianWeapon::P_Shoot(const EPoolObject InProjectileName)
 	{
 		PlayShootMontage();
 		FirstWeapon->P_Shoot(InProjectileName);
+		CurrentAmmo--;
+		P_UpdateAmmoTextHUD();
 		GetWorldTimerManager().SetTimer(SecondWeaponShotHandle, this, &AGuardianWeapon::ShootSecondWeaponShot, 0.2f / CustomTimeDilation);
 		ShootTimer = 0.f;
 	}
@@ -69,7 +71,12 @@ void AGuardianWeapon::SetCustomDilation(const float InDilation)
 	SecondWeapon->SetCustomDilation(InDilation);
 }
 
-void AGuardianWeapon::ShootSecondWeaponShot() const { SecondWeapon->P_Shoot(EPoolObject::GuardianProjectile); }
+void AGuardianWeapon::ShootSecondWeaponShot()
+{
+	SecondWeapon->P_Shoot(EPoolObject::GuardianProjectile);
+	CurrentAmmo--;
+	P_UpdateAmmoTextHUD();
+}
 
 void AGuardianWeapon::DestroyThis()
 {

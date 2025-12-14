@@ -16,16 +16,9 @@ void ADualWieldingWeapon::AI_Setup()
 
 void ADualWieldingWeapon::AI_Shoot() { CyclingState.bIsCycling ? CyclingModeLogic() : NonCyclingModeLogic(); }
 
-bool ADualWieldingWeapon::P_CanShoot()
-{
-	return !HandsAnimInstance->GetIsReloading() && GetCurrentAmmoAmount() > 0;
-}
+bool ADualWieldingWeapon::P_CanShoot() { return !HandsAnimInstance->GetIsReloading() && GetCurrentAmmoAmount() > 0; }
 
-bool ADualWieldingWeapon::P_CanReload(int32 OtherAmmoSource)
-{
-	if (TotalAmmo == 0 && GetCurrentAmmoAmount() == 0) (void)DelegateManager->OnOutOfAmmo.ExecuteIfBound();
-	return TotalAmmo > 0 && !HandsAnimInstance->GetIsReloading();
-}
+bool ADualWieldingWeapon::P_CanReload(int32 OtherAmmoSource) { return TotalAmmo > 0 && !HandsAnimInstance->GetIsReloading(); }
 
 void ADualWieldingWeapon::P_Shoot(const EPoolObject InProjectileName)
 {

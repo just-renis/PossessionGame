@@ -34,7 +34,7 @@ private:
 	virtual void SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh) override;
 	virtual void SetMeshes(const EWeapon InPrimaryDataAssetName) override;
 	virtual void SetCustomDilation(const float InDilation) override;
-	void ShootSecondWeaponShot() const;
+	void ShootSecondWeaponShot();
 	virtual void DestroyThis() override;
 	virtual void PostProprietorSetup() override;
 };

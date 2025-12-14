@@ -29,7 +29,11 @@ void UAbility::P_StopAbility()
 void UAbility::Tick(const float InDeltaTime)
 {
 	if (bIsAbilityInDuration) AbilityInDurationLogic(InDeltaTime);
-	else if (CurrentChargesAmount < MaxChargesAmount) CooldownLogic(InDeltaTime);
+	else if (CurrentChargesAmount < MaxChargesAmount)
+	{
+		if (IsProprietorPossessed()) CooldownLogic(InDeltaTime * RecentHijackBoost);
+		else CooldownLogic(InDeltaTime);
+	}
 }
 
 void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
@@ -38,7 +42,11 @@ void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbility
 	DelegateManager = InDelegateManager;
 	SetProprietor(InAbilityProprietor);
 	SetupUpgradeAppliance(IsProprietorPossessed());
-	if (InAbilityProprietor->GetIsHijacked()) P_ApplyVariation();
+	if (InAbilityProprietor->GetIsHijacked())
+	{
+		P_ApplyVariation();
+		GetWorld()->GetTimerManager().SetTimer(P_RecentHijackBoostHandle, this, &UAbility::P_DisableRecentHijackBoost, RecentHijackBoostTime, false);
+	}
 }
 
 float UAbility::AI_GetCooldownReduction()
@@ -79,6 +87,8 @@ void UAbility::SetupUpgradeAppliance(const bool bIsPlayer)
 		CurrentDuration = DurationTime;
 	}
 }
+
+void UAbility::P_DisableRecentHijackBoost() { RecentHijackBoost = 1.f; }
 
 void UAbility::ResetDuration()
 {

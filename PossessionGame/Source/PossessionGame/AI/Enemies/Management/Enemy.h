@@ -427,7 +427,7 @@ private:
 	void P_Rotate(const FInputActionValue& InValue);
 	void P_Reload();
 	void P_ToggleRun(const bool bState);
-	void P_OnEnemyDeathEvents(const int32 InXp, const float InHijackTimeValue);
+	void P_OnEnemyDeathEvents(const int32 InXp) const;
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
 	void P_StopAllAbilities(const bool bDestroy = false);
