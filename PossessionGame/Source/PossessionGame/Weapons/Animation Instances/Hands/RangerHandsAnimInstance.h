@@ -9,5 +9,5 @@ class POSSESSIONGAME_API URangerHandsAnimInstance : public UHandsAnimInstance
 {
 	GENERATED_BODY()
 
-	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted) override;
+	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted) override;
 };

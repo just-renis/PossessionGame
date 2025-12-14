@@ -69,6 +69,8 @@ void ATrickster::P_ThrowEmpGrenade() const
 	Weapon->ShootProjectile(EPoolObject::TricksterEmpProjectile, true, NAME_None, false);
 }
 
+void ATrickster::P_RemoveReloadSound() { AssetsManager->RemoveStoredSound(ESound::TricksterReload); }
+
 TArray<FVector> ATrickster::GetAvailableCloneSpawnOffsets(int32 InClonesAmount)
 {
 	const TObjectPtr<UNavigationSystemV1> NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(GetWorld());

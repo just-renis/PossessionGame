@@ -695,6 +695,7 @@ void AEnemy::P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInput
 
 void AEnemy::P_Destroy()
 {
+	P_RemoveReloadSound();
 	DelegateManager->RequestTriggerCameraShake.Unbind();
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();
@@ -814,7 +815,7 @@ void AEnemy::BeginPlay()
 	Tags.Add("Enemy");
 	Tags.Add("AliveEnemy");
 	Camera->SetActive(false);
-	GetWorldTimerManager().SetTimer(CheckIfFallOutOfWorldHandle, this, &AEnemy::CheckIfFallOutOfWorld, 2.f, true);
+	GetWorldTimerManager().SetTimer(CheckIfFallOutOfWorldHandle, this, &AEnemy::CheckIfFallOutOfWorld, 5.f, true);
 	GetWorldTimerManager().SetTimer(AI_SetCharacterMovementSpeedHandle, this, &AEnemy::AI_SetCharacterMovementSpeed, 0.05f, true);
 	GetWorldTimerManager().SetTimer(AI_PlaySpawnSoundHandle, this, &AEnemy::AI_PlaySpawnSound, 3.f + UKismetMathLibrary::RandomInteger(4), false);
 	DelegateManager->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
@@ -1493,11 +1494,11 @@ void AEnemy::P_FinishHijackProcess()
 	DelegateManager->OnEnemyDeath.Unbind();
 	if (Controller) Controller->Possess(HijackTarget);
 	InitiateDeath();
-	Destroy();
 	AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(false);
 	P_AddAndSetHijackPulse(0.f);
+	Destroy();
 }
 
 void AEnemy::P_ChangeFovWhileHijackingProcess()
@@ -1725,6 +1726,7 @@ void AEnemy::ApplyStunEffect(const float InEffectDuration)
 	}
 	else
 	{
+		DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(NSLOCTEXT("ST_Localization", "Stunned", "Stunned"));
 		P_MakeCameraShake(ECameraShake::PlayerStunned);
 		bIsInputLocked = true;
 		if (Weapon && Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->PlayMontageWithHold(EHandsAnimState::StunEffect, InEffectDuration);

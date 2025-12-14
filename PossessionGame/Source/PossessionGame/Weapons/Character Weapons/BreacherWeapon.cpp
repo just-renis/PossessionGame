@@ -39,12 +39,11 @@ void ABreacherWeapon::P_Shoot(const EPoolObject InProjectileName)
 	P_UpdateAmmoTextHUD();
 }
 
-void ABreacherWeapon::P_Reload(const int32 InOtherAmmoSource)
+void ABreacherWeapon::P_Reload()
 {
-	AssetsManager->PlaySound2D(ESound::BreacherReload);
+	AssetsManager->PlaySound2D(ESound::BreacherReload, true);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
 	if (AnimInstance) AnimInstance->PlayMontage(EWeaponAnimState::Reload);
-	Super::P_Reload(InOtherAmmoSource);
 }
 
 void ABreacherWeapon::P_Setup()

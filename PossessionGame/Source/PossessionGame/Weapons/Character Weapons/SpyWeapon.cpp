@@ -9,11 +9,10 @@ void ASpyWeapon::P_Shoot(const EPoolObject InProjectileName)
 	Super::P_Shoot(InProjectileName);
 }
 
-void ASpyWeapon::P_Reload(int32 OtherAmmoSource)
+void ASpyWeapon::P_Reload()
 {
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
 	if (AnimInstance) AnimInstance->PlayMontage(EWeaponAnimState::Reload);
-	Super::P_Reload(OtherAmmoSource);
 }
 
 void ASpyWeapon::P_Setup()

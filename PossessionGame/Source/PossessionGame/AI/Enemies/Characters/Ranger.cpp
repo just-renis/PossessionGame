@@ -65,6 +65,12 @@ void ARanger::P_LaunchGrenade()
 
 void ARanger::P_InitiateThrowMine() { GetWorldTimerManager().SetTimer(MineThrowHandle, this, &ARanger::P_ThrowMine, 0.34f, false); }
 
+void ARanger::P_RemoveReloadSound()
+{
+	Weapon->P_StopReloadAnimation();
+	AssetsManager->RemoveStoredSound(ESound::RangerReload);
+}
+
 void ARanger::SpawnShield()
 {
 	const TObjectPtr<APoolObject> Shield = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::RangerShield, GetActorLocation() + GetActorForwardVector() * 100.f, GetActorRotation() + FRotator(0.f, -90.f, 0.f));

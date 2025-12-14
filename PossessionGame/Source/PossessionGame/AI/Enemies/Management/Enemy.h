@@ -93,6 +93,7 @@ public:
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection);
 	virtual void AI_StunEffectEnded();
 
+	virtual void P_RemoveReloadSound() {}
 	void P_ApplyUpgradeOnSelection();
 	void P_UseAbility(const int32 InAbilityIndex);
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo) const;

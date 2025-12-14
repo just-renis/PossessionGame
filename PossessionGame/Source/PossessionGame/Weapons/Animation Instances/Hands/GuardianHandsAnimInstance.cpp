@@ -1,15 +1,8 @@
 ﻿#include "GuardianHandsAnimInstance.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 
-void UGuardianHandsAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
+void UGuardianHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted)
 {
-	Super::OnMontageEnd(Montage, bIsInterrupted);
-	const TObjectPtr<UAnimMontage>* OverChargeMontage = Montages.Find(EHandsAnimState::OverCharge);
-	if (OverChargeMontage && Montage == OverChargeMontage->Get())
-	{
-		(void)OnHandsMontageEnd.ExecuteIfBound(false);
-		return;
-	}
-	const TObjectPtr<UAnimMontage>* ShootMontage = Montages.Find(EHandsAnimState::Shoot);
-	if (ShootMontage && Montage == ShootMontage->Get()) (void)OnHandsMontageEnd.ExecuteIfBound(false);
+	Super::OnMontageEnd(InMontage, bIsInterrupted);
+	if (IsMontage(EHandsAnimState::Shoot, InMontage) || IsMontage(EHandsAnimState::OverCharge, InMontage)) (void)OnHandsMontageEnd.ExecuteIfBound(false);
 }

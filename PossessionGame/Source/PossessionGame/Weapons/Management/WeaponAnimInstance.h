@@ -13,14 +13,14 @@ class POSSESSIONGAME_API UWeaponAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
-	bool IsPlaying(EWeaponAnimState State);
-	bool IsMontageExisting(EWeaponAnimState State);
-	float GetMontageLength(EWeaponAnimState State);
+	bool IsPlaying(const EWeaponAnimState InState);
+	bool IsMontageExisting(const EWeaponAnimState InState) const;
+	float GetMontageLength(const EWeaponAnimState InState);
 
-	void SetSpeed(float Value) { Speed = Value; }
-	void PlayMontage(EWeaponAnimState State, float StartPosition = 0.f);
-	void StopMontage(EWeaponAnimState State, float BlendOut = 0.f);
-	void SetWeaponName(EWeapon Name) { WeaponName = Name; }
+	void SetSpeed(const float InValue) { Speed = InValue; }
+	void PlayMontage(const EWeaponAnimState InState, const float InStartPosition = 0.f);
+	void StopMontage(const EWeaponAnimState InState, const float InBlendOut = 0.f);
+	void SetWeaponName(const EWeapon InName) { WeaponName = InName; }
 	void SetGlobalPlayRate(const float InPlayRate);
 
 	UPROPERTY(BlueprintReadOnly, Category = "Animation")
@@ -28,9 +28,11 @@ public:
 protected:
 	UPROPERTY()
 	TMap<EWeaponAnimState, TObjectPtr<UAnimMontage>> Montages;
+
+	bool IsMontage(const EWeaponAnimState InState, const UAnimMontage* InMontage) const;
 	
 	UFUNCTION()
-	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted) {}
+	virtual void OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted) {}
 private:
 	float GlobalPlayRate = 1.f;
 	EWeapon WeaponName;
@@ -38,6 +40,6 @@ private:
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	
 	virtual void NativeBeginPlay() override;
-	void LoadMontageIfNotLoaded(EWeaponAnimState State);
+	void LoadMontageIfNotLoaded(const EWeaponAnimState InState);
 	virtual void NativeUninitializeAnimation() override;
 };

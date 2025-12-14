@@ -3,27 +3,13 @@
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Weapons/Character Weapons/TricksterWeapon.h"
 
-void UTricksterHandsAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
+void UTricksterHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted)
 {
-	Super::OnMontageEnd(Montage, bIsInterrupted);
-	const TObjectPtr<UAnimMontage>* ReloadMontage = Montages.Find(EHandsAnimState::Reload);
-	if (ReloadMontage && Montage == ReloadMontage->Get())
+	Super::OnMontageEnd(InMontage, bIsInterrupted);
+	if (IsMontage(EHandsAnimState::Reload, InMontage))
 	{
 		Cast<ATricksterWeapon>(GetProprietor()->GetWeapon())->P_StopOverChargeVfx();
 		return;
 	}
-	const TObjectPtr<UAnimMontage>* SmokeBombThrowMontage = Montages.Find(EHandsAnimState::GrenadeLaunch);
-	if (SmokeBombThrowMontage && Montage == SmokeBombThrowMontage->Get())
-	{
-		(void)OnHandsMontageEnd.ExecuteIfBound(false);
-		return;
-	}
-	const TObjectPtr<UAnimMontage>* EmpThrowMontage = Montages.Find(EHandsAnimState::SecondaryGrenadeLaunch);
-	if (EmpThrowMontage && Montage == EmpThrowMontage->Get())
-	{
-		(void)OnHandsMontageEnd.ExecuteIfBound(false);
-		return;
-	}
-	const TObjectPtr<UAnimMontage>* DeployCloneMontage = Montages.Find(EHandsAnimState::DeployClone);
-	if (DeployCloneMontage && Montage == DeployCloneMontage->Get()) (void)OnHandsMontageEnd.ExecuteIfBound(false);
+	if (IsMontage(EHandsAnimState::GrenadeLaunch, InMontage) || IsMontage(EHandsAnimState::SecondaryGrenadeLaunch, InMontage) || IsMontage(EHandsAnimState::DeployClone, InMontage)) (void)OnHandsMontageEnd.ExecuteIfBound(false);
 }

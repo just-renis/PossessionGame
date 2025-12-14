@@ -17,12 +17,11 @@ ATricksterWeapon::ATricksterWeapon()
 
 void ATricksterWeapon::AI_Reload() { PlaySound(ESound::TricksterReload, true); }
 
-void ATricksterWeapon::P_Reload(int32 OtherAmmoSource)
+void ATricksterWeapon::P_Reload()
 {
-	AssetsManager->PlaySound2D(ESound::TricksterReload);
+	AssetsManager->PlaySound2D(ESound::TricksterReload, true);
 	P_PlayOverChargeVfx();
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
-	Super::P_Reload(OtherAmmoSource);
 }
 
 void ATricksterWeapon::P_PlayOverChargeVfx()
@@ -46,7 +45,6 @@ void ATricksterWeapon::BeginPlay()
 {
 	Name = EWeapon::TricksterWeapon;
 	Super::BeginPlay();
-	SetWeaponReloadMontageDelegate();
 }
 
 void ATricksterWeapon::SetupOneHandedWeapons(TObjectPtr<USkeletalMeshComponent> CharacterMesh)

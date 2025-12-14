@@ -25,7 +25,6 @@ class POSSESSIONGAME_API AWeapon : public AActor, public IDamageReasonProvider
 {
 	GENERATED_BODY()
 public:
-	int32 HitCount = 0;
 	AWeapon();
 
 	bool GetIsReloadEnabled() const { return bIsReloadEnabled; }
@@ -61,8 +60,8 @@ public:
 	virtual bool P_CanShoot();
 	virtual float P_UpgradeDamageAppliance() { return 0.f; }
 	
+	virtual void P_Reload() {}
 	void P_SetWalkingSpeed(const float InSpeed) const;
-	virtual void P_Reload(const int32 InOtherAmmoSource = -1);
 	virtual void P_Shoot(const EPoolObject InProjectileName);
 	void P_InitialSetupTransfer();
 	virtual void P_SetupTransfer(const bool bSetToFirstHand = true);
@@ -72,6 +71,7 @@ public:
 	void P_SetWalkSpread(const bool bState);
 	virtual void P_SetVariationMaterial();
 	virtual void P_ChangeVfxVariation();
+	void P_StopReloadAnimation();
 	
 	virtual void SetWeaponMeshScaleToOriginal() { Mesh->SetRelativeScale3D(OriginalScale); }
 	void SetFirstShotWasShot() { bFirstShotWasShot = true; }
@@ -147,20 +147,21 @@ protected:
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired);
 	void DisableHandsMesh() const;
 	void DealPointDamage(const FHitResult& InHitResult);
-	virtual void WeaponReloadMontageFinished() {}
-	void SetWeaponReloadMontageDelegate();
 	virtual void MuzzleLogicFromAbility() {}
 	virtual void FpsTrailVfxLogic();
 private:
 	bool bFirstShotWasShot = false;
 	int32 ShootCyclesUntilReload;
+	FTimerHandle DisableComponentTickHandle;
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
 	
 	void P_SetupLevelUpAppliance();
+	void P_ReloadAmmo(const int32 InOtherAmmoSource);
 	virtual void P_VariationHitScanDamageAppliance() {}
 
 	virtual EDamageReason GetDamageReason() const override { return P_Data->GetDamageReason(); } // It does not matter from which data i will get damage reason, since it would be the same.
 
 	void SetupHandsOptimization() const;
+	void DisableComponentTick();
 };

@@ -67,6 +67,8 @@ void ABreacher::P_ThrowDynamite()
 	Dynamite->Throw();
 }
 
+void ABreacher::P_RemoveReloadSound() { AssetsManager->RemoveStoredSound(ESound::BreacherReload); }
+
 ABreacher::ABreacher()
 {
 	SpawnSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("SpawnSfx"));

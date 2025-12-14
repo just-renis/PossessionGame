@@ -36,13 +36,16 @@ protected:
 	UPROPERTY()
 	TMap<EHandsAnimState, TObjectPtr<UAnimMontage>> Montages;
 	
+	bool IsMontage(const EHandsAnimState InState, const UAnimMontage* InMontage) const;
+	
 	virtual void NativeBeginPlay() override;
 	UFUNCTION()
-	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted);
+	virtual void OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted);
 private:
 	bool bIsReloading = false;
 	float GlobalPlayRate = 1.f;
 	EWeapon WeaponName;
+	FTimerHandle MontageWithHoldHandle;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	float DirectionalAngle = 0.f;
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
@@ -53,13 +56,11 @@ private:
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Proprietor;
-	UPROPERTY()
-	FTimerHandle MontageWithHoldHandle;
 
-	bool IsMontageExisting(const EHandsAnimState InState);
+	bool IsMontageExisting(const EHandsAnimState InState) const;
 	
 	void LoadMontageIfNotLoaded(const EHandsAnimState InState);
-	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	virtual void NativeUpdateAnimation(const float InDeltaSeconds) override;
 	void MontageWithHoldEnd();
 	virtual void NativeUninitializeAnimation() override;
 };

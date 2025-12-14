@@ -14,6 +14,7 @@ public:
 	void P_ThrowBarrel();
 	void P_Bash(const float InImpulseStrength);
 	void P_ThrowDynamite();
+	virtual void P_RemoveReloadSound() override;
 private:
 	ABreacher();
 

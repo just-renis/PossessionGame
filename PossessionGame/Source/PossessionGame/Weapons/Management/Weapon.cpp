@@ -49,22 +49,6 @@ bool AWeapon::P_CanShoot() { return ShootTimer >= GetShootCooldown() && CurrentA
 
 void AWeapon::P_SetWalkingSpeed(const float InSpeed) const { if (HandsAnimInstance) HandsAnimInstance->SetSpeed(InSpeed); }
 
-void AWeapon::P_Reload(const int32 InOtherAmmoSource)
-{
-	if (InOtherAmmoSource != -1) TotalAmmo = InOtherAmmoSource;
-	const int32 AmmoNeeded = MagazineCap - CurrentAmmo;
-	if (TotalAmmo >= AmmoNeeded)
-	{
-		CurrentAmmo += AmmoNeeded;
-		TotalAmmo -= AmmoNeeded;
-	}
-	else
-	{
-		CurrentAmmo += TotalAmmo;
-		TotalAmmo = 0;
-	}
-}
-
 void AWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	MuzzleFlashLogic();
@@ -136,6 +120,12 @@ void AWeapon::P_ChangeVfxVariation()
 		MuzzleFlashComponent->DeactivateImmediate();
 		MuzzleFlashComponent = nullptr;
 	}
+}
+
+void AWeapon::P_StopReloadAnimation()
+{
+	if (AnimInstance) AnimInstance->StopMontage(EWeaponAnimState::Reload);
+	GetWorldTimerManager().SetTimer(DisableComponentTickHandle, this, &AWeapon::DisableComponentTick, 0.1f);
 }
 
 void AWeapon::DestroyThis()
@@ -228,7 +218,7 @@ void AWeapon::P_Setup()
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
 	DelegateManager->OnLevelUp.AddUObject(this, &AWeapon::P_SetupLevelUpAppliance);
-	DelegateManager->OnPlayerReloadMontageEnd.BindUObject(this, &AWeapon::P_UpdateAmmoTextHUD);
+	DelegateManager->OnPlayerReloadMontageEnd.BindUObject(this, &AWeapon::P_ReloadAmmo);
 }
 
 void AWeapon::P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName)
@@ -337,14 +327,29 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), Damage * (bIsCritical ? P_GetCriticalDamage() : 1.f), (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 
-void AWeapon::SetWeaponReloadMontageDelegate() { DelegateManager->OnHandsReloadMontageEnd.BindUObject(this, &AWeapon::WeaponReloadMontageFinished); }
-
 void AWeapon::FpsTrailVfxLogic()
 {
 	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), nullptr, GetSocketLocation("FpsProjectileSocket"), GetSocketRotation("FpsProjectileSocket"), Proprietor->GetVariation());
 }
 
 void AWeapon::P_SetupLevelUpAppliance() { HitScanDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelUpDamageIncrease() * 0.01f; }
+
+void AWeapon::P_ReloadAmmo(const int32 InOtherAmmoSource)
+{
+	if (InOtherAmmoSource != -1) TotalAmmo = InOtherAmmoSource;
+	const int32 AmmoNeeded = MagazineCap - CurrentAmmo;
+	if (TotalAmmo >= AmmoNeeded)
+	{
+		CurrentAmmo += AmmoNeeded;
+		TotalAmmo -= AmmoNeeded;
+	}
+	else
+	{
+		CurrentAmmo += TotalAmmo;
+		TotalAmmo = 0;
+	}
+	P_UpdateAmmoTextHUD();
+}
 
 void AWeapon::SetupHandsOptimization() const
 {
@@ -355,4 +360,10 @@ void AWeapon::SetupHandsOptimization() const
 	HandsMesh->SetAllowAnimCurveEvaluation(false);
 	HandsMesh->bUseRefPoseOnInitAnim = true;
 	HandsMesh->SetComponentTickInterval(1.f / 60.f);
+}
+
+void AWeapon::DisableComponentTick()
+{
+	if (!GetMesh()) return;
+	GetMesh()->SetComponentTickEnabled(false);
 }

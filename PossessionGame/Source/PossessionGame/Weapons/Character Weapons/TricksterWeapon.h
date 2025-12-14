@@ -20,7 +20,7 @@ private:
 
 	virtual void AI_Reload() override;
 
-	virtual void P_Reload(int32 OtherAmmoSource) override;
+	virtual void P_Reload() override;
 	void P_PlayOverChargeVfx();
 	
 	virtual void BeginPlay() override;

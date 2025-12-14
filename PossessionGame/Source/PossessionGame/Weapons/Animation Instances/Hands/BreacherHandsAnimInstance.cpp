@@ -4,6 +4,6 @@
 void UBreacherHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted)
 {
 	Super::OnMontageEnd(InMontage, bIsInterrupted);
-	const TObjectPtr<UAnimMontage>* ThrowBarrelMontage = Montages.Find(EHandsAnimState::BreacherThrow);
-	if (ThrowBarrelMontage && InMontage == ThrowBarrelMontage->Get()) (void)OnHandsMontageEnd.ExecuteIfBound(false);
+	if (!IsMontage(EHandsAnimState::BreacherThrow, InMontage)) return;
+	(void)OnHandsMontageEnd.ExecuteIfBound(false);
 }

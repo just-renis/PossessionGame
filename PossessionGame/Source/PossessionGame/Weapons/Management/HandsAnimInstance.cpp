@@ -1,6 +1,7 @@
 ﻿#include "HandsAnimInstance.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "KismetAnimationLibrary.h"
+#include "Weapon.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -34,11 +35,7 @@ void UHandsAnimInstance::PlayMontage(const EHandsAnimState InState, const float 
     {
         LoadMontageIfNotLoaded(InState);
         Montage_Play(Montages.Find(InState)->Get(), GlobalPlayRate, EMontagePlayReturnType::MontageLength, InStartPosition);
-        if (InState == EHandsAnimState::Reload)
-        {
-            bIsReloading = true;
-            Proprietor->SetIsActionInMotion(true);
-        }
+        if (InState == EHandsAnimState::Reload) bIsReloading = true;
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontage"), *UEnum::GetValueAsString(WeaponName), *UEnum::GetValueAsString(InState));
 }
@@ -70,6 +67,12 @@ void UHandsAnimInstance::SetGlobalPlayRate(const float InPlayRate)
     if (const TObjectPtr<UAnimMontage> CurrentMontage = GetCurrentActiveMontage()) Montage_SetPlayRate(CurrentMontage, GlobalPlayRate);
 }
 
+bool UHandsAnimInstance::IsMontage(const EHandsAnimState InState, const UAnimMontage* InMontage) const
+{
+    if (const TObjectPtr<UAnimMontage>* Found = Montages.Find(InState)) return *Found == InMontage;
+    return false;
+}
+
 void UHandsAnimInstance::NativeBeginPlay()
 {
     Super::NativeBeginPlay();
@@ -78,28 +81,25 @@ void UHandsAnimInstance::NativeBeginPlay()
     OnMontageBlendingOut.AddDynamic(this, &UHandsAnimInstance::OnMontageEnd);
 }
 
-void UHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted)
+void UHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted)
 {
-    const TObjectPtr<UAnimMontage>* ReloadMontage = Montages.Find(EHandsAnimState::Reload);
-    if (ReloadMontage && InMontage == ReloadMontage->Get())
+    if (IsMontage(EHandsAnimState::Reload, InMontage))
     {
         bIsReloading = false;
-        Proprietor->SetIsActionInMotion(false);
-        (void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHandsReloadMontageEnd.ExecuteIfBound();
-        (void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerReloadMontageEnd.ExecuteIfBound();
-        return;
+        Proprietor->P_RemoveReloadSound();
+        if (!bIsInterrupted) (void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerReloadMontageEnd.ExecuteIfBound(Proprietor->GetWeapon()->GetTotalAmmoAmount());
+       return;
     }
-    const TObjectPtr<UAnimMontage>* ShootMontage = Montages.Find(EHandsAnimState::Shoot);
-    if (ShootMontage && InMontage == ShootMontage->Get())
+    if (IsMontage(EHandsAnimState::Shoot, InMontage))
     {
         if (Proprietor->GetIsSliding()) PlayMontageWithHold(EHandsAnimState::Slide, -1.f);
         return;
     }
-    const TObjectPtr<UAnimMontage>* QuickMeleeMontage = Montages.Find(EHandsAnimState::QuickMelee);
-    if (QuickMeleeMontage && InMontage == QuickMeleeMontage->Get()) Proprietor->SetIsActionInMotion(false);
+    if (!IsMontage(EHandsAnimState::QuickMelee, InMontage)) return;
+    Proprietor->SetIsActionInMotion(false);
 }
 
-bool UHandsAnimInstance::IsMontageExisting(const EHandsAnimState InState)
+bool UHandsAnimInstance::IsMontageExisting(const EHandsAnimState InState) const
 {
     return AssetsManager->GetWeaponData(WeaponName)->HandsMontages.Contains(InState);
 }
@@ -109,10 +109,11 @@ void UHandsAnimInstance::LoadMontageIfNotLoaded(const EHandsAnimState InState)
     if (!Montages.Contains(InState)) Montages.Add(InState, AssetsManager->GetWeaponData(WeaponName)->HandsMontages[InState].LoadSynchronous());
 }
 
-void UHandsAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+void UHandsAnimInstance::NativeUpdateAnimation(const float InDeltaSeconds)
 {
-    Super::NativeUpdateAnimation(DeltaSeconds);
-    if (Proprietor) DirectionalAngle = UKismetAnimationLibrary::CalculateDirection(Proprietor->GetVelocity(), Proprietor->GetActorRotation());
+    Super::NativeUpdateAnimation(InDeltaSeconds);
+    if (!Proprietor) return;
+    DirectionalAngle = UKismetAnimationLibrary::CalculateDirection(Proprietor->GetVelocity(), Proprietor->GetActorRotation());
 }
 
 void UHandsAnimInstance::MontageWithHoldEnd() { StopAllMontages(0.1f); }

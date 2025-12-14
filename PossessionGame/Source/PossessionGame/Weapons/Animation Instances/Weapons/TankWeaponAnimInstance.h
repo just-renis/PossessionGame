@@ -9,5 +9,5 @@ class POSSESSIONGAME_API UTankWeaponAnimInstance : public UWeaponAnimInstance
 {
 	GENERATED_BODY()
 
-	virtual void OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted) override;
+	virtual void OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted) override;
 };

@@ -19,7 +19,7 @@ private:
 	virtual void AI_Shoot() override;
 	
 	virtual void P_Shoot(const EPoolObject InProjectileName) override;
-	virtual void P_Reload(int32 OtherAmmoSource) override;
+	virtual void P_Reload() override;
 	virtual void P_Setup() override;
 	
 	virtual void BeginPlay() override;

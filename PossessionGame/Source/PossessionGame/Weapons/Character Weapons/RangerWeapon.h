@@ -24,12 +24,11 @@ private:
 	virtual float P_GetCriticalDamage() override;
 	
 	virtual void P_Shoot(const EPoolObject InProjectileName) override;
-	virtual void P_Reload(int32 OtherAmmoSource) override;
+	virtual void P_Reload() override;
 	virtual void P_Setup() override;
 
 	virtual void BeginPlay() override;
 	void AddSpecialUpgradeLogic(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialAttributeName);
 	void AttachGrenadeLaunchSpecialVfx();
 	void ChangeGrenadeLaunchSpecialComponentState(const bool bState) const;
-	virtual void WeaponReloadMontageFinished() override;
 };

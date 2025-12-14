@@ -19,6 +19,7 @@ public:
 
 	void P_LaunchGrenade();
 	void P_InitiateThrowMine();
+	virtual void P_RemoveReloadSound() override;
 	
 	void SpawnShield();
 private:

@@ -1,8 +1,7 @@
 ﻿#include "TankWeaponAnimInstance.h"
 
-void UTankWeaponAnimInstance::OnMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
+void UTankWeaponAnimInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted)
 {
-	if (bIsInterrupted) return;
-	const TObjectPtr<UAnimMontage>* ChargeUpMontage = Montages.Find(EWeaponAnimState::ChargeUp);
-	if (ChargeUpMontage && Montage == ChargeUpMontage->Get()) PlayMontage(EWeaponAnimState::Shoot);
+	if (bIsInterrupted || !IsMontage(EWeaponAnimState::ChargeUp, InMontage)) return;
+	PlayMontage(EWeaponAnimState::Shoot);
 }

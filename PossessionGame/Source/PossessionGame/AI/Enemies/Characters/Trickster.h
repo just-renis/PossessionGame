@@ -17,6 +17,7 @@ public:
 	
 	void P_ThrowPoisonGrenade() const;
 	void P_ThrowEmpGrenade() const;
+	virtual void P_RemoveReloadSound() override;
 
 	TArray<FVector> GetAvailableCloneSpawnOffsets(int32 InClonesAmount);
 private:

@@ -27,11 +27,7 @@ void ATankWeapon::P_Shoot(const EPoolObject InProjectileName)
 	}
 }
 
-void ATankWeapon::P_Reload(int32 OtherAmmoSource)
-{
-	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
-	Super::P_Reload(OtherAmmoSource);
-}
+void ATankWeapon::P_Reload() { HandsAnimInstance->PlayMontage(EHandsAnimState::Reload); }
 
 void ATankWeapon::P_SetupTransfer(bool bSetToFirstHand)
 {
@@ -49,7 +45,6 @@ void ATankWeapon::BeginPlay()
 {
 	Name = EWeapon::TankWeapon;
 	Super::BeginPlay();
-	SetWeaponReloadMontageDelegate();
 	AnimInstance = Cast<UTankWeaponAnimInstance>(Mesh->GetAnimInstance());
 	AnimInstance->SetWeaponName(Name);
 }
