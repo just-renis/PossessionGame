@@ -82,7 +82,6 @@ void AWarden::BeginPlay()
 	bCanShoot = true;
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Warden);
 	BeamWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("BeamWeaponSocket"));
-	AssetsManager->AttachVfx(EVfx::WardenBeamShot, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &BeamVfx, BeamWeapon, FName("BeamSocket"), true);
 	GetWorldTimerManager().SetTimer(BeamTriggerHandle, this, &AWarden::TryTriggeringBeamShot, 1.f, true);
 	BeamCollision->OnComponentBeginOverlap.AddDynamic(this, &AWarden::OnBeamCollisionBeginOverlap);
 }
@@ -90,6 +89,7 @@ void AWarden::BeginPlay()
 void AWarden::TryTriggeringBeamShot()
 {
 	if (!CanAbilityBeExecuted(0) || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	if (!BeamVfx) AssetsManager->AttachVfx(EVfx::WardenBeamShot, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &BeamVfx, BeamWeapon, FName("BeamSocket"), true);
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::WardenBeamShot);
 }
 

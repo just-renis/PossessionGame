@@ -1111,7 +1111,7 @@ void AEnemy::P_Rotate(const FInputActionValue& InValue)
 	AddControllerPitchInput(-RotationVector.Y * MouseSensitivity.Y);
 }
 
-void AEnemy::P_Reload() 
+void AEnemy::P_Reload()
 {
 	if (bIsInputLocked) return;
 	if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload && !P_InputManager->IsPressed(FKey("LeftMouseButton")) && Weapon->P_CanReload()) Weapon->P_Reload();
@@ -1725,6 +1725,7 @@ void AEnemy::ApplyStunEffect(const float InEffectDuration)
 	}
 	else
 	{
+		P_MakeCameraShake(ECameraShake::PlayerStunned);
 		bIsInputLocked = true;
 		if (Weapon && Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->PlayMontageWithHold(EHandsAnimState::StunEffect, InEffectDuration);
 		GetWorldTimerManager().SetTimer(StunEffectEndHandle, this, &AEnemy::P_StunEffectEnded, InEffectDuration);
