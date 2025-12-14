@@ -31,6 +31,8 @@ void ASamurai::P_Setup()
 
 void ASamurai::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.2745f, 0.f, 0.5843f)); }
 
+void ASamurai::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::SamuraiProjectile); }
+
 void ASamurai::BeginPlay()
 {
 	CharacterName = ECharacterType::Samurai;

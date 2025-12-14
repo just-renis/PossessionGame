@@ -9,7 +9,7 @@ class POSSESSIONGAME_API ASamuraiWeapon : public AOneHandedWeapon
 {
 	GENERATED_BODY()
 
-	virtual void P_Shoot() override;
+	virtual void P_Shoot(const EPoolObject InProjectileName) override;
 	virtual void P_UpdateAmmoTextHUD() override;
 
 	virtual void BeginPlay() override;

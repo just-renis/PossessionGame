@@ -80,6 +80,7 @@ private:
 	void P_ResetShieldValues();
 	void P_ToggleShieldVfx(const bool bState);
 	virtual void P_ShowReceivedDamageNumber(const float InDamage) override;
+	virtual void P_WeaponShoot() override;
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	

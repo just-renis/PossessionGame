@@ -157,6 +157,8 @@ void ARanger::P_ThrowMine()
 	Mine->Throw();
 }
 
+void ARanger::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::RangerProjectile); }
+
 void ARanger::BeginPlay()
 {
 	CharacterName = ECharacterType::Ranger;

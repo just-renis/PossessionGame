@@ -202,6 +202,8 @@ void ABreacher::P_StopAIBashLogic()
 	bIsBashTriggerInitiated = false;
 }
 
+void ABreacher::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::BreacherProjectile); }
+
 void ABreacher::P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (!OtherActor || OtherActor == this || FMath::Abs(Hit.Normal.Z) > 0.5f) return;
@@ -214,7 +216,11 @@ void ABreacher::P_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPri
 
 float ABreacher::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (bImmuneToExplosions && DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) return 0.f;
+	if (!bIsHijacked)
+	{
+		if (bIsBashing && GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility2, EUpgradeAttribute::Special1)) return 0.f;
+		if (bImmuneToExplosions && DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) return 0.f;
+	}
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 

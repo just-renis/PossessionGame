@@ -161,6 +161,8 @@ void ATrickster::P_Setup()
 
 void ATrickster::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.f, 0.57255f, 0.58431f)); }
 
+void ATrickster::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::TricksterProjectile); }
+
 float ATrickster::ReceiveMovementSpeedModification() const
 {
 	if (bIsCloneEnemyRunUpgradeTaken && !bIsHijacked && CurrentMoveMode == EMoveMode::Run) return AI_MovementSpeedMultiplierForCloneSpecialUpgrade;

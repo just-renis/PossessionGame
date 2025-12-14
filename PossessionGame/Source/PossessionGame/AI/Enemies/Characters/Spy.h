@@ -27,6 +27,7 @@ private:
 	virtual void P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
 	virtual void P_SetupLeftClickInputTriggeredState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override {}
 	virtual void P_SetupColorsForUI() override;
+	virtual void P_WeaponShoot() override;
 	
 	virtual void BeginPlay() override;
 };

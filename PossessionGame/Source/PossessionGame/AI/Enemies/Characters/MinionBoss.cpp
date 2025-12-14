@@ -30,7 +30,14 @@ void AMinionBoss::EnableLaserEyeBall()
 
 void AMinionBoss::EnableLaser()
 {
-	if (!LaserVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaser, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &LaserVfx, GetMesh(), "LaserSocket");
+	if (!LaserVfx)
+	{
+		AssetsManager->AttachVfx(EVfx::MinionBossLaser, [this]() -> bool
+		{
+			if (RequestLaserActivityState.IsBound()) return IsAsyncAssetStillAllowedToBeUsed() && RequestLaserActivityState.Execute();
+			return IsAsyncAssetStillAllowedToBeUsed();
+		}, &LaserVfx, GetMesh(), "LaserSocket");
+	}
 	else LaserVfx->Activate();
 }
 
@@ -269,6 +276,8 @@ void AMinionBoss::ClearTimers()
 	GetWorld()->GetTimerManager().ClearTimer(DealLaserDamageToPlayerHandle);
 	GetWorld()->GetTimerManager().ClearTimer(MoveDirectlyToPlayerHandle);
 }
+
+void AMinionBoss::ApplyEmpEffect(const float InEffectDuration) { Super::ApplyEmpEffect(InEffectDuration * 0.5f); }
 
 void AMinionBoss::OnLaserCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

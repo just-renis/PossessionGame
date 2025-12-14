@@ -70,7 +70,8 @@ void UAbility::SetupUpgradeAppliance(const bool bIsPlayer)
 {
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	const float CooldownReduction = bIsPlayer ? P_GetCooldownReduction() : AI_GetCooldownReduction();
-	ReqCooldownSecs = Data->GetCooldownSecs() / (1.f + CooldownReduction * 0.01f);
+	ReqCooldownSecs = Data->GetCooldownSecs() * (bIsPlayer ? 1.f : AI_SpecialCooldownMultiplier());
+	ReqCooldownSecs = ReqCooldownSecs / (1.f + CooldownReduction * 0.01f);
 	MaxChargesAmount = Data->GetChargesAmount() + RunSaveSlot->GetUpgradeAttributeValues(Data->GetAbilityName(), EUpgradeAttribute::AbilityChargesAmount, bIsPlayer);
 	if (Data->GetIsAbilityWithDuration())
 	{

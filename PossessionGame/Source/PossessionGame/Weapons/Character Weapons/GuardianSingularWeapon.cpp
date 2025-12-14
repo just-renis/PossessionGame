@@ -19,7 +19,7 @@ void AGuardianSingularWeapon::AI_Shoot()
 	ShootProjectile(EPoolObject::GuardianProjectile, false);
 }
 
-void AGuardianSingularWeapon::P_Shoot()
+void AGuardianSingularWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	if (ShootTimer >= GetShootCooldown())
 	{
@@ -27,7 +27,7 @@ void AGuardianSingularWeapon::P_Shoot()
 		MuzzleFlashLogic();
 		MakeShootingCameraShake();
 		ShootTimer = 0.f;
-		ShootProjectile(EPoolObject::GuardianProjectile, false);
+		ShootProjectile(InProjectileName, false);
 	}
 }
 

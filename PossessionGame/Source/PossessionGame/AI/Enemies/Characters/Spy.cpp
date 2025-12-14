@@ -50,6 +50,8 @@ void ASpy::P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent>
 
 void ASpy::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.20392f, 0.58431f, 0.31373f)); }
 
+void ASpy::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::SpyProjectile); }
+
 void ASpy::BeginPlay()
 {
 	CharacterName = ECharacterType::Spy;

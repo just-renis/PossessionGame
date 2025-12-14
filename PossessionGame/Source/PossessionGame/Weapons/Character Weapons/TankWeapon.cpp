@@ -17,12 +17,12 @@ void ATankWeapon::AI_Shoot()
 
 void ATankWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(CurrentAmmo); }
 
-void ATankWeapon::P_Shoot()
+void ATankWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	if (AnimInstance->IsPlaying(EWeaponAnimState::Shoot))
 	{
 		AssetsManager->PlaySound2D(ESound::TankShoot);
-		Super::P_Shoot();
+		Super::P_Shoot(InProjectileName);
 		if (CurrentAmmo <= 0) (void)OnAmmoEnded.ExecuteIfBound();
 	}
 }

@@ -35,6 +35,7 @@ void UMinionBossAbility2::SetProprietor(const TObjectPtr<AEnemy> AbilityPropriet
 {
 	Proprietor = Cast<AMinionBoss>(AbilityProprietor);
 	Proprietor->GetStopLaserDelegate().BindUObject(this, &UMinionBossAbility2::DisableLaser);
+	Proprietor->GetLaserActivityStateDelegate().BindUObject(this, &UMinionBossAbility2::GetLaserActivityState);
 }
 
 void UMinionBossAbility2::CooldownLogic(const float InDeltaTime)
@@ -65,6 +66,7 @@ void UMinionBossAbility2::DisableLaser()
 void UMinionBossAbility2::ShootLaser()
 {
 	if (bIsLaserDisabled) return;
+	bIsLaserActive = true;
 	Proprietor->TriggerLaserCameraShake();
 	Proprietor->EnableLaser();
 	Proprietor->PlaySound(ESound::MinionBossLaserEyeHold, true);
@@ -128,6 +130,7 @@ void UMinionBossAbility2::ReceivePlayerPosition()
 
 void UMinionBossAbility2::TurnOffLaser()
 {
+	bIsLaserActive = false;
 	GetWorld()->GetTimerManager().ClearTimer(ShootLaserHandle);
 	Proprietor->StopSound(ESound::MinionBossLaserEyeHold);
 	Proprietor->GetLaserCollision()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

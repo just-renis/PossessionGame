@@ -19,7 +19,7 @@ class POSSESSIONGAME_API ATricksterSingularWeapon : public AOneHandedWeapon
 	virtual bool P_CanReload(int32 OtherAmmoSource) override;
 	virtual float P_ReceiveHitScanDamage() override;
 	
-	virtual void P_Shoot() override;
+	virtual void P_Shoot(const EPoolObject InProjectileName) override;
 
 	virtual void BeginPlay() override;
 	virtual void SetMeshes(EWeapon PrimaryDataAssetName) override;

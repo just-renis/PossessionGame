@@ -26,7 +26,7 @@ void ABreacherWeapon::AI_Shoot()
 	ShootProjectile(EPoolObject::BreacherProjectile, false, NAME_None, true);
 }
 
-void ABreacherWeapon::P_Shoot()
+void ABreacherWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	AssetsManager->PlaySound2D(ESound::BreacherShoot);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
@@ -35,7 +35,7 @@ void ABreacherWeapon::P_Shoot()
 	MakeShootingCameraShake();
 	CurrentAmmo--;
 	ShootTimer = 0.f;
-	ShootProjectile(EPoolObject::BreacherProjectile, false, NAME_None, true);
+	ShootProjectile(InProjectileName, false, NAME_None, true);
 	P_UpdateAmmoTextHUD();
 }
 

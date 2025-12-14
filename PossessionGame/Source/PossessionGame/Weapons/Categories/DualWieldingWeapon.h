@@ -28,7 +28,7 @@ public:
     virtual bool P_CanShoot() override;
     virtual bool P_CanReload(int32 OtherAmmoSource) override;
     
-    virtual void P_Shoot() override;
+    virtual void P_Shoot(const EPoolObject InProjectileName) override;
     virtual void P_SetupTransfer(bool bSetToFirstHand) override;
     virtual void P_UpdateAmmoTextHUD() override;
     virtual void P_ChangeVfxVariation() override;

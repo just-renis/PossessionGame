@@ -18,7 +18,7 @@ class POSSESSIONGAME_API AGuardianSingularWeapon : public AOneHandedWeapon
 	
 	virtual void AI_Shoot() override;
 
-	virtual void P_Shoot() override;
+	virtual void P_Shoot(const EPoolObject InProjectileName) override;
 
 	virtual void BeginPlay() override;
 	virtual void SetMeshes(EWeapon PrimaryDataAssetName) override;

@@ -27,12 +27,12 @@ bool ADualWieldingWeapon::P_CanReload(int32 OtherAmmoSource)
 	return TotalAmmo > 0 && !HandsAnimInstance->GetIsReloading();
 }
 
-void ADualWieldingWeapon::P_Shoot()
+void ADualWieldingWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	if (ShootTimer >= GetShootCooldown())
 	{
-		FirstWeapon->P_Shoot();
-		SecondWeapon->P_Shoot();
+		FirstWeapon->P_Shoot(InProjectileName);
+		SecondWeapon->P_Shoot(InProjectileName);
 		CurrentAmmo -= 2;
 		PlayShootMontage();
 		ShootTimer = 0.f;

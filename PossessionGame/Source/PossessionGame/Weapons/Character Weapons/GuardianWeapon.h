@@ -19,17 +19,15 @@ public:
 private:
 	bool bIsShootingHolding = false;
 	float ShootingHoldDuration = 0.f;
+	FTimerHandle SecondWeaponShotHandle;
+	FTimerHandle ShootingHoldDurationHandle;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MI_Hands;
-	UPROPERTY()
-	FTimerHandle SecondWeaponShotHandle;
-	UPROPERTY()
-	FTimerHandle ShootingHoldDurationHandle;
 	
 	virtual bool P_CanShoot() override;
 	
 	virtual void P_UpdateAmmoTextHUD() override;
-	virtual void P_Shoot() override;
+	virtual void P_Shoot(const EPoolObject InProjectileName) override;
 	void P_UpdateShootingHoldDuration();
 
 	virtual void BeginPlay() override;

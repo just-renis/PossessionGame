@@ -19,6 +19,8 @@ void AWraith::P_Setup()
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &AWraith::SetIsActionInMotion);
 }
 
+void AWraith::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::WraithProjectile); }
+
 void AWraith::BeginPlay()
 {
 	CharacterName = ECharacterType::Wraith;

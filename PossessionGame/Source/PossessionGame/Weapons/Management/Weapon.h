@@ -63,7 +63,7 @@ public:
 	
 	void P_SetWalkingSpeed(const float InSpeed) const;
 	virtual void P_Reload(const int32 InOtherAmmoSource = -1);
-	virtual void P_Shoot();
+	virtual void P_Shoot(const EPoolObject InProjectileName);
 	void P_InitialSetupTransfer();
 	virtual void P_SetupTransfer(const bool bSetToFirstHand = true);
 	virtual void P_UpdateAmmoTextHUD();

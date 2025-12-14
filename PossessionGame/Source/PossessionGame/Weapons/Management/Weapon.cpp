@@ -66,13 +66,13 @@ void AWeapon::P_Reload(const int32 InOtherAmmoSource)
 	}
 }
 
-void AWeapon::P_Shoot()
+void AWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	MuzzleFlashLogic();
 	MakeShootingCameraShake();
 	CurrentAmmo--;
 	ShootTimer = 0.f;
-	bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(EPoolObject::RangerProjectile, false);
+	bIsHitScanEnabled ? HitScanLogic() : ShootProjectile(InProjectileName, false);
 	P_UpdateAmmoTextHUD();
 }
 
