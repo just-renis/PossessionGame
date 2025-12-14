@@ -1,10 +1,8 @@
 #include "Spy.h"
-
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
 #include "PossessionGame/AI/Enemies/Controllers/SpyAIController.h"
-#include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/SpyWeapon.h"
@@ -47,8 +45,6 @@ void ASpy::P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent>
 	Super::P_SetupLeftClickInputStartedState(LeftClickInputComponent);
 	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &ASpy::P_Shoot);
 }
-
-void ASpy::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.20392f, 0.58431f, 0.31373f)); }
 
 void ASpy::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::SpyProjectile); }
 

@@ -9,7 +9,6 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EUpgrade.h"
-#include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -158,8 +157,6 @@ void ATrickster::P_Setup()
 	Super::P_Setup();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ATrickster::SetIsActionInMotion);
 }
-
-void ATrickster::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.f, 0.57255f, 0.58431f)); }
 
 void ATrickster::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::TricksterProjectile); }
 

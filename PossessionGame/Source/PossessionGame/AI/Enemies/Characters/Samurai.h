@@ -5,22 +5,21 @@
 #include "Samurai.generated.h"
 
 class ADestructible;
-enum class EPlayerInputState : uint8;
 
 UCLASS()
 class POSSESSIONGAME_API ASamurai : public AEnemy
 {
 	GENERATED_BODY()
 
-	TObjectPtr<ADestructible> SamuraiHat;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<ADestructible> SamuraiHatClass;
+	UPROPERTY()
+	TObjectPtr<ADestructible> SamuraiHat;
 
 	virtual void AI_Shoot() override;
 	virtual void AI_SetupWeapon() override;
 
 	virtual void P_Setup() override;
-	virtual void P_SetupColorsForUI() override;
 	virtual void P_WeaponShoot() override;
 
 	virtual void BeginPlay() override;

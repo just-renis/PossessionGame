@@ -49,7 +49,6 @@ private:
 	void AI_OnPlayerEnterPoisonGrenadeTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	virtual void P_Setup() override;
-	virtual void P_SetupColorsForUI() override;
 	virtual void P_WeaponShoot() override;
 
 	virtual float ReceiveMovementSpeedModification() const override;

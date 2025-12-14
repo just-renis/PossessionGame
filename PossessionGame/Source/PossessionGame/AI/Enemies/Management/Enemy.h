@@ -213,7 +213,6 @@ protected:
 	virtual void P_Destroy();
 	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
 	void P_SetupCharacterMovement();
-	virtual void P_SetupColorsForUI() {}
 	virtual void P_Move(const FInputActionValue& Value);
 	virtual void P_InitiateJump();
 	virtual void P_InitiateStomp();
@@ -359,6 +358,8 @@ private:
 	TSubclassOf<UCameraShakeBase> ReceivingDamageCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> QuickMeleeCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> StunnedCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> HijackOutlineMaterial;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))

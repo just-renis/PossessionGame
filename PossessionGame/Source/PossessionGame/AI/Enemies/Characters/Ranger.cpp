@@ -11,7 +11,6 @@
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Projectiles/Throwables/RangerMine.h"
-#include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -135,8 +134,6 @@ void ARanger::P_Setup()
 	P_ChangeRangerVariationMuzzle();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ARanger::SetIsActionInMotion);
 }
-
-void ARanger::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.58431f, 0.11373f, 0.f)); }
 
 void ARanger::P_ChangeRangerVariationMuzzle()
 {

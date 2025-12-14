@@ -3,7 +3,6 @@
 #include "PossessionGame/Destructibles/Destructible.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWeapon.h"
-#include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/SamuraiWeapon.h"
@@ -23,13 +22,6 @@ void ASamurai::P_Setup()
 	Super::P_Setup();
 	SamuraiHat->HandleDeactivation();
 }
-
-/*void ASamurai::P_SetupRightClickInputStartedState(TObjectPtr<UEnhancedInputComponent> RightClickInputComponent)
-{
-	RightClickInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &ASamurai::P_SetBowStretchingState, EPlayerInputState::RightClickStart);
-}*/
-
-void ASamurai::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.2745f, 0.f, 0.5843f)); }
 
 void ASamurai::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::SamuraiProjectile); }
 

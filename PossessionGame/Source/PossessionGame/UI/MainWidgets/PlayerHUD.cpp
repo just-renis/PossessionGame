@@ -76,7 +76,12 @@ void UPlayerHUD::Reset()
 	GetAbilityPanel()->SetOverlaysVisibility(true);
 }
 
-void UPlayerHUD::SetColors(const FLinearColor InColor) const { if (ScreenGlow) ScreenGlow->SetColorAndOpacity(InColor); }
+void UPlayerHUD::SetColors(const ECharacterType InCharacterName) const
+{
+	if (!ScreenGlow) return;
+	if (const FLinearColor* Color = CharacterScreenGlowColors.Find(InCharacterName)) ScreenGlow->SetColorAndOpacity(*Color);
+	else ScreenGlow->SetColorAndOpacity(FLinearColor::White);
+}
 
 void UPlayerHUD::UpdateHijackIndicator(const bool bState, const FText& InKeyName)
 {
@@ -90,8 +95,6 @@ void UPlayerHUD::UpdateHijackIndicator(const bool bState, const FText& InKeyName
 	}
 	else if (PressKeyBindSizeBox) PressKeyBindSizeBox->SetRenderOpacity(0.f);
 }
-
-void UPlayerHUD::UpdateRunIndicator(const bool bState) const { if (RunIndicatorInv) RunIndicatorInv->SetRenderOpacity(bState ? 1.f : 0.3f); }
 
 void UPlayerHUD::ToggleCriticalDamageIndicator() const
 {

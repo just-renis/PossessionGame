@@ -4,7 +4,6 @@
 #include "InputMappingContext.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
-#include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
@@ -105,8 +104,6 @@ void ATank::P_StopChargingMinigun()
 	if (Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp)) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::ChargeUp);
 	else if (P_GetIsLeftOrRightInputNotPressed()) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::Shoot);
 }
-
-void ATank::P_SetupColorsForUI() { P_HUD->SetColors(FLinearColor(0.57647f, 0.58431f, 0.56078f)); }
 
 void ATank::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::TankProjectile); }
 

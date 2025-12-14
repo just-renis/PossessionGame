@@ -1039,7 +1039,7 @@ void AEnemy::P_SetupUI()
 	P_HUD->ConfigureUIs();
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
-	P_SetupColorsForUI();
+	P_HUD->SetColors(CharacterName);
 	P_HUD->PlayHijackAnim(false);
 	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.015f, true);
 }
@@ -1128,7 +1128,6 @@ void AEnemy::P_ToggleRun(const bool bState)
 	}
 	else if (RunVfx) RunVfx->DeactivateImmediate();
 	SetMaxWalkSpeed(bIsRunning ? EMoveMode::Run : EMoveMode::Walk);
-	if (P_HUD) P_HUD->UpdateRunIndicator(bIsRunning);
 }
 
 void AEnemy::P_OnEnemyDeathEvents(const int32 InXp) const { P_AddXp(InXp); }
@@ -1182,7 +1181,8 @@ void AEnemy::P_MakeCameraShake(const ECameraShake InCameraShakeName)
 		case ECameraShake::MinionBossLaser: MinionBossLaserShakeInstance = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(MinionBossLaserShake); break;
 		case ECameraShake::PlayerReceiveDamage: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(ReceivingDamageCameraShake); break;
 		case ECameraShake::PlayerQuickMelee: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(QuickMeleeCameraShake); break;
-		case ECameraShake::PlayerStomp: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(StompCameraShake);
+		case ECameraShake::PlayerStomp: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(StompCameraShake); break;
+		case ECameraShake::PlayerStunned: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(StunnedCameraShake); break;
 	}
 }
 
@@ -1190,7 +1190,7 @@ void AEnemy::P_StopCameraShake(const ECameraShake InCameraShakeName) const
 {
 	switch (InCameraShakeName)
 	{
-		case ECameraShake::MinionBossLaser: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StopCameraShake(MinionBossLaserShakeInstance);
+		case ECameraShake::MinionBossLaser: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StopCameraShake(MinionBossLaserShakeInstance); break;
 		default: ;
 	}
 }

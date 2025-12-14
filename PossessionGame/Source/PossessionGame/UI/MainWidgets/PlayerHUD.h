@@ -33,9 +33,8 @@ public:
 	void UpdateAmmoText(const int32 InFirstWeaponAmmo, const int32 InSecondWeaponAmmo, const int32 InMaxAmmo) const;
 	void UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility);
 	void Reset();
-	void SetColors(const FLinearColor InColor) const;
+	void SetColors(const ECharacterType InCharacterName) const;
 	void UpdateHijackIndicator(const bool bState, const FText& InKeyName = FText());
-	void UpdateRunIndicator(const bool bState) const;
 	void ToggleCriticalDamageIndicator() const;
 	void ConfigureUIs();
 	void PlayFadeOutAnim(const bool bState);
@@ -62,6 +61,8 @@ private:
 	FTimerHandle MinorAnnouncementDisplayHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Hp Bars Data", meta = (AllowPrivateAccess = true))
 	TMap<EEnemyHpBar, TObjectPtr<UTexture2D>> EnemyHpBars;
+	UPROPERTY(EditDefaultsOnly, Category = "Characters", meta = (AllowPrivateAccess = true))
+	TMap<ECharacterType, FLinearColor> CharacterScreenGlowColors;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> DamageTickTexture;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -128,8 +129,6 @@ private:
 	TObjectPtr<UProgressBar> GlobalHpBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ScreenGlow;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> RunIndicatorInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
 	UPROPERTY(meta = (BindWidget))
