@@ -14,10 +14,9 @@ class POSSESSIONGAME_API UChargeTerminalModeLogic : public UGameModeBaseLogic
 	bool bIsTerminalCharged = false;
 	bool bIsUsbRequirementFilled = false;
 	int32 ChargeAmount = 0;
+	FTimerHandle InitiateNextChargeHandle;
 	UPROPERTY()
 	TObjectPtr<UChargeTerminalModeData> Data;
-	UPROPERTY()
-	FTimerHandle NextChargeHandle;
 
 	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData) override;
 	virtual void Finalize() override;

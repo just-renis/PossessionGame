@@ -46,7 +46,7 @@ void USecretBoostCardUI::OnHovered()
 	{
 		case EVariation::SecretCrateRewardHealth: (void)ShowDetailsPanelContents.ExecuteIfBound(true, FText::Format(NSLOCTEXT("ST_Localization", "SecretHpBoost", "Grants {0}% Increased Max HP This Run"), FText::AsNumber(BoostValue))); return;
 		case EVariation::SecretCrateRewardDamage: (void)ShowDetailsPanelContents.ExecuteIfBound(true,  FText::Format(NSLOCTEXT("ST_Localization", "SecretDamageBoost",  "Grants {0}% Increased Max Damage This Run"), FText::AsNumber(BoostValue))); return;
-		case EVariation::SecretCrateRewardXp: (void)ShowDetailsPanelContents.ExecuteIfBound(true,  FText::Format(NSLOCTEXT("ST_Localization", "SecretXPBoost",  "Grants {0} XP"), FText::AsNumber(BoostValue)));
+		case EVariation::SecretCrateRewardXp: (void)ShowDetailsPanelContents.ExecuteIfBound(true,  FText::Format(NSLOCTEXT("ST_Localization", "SecretXPBoost",  "Grants {0} Level and Upgrade XP"), FText::AsNumber(BoostValue)));
 		default: ;
 	}
 }

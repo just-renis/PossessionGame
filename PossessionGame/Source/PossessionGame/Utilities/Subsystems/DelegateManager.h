@@ -22,7 +22,6 @@ class AThrowable;
 
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
 DECLARE_DELEGATE(FOnUpgradeSelectionOpened);
-DECLARE_DELEGATE(FOnUpgradeSelectionFinished);
 DECLARE_DELEGATE(FOnSecretDoorOpened);
 DECLARE_DELEGATE(FUpdateGameModeEnemiesAmount);
 DECLARE_DELEGATE(FMeleeAttackOccured);
@@ -40,6 +39,7 @@ DECLARE_DELEGATE_RetVal(bool, FRequestIsTimeStopUsed);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsArenaMode);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsDemo);
 DECLARE_DELEGATE_RetVal(int32, FRequestCurrentTimer);
+DECLARE_DELEGATE_RetVal(float, FRequestCurrentXpNerf);
 DECLARE_DELEGATE_RetVal(ECharacterType, FRequestCurrentCharacter);
 DECLARE_DELEGATE_RetVal(EGameMode, FRequestCurrentGameMode);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
@@ -48,7 +48,7 @@ DECLARE_DELEGATE_OneParam(FRequestStopCameraShake, const ECameraShake);
 DECLARE_DELEGATE_OneParam(FOnUpgradeCardSelected, const FRuntimeUpgradeData&);
 DECLARE_DELEGATE_OneParam(FRequirePlayerAnnouncementInfo, const FText&);
 DECLARE_DELEGATE_OneParam(FChangeMusicPlayerState, const bool);
-DECLARE_DELEGATE_OneParam(FOnXpReceived, const int32);
+DECLARE_DELEGATE_OneParam(FOnXpReceived, const float);
 DECLARE_DELEGATE_OneParam(FApplySecretBoostHealth, const int32);
 DECLARE_DELEGATE_OneParam(FOnOpenUnlockAbilityPopup, const int32);
 DECLARE_DELEGATE_OneParam(FOnChargeTerminalModeCompletion, const int32);
@@ -59,8 +59,8 @@ DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
 DECLARE_DELEGATE_OneParam(FOnGlobalHpBarSpawn, const EEnemyHpBar);
 DECLARE_DELEGATE_OneParam(FRequestMiniPopup, const FText&);
 DECLARE_DELEGATE_OneParam(FHackTerminalSubtractHp, const float);
-DECLARE_DELEGATE_OneParam(FOnEnemyDeath, const int32);
 DECLARE_DELEGATE_OneParam(FOnPlayerReloadMontageEnd, const int32);
+DECLARE_DELEGATE_OneParam(FOnUpgradeAmountChanged, const int32);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FUpdateGlobalHpBar, const float, const float);
 DECLARE_DELEGATE_TwoParams(FOnSaveSlotClicked, const FString&, const FString&);
@@ -69,6 +69,7 @@ DECLARE_DELEGATE_TwoParams(FOnTutorialBotTipDialogue, const ETutorialBotAnimStat
 DECLARE_DELEGATE_TwoParams(FOnPlayerDamageTaken, float, const FLinearColor);
 DECLARE_DELEGATE_TwoParams(FRequestObjectWithCapRemoval, const EPoolObject, const TObjectPtr<AThrowable>&);
 DECLARE_DELEGATE_TwoParams(FRequestMinorAnnouncement, const FText&, const ESound);
+DECLARE_DELEGATE_TwoParams(FOnEnemyDeath, const float, const ECharacterType);
 DECLARE_DELEGATE_RetVal_TwoParams(bool, FRequestSpecialUpgradeAvailability, const EUpgrade, const EUpgradeAttribute);
 DECLARE_DELEGATE_ThreeParams(FOnAbilityUse, const int32, const bool, const bool);
 DECLARE_DELEGATE_FourParams(FShowDamageNumber, const FLinearColor, const float, const FVector&, const FVector&);
@@ -113,7 +114,6 @@ class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
 public:
 	FOnGraphicsSettingChange OnGraphicsSettingChange;
 	FOnUpgradeSelectionOpened OnUpgradeSelectionOpened;
-	FOnUpgradeSelectionFinished OnUpgradeSelectionFinished;
 	FOnSecretDoorOpened OnSecretDoorOpened;
 	FUpdateGameModeEnemiesAmount UpdateGameModeEnemiesAmount;
 	FMeleeAttackOccured MeleeAttackOccured;
@@ -131,6 +131,7 @@ public:
 	FRequestIsArenaMode RequestIsArenaMode;
 	FRequestIsDemo RequestIsDemo;
 	FRequestCurrentTimer RequestCurrentTimer;
+	FRequestCurrentXpNerf RequestCurrentXpNerf;
 	FRequestCurrentCharacter RequestCurrentCharacter;
 	FRequestCurrentGameMode RequestCurrentGameMode;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
@@ -151,8 +152,8 @@ public:
 	FOnGlobalHpBarSpawn OnGlobalHpBarSpawn;
 	FRequestMiniPopup RequestMiniPopup;
 	FHackTerminalSubtractHp HackTerminalSubtractHp;
-	FOnEnemyDeath OnEnemyDeath;
 	FOnPlayerReloadMontageEnd OnPlayerReloadMontageEnd;
+	FOnUpgradeAmountChanged OnUpgradeAmountChanged;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;
 	FOnMusicSoundtrackChangeRequired OnMusicSoundtrackChangeRequired;
@@ -160,6 +161,7 @@ public:
 	FOnPlayerDamageTaken OnPlayerDamageTaken;
 	FRequestObjectWithCapRemoval RequestObjectWithCapRemoval;
 	FRequestMinorAnnouncement RequestMinorAnnouncement;
+	FOnEnemyDeath OnEnemyDeath;
 	FRequestSpecialUpgradeAvailability RequestSpecialUpgradeAvailability;
 	FOnAbilityUse OnAbilityUse;
 	FShowDamageNumber ShowDamageNumber;

@@ -24,9 +24,7 @@ public:
 	bool UnlockAbility(const ECharacterType InCharacter, const int32 InAbilityIndex);
 	bool GetIsAbilityUnlocked(const ECharacterType InCharacter, const int32 InAbilityIndex);
 	bool GetIsExplanationShown(const EExplanation InExplanationName) const;
-	int32 GetXp() const { return CurrentXp; }
 	int32 GetPlayerLevel() const { return CurrentLevel; }
-	int32 GetCurrentLevelNeededXp() const;
 	int32 GetLevelDamageBoost() const;
 	int32 GetLevelHpBoost() const;
 	int32 GetVariationUnlockProgress(const EVariation InVariationUnlockName) const;
@@ -36,6 +34,8 @@ public:
 	int32 GetArenaMaxTimeSurvivedSeconds() const { return ArenaMaxTimeSurvivedSeconds; }
 	int32 GetLevelUpDamageIncrease() const;
 	int32 GetLevelUpHpIncrease() const;
+	float GetXp() const { return CurrentXp; }
+	float GetCurrentLevelNeededXp() const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	ECharacterType GetRandomSpawnableCharacter(const TObjectPtr<UPossessionGameInstance>& InGameInstance) const;
 	FCharacterAbilities GetCharacterChosenAbilities(const ECharacterType InCharacter);
@@ -47,7 +47,7 @@ public:
 	void SetTutorialFinished() { bTutorialFinished = true; }
 	void AddSpawnableCharacter(const TObjectPtr<UDelegateManager>& InDelegateManager, const ECharacterType InCharacterName);
 	void SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName);
-	void AddXp(const int32 InXp);
+	void AddXp(const float InXp);
 	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);
 	void SaveSlot();
 	void UnlockVariation(const EVariation InVariationUnlockName);
@@ -58,8 +58,6 @@ private:
 	UPROPERTY()
 	bool bTutorialFinished = false;
 	UPROPERTY()
-	int32 CurrentXp = 0;
-	UPROPERTY()
 	int32 CurrentLevel = 0;
 	UPROPERTY()
 	int32 CurrencyAmount = 0;
@@ -67,6 +65,8 @@ private:
 	int32 SaveVersion = 1;
 	UPROPERTY()
 	int32 ArenaMaxTimeSurvivedSeconds = 0;
+	UPROPERTY()
+	float CurrentXp = 0;
 	UPROPERTY()
 	FString SlotName;
 	UPROPERTY(Transient)

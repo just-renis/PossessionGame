@@ -1,7 +1,7 @@
 ﻿#include "SaveSlot.h"
 #include "MetaSaveSlot.h"
 #include "Kismet/GameplayStatics.h"
-#include "PossessionGame/Data Assets/Base Data Assets/PlayerLevelData.h"
+#include "PossessionGame/Data Assets/Player/Base Data/PlayerLevelData.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -28,8 +28,6 @@ bool USaveSlot::UnlockAbility(const ECharacterType InCharacter, const int32 InAb
 	return true;
 }
 
-int32 USaveSlot::GetCurrentLevelNeededXp() const { return PlayerLevelData->GetXpNeeded(CurrentLevel); }
-
 int32 USaveSlot::GetLevelDamageBoost() const { return PlayerLevelData->GetDamageIncrease(CurrentLevel); }
 
 int32 USaveSlot::GetLevelHpBoost() const { return PlayerLevelData->GetHpIncrease(CurrentLevel); }
@@ -51,6 +49,8 @@ int32 USaveSlot::GetLevelUpHpIncrease() const
 	const int32 Value = PlayerLevelData->GetHpIncrease(CurrentLevel) - PlayerLevelData->GetHpIncrease(CurrentLevel - 1);
 	return Value > 0 ? Value : 0;
 }
+
+float USaveSlot::GetCurrentLevelNeededXp() const { return PlayerLevelData->GetXpNeeded(CurrentLevel); }
 
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
 
@@ -97,8 +97,9 @@ void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInsta
 	VersionMigration();
 }
 
-void USaveSlot::AddXp(const int32 InXp)
+void USaveSlot::AddXp(const float InXp)
 {
+	if (GameInstance->GetSubsystem<UDelegateManager>()->RequestIsArenaMode.IsBound() && GameInstance->GetSubsystem<UDelegateManager>()->RequestIsArenaMode.Execute()) return;
 	CurrentXp += InXp;
 	while (CurrentXp >= GetCurrentLevelNeededXp())
 	{

@@ -12,7 +12,7 @@ void UWaveModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const T
 	Super::Init(InWaveManager, InGameModeData);
 	Data = Cast<UWaveModeData>(InGameModeData);
 	SetData();
-	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.BindUObject(this, &UWaveModeLogic::InitiateNextWave);
+	//WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.BindUObject(this, &UWaveModeLogic::InitiateNextWave);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UWaveModeLogic::UpdateEnemiesAmount);
 	SetupWaveManagerUI();
 	SetupTimers();
@@ -20,7 +20,6 @@ void UWaveModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const T
 
 void UWaveModeLogic::Finalize()
 {
-	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.Unbind();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	Super::Finalize();
 }
@@ -93,17 +92,17 @@ void UWaveModeLogic::WaveCompleted()
 {
 	if (!WaveManagerHUD) return;
 	bInstanceFinished = true;
+	TotalAmountOfEnemiesKilled = 0;
 	WaveManagerHUD->UpdateObjectiveProgress(CurrentWave, AmountOfWaves);
 	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "WaveCompleted", "Wave Completed"));
 	PlaySound(ESound::WaveCompleted);
 	bWaveNotStarted = true;
-	GetWorld()->GetTimerManager().SetTimer(OpenUpgradeSelectionHandle, this, &UWaveModeLogic::ShowUpgradeSelection, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
+	GetWorld()->GetTimerManager().SetTimer(InitiateNextWaveHandle, this, &UWaveModeLogic::InitiateNextWave, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 
 void UWaveModeLogic::AfterSpawnEnemyCallback()
 {
-	bAsyncLoadInProcess = false;
-	AliveEnemiesAmount++;
+	IncreaseAliveEnemiesAmount();
 	EnemiesLeftToKill--;
 }
 

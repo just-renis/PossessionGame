@@ -78,6 +78,7 @@ void UHackTerminalModeLogic::StartTerminalHack()
 void UHackTerminalModeLogic::FinishTerminalHack()
 {
 	PlaySound(ESound::GeneratorCompleted);
+	TotalAmountOfEnemiesKilled = 0;
 	UnreservedEnemiesHpPool = ReservedEnemiesHpPool = Data->GetEnemiesHpPool();
 	WaveManager->GetDelegateManager()->OnBossDeath.Broadcast();
 	WaveManager->GetDelegateManager()->OnTerminalHackRoomFinish.Broadcast(CurrentTerminalRoomMode);
@@ -91,7 +92,6 @@ void UHackTerminalModeLogic::FinishTerminalHack()
 	WaveManagerHUD->ToggleFinishOffEnemiesText(false);
 	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "HackCompleted", "Hack Completed"));
 	WaveManagerHUD->UpdateObjectiveProgress(TerminalsHackedAmount, Data->GetTerminalsAmountToHack());
-	GetWorld()->GetTimerManager().SetTimer(OpenUpgradeSelectionHandle, this, &UHackTerminalModeLogic::ShowUpgradeSelection, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 
 void UHackTerminalModeLogic::StopSpawning()

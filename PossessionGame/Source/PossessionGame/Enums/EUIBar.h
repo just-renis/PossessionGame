@@ -7,5 +7,6 @@ enum class EUIBar : uint8
 	Hp,
 	Hijack,
 	Xp,
-	Boss
+	Boss,
+	Upgrade
 };

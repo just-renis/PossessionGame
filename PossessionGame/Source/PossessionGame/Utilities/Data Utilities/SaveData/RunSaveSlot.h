@@ -7,13 +7,13 @@
 #include "PossessionGame/Utilities/Data Utilities/FSpecialUpgradesContainer.h"
 #include "RunSaveSlot.generated.h"
 
+class UDelegateManager;
 enum class EPoolObject : uint8;
 enum class EAbility : uint8;
 enum class EUpgrade : uint8;
 enum class ECharacterType : uint8;
 enum class EUpgradeAttribute : uint8;
 enum class EVariation : uint8;
-class UPossessionGameInstance;
 
 USTRUCT()
 struct POSSESSIONGAME_API FUpgradeAttributeValues
@@ -49,6 +49,12 @@ class POSSESSIONGAME_API URunSaveSlot : public USaveGame
 {
 	GENERATED_BODY()
 public:
+	bool IsUpgradeAvailable() const { return CurrentlyAvailableUpgradeAmount > 0; }
+	int32 GetCurrentChapter() const { return CurrentChapter; }
+	float GetCurrentUpgradeXp() const { return CurrentUpgradeXp; }
+	ECharacterType GetCurrentCharacter() const { return CurrentCharacter; }
+	FString GetSlotName() { return SlotName; }
+	TArray<EUpgrade>& GetAvailableUpgrades() { return AvailableUpgrades; }
 	bool IsSpecialUpgradeAvailable(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttribute);
 	float GetUpgradeAttributeValues(const EUpgrade InUpgradeName, const EUpgradeAttribute InUpgradeAttribute, const bool bIsPlayer);
 	float GetUpgradeAttributeValues(const EAbility InAbilityName, const EUpgradeAttribute InUpgradeAttribute, const bool bIsPlayer);
@@ -57,11 +63,8 @@ public:
 	int32 GetSecretBoost(const EVariation InVariation);
 	int32 GetCurrentLevel(const EUpgrade InUpgradeName);
 	int32 GetCurrentLevelSumOfCharacterAbilities(const ECharacterType InCharacterName);
-	int32 GetCurrentChapter() const { return CurrentChapter; }
-	ECharacterType GetCurrentCharacter() const { return CurrentCharacter; }
-	FString GetSlotName() { return SlotName; }
+	float GetCurrentUpgradeXpNeeded() const;
 	TSet<int32> GetUpgradeChoicesIds(const EUpgrade InUpgradeName);
-	TArray<EUpgrade>& GetAvailableUpgrades() { return AvailableUpgrades; }
 
 	void AddAvailableUpgrades(const TArray<EUpgrade>& InAvailableUpgrades) { AvailableUpgrades = InAvailableUpgrades; }
 	void AddUpgrade(const TObjectPtr<UGameInstance>& InGameInstance, const EUpgrade InUpgrade, const FUpgradeChoicePair& InUpgradeChoicePair, const EUpgradeAttribute InSpecialAttribute);
@@ -69,11 +72,19 @@ public:
 	void SetupSlot(const TObjectPtr<UGameInstance>& InGameInstance, const FString& InSlotName);
 	void AddSecretCrateBoost(const EVariation InVariation, const int32 InPercentage);
 	void SetCurrentChapterAndCharacter(const int32 InCurrentChapter, const ECharacterType InCurrentCharacter);
+	void AddUpgradeXp(const TObjectPtr<UDelegateManager>& InDelegateManager, const float InUpgradeXp);
+	void SubtractCurrentUpgradeAmount(const TObjectPtr<UDelegateManager>& InDelegateManager);
 private:
 	UPROPERTY()
 	int32 SaveVersion = 1;
 	UPROPERTY()
 	int32 CurrentChapter = 1;
+	UPROPERTY()
+	int32 CurrentUpgradeLevel = 0;
+	UPROPERTY()
+	int32 CurrentlyAvailableUpgradeAmount = 0;
+	UPROPERTY()
+	float CurrentUpgradeXp = 0;
 	UPROPERTY()
 	FString SlotName;
 	UPROPERTY()

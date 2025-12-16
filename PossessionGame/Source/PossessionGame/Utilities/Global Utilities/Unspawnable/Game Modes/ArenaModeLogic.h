@@ -16,10 +16,8 @@ class POSSESSIONGAME_API UArenaModeLogic : public UGameModeBaseLogic
 	int32 EnemiesPerWave;
 	int32 EnemiesLeftToKill;
 	int32 CountdownSeconds;
-	UPROPERTY()
 	FTimerHandle CountdownHandle;
-	UPROPERTY()
-	FTimerHandle OpenUpgradeSelectionHandle;
+	FTimerHandle InitiateNextWaveHandle;
 	UPROPERTY()
 	TObjectPtr<UArenaModeData> Data;
 

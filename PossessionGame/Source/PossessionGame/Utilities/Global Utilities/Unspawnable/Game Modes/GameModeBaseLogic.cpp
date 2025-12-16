@@ -2,7 +2,6 @@
 #include "PossessionGame/Data Assets/Base Data Assets/GameModeData.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/EWidget.h"
-#include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -12,8 +11,11 @@
 void UGameModeBaseLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData)
 {
 	WaveManager = InWaveManager;
+	WaveManager->GetDelegateManager()->RequestCurrentXpNerf.BindUObject(this, &UGameModeBaseLogic::GetCurrentXpNerf);
 	EnemiesOnSceneLimit = InGameModeData->GetEnemiesOnSceneLimit();
 	SpawnRate = InGameModeData->GetSpawnRate();
+	FirstThresholdOfTotalAmountNerf = InGameModeData->GetFirstThresholdOfTotalAmountNerf();
+	SecondThresholdOfTotalAmountNerf = InGameModeData->GetSecondThresholdOfTotalAmountNerf();
 	WaveManager->GetDelegateManager()->OnPlayerDeath.AddUObject(this, &UGameModeBaseLogic::FadeOutObjectivePanel);
 }
 
@@ -29,6 +31,13 @@ int32 UGameModeBaseLogic::ConvertGameModeToDroneLocation() const
 	return 0;
 }
 
+float UGameModeBaseLogic::GetCurrentXpNerf() const
+{
+	if (TotalAmountOfEnemiesKilled >= SecondThresholdOfTotalAmountNerf) return 0.f;
+	if (TotalAmountOfEnemiesKilled >= FirstThresholdOfTotalAmountNerf) return 0.5f;
+	return 1.f;
+}
+
 void UGameModeBaseLogic::SetupWaveManagerUI()
 {
 	WaveManagerHUD = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD);
@@ -39,6 +48,7 @@ void UGameModeBaseLogic::Finalize()
 {
 	WaveManager->GetDelegateManager()->OnGameModeFinished.Broadcast(WaveManager->GetCurrentGameMode());
 	FadeOutObjectivePanel();
+	WaveManager->GetDelegateManager()->RequestCurrentXpNerf.Unbind();
 }
 
 void UGameModeBaseLogic::PlaySound(const ESound InSoundName) const { WaveManager->GetAssetsManager()->PlaySound2D(InSoundName); }
@@ -57,4 +67,8 @@ void UGameModeBaseLogic::FadeOutObjectivePanel() const
 
 void UGameModeBaseLogic::FadeInObjectivePanel() const { if (WaveManagerHUD) WaveManagerHUD->PlayObjectivePanelFadeInAnim(true); }
 
-void UGameModeBaseLogic::ShowUpgradeSelection() const { GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI(); }
+void UGameModeBaseLogic::UpdateEnemiesAmount()
+{
+	AliveEnemiesAmount--;
+	TotalAmountOfEnemiesKilled++;
+}

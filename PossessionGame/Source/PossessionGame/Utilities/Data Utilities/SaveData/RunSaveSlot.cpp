@@ -89,6 +89,8 @@ int32 URunSaveSlot::GetCurrentLevelSumOfCharacterAbilities(const ECharacterType 
 	return 0;
 }
 
+float URunSaveSlot::GetCurrentUpgradeXpNeeded() const { return 10 + 5 * CurrentUpgradeLevel; }
+
 TSet<int32> URunSaveSlot::GetUpgradeChoicesIds(const EUpgrade InUpgradeName)
 {
 	if (const FUpgradeChoicesIds* UpgradeChoicesIds = ChosenUpgradeChoices.Find(InUpgradeName)) return UpgradeChoicesIds->Ids;
@@ -130,6 +132,22 @@ void URunSaveSlot::SetCurrentChapterAndCharacter(const int32 InCurrentChapter, c
 	CurrentChapter = InCurrentChapter > 2 ? 2 : InCurrentChapter;
 	CurrentCharacter = InCurrentCharacter;
 	SaveSlot();
+}
+
+void URunSaveSlot::AddUpgradeXp(const TObjectPtr<UDelegateManager>& InDelegateManager, const float InUpgradeXp)
+{
+	CurrentUpgradeXp += InUpgradeXp;
+	while (CurrentUpgradeXp >= GetCurrentUpgradeXpNeeded())
+	{
+		CurrentUpgradeXp -= GetCurrentUpgradeXpNeeded();
+		CurrentUpgradeLevel++;
+		InDelegateManager->OnUpgradeAmountChanged.ExecuteIfBound(++CurrentlyAvailableUpgradeAmount);
+	}
+}
+
+void URunSaveSlot::SubtractCurrentUpgradeAmount(const TObjectPtr<UDelegateManager>& InDelegateManager)
+{
+	InDelegateManager->OnUpgradeAmountChanged.ExecuteIfBound(--CurrentlyAvailableUpgradeAmount);
 }
 
 float URunSaveSlot::GetUpgradeAttributeValuesForEnemy(const EPoolObject InPoolObject, const EUpgradeAttribute InUpgradeAttribute, const bool bForAbilityOnly)

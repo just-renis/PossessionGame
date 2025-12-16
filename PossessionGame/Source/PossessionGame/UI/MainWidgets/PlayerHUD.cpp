@@ -34,14 +34,19 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 		case EUIBar::Xp:
 			if (!XpBar || !XpNumberText) return;
 			XpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
-			XpBar->SetPercent(InCurrent / InMax);
-		break;
+			XpBar->SetPercent(Progress);
+			break;
 		case EUIBar::Boss:
 			if (!GlobalHpBar || !GlobalHpWhiteBar) return;
 			GlobalStepHpPercentage = (GlobalHpBar->GetPercent() - Progress) * 0.1f;
 			GlobalHpWhiteBar->SetPercent(GlobalHpBar->GetPercent());
 			GlobalHpBar->SetPercent(Progress);
 			GetWorld()->GetTimerManager().SetTimer(UpdateGlobalWhiteHpBarHandle, this, &UPlayerHUD::UpdateGlobalWhiteHpBar, 0.02f, true);
+			break;
+		case EUIBar::Upgrade:
+			if (!UpgradeBar) return;
+			UpgradeBar->SetPercent(Progress);
+			break;
 		default: ;
 	}
 }
@@ -220,6 +225,7 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->RequirePlayerAnnouncementInfo.BindUObject(this, &UPlayerHUD::PlayAnnouncement);
 	DelegateManager->RequestMinorAnnouncement.BindUObject(this, &UPlayerHUD::ShowMinorAnnouncement);
 	DelegateManager->OnPlayerDamageTaken.BindUObject(this, &UPlayerHUD::SetDamageNumber);
+	DelegateManager->OnUpgradeAmountChanged.BindUObject(this, &UPlayerHUD::UpdateUpgradeAmountText);
 	if (HijackProgressBar) MID_HijackProgress = HijackProgressBar->GetDynamicMaterial();
 	UpdateHijackIndicator(false);
 	SetLevelText();
@@ -362,6 +368,13 @@ void UPlayerHUD::NativeDestruct()
 	GetWorld()->GetTimerManager().ClearTimer(UpdateWhiteHpBarHandle);
 	GetWorld()->GetTimerManager().ClearTimer(UpdateGlobalWhiteHpBarHandle);
 	Super::NativeDestruct();
+}
+
+void UPlayerHUD::UpdateUpgradeAmountText(const int32 InAmount) const
+{
+	if (!UpgradeAmountText || !UpgradeTextInv) return;
+	UpgradeAmountText->SetText(FText::AsNumber(InAmount));
+	UpgradeTextInv->SetVisibility(InAmount > 0 ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
 template<typename T>

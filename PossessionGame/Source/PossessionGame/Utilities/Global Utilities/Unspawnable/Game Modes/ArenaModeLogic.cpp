@@ -11,7 +11,6 @@ void UArenaModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const 
 	Super::Init(InWaveManager, InGameModeData);
 	Data = Cast<UArenaModeData>(InGameModeData);
 	SetData();
-	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.BindUObject(this, &UArenaModeLogic::InitiateNextWave);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UArenaModeLogic::UpdateEnemiesAmount);
 	SetupWaveManagerUI();
 	SetupTimers();
@@ -100,13 +99,12 @@ void UArenaModeLogic::WaveCompleted()
 	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "WaveCompleted", "Wave Completed"));
 	PlaySound(ESound::WaveCompleted);
 	bWaveNotStarted = true;
-	GetWorld()->GetTimerManager().SetTimer(OpenUpgradeSelectionHandle, this, &UArenaModeLogic::ShowUpgradeSelection, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
+	GetWorld()->GetTimerManager().SetTimer(InitiateNextWaveHandle, this, &UArenaModeLogic::InitiateNextWave, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 
 void UArenaModeLogic::AfterSpawnEnemyCallback()
 {
-	bAsyncLoadInProcess = false;
-	AliveEnemiesAmount++;
+	IncreaseAliveEnemiesAmount();
 	EnemiesLeftToKill--;
 }
 

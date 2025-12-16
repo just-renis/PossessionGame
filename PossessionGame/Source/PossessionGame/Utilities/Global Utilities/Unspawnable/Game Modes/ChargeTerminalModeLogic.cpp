@@ -13,7 +13,6 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 	SetupWaveManagerUI();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UChargeTerminalModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->OnUsbInserted.AddUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
-	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.BindUObject(this, &UChargeTerminalModeLogic::InitiateNextCharge);
 	PlaySound(ESound::TaskAnnouncement);
 	WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Warden, EGameMode::MiniBossSpawn, [this](const float)
 	{
@@ -32,7 +31,6 @@ void UChargeTerminalModeLogic::Finalize()
 		WaveManagerHUD->ToggleFinishOffEnemiesText(false);
 	}
 	WaveManager->GetDelegateManager()->StartForceFieldDissolve.Broadcast(0);
-	WaveManager->GetDelegateManager()->OnUpgradeSelectionFinished.Unbind();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	WaveManager->GetDelegateManager()->OnUsbInserted.RemoveAll(this);
 	GetWorld()->GetTimerManager().ClearTimer(SpawnHandle);
@@ -87,8 +85,9 @@ void UChargeTerminalModeLogic::ChargeCleared()
 {
 	if (!WaveManagerHUD) return;
 	bInstanceFinished = true;
+	TotalAmountOfEnemiesKilled = 0;
 	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "WaveCompleted", "Wave Completed"));
-	GetWorld()->GetTimerManager().SetTimer(NextChargeHandle, this, &UChargeTerminalModeLogic::ShowUpgradeSelection, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
+	GetWorld()->GetTimerManager().SetTimer(InitiateNextChargeHandle, this, &UChargeTerminalModeLogic::InitiateNextCharge, WaveManagerHUD->GetWaveAnnouncementEndTime(), false);
 }
 
 void UChargeTerminalModeLogic::InitiateNextCharge()

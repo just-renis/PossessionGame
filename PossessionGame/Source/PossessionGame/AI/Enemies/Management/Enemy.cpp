@@ -290,30 +290,30 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	}
 	if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Move);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Started, this, &AEnemy::P_Jump);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Rotate);
-		P_SetupShiftInput(EnhancedInputComponent);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &AEnemy::P_HijackEnemy);
-		P_SetupLeftClickInput(EnhancedInputComponent);
-		if (bCanReload) EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(9).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Reload);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Move); // WASD
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Started, this, &AEnemy::P_Jump); // Space
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Rotate); // Mouse movement
+		P_SetupShiftInput(EnhancedInputComponent); // Shift
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &AEnemy::P_HijackEnemy); // E
+		P_SetupLeftClickInput(EnhancedInputComponent); // Left Click
+		if (bCanReload) EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(9).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Reload); // R
 		#if WITH_EDITOR
-			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(10).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleGodMode);
+			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(10).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleGodMode); // +
 		#endif
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(11).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, P_GetFirstSlotAbilityIndex());
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(12).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, P_GetSecondSlotAbilityIndex());
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(13).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, 2);
-		P_SetupRightClickInput(EnhancedInputComponent);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &AEnemy::P_HandleEscapeClick);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(11).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, P_GetFirstSlotAbilityIndex()); // 1
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(12).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, P_GetSecondSlotAbilityIndex()); // 2
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(13).Action, ETriggerEvent::Started, this, &AEnemy::P_OpenUpgradeSelection); // T
+		P_SetupRightClickInput(EnhancedInputComponent); // Right Click
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &AEnemy::P_HandleEscapeClick); // Escape
 		#if WITH_EDITOR
-			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &AEnemy::ToggleTimeDilation);
+			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &AEnemy::ToggleTimeDilation); // B
 		#endif
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &AEnemy::P_TryInteracting);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &AEnemy::P_TryInteracting); // F
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack); // V
 		//- 19 reserved was stomp, -14 right click reserved.
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::OpenInfoPanel);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel);
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_InitiateSlide);
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::OpenInfoPanel); // Tab
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel); // Tab
+		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_InitiateSlide); // C
 	}
 	if (!GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialManager();
 }
@@ -356,7 +356,7 @@ void AEnemy::InitiateDeath()
 		AI_PlayDeathSound();
 		AI_PlayDeathExplosion();
 		AI_Destroy();
-		if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp());
+		if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp(), CharacterName);
 		DelegateManager->OnEnemyDeathOccurred.Broadcast(this);
 		(void)DelegateManager->UpdateGameModeEnemiesAmount.ExecuteIfBound();
 		if (bAffectedByEmp && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility2, EUpgradeAttribute::Special1)) AI_TriggerEmpExplosion();
@@ -656,7 +656,6 @@ void AEnemy::P_Setup()
 	P_InputManager = Cast<UEnhancedPlayerInput>(GetWorld()->GetFirstPlayerController()->PlayerInput);
 	P_SetupUI();
 	P_SetupAbilities();
-	if (AI_Data) (void)DelegateManager->OnEnemyDeath.ExecuteIfBound(AI_Data->GetXp());
 	DelegateManager->OnEnemyDeath.BindUObject(this, &AEnemy::P_OnEnemyDeathEvents);
 }
 
@@ -1036,7 +1035,10 @@ void AEnemy::P_SetupUI()
 	P_HUD->SetPlayerRef(this);
 	P_HUD->UpdateProgressBar(EUIBar::Hijack, 0.f, P_Data->GetPossessionBarCooldown());
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
-	P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetXp(), GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCurrentLevelNeededXp());
+	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	P_HUD->UpdateProgressBar(EUIBar::Xp, SaveSlot->GetXp(), SaveSlot->GetCurrentLevelNeededXp());
+	P_HUD->UpdateProgressBar(EUIBar::Upgrade, RunSaveSlot->GetCurrentUpgradeXp(), RunSaveSlot->GetCurrentUpgradeXpNeeded());
 	P_HUD->ConfigureUIs();
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
@@ -1131,7 +1133,14 @@ void AEnemy::P_ToggleRun(const bool bState)
 	SetMaxWalkSpeed(bIsRunning ? EMoveMode::Run : EMoveMode::Walk);
 }
 
-void AEnemy::P_OnEnemyDeathEvents(const int32 InXp) const { P_AddXp(InXp); }
+void AEnemy::P_OnEnemyDeathEvents(float InXp, const ECharacterType InCharacterName) const
+{
+	if (InCharacterName != ECharacterType::Warden && InCharacterName != ECharacterType::MinionBoss)
+	{
+		if (DelegateManager->RequestCurrentXpNerf.IsBound()) InXp *= DelegateManager->RequestCurrentXpNerf.Execute();
+	}
+	P_AddXp(InXp);
+}
 
 void AEnemy::P_ToggleGodMode()
 {
@@ -1257,11 +1266,7 @@ void AEnemy::P_ConfigurePostProcessEffectsAfterDeath() const
 	PostProcessManager->FadeOutDeathMaterials();
 }
 
-void AEnemy::P_InUpgradeSelection()
-{
-	bInUpgradeSelection = true;
-	P_StopAllAbilities();
-}
+void AEnemy::P_InUpgradeSelection() { bInUpgradeSelection = true; }
 
 void AEnemy::P_TryInteracting()
 {
@@ -1433,11 +1438,15 @@ void AEnemy::P_ContinuousFovChange()
 	}
 }
 
-void AEnemy::P_AddXp(const int32 InXp) const
+void AEnemy::P_AddXp(const float InXp) const
 {
-	if (DelegateManager->RequestIsArenaMode.IsBound() && DelegateManager->RequestIsArenaMode.Execute()) return;
-	GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->AddXp(InXp);
-	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Xp, GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetXp(), GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCurrentLevelNeededXp());
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
+	RunSaveSlot->AddUpgradeXp(DelegateManager, InXp);
+	SaveSlot->AddXp(InXp);
+	if (!P_HUD) return;
+	P_HUD->UpdateProgressBar(EUIBar::Xp, SaveSlot->GetXp(), SaveSlot->GetCurrentLevelNeededXp());
+	P_HUD->UpdateProgressBar(EUIBar::Upgrade, RunSaveSlot->GetCurrentUpgradeXp(), RunSaveSlot->GetCurrentUpgradeXpNeeded());
 }
 
 void AEnemy::P_ApplySecretBoostHp(const int32 InPercentage)
@@ -1524,6 +1533,12 @@ void AEnemy::P_LockInToTargetLogic() const
 }
 
 void AEnemy::P_TurnOffInvincibility() { bIsInvincible = false; }
+
+void AEnemy::P_OpenUpgradeSelection()
+{
+	if (!GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsUpgradeAvailable()) return;
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+}
 
 void AEnemy::TickAbilities(const float InDeltaTime)
 {

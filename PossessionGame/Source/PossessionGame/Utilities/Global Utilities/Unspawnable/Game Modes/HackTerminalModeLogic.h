@@ -16,7 +16,6 @@ class POSSESSIONGAME_API UHackTerminalModeLogic : public UGameModeBaseLogic
 	float UnreservedEnemiesHpPool;
 	float ReservedEnemiesHpPool;
 	EGameMode CurrentTerminalRoomMode;
-	FTimerHandle OpenUpgradeSelectionHandle;
 	UPROPERTY()
 	TObjectPtr<UHackTerminalModeData> Data;
 

@@ -19,7 +19,7 @@ void UBossModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const T
 void UBossModeLogic::Finalize()
 {
 	Super::Finalize();
-	GetWorld()->GetTimerManager().SetTimer(OpenUpgradeSelectionHandle, this, &UBossModeLogic::ShowUpgradeSelection, 1.f);
+	TotalAmountOfEnemiesKilled = 0;
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	WaveManager->GetDelegateManager()->OnBossDeath.RemoveAll(this);
 	if (!WaveManagerHUD) return;

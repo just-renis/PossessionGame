@@ -124,6 +124,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> HpWhiteBar;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> UpgradeBar;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> GlobalHpWhiteBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> GlobalHpBar;
@@ -149,6 +151,10 @@ private:
 	TObjectPtr<UInvalidationBox> MinorAnnouncementInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> MinorAnnouncementText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidget> UpgradeTextInv;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> UpgradeAmountText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> HijackProgressBar;
 	UPROPERTY(meta = (BindWidget))
@@ -209,6 +215,7 @@ private:
 	void CollapseAllCrosshairs() const;
 	void ResetGlobalHpBar() const;
 	virtual void NativeDestruct() override;
+	void UpdateUpgradeAmountText(const int32 InAmount) const;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };

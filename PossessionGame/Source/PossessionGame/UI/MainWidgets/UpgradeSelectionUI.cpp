@@ -12,6 +12,7 @@
 #include "PossessionGame/UI/SecondaryWidgets/MainMenuButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeCardUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/UpgradeDetailsPanelUI.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -26,7 +27,6 @@ void UUpgradeSelectionUI::OpenUI()
 	if (UpgradesData.IsEmpty())
 	{
 		CloseUI();
-		(void)DelegateManager->OnUpgradeSelectionFinished.ExecuteIfBound();
 		return;
 	}
 	PlayAnimation(UpgradeMenuOpenAnim);
@@ -46,8 +46,11 @@ void UUpgradeSelectionUI::OpenUI()
 void UUpgradeSelectionUI::CloseUI()
 {
 	for (int32 i = 0; i < UpgradesData.Num(); i++) CardOptions[i]->ToggleCardVisibility(false);
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	RunSaveSlot->SubtractCurrentUpgradeAmount(DelegateManager);
 	UpgradeChoicesPanel->SetVisibility(ESlateVisibility::Collapsed);
 	Toggle(false);
+	if (RunSaveSlot->IsUpgradeAvailable()) OpenUI();
 }
 
 void UUpgradeSelectionUI::TriggerUpgradeMenuCloseAnimation()
@@ -243,7 +246,6 @@ void UUpgradeSelectionUI::UpgradeSelectionPanelFadeOutFinished()
 	CachedPairs.Empty();
 	UnbindAllFromAnimationFinished(UpgradeMenuCloseAnim);
 	CloseUI();
-	(void)DelegateManager->OnUpgradeSelectionFinished.ExecuteIfBound();
 }
 
 void UUpgradeSelectionUI::GoBackAnimFinished()

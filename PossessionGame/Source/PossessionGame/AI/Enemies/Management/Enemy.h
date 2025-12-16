@@ -429,7 +429,7 @@ private:
 	void P_Rotate(const FInputActionValue& InValue);
 	void P_Reload();
 	void P_ToggleRun(const bool bState);
-	void P_OnEnemyDeathEvents(const int32 InXp) const;
+	void P_OnEnemyDeathEvents(float InXp, const ECharacterType InCharacterName) const;
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
 	void P_StopAllAbilities(const bool bDestroy = false);
@@ -460,7 +460,7 @@ private:
 	void P_DetectIfPlayerPointingAtOutlineObjects();
 	void P_TriggerCriticalDamageIndicator() const;
 	void P_ContinuousFovChange();
-	void P_AddXp(const int32 InXp) const;
+	void P_AddXp(const float InXp) const;
 	void P_ApplySecretBoostHp(const int32 InPercentage);
 	void P_InitiateSlide();
 	void P_EndSlide();
@@ -470,6 +470,7 @@ private:
 	void P_AddAndSetHijackPulse(const float InValue);
 	void P_LockInToTargetLogic() const;
 	void P_TurnOffInvincibility();
+	void P_OpenUpgradeSelection();
 
 	void TickAbilities(const float InDeltaTime);
 	void SetupStimuliSource();

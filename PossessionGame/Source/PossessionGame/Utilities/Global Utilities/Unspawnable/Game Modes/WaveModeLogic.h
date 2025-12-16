@@ -17,12 +17,10 @@ class POSSESSIONGAME_API UWaveModeLogic : public UGameModeBaseLogic
 	int32 AmountOfWaves;
 	int32 EnemiesLeftToKill;
 	int32 CountdownSeconds;
+	FTimerHandle InitiateNextWaveHandle;
+	FTimerHandle CountdownHandle;
 	UPROPERTY()
 	TObjectPtr<UWaveModeData> Data;
-	UPROPERTY()
-	FTimerHandle OpenUpgradeSelectionHandle;
-	UPROPERTY()
-	FTimerHandle CountdownHandle;
 	
 	virtual void Init(const TObjectPtr<UWaveManager>& InWaveManager, const TObjectPtr<UGameModeData>& InGameModeData) override;
 	virtual void Finalize() override;

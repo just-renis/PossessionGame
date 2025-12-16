@@ -20,15 +20,18 @@ protected:
 	bool bAsyncLoadInProcess = false;
 	int32 AliveEnemiesAmount = 0;
 	int32 EnemiesOnSceneLimit;
+	int32 TotalAmountOfEnemiesKilled = 0;
+	int32 FirstThresholdOfTotalAmountNerf;
+	int32 SecondThresholdOfTotalAmountNerf;
 	float SpawnRate;
+	FTimerHandle SpawnHandle;
 	UPROPERTY()
 	TObjectPtr<UWaveManager> WaveManager;
 	UPROPERTY()
 	TObjectPtr<UWaveManagerHUD> WaveManagerHUD;
-	UPROPERTY()
-	FTimerHandle SpawnHandle;
 
 	int32 ConvertGameModeToDroneLocation() const;
+	float GetCurrentXpNerf() const;
 	
 	virtual void SetupWaveManagerUI();
 	virtual void SetupTimers() {}
@@ -38,7 +41,6 @@ protected:
 	void FadeOutObjectivePanel() const;
 	virtual void HandleSpawning() {}
 	virtual void FadeInObjectivePanel() const;
-	virtual void UpdateEnemiesAmount() { AliveEnemiesAmount--; }
-	void ShowUpgradeSelection() const;
+	virtual void UpdateEnemiesAmount();
 	virtual void UpdateTaskProgress() {}
 };
