@@ -38,7 +38,7 @@ private:
 	};
 	UPROPERTY()
 	TMap<FString, FText> LocalizedActionDisplayNames = {
-		{ FString("Crouch / Slide / Stomp"), NSLOCTEXT("ST_Localization", "Crouch / Slide / Stomp", "Crouch / Slide / Stomp") },
+		{ FString("Slide / Stomp"), NSLOCTEXT("ST_Localization", "Slide / Stomp", "Slide / Stomp") },
 		{ FString("Back"), NSLOCTEXT("ST_Localization", "Escape", "Escape") },
 		{ FString("First Ability"), NSLOCTEXT("ST_Localization", "First Ability", "First Ability") },
 		{ FString("Hijack"), NSLOCTEXT("ST_Localization", "Hijack", "Hijack") },
@@ -53,6 +53,7 @@ private:
 		{ FString("Reload"), NSLOCTEXT("ST_Localization", "Reload", "Reload") },
 		{ FString("Run"), NSLOCTEXT("ST_Localization", "Run", "Run") },
 		{ FString("Second Ability"), NSLOCTEXT("ST_Localization", "Second Ability", "Second Ability") },
+		{ FString("Open Upgrade"), NSLOCTEXT("ST_Localization", "Open Upgrade", "Open Upgrade") },
 		{ FString("Info Panel"), NSLOCTEXT("ST_Localization", "Info Panel", "Info Panel") },
 	};
 };

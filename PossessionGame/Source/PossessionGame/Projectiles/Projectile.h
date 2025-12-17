@@ -64,13 +64,8 @@ private:
 	float TimeDilation = 1.f;
 	FVector StartLocation;
 	FTimerHandle DestroyHandle;
-	FTimerHandle EffectsDeactivationHandle;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
-	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> FirstImpactVfx;
-	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> SecondaryImpactVfx;
 	UPROPERTY()
 	TObjectPtr<UUpgradeManager> UpgradeManager;
 
@@ -89,7 +84,6 @@ private:
 	virtual void P_VariationDamageAppliance() {}
 
 	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) {}
-	void DeactivateEffects() { bIsActive = false; }
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
 };

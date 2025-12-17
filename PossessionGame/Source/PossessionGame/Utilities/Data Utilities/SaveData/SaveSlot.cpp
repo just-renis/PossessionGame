@@ -103,7 +103,6 @@ void USaveSlot::AddSpawnableCharacter(const TObjectPtr<UDelegateManager>& InDele
 void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName)
 {
 	GameInstance = InGameInstance;
-	//SpawnableCharactersWeightsToSpawn = GameInstance->GetSpawnableCharactersWeightsToSpawn();
 	PlayerLevelData = GameInstance->GetPlayerLevelData();
 	SlotName = InSlotName;
 	AddDefaultAbilities();

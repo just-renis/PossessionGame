@@ -222,6 +222,7 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->OnGlobalHpBarSpawn.BindUObject(this, &UPlayerHUD::EnableGlobalHpBar);
 	DelegateManager->OnBossDeath.AddUObject(this, &UPlayerHUD::DisableGlobalHpBar);
 	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerHUD::UpdatePressToHijackKeyBind);
+	DelegateManager->OnKeyBindChange.AddUObject(this, &UPlayerHUD::UpdateUpgradeKeyBindText);
 	DelegateManager->RequirePlayerAnnouncementInfo.BindUObject(this, &UPlayerHUD::PlayAnnouncement);
 	DelegateManager->RequestMinorAnnouncement.BindUObject(this, &UPlayerHUD::ShowMinorAnnouncement);
 	DelegateManager->OnPlayerDamageTaken.BindUObject(this, &UPlayerHUD::SetDamageNumber);
@@ -375,6 +376,12 @@ void UPlayerHUD::UpdateUpgradeAmountText(const int32 InAmount) const
 	if (!UpgradeAmountText || !UpgradeTextInv) return;
 	UpgradeAmountText->SetText(FText::AsNumber(InAmount));
 	UpgradeTextInv->SetVisibility(InAmount > 0 ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+}
+
+void UPlayerHUD::UpdateUpgradeKeyBindText(const FName& InKeyBindName, const FText& InKeyName) const
+{
+	if (!InKeyBindName.IsEqual("Upgrade") || !UpgradeKeyBindText) return;
+	UpgradeKeyBindText->SetText(InKeyName);
 }
 
 template<typename T>

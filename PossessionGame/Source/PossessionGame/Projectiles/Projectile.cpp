@@ -130,11 +130,8 @@ void AProjectile::DisableProjectileComponents() const
 
 void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact)
 {
-//	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), nullptr,
-	//InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetVariation() : EVariation::Default, Attributes);
-	AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact),
-	[this]() -> bool { return bIsActive; }, bFirstImpact ? &FirstImpactVfx : &SecondaryImpactVfx, Mesh, NAME_None, false, FVector::ZeroVector,
-	FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetVariation() : EVariation::Default, Attributes);
+	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), nullptr,
+	InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetVariation() : EVariation::Default, Attributes);
 }
 
 void AProjectile::DealAreaDamage()
@@ -173,7 +170,7 @@ void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnPr
 
 void AProjectile::DestroyThis()
 {
-	GetWorldTimerManager().SetTimer(EffectsDeactivationHandle, this, &AProjectile::DeactivateEffects, 0.2f);
+	bIsActive = false;
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTimeDilationChanged.RemoveAll(this);
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
@@ -251,7 +248,6 @@ void AProjectile::P_SetupUpgradesAppliance()
 void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
-	GetWorldTimerManager().ClearTimer(EffectsDeactivationHandle);
 	Super::EndPlay(EndPlayReason);
 }
 

@@ -144,6 +144,8 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> LevelNumberText;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> UpgradeKeyBindText;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> InfoPanelInv;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> OutOfAmmoInv;
@@ -216,6 +218,7 @@ private:
 	void ResetGlobalHpBar() const;
 	virtual void NativeDestruct() override;
 	void UpdateUpgradeAmountText(const int32 InAmount) const;
+	void UpdateUpgradeKeyBindText(const FName& InKeyBindName, const FText& InKeyName) const;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);
 };
