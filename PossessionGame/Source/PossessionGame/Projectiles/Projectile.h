@@ -60,11 +60,17 @@ protected:
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
+	bool bIsActive = true;
 	float TimeDilation = 1.f;
 	FVector StartLocation;
 	FTimerHandle DestroyHandle;
+	FTimerHandle EffectsDeactivationHandle;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> FirstImpactVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> SecondaryImpactVfx;
 	UPROPERTY()
 	TObjectPtr<UUpgradeManager> UpgradeManager;
 
@@ -82,7 +88,8 @@ private:
 	void P_SetupUpgradesAppliance();
 	virtual void P_VariationDamageAppliance() {}
 
+	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) {}
+	void DeactivateEffects() { bIsActive = false; }
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
-	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) {}
 };

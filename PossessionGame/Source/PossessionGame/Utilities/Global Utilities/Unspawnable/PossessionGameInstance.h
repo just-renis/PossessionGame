@@ -53,6 +53,7 @@ public:
 	int32 GetPlayerLevel() const { return PlayerLevel; }
 	TObjectPtr<UPlayerLevelData> GetPlayerLevelData() const { return PlayerLevelData; }
 	TArray<ECharacterType> GetSpawnableCharacters() const { return OnlyCharactersToSpawn; }
+	TMap<ECharacterType, int32> GetSpawnableCharactersWeightsToSpawn() const { return SpawnableCharactersWeightsToSpawn; }
 	
 	void InitGameInstanceManagers();
 	void SetMainMenuLaunchedOnce() { bMainMenuLaunchedOnce = true;}
@@ -80,6 +81,8 @@ private:
 	int32 PlayerLevel = 0;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrades Data", meta = (AllowPrivateAccess = true))
 	TMap<ECharacterType, FCharacterUpgrades> ExistingUpgrades;
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Spawn Settings", meta = (AllowPrivateAccess = true))
+	TMap<ECharacterType, int32> SpawnableCharactersWeightsToSpawn;
 	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
 	TMap<int32, FSpawnableEnemiesByChapter> SpawnableEnemiesByChapter;
 	

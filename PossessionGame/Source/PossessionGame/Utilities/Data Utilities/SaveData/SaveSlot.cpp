@@ -54,10 +54,26 @@ float USaveSlot::GetCurrentLevelNeededXp() const { return PlayerLevelData->GetXp
 
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
 
-ECharacterType USaveSlot::GetRandomSpawnableCharacter(const TObjectPtr<UPossessionGameInstance>& InGameInstance) const
+ECharacterType USaveSlot::GetRandomSpawnableCharacter() const
 {
-	TArray SpawnableCharactersArray = InGameInstance->GetSpawnCharactersFromSaveEnabled() ? SpawnableCharacters.Array() : InGameInstance->GetSpawnableCharacters();
-	return SpawnableCharactersArray.IsEmpty() ? ECharacterType::Minion : SpawnableCharactersArray[FMath::RandRange(0, SpawnableCharactersArray.Num() - 1)];
+	const TArray<ECharacterType> SpawnableCharactersArray = GameInstance->GetSpawnCharactersFromSaveEnabled() ? SpawnableCharacters.Array() : GameInstance->GetSpawnableCharacters();
+	TMap<ECharacterType, int32> Weights = GameInstance->GetSpawnableCharactersWeightsToSpawn();
+	if (Weights.IsEmpty() || SpawnableCharactersArray.IsEmpty()) return ECharacterType::Guardian;
+	int32 TotalWeight = 0;
+	for (const ECharacterType Type : SpawnableCharactersArray)
+	{
+		if (const int32* Weight = Weights.Find(Type)) TotalWeight += *Weight;
+	}
+	int32 Roll = FMath::RandRange(1, TotalWeight);
+	for (const ECharacterType Type : SpawnableCharactersArray)
+	{
+		if (const int32* Weight = Weights.Find(Type))
+		{
+			Roll -= *Weight;
+			if (Roll <= 0) return Type;
+		}
+	}
+	return ECharacterType::Guardian;
 }
 
 FCharacterAbilities USaveSlot::GetCharacterChosenAbilities(const ECharacterType InCharacter)
@@ -87,6 +103,7 @@ void USaveSlot::AddSpawnableCharacter(const TObjectPtr<UDelegateManager>& InDele
 void USaveSlot::SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName)
 {
 	GameInstance = InGameInstance;
+	//SpawnableCharactersWeightsToSpawn = GameInstance->GetSpawnableCharactersWeightsToSpawn();
 	PlayerLevelData = GameInstance->GetPlayerLevelData();
 	SlotName = InSlotName;
 	AddDefaultAbilities();

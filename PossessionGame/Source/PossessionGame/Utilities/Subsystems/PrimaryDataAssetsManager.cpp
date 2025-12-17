@@ -219,7 +219,7 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const FVfxContainer& InVfxDat
 
 void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack, TFunction<bool()> InSpawnCallback)
 {
-	if (InCharacter == ECharacterType::Random) InCharacter = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetRandomSpawnableCharacter(Cast<UPossessionGameInstance>(GetGameInstance()));
+	if (InCharacter == ECharacterType::Random) InCharacter = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetRandomSpawnableCharacter();
 	!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, InCallBack, InSpawnCallback) : SpawnEnemy(InCharacter, InGameMode, InCallBack);
 	TotalSpawnedEnemies++;
 	AddSpawnableEnemiesToThePool();
@@ -227,11 +227,7 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 
 void UPrimaryDataAssetsManager::RequestSpawnEnemy(const ECharacterType InCharacter, const FVector& InLocation, const float InHpPercentage)
 {
-	if (const TObjectPtr<AEnemy> Enemy = GetWorld()->SpawnActor<AEnemy>(LoadedEnemies[InCharacter], InLocation, FRotator::ZeroRotator))
-	{
-		Enemy->AI_SetRespawnRequest(InHpPercentage);
-	}
-	else UE_LOG(LogTemp, Error, TEXT("RequestSpawnEnemy AFTER LEAVING BODY SOMEHOW COULD NOT BE LOADED!!!"));
+	if (const TObjectPtr<AEnemy> Enemy = GetWorld()->SpawnActor<AEnemy>(LoadedEnemies[InCharacter], InLocation, FRotator::ZeroRotator)) Enemy->AI_SetRespawnRequest(InHpPercentage);
 }
 
 void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TMap<int32, FSpawnableEnemiesByChapter>& InSpawnableEnemiesByChapter)

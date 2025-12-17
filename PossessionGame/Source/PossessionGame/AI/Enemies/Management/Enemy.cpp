@@ -624,7 +624,8 @@ void AEnemy::P_Setup()
 {
 	if (bAffectedByEmp) EmpEffectEnded();
 	if (bAffectedByStun) AI_StunEffectEnded();
-	GetMesh()->SetComponentTickEnabled(false);
+	DisableSkeletalMesh();
+	GetCapsuleComponent()->SetCollisionProfileName("Player");
 	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f);
 	DelegateManager->RequestCurrentCharacter.BindUObject(this, &AEnemy::GetCharacterName);
 	DelegateManager->ApplyUpgradeOnSelection.BindUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
@@ -641,7 +642,6 @@ void AEnemy::P_Setup()
 	Tags.Add("Player");
 	P_ReceiveCurrentlySelectedVariation();
 	AI_Destroy();
-	GetMesh()->SetCollisionProfileName("Player");
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->SetTarget(this);
 	P_LoadDataIfNotLoaded(CharacterName);
 	bUseControllerRotationYaw = true;
@@ -1209,15 +1209,20 @@ void AEnemy::P_HandlingDamageTaken()
 {
 	if (bIsImmortal && CurrentHp <= 10) CurrentHp = 10;
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
-	if (!GameInstance->IsPlayerTakenDamageEffectsEnabled()) return;
+	#if WITH_EDITOR
+		if (!GameInstance->IsPlayerTakenDamageEffectsEnabled()) return;
+	#endif
 	P_TriggerTakeDamageEffects();
-	P_HUD->UpdateReceiveDamageInv();
 	if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamage();
 }
 
 void AEnemy::P_TriggerTakeDamageEffects()
 {
+	if (!bPlayerTakeDamageEffectsEnabled) return;
+	bPlayerTakeDamageEffectsEnabled = false;
+	GetWorldTimerManager().SetTimer(P_TakeDamageEffectsHandle, this, &AEnemy::P_EnableTakeDamageEffects, PlayerTakeDamageEffectDelay);
 	P_MakeCameraShake(ECameraShake::PlayerReceiveDamage);
+	P_HUD->UpdateReceiveDamageInv();
 	if (UKismetMathLibrary::RandomInteger(100) >= 75)
 	{
 		AssetsManager->PlaySound2D(ESound::TakeDamageLayer2);
@@ -1773,4 +1778,13 @@ void AEnemy::ApplyDisablingActionEffect(const float InEffectDuration, const EDis
 		case EDisablingEffect::Stun: if (!bAffectedByStun) DisablingActionsEffectsCount++;
 	}
 	AI_DisableActions(InEffectDuration, InEffectName);
+}
+
+void AEnemy::DisableSkeletalMesh() const
+{
+	GetMesh()->PrimaryComponentTick.bCanEverTick = false;
+	GetMesh()->SetComponentTickEnabled(false);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetGenerateOverlapEvents(false);
+	GetMesh()->SetNotifyRigidBodyCollision(false);
 }

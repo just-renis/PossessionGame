@@ -262,6 +262,7 @@ private:
 	bool bPoisonSlowVfxAttachRequested = false;
 	bool bIsInvincible = false;
 	bool bAIRespawnRequested = false;
+	bool bPlayerTakeDamageEffectsEnabled = true;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -291,6 +292,7 @@ private:
 	FTimerHandle P_ContinuousFovChangeHandle;
 	FTimerHandle P_ControlLogicHandle;
 	FTimerHandle P_SlideEndHandle;
+	FTimerHandle P_TakeDamageEffectsHandle;
 	FTimerHandle DestroyHandle;
 	FTimerHandle CheckIfFallOutOfWorldHandle;
 	FTimerHandle DestroyCondenseMaterialsProcessHandle;
@@ -345,6 +347,8 @@ private:
 	float SlideHeight = 39.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
 	float SlideCameraZ = 0.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Optimization", meta = (AllowPrivateAccess = true))
+	float PlayerTakeDamageEffectDelay = 0.2f;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -421,6 +425,7 @@ private:
 	int32 P_GetFirstSlotAbilityIndex() const { return P_FirstSlotAbilityIndex; }
 	int32 P_GetSecondSlotAbilityIndex() const { return P_SecondSlotAbilityIndex; }
 	
+	void P_EnableTakeDamageEffects() { bPlayerTakeDamageEffectsEnabled = true; }
 	void P_SetupData();
 	void P_SetupUI();
 	void P_HijackEnemy();
@@ -497,4 +502,5 @@ private:
 	void ApplyStunEffect(const float InEffectDuration);
 	void PlayStunAffectedVfx(const float InEffectDuration);
 	void ApplyDisablingActionEffect(const float InEffectDuration, const EDisablingEffect InEffectName);
+	void DisableSkeletalMesh() const;
 };

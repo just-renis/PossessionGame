@@ -37,7 +37,7 @@ public:
 	float GetXp() const { return CurrentXp; }
 	float GetCurrentLevelNeededXp() const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
-	ECharacterType GetRandomSpawnableCharacter(const TObjectPtr<UPossessionGameInstance>& InGameInstance) const;
+	ECharacterType GetRandomSpawnableCharacter() const;
 	FCharacterAbilities GetCharacterChosenAbilities(const ECharacterType InCharacter);
 	FCharacterAbilities GetCharacterUnlockedAbilities(const ECharacterType InCharacter);
 	FString GetSlotName() { return SlotName; }

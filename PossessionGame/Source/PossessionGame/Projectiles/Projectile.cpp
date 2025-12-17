@@ -50,7 +50,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 	{
 		if (const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail); VfxName != EVfx::None)
 		{
-			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), nullptr, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, ProjectileData.GetProprietor()->GetVariation(), Attributes);
+			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), [this]() -> bool { return bIsActive; }, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, ProjectileData.GetProprietor()->GetVariation(), Attributes);
 		}
 	}
 	else
@@ -83,6 +83,7 @@ void AProjectile::OnImpact(const FHitResult& Hit)
 
 void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich)
 {
+	bIsActive = true;
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	Super::Init(InProjectileData, Rotation, InWhich);
 	SetupProjectile(InProjectileData, InWhich);
@@ -94,6 +95,7 @@ void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotati
 
 void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const FRotator& Rotation)
 {
+	bIsActive = true;
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	Super::InitCloneProjectile(InProjectileData, Rotation);
 	StartLocation = GetActorLocation();
@@ -113,7 +115,7 @@ void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const F
 	}
 	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, true);
 	SetDirection(Rotation.Vector());
-	if (!BulletTrailComponent) AssetsManager->AttachVfx(EVfx::CloneBullet, nullptr, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
+	if (!BulletTrailComponent) AssetsManager->AttachVfx(EVfx::CloneBullet, [this]() -> bool { return bIsActive; }, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
 	else BulletTrailComponent->Activate(true);
 	MovementComponent->SetComponentTickEnabled(true);
 	MovementComponent->Activate();
@@ -128,8 +130,11 @@ void AProjectile::DisableProjectileComponents() const
 
 void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact)
 {
-	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), nullptr,
-	InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetVariation() : EVariation::Default, Attributes);
+//	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact), nullptr,
+	//InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetVariation() : EVariation::Default, Attributes);
+	AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, bFirstImpact ? EVfxType::Impact : EVfxType::SecondaryImpact),
+	[this]() -> bool { return bIsActive; }, bFirstImpact ? &FirstImpactVfx : &SecondaryImpactVfx, Mesh, NAME_None, false, FVector::ZeroVector,
+	FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetVariation() : EVariation::Default, Attributes);
 }
 
 void AProjectile::DealAreaDamage()
@@ -168,6 +173,7 @@ void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnPr
 
 void AProjectile::DestroyThis()
 {
+	GetWorldTimerManager().SetTimer(EffectsDeactivationHandle, this, &AProjectile::DeactivateEffects, 0.2f);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTimeDilationChanged.RemoveAll(this);
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
@@ -245,6 +251,7 @@ void AProjectile::P_SetupUpgradesAppliance()
 void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	GetWorldTimerManager().ClearTimer(EffectsDeactivationHandle);
 	Super::EndPlay(EndPlayReason);
 }
 

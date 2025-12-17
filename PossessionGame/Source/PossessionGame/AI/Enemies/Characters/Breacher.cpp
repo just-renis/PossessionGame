@@ -310,7 +310,7 @@ void ABreacher::AllDisablingActionsFinished()
 	if (bIsBashTriggerInitiated) AI_EnableTriggeringBash();
 }
 
-void ABreacher::DealDamageToDestructible(const TObjectPtr<AActor>& InDestructible)
+void ABreacher::DealDamageToDestructible(const TObjectPtr<AActor>& InDestructible) const
 {
 	float BashDamage = P_DefaultBashDamage;
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
