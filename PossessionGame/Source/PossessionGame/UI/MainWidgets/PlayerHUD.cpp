@@ -10,6 +10,7 @@
 #include "PossessionGame/UI/SecondaryWidgets/InfoPanelUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
@@ -229,6 +230,7 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->OnUpgradeAmountChanged.BindUObject(this, &UPlayerHUD::UpdateUpgradeAmountText);
 	if (HijackProgressBar) MID_HijackProgress = HijackProgressBar->GetDynamicMaterial();
 	UpdateHijackIndicator(false);
+	UpdateUpgradeKeyBindText(FName("OpenUpgrade"), GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText(FName("OpenUpgrade")));
 	SetLevelText();
 }
 
@@ -303,7 +305,8 @@ void UPlayerHUD::UpdateGlobalWhiteHpBar()
 
 void UPlayerHUD::UpdatePressToHijackKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const
 {
-	if (PressKeyBindText && InKeyBindName.IsEqual("Hijack")) PressKeyBindText->SetText(FText::Format(FText::FromString("{0}"), InKeyBindText));
+	if (!InKeyBindName.IsEqual("Hijack") || !PressKeyBindText) return;
+	PressKeyBindText->SetText(FText::Format(FText::FromString("{0}"), InKeyBindText));
 }
 
 void UPlayerHUD::PlayAnnouncement(const FText& InText)
@@ -380,7 +383,7 @@ void UPlayerHUD::UpdateUpgradeAmountText(const int32 InAmount) const
 
 void UPlayerHUD::UpdateUpgradeKeyBindText(const FName& InKeyBindName, const FText& InKeyName) const
 {
-	if (!InKeyBindName.IsEqual("Upgrade") || !UpgradeKeyBindText) return;
+	if (!InKeyBindName.IsEqual("OpenUpgrade") || !UpgradeKeyBindText) return;
 	UpgradeKeyBindText->SetText(InKeyName);
 }
 
