@@ -11,6 +11,7 @@ ATutorialGate::ATutorialGate()
 {
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
 	CloseTriggerCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CloseTriggerCollision"));
+	OpenTriggerCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("OpenTriggerCollision"));
 	FirstGateSide = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FirstGateSide"));
 	SecondGateSide = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SecondGateSide"));
 	InteractableWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractableWidgetComponent"));
@@ -21,6 +22,12 @@ ATutorialGate::ATutorialGate()
 	CloseTriggerCollision->SetRelativeLocation(FVector(-150.f, 0.f, 0.f));
 	CloseTriggerCollision->SetCollisionProfileName("TriggerPlayer");
 	CloseTriggerCollision->CanCharacterStepUpOn = ECB_No;
+	OpenTriggerCollision->SetupAttachment(RootComponent);
+	OpenTriggerCollision->SetBoxExtent(FVector(20.f, 450.f, 450.f));
+	OpenTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	OpenTriggerCollision->SetRelativeLocation(FVector(150.f, 0.f, 0.f));
+	OpenTriggerCollision->SetCollisionProfileName("TriggerPlayer");
+	OpenTriggerCollision->CanCharacterStepUpOn = ECB_No;
 	FirstGateSide->SetupAttachment(RootComponent);
 	SecondGateSide->SetupAttachment(RootComponent);
 	InteractableWidget->SetupAttachment(RootComponent);
@@ -38,6 +45,11 @@ void ATutorialGate::BeginPlay()
 	{
 		CloseTriggerCollision->OnComponentBeginOverlap.AddDynamic(this, &ATutorialGate::CloseTriggerPassed);
 		CloseTriggerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+	if (bIsGateOpenedByTrigger)
+	{
+		OpenTriggerCollision->OnComponentBeginOverlap.AddDynamic(this, &ATutorialGate::OpenTriggerPassed);
+		OpenTriggerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
 	GetWorld()->GetSubsystem<UTutorialManager>()->OnMinionDeathCompleted.AddUObject(this, &ATutorialGate::OpenGateOnTutorialMinionDeath);
 }
@@ -161,4 +173,11 @@ void ATutorialGate::CloseTriggerPassed(UPrimitiveComponent* OverlappedComponent,
 	if (!OtherActor->ActorHasTag("Player")) return;
 	CloseGate();
 	CloseTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void ATutorialGate::OpenTriggerPassed(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!OtherActor->ActorHasTag("Player")) return;
+	OpenGate(EGameMode::None);
+	OpenTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

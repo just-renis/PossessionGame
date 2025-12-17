@@ -444,7 +444,7 @@ private:
 	void P_StopCameraShake(const ECameraShake InCameraShakeName) const;
 	void P_HandlingDamageTaken();
 	void P_TriggerTakeDamageEffects();
-	void P_EnableCriticalDamage();
+	void P_EnableCriticalDamageIndicator();
 	void P_ToggleCriticallyDamagedEffects(const float InValue) const;
 	void P_InitiateDeathEvents();
 	void P_ConfigurePostProcessEffectsAfterDeath() const;

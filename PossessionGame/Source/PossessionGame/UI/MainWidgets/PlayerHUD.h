@@ -52,11 +52,15 @@ private:
 	bool bDisplayMinorAnnouncementAvailable = true;
 	float StepHpPercentage;
 	float GlobalStepHpPercentage;
+	float StepXpPercentage;
+	float StepUpgradePercentage;
 	float MinorAnnouncementDisplayCooldown = 0.3f;
 	float OutOfAmmoDisplayCooldown = 0.5f;
 	ECharacterType CharacterType;
-	FTimerHandle UpdateWhiteHpBarHandle;
-	FTimerHandle UpdateGlobalWhiteHpBarHandle;
+	FTimerHandle UpdateHpWhiteBarHandle;
+	FTimerHandle UpdateGlobalHpWhiteBarHandle;
+	FTimerHandle UpdateXpBarHandle;
+	FTimerHandle UpdateUpgradeBarHandle;
 	FTimerHandle OutOfAmmoDisplayHandle;
 	FTimerHandle MinorAnnouncementDisplayHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Hp Bars Data", meta = (AllowPrivateAccess = true))
@@ -87,6 +91,8 @@ private:
 	TObjectPtr<UTextBlock> DamageNumberText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> XpBar;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> XpWhiteBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> Crosshair;
 	UPROPERTY(meta = (BindWidget))
@@ -125,6 +131,8 @@ private:
 	TObjectPtr<UProgressBar> HpWhiteBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> UpgradeBar;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UProgressBar> UpgradeWhiteBar;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> GlobalHpWhiteBar;
 	UPROPERTY(meta = (BindWidget))
@@ -210,12 +218,13 @@ private:
 	void DisableGlobalHpBar() const;
 	void UpdateWhiteHpBar();
 	void UpdateGlobalWhiteHpBar();
+	void UpdateXpBar();
+	void UpdateUpgradeBar();
 	void UpdatePressToHijackKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const;
 	void PlayAnnouncement(const FText& InText);
 	void SetDamageNumber(float InDamage, const FLinearColor InColor);
 	void CollapseAllAbilitiesPanels() const;
 	void CollapseAllCrosshairs() const;
-	void ResetGlobalHpBar() const;
 	virtual void NativeDestruct() override;
 	void UpdateUpgradeAmountText(const int32 InAmount) const;
 	void UpdateUpgradeKeyBindText(const FName& InKeyBindName, const FText& InKeyName) const;

@@ -14,6 +14,7 @@ AGate::AGate()
 {
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("collision"));
 	CloseTriggerCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CloseTriggerCollision"));
+	OpenTriggerCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("OpenTriggerCollision"));
 	FirstGateSide = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("firstGateSide"));
 	SecondGateSide = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("secondGateSide"));
 	InteractableWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("interactableWidgetComponent"));
@@ -24,6 +25,12 @@ AGate::AGate()
 	CloseTriggerCollision->SetRelativeLocation(FVector(-150.f, 0.f, 0.f));
 	CloseTriggerCollision->SetCollisionProfileName("TriggerPlayer");
 	CloseTriggerCollision->CanCharacterStepUpOn = ECB_No;
+	OpenTriggerCollision->SetupAttachment(RootComponent);
+	OpenTriggerCollision->SetBoxExtent(FVector(20.f, 450.f, 450.f));
+	OpenTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	OpenTriggerCollision->SetRelativeLocation(FVector(150.f, 0.f, 0.f));
+	OpenTriggerCollision->SetCollisionProfileName("TriggerPlayer");
+	OpenTriggerCollision->CanCharacterStepUpOn = ECB_No;
 	FirstGateSide->SetupAttachment(RootComponent);
 	SecondGateSide->SetupAttachment(RootComponent);
 	InteractableWidget->SetupAttachment(RootComponent);
@@ -39,12 +46,16 @@ void AGate::BeginPlay()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.AddUObject(this, &AGate::OpenGateAndShowMarker);
 	if (bIsGateAssociatedWithOtherGates) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateWithAssociationOpened.AddUObject(this, &AGate::DisableGate);
 	InteractableUI = Cast<UInteractableUI>(InteractableWidget->GetWidget());
-	bNeededArtifact = bNeedsArtifact;
 	if (bIsUnlockableByInteraction) SetupInteractability();
 	if (bIsGateClosedByTrigger)
 	{
 		CloseTriggerCollision->OnComponentBeginOverlap.AddDynamic(this, &AGate::CloseTriggerPassed);
 		CloseTriggerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+	if (bIsGateOpenedByTrigger)
+	{
+		OpenTriggerCollision->OnComponentBeginOverlap.AddDynamic(this, &AGate::OpenTriggerPassed);
+		OpenTriggerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
 	if (bNeedsArtifact) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnArtifactCollected.AddUObject(this, &AGate::SetArtifactCollected);
 }
@@ -73,11 +84,11 @@ void AGate::OpenGateAndShowMarker(const EGameMode InGameMode)
 void AGate::CloseGate()
 {
 	bEventToCloseGateHappened = true;
+	Collision->SetBoxExtent(FVector(1.f, 450.f, 175.f));
+	Collision->SetCollisionResponseToAllChannels(ECR_Block);
 	if (bIsGateOpened)
 	{
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeFinished.RemoveAll(this);
-		if (bIsUnlockableByInteraction) Collision->SetBoxExtent(FVector(1.f, 450.f, 175.f));
-		Collision->SetCollisionResponseToAllChannels(ECR_Block);
 		GetWorldTimerManager().SetTimer(CloseGatesHandle, this, &AGate::CloseGateSides, 0.025f, true);
 	}
 }
@@ -86,7 +97,6 @@ void AGate::Interact()
 {
 	if (!GetIsInteractable() || bNeedsArtifact) return;
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnInteractionTry.RemoveAll(this);
-	if (bNeededArtifact) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSecretDoorOpened.ExecuteIfBound();
 	if (bIsGateAssociatedWithOtherGates)
 	{
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGateWithAssociationOpened.RemoveAll(this);
@@ -190,4 +200,12 @@ void AGate::CloseTriggerPassed(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (!OtherActor->ActorHasTag("Player")) return;
 	CloseGate();
 	CloseTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AGate::OpenTriggerPassed(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!OtherActor->ActorHasTag("Player") || bNeedsArtifact) return;
+	OpenGate(EGameMode::None);
+	OpenTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	if (bIsDemoGate) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UDemoEndUI>(EWidget::DemoEndUI);
 }

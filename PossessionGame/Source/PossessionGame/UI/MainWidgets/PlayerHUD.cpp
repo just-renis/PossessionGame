@@ -25,7 +25,7 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 			HpWhiteBar->SetPercent(HpBar->GetPercent());
 			HpBar->SetPercent(Progress);
 			HpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
-			GetWorld()->GetTimerManager().SetTimer(UpdateWhiteHpBarHandle, this, &UPlayerHUD::UpdateWhiteHpBar, 0.02f, true);
+			GetWorld()->GetTimerManager().SetTimer(UpdateHpWhiteBarHandle, this, &UPlayerHUD::UpdateWhiteHpBar, 0.02f, true);
 			break;
 		case EUIBar::Hijack:
 			if (Progress > 1.f) Progress = 1.f;
@@ -33,20 +33,26 @@ void UPlayerHUD::UpdateProgressBar(const EUIBar InBar, const float InCurrent, co
 			if (HijackChargeText) HijackChargeText->SetText(FText::FromString(FString::FromInt(Progress * 100.f) + "%"));
 			break;
 		case EUIBar::Xp:
-			if (!XpBar || !XpNumberText) return;
+			if (!XpBar || !XpWhiteBar || !XpNumberText) return;
+			StepXpPercentage = (XpWhiteBar->GetPercent() - Progress) * 0.1f;
+			XpBar->SetPercent(XpWhiteBar->GetPercent());
+			XpWhiteBar->SetPercent(Progress);
+			GetWorld()->GetTimerManager().SetTimer(UpdateXpBarHandle, this, &UPlayerHUD::UpdateXpBar, 0.02f, true);
 			XpNumberText->SetText(FText::FromString(FString::Format(TEXT("{0} / {1}"), {static_cast<int32>(InCurrent), static_cast<int32>(InMax)})));
-			XpBar->SetPercent(Progress);
 			break;
 		case EUIBar::Boss:
 			if (!GlobalHpBar || !GlobalHpWhiteBar) return;
 			GlobalStepHpPercentage = (GlobalHpBar->GetPercent() - Progress) * 0.1f;
 			GlobalHpWhiteBar->SetPercent(GlobalHpBar->GetPercent());
 			GlobalHpBar->SetPercent(Progress);
-			GetWorld()->GetTimerManager().SetTimer(UpdateGlobalWhiteHpBarHandle, this, &UPlayerHUD::UpdateGlobalWhiteHpBar, 0.02f, true);
+			GetWorld()->GetTimerManager().SetTimer(UpdateGlobalHpWhiteBarHandle, this, &UPlayerHUD::UpdateGlobalWhiteHpBar, 0.02f, true);
 			break;
 		case EUIBar::Upgrade:
-			if (!UpgradeBar) return;
-			UpgradeBar->SetPercent(Progress);
+			if (!UpgradeBar || !UpgradeWhiteBar) return;
+			StepUpgradePercentage = (UpgradeWhiteBar->GetPercent() - Progress) * 0.1f;
+			UpgradeBar->SetPercent(UpgradeWhiteBar->GetPercent());
+			UpgradeWhiteBar->SetPercent(Progress);
+			GetWorld()->GetTimerManager().SetTimer(UpdateUpgradeBarHandle, this, &UPlayerHUD::UpdateUpgradeBar, 0.02f, true);
 			break;
 		default: ;
 	}
@@ -270,14 +276,11 @@ void UPlayerHUD::EnableGlobalHpBar(const EEnemyHpBar InHpBarType) const
 	CurrentStyle.FillImage.SetResourceObject(EnemyHpBars[InHpBarType]);
 	GlobalHpBar->SetWidgetStyle(CurrentStyle);
 	GlobalHpBar->SetPercent(1.f);
+	GlobalHpWhiteBar->SetPercent(1.f);
 	GlobalHpBarInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
-void UPlayerHUD::DisableGlobalHpBar() const
-{
-	if (GlobalHpBarInv) GlobalHpBarInv->SetVisibility(ESlateVisibility::Collapsed);
-	ResetGlobalHpBar();
-}
+void UPlayerHUD::DisableGlobalHpBar() const { if (GlobalHpBarInv) GlobalHpBarInv->SetVisibility(ESlateVisibility::Collapsed); }
 
 void UPlayerHUD::UpdateWhiteHpBar()
 {
@@ -286,7 +289,7 @@ void UPlayerHUD::UpdateWhiteHpBar()
 	if (NewPercentage <= HpBar->GetPercent())
 	{
 		NewPercentage = HpBar->GetPercent();
-		GetWorld()->GetTimerManager().ClearTimer(UpdateWhiteHpBarHandle);
+		GetWorld()->GetTimerManager().ClearTimer(UpdateHpWhiteBarHandle);
 	}
 	HpWhiteBar->SetPercent(NewPercentage);
 }
@@ -298,9 +301,33 @@ void UPlayerHUD::UpdateGlobalWhiteHpBar()
 	if (NewPercentage <= GlobalHpBar->GetPercent())
 	{
 		NewPercentage = GlobalHpBar->GetPercent();
-		GetWorld()->GetTimerManager().ClearTimer(UpdateGlobalWhiteHpBarHandle);
+		GetWorld()->GetTimerManager().ClearTimer(UpdateGlobalHpWhiteBarHandle);
 	}
 	GlobalHpWhiteBar->SetPercent(NewPercentage);
+}
+
+void UPlayerHUD::UpdateXpBar()
+{
+	if (!XpWhiteBar || !XpBar) return;
+	float NewPercentage = XpBar->GetPercent() - StepXpPercentage;
+	if (NewPercentage <= XpWhiteBar->GetPercent())
+	{
+		NewPercentage = XpWhiteBar->GetPercent();
+		GetWorld()->GetTimerManager().ClearTimer(UpdateXpBarHandle);
+	}
+	XpBar->SetPercent(NewPercentage);
+}
+
+void UPlayerHUD::UpdateUpgradeBar()
+{
+	if (!UpgradeWhiteBar || !UpgradeBar) return;
+	float NewPercentage = UpgradeBar->GetPercent() - StepUpgradePercentage;
+	if (NewPercentage <= UpgradeWhiteBar->GetPercent())
+	{
+		NewPercentage = UpgradeWhiteBar->GetPercent();
+		GetWorld()->GetTimerManager().ClearTimer(UpdateUpgradeBarHandle);
+	}
+	UpgradeBar->SetPercent(NewPercentage);
 }
 
 void UPlayerHUD::UpdatePressToHijackKeyBind(const FName& InKeyBindName, const FText& InKeyBindText) const
@@ -359,18 +386,11 @@ void UPlayerHUD::CollapseAllCrosshairs() const
 	SamuraiCrosshair->SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void UPlayerHUD::ResetGlobalHpBar() const
-{
-	if (!GlobalHpBar || !GlobalHpWhiteBar) return;
-	GlobalHpWhiteBar->SetPercent(1.f);
-	GlobalHpBar->SetPercent(1.f);
-}
-
 void UPlayerHUD::NativeDestruct()
 {
 	GetWorld()->GetTimerManager().ClearTimer(OutOfAmmoDisplayHandle);
-	GetWorld()->GetTimerManager().ClearTimer(UpdateWhiteHpBarHandle);
-	GetWorld()->GetTimerManager().ClearTimer(UpdateGlobalWhiteHpBarHandle);
+	GetWorld()->GetTimerManager().ClearTimer(UpdateHpWhiteBarHandle);
+	GetWorld()->GetTimerManager().ClearTimer(UpdateGlobalHpWhiteBarHandle);
 	Super::NativeDestruct();
 }
 

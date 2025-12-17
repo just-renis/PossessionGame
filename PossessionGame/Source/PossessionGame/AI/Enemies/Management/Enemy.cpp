@@ -671,7 +671,7 @@ void AEnemy::P_Shoot()
 	}
 	if (Weapon->GetCurrentAmmoAmount() > 0) return;
 	if (Weapon->P_CanReload()) Weapon->P_Reload();
-	else if (P_HUD) P_HUD->ShowOutOfAmmo();
+	else if (!Weapon->GetHandsAnimInstance()->IsPlaying(EHandsAnimState::Reload) && P_HUD) P_HUD->ShowOutOfAmmo();
 }
 
 void AEnemy::P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
@@ -1044,6 +1044,7 @@ void AEnemy::P_SetupUI()
 	Weapon->P_UpdateAmmoTextHUD();
 	P_HUD->SetColors(CharacterName);
 	P_HUD->PlayHijackAnim(false);
+	if (CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamageIndicator();
 	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.015f, true);
 }
 
@@ -1213,7 +1214,7 @@ void AEnemy::P_HandlingDamageTaken()
 		if (!GameInstance->IsPlayerTakenDamageEffectsEnabled()) return;
 	#endif
 	P_TriggerTakeDamageEffects();
-	if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamage();
+	if (!bIsCriticallyDamaged && CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamageIndicator();
 }
 
 void AEnemy::P_TriggerTakeDamageEffects()
@@ -1231,7 +1232,7 @@ void AEnemy::P_TriggerTakeDamageEffects()
 	else AssetsManager->PlaySound2D(ESound::TakeDamageLayer1);
 }
 
-void AEnemy::P_EnableCriticalDamage()
+void AEnemy::P_EnableCriticalDamageIndicator()
 {
 	GetWorldTimerManager().SetTimer(P_TriggerCriticalDamageIndicatorHandle, this, &AEnemy::P_TriggerCriticalDamageIndicator, 0.5f, true);
 	bIsCriticallyDamaged = true;
@@ -1476,7 +1477,9 @@ void AEnemy::P_InitiateSlide()
 	GetCapsuleComponent()->SetCapsuleHalfHeight(SlideHeight);
 	GetCharacterMovement()->GroundFriction = SlideGroundFriction;
 	GetCharacterMovement()->BrakingFrictionFactor = SlideBrakingFrictionFactor;
-	LaunchCharacter(GetActorForwardVector() * SlideStrength, true, false);
+	FVector SlideDir = GetLastMovementInputVector();
+	if (SlideDir.IsNearlyZero()) SlideDir = GetActorForwardVector();
+	LaunchCharacter(SlideDir.GetSafeNormal() * SlideStrength, true, false);
 	GetWorld()->GetTimerManager().SetTimer(P_SlideEndHandle, this, &AEnemy::P_EndSlide, SlideDuration, false);
 	Weapon->GetHandsAnimInstance()->PlayMontageWithHold(EHandsAnimState::Slide, SlideDuration);
 }

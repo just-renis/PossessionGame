@@ -20,12 +20,18 @@ class POSSESSIONGAME_API ATutorialGate : public AActor, public IInteractable
 	bool bEventToCloseGateHappened = false;
 	bool bIsGateOpened = false;
 	float TimePassed = 0.f;
+	FTimerHandle FadeOutAnimHandle;
+	FTimerHandle OpenGatesHandle;
+	FTimerHandle CloseGatesHandle;
+	FTimerHandle DisableOutlineHandle;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsTutorialBotChangeLocationGate = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsUnlockableByInteraction = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsGateClosedByTrigger = false;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bIsGateOpenedByTrigger = true;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EGameMode GameModeToFinish;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -34,6 +40,8 @@ class POSSESSIONGAME_API ATutorialGate : public AActor, public IInteractable
 	TObjectPtr<UBoxComponent> Collision;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UBoxComponent> CloseTriggerCollision;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UBoxComponent> OpenTriggerCollision;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> FirstGateSide;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -44,14 +52,6 @@ class POSSESSIONGAME_API ATutorialGate : public AActor, public IInteractable
 	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
 	UPROPERTY()
 	TObjectPtr<UInteractableUI> InteractableUI;
-	UPROPERTY()
-	FTimerHandle FadeOutAnimHandle;
-	UPROPERTY()
-	FTimerHandle OpenGatesHandle;
-	UPROPERTY()
-	FTimerHandle CloseGatesHandle;
-	UPROPERTY()
-	FTimerHandle DisableOutlineHandle;
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -73,4 +73,6 @@ class POSSESSIONGAME_API ATutorialGate : public AActor, public IInteractable
 	void DisableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	UFUNCTION()
 	void CloseTriggerPassed(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OpenTriggerPassed(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
