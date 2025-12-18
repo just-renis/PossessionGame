@@ -3,6 +3,7 @@
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ELanguageCode.h"
+#include "PossessionGame/UI/SecondaryWidgets/CustomEditableText.h"
 #include "PossessionGame/UI/SecondaryWidgets/SettingsOptionUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/SliderUI.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameUserSettings.h"
@@ -18,7 +19,7 @@ void UAudioSettingsUI::UpdateDefaultMainSettings()
 	ApplyMusicVolumeValue(SavedSettings->GetMusicVolumeValue());
 	ApplyHorizontalSensitivityValue(SavedSettings->GetMouseHorizontalSensitivity());
 	ApplyVerticalSensitivityValue(SavedSettings->GetMouseVerticalSensitivity());
-	ApplyFpsCapValue(Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings())->GetFrameRateLimit());
+	ApplyFpsCapValue(GEngine->GetGameUserSettings()->GetFrameRateLimit());
 	ApplyRunToggleValue(SavedSettings->GetIsRunToggleEnabled());
 }
 
@@ -50,7 +51,7 @@ void UAudioSettingsUI::ApplySettings()
 		VerticalSensitivitySlider->SaveValue();
 		SavedSettings->SetMouseVerticalSensitivity(VerticalSensitivitySlider->GetSavedValue());
 	}
-	if (FpsCapSlider) FpsCapSlider->SaveValue();
+	ApplyFpsCapValue(FCString::Atoi(*FpsCapNumberText->GetText().ToString()));
 	if (RunModeOption) SavedSettings->SetIsRunToggleEnabled(bIsRunToggleMode);
 	const FString& LanguageEncode = GetLanguageOption(LanguageCode).LanguageCode;
 	SavedSettings->SetLanguage(LanguageEncode);
@@ -67,7 +68,7 @@ void UAudioSettingsUI::SetSavedSettings()
 	if (MusicVolumeSlider) ApplyMusicVolumeValue(MusicVolumeSlider->GetSavedValue());
 	if (HorizontalSensitivitySlider) ApplyHorizontalSensitivityValue(HorizontalSensitivitySlider->GetSavedValue());
 	if (VerticalSensitivitySlider) ApplyVerticalSensitivityValue(VerticalSensitivitySlider->GetSavedValue());
-	if (FpsCapSlider) ApplyFpsCapValue(FpsCapSlider->GetSavedValue());
+	if (FpsCapNumberText) ApplyFpsCapValue(FCString::Atoi(*FpsCapNumberText->GetText().ToString()));
 }
 
 ELanguageCode UAudioSettingsUI::GetLanguageCode(const FString& InCode)
@@ -118,7 +119,6 @@ void UAudioSettingsUI::NativeConstruct()
 	LanguageOption->SetText(GetLanguageOption(LanguageCode).LanguageName);
 	LanguageOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchLeft);
 	LanguageOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::LanguageSwitchRight);
-	if (FpsCapSlider) FpsCapSlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::SetFpsValue);
 	if (HorizontalSensitivitySlider) HorizontalSensitivitySlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::SetHorizontalSensitivityNumberValue);
 	if (VerticalSensitivitySlider) VerticalSensitivitySlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::UAudioSettingsUI::SetVerticalSensitivityNumberValue);
 	if (RunModeOption)
@@ -126,6 +126,7 @@ void UAudioSettingsUI::NativeConstruct()
 		RunModeOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::ToggleRunMode);
 		RunModeOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::ToggleRunMode);
 	}
+	if (FpsCapNumberText) FpsCapNumberText->Init();
 }
 
 void UAudioSettingsUI::ApplyMasterVolumeValue(const float InValue) const
@@ -171,12 +172,11 @@ void UAudioSettingsUI::ApplyVerticalSensitivityValue(const float InValue)
 	SetVerticalSensitivityNumberValue(InValue);
 }
 
-void UAudioSettingsUI::ApplyFpsCapValue(const float InValue) const
+void UAudioSettingsUI::ApplyFpsCapValue(int32 InValue) const
 {
-	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
-	GameUserSettings->SetFrameRateLimit(InValue);
-	if (FpsCapNumberText) FpsCapNumberText->SetText(FText::AsNumber(static_cast<int32>(GameUserSettings->GetFrameRateLimit())));
-	if (FpsCapSlider) FpsCapSlider->SetValue(InValue);
+	if (InValue != 0) InValue = FMath::Max(InValue, 20);
+	GEngine->GetGameUserSettings()->SetFrameRateLimit(InValue);
+	if (FpsCapNumberText) FpsCapNumberText->SetText(FText::AsNumber(InValue));
 }
 
 void UAudioSettingsUI::ApplyRunToggleValue(const bool bState)
@@ -201,13 +201,6 @@ void UAudioSettingsUI::LanguageSwitchRight()
 	if (!Languages.Contains(static_cast<ELanguageCode>(NextValue))) NextValue = Languages.Num() - 1;
 	LanguageCode = static_cast<ELanguageCode>(NextValue);
 	if (LanguageOption) LanguageOption->SetText(Languages[LanguageCode].LanguageName);
-}
-
-void UAudioSettingsUI::SetFpsValue(const float InValue)
-{
-	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
-	GameUserSettings->SetFrameRateLimit(InValue);
-	if (FpsCapNumberText) FpsCapNumberText->SetText(FText::AsNumber(static_cast<int32>(GameUserSettings->GetFrameRateLimit())));
 }
 
 void UAudioSettingsUI::SetHorizontalSensitivityNumberValue(const float InValue)

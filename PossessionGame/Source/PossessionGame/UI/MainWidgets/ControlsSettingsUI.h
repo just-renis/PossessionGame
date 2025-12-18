@@ -23,7 +23,7 @@ public:
 	void Setup(const TObjectPtr<USettingsUI>& InParent);
 private:
 	int32 DesiredOrderMovement = 6;
-	int32 DesiredOrderAction = 12;
+	int32 DesiredOrderAction = 13;
 	UPROPERTY(EditDefaultsOnly, Category = "Key Binds", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> LineSeparatorTexture;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

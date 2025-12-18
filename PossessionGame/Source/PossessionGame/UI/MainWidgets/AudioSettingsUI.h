@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/ELanguageCode.h"
 #include "AudioSettingsUI.generated.h"
 
+class UCustomEditableText;
 class UTextBlock;
 enum class ELanguageCode : uint8;
 class USettingsOptionUI;
@@ -48,13 +49,11 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USliderUI> VerticalSensitivitySlider;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USliderUI> FpsCapSlider;
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USettingsOptionUI> LanguageOption;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USettingsOptionUI> RunModeOption;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> FpsCapNumberText;
+	TObjectPtr<UCustomEditableText> FpsCapNumberText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> HorizontalSensitivityNumber;
 	UPROPERTY(meta = (BindWidget))
@@ -71,7 +70,7 @@ private:
 	void SetupLanguagesData();
 	void ApplyHorizontalSensitivityValue(const float InValue);
 	void ApplyVerticalSensitivityValue(const float InValue);
-	void ApplyFpsCapValue(const float InValue) const;
+	void ApplyFpsCapValue(int32 InValue) const;
 	void ApplyRunToggleValue(const bool bState);
 	UFUNCTION()
 	void ToggleRunMode();
@@ -79,8 +78,6 @@ private:
 	void LanguageSwitchLeft();
 	UFUNCTION()
 	void LanguageSwitchRight();
-	UFUNCTION()
-	void SetFpsValue(const float InValue);
 	UFUNCTION()
 	void SetHorizontalSensitivityNumberValue(const float InValue);
 	UFUNCTION()
