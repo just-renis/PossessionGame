@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnhancedInputComponent.h"
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
@@ -94,6 +95,7 @@ public:
 	virtual void AI_StunEffectEnded();
 
 	virtual void P_RemoveReloadSound() {}
+	void P_ReEnableRunIfToggleMode();
 	void P_ApplyUpgradeOnSelection();
 	void P_UseAbility(const int32 InAbilityIndex);
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo) const;
@@ -180,6 +182,8 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> VectorBlastSpecialImpactUpgrade;
 	UPROPERTY()
+	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent;
+	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 	
 	virtual float AI_GetShootPause();
@@ -205,12 +209,12 @@ protected:
 	virtual void P_SetupAbilities();
 	virtual void P_Setup();
 	virtual void P_Shoot();
-	virtual void P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent);
-	virtual void P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent) {}
-	virtual void P_SetupShiftInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent);
-	virtual void P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent) {}
-	virtual void P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent);
-	virtual void P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent) {}
+	virtual void P_SetupLeftClickInput();
+	virtual void P_SetupRightClickInput() {}
+	virtual void P_SetupShiftInput();
+	virtual void P_SetupLeftClickInputStartedState();
+	virtual void P_SetupLeftClickInputTriggeredState();
+	virtual void P_SetupLeftClickInputCompletedState();
 	virtual void P_Destroy();
 	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
 	void P_SetupCharacterMovement();
@@ -252,6 +256,7 @@ private:
 	bool bIsStomping = false;
 	bool bCanRun = true;
 	bool bIsRunning = false;
+	bool bWasRunningBeforeShooting = false;
 	bool bHijackOutlineState = false;
 	bool bIsSliding = false;
 	bool bIsDoubleJumpOccured = false;
@@ -263,6 +268,8 @@ private:
 	bool bIsInvincible = false;
 	bool bAIRespawnRequested = false;
 	bool bPlayerTakeDamageEffectsEnabled = true;
+	bool bPlayerRunModeIsToggle = false;
+	bool bIsHoldingShoot = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -278,6 +285,8 @@ private:
 	int32 OverlappingPoisonAreas = 0;
 	int32 DisablingActionsEffectsCount = 0;
 	int32 CurrentJumpCount = 0;
+	uint32 RunBindTurnOnHandle;
+	uint32 RunBindTurnOffHandle;
 	FTimerHandle AI_ClearShootPauseHandle;
 	FTimerHandle AI_TriggerDeathVoiceLineHandle;
 	FTimerHandle AI_SetCharacterMovementSpeedHandle;
@@ -293,6 +302,7 @@ private:
 	FTimerHandle P_ControlLogicHandle;
 	FTimerHandle P_SlideEndHandle;
 	FTimerHandle P_TakeDamageEffectsHandle;
+	FTimerHandle P_CheckStoppedMovingHandle;
 	FTimerHandle DestroyHandle;
 	FTimerHandle CheckIfFallOutOfWorldHandle;
 	FTimerHandle DestroyCondenseMaterialsProcessHandle;
@@ -305,8 +315,6 @@ private:
 	FTimerHandle HijackLockInToTargetHandle;
 	FTimerHandle HijackInvincibilityDelayHandle;
 	FTimerHandle RecoverFromDisablingEffectHandle;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Explosion Radius From Emp Upgrade", meta = (AllowPrivateAccess = true))
-	float ExplosionRadiusFromEmpUpgradeInMetres = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
 	float HijackDelay = 0.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
@@ -347,6 +355,12 @@ private:
 	float SlideHeight = 39.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
 	float SlideCameraZ = 0.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Other", meta = (AllowPrivateAccess = true))
+	float ExplosionRadiusFromEmpUpgradeInMetres = 5.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Other", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
+	float AnyExplosionImpulseStrength = 1500.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Other", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
+	float AnyExplosionUpwardsImpulseAxisAddition = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Optimization", meta = (AllowPrivateAccess = true))
 	float PlayerTakeDamageEffectDelay = 0.2f;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
@@ -426,6 +440,7 @@ private:
 	int32 P_GetSecondSlotAbilityIndex() const { return P_SecondSlotAbilityIndex; }
 	
 	void P_EnableTakeDamageEffects() { bPlayerTakeDamageEffectsEnabled = true; }
+	void P_ChangeHoldingShootState(const bool bState);
 	void P_SetupData();
 	void P_SetupUI();
 	void P_HijackEnemy();
@@ -433,6 +448,7 @@ private:
 	void P_HijackBarLogic();
 	void P_Rotate(const FInputActionValue& InValue);
 	void P_Reload();
+	void P_ToggleRun();
 	void P_ToggleRun(const bool bState);
 	void P_OnEnemyDeathEvents(float InXp, const ECharacterType InCharacterName) const;
 	void P_ToggleGodMode();
@@ -476,6 +492,8 @@ private:
 	void P_LockInToTargetLogic() const;
 	void P_TurnOffInvincibility();
 	void P_OpenUpgradeSelection();
+	void P_SetupRunMode();
+	void P_CheckStoppedMoving() const;
 
 	void TickAbilities(const float InDeltaTime);
 	void SetupStimuliSource();

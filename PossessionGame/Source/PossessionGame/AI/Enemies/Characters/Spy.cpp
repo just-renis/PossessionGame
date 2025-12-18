@@ -40,10 +40,9 @@ void ASpy::P_Shoot()
 	Super::P_Shoot();
 }
 
-void ASpy::P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
+void ASpy::P_SetupLeftClickInputStartedState()
 {
-	Super::P_SetupLeftClickInputStartedState(LeftClickInputComponent);
-	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &ASpy::P_Shoot);
+	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &ASpy::P_Shoot);
 }
 
 void ASpy::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::SpyProjectile); }

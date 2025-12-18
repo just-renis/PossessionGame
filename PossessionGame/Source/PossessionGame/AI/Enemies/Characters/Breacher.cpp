@@ -190,10 +190,7 @@ void ABreacher::P_Setup()
 	P_StopAIBashLogic();
 }
 
-void ABreacher::P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
-{
-	InEnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &ABreacher::DetonateDynamites);
-}
+void ABreacher::P_SetupRightClickInput() { EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &ABreacher::DetonateDynamites); }
 
 void ABreacher::P_StopAIBashLogic()
 {

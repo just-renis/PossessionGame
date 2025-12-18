@@ -137,16 +137,10 @@ void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool b
 void AProjectile::DealAreaDamage()
 {
 	TArray<TObjectPtr<AActor>> IgnoredActors;
-	if (!ProjectileData.bCanBeDamagedByOwnProjectile)
-	{
-		if (!ProjectileData.bIsPlayerProjectile) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
-		else IgnoredActors = { ProjectileData.GetProprietor() };
-	}
+	if (!ProjectileData.bCanBeDamagedByOwnProjectile && !ProjectileData.bIsPlayerProjectile) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Damage, ProjectileData.RadiusMinimumDamage,
 	GetActorLocation(), ProjectileData.DamageInnerRadius, ProjectileData.DamageOuterRadius, ProjectileData.DamageFalloff, UDamageType::StaticClass(),
 	IgnoredActors, this, ProjectileData.GetProprietor()->GetController(), ECC_GameTraceChannel4);
-	//	DrawDebugSphere(GetWorld(), GetActorLocation(), 100.f, 12, FColor::Green, false, 3.f);
-	//DrawDebugSphere(GetWorld(), GetActorLocation(), 500.f, 12, FColor::Red, false, 3.f);
 }
 
 void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit)

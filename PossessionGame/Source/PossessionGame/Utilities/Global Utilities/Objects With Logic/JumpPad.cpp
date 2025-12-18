@@ -23,7 +23,6 @@ AJumpPad::AJumpPad()
 void AJumpPad::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag("Player")) return;
-	const TObjectPtr<UCharacterMovementComponent> CharacterMovement = Cast<ACharacter>(OtherActor)->GetCharacterMovement();
-	CharacterMovement->AddImpulse(CharacterMovement->Mass * LaunchVelocity);
+	Cast<ACharacter>(OtherActor)->LaunchCharacter(LaunchVelocity, false, true);
 	JumpPadActivateSound->Sound ? JumpPadActivateSound->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(JumpPadActivateSound, nullptr, ESound::JumpPadActivate);
 }

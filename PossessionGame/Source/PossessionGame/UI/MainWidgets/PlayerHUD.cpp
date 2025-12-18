@@ -394,11 +394,16 @@ void UPlayerHUD::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-void UPlayerHUD::UpdateUpgradeAmountText(const int32 InAmount) const
+void UPlayerHUD::UpdateUpgradeAmountText(const int32 InAmount)
 {
 	if (!UpgradeAmountText || !UpgradeTextInv) return;
 	UpgradeAmountText->SetText(FText::AsNumber(InAmount));
-	UpgradeTextInv->SetVisibility(InAmount > 0 ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (InAmount == 1)
+	{
+		UpgradeTextInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		PlayAnimation(UpgradePopupAnim);
+	}
+	else if (InAmount <= 0) UpgradeTextInv->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UPlayerHUD::UpdateUpgradeKeyBindText(const FName& InKeyBindName, const FText& InKeyName) const

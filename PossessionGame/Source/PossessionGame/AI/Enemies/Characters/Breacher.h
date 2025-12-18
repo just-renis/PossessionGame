@@ -78,7 +78,7 @@ private:
 	void AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	virtual void P_Setup() override;
-	virtual void P_SetupRightClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent) override;
+	virtual void P_SetupRightClickInput() override;
 	void P_StopAIBashLogic();
 	virtual void P_WeaponShoot() override;
 	UFUNCTION()

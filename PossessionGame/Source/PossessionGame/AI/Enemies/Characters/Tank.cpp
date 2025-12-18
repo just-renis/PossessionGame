@@ -63,16 +63,16 @@ void ATank::P_Setup()
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ATank::SetIsActionInMotion);
 }
 
-void ATank::P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
+void ATank::P_SetupLeftClickInputStartedState()
 {
-	Super::P_SetupLeftClickInputStartedState(LeftClickInputComponent);
-	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &ATank::P_ToggleChargeMinigun, true);
+	Super::P_SetupLeftClickInputStartedState();
+	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &ATank::P_ToggleChargeMinigun, true);
 }
 
-void ATank::P_SetupLeftClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent)
+void ATank::P_SetupLeftClickInputCompletedState()
 {
-	Super::P_SetupLeftClickInputCompletedState(LeftClickInputComponent);
-	LeftClickInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Completed, this, &ATank::P_ToggleChargeMinigun, false);
+	Super::P_SetupLeftClickInputCompletedState();
+	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Completed, this, &ATank::P_ToggleChargeMinigun, false);
 }
 
 void ATank::P_Destroy()

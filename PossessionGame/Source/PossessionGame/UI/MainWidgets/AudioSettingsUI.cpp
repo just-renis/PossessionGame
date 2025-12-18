@@ -7,6 +7,7 @@
 #include "PossessionGame/UI/SecondaryWidgets/SliderUI.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameUserSettings.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/SettingsSave.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 
 void UAudioSettingsUI::UpdateDefaultMainSettings()
@@ -18,6 +19,7 @@ void UAudioSettingsUI::UpdateDefaultMainSettings()
 	ApplyHorizontalSensitivityValue(SavedSettings->GetMouseHorizontalSensitivity());
 	ApplyVerticalSensitivityValue(SavedSettings->GetMouseVerticalSensitivity());
 	ApplyFpsCapValue(Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings())->GetFrameRateLimit());
+	ApplyRunToggleValue(SavedSettings->GetIsRunToggleEnabled());
 }
 
 void UAudioSettingsUI::ApplySettings()
@@ -49,11 +51,13 @@ void UAudioSettingsUI::ApplySettings()
 		SavedSettings->SetMouseVerticalSensitivity(VerticalSensitivitySlider->GetSavedValue());
 	}
 	if (FpsCapSlider) FpsCapSlider->SaveValue();
+	if (RunModeOption) SavedSettings->SetIsRunToggleEnabled(bIsRunToggleMode);
 	const FString& LanguageEncode = GetLanguageOption(LanguageCode).LanguageCode;
 	SavedSettings->SetLanguage(LanguageEncode);
 	FInternationalization::Get().SetCurrentCulture(LanguageEncode);
 	SetupLanguagesData();
 	UGameplayStatics::SaveGameToSlot(SavedSettings, "SettingsSlot", 0);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnRunModeChange.ExecuteIfBound();
 }
 
 void UAudioSettingsUI::SetSavedSettings()
@@ -117,6 +121,11 @@ void UAudioSettingsUI::NativeConstruct()
 	if (FpsCapSlider) FpsCapSlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::SetFpsValue);
 	if (HorizontalSensitivitySlider) HorizontalSensitivitySlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::SetHorizontalSensitivityNumberValue);
 	if (VerticalSensitivitySlider) VerticalSensitivitySlider->GetSlider()->OnValueChanged.AddDynamic(this, &UAudioSettingsUI::UAudioSettingsUI::SetVerticalSensitivityNumberValue);
+	if (RunModeOption)
+	{
+		RunModeOption->GetDownscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::ToggleRunMode);
+		RunModeOption->GetUpscaleButton()->OnClicked.AddDynamic(this, &UAudioSettingsUI::ToggleRunMode);
+	}
 }
 
 void UAudioSettingsUI::ApplyMasterVolumeValue(const float InValue) const
@@ -169,6 +178,14 @@ void UAudioSettingsUI::ApplyFpsCapValue(const float InValue) const
 	if (FpsCapNumberText) FpsCapNumberText->SetText(FText::AsNumber(static_cast<int32>(GameUserSettings->GetFrameRateLimit())));
 	if (FpsCapSlider) FpsCapSlider->SetValue(InValue);
 }
+
+void UAudioSettingsUI::ApplyRunToggleValue(const bool bState)
+{
+	bIsRunToggleMode = bState;
+	if (RunModeOption) RunModeOption->SetText(bIsRunToggleMode ? NSLOCTEXT("ST_Localization", "Toggle", "Toggle") : NSLOCTEXT("ST_Localization", "Hold", "Hold"));
+}
+
+void UAudioSettingsUI::ToggleRunMode() { ApplyRunToggleValue(!bIsRunToggleMode); }
 
 void UAudioSettingsUI::LanguageSwitchLeft()
 {

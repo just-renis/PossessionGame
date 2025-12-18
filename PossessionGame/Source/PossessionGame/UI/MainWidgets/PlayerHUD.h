@@ -197,6 +197,8 @@ private:
 	TObjectPtr<UWidgetAnimation> DamageReceivedAnim;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> HijackInitiateAnim;
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> UpgradePopupAnim;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Player;
 	UPROPERTY()
@@ -226,7 +228,7 @@ private:
 	void CollapseAllAbilitiesPanels() const;
 	void CollapseAllCrosshairs() const;
 	virtual void NativeDestruct() override;
-	void UpdateUpgradeAmountText(const int32 InAmount) const;
+	void UpdateUpgradeAmountText(const int32 InAmount);
 	void UpdateUpgradeKeyBindText(const FName& InKeyBindName, const FText& InKeyName) const;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);

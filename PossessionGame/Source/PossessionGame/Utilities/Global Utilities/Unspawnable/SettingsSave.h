@@ -9,6 +9,7 @@ class POSSESSIONGAME_API USettingsSave : public USaveGame
 {
 	GENERATED_BODY()
 public:
+	bool GetIsRunToggleEnabled() const { return bIsRunToggleEnabled; }
 	float GetMasterVolumeValue() const { return MasterVolumeValue; }
 	float GetSfxVolumeValue() const { return SfxVolumeValue; }
 	float GetMusicVolumeValue() const { return MusicVolumeValue; }
@@ -23,7 +24,10 @@ public:
 	void SetLanguage(const FString& InLanguage) { Language = InLanguage; }
 	void SetMouseHorizontalSensitivity(const float InValue) { MouseHorizontalSensitivity = InValue; }
 	void SetMouseVerticalSensitivity(const float InValue) { MouseVerticalSensitivity = InValue; }
+	void SetIsRunToggleEnabled(const bool bState) { bIsRunToggleEnabled = bState; }
 private:
+	UPROPERTY()
+	bool bIsRunToggleEnabled = false;
 	UPROPERTY()
 	float MasterVolumeValue = 1.f;
 	UPROPERTY()

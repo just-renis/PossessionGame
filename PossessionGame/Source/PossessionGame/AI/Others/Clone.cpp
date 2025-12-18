@@ -22,6 +22,26 @@ AClone::AClone()
 	DisappearSound->SetupAttachment(Mesh);
 }
 
+FVector AClone::GetAvoidanceDirection(const FVector& DesiredDir) const
+{
+	FVector Start = GetActorLocation();
+	Start.Z += 20.f;
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	DrawDebugLine(GetWorld(), Start, Start + DesiredDir * TraceDistance, FColor::Green, false, 0.02f);
+	if (!GetWorld()->SweepSingleByChannel(Hit, Start, Start + DesiredDir * TraceDistance, FQuat::Identity, ECC_WorldStatic, FCollisionShape::MakeSphere(TraceRadius), Params)) { return DesiredDir; }
+	const FVector Right = FVector::CrossProduct(FVector::UpVector, DesiredDir);
+	const FVector Left = -Right;
+	DrawDebugLine(GetWorld(), Start, Start + Right * TraceDistance, FColor::Red, false, 0.02f);
+	const bool bRightClear = !GetWorld()->SweepSingleByChannel(Hit, Start, Start + Right * TraceDistance, FQuat::Identity, ECC_WorldStatic, FCollisionShape::MakeSphere(TraceRadius), Params);
+	DrawDebugLine(GetWorld(), Start, Start + Left * TraceDistance, FColor::Blue, false, 0.02f);
+	const bool bLeftClear = !GetWorld()->SweepSingleByChannel(Hit, Start, Start + Left * TraceDistance, FQuat::Identity, ECC_WorldStatic, FCollisionShape::MakeSphere(TraceRadius), Params);
+	if (bRightClear) return (DesiredDir + Right * AvoidStrength).GetSafeNormal();
+	if (bLeftClear)  return (DesiredDir + Left  * AvoidStrength).GetSafeNormal();
+	return DesiredDir * 0.3f;
+}
+
 void AClone::InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USkeletalMesh> InSkeletalMesh, const TObjectPtr<USkeletalMesh> InWeaponMesh)
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnEnemyDeathOccurred.AddUObject(this, &AClone::ChangeTarget);
@@ -107,13 +127,15 @@ void AClone::MoveTowardsTargetLogic()
 	AnimInstance->SetLookAtLocation(Target->GetActorLocation());
 	if (Distance > 400.f)
 	{
-		if (!AnimInstance->GetIsDirectionForward()) AnimInstance->SetMovementDirectionForward(true);
-		AddActorWorldOffset(Direction * MovementSpeed * 0.02f, true);
+		AnimInstance->SetMovementDirectionForward(true);
+		//const FVector MoveDir = GetAvoidanceDirection(ToTarget.GetSafeNormal());
+		AddActorWorldOffset(Direction  * MovementSpeed * 0.02f, true);
 	}
 	else if (Distance < 300.f)
 	{
-		if (AnimInstance->GetIsDirectionForward()) AnimInstance->SetMovementDirectionForward(false);
-		AddActorWorldOffset(-Direction * MovementSpeed * 0.02f, true);
+		AnimInstance->SetMovementDirectionForward(false);
+		//const FVector MoveDir = GetAvoidanceDirection(-ToTarget.GetSafeNormal());
+		AddActorWorldOffset(-Direction  * MovementSpeed * 0.02f, true);
 	}
 	else AnimInstance->SetShootOnly(true);
 	FRotator TargetRot = Direction.Rotation();

@@ -2,6 +2,7 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "KismetAnimationLibrary.h"
 #include "Weapon.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -88,7 +89,7 @@ void UHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInt
         bIsReloading = false;
         Proprietor->P_RemoveReloadSound();
         if (!bIsInterrupted) (void)GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerReloadMontageEnd.ExecuteIfBound(Proprietor->GetWeapon()->GetTotalAmmoAmount());
-       return;
+        return;
     }
     if (IsMontage(EHandsAnimState::Shoot, InMontage))
     {
@@ -113,6 +114,7 @@ void UHandsAnimInstance::NativeUpdateAnimation(const float InDeltaSeconds)
 {
     Super::NativeUpdateAnimation(InDeltaSeconds);
     if (!Proprietor) return;
+    bIsFalling = Proprietor->GetCharacterMovement()->IsFalling();
     DirectionalAngle = UKismetAnimationLibrary::CalculateDirection(Proprietor->GetVelocity(), Proprietor->GetActorRotation());
 }
 

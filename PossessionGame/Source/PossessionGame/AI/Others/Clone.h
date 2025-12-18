@@ -20,7 +20,14 @@ class POSSESSIONGAME_API AClone : public APoolObject
 	float PatternMaxOpacity = 0.f;
 	float PatternOpacityDivisor = 0.f;
 	float DeploymentPercent = 0.f;
+	float TraceDistance = 120.f;
+	float AvoidStrength = 0.75f;
+	float TraceRadius = 25.f;
 	FVector Velocity;
+	FTimerHandle GravityHandle;
+	FTimerHandle MoveHandle;
+	FTimerHandle ShootHandle;
+	FTimerHandle DissolveHandle;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -34,14 +41,6 @@ class POSSESSIONGAME_API AClone : public APoolObject
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	FProjectileData ProjectileData;
 	UPROPERTY()
-	FTimerHandle GravityHandle;
-	UPROPERTY()
-	FTimerHandle MoveHandle;
-	UPROPERTY()
-	FTimerHandle ShootHandle;
-	UPROPERTY()
-	FTimerHandle DissolveHandle;
-	UPROPERTY()
 	TObjectPtr<UCloneAnimationInstance> AnimInstance;
 	UPROPERTY()
 	TObjectPtr<AActor> Target;
@@ -51,6 +50,8 @@ class POSSESSIONGAME_API AClone : public APoolObject
 	TObjectPtr<UNiagaraComponent> CloneSpawnComponent;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DisappearSound;
+
+	FVector GetAvoidanceDirection(const FVector& DesiredDir) const;
 
 	virtual void InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USkeletalMesh> InSkeletalMesh, const TObjectPtr<USkeletalMesh> InWeaponMesh) override;
 	void DestroyThis();

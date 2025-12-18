@@ -50,6 +50,7 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
+#include "PossessionGame/Utilities/Global Utilities/Unspawnable/SettingsSave.h"
 #include "PossessionGame/Utilities/Subsystems/AbilityManager.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
@@ -213,6 +214,13 @@ void AEnemy::AI_StunEffectEnded()
 	RemoveDisablingActionEffect();
 }
 
+void AEnemy::P_ReEnableRunIfToggleMode()
+{
+	if (!bPlayerRunModeIsToggle || !bWasRunningBeforeShooting) return;
+	bWasRunningBeforeShooting = false;
+	P_ToggleRun(true);
+}
+
 void AEnemy::P_ApplyUpgradeOnSelection()
 {
 	bInUpgradeSelection = false;
@@ -288,14 +296,15 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 			if (!Subsystem->HasMappingContext(PlayerMappingContext)) Subsystem->AddMappingContext(PlayerMappingContext, 0);
 		}
 	}
-	if (const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
+	if (EnhancedInputComponent)
 	{
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(0).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Move); // WASD
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(4).Action, ETriggerEvent::Started, this, &AEnemy::P_Jump); // Space
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(5).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Rotate); // Mouse movement
-		P_SetupShiftInput(EnhancedInputComponent); // Shift
+		P_SetupShiftInput(); // Shift
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(7).Action, ETriggerEvent::Triggered, this, &AEnemy::P_HijackEnemy); // E
-		P_SetupLeftClickInput(EnhancedInputComponent); // Left Click
+		P_SetupLeftClickInput(); // Left Click
 		if (bCanReload) EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(9).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Reload); // R
 		#if WITH_EDITOR
 			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(10).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleGodMode); // +
@@ -303,7 +312,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(11).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, P_GetFirstSlotAbilityIndex()); // 1
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(12).Action, ETriggerEvent::Started, this, &AEnemy::P_UseAbility, P_GetSecondSlotAbilityIndex()); // 2
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(13).Action, ETriggerEvent::Started, this, &AEnemy::P_OpenUpgradeSelection); // T
-		P_SetupRightClickInput(EnhancedInputComponent); // Right Click
+		P_SetupRightClickInput(); // Right Click
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(15).Action, ETriggerEvent::Started, this, &AEnemy::P_HandleEscapeClick); // Escape
 		#if WITH_EDITOR
 			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &AEnemy::ToggleTimeDilation); // B
@@ -638,6 +647,7 @@ void AEnemy::P_Setup()
 	DelegateManager->OnXpReceived.BindUObject(this, &AEnemy::P_AddXp);
 	DelegateManager->ApplySecretBoostHealth.BindUObject(this, &AEnemy::P_ApplySecretBoostHp);
 	DelegateManager->AddActionSpeedBoost.RemoveAll(this);
+	DelegateManager->OnRunModeChange.BindUObject(this, &AEnemy::P_SetupRunMode);
 	Tags.Remove("AliveEnemy");
 	Tags.Add("Player");
 	P_ReceiveCurrentlySelectedVariation();
@@ -657,6 +667,7 @@ void AEnemy::P_Setup()
 	P_SetupUI();
 	P_SetupAbilities();
 	DelegateManager->OnEnemyDeath.BindUObject(this, &AEnemy::P_OnEnemyDeathEvents);
+	GetWorldTimerManager().SetTimer(P_CheckStoppedMovingHandle, this, &AEnemy::P_CheckStoppedMoving, 0.25f, true);
 }
 
 void AEnemy::P_Shoot()
@@ -664,7 +675,11 @@ void AEnemy::P_Shoot()
 	if (bIsInputLocked || bIsActionInMotion || !bCanShoot) return;
 	if (Weapon->P_CanShoot())
 	{
-		if (bIsRunning) P_ToggleRun(false);
+		if (bIsRunning)
+		{
+			if (bPlayerRunModeIsToggle) bWasRunningBeforeShooting = true;
+			P_ToggleRun(false);
+		}
 		if (bIsSliding) Weapon->GetHandsAnimInstance()->StopMontage(EHandsAnimState::Slide, 0.f);
 		P_WeaponShoot();
 		return;
@@ -674,22 +689,28 @@ void AEnemy::P_Shoot()
 	else if (!Weapon->GetHandsAnimInstance()->IsPlaying(EHandsAnimState::Reload) && P_HUD) P_HUD->ShowOutOfAmmo();
 }
 
-void AEnemy::P_SetupLeftClickInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
+void AEnemy::P_SetupLeftClickInput()
 {
-	P_SetupLeftClickInputStartedState(InEnhancedInputComponent);
-	P_SetupLeftClickInputTriggeredState(InEnhancedInputComponent);
-	P_SetupLeftClickInputCompletedState(InEnhancedInputComponent);
+	P_SetupLeftClickInputStartedState();
+	P_SetupLeftClickInputTriggeredState();
+	P_SetupLeftClickInputCompletedState();
 }
 
-void AEnemy::P_SetupShiftInput(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
+void AEnemy::P_SetupShiftInput() { P_SetupRunMode(); }
+
+void AEnemy::P_SetupLeftClickInputStartedState()
 {
-	InEnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleRun, true);
-	InEnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &AEnemy::P_ToggleRun, false);
+	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &AEnemy::P_ChangeHoldingShootState, true);
 }
 
-void AEnemy::P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> InEnhancedInputComponent)
+void AEnemy::P_SetupLeftClickInputTriggeredState()
 {
-	InEnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Shoot);
+	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Triggered, this, &AEnemy::P_Shoot);
+}
+
+void AEnemy::P_SetupLeftClickInputCompletedState()
+{
+	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Completed, this, &AEnemy::P_ChangeHoldingShootState, false);
 }
 
 void AEnemy::P_Destroy()
@@ -777,7 +798,14 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	}
 	if (bIsHijacked)
 	{
-		ReceiveDamage(Damage, EDamageReason::None);
+		if (RadialDamageEvent)
+		{
+			FVector LaunchDir = GetActorLocation() - RadialDamageEvent->Origin;
+			LaunchDir.Z += AnyExplosionUpwardsImpulseAxisAddition;
+			LaunchDir.Normalize();
+			LaunchCharacter(LaunchDir * AnyExplosionImpulseStrength, true, true);
+		}
+		if (EventInstigator != GetController()) ReceiveDamage(Damage, EDamageReason::None);
 		return Damage;
 	}
 	if (RadialDamageEvent) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), Damage, GetActorLocation(), GetActorForwardVector());
@@ -892,6 +920,7 @@ void AEnemy::ClearTimers()
 	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
 	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
 	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
+	GetWorldTimerManager().ClearTimer(P_CheckStoppedMovingHandle);
 	GetWorldTimerManager().ClearTimer(ActionSpeedHandle);
 }
 
@@ -1014,6 +1043,12 @@ void AEnemy::AI_TimeDilationChange(const float InDilation) const
 	GetMesh()->SetComponentTickInterval(1.f / 30.f / InDilation);
 }
 
+void AEnemy::P_ChangeHoldingShootState(const bool bState)
+{
+	bIsHoldingShoot = bState;
+	if (!bIsHoldingShoot) P_ReEnableRunIfToggleMode();
+}
+
 void AEnemy::P_SetupData()
 {
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
@@ -1121,6 +1156,8 @@ void AEnemy::P_Reload()
 	if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload && !P_InputManager->IsPressed(FKey("LeftMouseButton")) && Weapon->P_CanReload()) Weapon->P_Reload();
 }
 
+void AEnemy::P_ToggleRun() { P_ToggleRun(!bIsRunning); }
+
 void AEnemy::P_ToggleRun(const bool bState)
 {
 	if (bIsInputLocked || !bCanRun) return;
@@ -1136,10 +1173,7 @@ void AEnemy::P_ToggleRun(const bool bState)
 
 void AEnemy::P_OnEnemyDeathEvents(float InXp, const ECharacterType InCharacterName) const
 {
-	if (InCharacterName != ECharacterType::Warden && InCharacterName != ECharacterType::MinionBoss)
-	{
-		if (DelegateManager->RequestCurrentXpNerf.IsBound()) InXp *= DelegateManager->RequestCurrentXpNerf.Execute();
-	}
+	if (InCharacterName != ECharacterType::Warden && InCharacterName != ECharacterType::MinionBoss && DelegateManager->RequestCurrentXpNerf.IsBound()) InXp *= DelegateManager->RequestCurrentXpNerf.Execute();
 	P_AddXp(InXp);
 }
 
@@ -1546,6 +1580,37 @@ void AEnemy::P_OpenUpgradeSelection()
 {
 	if (!GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsUpgradeAvailable()) return;
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
+}
+
+void AEnemy::P_SetupRunMode()
+{
+	if (!EnhancedInputComponent) return;
+	const TObjectPtr<USettingsSave> SettingsSave = Cast<USettingsSave>(UGameplayStatics::LoadGameFromSlot("SettingsSlot", 0));
+	if (SettingsSave->GetIsRunToggleEnabled())
+	{
+		if (RunBindTurnOnHandle != 0)
+		{
+			EnhancedInputComponent->RemoveBindingByHandle(RunBindTurnOnHandle);
+			EnhancedInputComponent->RemoveBindingByHandle(RunBindTurnOffHandle);
+		}
+		bPlayerRunModeIsToggle = true;
+		RunBindTurnOnHandle = EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleRun).GetHandle();
+	}
+	else
+	{
+		if (RunBindTurnOnHandle != 0) EnhancedInputComponent->RemoveBindingByHandle(RunBindTurnOnHandle);
+		bPlayerRunModeIsToggle = false;
+		RunBindTurnOnHandle = EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Started, this, &AEnemy::P_ToggleRun, true).GetHandle();
+		RunBindTurnOffHandle = EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(6).Action, ETriggerEvent::Completed, this, &AEnemy::P_ToggleRun, false).GetHandle();
+	}
+	P_ToggleRun(false);
+}
+
+void AEnemy::P_CheckStoppedMoving() const
+{
+	if (!RunVfx) return;
+	if (GetVelocity().SizeSquared() < KINDA_SMALL_NUMBER) RunVfx->DeactivateImmediate();
+	else if (bIsRunning) RunVfx->Activate();
 }
 
 void AEnemy::TickAbilities(const float InDeltaTime)

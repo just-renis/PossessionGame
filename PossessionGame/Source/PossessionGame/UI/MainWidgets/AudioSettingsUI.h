@@ -33,6 +33,7 @@ public:
 	void ApplySettings();
 	void SetSavedSettings();
 private:
+	bool bIsRunToggleMode;
 	ELanguageCode LanguageCode;
 	UPROPERTY()
 	TMap<ELanguageCode, FLanguageOption> Languages;
@@ -50,6 +51,8 @@ private:
 	TObjectPtr<USliderUI> FpsCapSlider;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USettingsOptionUI> LanguageOption;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<USettingsOptionUI> RunModeOption;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FpsCapNumberText;
 	UPROPERTY(meta = (BindWidget))
@@ -69,6 +72,9 @@ private:
 	void ApplyHorizontalSensitivityValue(const float InValue);
 	void ApplyVerticalSensitivityValue(const float InValue);
 	void ApplyFpsCapValue(const float InValue) const;
+	void ApplyRunToggleValue(const bool bState);
+	UFUNCTION()
+	void ToggleRunMode();
 	UFUNCTION()
 	void LanguageSwitchLeft();
 	UFUNCTION()

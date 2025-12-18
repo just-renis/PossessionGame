@@ -27,9 +27,9 @@ private:
 	bool P_GetIsLeftOrRightInputNotPressed();
 	
 	virtual void P_Setup() override;
-	virtual void P_SetupLeftClickInputStartedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
-	virtual void P_SetupLeftClickInputCompletedState(TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
-	virtual void P_SetupShiftInput(const TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent) override {}
+	virtual void P_SetupLeftClickInputStartedState() override;
+	virtual void P_SetupLeftClickInputCompletedState() override;
+	virtual void P_SetupShiftInput() override {}
 	virtual void P_Destroy() override;
 	void P_ToggleChargeMinigun(const bool bState);
 	void P_StopChargingMinigun();

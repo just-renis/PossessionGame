@@ -65,9 +65,9 @@ private:
 	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage) override;
 
 	virtual void P_Setup() override;
-	virtual void P_SetupLeftClickInputTriggeredState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override {}
-	virtual void P_SetupLeftClickInputStartedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
-	virtual void P_SetupLeftClickInputCompletedState(const TObjectPtr<UEnhancedInputComponent> LeftClickInputComponent) override;
+	virtual void P_SetupLeftClickInputTriggeredState() override {}
+	virtual void P_SetupLeftClickInputStartedState() override;
+	virtual void P_SetupLeftClickInputCompletedState() override;
 	void P_OnShootStarted();
 	void P_ResetShootHoldDuration() const;
 	void P_CancelShootingHold();
