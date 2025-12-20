@@ -2,12 +2,14 @@
 #include "Enemy.h"
 #include "EnemyAnimationInstance.h"
 #include "Components/StateTreeComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/EmptyActor.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
+#include "PossessionGame/Weapons/Management/Weapon.h"
 
 AEnemyAIController::AEnemyAIController()
 {
@@ -82,17 +84,35 @@ void AEnemyAIController::BeginPlay()
 	SetupEQSTarget();
 }
 
-void AEnemyAIController::AdjustCustomFocus() const
+void AEnemyAIController::AdjustCustomFocus()
 {
 	if (!Proprietor->GetIsActionInMotion())
 	{
-		const FVector TargetLocation = EnemyCommunicator->GetTargetLocation();
+		FVector TargetLocation = EnemyCommunicator->GetTargetLocation();
 		if ((Proprietor->GetMoveMode() != EMoveMode::Walk || TargetLocation.ContainsNaN()) && bIsControlRigAvailableToToggle) Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
 		else
 		{
 			if (bIsControlRigAvailableToToggle) Proprietor->GetAnimInstance()->SetIsControlRigEnabled(true);
-			Proprietor->GetAnimInstance()->SetLookAtLocation(TargetLocation);
-			CustomFocusToLocation(TargetLocation);
+			const TObjectPtr<AEnemy> Player = EnemyCommunicator->GetTarget();
+			if (bPredictionEnabled && Player)
+			{
+				FVector TargetVelocity = Player->GetCharacterMovement()->Velocity;
+				TargetVelocity.Z = 0.f;
+				const FVector MuzzleLocation = Proprietor->GetWeapon()->GetSocketLocation("MuzzleSocket");
+				const float Distance = FVector::Dist(MuzzleLocation, TargetLocation);
+				const float VerticalDelta = TargetLocation.Z - MuzzleLocation.Z;
+				float PredictionTime = bPredictionClampEnabled ? FMath::Clamp(Distance / ProjectileSpeed * PredictionTimeMultiplier, 0.f, PredictionMaxClamp) : Distance / ProjectileSpeed * PredictionTimeMultiplier;
+				if (VerticalDelta > VerticalDeltaThreshold) TargetLocation.Z += VerticalDeltaAddition;
+				if (PredictionTime > DistanceScalingMultiplierStart) PredictionTime *= DistanceScalingMultiplier;
+				const FVector ModifiedTargetLocation = TargetLocation + TargetVelocity * PredictionTime;
+				Proprietor->GetAnimInstance()->SetLookAtLocation(ModifiedTargetLocation);
+				if (bCustomFocusEnabled) CustomFocusToLocation(ModifiedTargetLocation);
+			}
+			else
+			{
+				Proprietor->GetAnimInstance()->SetLookAtLocation(TargetLocation);
+				if (bCustomFocusEnabled) CustomFocusToLocation(TargetLocation);
+			}
 		}
 	}
 }
@@ -133,7 +153,7 @@ void AEnemyAIController::CustomFocusToLocation(const FVector& InTargetLocation) 
 	GetPawn()->SetActorRotation(NewControlRotation);
 }
 
-void AEnemyAIController::SetTarget(const TObjectPtr<AActor>& InTarget, const bool bIsTargetAcquiredForFirstTime)
+void AEnemyAIController::SetTarget(const TObjectPtr<AEnemy>& InTarget, const bool bIsTargetAcquiredForFirstTime)
 {
 	StateTreeData.SetTargetRef(InTarget);
 	if (!bIsTargetAcquiredForFirstTime) SetupStateTree();

@@ -1,7 +1,6 @@
 ﻿#include "EQG_AroundPlayer.h"
 #include "NavigationSystem.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_Point.h"
-#include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Utilities/Data Utilities/FEQSPointData.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 
@@ -19,23 +18,23 @@ void UEQG_AroundPlayer::GenerateItems(FEnvQueryInstance& QueryInstance) const
 	QueryInstance.ReserveItemData(NumRings * NumPointsInRing);
 	for (int32 RingIndex = 0, i = 0; RingIndex < NumRings; RingIndex++)
 	{
-		float CurrentRadius;
-		if (RingIndex == 1) CurrentRadius = DefaultMetresDistance * 100.f + RingIndex * RangerMetresDistance * 100.f;
-		else CurrentRadius = DefaultMetresDistance * 100.f + RingIndex * 100.f;
-		for (int32 PointIndex = 0; PointIndex < NumPointsInRing; PointIndex++, i++)
+		const float CurrentRadius = DistanceRanges[RingIndex] * 100.f;
+		if (const FDistanceRangeCharacters* Characters = DistanceRangeCharacters.Find(RingIndex))
 		{
-			const float Angle = FMath::DegreesToRadians(360.f / NumPointsInRing * PointIndex);
-			FVector PointOffset = FVector(FMath::Cos(Angle) * CurrentRadius, FMath::Sin(Angle) * CurrentRadius, 0.f);
-			FVector PointLocation = QueryActor->GetActorLocation() + PointOffset;
-			FNavLocation NavPoint;
-			if (NavSys->ProjectPointToNavigation(PointLocation, NavPoint, FVector(50.f, 50.f, 1000.f)))
+			for (int32 PointIndex = 0; PointIndex < NumPointsInRing; PointIndex++, i++)
 			{
-				FVector FixedLocation = NavPoint.Location + FVector(0.f, 0.f, 50.f);
-				QueryInstance.AddItemData<UEnvQueryItemType_Point>(FixedLocation);
-				if (RingIndex == 0) EnemyCommunicator->AddPoint(i, FEQSPointData(FixedLocation, TSet{ECharacterType::Trickster, ECharacterType::Spy, ECharacterType::Tank, ECharacterType::Breacher}));
-				else EnemyCommunicator->AddPoint(i, FEQSPointData(FixedLocation, RingIndex == 1 ? TSet{ECharacterType::Minion, ECharacterType::Guardian, ECharacterType::MinionBoss, ECharacterType::Warden, ECharacterType::Wraith} : TSet{ECharacterType::Ranger}));
+				const float Angle = FMath::DegreesToRadians(360.f / NumPointsInRing * PointIndex);
+				FVector PointOffset = FVector(FMath::Cos(Angle) * CurrentRadius, FMath::Sin(Angle) * CurrentRadius, 0.f);
+				FVector PointLocation = QueryActor->GetActorLocation() + PointOffset;
+				FNavLocation NavPoint;
+				if (NavSys->ProjectPointToNavigation(PointLocation, NavPoint, FVector(50.f, 50.f, 1000.f)))
+				{
+					FVector FixedLocation = NavPoint.Location + FVector(0.f, 0.f, 50.f);
+					QueryInstance.AddItemData<UEnvQueryItemType_Point>(FixedLocation);
+					EnemyCommunicator->AddPoint(i, FEQSPointData(FixedLocation, Characters->Values));
+				}
+				else i--;
 			}
-			else i--;
 		}
 	}
 }

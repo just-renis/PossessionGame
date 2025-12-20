@@ -4,6 +4,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FEQSPointData.h"
 #include "EnemyCommunicator.generated.h"
 
+class AEnemy;
 class APossessionGameGameModeBase;
 struct FEnvQueryResult;
 class UEnvQuery;
@@ -19,16 +20,16 @@ public:
 	bool GetIsEnemiesAvailable() const { return !Enemies.IsEmpty(); }
 	FVector GetPointLocation(ECharacterType InCharacterType, FVector InLocation);
 	FVector GetTargetLocation() const;
-	TObjectPtr<AActor>& GetTarget() { return Target; }
+	TObjectPtr<AEnemy>& GetTarget() { return Target; }
 	FVector GetFarthestEnemyLocation(const FVector& InFromLocation);
 	TObjectPtr<AActor> GetClosestEnemy(const FVector& InFromLocation, const TObjectPtr<AActor>& InIgnoreEnemy = nullptr);
 	FOnEQSFinish& GetEQSDelegate() { return OnEQSFinish; }
 	TArray<TObjectPtr<AActor>>& GetAllEnemies() { return Enemies; }
 
 	void Init(TObjectPtr<UDelegateManager> InDelegateManager, TObjectPtr<UEnvQuery> InTargetEQS);
-	void SetTarget(TObjectPtr<AActor> InTarget);
-	void AddEnemy(TObjectPtr<AActor> InEnemy);
-	void RemoveEnemy(TObjectPtr<AActor> InEnemy);
+	void SetTarget(const TObjectPtr<AEnemy>& InTarget);
+	void AddEnemy(const TObjectPtr<AActor>& InEnemy);
+	void RemoveEnemy(const TObjectPtr<AActor>& InEnemy);
 	void AddPoint(int32 Key, const FEQSPointData& Data);
 	void RemovePoint(int32 Key);
 private:
@@ -42,7 +43,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UEnvQuery> TargetEQS;
 	UPROPERTY()
-	TObjectPtr<AActor> Target;
+	TObjectPtr<AEnemy> Target;
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
@@ -50,7 +51,7 @@ private:
 	UPROPERTY()
 	TMap<int32, FEQSPointData> PointsAroundTarget;
 
-	void InitDelegates(TObjectPtr<UDelegateManager> InDelegateManager);
+	void InitDelegates(const TObjectPtr<UDelegateManager>& InDelegateManager);
 	void TargetQueryResult(TSharedPtr<FEnvQueryResult> Result);
 	void GeneratePointsAroundTarget();
 	virtual void Deinitialize() override;

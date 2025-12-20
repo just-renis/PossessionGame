@@ -19,6 +19,7 @@ enum class EPoolObject : uint8;
 struct FRuntimeUpgradeData;
 class USaveSlot;
 class AThrowable;
+class AEnemy;
 
 DECLARE_DELEGATE(FOnGraphicsSettingChange);
 DECLARE_DELEGATE(FOnUpgradeSelectionOpened);
@@ -87,7 +88,7 @@ DECLARE_MULTICAST_DELEGATE(FOnArtifactCollected);
 DECLARE_MULTICAST_DELEGATE(FOnDetonateDynamites);
 DECLARE_MULTICAST_DELEGATE(FOnLevelUp);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, TObjectPtr<AActor>);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, const TObjectPtr<AEnemy>&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnXRayThroughWallsChange, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeaponAmmoChangeOneParam, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeInitiator, const EGameMode);
@@ -102,7 +103,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemyDeathOccurred, const TObjectPtr<AAct
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTimeDilationChanged, const float);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType, const EVariation);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AActor>&, bool);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AEnemy>&, bool);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText&);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSpecialUpgradeAdded, const EUpgrade, const EUpgradeAttribute);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FAddActionSpeedBoost, const float, const float);

@@ -51,13 +51,35 @@ protected:
 	TObjectPtr<UEnemyCommunicator> EnemyCommunicator;
 	
 	virtual void BeginPlay() override;
-	virtual void AdjustCustomFocus() const;
+	virtual void AdjustCustomFocus();
 	UFUNCTION()
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 private:
 	bool bIsControlRigAvailableToToggle = true;
 	EStateTreeEvent CurrentStateTreeEvent;
 	FOnEqsTargetUpdate OnEqsTargetUpdate;
+	FTimerHandle AdjustCustomFocusHandle;
+	FTimerHandle OnLostSightOfPawnHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
+	bool bPredictionEnabled = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
+	bool bPredictionClampEnabled = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
+	float PredictionTimeMultiplier = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
+	float PredictionMaxClamp = 0.8f;
+	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
+	float DistanceScalingMultiplier = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
+	float DistanceScalingMultiplierStart = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
+	float ProjectileSpeed = 2000.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
+	float VerticalDeltaThreshold = 40.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
+	float VerticalDeltaAddition = 40.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Custom Focus", meta = (AllowPrivateAccess = true))
+	bool bCustomFocusEnabled = true;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	FStateTreeData StateTreeData;
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
@@ -66,15 +88,11 @@ private:
 	TObjectPtr<UAISenseConfig_Sight> SightConfig;
 	UPROPERTY()
 	TObjectPtr<AActor> EQSTarget;
-	UPROPERTY()
-	FTimerHandle AdjustCustomFocusHandle;
-	UPROPERTY()
-	FTimerHandle OnLostSightOfPawnHandle;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
 	void CustomFocusToLocation(const FVector& InTargetLocation) const;
-	void SetTarget(const TObjectPtr<AActor>& InTarget, const bool bIsTargetAcquiredForFirstTime);
+	void SetTarget(const TObjectPtr<AEnemy>& InTarget, const bool bIsTargetAcquiredForFirstTime);
 	void SetIsTargetInMySight(const bool bState);
 	void SetupEQSTarget();
 	void SetEQSTargetLocation();

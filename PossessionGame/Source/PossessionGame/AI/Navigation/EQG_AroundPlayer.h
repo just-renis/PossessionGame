@@ -4,6 +4,17 @@
 #include "EnvironmentQuery/Generators/EnvQueryGenerator_Donut.h"
 #include "EQG_AroundPlayer.generated.h"
 
+enum class ECharacterType : uint8;
+
+USTRUCT()
+struct FDistanceRangeCharacters
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TSet<ECharacterType> Values;
+};
+
 UCLASS()
 class POSSESSIONGAME_API UEQG_AroundPlayer : public UEnvQueryGenerator
 {
@@ -12,9 +23,9 @@ public:
 	UEQG_AroundPlayer();
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	float RangerMetresDistance = 4.f;
+	TArray<float> DistanceRanges;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	float DefaultMetresDistance = 4.f;
+	TMap<int32, FDistanceRangeCharacters> DistanceRangeCharacters;
 	
 	virtual void GenerateItems(FEnvQueryInstance& QueryInstance) const override;
 };

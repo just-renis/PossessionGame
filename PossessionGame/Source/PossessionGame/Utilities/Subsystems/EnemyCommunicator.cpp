@@ -1,12 +1,13 @@
 #include "EnemyCommunicator.h"
 #include "DelegateManager.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 
 FVector UEnemyCommunicator::GetPointLocation(ECharacterType InCharacterType, FVector InLocation)
 {
-	if (PointsAroundTarget.IsEmpty()) return FVector(NAN, NAN, NAN);
+	if (PointsAroundTarget.IsEmpty()) return GetTargetLocation();
 	TArray<int32> AvailableKeys;
 	float MinDistance = FLT_MAX;
 	int32 KeyIndex = 0;
@@ -72,7 +73,7 @@ void UEnemyCommunicator::Init(TObjectPtr<UDelegateManager> InDelegateManager, TO
 	if (WITH_EDITOR) GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 }
 
-void UEnemyCommunicator::SetTarget(TObjectPtr<AActor> InTarget)
+void UEnemyCommunicator::SetTarget(const TObjectPtr<AEnemy>& InTarget)
 {
 	Target = InTarget;
 	DelegateManager->OnTargetChange.Broadcast(InTarget, bWasTargetSet);
@@ -80,15 +81,15 @@ void UEnemyCommunicator::SetTarget(TObjectPtr<AActor> InTarget)
 	GetWorld()->GetTimerManager().SetTimer(EQSPointsGenerationHandle, this, &UEnemyCommunicator::GeneratePointsAroundTarget, 1.f, true);
 }
 
-void UEnemyCommunicator::AddEnemy(TObjectPtr<AActor> InEnemy) { Enemies.Add(InEnemy); }
+void UEnemyCommunicator::AddEnemy(const TObjectPtr<AActor>& InEnemy) { Enemies.Add(InEnemy); }
 
-void UEnemyCommunicator::RemoveEnemy(TObjectPtr<AActor> InEnemy) { Enemies.Remove(InEnemy); }
+void UEnemyCommunicator::RemoveEnemy(const TObjectPtr<AActor>& InEnemy) { Enemies.Remove(InEnemy); }
 
 void UEnemyCommunicator::AddPoint(int32 Key, const FEQSPointData& Data) { PointsAroundTarget.Add(Key, Data); }
 
 void UEnemyCommunicator::RemovePoint(int32 Key) { PointsAroundTarget.Remove(Key); }
 
-void UEnemyCommunicator::InitDelegates(TObjectPtr<UDelegateManager> InDelegateManager)
+void UEnemyCommunicator::InitDelegates(const TObjectPtr<UDelegateManager>& InDelegateManager)
 {
 	DelegateManager = InDelegateManager;
 	DelegateManager->OnConcealAbilityChange.AddUObject(this, &UEnemyCommunicator::SetTarget);
@@ -96,9 +97,9 @@ void UEnemyCommunicator::InitDelegates(TObjectPtr<UDelegateManager> InDelegateMa
 
 void UEnemyCommunicator::TargetQueryResult(TSharedPtr<FEnvQueryResult> Result)
 {
+	OnEQSFinish.Broadcast();
 	if (Result->IsSuccessful())
 	{
-		OnEQSFinish.Broadcast();
 		if (WITH_EDITOR && GameModeBase && GameModeBase->GetIsDebugModeEnabled())
 		{
 			for (TPair<int32, FEQSPointData> PointData : PointsAroundTarget)
