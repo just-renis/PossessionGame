@@ -40,6 +40,7 @@
 #include "PossessionGame/UI/MainWidgets/HijackUI.h"
 #include "PossessionGame/UI/MainWidgets/PauseMenuUI.h"
 #include "PossessionGame/UI/MainWidgets/PlayerHUD.h"
+#include "PossessionGame/UI/MainWidgets/PlayerLevelSystemUI.h"
 #include "PossessionGame/UI/MainWidgets/SettingsUI.h"
 #include "PossessionGame/UI/MainWidgets/UpgradeSelectionUI.h"
 #include "PossessionGame/UI/MainWidgets/VariationsUI.h"
@@ -1210,6 +1211,7 @@ void AEnemy::P_HandleEscapeClick()
 		case EWidget::VariationsUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI(); break;
 		case EWidget::AbilitiesMenuUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UAbilitiesMenuUI>(EWidget::AbilitiesMenuUI)->CloseUI(); break;
 		case EWidget::UpgradeSelectionUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->GoBack(); break;
+		case EWidget::PlayerLevelSystemUI: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPlayerLevelSystemUI>(EWidget::PlayerLevelSystemUI)->CloseUI(); break;
 		case EWidget::ExplanationUI: break;
 		default: GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UPauseMenuUI>(EWidget::PauseMenuUI)->OpenUI();
 	}

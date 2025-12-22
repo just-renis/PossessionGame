@@ -27,8 +27,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Key Binds", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> LineSeparatorTexture;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TSubclassOf<UUserWidget> SettingsTitleClass;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> KeyBindingClass;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UVerticalBox> KeyBindingsPanel;

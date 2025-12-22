@@ -99,10 +99,11 @@ void AEnemyAIController::AdjustCustomFocus()
 				FVector TargetVelocity = Player->GetCharacterMovement()->Velocity;
 				TargetVelocity.Z = 0.f;
 				const FVector MuzzleLocation = Proprietor->GetWeapon()->GetSocketLocation("MuzzleSocket");
-				const float Distance = FVector::Dist(MuzzleLocation, TargetLocation);
-				const float VerticalDelta = TargetLocation.Z - MuzzleLocation.Z;
-				float PredictionTime = bPredictionClampEnabled ? FMath::Clamp(Distance / ProjectileSpeed * PredictionTimeMultiplier, 0.f, PredictionMaxClamp) : Distance / ProjectileSpeed * PredictionTimeMultiplier;
-				if (VerticalDelta > VerticalDeltaThreshold) TargetLocation.Z += VerticalDeltaAddition;
+				const FVector ToTarget = TargetLocation - MuzzleLocation;
+				const float Distance = ToTarget.Size();
+				const float BasePredictionTime = Distance / ProjectileSpeed * PredictionTimeMultiplier;
+				float PredictionTime = bPredictionClampEnabled ? FMath::Clamp(BasePredictionTime, 0.f, PredictionMaxClamp) : BasePredictionTime;
+				if (TargetLocation.Z - MuzzleLocation.Z > VerticalDeltaThreshold) TargetLocation.Z += VerticalDeltaAddition;
 				if (PredictionTime > DistanceScalingMultiplierStart) PredictionTime *= DistanceScalingMultiplier;
 				const FVector ModifiedTargetLocation = TargetLocation + TargetVelocity * PredictionTime;
 				Proprietor->GetAnimInstance()->SetLookAtLocation(ModifiedTargetLocation);

@@ -19,6 +19,8 @@ bool USaveSlot::GetIsAbilityUnlocked(const ECharacterType InCharacter, const int
 
 bool USaveSlot::GetIsExplanationShown(const EExplanation InExplanationName) const { return ShownExplanations.Contains(InExplanationName); }
 
+bool USaveSlot::IsPlayerLevelUpgradeSelected(const EPlayerLevelUpgradeId InId) const { return SelectedPlayerLevelUpgrades.Contains(InId); }
+
 bool USaveSlot::UnlockAbility(const ECharacterType InCharacter, const int32 InAbilityIndex)
 {
 	if (GetSkillPoints() <= 0) return false;
@@ -154,6 +156,13 @@ void USaveSlot::AddShownExplanation(const EExplanation InExplanationName)
 void USaveSlot::AddArenaStats(const int32 InSurviveTime)
 {
 	if (InSurviveTime > ArenaMaxTimeSurvivedSeconds) ArenaMaxTimeSurvivedSeconds = InSurviveTime;
+	SaveSlot();
+}
+
+void USaveSlot::ChangePlayerLevelUpgrade(const EPlayerLevelUpgradeId InAddId, const EPlayerLevelUpgradeId InRemoveId)
+{
+	SelectedPlayerLevelUpgrades.Remove(InRemoveId);
+	SelectedPlayerLevelUpgrades.Add(InAddId);
 	SaveSlot();
 }
 

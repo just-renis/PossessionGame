@@ -22,5 +22,6 @@ enum class EWidget : uint8
     SaveSlotMenuUI,
     DeathMenuUI,
     HijackUI,
-    PlayerGhostNonTutorialUI
+    PlayerGhostNonTutorialUI,
+    PlayerLevelSystemUI
 };

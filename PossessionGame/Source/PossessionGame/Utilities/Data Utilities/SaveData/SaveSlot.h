@@ -7,6 +7,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FVariationUnlockData.h"
 #include "SaveSlot.generated.h"
 
+enum class EPlayerLevelUpgradeId : uint8;
 class UDelegateManager;
 enum class EExplanation : uint8;
 enum class EVariation : uint8;
@@ -24,6 +25,7 @@ public:
 	bool UnlockAbility(const ECharacterType InCharacter, const int32 InAbilityIndex);
 	bool GetIsAbilityUnlocked(const ECharacterType InCharacter, const int32 InAbilityIndex);
 	bool GetIsExplanationShown(const EExplanation InExplanationName) const;
+	bool IsPlayerLevelUpgradeSelected(const EPlayerLevelUpgradeId InId) const;
 	int32 GetPlayerLevel() const { return CurrentLevel; }
 	int32 GetLevelDamageBoost() const;
 	int32 GetLevelHpBoost() const;
@@ -54,6 +56,7 @@ public:
 	void AddChosenAbilities(const ECharacterType InCharacter, const int32 InFirstAbilityIndex, const int32 InSecondAbilityIndex);
 	void AddShownExplanation(const EExplanation InExplanationName);
 	void AddArenaStats(const int32 InSurviveTime);
+	void ChangePlayerLevelUpgrade(const EPlayerLevelUpgradeId InAddId, const EPlayerLevelUpgradeId InRemoveId);
 private:
 	UPROPERTY()
 	bool bTutorialFinished = false;
@@ -79,6 +82,8 @@ private:
 	TSet<ECharacterType> SpawnableCharacters;
 	UPROPERTY()
 	TSet<EExplanation> ShownExplanations;
+	UPROPERTY()
+	TSet<EPlayerLevelUpgradeId> SelectedPlayerLevelUpgrades;
 	UPROPERTY()
 	TMap<ECharacterType, FCharacterAbilities> CharacterChosenAbilities;
 	UPROPERTY()

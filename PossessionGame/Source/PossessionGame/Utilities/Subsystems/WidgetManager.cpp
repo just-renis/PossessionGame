@@ -26,23 +26,11 @@ int32 UWidgetManager::GetWidgetZOrder(const EWidget InWidgetName)
 {
 	switch (InWidgetName)
 	{
-		case EWidget::WaveManagerHUD: return 0;
-		case EWidget::PlayerHUD: return 0;
-		case EWidget::MainMenuUI: return 0;
-		case EWidget::SettingsUI: return 3;
-		case EWidget::PauseMenuUI: return 3;
-		case EWidget::UpgradeSelectionUI: return 1;
-		case EWidget::TutorialUI: return 0;
-		case EWidget::VariationsUI: return 1;
-		case EWidget::LoadingScreenUI: return 4;
-		case EWidget::GameLaunchUI: return 4;
-		case EWidget::DemoEndUI: return 4;
-		case EWidget::SecretRoomUI: return 1;
-		case EWidget::AbilitiesMenuUI: return 1;
+		case EWidget::WaveManagerHUD: case EWidget::PlayerHUD: case EWidget::MainMenuUI: case EWidget::TutorialUI: case EWidget::HijackUI: case EWidget::PlayerGhostNonTutorialUI: return 0;
+		case EWidget::UpgradeSelectionUI: case EWidget::VariationsUI: case EWidget::SecretRoomUI: case EWidget::AbilitiesMenuUI: case EWidget::PlayerLevelSystemUI: return 1;
 		case EWidget::ExplanationUI: return 2;
-		case EWidget::SaveSlotMenuUI: return 3;
-		case EWidget::HijackUI: return 0;
-		case EWidget::PlayerGhostNonTutorialUI: return 0;
+		case EWidget::SettingsUI: case EWidget::PauseMenuUI: case EWidget::SaveSlotMenuUI: return 3;
+		case EWidget::LoadingScreenUI: case EWidget::GameLaunchUI: case EWidget::DemoEndUI: return 4;
 		default: return 5;
 	}
 }
