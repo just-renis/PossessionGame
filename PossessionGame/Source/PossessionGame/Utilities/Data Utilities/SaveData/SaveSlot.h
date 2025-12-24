@@ -37,6 +37,7 @@ public:
 	float GetPlayerLevelPureGlobalDamageBonus() const;
 	float GetPlayerLevelAllGlobalDamageBonus() const;
 	float GetPlayerLevelAllGlobalHpBonus(const float InMaxHp) const;
+	float GetPlayerLevelAllCriticalMultiBonus() const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	ECharacterType GetRandomSpawnableCharacter() const;
 	FCharacterAbilities GetCharacterChosenAbilities(const ECharacterType InCharacter);

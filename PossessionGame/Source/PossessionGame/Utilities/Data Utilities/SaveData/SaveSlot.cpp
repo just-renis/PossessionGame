@@ -59,6 +59,13 @@ float USaveSlot::GetPlayerLevelAllGlobalHpBonus(const float InMaxHp) const
 	return HpBonus + InMaxHp * HpBonusPercentage * 0.01f;
 }
 
+float USaveSlot::GetPlayerLevelAllCriticalMultiBonus() const
+{
+	//float DamageBonus = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::ThirdOptionA) ? 15.f : 0.f;
+	//DamageBonus += IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SixthOptionB) ? 30.f : 0.f;
+	return 1.f;
+}
+
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
 
 ECharacterType USaveSlot::GetRandomSpawnableCharacter() const

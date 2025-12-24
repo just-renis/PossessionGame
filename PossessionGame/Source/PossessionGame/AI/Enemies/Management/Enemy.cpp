@@ -142,7 +142,7 @@ void AEnemy::AI_StopAbility(const int32 InIndex) const { if (const TObjectPtr<UA
 
 void AEnemy::AI_SetupUpgradesAppliance()
 {
-	MaxHp += GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
+	MaxHp += SaveSlotManager->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
 	CurrentHp = MaxHp;
 }
 
@@ -166,7 +166,7 @@ void AEnemy::AI_TriggerVectorBlastSpecialImpact()
 void AEnemy::AI_SetupRespawn()
 {
 	if (!bAIRespawnRequested) return;
-	MaxHp = AI_Data->GetMaxHp() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
+	MaxHp = AI_Data->GetMaxHp() + SaveSlotManager->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName);
 	CurrentHp = MaxHp * SavedRespawnHpPercentage;
 	MeshBaseMaterialCondenseValue = 0.4f;
 	MeshEmissiveMaterialOpacityValue = 0.5f;
@@ -326,7 +326,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel); // Tab
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_InitiateSlide); // C
 	}
-	if (!GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialManager();
+	if (!SaveSlotManager->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialManager();
 }
 
 void AEnemy::PossessedBy(AController* NewController)
@@ -614,7 +614,7 @@ void AEnemy::AI_DisableActions(const float InEffectDuration, const EDisablingEff
 
 void AEnemy::P_SetupAbilities()
 {
-	TArray<int32> ChosenAbilities = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetCharacterChosenAbilities(CharacterName).Abilities;
+	TArray<int32> ChosenAbilities = SaveSlotManager->GetSaveSlot()->GetCharacterChosenAbilities(CharacterName).Abilities;
 	const TMap<EAbility, TSoftObjectPtr<UAbilityData>> AbilityData = AssetsManager->GetCharacterData(CharacterName).GetCharacterContainer()->P_Abilities_Data;
 	const TObjectPtr<UAbilityManager> AbilityManager = GameInstance->GetSubsystem<UAbilityManager>();
 	for (int32 i = 0; i < ChosenAbilities.Num(); i++)
@@ -635,7 +635,7 @@ void AEnemy::P_Setup()
 {
 	if (bAffectedByEmp) EmpEffectEnded();
 	if (bAffectedByStun) AI_StunEffectEnded();
-	const float HijackSpeedMultiplier = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SecondOptionA) ? 1.3f : 1.f;
+	const float HijackSpeedMultiplier = SaveSlotManager->GetSaveSlot()->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SecondOptionA) ? 1.3f : 1.f;
 	HijackDelayAnimationSpeed = HijackSpeedMultiplier;
 	HijackDelay /= HijackSpeedMultiplier;
 	DisableSkeletalMesh();
@@ -730,8 +730,8 @@ void AEnemy::P_Destroy()
 	NavAreaModifier->Destroy();
 	if (bPlayerDied)
 	{
-		GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->SaveSlot();
-		GameInstance->GetSubsystem<USaveSlotManager>()->ResetRunSaveSlot();
+		SaveSlotManager->GetSaveSlot()->SaveSlot();
+		SaveSlotManager->ResetRunSaveSlot();
 		return;
 	}
 	P_HUD->Reset();
@@ -837,6 +837,7 @@ void AEnemy::BeginPlay()
 	DelegateManager = GameInstance->GetSubsystem<UDelegateManager>();
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 	GlobalSettingsManager = GameInstance->GetSubsystem<UGlobalSettingsManager>();
+	SaveSlotManager = GameInstance->GetSubsystem<USaveSlotManager>();
 	DefaultCameraZ = Camera->GetRelativeLocation().Z;
 	AI_SetupHpBar();
 	AssetsManager = GameInstance->GetSubsystem<UPrimaryDataAssetsManager>();
@@ -1057,11 +1058,17 @@ void AEnemy::P_ChangeHoldingShootState(const bool bState)
 void AEnemy::P_SetupData()
 {
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
-	const float HpPercentage = CurrentHp / (AI_Data->GetMaxHp() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName));
+	const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
+	const float HpPercentage = CurrentHp / (AI_Data->GetMaxHp() + SaveSlotManager->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName));
 	MaxHp = P_Data->GetMaxHp();
-	MaxHp += GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalHpBonus(MaxHp);
-	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardHealth) * 0.01f;
+	MaxHp += SaveSlot->GetPlayerLevelAllGlobalHpBonus(MaxHp);
+	MaxHp += MaxHp * SaveSlotManager->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardHealth) * 0.01f;
 	CurrentHp = MaxHp * HpPercentage;
+	if (SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SecondOptionB) && CurrentHp < MaxHp)
+	{
+		CurrentHp += MaxHp * 0.2f;
+		if (CurrentHp >= MaxHp) CurrentHp = MaxHp;
+	}
 	bIsHijacked = true;
 	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 	bCanShoot = true;
@@ -1075,8 +1082,8 @@ void AEnemy::P_SetupUI()
 	P_HUD->SetPlayerRef(this);
 	P_HUD->UpdateProgressBar(EUIBar::Hijack, 0.f, P_Data->GetPossessionBarCooldown());
 	P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
-	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
-	const TObjectPtr<URunSaveSlot> RunSaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = SaveSlotManager->GetRunSaveSlot();
 	P_HUD->UpdateProgressBar(EUIBar::Xp, SaveSlot->GetXp(), SaveSlot->GetCurrentLevelNeededXp());
 	P_HUD->UpdateProgressBar(EUIBar::Upgrade, RunSaveSlot->GetCurrentUpgradeXp(), RunSaveSlot->GetCurrentUpgradeXpNeeded());
 	P_HUD->ConfigureUIs();
@@ -1349,7 +1356,7 @@ void AEnemy::P_ProcessMeleeAttack()
 		TraceParams.AddIgnoredActor(this);
 		TraceParams.AddIgnoredActor(Actor);
 		if (GetWorld()->LineTraceSingleByChannel(Hit, Origin, Actor->GetActorLocation(), ECC_Visibility, TraceParams)) return;
-		const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
+		const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
 		const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionA);
 		const float TrueQuickMeleeDamage = QuickMeleeAttackDamage + (bIsUpgradeSelected ? QuickMeleeAttackDamage * SaveSlot->GetPlayerLevel() * 0.15f : 0.f);
 		UGameplayStatics::ApplyDamage(Actor, TrueQuickMeleeDamage, GetController(), this, UDamageType::StaticClass());
@@ -1407,7 +1414,7 @@ void AEnemy::P_StompImpact(const FVector& InHitLocation)
 		Params.AddIgnoredActor(this);
 		Params.AddIgnoredActor(Actor);
 		if (GetWorld()->LineTraceSingleByChannel(Hit, InHitLocation, Actor->GetActorLocation(), ECC_Visibility, Params)) continue;
-		const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
+		const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
 		const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionA);
 		const float TrueStompDamage = StompDamage + (bIsUpgradeSelected ? StompDamage * SaveSlot->GetPlayerLevel() * 0.15f : 0.f);
 		UGameplayStatics::ApplyDamage(Actor, TrueStompDamage, nullptr, this, UDamageType::StaticClass());
@@ -1488,8 +1495,8 @@ void AEnemy::P_ContinuousFovChange()
 
 void AEnemy::P_AddXp(const float InXp) const
 {
-	const TObjectPtr<URunSaveSlot> RunSaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
-	const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = SaveSlotManager->GetRunSaveSlot();
+	const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
 	RunSaveSlot->AddUpgradeXp(DelegateManager, InXp);
 	SaveSlot->AddXp(InXp);
 	if (!P_HUD) return;
@@ -1586,7 +1593,7 @@ void AEnemy::P_TurnOffInvincibility() { bIsInvincible = false; }
 
 void AEnemy::P_OpenUpgradeSelection()
 {
-	if (!GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsUpgradeAvailable()) return;
+	if (!SaveSlotManager->GetRunSaveSlot()->IsUpgradeAvailable()) return;
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
 }
 
@@ -1651,7 +1658,7 @@ void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float
 {
 	switch (InDamageReason)
 	{
-		case EDamageReason::TricksterPoisonDamage: GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ProgressVariationUnlock(EVariation::TricksterVariationPurple, InDamage); break;
+		case EDamageReason::TricksterPoisonDamage: SaveSlotManager->GetSaveSlot()->ProgressVariationUnlock(EVariation::TricksterVariationPurple, InDamage); break;
 		default: ;
 	}
 }
@@ -1665,8 +1672,8 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 			{
 				if (DelegateManager->RequestIsTimeStopUsed.IsBound() && DelegateManager->RequestIsTimeStopUsed.Execute()) GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddGuardianTimeStopSpecialStack();
 			}
-			GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ProgressVariationUnlock(EVariation::GuardianVariationGold, 1); break;
-		case EDamageReason::RangerGrenadeDamage: GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ProgressVariationUnlock(EVariation::RangerVariationBlue, 1); break;
+			SaveSlotManager->GetSaveSlot()->ProgressVariationUnlock(EVariation::GuardianVariationGold, 1); break;
+		case EDamageReason::RangerGrenadeDamage: SaveSlotManager->GetSaveSlot()->ProgressVariationUnlock(EVariation::RangerVariationBlue, 1); break;
 		case EDamageReason::BreacherBashDamage: (void)DelegateManager->OnPlayerBashKill.ExecuteIfBound(); break;
 		default: ;
 	}

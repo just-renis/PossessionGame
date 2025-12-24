@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
+class USaveSlotManager;
 enum class EWidget : uint8;
 enum class EDisablingEffect : uint8;
 enum class ECameraShake : uint8;
@@ -423,6 +424,8 @@ private:
 	TObjectPtr<UMaterialInstanceDynamic> MID_HijackPulse;
 	UPROPERTY()
 	TObjectPtr<UCameraShakeBase> MinionBossLaserShakeInstance;
+	UPROPERTY()
+	TObjectPtr<USaveSlotManager> SaveSlotManager;
 
 	void AI_SetupData();
 	void AI_StopAllAbilities();

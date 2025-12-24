@@ -321,7 +321,9 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 		UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), Damage, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 		return;
 	}
-	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), Damage * (bIsCritical ? P_GetCriticalDamage() : 1.f), (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
+	const float CriticalDamageMultiplier = bIsCritical ? P_GetCriticalDamage() : 1.f;
+	//GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->IsPlayerLevelUpgradeSelected()
+	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), Damage * CriticalDamageMultiplier, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 
 void AWeapon::FpsTrailVfxLogic()

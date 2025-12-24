@@ -114,9 +114,10 @@ void UHandsAnimInstance::NativeUpdateAnimation(const float InDeltaSeconds)
 {
     Super::NativeUpdateAnimation(InDeltaSeconds);
     if (!Proprietor) return;
-    bIsGoingUpwards = Proprietor->GetVelocity().Z > 0.f;
-    if (!bIsGoingUpwards) bIsFalling = Proprietor->GetCharacterMovement()->IsFalling();
-    else bIsFalling = false;
+    bIsFalling = Proprietor->GetCharacterMovement()->IsFalling();
+  //  bIsGoingUpwards = Proprietor->GetVelocity().Z > 0.f;
+   // if (!bIsGoingUpwards) bIsFalling = Proprietor->GetCharacterMovement()->IsFalling();
+  //  else bIsFalling = false;
     DirectionalAngle = UKismetAnimationLibrary::CalculateDirection(Proprietor->GetVelocity(), Proprietor->GetActorRotation());
 }
 
