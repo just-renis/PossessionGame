@@ -1,5 +1,4 @@
 ﻿#include "PoisonArea.h"
-
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/ECharacterType.h"

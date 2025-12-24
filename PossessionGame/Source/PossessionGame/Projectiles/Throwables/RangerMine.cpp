@@ -7,7 +7,6 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -91,9 +90,11 @@ void ARangerMine::DealAreaDamage()
 	float MinimumDamage = Data->GetRadiusMinimumDamage() + DamageFromUpgrades;
 	const float InnerRadius = Data->GetDamageInnerRadius() + Data->GetDamageInnerRadius() * RadiusIncrease * 0.01f;
 	const float OuterRadius = Data->GetDamageOuterRadius() + Data->GetDamageOuterRadius() * RadiusIncrease * 0.01f;
-	const float LevelDamageBoost = Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f;
-	NormalDamage += LevelDamageBoost;
-	MinimumDamage += LevelDamageBoost;
+	const float PlayerLevelGlobalDamageBoost = GetPlayerLevelAllGlobalDamageBonus();
+	UE_LOG(LogTemp, Error, TEXT("BEFORE MINE: %f"), NormalDamage);
+	NormalDamage += PlayerLevelGlobalDamageBoost;
+	MinimumDamage += PlayerLevelGlobalDamageBoost;
+	UE_LOG(LogTemp, Error, TEXT("AFTER MINE: %f"), NormalDamage);
 	const float UpgradeDamageBoost = UpgradeAppliance();
 	NormalDamage += UpgradeDamageBoost;
 	MinimumDamage += UpgradeDamageBoost;

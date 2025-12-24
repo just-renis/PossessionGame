@@ -2,6 +2,7 @@
 #include "MetaSaveSlot.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerLevelData.h"
+#include "PossessionGame/Enums/EPlayerLevelUpgradeId.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -30,29 +31,33 @@ bool USaveSlot::UnlockAbility(const ECharacterType InCharacter, const int32 InAb
 	return true;
 }
 
-int32 USaveSlot::GetLevelDamageBoost() const { return PlayerLevelData->GetDamageIncrease(CurrentLevel); }
-
-int32 USaveSlot::GetLevelHpBoost() const { return PlayerLevelData->GetHpIncrease(CurrentLevel); }
-
 int32 USaveSlot::GetVariationUnlockProgress(const EVariation InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockProgress(InVariationUnlockName); }
 
 int32 USaveSlot::GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockRequirement(InVariationUnlockName); }
 
 int32 USaveSlot::GetSkillPoints() const { return GetPlayerLevel() - CharacterUnlockedAbilities.Num(); }
 
-int32 USaveSlot::GetLevelUpDamageIncrease() const
-{
-	const int32 Value = PlayerLevelData->GetDamageIncrease(CurrentLevel) - PlayerLevelData->GetDamageIncrease(CurrentLevel - 1);
-	return Value > 0 ? Value : 0;
-}
-
-int32 USaveSlot::GetLevelUpHpIncrease() const
-{
-	const int32 Value = PlayerLevelData->GetHpIncrease(CurrentLevel) - PlayerLevelData->GetHpIncrease(CurrentLevel - 1);
-	return Value > 0 ? Value : 0;
-}
-
 float USaveSlot::GetCurrentLevelNeededXp() const { return PlayerLevelData->GetXpNeeded(CurrentLevel); }
+
+float USaveSlot::GetPlayerLevelPureGlobalDamageBonus() const
+{
+	float DamageBonus = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FirstOptionA) ? 15.f : 0.f;
+	DamageBonus += IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SixthOptionB) ? 30.f : 0.f;
+	return DamageBonus;
+}
+
+float USaveSlot::GetPlayerLevelAllGlobalDamageBonus() const
+{
+	return GetPlayerLevelPureGlobalDamageBonus();
+}
+
+float USaveSlot::GetPlayerLevelAllGlobalHpBonus(const float InMaxHp) const
+{
+	float HpBonusPercentage = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FirstOptionB) ? 25.f : 0.f;
+	HpBonusPercentage += IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SixthOptionA) ? 50.f : 0.f;
+	const float HpBonus = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::ThirdOptionB) ? 60.f : 0.f;
+	return HpBonus + InMaxHp * HpBonusPercentage * 0.01f;
+}
 
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }
 

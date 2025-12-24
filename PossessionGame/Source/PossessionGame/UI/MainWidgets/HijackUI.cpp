@@ -3,10 +3,11 @@
 
 void UHijackUI::TriggerHijackProgress() { GetWorld()->GetTimerManager().SetTimer(HijackHandle, this, &UHijackUI::HijackProgress, 0.02f, true); }
 
-void UHijackUI::OpenUI()
+void UHijackUI::OpenUI(const float InHijackAnimSpeed)
 {
 	HijackInv->SetRenderOpacity(1.f);
-	PlayAnimation(HijackInitiateAnim);
+	PlayAnimation(HijackInitiateAnim, InHijackAnimSpeed);
+	HijackSpeedMultiplier = InHijackAnimSpeed;
 	TriggerHijackProgress();
 }
 
@@ -27,7 +28,7 @@ void UHijackUI::NativeConstruct()
 void UHijackUI::HijackProgress()
 {
 	if (!MI_HijackRadial) return;
-	Progress += 0.04f;
+	Progress += 0.04f * HijackSpeedMultiplier;
 	MI_HijackRadial->SetScalarParameterValue(FName("Progress"), Progress);
 	if (Progress >= 1.f)
 	{

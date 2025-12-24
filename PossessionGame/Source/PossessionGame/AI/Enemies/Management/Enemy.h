@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
+enum class EWidget : uint8;
 enum class EDisablingEffect : uint8;
 enum class ECameraShake : uint8;
 enum class EStateTreeEvent : uint8;
@@ -280,6 +281,7 @@ private:
 	float MovementSpeedMultiplier = 1.f;
 	float AdditionalActionSpeedValue = 0.f;
 	float SavedRespawnHpPercentage = 1.f;
+	float HijackDelayAnimationSpeed = 1.f;
 	int32 P_FirstSlotAbilityIndex = 0;
 	int32 P_SecondSlotAbilityIndex = 1;
 	int32 OverlappingPoisonAreas = 0;
@@ -470,11 +472,11 @@ private:
 	void P_ProcessMeleeAttack();
 	void P_SetupNavArea();
 	void P_OnVariationSelection(const ECharacterType InCharacterType);
-	void P_OnAbilitiesMenuSelectionEnd();
+	void P_OnAbilitiesOrLevelMenuSelectionEnd(const EWidget InWidgetName);
 	void P_ReceiveCurrentlySelectedVariation();
 	void P_Jump();
 	void P_Stomp();
-	void P_SetupLevelUpAppliance();
+	void P_PlayLevelUpVfx();
 	void P_StompImpact(const FVector& InHitLocation);
 	void P_Death();
 	void P_ControlLogic();

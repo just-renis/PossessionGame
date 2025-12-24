@@ -27,17 +27,16 @@ public:
 	bool GetIsExplanationShown(const EExplanation InExplanationName) const;
 	bool IsPlayerLevelUpgradeSelected(const EPlayerLevelUpgradeId InId) const;
 	int32 GetPlayerLevel() const { return CurrentLevel; }
-	int32 GetLevelDamageBoost() const;
-	int32 GetLevelHpBoost() const;
 	int32 GetVariationUnlockProgress(const EVariation InVariationUnlockName) const;
 	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
 	int32 GetCurrencyAmount() const { return CurrencyAmount; }
 	int32 GetSkillPoints() const;
 	int32 GetArenaMaxTimeSurvivedSeconds() const { return ArenaMaxTimeSurvivedSeconds; }
-	int32 GetLevelUpDamageIncrease() const;
-	int32 GetLevelUpHpIncrease() const;
 	float GetXp() const { return CurrentXp; }
 	float GetCurrentLevelNeededXp() const;
+	float GetPlayerLevelPureGlobalDamageBonus() const;
+	float GetPlayerLevelAllGlobalDamageBonus() const;
+	float GetPlayerLevelAllGlobalHpBonus(const float InMaxHp) const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	ECharacterType GetRandomSpawnableCharacter() const;
 	FCharacterAbilities GetCharacterChosenAbilities(const ECharacterType InCharacter);

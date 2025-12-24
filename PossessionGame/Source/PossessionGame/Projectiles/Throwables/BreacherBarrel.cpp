@@ -5,7 +5,6 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -22,9 +21,11 @@ void ABreacherBarrel::Explode()
 	float MinimumDamage = (Data->GetRadiusMinimumDamage() + DamageFromUpgrades) * (bIsTripleDamageRolled ? 3.f : 1.f);
 	const float InnerRadius = Data->GetDamageInnerRadius() + Data->GetDamageInnerRadius() * RadiusIncrease * 0.01f;
 	const float OuterRadius = Data->GetDamageOuterRadius() + Data->GetDamageOuterRadius() * RadiusIncrease * 0.01f;
-	const float LevelDamageBoost = Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f;
-	NormalDamage += LevelDamageBoost;
-	MinimumDamage += LevelDamageBoost;
+	const float PlayerLevelGlobalDamageBoost = GetPlayerLevelAllGlobalDamageBonus();
+	UE_LOG(LogTemp, Error, TEXT("BEFORE BARREL: %f"), NormalDamage);
+	NormalDamage += PlayerLevelGlobalDamageBoost;
+	MinimumDamage += PlayerLevelGlobalDamageBoost;
+	UE_LOG(LogTemp, Error, TEXT("AFTER BARREL: %f"), NormalDamage);
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
 	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(bIsTripleDamageRolled ? EVfx::BreacherSpecialBarrelExplosion : EVfx::BreacherBarrelExplosion, nullptr, GetActorLocation());

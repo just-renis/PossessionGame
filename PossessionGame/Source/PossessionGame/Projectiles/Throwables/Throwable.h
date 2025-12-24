@@ -32,6 +32,8 @@ protected:
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
+	float GetPlayerLevelAllGlobalDamageBonus() const;
+
 	virtual void OnImpact(const FHitResult& Hit);
 	void PlaySound(const ESound InSoundName);
 	virtual void SetupOnHitEvent();

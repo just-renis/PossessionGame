@@ -25,6 +25,7 @@
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "Engine/OverlapResult.h"
 #include "PossessionGame/Destructibles/Destructible.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 
 void ABreacher::AI_EnableTriggeringBash()
 {
@@ -282,6 +283,9 @@ void ABreacher::TriggerBashOverlap()
 				float BashDamage = P_DefaultBashDamage;
 				const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 				BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, bIsHijacked);
+				UE_LOG(LogTemp, Error, TEXT("BEFORE BASH: %f"), BashDamage);
+				BashDamage += BashDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus() * 0.01f;
+				UE_LOG(LogTemp, Error, TEXT("AFTER BASH: %f"), BashDamage);
 				Cast<AEnemy>(HitActor)->AI_ReceiveStunEffect(false, P_BashStunDuration, BashDamage, HitDirection);
 			}
 			else

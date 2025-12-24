@@ -78,7 +78,7 @@ void UAbilitiesMenuUI::CloseUI()
 	TankCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	SaveSlot->SaveSlot();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestAddAbilitiesToUpgradePool.ExecuteIfBound(SaveSlot);
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAbilitiesMenuSelectionEnd.ExecuteIfBound();
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAbilitiesOrLevelMenuSelectionEnd.ExecuteIfBound(EWidget::AbilitiesMenuUI);
 }
 
 void UAbilitiesMenuUI::NativeConstruct()

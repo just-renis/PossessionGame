@@ -156,7 +156,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> ShootingCameraShake;
 	
-	void P_SetupLevelUpAppliance();
 	void P_ReloadAmmo(const int32 InOtherAmmoSource);
 	virtual void P_VariationHitScanDamageAppliance() {}
 

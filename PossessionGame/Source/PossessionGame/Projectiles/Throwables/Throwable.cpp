@@ -1,7 +1,9 @@
 ﻿#include "Throwable.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 void AThrowable::Initialize(const TObjectPtr<AActor>& InProprietor) { Proprietor = InProprietor; }
 
@@ -25,6 +27,11 @@ AThrowable::AThrowable()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = Mesh;
+}
+
+float AThrowable::GetPlayerLevelAllGlobalDamageBonus() const
+{
+	return Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus() * 0.01f;
 }
 
 void AThrowable::OnImpact(const FHitResult& Hit)

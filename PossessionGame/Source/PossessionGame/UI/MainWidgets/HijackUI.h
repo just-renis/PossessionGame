@@ -12,10 +12,11 @@ class POSSESSIONGAME_API UHijackUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void TriggerHijackProgress();
-	void OpenUI();
+	void OpenUI(const float InHijackAnimSpeed);
 	void CloseUI() const;
 private:
 	float Progress = 0.f;
+	float HijackSpeedMultiplier = 1.f;
 	FTimerHandle HijackHandle;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> HijackRadial;

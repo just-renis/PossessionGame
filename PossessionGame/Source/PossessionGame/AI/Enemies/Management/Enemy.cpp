@@ -28,6 +28,7 @@
 #include "PossessionGame/Enums/EDisablingEffect.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EMoveMode.h"
+#include "PossessionGame/Enums/EPlayerLevelUpgradeId.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PossessionGame/Enums/EUpgrade.h"
@@ -634,6 +635,9 @@ void AEnemy::P_Setup()
 {
 	if (bAffectedByEmp) EmpEffectEnded();
 	if (bAffectedByStun) AI_StunEffectEnded();
+	const float HijackSpeedMultiplier = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SecondOptionA) ? 1.3f : 1.f;
+	HijackDelayAnimationSpeed = HijackSpeedMultiplier;
+	HijackDelay /= HijackSpeedMultiplier;
 	DisableSkeletalMesh();
 	GetCapsuleComponent()->SetCollisionProfileName("Player");
 	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f);
@@ -643,8 +647,8 @@ void AEnemy::P_Setup()
 	DelegateManager->RequestTriggerCameraShake.BindUObject(this, &AEnemy::P_MakeCameraShake);
 	DelegateManager->RequestStopCameraShake.BindUObject(this, &AEnemy::P_StopCameraShake);
 	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
-	DelegateManager->OnAbilitiesMenuSelectionEnd.BindUObject(this, &AEnemy::P_OnAbilitiesMenuSelectionEnd);
-	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_SetupLevelUpAppliance);
+	DelegateManager->OnAbilitiesOrLevelMenuSelectionEnd.BindUObject(this, &AEnemy::P_OnAbilitiesOrLevelMenuSelectionEnd);
+	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_PlayLevelUpVfx);
 	DelegateManager->OnXpReceived.BindUObject(this, &AEnemy::P_AddXp);
 	DelegateManager->ApplySecretBoostHealth.BindUObject(this, &AEnemy::P_ApplySecretBoostHp);
 	DelegateManager->AddActionSpeedBoost.RemoveAll(this);
@@ -1055,7 +1059,7 @@ void AEnemy::P_SetupData()
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
 	const float HpPercentage = CurrentHp / (AI_Data->GetMaxHp() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName));
 	MaxHp = P_Data->GetMaxHp();
-	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelHpBoost() * 0.01f;
+	MaxHp += GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalHpBonus(MaxHp);
 	MaxHp += MaxHp * GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardHealth) * 0.01f;
 	CurrentHp = MaxHp * HpPercentage;
 	bIsHijacked = true;
@@ -1079,7 +1083,7 @@ void AEnemy::P_SetupUI()
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
 	P_HUD->SetColors(CharacterName);
-	P_HUD->PlayHijackAnim(false);
+	P_HUD->PlayHijackAnim(false, HijackDelayAnimationSpeed);
 	if (CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamageIndicator();
 	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.015f, true);
 }
@@ -1121,10 +1125,10 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bInstan
 		P_AddAndSetHijackPulse(1.f);
 		AssetsManager->PlaySound2D(ESound::HijackInProgress);
 		HijackTarget = InEnemy;
-		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->OpenUI();
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->OpenUI(HijackDelayAnimationSpeed);
 		bIsInputLocked = true;
-		if (P_HUD) P_HUD->PlayHijackAnim(true);
-		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(true);
+		if (P_HUD) P_HUD->PlayHijackAnim(true, HijackDelayAnimationSpeed);
+		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(true, HijackDelayAnimationSpeed);
 		GetWorldTimerManager().SetTimer(HijackDelayHandle, this, &AEnemy::P_FinishHijackProcess, HijackDelay);
 		GetWorldTimerManager().SetTimer(HijackFovChangeHandle, this, &AEnemy::P_ChangeFovWhileHijackingProcess, 0.02f, true);
 		GetWorldTimerManager().SetTimer(HijackLockInToTargetHandle, this, &AEnemy::P_LockInToTargetLogic, 0.02f, true);
@@ -1345,7 +1349,9 @@ void AEnemy::P_ProcessMeleeAttack()
 		TraceParams.AddIgnoredActor(this);
 		TraceParams.AddIgnoredActor(Actor);
 		if (GetWorld()->LineTraceSingleByChannel(Hit, Origin, Actor->GetActorLocation(), ECC_Visibility, TraceParams)) return;
-		const float TrueQuickMeleeDamage = QuickMeleeAttackDamage + FMath::Min(QuickMeleeAttackDamage * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevel() * 0.1f, 80.f);
+		const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
+		const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionA);
+		const float TrueQuickMeleeDamage = QuickMeleeAttackDamage + (bIsUpgradeSelected ? QuickMeleeAttackDamage * SaveSlot->GetPlayerLevel() * 0.15f : 0.f);
 		UGameplayStatics::ApplyDamage(Actor, TrueQuickMeleeDamage, GetController(), this, UDamageType::StaticClass());
 		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
 	}
@@ -1363,9 +1369,9 @@ void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
 }
 
-void AEnemy::P_OnAbilitiesMenuSelectionEnd()
+void AEnemy::P_OnAbilitiesOrLevelMenuSelectionEnd(const EWidget InWidgetName)
 {
-	P_HijackLogic(AssetsManager->SpawnVariationReplacement(CharacterName, EWidget::AbilitiesMenuUI), true);
+	P_HijackLogic(AssetsManager->SpawnVariationReplacement(CharacterName, InWidgetName), true);
 }
 
 void AEnemy::P_ReceiveCurrentlySelectedVariation() { Variation = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName); }
@@ -1382,12 +1388,10 @@ void AEnemy::P_Stomp()
 	P_InitiateStomp();
 }
 
-void AEnemy::P_SetupLevelUpAppliance()
+void AEnemy::P_PlayLevelUpVfx()
 {
 	if (!LevelUpVfx) AssetsManager->AttachVfx(EVfx::LevelUpEffect, [this]() -> bool { return GetIsAlive(); }, &LevelUpVfx, GetMesh(), FName("DeathSocket"));
 	else LevelUpVfx->Activate();
-	MaxHp += P_Data->GetMaxHp() * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelUpHpIncrease() * 0.01f;
-	if (P_HUD) P_HUD->UpdateProgressBar(EUIBar::Hp, CurrentHp, MaxHp);
 }
 
 void AEnemy::P_StompImpact(const FVector& InHitLocation)
@@ -1403,7 +1407,9 @@ void AEnemy::P_StompImpact(const FVector& InHitLocation)
 		Params.AddIgnoredActor(this);
 		Params.AddIgnoredActor(Actor);
 		if (GetWorld()->LineTraceSingleByChannel(Hit, InHitLocation, Actor->GetActorLocation(), ECC_Visibility, Params)) continue;
-		const float TrueStompDamage = StompDamage + FMath::Min(StompDamage * GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevel() * 0.1f, 80.f);
+		const TObjectPtr<USaveSlot> SaveSlot = GameInstance->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
+		const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionA);
+		const float TrueStompDamage = StompDamage + (bIsUpgradeSelected ? StompDamage * SaveSlot->GetPlayerLevel() * 0.15f : 0.f);
 		UGameplayStatics::ApplyDamage(Actor, TrueStompDamage, nullptr, this, UDamageType::StaticClass());
 		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
 	}
@@ -1549,7 +1555,7 @@ void AEnemy::P_FinishHijackProcess()
 	InitiateDeath();
 	AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(false);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(false, HijackDelayAnimationSpeed);
 	P_AddAndSetHijackPulse(0.f);
 	Destroy();
 }

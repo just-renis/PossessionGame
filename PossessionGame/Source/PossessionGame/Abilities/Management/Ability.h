@@ -62,7 +62,7 @@ protected:
 	virtual void CooldownLogic(const float InDeltaTime);
 private:
 	bool bIsDurational = false;
-	float RecentHijackBoostTime = 10.f;
+	float RecentHijackBoostTime = 8.f;
 	float RecentHijackBoost = 2.5f;
 	int32 AbilityIndex;
 	FTimerHandle P_RecentHijackBoostHandle;

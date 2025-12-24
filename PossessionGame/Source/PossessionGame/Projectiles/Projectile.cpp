@@ -111,7 +111,7 @@ void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const F
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	if (RunSaveSlot->IsSpecialUpgradeAvailable(EUpgrade::TricksterAbility3, EUpgradeAttribute::Special1))
 	{
-		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f;
+		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus() * 0.01f;
 	}
 	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, true);
 	SetDirection(Rotation.Vector());
@@ -167,7 +167,6 @@ void AProjectile::DestroyThis()
 	bIsActive = false;
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTimeDilationChanged.RemoveAll(this);
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	DisableProjectileComponents();
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);
 }
@@ -230,8 +229,6 @@ float AProjectile::P_CalculateByRangeDamage(const FHitResult& InHit)
 	return PlayerWeaponData->GetDamageMultiplierFromRange(FVector::Distance(StartLocation, InHit.Location) * 0.01f);
 }
 
-void AProjectile::P_SetupLevelUpAppliance() { Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelUpDamageIncrease() * 0.01f; }
-
 void AProjectile::P_SetupUpgradesAppliance()
 {
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
@@ -257,9 +254,10 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 	{
 		P_SetupUpgradesAppliance();
 		P_VariationDamageAppliance();
-		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f;
+		UE_LOG(LogTemp, Error, TEXT("BEFORE PROJECTILE: %f"), Damage);
+		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus() * 0.01f;
+		UE_LOG(LogTemp, Error, TEXT("AFTER PROJECTILE: %f"), Damage);
 		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.AddUObject(this, &AProjectile::P_SetupLevelUpAppliance);
 	}
 	else AI_SetupUpgradesAppliance();
 }

@@ -128,11 +128,7 @@ void AWeapon::P_StopReloadAnimation()
 	GetWorldTimerManager().SetTimer(DisableComponentTickHandle, this, &AWeapon::DisableComponentTick, 0.1f);
 }
 
-void AWeapon::DestroyThis()
-{
-	DelegateManager->OnLevelUp.RemoveAll(this);
-	Destroy();
-}
+void AWeapon::DestroyThis() { Destroy(); }
 
 void AWeapon::SetToOriginalSettings()
 {
@@ -214,10 +210,8 @@ void AWeapon::P_Setup()
 	TotalAmmo = P_Data->GetTotalAmmo();
 	HitScanDamage = DefaultHitScanDamage = P_Data->GetHitScanDamage();
 	P_VariationHitScanDamageAppliance();
-	HitScanDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelDamageBoost() * 0.01f;
 	ShootCooldown = P_Data->GetShootCooldown();
 	bIsHitScanEnabled = P_Data->GetHitScanEnabled();
-	DelegateManager->OnLevelUp.AddUObject(this, &AWeapon::P_SetupLevelUpAppliance);
 	DelegateManager->OnPlayerReloadMontageEnd.BindUObject(this, &AWeapon::P_ReloadAmmo);
 }
 
@@ -315,7 +309,10 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 {
 	const float SecretBoostDamage = P_ReceiveHitScanDamage() + P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
 	const float AfterUpgradeApplianceDamage = SecretBoostDamage + P_UpgradeDamageAppliance();
-	const float Damage = AfterUpgradeApplianceDamage * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
+	UE_LOG(LogTemp, Error, TEXT("BEFORE HITSCAN: %f"), AfterUpgradeApplianceDamage);
+	const float AfterPlayerLevelAllGlobalDamage = AfterUpgradeApplianceDamage + P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus() * 0.01f;
+	UE_LOG(LogTemp, Error, TEXT("AFTER HITSCAN: %f"), AfterPlayerLevelAllGlobalDamage);
+	const float Damage = AfterPlayerLevelAllGlobalDamage * P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
 	if (FMath::IsNearlyEqual(Damage, 0.f, 0.01f)) return;
 	const bool bIsCritical = InHitResult.BoneName.IsEqual(FName("head"));
 	(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
@@ -331,8 +328,6 @@ void AWeapon::FpsTrailVfxLogic()
 {
 	AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), nullptr, GetSocketLocation("FpsProjectileSocket"), GetSocketRotation("FpsProjectileSocket"), Proprietor->GetVariation());
 }
-
-void AWeapon::P_SetupLevelUpAppliance() { HitScanDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetLevelUpDamageIncrease() * 0.01f; }
 
 void AWeapon::P_ReloadAmmo(const int32 InOtherAmmoSource)
 {

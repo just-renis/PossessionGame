@@ -12,13 +12,18 @@
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/UI/SecondaryWidgets/PlayerLevelOptionUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 void UPlayerLevelSystemUI::OpenUI() { Toggle(true); }
 
-void UPlayerLevelSystemUI::CloseUI() { Toggle(false); }
+void UPlayerLevelSystemUI::CloseUI()
+{
+	Toggle(false);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAbilitiesOrLevelMenuSelectionEnd.ExecuteIfBound(EWidget::PlayerLevelSystemUI);
+}
 
 void UPlayerLevelSystemUI::NativeConstruct()
 {
@@ -70,8 +75,8 @@ void UPlayerLevelSystemUI::SetupPlayerOptions()
 			}
 			const EPlayerLevelUpgradeId FirstId = static_cast<EPlayerLevelUpgradeId>(i * 2);
 			const EPlayerLevelUpgradeId SecondId = static_cast<EPlayerLevelUpgradeId>(i * 2 + 1);
-			if (const FText* Description = UpgradeDescriptions.Find(FirstId)) FirstPlayerLevelOptionWidget->Setup(SecondPlayerLevelOptionWidget, FirstId, SecondId, *Description, SaveSlot->IsPlayerLevelUpgradeSelected(FirstId));
-			if (const FText* Description = UpgradeDescriptions.Find(SecondId)) SecondPlayerLevelOptionWidget->Setup(FirstPlayerLevelOptionWidget, SecondId, FirstId, *Description, SaveSlot->IsPlayerLevelUpgradeSelected(SecondId));
+			if (const FText* Description = UpgradeDescriptions.Find(FirstId)) FirstPlayerLevelOptionWidget->Setup(SaveSlot->GetPlayerLevel() > i, SecondPlayerLevelOptionWidget, FirstId, SecondId, *Description, SaveSlot->IsPlayerLevelUpgradeSelected(FirstId));
+			if (const FText* Description = UpgradeDescriptions.Find(SecondId)) SecondPlayerLevelOptionWidget->Setup(SaveSlot->GetPlayerLevel() > i, FirstPlayerLevelOptionWidget, SecondId, FirstId, *Description, SaveSlot->IsPlayerLevelUpgradeSelected(SecondId));
 		}
 		const TObjectPtr<USpacer> Spacer = WidgetTree->ConstructWidget<USpacer>(USpacer::StaticClass());
 		if (!Spacer) continue;

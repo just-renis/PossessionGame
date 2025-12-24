@@ -70,7 +70,7 @@ TObjectPtr<AEnemy> UPrimaryDataAssetsManager::SpawnVariationReplacement(const EC
 {
 	if (const TSubclassOf<AEnemy>* Enemy = LoadedEnemies.Find(InCharacter))
 	{
-		return SpawnLocations[InWidgetName == EWidget::VariationsUI ? EGameMode::TutorialMode1 : EGameMode::TutorialMode2].SpawnLocations[0]->SpawnEnemy(*Enemy);
+		return SpawnLocations[InWidgetName == EWidget::AbilitiesMenuUI ? EGameMode::TutorialMode2 : EGameMode::TutorialMode1].SpawnLocations[0]->SpawnEnemy(*Enemy);
 	}
 	return nullptr;
 }
