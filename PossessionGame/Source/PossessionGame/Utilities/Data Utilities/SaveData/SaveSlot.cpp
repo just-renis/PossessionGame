@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/EPlayerLevelUpgradeId.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
@@ -41,14 +42,15 @@ float USaveSlot::GetCurrentLevelNeededXp() const { return PlayerLevelData->GetXp
 
 float USaveSlot::GetPlayerLevelPureGlobalDamageBonus() const
 {
-	float DamageBonus = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FirstOptionA) ? 15.f : 0.f;
-	DamageBonus += IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SixthOptionB) ? 30.f : 0.f;
+	float DamageBonus = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FirstOptionA) ? 0.15f : 0.f;
+	DamageBonus += IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SixthOptionB) ? 0.3f : 0.f;
 	return DamageBonus;
 }
 
 float USaveSlot::GetPlayerLevelAllGlobalDamageBonus() const
 {
-	return GetPlayerLevelPureGlobalDamageBonus();
+	if (!IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FourthOptionA)) return GetPlayerLevelPureGlobalDamageBonus();
+	return GetPlayerLevelPureGlobalDamageBonus() + GameInstance->GetSubsystem<UPlayerDataManager>()->GetRecentHijackBoost();
 }
 
 float USaveSlot::GetPlayerLevelAllGlobalHpBonus(const float InMaxHp) const
@@ -61,9 +63,9 @@ float USaveSlot::GetPlayerLevelAllGlobalHpBonus(const float InMaxHp) const
 
 float USaveSlot::GetPlayerLevelAllCriticalMultiBonus() const
 {
-	//float DamageBonus = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::ThirdOptionA) ? 15.f : 0.f;
-	//DamageBonus += IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SixthOptionB) ? 30.f : 0.f;
-	return 1.f;
+	float CriticalMulti = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::ThirdOptionA) ? 0.25f : 0.f;
+	CriticalMulti += IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::EighthOptionB) ? 0.4f : 0.f;
+	return CriticalMulti;
 }
 
 EVariation USaveSlot::GetSelectedVariation(const ECharacterType InCharacter) const { return VariationUnlockData.GetSelectedVariation(InCharacter); }

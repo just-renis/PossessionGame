@@ -523,7 +523,7 @@ FString UUpgradeDetailsPanelUI::GetMiscDamageUpgradeString(const TObjectPtr<UCod
 		switch (InAttribute.Key)
 		{
 			case EUpgradeAttribute::FlatDamage: return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatDamage, bForPlayer),
-			MiscData->GetDamage() + MiscData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelPureGlobalDamageBonus() * 0.01f, InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+			MiscData->GetDamage() + MiscData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelPureGlobalDamageBonus(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
 			case EUpgradeAttribute::DamagePercentage: return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::DamagePercentage, bForPlayer),
 			MiscData->GetDamage(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::None);
 			default: return FString();
@@ -563,7 +563,7 @@ FString UUpgradeDetailsPanelUI::GetProjectileDamageByName(const TObjectPtr<UCode
 				ProjectileData->GetDamage(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::None);
 			case EUpgradeAttribute::FlatDamage:
 				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatDamage, bForPlayer),
-				ProjectileData->GetDamage() + ProjectileData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelPureGlobalDamageBonus() * 0.01f, InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+				ProjectileData->GetDamage() + ProjectileData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelPureGlobalDamageBonus(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
 			default: return FString();
 		}
 	}
@@ -581,7 +581,7 @@ FString UUpgradeDetailsPanelUI::GetThrowableDamageByName(const TObjectPtr<UCodex
 				ThrowableData->GetDamage(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::None);
 			case EUpgradeAttribute::FlatDamage:
 				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatDamage, bForPlayer),
-				ThrowableData->GetDamage() + ThrowableData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelPureGlobalDamageBonus() * 0.01f, InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+				ThrowableData->GetDamage() + ThrowableData->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelPureGlobalDamageBonus(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
 			default: return FString();
 		}
 	}

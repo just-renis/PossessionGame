@@ -656,6 +656,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TankWeaponChargeDown", ESound::TankWeaponChargeDown);
 	SoundMap.Add("PA_TankWeaponChargeUp", ESound::TankWeaponChargeUp);
 	SoundMap.Add("PA_HijackInProgress", ESound::HijackInProgress);
+	SoundMap.Add("PA_UpgradeAvailable", ESound::UpgradeAvailable);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

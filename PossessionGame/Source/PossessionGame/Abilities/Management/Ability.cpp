@@ -1,8 +1,10 @@
 #include "Ability.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/AbilityData.h"
+#include "PossessionGame/Enums/EPlayerLevelUpgradeId.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
@@ -45,6 +47,10 @@ void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbility
 	if (InAbilityProprietor->GetIsHijacked())
 	{
 		P_ApplyVariation();
+		const bool bIsUpgradeSelectedA = InAbilityProprietor->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SeventhOptionA);
+		const bool bIsUpgradeSelectedB = InAbilityProprietor->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SeventhOptionB);
+		RecentHijackBoost += bIsUpgradeSelectedA ? 0.5f : 0.f;
+		RecentHijackBoostTime += bIsUpgradeSelectedB ? 4.f : 0.f;
 		GetWorld()->GetTimerManager().SetTimer(P_RecentHijackBoostHandle, this, &UAbility::P_DisableRecentHijackBoost, RecentHijackBoostTime, false);
 	}
 }

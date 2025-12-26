@@ -47,7 +47,7 @@ private:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DisableBeamCollision();
 	virtual void InitiateDeath() override;
-	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason) override;
+	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent) override;
 	virtual void ClearTimers() override;
 	virtual void ApplyEmpEffect(const float InEffectDuration) override;
 	UFUNCTION()

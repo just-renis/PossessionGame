@@ -67,13 +67,6 @@ private:
 	virtual void P_Setup() override;
 	virtual void P_SetupLeftClickInputTriggeredState() override {}
 	virtual void P_SetupLeftClickInputStartedState() override;
-	virtual void P_SetupLeftClickInputCompletedState() override;
-	void P_OnShootStarted();
-	void P_ResetShootHoldDuration() const;
-	void P_CancelShootingHold();
-	virtual void P_InitiateJump() override;
-	virtual void P_InitiateStomp() override;
-	virtual void P_Move(const FInputActionValue& Value) override;
 	void P_UpdateShieldMaterialAppear();
 	void P_UpdateShieldMaterialDisappear();
 	void P_UpdateShieldMaterial(const bool bState);

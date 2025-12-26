@@ -6,14 +6,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/ESound.h"
-#include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
-#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
-#include "PossessionGame/Weapons/Character Weapons/GuardianWeapon.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "Kismet/GameplayStatics.h"
@@ -126,40 +123,6 @@ void AGuardian::P_Setup()
 void AGuardian::P_SetupLeftClickInputStartedState()
 {
 	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Triggered, this, &AGuardian::P_Shoot);
-	if (EVariation::GuardianVariationGold == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName))
-	{
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &AGuardian::P_OnShootStarted);
-	}
-}
-
-void AGuardian::P_SetupLeftClickInputCompletedState()
-{
-	if (EVariation::GuardianVariationGold != GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(CharacterName)) return;
-	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Completed, this, &AGuardian::P_CancelShootingHold);
-}
-
-void AGuardian::P_OnShootStarted() { Cast<AGuardianWeapon>(Weapon)->P_ShootingHoldStarted(); }
-
-void AGuardian::P_ResetShootHoldDuration() const { Cast<AGuardianWeapon>(Weapon)->P_ResetShootingHoldDuration(); }
-
-void AGuardian::P_CancelShootingHold() { Cast<AGuardianWeapon>(Weapon)->P_CancelShootingHold(); }
-
-void AGuardian::P_InitiateJump()
-{
-	Super::P_InitiateJump();
-	if (Variation == EVariation::GuardianVariationGold) P_ResetShootHoldDuration();
-}
-
-void AGuardian::P_InitiateStomp()
-{
-	Super::P_InitiateStomp();
-	if (Variation == EVariation::GuardianVariationGold) P_ResetShootHoldDuration();
-}
-
-void AGuardian::P_Move(const FInputActionValue& Value)
-{
-	Super::P_Move(Value);
-	if (Variation == EVariation::GuardianVariationGold) P_ResetShootHoldDuration();
 }
 
 void AGuardian::P_UpdateShieldMaterialAppear()

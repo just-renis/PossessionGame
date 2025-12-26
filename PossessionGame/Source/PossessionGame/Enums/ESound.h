@@ -139,5 +139,6 @@ enum class ESound : uint16
 	TankOnHijack,
 	TankWeaponChargeUp,
 	TankWeaponChargeDown,
-	HijackInProgress
+	HijackInProgress,
+	UpgradeAvailable
 };

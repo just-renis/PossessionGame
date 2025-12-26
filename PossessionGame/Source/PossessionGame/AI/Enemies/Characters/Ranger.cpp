@@ -233,7 +233,7 @@ float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 	}
 	if (bIsHijacked)
 	{
-		ReceiveDamage(Damage, EDamageReason::None);
+		ReceiveDamage(Damage, EDamageReason::None, nullptr, nullptr);
 		return Damage;
 	}
 	if (RadialDamageEvent) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), Damage, GetActorLocation(), GetActorForwardVector());
@@ -243,6 +243,6 @@ float ARanger::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? CriticalDamageNumberColor : GetDamageNumberColor(), Damage, PointDamageEvent->HitInfo.Location, GetActorForwardVector());
 	}
 	else (void)DelegateManager->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), Damage, GetActorLocation(), GetActorForwardVector());
-	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None);
+	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None, PointDamageEvent, RadialDamageEvent);
 	return Damage;
 }

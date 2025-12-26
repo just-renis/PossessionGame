@@ -7,6 +7,7 @@ void UPlayerDataManager::Reset()
 	RangerShieldSpecialData = FRangerShieldSpecialData();
 	GuardianTimeStopSpecialData = FGuardianTimeStopSpecialData();
 	RangerBlueVariationData = FRangerBlueVariationData();
+	RecentHijackBoostData = FRecentHijackBoost();
 }
 
 void UPlayerDataManager::Tick(const float InTickTime)
@@ -16,4 +17,5 @@ void UPlayerDataManager::Tick(const float InTickTime)
 	RangerShieldSpecialData.TickStackDuration(InTickTime);
 	GuardianTimeStopSpecialData.TickStackDuration(InTickTime);
 	RangerBlueVariationData.TickStackDuration(InTickTime);
+	if (RecentHijackBoostData.GetIsEnabled()) RecentHijackBoostData.TickDuration(InTickTime);
 }

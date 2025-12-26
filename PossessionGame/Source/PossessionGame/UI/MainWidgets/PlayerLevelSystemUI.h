@@ -15,7 +15,7 @@ public:
 	void OpenUI();
 	void CloseUI();
 private:
-	int32 PlayerLevelMaxAmount = 10;
+	int32 PlayerLevelMaxAmount = 8;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UUserWidget> PlayerLevelOptionClass;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

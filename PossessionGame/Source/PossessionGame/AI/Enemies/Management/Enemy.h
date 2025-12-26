@@ -40,6 +40,30 @@ enum class EAbility : uint8;
 enum class ECharacterType : uint8;
 enum class EMoveMode : uint8;
 
+USTRUCT()
+struct FConductionLogicData
+{
+	GENERATED_BODY()
+	
+	float StackDuration = 10.f;
+	float DamageTakenPercentage = 0.03f;
+	TArray<float> Stacks;
+
+	float GetDamageTakenPercentage() const { return DamageTakenPercentage * Stacks.Num(); }
+	
+	void AddStack() { Stacks.Add(0.f); }
+	void RemoveStackAt(const int32 InIndex) { Stacks.RemoveAt(InIndex); }
+	void TickStackDuration(const float InTickTime)
+	{
+		for (int32 i = Stacks.Num() - 1; i >= 0; i--)
+		{
+			Stacks[i] += InTickTime;
+			if (Stacks[i] >= StackDuration) RemoveStackAt(i);
+		}
+	}
+	void Reset() { Stacks.Empty(); }
+};
+
 UCLASS(Abstract)
 class POSSESSIONGAME_API AEnemy : public ACharacter
 {
@@ -117,7 +141,7 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitiateDeath();
-	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason);
+	virtual void ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent);
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired = false);
 	void StopSound(const ESound InSoundName);
 	virtual void ReceiveEmpEffect(const float InEffectDuration);
@@ -272,6 +296,7 @@ private:
 	bool bPlayerTakeDamageEffectsEnabled = true;
 	bool bPlayerRunModeIsToggle = false;
 	bool bIsHoldingShoot = false;
+	bool bIsSelectedFourthOptionB = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -318,6 +343,7 @@ private:
 	FTimerHandle HijackLockInToTargetHandle;
 	FTimerHandle HijackInvincibilityDelayHandle;
 	FTimerHandle RecoverFromDisablingEffectHandle;
+	FConductionLogicData ConductionLogicData;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
 	float HijackDelay = 0.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))

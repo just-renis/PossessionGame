@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Enums/EPlayerLevelUpgradeId.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVfx.h"
@@ -13,6 +14,7 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -111,7 +113,7 @@ void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const F
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	if (RunSaveSlot->IsSpecialUpgradeAvailable(EUpgrade::TricksterAbility3, EUpgradeAttribute::Special1))
 	{
-		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus() * 0.01f;
+		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 	}
 	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, true);
 	SetDirection(Rotation.Vector());
@@ -152,11 +154,28 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 		return;
 	}
 	const bool bIsCritical = Hit.BoneName.IsEqual(FName("head"));
-	float DamageAfterCritical = ProjectileData.GetProprietor() ? Damage * (bIsCritical ? ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage() : 1.f) : Damage;
+	float TrueDamage = Damage;
+	if (ProjectileData.bIsShotByWeapon)
+	{
+		const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
+		const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionB);
+		TrueDamage += DefaultDamage * (bIsUpgradeSelected ? SaveSlot->GetPlayerLevel() * 0.08f : 0.f);
+		TrueDamage += DefaultDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetPoisonAreaStackBoost(); // Trickster Purple Variation Damage Boost.
+		
+		const bool bIsUpgradeSelectedEightOptionA = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::EighthOptionA);
+		if (bIsUpgradeSelectedEightOptionA && FMath::RandRange(1, 100) < 26) TrueDamage *= 2.f;
+	}
+	if (ProjectileData.GetProprietor() && bIsCritical)
+	{
+		float CriticalDamageMultiplier = ProjectileData.GetProprietor()->GetWeapon()->GetPlayerData()->GetCriticalDamage();
+		CriticalDamageMultiplier += CriticalDamageMultiplier * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllCriticalMultiBonus();
+		CriticalDamageMultiplier += GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerBlueVariationStackBoost(); // Ranger Blue Variation Critical Damage Boost.
+		TrueDamage *= CriticalDamageMultiplier;
+	}
 	FHitResult ModifiableHit = Hit;
 	ModifiableHit.TraceStart = StartLocation;
-	DamageAfterCritical *= P_CalculateByRangeDamage(ModifiableHit);
-	UGameplayStatics::ApplyPointDamage(OtherActor, DamageAfterCritical, (ModifiableHit.Location - GetActorLocation()).GetSafeNormal() * 2.f, ModifiableHit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
+	TrueDamage *= P_CalculateByRangeDamage(ModifiableHit);
+	UGameplayStatics::ApplyPointDamage(OtherActor, TrueDamage, (ModifiableHit.Location - GetActorLocation()).GetSafeNormal() * 2.f, ModifiableHit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
 	if (ProjectileData.GetProprietor()) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 }
 
@@ -186,13 +205,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		Cast<ABreacherBarrel>(OtherActor)->Explode();
 		return;
 	}
-	if (OtherActor->ActorHasTag("Destructible"))
-	{
-		Damage *= P_CalculateByRangeDamage(Hit);
-		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
-		return;
-	}
-	if (!OtherActor->ActorHasTag("Enemy")) return;
+	if (!OtherActor->ActorHasTag("Enemy") && !OtherActor->ActorHasTag("Destructible")) return;
 	if (ProjectileData.bIsPlayerProjectile)
 	{
 		DealDamageToSentientActor(ProjectileData.bIsPlayerProjectile, OtherActor, Hit);
@@ -254,9 +267,7 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 	{
 		P_SetupUpgradesAppliance();
 		P_VariationDamageAppliance();
-		UE_LOG(LogTemp, Error, TEXT("BEFORE PROJECTILE: %f"), Damage);
-		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus() * 0.01f;
-		UE_LOG(LogTemp, Error, TEXT("AFTER PROJECTILE: %f"), Damage);
+		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
 	}
 	else AI_SetupUpgradesAppliance();

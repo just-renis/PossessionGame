@@ -284,7 +284,7 @@ void ABreacher::TriggerBashOverlap()
 				const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 				BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, bIsHijacked);
 				UE_LOG(LogTemp, Error, TEXT("BEFORE BASH: %f"), BashDamage);
-				BashDamage += BashDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus() * 0.01f;
+				BashDamage += BashDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 				UE_LOG(LogTemp, Error, TEXT("AFTER BASH: %f"), BashDamage);
 				Cast<AEnemy>(HitActor)->AI_ReceiveStunEffect(false, P_BashStunDuration, BashDamage, HitDirection);
 			}

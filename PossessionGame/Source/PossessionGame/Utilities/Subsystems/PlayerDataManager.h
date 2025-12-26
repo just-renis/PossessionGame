@@ -16,7 +16,7 @@ struct FTricksterPurpleVariationData
 	
 	float Uptime = 0.f;
 	float UptimeRequired = 1.f;
-	float StackDuration = 15.f;
+	float StackDuration = 12.f;
 	float DamageBoostPercentage = 0.1f;
 	TArray<float> Stacks;
 
@@ -46,8 +46,8 @@ struct FRangerBlueVariationData
 {
 	GENERATED_BODY()
 	
-	float StackDuration = 20.f;
-	float DamageBoostPercentage = 0.05f;
+	float StackDuration = 14.f;
+	float DamageBoostPercentage = 0.04f;
 	TArray<float> Stacks;
 
 	float GetCriticalDamageBoost() const { return DamageBoostPercentage * Stacks.Num(); }
@@ -141,6 +141,40 @@ struct FGuardianTimeStopSpecialData
 	}
 };
 
+USTRUCT()
+struct FRecentHijackBoost
+{
+	GENERATED_BODY()
+
+	bool bIsEnabled = false;
+	bool bIsFourthOptionA = false;
+	float Duration = 0.f;
+	float BoostPercentage = 0.f;
+	float CurrentDuration = 0.f;
+
+	bool GetIsEnabled() const { return bIsEnabled; }
+	float GetBoost() const { return BoostPercentage; }
+	
+	void AddBoost(const bool bInIsFourthOptionA)
+	{
+		bIsFourthOptionA = bInIsFourthOptionA;
+		CurrentDuration = 0.f;
+		Duration = bInIsFourthOptionA ? 6.f : 4.f;
+		BoostPercentage = bInIsFourthOptionA ? 0.35f : 0.6f;
+		bIsEnabled = true;
+	}
+	void RemoveBoost()
+	{
+		bIsEnabled = false;
+		BoostPercentage = bIsFourthOptionA ? 0.f : 1.f;
+	}
+	void TickDuration(const float InTickTime)
+	{
+		CurrentDuration += InTickTime;
+		if (CurrentDuration >= Duration) RemoveBoost();
+	}
+};
+
 UCLASS()
 class POSSESSIONGAME_API UPlayerDataManager : public UGameInstanceSubsystem
 {
@@ -150,7 +184,8 @@ public:
 	float GetRangerGrenadeSpecialBoost() const { return RangerGrenadeSpecialData.GetDamageBoost(); }
 	float GetRangerShieldSpecialBoost() const { return RangerShieldSpecialData.GetDamageBoost(); }
 	float GetGuardianTimeStopSpecialBoost() const { return GuardianTimeStopSpecialData.GetDamageBoost(); }
-	float GetCriticalDamageStackBoost() const { return RangerBlueVariationData.GetCriticalDamageBoost(); }
+	float GetRangerBlueVariationStackBoost() const { return RangerBlueVariationData.GetCriticalDamageBoost(); }
+	float GetRecentHijackBoost() const { return RecentHijackBoostData.GetBoost(); }
 	FOnRangerAbilityStackStatusChanged& GetOnRangerAbilityStackStatusChangedDelegate() { return RangerGrenadeSpecialData.OnRangerAbilityStackStatusChanged; }
 	
 	void AddPoisonAreaUptime(const float InUptime) { TricksterPurpleVariationData.AddPoisonAreaUptime(InUptime); }
@@ -158,6 +193,7 @@ public:
 	void AddRangerGrenadeSpecialStack() { RangerGrenadeSpecialData.AddStack(); }
 	void AddRangerShieldSpecialStack() { RangerShieldSpecialData.AddStack(); }
 	void AddGuardianTimeStopSpecialStack() { GuardianTimeStopSpecialData.AddStack(); }
+	void AddRecentHijackBoost(const bool bInIsFourthOptionA) { RecentHijackBoostData.AddBoost(bInIsFourthOptionA); }
 	void Reset();
 	void Tick(const float InTickTime);
 private:
@@ -166,4 +202,5 @@ private:
 	FRangerShieldSpecialData RangerShieldSpecialData;
 	FGuardianTimeStopSpecialData GuardianTimeStopSpecialData;
 	FRangerBlueVariationData RangerBlueVariationData;
+	FRecentHijackBoost RecentHijackBoostData;
 };

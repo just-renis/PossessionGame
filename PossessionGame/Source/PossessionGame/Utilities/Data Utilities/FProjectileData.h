@@ -46,6 +46,8 @@ struct POSSESSIONGAME_API FProjectileData
 	UPROPERTY(EditAnywhere)
 	float Damage = 0.f;
 	UPROPERTY(EditAnywhere)
+	bool bIsShotByWeapon = true;
+	UPROPERTY(EditAnywhere)
 	bool bProjectileDealsOvertimeDamage = false;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "bProjectileDealsOvertimeDamage", EditConditionHides))
 	float OvertimeTickTrigger = 0.f;
@@ -82,7 +84,7 @@ struct POSSESSIONGAME_API FProjectileData
 	}
 	TObjectPtr<AEnemy> GetProprietor() { return Proprietor; }
 
-	void SetWalkSpread(bool bState) { bWalkSpreadEnabled = bState; }
+	void SetWalkSpread(const bool bState) { bWalkSpreadEnabled = bState; }
 	void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
 	void SetAmount(const int32 InAmount) { Amount = InAmount; }
 private:

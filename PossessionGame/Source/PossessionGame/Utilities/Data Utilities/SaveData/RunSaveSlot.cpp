@@ -7,6 +7,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FSpecialUpgradesContainer.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 bool URunSaveSlot::IsSpecialUpgradeAvailable(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttribute)
@@ -134,14 +135,15 @@ void URunSaveSlot::SetCurrentChapterAndCharacter(const int32 InCurrentChapter, c
 	SaveSlot();
 }
 
-void URunSaveSlot::AddUpgradeXp(const TObjectPtr<UDelegateManager>& InDelegateManager, const float InUpgradeXp)
+void URunSaveSlot::AddUpgradeXp(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const float InUpgradeXp)
 {
 	CurrentUpgradeXp += InUpgradeXp;
 	while (CurrentUpgradeXp >= GetCurrentUpgradeXpNeeded())
 	{
+		InGameInstance->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeAvailable);
 		CurrentUpgradeXp -= GetCurrentUpgradeXpNeeded();
 		CurrentUpgradeLevel++;
-		InDelegateManager->OnUpgradeAmountChanged.ExecuteIfBound(++CurrentlyAvailableUpgradeAmount);
+		InGameInstance->GetSubsystem<UDelegateManager>()->OnUpgradeAmountChanged.ExecuteIfBound(++CurrentlyAvailableUpgradeAmount);
 	}
 }
 

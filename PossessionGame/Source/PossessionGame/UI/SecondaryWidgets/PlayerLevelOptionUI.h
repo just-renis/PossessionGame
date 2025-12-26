@@ -31,4 +31,6 @@ private:
 	void OnSelected();
 	UFUNCTION()
 	void OnOtherOptionSelected();
+	UFUNCTION()
+	void OnHoverTrigger();
 };

@@ -4,9 +4,11 @@
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
@@ -60,7 +62,11 @@ float ARangerWeapon::P_UpgradeDamageAppliance()
 	+ P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerShieldSpecialBoost();
 }
 
-float ARangerWeapon::P_GetCriticalDamage() { return Super::P_GetCriticalDamage() + Super::P_GetCriticalDamage() * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetCriticalDamageStackBoost(); }
+float ARangerWeapon::P_GetCriticalDamage()
+{
+	const float CriticalDamageMultiplier = P_Data->GetCriticalDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllCriticalMultiBonus();
+	return P_Data->GetCriticalDamage() + CriticalDamageMultiplier;
+}
 
 void ARangerWeapon::BeginPlay()
 {

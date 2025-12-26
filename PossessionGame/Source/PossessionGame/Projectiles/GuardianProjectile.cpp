@@ -2,22 +2,13 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EUpgrade.h"
-#include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
-#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Weapons/Character Weapons/GuardianWeapon.h"
 
 float AGuardianProjectile::P_UpgradeDamageAppliance() { return DefaultDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetGuardianTimeStopSpecialBoost(); }
-
-void AGuardianProjectile::P_VariationDamageAppliance()
-{
-	if (EVariation::GuardianVariationGold != GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ProjectileData.GetProprietor()->GetCharacterName())) return;
-	const int32 NumIntervals = FMath::Clamp(FMath::FloorToInt(Cast<AGuardianWeapon>(ProjectileData.GetProprietor()->GetWeapon())->P_GetShootingHoldDuration() * 2.f), 0, 10);
-	Damage += DefaultDamage * 0.05f * NumIntervals;
-}
 
 void AGuardianProjectile::BeginPlay()
 {

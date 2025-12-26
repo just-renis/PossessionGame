@@ -3,15 +3,8 @@
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
-#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
-
-void AGuardianWeapon::P_CancelShootingHold()
-{
-	bIsShootingHolding = false;
-	ShootingHoldDuration = 0.f;
-}
 
 void AGuardianWeapon::ToggleHandsMeshAbilityState(const bool bState) const
 {
@@ -37,8 +30,6 @@ void AGuardianWeapon::P_Shoot(const EPoolObject InProjectileName)
 		ShootTimer = 0.f;
 	}
 }
-
-void AGuardianWeapon::P_UpdateShootingHoldDuration() { if (bIsShootingHolding) ShootingHoldDuration += 0.1f; }
 
 void AGuardianWeapon::BeginPlay()
 {
@@ -81,13 +72,5 @@ void AGuardianWeapon::ShootSecondWeaponShot()
 void AGuardianWeapon::DestroyThis()
 {
 	GetWorldTimerManager().ClearTimer(SecondWeaponShotHandle);
-	GetWorldTimerManager().ClearTimer(ShootingHoldDurationHandle);
 	Super::DestroyThis();
-}
-
-void AGuardianWeapon::PostProprietorSetup()
-{
-	Super::PostProprietorSetup();
-	if (EVariation::GuardianVariationGold != GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(Proprietor->GetCharacterName())) return;
-	GetWorldTimerManager().SetTimer(ShootingHoldDurationHandle, this, &AGuardianWeapon::P_UpdateShootingHoldDuration, 0.1f, true);
 }

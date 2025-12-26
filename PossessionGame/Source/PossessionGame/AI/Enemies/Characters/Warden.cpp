@@ -66,7 +66,7 @@ void AWarden::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffec
 {
 	if (bHitByOtherAI) return;
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
-	ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage);
+	ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage, nullptr, nullptr);
 }
 
 void AWarden::AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName)
@@ -113,9 +113,9 @@ void AWarden::InitiateDeath()
 	DelegateManager->OnBossDeath.Broadcast();
 }
 
-void AWarden::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
+void AWarden::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent)
 {
-	Super::ReceiveDamage(InDamage, InDamageReason);
+	Super::ReceiveDamage(InDamage, InDamageReason, PointDamageEvent, RadialDamageEvent);
 	(void)DelegateManager->UpdateGlobalHpBar.ExecuteIfBound(CurrentHp, MaxHp);
 }
 
@@ -169,7 +169,7 @@ void AWarden::OnBeamCollisionBeginOverlap(UPrimitiveComponent* OverlappedCompone
 {
 	if (const TObjectPtr<AEnemy> Player = Cast<AEnemy>(OtherActor); Player->GetIsHijacked())
 	{
-		Player->ReceiveDamage(Damage, EDamageReason::None);
+		Player->ReceiveDamage(Damage, EDamageReason::None, nullptr, nullptr);
 		DisableBeamCollision();
 	}
 }

@@ -31,7 +31,7 @@ AThrowable::AThrowable()
 
 float AThrowable::GetPlayerLevelAllGlobalDamageBonus() const
 {
-	return Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus() * 0.01f;
+	return Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 }
 
 void AThrowable::OnImpact(const FHitResult& Hit)

@@ -201,11 +201,7 @@ void AEnemy::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffect
 {
 	InHitDirection.Z = 0.f;
 	GetCharacterMovement()->StopMovementImmediately();
-	if (!bHitByOtherAI)
-	{
-		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
-		ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage);
-	}
+	if (!bHitByOtherAI) ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage, nullptr, nullptr);
 	LaunchCharacter(InHitDirection * (AI_Data ? AI_Data->GetBashImpulseForce() : 5000.f), true, true);
 	ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Stun);
 }
@@ -265,7 +261,7 @@ void AEnemy::P_ReceiveStunEffect(const float InEffectDuration, const float InDam
 	if (GetWeapon()->GetAnimInstance()) GetWeapon()->GetAnimInstance()->StopAllMontages(0.f);
 	InHitDirection.Z = 0.f;
 	GetCharacterMovement()->StopMovementImmediately();
-	ReceiveDamage(InDamage, EDamageReason::None);
+	ReceiveDamage(InDamage, EDamageReason::None, nullptr, nullptr);
 	LaunchCharacter(InHitDirection * (P_Data ? P_Data->GetBashImpulseForce() : 5000.f), true, true);
 	ApplyStunEffect(InEffectDuration);
 }
@@ -283,6 +279,7 @@ void AEnemy::SetIsActionInMotion(const bool bState)
 void AEnemy::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	ConductionLogicData.TickStackDuration(DeltaTime);
 	if (!bIsAlive || bInUpgradeSelection || Abilities.IsEmpty()) return;
 	TickAbilities(DeltaTime);
 }
@@ -378,15 +375,28 @@ void AEnemy::InitiateDeath()
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AEnemy::DestroyThis, DestroyAfter, false);
 }
 
-void AEnemy::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
+void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent)
 {
+	if (bIsSelectedFourthOptionB) InDamage *= GameInstance->GetSubsystem<UPlayerDataManager>()->GetRecentHijackBoost();
+	if (InDamageReason == EDamageReason::GuardianDamage && EVariation::GuardianVariationGold == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Guardian)) { ConductionLogicData.AddStack(); }
+	InDamage += InDamage * ConductionLogicData.GetDamageTakenPercentage();
 	CurrentHp -= InDamage;
 	if (bIsHijacked)
 	{
 		P_HandlingDamageTaken();
 		P_ShowReceivedDamageNumber(InDamage);
 	}
-	else if (bIsAlive) AI_ReceivedDamage(InDamageReason, InDamage);
+	else if (bIsAlive)
+	{
+		if (RadialDamageEvent) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
+		else if (PointDamageEvent)
+		{
+			const bool bIsCritical = PointDamageEvent->HitInfo.BoneName.IsEqual(FName("head"));
+			(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? CriticalDamageNumberColor : GetDamageNumberColor(), InDamage, PointDamageEvent->HitInfo.Location, GetActorForwardVector());
+		}
+		else (void)DelegateManager->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
+		AI_ReceivedDamage(InDamageReason, InDamage);
+	}
 	if (bIsAlive && CurrentHp <= 0)
 	{
 		if (bIsHijacked) P_Death();
@@ -635,6 +645,7 @@ void AEnemy::P_Setup()
 {
 	if (bAffectedByEmp) EmpEffectEnded();
 	if (bAffectedByStun) AI_StunEffectEnded();
+	ConductionLogicData.Reset();
 	const float HijackSpeedMultiplier = SaveSlotManager->GetSaveSlot()->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SecondOptionA) ? 1.3f : 1.f;
 	HijackDelayAnimationSpeed = HijackSpeedMultiplier;
 	HijackDelay /= HijackSpeedMultiplier;
@@ -810,17 +821,10 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 			LaunchDir.Normalize();
 			LaunchCharacter(LaunchDir * AnyExplosionImpulseStrength, true, true);
 		}
-		if (EventInstigator != GetController()) ReceiveDamage(Damage, EDamageReason::None);
+		if (EventInstigator != GetController()) ReceiveDamage(Damage, EDamageReason::None, PointDamageEvent, RadialDamageEvent);
 		return Damage;
 	}
-	if (RadialDamageEvent) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), Damage, GetActorLocation(), GetActorForwardVector());
-	else if (PointDamageEvent)
-	{
-		const bool bIsCritical = PointDamageEvent->HitInfo.BoneName.IsEqual(FName("head"));
-		(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? CriticalDamageNumberColor : GetDamageNumberColor(), Damage, PointDamageEvent->HitInfo.Location, GetActorForwardVector());
-	}
-	else (void)DelegateManager->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), Damage, GetActorLocation(), GetActorForwardVector());
-	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None);
+	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None, PointDamageEvent, RadialDamageEvent);
 	return Damage;
 }
 
@@ -1059,6 +1063,9 @@ void AEnemy::P_SetupData()
 {
 	P_Data->SetIsGodModeEnabled(GlobalSettingsManager->GetIsGodModeEnabled());
 	const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
+	bIsSelectedFourthOptionB = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FourthOptionB);
+	if (SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FourthOptionA)) GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddRecentHijackBoost(true);
+	else if (bIsSelectedFourthOptionB) GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddRecentHijackBoost(false);
 	const float HpPercentage = CurrentHp / (AI_Data->GetMaxHp() + SaveSlotManager->GetRunSaveSlot()->GetHpUpgradesForEnemy(CharacterName));
 	MaxHp = P_Data->GetMaxHp();
 	MaxHp += SaveSlot->GetPlayerLevelAllGlobalHpBonus(MaxHp);
@@ -1497,7 +1504,7 @@ void AEnemy::P_AddXp(const float InXp) const
 {
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = SaveSlotManager->GetRunSaveSlot();
 	const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
-	RunSaveSlot->AddUpgradeXp(DelegateManager, InXp);
+	RunSaveSlot->AddUpgradeXp(GameInstance, InXp);
 	SaveSlot->AddXp(InXp);
 	if (!P_HUD) return;
 	P_HUD->UpdateProgressBar(EUIBar::Xp, SaveSlot->GetXp(), SaveSlot->GetCurrentLevelNeededXp());

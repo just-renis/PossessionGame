@@ -19,8 +19,6 @@ class POSSESSIONGAME_API AGuardianProjectile : public AProjectile
 
 	virtual float P_UpgradeDamageAppliance() override;
 
-	virtual void P_VariationDamageAppliance() override;
-
 	virtual void BeginPlay() override;
 	void SpecialUpgradeTaken(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttributeName);
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;

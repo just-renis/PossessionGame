@@ -168,7 +168,7 @@ void AMinionBoss::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InE
 {
 	if (bHitByOtherAI) return;
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
-	ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage);
+	ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage, nullptr, nullptr);
 }
 
 void AMinionBoss::AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName)
@@ -236,9 +236,9 @@ void AMinionBoss::TryTriggerStomp()
 	}
 }
 
-void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason)
+void AMinionBoss::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent)
 {
-	Super::ReceiveDamage(InDamage, InDamageReason);
+	Super::ReceiveDamage(InDamage, InDamageReason, PointDamageEvent, RadialDamageEvent);
 	if (FMath::RandRange(1, 10) >= 9) PlaySound(ESound::MinionBossTakeDamage);
 	(void)DelegateManager->UpdateGlobalHpBar.ExecuteIfBound(CurrentHp, MaxHp);
 }
@@ -258,7 +258,7 @@ void AMinionBoss::CheckDistanceOfLaserEyeTrigger()
 	}
 }
 
-void AMinionBoss::DealLaserDamageToPlayer() const { if (Player) Player->ReceiveDamage(2.5f, EDamageReason::MinionBossDamage); }
+void AMinionBoss::DealLaserDamageToPlayer() const { if (Player) Player->ReceiveDamage(2.5f, EDamageReason::MinionBossDamage, nullptr, nullptr); }
 
 void AMinionBoss::SetMoveDirectlyToPlayer()
 {

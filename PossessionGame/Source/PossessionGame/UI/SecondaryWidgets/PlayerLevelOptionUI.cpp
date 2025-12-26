@@ -3,6 +3,7 @@
 #include "Components/RichTextBlock.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 void UPlayerLevelOptionUI::Setup(const bool bIsUnlocked, const TObjectPtr<UPlayerLevelOptionUI>& InOtherOptionWidget, const EPlayerLevelUpgradeId InId, const EPlayerLevelUpgradeId InOtherOptionId, const FText& InText, const bool bIsChosen)
@@ -27,6 +28,8 @@ void UPlayerLevelOptionUI::NativeConstruct()
 	if (!OptionButton) return;
 	NotSelectedTexture = OptionButton->GetStyle().Normal.GetResourceObject();
 	OptionButton->OnClicked.AddDynamic(this, &UPlayerLevelOptionUI::OnSelected);
+	OptionButton->OnHovered.AddDynamic(this, &UPlayerLevelOptionUI::OnHoverTrigger);
+	OptionButton->OnUnhovered.AddDynamic(this, &UPlayerLevelOptionUI::OnHoverTrigger);
 }
 
 void UPlayerLevelOptionUI::SetAsChosen() const
@@ -40,6 +43,7 @@ void UPlayerLevelOptionUI::SetAsChosen() const
 void UPlayerLevelOptionUI::OnSelected()
 {
 	if (!OptionButton || OptionButton->GetVisibility() == ESlateVisibility::SelfHitTestInvisible) return;
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ClickArrow);
 	SetAsChosen();
 	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->ChangePlayerLevelUpgrade(Id, OtherOptionId);
 }
@@ -50,4 +54,9 @@ void UPlayerLevelOptionUI::OnOtherOptionSelected()
 	ButtonStyle.Normal.SetResourceObject(NotSelectedTexture);
 	OptionButton->SetStyle(ButtonStyle);
 	OptionButton->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UPlayerLevelOptionUI::OnHoverTrigger()
+{
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 }

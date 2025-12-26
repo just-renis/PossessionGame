@@ -7,6 +7,7 @@
 #include "PossessionGame/Utilities/Data Utilities/FSpecialUpgradesContainer.h"
 #include "RunSaveSlot.generated.h"
 
+class UPossessionGameInstance;
 class UDelegateManager;
 enum class EPoolObject : uint8;
 enum class EAbility : uint8;
@@ -72,7 +73,7 @@ public:
 	void SetupSlot(const TObjectPtr<UGameInstance>& InGameInstance, const FString& InSlotName);
 	void AddSecretCrateBoost(const EVariation InVariation, const int32 InPercentage);
 	void SetCurrentChapterAndCharacter(const int32 InCurrentChapter, const ECharacterType InCurrentCharacter);
-	void AddUpgradeXp(const TObjectPtr<UDelegateManager>& InDelegateManager, const float InUpgradeXp);
+	void AddUpgradeXp(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const float InUpgradeXp);
 	void SubtractCurrentUpgradeAmount(const TObjectPtr<UDelegateManager>& InDelegateManager);
 private:
 	UPROPERTY()

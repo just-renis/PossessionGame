@@ -83,7 +83,7 @@ private:
 	virtual void DestroyThis() override;
 	virtual void InitiateDeath() override;
 	void TryTriggerStomp();
-	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason) override;
+	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent) override;
 	void CheckDistanceOfLaserEyeTrigger();
 	void DealLaserDamageToPlayer() const;
 	virtual void SetUnHijackOutline(const bool bState) const override {}
