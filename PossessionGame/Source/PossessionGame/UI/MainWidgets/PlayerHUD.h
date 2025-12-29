@@ -56,6 +56,7 @@ private:
 	float StepUpgradePercentage;
 	float MinorAnnouncementDisplayCooldown = 0.3f;
 	float OutOfAmmoDisplayCooldown = 0.5f;
+	int32 UPGRADEAMOUNT = 0;
 	ECharacterType CharacterType;
 	FTimerHandle UpdateHpWhiteBarHandle;
 	FTimerHandle UpdateGlobalHpWhiteBarHandle;
@@ -89,6 +90,8 @@ private:
 	TObjectPtr<UAbilitiesPanelUI> SamuraiAbilitiesPanel;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DamageNumberText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> UpgradesGotten;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> XpBar;
 	UPROPERTY(meta = (BindWidget))
@@ -229,6 +232,7 @@ private:
 	void CollapseAllCrosshairs() const;
 	virtual void NativeDestruct() override;
 	void UpdateUpgradeAmountText(const int32 InAmount);
+	void UpgradeShit();
 	void UpdateUpgradeKeyBindText(const FName& InKeyBindName, const FText& InKeyName) const;
 	template<typename T>
 	void ToggleUI(const TObjectPtr<T>& InUI);

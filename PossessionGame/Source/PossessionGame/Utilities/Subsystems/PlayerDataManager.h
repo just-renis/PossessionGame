@@ -17,7 +17,7 @@ struct FTricksterPurpleVariationData
 	float Uptime = 0.f;
 	float UptimeRequired = 1.f;
 	float StackDuration = 12.f;
-	float DamageBoostPercentage = 0.1f;
+	float DamageBoostPercentage = 0.05f;
 	TArray<float> Stacks;
 
 	float GetDamageBoost() const { return DamageBoostPercentage * Stacks.Num(); }
@@ -123,7 +123,7 @@ struct FGuardianTimeStopSpecialData
 {
 	GENERATED_BODY()
 	
-	float StackDuration = 20.f;
+	float StackDuration = 15.f;
 	float DamageBoostPercentage = 0.05f;
 	TArray<float> Stacks;
 

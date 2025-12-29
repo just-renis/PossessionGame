@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 AVectorBlastProjectile::AVectorBlastProjectile()
@@ -19,6 +20,8 @@ AVectorBlastProjectile::AVectorBlastProjectile()
 	Sounds.Add(ESound::VectorBlastHit, HitSfx);
 	Sounds.Add(ESound::VectorBlastBounce, BounceSfx);
 }
+
+float AVectorBlastProjectile::P_UpgradeDamageAppliance() { return DefaultDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetGuardianTimeStopSpecialBoost(); }
 
 float AVectorBlastProjectile::GetModifiedLifeSpan() const
 {

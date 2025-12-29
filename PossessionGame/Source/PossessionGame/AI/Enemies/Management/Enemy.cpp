@@ -920,6 +920,8 @@ void AEnemy::DestroyThis()
 	GetWorldTimerManager().SetTimer(DestroyCondenseMaterialsProcessHandle, this, &AEnemy::DestroyCondenseMaterialsProcess, 0.05f, true);
 }
 
+void AEnemy::DestroyImmediately() { Destroy(); }
+
 void AEnemy::DisableAllVfxAfterPossession() { DisableHijackViableVfx(); }
 
 void AEnemy::ClearTimers()
@@ -1073,7 +1075,7 @@ void AEnemy::P_SetupData()
 	CurrentHp = MaxHp * HpPercentage;
 	if (SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SecondOptionB) && CurrentHp < MaxHp)
 	{
-		CurrentHp += MaxHp * 0.2f;
+		CurrentHp += MaxHp * 0.25f;
 		if (CurrentHp >= MaxHp) CurrentHp = MaxHp;
 	}
 	bIsHijacked = true;
@@ -1132,7 +1134,7 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bInstan
 		DelegateManager->OnEnemyDeath.Unbind();
 		if (Controller) Controller->Possess(InEnemy);
 		InitiateDeath();
-		Destroy();
+		DestroyImmediately();
 	}
 	else
 	{
@@ -1571,7 +1573,7 @@ void AEnemy::P_FinishHijackProcess()
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(false, HijackDelayAnimationSpeed);
 	P_AddAndSetHijackPulse(0.f);
-	Destroy();
+	DestroyImmediately();
 }
 
 void AEnemy::P_ChangeFovWhileHijackingProcess()
@@ -1722,7 +1724,7 @@ void AEnemy::DestroyCondenseMaterialsProcess()
 	if (MeshEmissiveMaterialOpacityValue <= 0.f)
 	{
 		GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);
-		Destroy();
+		DestroyImmediately();
 	}
 }
 

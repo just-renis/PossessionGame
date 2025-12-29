@@ -57,13 +57,13 @@ float USaveSlot::GetPlayerLevelAllGlobalHpBonus(const float InMaxHp) const
 {
 	float HpBonusPercentage = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FirstOptionB) ? 25.f : 0.f;
 	HpBonusPercentage += IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SixthOptionA) ? 50.f : 0.f;
-	const float HpBonus = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::ThirdOptionB) ? 60.f : 0.f;
+	const float HpBonus = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::ThirdOptionB) ? 50.f : 0.f;
 	return HpBonus + InMaxHp * HpBonusPercentage * 0.01f;
 }
 
 float USaveSlot::GetPlayerLevelAllCriticalMultiBonus() const
 {
-	float CriticalMulti = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::ThirdOptionA) ? 0.25f : 0.f;
+	float CriticalMulti = IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::ThirdOptionA) ? 0.2f : 0.f;
 	CriticalMulti += IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::EighthOptionB) ? 0.4f : 0.f;
 	return CriticalMulti;
 }

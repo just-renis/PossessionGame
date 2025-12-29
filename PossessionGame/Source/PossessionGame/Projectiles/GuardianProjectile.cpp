@@ -25,7 +25,7 @@ void AGuardianProjectile::SpecialUpgradeTaken(const EUpgrade InUpgradeName, cons
 
 void AGuardianProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (!bIsFirstSpecialBounceUpgradeTaken || ProjectileData.bIsPlayerProjectile)
+	if (!bIsFirstSpecialBounceUpgradeTaken || ProjectileData.bIsPlayerProjectile || !MovementComponent->bShouldBounce)
 	{
 		Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 		return;

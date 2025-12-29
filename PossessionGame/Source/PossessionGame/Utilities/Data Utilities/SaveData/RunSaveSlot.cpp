@@ -143,6 +143,7 @@ void URunSaveSlot::AddUpgradeXp(const TObjectPtr<UPossessionGameInstance>& InGam
 		InGameInstance->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeAvailable);
 		CurrentUpgradeXp -= GetCurrentUpgradeXpNeeded();
 		CurrentUpgradeLevel++;
+		(void)InGameInstance->GetSubsystem<UDelegateManager>()->Fjustforshit.ExecuteIfBound();
 		InGameInstance->GetSubsystem<UDelegateManager>()->OnUpgradeAmountChanged.ExecuteIfBound(++CurrentlyAvailableUpgradeAmount);
 	}
 }

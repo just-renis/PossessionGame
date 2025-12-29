@@ -266,6 +266,7 @@ protected:
 	virtual void HandleDeactivation();
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
 	virtual void DestroyThis();
+	virtual void DestroyImmediately();
 	virtual void DisableAllVfxAfterPossession();
 	virtual void ClearTimers();
 	virtual void AllDisablingActionsFinished();

@@ -49,7 +49,7 @@ void UAbility::Setup(TObjectPtr<AEnemy> InAbilityProprietor, TObjectPtr<UAbility
 		P_ApplyVariation();
 		const bool bIsUpgradeSelectedA = InAbilityProprietor->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SeventhOptionA);
 		const bool bIsUpgradeSelectedB = InAbilityProprietor->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SeventhOptionB);
-		RecentHijackBoost += bIsUpgradeSelectedA ? 0.5f : 0.f;
+		RecentHijackBoost += bIsUpgradeSelectedA ? 0.75f : 0.f;
 		RecentHijackBoostTime += bIsUpgradeSelectedB ? 4.f : 0.f;
 		GetWorld()->GetTimerManager().SetTimer(P_RecentHijackBoostHandle, this, &UAbility::P_DisableRecentHijackBoost, RecentHijackBoostTime, false);
 	}

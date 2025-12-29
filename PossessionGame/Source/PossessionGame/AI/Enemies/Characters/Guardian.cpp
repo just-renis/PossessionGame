@@ -231,6 +231,17 @@ void AGuardian::InitiateDeath()
 	Super::InitiateDeath();
 }
 
+void AGuardian::TurnOffShieldPostProcess() const
+{
+	if (MID_Shield) GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::GuardianShield, MID_Shield, 0.f);
+}
+
+void AGuardian::DestroyImmediately()
+{
+	TurnOffShieldPostProcess();
+	Super::DestroyImmediately();
+}
+
 void AGuardian::ShootSecondWeaponProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon)
 {
 	AssetsManager->PlaySound2D(ESound::VectorBlastLaunch);

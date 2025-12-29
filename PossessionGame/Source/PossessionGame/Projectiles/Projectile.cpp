@@ -90,9 +90,9 @@ void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotati
 	Super::Init(InProjectileData, Rotation, InWhich);
 	SetupProjectile(InProjectileData, InWhich);
 	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
-	if (BulletTrailComponent) BulletTrailComponent->Activate();
+	if (BulletTrailComponent) BulletTrailComponent->Activate(true);
 	MovementComponent->SetComponentTickEnabled(true);
-	MovementComponent->Activate();
+	MovementComponent->Activate(true);
 }
 
 void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const FRotator& Rotation)
@@ -120,7 +120,7 @@ void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const F
 	if (!BulletTrailComponent) AssetsManager->AttachVfx(EVfx::CloneBullet, [this]() -> bool { return bIsActive; }, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"));
 	else BulletTrailComponent->Activate(true);
 	MovementComponent->SetComponentTickEnabled(true);
-	MovementComponent->Activate();
+	MovementComponent->Activate(true);
 }
 
 void AProjectile::DisableProjectileComponents() const
@@ -149,7 +149,6 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 {
 	if (!bIsPlayerProjectile)
 	{
-		Damage *= P_CalculateByRangeDamage(Hit);
 		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
 		return;
 	}
@@ -159,7 +158,7 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 	{
 		const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 		const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionB);
-		TrueDamage += DefaultDamage * (bIsUpgradeSelected ? SaveSlot->GetPlayerLevel() * 0.08f : 0.f);
+		TrueDamage += DefaultDamage * (bIsUpgradeSelected ? SaveSlot->GetPlayerLevel() * 0.05f : 0.f);
 		TrueDamage += DefaultDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetPoisonAreaStackBoost(); // Trickster Purple Variation Damage Boost.
 		
 		const bool bIsUpgradeSelectedEightOptionA = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::EighthOptionA);
@@ -205,13 +204,18 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		Cast<ABreacherBarrel>(OtherActor)->Explode();
 		return;
 	}
-	if (!OtherActor->ActorHasTag("Enemy") && !OtherActor->ActorHasTag("Destructible")) return;
+	if (OtherActor->ActorHasTag("Destructible"))
+	{
+		DealDamageToSentientActor(ProjectileData.bIsPlayerProjectile, OtherActor, Hit);
+		return;
+	}
+	if (!OtherActor->ActorHasTag("Enemy")) return;
 	if (ProjectileData.bIsPlayerProjectile)
 	{
 		DealDamageToSentientActor(ProjectileData.bIsPlayerProjectile, OtherActor, Hit);
 		return;
 	}
-	if (!ProjectileData.bIsPlayerProjectile && Cast<AEnemy>(OtherActor)->GetIsHijacked()) DealDamageToSentientActor(ProjectileData.bIsPlayerProjectile, OtherActor, Hit);
+	if (!ProjectileData.bIsPlayerProjectile && OtherActor->ActorHasTag("Player")) DealDamageToSentientActor(ProjectileData.bIsPlayerProjectile, OtherActor, Hit);
 }
 
 EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.DamageReason; }

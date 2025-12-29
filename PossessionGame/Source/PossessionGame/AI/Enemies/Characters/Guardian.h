@@ -37,6 +37,8 @@ private:
 	float ShieldColorDensity = 5.f;
 	float ShieldRadialRadius = 1.f;
 	float Radius = 3.f;
+	FTimerHandle ShieldUpdateHandle;
+	FTimerHandle ShootSecondWeaponProjectileHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Guardian;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
@@ -51,10 +53,6 @@ private:
 	TObjectPtr<UNiagaraComponent> GuardianShieldComponent;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> VectorBlastMuzzleComponent;
-	UPROPERTY()
-	FTimerHandle ShieldUpdateHandle;
-	UPROPERTY()
-	FTimerHandle ShootSecondWeaponProjectileHandle;
 
 	bool IsSecondAbilityInUse() const { return bIsSecondAbilityInUse; }
 	
@@ -82,6 +80,8 @@ private:
 	virtual void DisableAllVfxAfterPossession() override;
 	void ToggleShieldVfx(const bool bState, const EVfx InVfxName);
 	virtual void InitiateDeath() override;
+	void TurnOffShieldPostProcess() const;
+	virtual void DestroyImmediately() override;
 	UFUNCTION()
 	void ShootSecondWeaponProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, bool bFromFirstWeapon);
 };

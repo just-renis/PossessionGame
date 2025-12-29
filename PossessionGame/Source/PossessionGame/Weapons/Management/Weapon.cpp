@@ -324,7 +324,7 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	
 	float AfterPlayerLevelAllGlobalDamage = AfterUpgradeApplianceDamage + P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 	
-	AfterPlayerLevelAllGlobalDamage += DefaultHitScanDamage * (bIsUpgradeSelected ? SaveSlot->GetPlayerLevel() * 0.08f : 0.f);
+	AfterPlayerLevelAllGlobalDamage += DefaultHitScanDamage * (bIsUpgradeSelected ? SaveSlot->GetPlayerLevel() * 0.05f : 0.f);
 	
 	AfterPlayerLevelAllGlobalDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetPoisonAreaStackBoost(); // Trickster Purple Variation Damage Boost.
 	

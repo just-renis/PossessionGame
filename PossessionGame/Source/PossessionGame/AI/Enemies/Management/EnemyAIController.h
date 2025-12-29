@@ -67,6 +67,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
 	float PredictionTimeMultiplier = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
+	float PredictionStartsAt = 500.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
 	float PredictionMaxClamp = 0.8f;
 	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
 	float DistanceScalingMultiplier = 1.f;

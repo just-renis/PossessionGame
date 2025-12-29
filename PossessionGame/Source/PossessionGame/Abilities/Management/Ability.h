@@ -63,7 +63,7 @@ protected:
 private:
 	bool bIsDurational = false;
 	float RecentHijackBoostTime = 8.f;
-	float RecentHijackBoost = 2.5f;
+	float RecentHijackBoost = 2.f;
 	int32 AbilityIndex;
 	FTimerHandle P_RecentHijackBoostHandle;
 
