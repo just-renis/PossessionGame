@@ -159,7 +159,7 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 					{
 						return FText::Format(NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.1",
 						"<UpgradeAttributeText>WHILE ACTIVE, YOU REFLECT</>{0}{1}<UpgradeAttributeText>OF THE DAMAGE.</>"),
-						FText::FromString(GetRichTextTag(false)), FText::FromString(" 50% </>"));
+						FText::FromString(GetRichTextTag(false)), FText::FromString(" 100% </>"));
 					}
 					return NSLOCTEXT("ST_Localization", "GuardianAbilitySpecial1.2", "<UpgradeAttributeText>GUARDIAN TAKES NO DAMAGE ON FIRST HIT.</>");
 				default: break;

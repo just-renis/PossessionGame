@@ -48,20 +48,12 @@ void ABreacherDynamite::Explode()
 	const float InnerRadius = Data->GetDamageInnerRadius() + Data->GetDamageInnerRadius() * RadiusIncrease * 0.01f;
 	const float OuterRadius = Data->GetDamageOuterRadius() + Data->GetDamageOuterRadius() * RadiusIncrease * 0.01f;
 	const float PlayerLevelGlobalDamageBoost = GetPlayerLevelAllGlobalDamageBonus();
-	UE_LOG(LogTemp, Error, TEXT("BEFORE DYNAMITE: %f"), NormalDamage);
 	NormalDamage += PlayerLevelGlobalDamageBoost;
 	MinimumDamage += PlayerLevelGlobalDamageBoost;
-	UE_LOG(LogTemp, Error, TEXT("AFTER DYNAMITE: %f"), NormalDamage);
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, SavedSpecialExplosionLocation, InnerRadius, OuterRadius,
 	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::BreacherDynamiteExplosion, nullptr, SavedSpecialExplosionLocation);
 	PlaySound(ESound::BreacherDynamiteExplosion);
-}
-
-void ABreacherDynamite::Throw()
-{
-	Super::Throw();
-	GetWorldTimerManager().SetTimer(StickHandle, this, &ABreacherDynamite::PerformStickTrace, 0.05f, true);
 }
 
 void ABreacherDynamite::Init(const bool bInIsPlayerObject)
@@ -70,20 +62,12 @@ void ABreacherDynamite::Init(const bool bInIsPlayerObject)
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.AddUObject(this, &ABreacherDynamite::PrimaryExplode);
 }
 
-void ABreacherDynamite::PerformStickTrace()
+void ABreacherDynamite::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) { OnImpact(Hit); }
+
+void ABreacherDynamite::OnImpact(const FHitResult& Hit)
 {
-	FHitResult Hit;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-	Params.AddIgnoredActor(Proprietor);
-	for (int32 i = 0; i < 4; i++)
-	{
-		const FVector Position = Mesh->GetSocketLocation(FName("StickingBoundsSocket" + FString::FromInt(i)));
-		const FQuat Rotation = Mesh->GetSocketQuaternion(FName("StickingBoundsSocket" + FString::FromInt(i)));
-		if (GetWorld()->SweepSingleByChannel(Hit, Position, Position, Rotation, ECC_WorldStatic, FCollisionShape::MakeBox(StickingBounds), Params))
-		{
-			Mesh->SetSimulatePhysics(false);
-			GetWorldTimerManager().ClearTimer(StickHandle);
-		}
-	}
+	Mesh->OnComponentHit.RemoveAll(this);
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Mesh->AttachToComponent(Hit.GetComponent(), FAttachmentTransformRules::KeepWorldTransform);
 }

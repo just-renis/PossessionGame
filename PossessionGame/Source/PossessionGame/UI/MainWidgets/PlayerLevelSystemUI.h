@@ -4,6 +4,10 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerLevelSystemUI.generated.h"
 
+class UHorizontalBox;
+class USaveSlot;
+class UHorizontalBoxSlot;
+enum class ELevelSystemUpgradeTexture : uint8;
 enum class EPlayerLevelUpgradeId : uint8;
 class UVerticalBox;
 
@@ -20,16 +24,29 @@ private:
 	TSubclassOf<UUserWidget> PlayerLevelOptionClass;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TMap<EPlayerLevelUpgradeId, FText> UpgradeDescriptions;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UObject> Font;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TArray<ELevelSystemUpgradeTexture> LevelOptionsTextureTypes;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TMap<ELevelSystemUpgradeTexture, TObjectPtr<UObject>> IconTextures;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVerticalBox> OptionsBox;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeOutDelegate;
+	
+	TObjectPtr<UWidget> GenerateLevelText(const int32 InIndex) const;
 
 	virtual void NativeConstruct() override;
 	void SetupPlayerOptions();
 	void Toggle(const bool bState);
+	void SetupLevelText(const TObjectPtr<UHorizontalBoxSlot>& InElement);
+	void SetupFirstLevelOption(const TObjectPtr<UHorizontalBoxSlot>& InElement);
+	void SetupSecondLevelOption(const TObjectPtr<UHorizontalBoxSlot>& InElement);
+	void SetupLevelOptions(const int32 InIndex, const TObjectPtr<USaveSlot>& InSaveSlot, const TObjectPtr<UHorizontalBox>& InHorizontalBox);
+	void SetupSpacerBetweenLevelOptions() const;
 	UFUNCTION()
 	void Hide();
 };

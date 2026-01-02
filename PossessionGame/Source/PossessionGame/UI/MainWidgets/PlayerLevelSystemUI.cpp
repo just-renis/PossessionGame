@@ -8,6 +8,7 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/Enums/ELevelSystemUpgradeTexture.h"
 #include "PossessionGame/Enums/EPlayerLevelUpgradeId.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/UI/SecondaryWidgets/PlayerLevelOptionUI.h"
@@ -23,6 +24,16 @@ void UPlayerLevelSystemUI::CloseUI()
 {
 	Toggle(false);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAbilitiesOrLevelMenuSelectionEnd.ExecuteIfBound(EWidget::PlayerLevelSystemUI);
+}
+
+TObjectPtr<UWidget> UPlayerLevelSystemUI::GenerateLevelText(const int32 InIndex) const
+{
+	const TObjectPtr<UTextBlock> LevelText = WidgetTree->ConstructWidget<UTextBlock>();
+	LevelText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "Level", "Level {0}"), InIndex));
+	FSlateFontInfo FontInfo = LevelText->GetFont();
+	FontInfo.FontObject = Font;
+	LevelText->SetFont(FontInfo);
+	return LevelText;
 }
 
 void UPlayerLevelSystemUI::NativeConstruct()
@@ -42,50 +53,11 @@ void UPlayerLevelSystemUI::SetupPlayerOptions()
 		if (!HorizontalBox) continue;
 		if (const TObjectPtr<UVerticalBoxSlot> HorizontalBoxSlot = Cast<UVerticalBoxSlot>(OptionsBox->AddChild(HorizontalBox)))
 		{
-			FSlateChildSize HorizontalBoxSize(ESlateSizeRule::Fill);
-			HorizontalBoxSlot->SetSize(HorizontalBoxSize);
-			const TObjectPtr<UTextBlock> LevelText = WidgetTree->ConstructWidget<UTextBlock>();
-			if (!LevelText) continue;
-			LevelText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "Level", "Level {0}"), i + 1));
-			if (const TObjectPtr<UHorizontalBoxSlot> ElementSlot = Cast<UHorizontalBoxSlot>(HorizontalBox->AddChild(LevelText)))
-			{
-				FSlateChildSize Size(ESlateSizeRule::Fill);
-				Size.Value = 0.4f;
-				ElementSlot->SetSize(Size);
-				ElementSlot->SetPadding(FMargin(5.f, 0.f, 0.f, 0.f));
-				ElementSlot->SetHorizontalAlignment(HAlign_Fill);
-				ElementSlot->SetVerticalAlignment(VAlign_Center);
-			}
-			const TObjectPtr<UPlayerLevelOptionUI> FirstPlayerLevelOptionWidget = CreateWidget<UPlayerLevelOptionUI>(this, PlayerLevelOptionClass);
-			if (!FirstPlayerLevelOptionWidget) continue;
-			if (const TObjectPtr<UHorizontalBoxSlot> ElementSlot = Cast<UHorizontalBoxSlot>(HorizontalBox->AddChild(FirstPlayerLevelOptionWidget)))
-			{
-				FSlateChildSize Size(ESlateSizeRule::Fill);
-				Size.Value = 1.f;
-				ElementSlot->SetSize(Size);
-				ElementSlot->SetPadding(FMargin(0.f, 0.f, 25.f, 0.f));
-			}
-			const TObjectPtr<UPlayerLevelOptionUI> SecondPlayerLevelOptionWidget = CreateWidget<UPlayerLevelOptionUI>(this, PlayerLevelOptionClass);
-			if (!SecondPlayerLevelOptionWidget) continue;
-			if (const TObjectPtr<UHorizontalBoxSlot> ElementSlot = Cast<UHorizontalBoxSlot>(HorizontalBox->AddChild(SecondPlayerLevelOptionWidget)))
-			{
-				FSlateChildSize Size(ESlateSizeRule::Fill);
-				Size.Value = 1.f;
-				ElementSlot->SetSize(Size);
-			}
-			const EPlayerLevelUpgradeId FirstId = static_cast<EPlayerLevelUpgradeId>(i * 2);
-			const EPlayerLevelUpgradeId SecondId = static_cast<EPlayerLevelUpgradeId>(i * 2 + 1);
-			if (const FText* Description = UpgradeDescriptions.Find(FirstId)) FirstPlayerLevelOptionWidget->Setup(SaveSlot->GetPlayerLevel() > i, SecondPlayerLevelOptionWidget, FirstId, SecondId, *Description, SaveSlot->IsPlayerLevelUpgradeSelected(FirstId));
-			if (const FText* Description = UpgradeDescriptions.Find(SecondId)) SecondPlayerLevelOptionWidget->Setup(SaveSlot->GetPlayerLevel() > i, FirstPlayerLevelOptionWidget, SecondId, FirstId, *Description, SaveSlot->IsPlayerLevelUpgradeSelected(SecondId));
+			HorizontalBoxSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+			if (const TObjectPtr<UHorizontalBoxSlot> LevelTextElement = Cast<UHorizontalBoxSlot>(HorizontalBox->AddChild(GenerateLevelText(i + 1)))) SetupLevelText(LevelTextElement);
+			SetupLevelOptions(i, SaveSlot, HorizontalBox);
 		}
-		const TObjectPtr<USpacer> Spacer = WidgetTree->ConstructWidget<USpacer>(USpacer::StaticClass());
-		if (!Spacer) continue;
-		if (const TObjectPtr<UVerticalBoxSlot> ElementSlot = Cast<UVerticalBoxSlot>(OptionsBox->AddChild(Spacer)))
-		{
-			FSlateChildSize Size(ESlateSizeRule::Fill);
-			Size.Value = 0.1f;
-			ElementSlot->SetSize(Size);
-		}
+		SetupSpacerBetweenLevelOptions();
 	}
 }
 
@@ -108,6 +80,63 @@ void UPlayerLevelSystemUI::Toggle(const bool bState)
 		BindToAnimationFinished(FadeInAnim, FadeOutDelegate);
 	}
 	PlayAnimation(FadeInAnim, GetAnimationCurrentTime(FadeInAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
+}
+
+void UPlayerLevelSystemUI::SetupLevelText(const TObjectPtr<UHorizontalBoxSlot>& InElement)
+{
+	FSlateChildSize Size(ESlateSizeRule::Fill);
+	Size.Value = 0.4f;
+	InElement->SetSize(Size);
+	InElement->SetPadding(FMargin(5.f, 0.f, 0.f, 0.f));
+	InElement->SetHorizontalAlignment(HAlign_Fill);
+	InElement->SetVerticalAlignment(VAlign_Center);
+}
+
+void UPlayerLevelSystemUI::SetupFirstLevelOption(const TObjectPtr<UHorizontalBoxSlot>& InElement)
+{
+	FSlateChildSize Size(ESlateSizeRule::Fill);
+	Size.Value = 1.f;
+	InElement->SetSize(Size);
+	InElement->SetPadding(FMargin(0.f, 0.f, 25.f, 0.f));
+}
+
+void UPlayerLevelSystemUI::SetupSecondLevelOption(const TObjectPtr<UHorizontalBoxSlot>& InElement)
+{
+	FSlateChildSize Size(ESlateSizeRule::Fill);
+	Size.Value = 1.f;
+	InElement->SetSize(Size);
+}
+
+void UPlayerLevelSystemUI::SetupLevelOptions(const int32 InIndex, const TObjectPtr<USaveSlot>& InSaveSlot, const TObjectPtr<UHorizontalBox>& InHorizontalBox)
+{
+	const TObjectPtr<UPlayerLevelOptionUI> FirstPlayerLevelOptionWidget = CreateWidget<UPlayerLevelOptionUI>(this, PlayerLevelOptionClass);
+	if (const TObjectPtr<UHorizontalBoxSlot> FirstLevelOption = Cast<UHorizontalBoxSlot>(InHorizontalBox->AddChild(FirstPlayerLevelOptionWidget))) SetupFirstLevelOption(FirstLevelOption);
+	const TObjectPtr<UPlayerLevelOptionUI> SecondPlayerLevelOptionWidget = CreateWidget<UPlayerLevelOptionUI>(this, PlayerLevelOptionClass);
+	if (const TObjectPtr<UHorizontalBoxSlot> SecondLevelOption = Cast<UHorizontalBoxSlot>(InHorizontalBox->AddChild(SecondPlayerLevelOptionWidget))) SetupSecondLevelOption(SecondLevelOption);
+	const EPlayerLevelUpgradeId FirstId = static_cast<EPlayerLevelUpgradeId>(InIndex * 2);
+	const EPlayerLevelUpgradeId SecondId = static_cast<EPlayerLevelUpgradeId>(InIndex * 2 + 1);
+	TObjectPtr<UObject> TextureForLevelOptionIcon = IconTextures[ELevelSystemUpgradeTexture::Ability];
+	if (const FText* Description = UpgradeDescriptions.Find(FirstId))
+	{
+		if (const TObjectPtr<UObject>* Texture = IconTextures.Find(LevelOptionsTextureTypes[InIndex * 2])) TextureForLevelOptionIcon = *Texture;
+		FirstPlayerLevelOptionWidget->Setup(InSaveSlot->GetPlayerLevel() > InIndex, SecondPlayerLevelOptionWidget, FirstId, SecondId, *Description, InSaveSlot->IsPlayerLevelUpgradeSelected(FirstId), TextureForLevelOptionIcon);
+	}
+	if (const FText* Description = UpgradeDescriptions.Find(SecondId))
+	{
+		if (const TObjectPtr<UObject>* Texture = IconTextures.Find(LevelOptionsTextureTypes[InIndex * 2 + 1])) TextureForLevelOptionIcon = *Texture;
+		SecondPlayerLevelOptionWidget->Setup(InSaveSlot->GetPlayerLevel() > InIndex, FirstPlayerLevelOptionWidget, SecondId, FirstId, *Description, InSaveSlot->IsPlayerLevelUpgradeSelected(SecondId), TextureForLevelOptionIcon);
+	}
+}
+
+void UPlayerLevelSystemUI::SetupSpacerBetweenLevelOptions() const
+{
+	const TObjectPtr<USpacer> Spacer = WidgetTree->ConstructWidget<USpacer>(USpacer::StaticClass());
+	if (const TObjectPtr<UVerticalBoxSlot> ElementSlot = Cast<UVerticalBoxSlot>(OptionsBox->AddChild(Spacer)))
+	{
+		FSlateChildSize Size(ESlateSizeRule::Fill);
+		Size.Value = 0.1f;
+		ElementSlot->SetSize(Size);
+	}
 }
 
 void UPlayerLevelSystemUI::Hide()

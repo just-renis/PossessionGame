@@ -22,10 +22,8 @@ void ABreacherBarrel::Explode()
 	const float InnerRadius = Data->GetDamageInnerRadius() + Data->GetDamageInnerRadius() * RadiusIncrease * 0.01f;
 	const float OuterRadius = Data->GetDamageOuterRadius() + Data->GetDamageOuterRadius() * RadiusIncrease * 0.01f;
 	const float PlayerLevelGlobalDamageBoost = GetPlayerLevelAllGlobalDamageBonus();
-	UE_LOG(LogTemp, Error, TEXT("BEFORE BARREL: %f"), NormalDamage);
 	NormalDamage += PlayerLevelGlobalDamageBoost;
 	MinimumDamage += PlayerLevelGlobalDamageBoost;
-	UE_LOG(LogTemp, Error, TEXT("AFTER BARREL: %f"), NormalDamage);
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
 	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(bIsTripleDamageRolled ? EVfx::BreacherSpecialBarrelExplosion : EVfx::BreacherBarrelExplosion, nullptr, GetActorLocation());

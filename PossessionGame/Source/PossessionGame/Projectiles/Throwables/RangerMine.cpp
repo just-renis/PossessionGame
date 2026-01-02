@@ -91,10 +91,8 @@ void ARangerMine::DealAreaDamage()
 	const float InnerRadius = Data->GetDamageInnerRadius() + Data->GetDamageInnerRadius() * RadiusIncrease * 0.01f;
 	const float OuterRadius = Data->GetDamageOuterRadius() + Data->GetDamageOuterRadius() * RadiusIncrease * 0.01f;
 	const float PlayerLevelGlobalDamageBoost = GetPlayerLevelAllGlobalDamageBonus();
-	UE_LOG(LogTemp, Error, TEXT("BEFORE MINE: %f"), NormalDamage);
 	NormalDamage += PlayerLevelGlobalDamageBoost;
 	MinimumDamage += PlayerLevelGlobalDamageBoost;
-	UE_LOG(LogTemp, Error, TEXT("AFTER MINE: %f"), NormalDamage);
 	const float UpgradeDamageBoost = UpgradeAppliance();
 	NormalDamage += UpgradeDamageBoost;
 	MinimumDamage += UpgradeDamageBoost;

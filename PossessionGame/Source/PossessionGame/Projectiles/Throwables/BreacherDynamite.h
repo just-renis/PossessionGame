@@ -11,17 +11,13 @@ class POSSESSIONGAME_API ABreacherDynamite : public AThrowable
 {
 	GENERATED_BODY()
 public:
-	virtual void Throw() override;
 	virtual void Init(const bool bInIsPlayerObject) override;
 private:
 	ABreacherDynamite();
 
 	float SpecialExplosionDelay = 0.3f;
-	FTimerHandle StickHandle;
 	FTimerHandle SpecialExplosionDelayHandle;
 	FVector SavedSpecialExplosionLocation;
-	UPROPERTY(EditDefaultsOnly, Category = "Dynamite", meta = (AllowPrivateAccess = true))
-	FVector StickingBounds;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> ExplodeSfx;
 	UPROPERTY()
@@ -29,5 +25,6 @@ private:
 
 	void PrimaryExplode();
 	void Explode();
-	void PerformStickTrace();
+	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
+	virtual void OnImpact(const FHitResult& Hit) override;
 };

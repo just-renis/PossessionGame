@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerLevelOptionUI.generated.h"
 
+class UImage;
 class URichTextBlock;
 class UButton;
 enum class EPlayerLevelUpgradeId : uint8;
@@ -13,7 +14,7 @@ class POSSESSIONGAME_API UPlayerLevelOptionUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void Setup(const bool bIsUnlocked, const TObjectPtr<UPlayerLevelOptionUI>& InOtherOptionWidget, const EPlayerLevelUpgradeId InId, const EPlayerLevelUpgradeId InOtherOptionId, const FText& InText, const bool bIsChosen);
+	void Setup(const bool bIsUnlocked, const TObjectPtr<UPlayerLevelOptionUI>& InOtherOptionWidget, const EPlayerLevelUpgradeId InId, const EPlayerLevelUpgradeId InOtherOptionId, const FText& InText, const bool bIsChosen, const TObjectPtr<UObject>& InOptionIconTexture);
 private:
 	bool bIsSelected = false;
 	EPlayerLevelUpgradeId Id;
@@ -22,6 +23,8 @@ private:
 	TObjectPtr<URichTextBlock> OptionText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> OptionButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> OptionIcon;
 	UPROPERTY()
 	TObjectPtr<UObject> NotSelectedTexture;
 

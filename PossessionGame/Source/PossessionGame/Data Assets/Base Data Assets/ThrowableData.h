@@ -17,6 +17,7 @@ public:
 	float GetDamageInnerRadius() const { return DamageInnerRadius; }
 	float GetDamageOuterRadius() const { return DamageOuterRadius; }
 	float GetDamageFalloff() const { return DamageFalloff; }
+	float GetDirectionMultiplier() const { return DirectionMultiplier; }
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	bool bNeedsOnHitEvent = false;
@@ -26,6 +27,8 @@ private:
 	float Damage = 0.f;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	float ImpulseForce = 0.f;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	float DirectionMultiplier = 0.3f;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	bool bIsDealingRadiusDamage = false;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bIsDealingRadiusDamage", EditConditionHides, AllowPrivateAccess = true))

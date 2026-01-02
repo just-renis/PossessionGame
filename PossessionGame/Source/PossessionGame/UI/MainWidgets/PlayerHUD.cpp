@@ -234,7 +234,6 @@ void UPlayerHUD::NativeConstruct()
 	DelegateManager->RequestMinorAnnouncement.BindUObject(this, &UPlayerHUD::ShowMinorAnnouncement);
 	DelegateManager->OnPlayerDamageTaken.BindUObject(this, &UPlayerHUD::SetDamageNumber);
 	DelegateManager->OnUpgradeAmountChanged.BindUObject(this, &UPlayerHUD::UpdateUpgradeAmountText);
-	DelegateManager->Fjustforshit.BindUObject(this, &UPlayerHUD::UpgradeShit);
 	if (HijackProgressBar) MID_HijackProgress = HijackProgressBar->GetDynamicMaterial();
 	UpdateHijackIndicator(false);
 	UpdateUpgradeKeyBindText(FName("OpenUpgrade"), GetGameInstance()->GetSubsystem<UGlobalSettingsManager>()->GetKeyBindText(FName("OpenUpgrade")));
@@ -405,11 +404,6 @@ void UPlayerHUD::UpdateUpgradeAmountText(const int32 InAmount)
 		PlayAnimation(UpgradePopupAnim);
 	}
 	else if (InAmount <= 0) UpgradeTextInv->SetVisibility(ESlateVisibility::Collapsed);
-}
-
-void UPlayerHUD::UpgradeShit()
-{
-	UpgradesGotten->SetText(FText::AsNumber(++UPGRADEAMOUNT));
 }
 
 void UPlayerHUD::UpdateUpgradeKeyBindText(const FName& InKeyBindName, const FText& InKeyName) const

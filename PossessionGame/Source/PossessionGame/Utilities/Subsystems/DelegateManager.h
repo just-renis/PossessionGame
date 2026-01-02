@@ -61,7 +61,6 @@ DECLARE_DELEGATE_OneParam(FRequestMiniPopup, const FText&);
 DECLARE_DELEGATE_OneParam(FHackTerminalSubtractHp, const float);
 DECLARE_DELEGATE_OneParam(FOnPlayerReloadMontageEnd, const int32);
 DECLARE_DELEGATE_OneParam(FOnUpgradeAmountChanged, const int32);
-DECLARE_DELEGATE(FJUSTFORSHIT);
 DECLARE_DELEGATE_OneParam(FOnAbilitiesOrLevelMenuSelectionEnd, const EWidget);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FUpdateGlobalHpBar, const float, const float);
@@ -155,7 +154,6 @@ public:
 	FHackTerminalSubtractHp HackTerminalSubtractHp;
 	FOnPlayerReloadMontageEnd OnPlayerReloadMontageEnd;
 	FOnUpgradeAmountChanged OnUpgradeAmountChanged;
-	FJUSTFORSHIT Fjustforshit;
 	FOnAbilitiesOrLevelMenuSelectionEnd OnAbilitiesOrLevelMenuSelectionEnd;
 	FOnAbilityEnd OnAbilityEnd;
 	FOnSaveSlotClicked OnSaveSlotClicked;

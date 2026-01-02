@@ -184,7 +184,7 @@ float AGuardian::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	}
 	if (bReflectDamageEnabled && EventInstigator && EventInstigator->GetPawn())
 	{
-		UGameplayStatics::ApplyDamage(EventInstigator->GetPawn(), Damage * 0.5f, nullptr, this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(EventInstigator->GetPawn(), Damage, nullptr, this, UDamageType::StaticClass());
 	}
 	return Damage;
 }

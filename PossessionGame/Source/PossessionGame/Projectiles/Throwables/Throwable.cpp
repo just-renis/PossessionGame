@@ -10,10 +10,10 @@ void AThrowable::Initialize(const TObjectPtr<AActor>& InProprietor) { Proprietor
 void AThrowable::Throw()
 {
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	Mesh->SetSimulatePhysics(true); 
+	Mesh->SetSimulatePhysics(true);
 	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector, false);
 	Mesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-	Mesh->AddImpulse((-GetActorRightVector() + GetActorForwardVector() * 0.3f).GetSafeNormal() * Data->GetImpulseForce(), NAME_None, true);
+	Mesh->AddImpulse((-GetActorRightVector() + GetActorForwardVector() * Data->GetDirectionMultiplier()).GetSafeNormal() * Data->GetImpulseForce(), NAME_None, true);
 	SetupOnHitEvent();
 }
 
