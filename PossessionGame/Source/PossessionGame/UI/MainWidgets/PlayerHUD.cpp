@@ -88,13 +88,6 @@ void UPlayerHUD::Reset()
 	GetAbilityPanel()->SetOverlaysVisibility(true);
 }
 
-void UPlayerHUD::SetColors(const ECharacterType InCharacterName) const
-{
-	if (!ScreenGlow) return;
-	if (const FLinearColor* Color = CharacterScreenGlowColors.Find(InCharacterName)) ScreenGlow->SetColorAndOpacity(*Color);
-	else ScreenGlow->SetColorAndOpacity(FLinearColor::White);
-}
-
 void UPlayerHUD::UpdateHijackIndicator(const bool bState, const FText& InKeyName)
 {
 	if (HijackChargedImage) HijackChargedImage->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);

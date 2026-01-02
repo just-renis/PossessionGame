@@ -1098,7 +1098,6 @@ void AEnemy::P_SetupUI()
 	P_HUD->ConfigureUIs();
 	P_UpdateAbilitiesUI();
 	Weapon->P_UpdateAmmoTextHUD();
-	P_HUD->SetColors(CharacterName);
 	P_HUD->PlayHijackAnim(false, HijackDelayAnimationSpeed);
 	if (CurrentHp <= MaxHp * 0.3f) P_EnableCriticalDamageIndicator();
 	GetWorldTimerManager().SetTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle, this, &AEnemy::P_DetectIfPlayerPointingAtOutlineObjects, 0.015f, true);
