@@ -101,5 +101,6 @@ enum class EVfx : uint16
 	BreacherBashDash,
 	BreacherBashDashTrail,
 	BreacherSpecialBarrelExplosion,
-	Stunned
+	Stunned,
+	WraithBulletTrail
 };

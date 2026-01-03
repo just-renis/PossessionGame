@@ -155,8 +155,10 @@ void AWeapon::AttachToSocket(const TObjectPtr<USkeletalMeshComponent>& OwnerMesh
 
 void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, bool bFromFirstWeapon)
 {
+	UE_LOG(LogTemp, Error, TEXT("SHOOT PROJECTILE 0"));
 	FProjectileData* ProjectileData = GetProjectileData(InProjectileName);
 	if (!ProjectileData) return;
+	UE_LOG(LogTemp, Error, TEXT("SHOOT PROJECTILE 1"));
 	if (bIsFromAbility)
 	{
 		MuzzleLogicFromAbility();
@@ -170,14 +172,20 @@ void AWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIs
 	//const FVector BaseScale = Mesh->GetSocketTransform(ProjectileSocketName, RTS_Component).GetScale3D(); If ill need scale for some reason from socket for projectiles.
 	if (ProjectileData->Amount > 1)
 	{
+	UE_LOG(LogTemp, Error, TEXT("SHOOT PROJECTILE 2"));
 		const FAdditionalProjectiles AdditionalProjectilesData = ProjectileData->GetMultiProjectileData(ProjectileData->Amount);
 		for (int32 i = 0; i < AdditionalProjectilesData.Data.Num(); i++)
 		{
+	UE_LOG(LogTemp, Error, TEXT("SHOOT PROJECTILE 3"));
 			GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, BaseLocation, BaseRotation.RotateVector(AdditionalProjectilesData.Data[i].Direction).Rotation())
 			->Init(*ProjectileData, BaseRotation.RotateVector(AdditionalProjectilesData.Data[i].Direction).Rotation(), i);
 		}
 	}
-	else GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, BaseLocation, BaseRotation)->Init(*ProjectileData, BaseRotation);
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("SHOOT PROJECTILE 4"));
+		GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(InProjectileName, BaseLocation, BaseRotation)->Init(*ProjectileData, BaseRotation);
+	}
 }
 
 void AWeapon::PostProprietorSetup() { SetupHandsAnimInstance(); }

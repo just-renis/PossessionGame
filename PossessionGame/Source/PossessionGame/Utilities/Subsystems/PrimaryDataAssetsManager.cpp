@@ -114,7 +114,8 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::CloneProjectile, EVfxType::Impact }), EVfx::CloneBulletImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Trail }), EVfx::BreacherBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Muzzle }), EVfx::BreacherMuzzle },
-		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Impact }), EVfx::BreacherBulletImpact }
+		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Impact }), EVfx::BreacherBulletImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Trail }), EVfx::WraithBulletTrail }
 	};
 	CharacterVfxCombinationsMap =
 	{
@@ -781,6 +782,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_BreacherBashDashTrail", EVfx::BreacherBashDashTrail);
 	VfxsMap.Add("PA_BreacherSpecialBarrelExplosion", EVfx::BreacherSpecialBarrelExplosion);
 	VfxsMap.Add("PA_Stunned", EVfx::Stunned);
+	VfxsMap.Add("PA_WraithBulletTrail", EVfx::WraithBulletTrail);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
