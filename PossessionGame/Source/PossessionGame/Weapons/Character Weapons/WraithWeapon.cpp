@@ -7,7 +7,6 @@ void AWraithWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeO
 
 void AWraithWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
-	UE_LOG(LogTemp, Error, TEXT("P_Shoot %s"), *UEnum::GetValueAsString(InProjectileName));
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
 	Super::P_Shoot(InProjectileName);
 }

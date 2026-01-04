@@ -226,9 +226,9 @@ void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, co
 	AddSpawnableEnemiesToThePool();
 }
 
-void UPrimaryDataAssetsManager::RequestSpawnEnemy(const ECharacterType InCharacter, const FVector& InLocation, const float InHpPercentage)
+void UPrimaryDataAssetsManager::RequestSpawnEnemy(const ECharacterType InCharacter, const FVector& InLocation, const float InHpPercentage, const bool bIsCorrupted)
 {
-	if (const TObjectPtr<AEnemy> Enemy = GetWorld()->SpawnActor<AEnemy>(LoadedEnemies[InCharacter], InLocation, FRotator::ZeroRotator)) Enemy->AI_SetRespawnRequest(InHpPercentage);
+	if (const TObjectPtr<AEnemy> Enemy = GetWorld()->SpawnActor<AEnemy>(LoadedEnemies[InCharacter], InLocation, FRotator::ZeroRotator)) Enemy->AI_SetRespawnRequest(InHpPercentage, bIsCorrupted);
 }
 
 void UPrimaryDataAssetsManager::Init(const bool bIsTutorialFinished, const TMap<int32, FSpawnableEnemiesByChapter>& InSpawnableEnemiesByChapter)
@@ -782,6 +782,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_BreacherBashDashTrail", EVfx::BreacherBashDashTrail);
 	VfxsMap.Add("PA_BreacherSpecialBarrelExplosion", EVfx::BreacherSpecialBarrelExplosion);
 	VfxsMap.Add("PA_Stunned", EVfx::Stunned);
+	VfxsMap.Add("PA_Corrupted", EVfx::Corrupted);
 	VfxsMap.Add("PA_WraithBulletTrail", EVfx::WraithBulletTrail);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();

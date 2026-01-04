@@ -91,7 +91,7 @@ AEnemy::AEnemy()
 	Sounds.Add(ESound::VectorBlastSpecialImpactUpgrade, VectorBlastSpecialImpactUpgrade);
 }
 
-bool AEnemy::GetIsHijackAble() const { return AI_Data->GetIsPossessable(); }
+bool AEnemy::GetIsHijackAble() const { return bIsHijackAble; }
 
 bool AEnemy::CanAbilityBeExecuted(const int32 AbilityIndex) const
 {
@@ -191,10 +191,13 @@ void AEnemy::AI_ProcessSpawnEffects()
 	GetWorldTimerManager().SetTimer(SpawnCondenseMaterialsProcessHandle, this, &AEnemy::SpawnCondenseMaterialsProcess, 0.05f, true);
 }
 
-void AEnemy::AI_SetRespawnRequest(const float InHpPercentage)
+void AEnemy::AI_SetRespawnRequest(const float InHpPercentage, const bool bIsCorrupted)
 {
 	bAIRespawnRequested = true;
 	SavedRespawnHpPercentage = InHpPercentage;
+	if (!bIsCorrupted) return;
+	AssetsManager->AttachVfx(EVfx::Corrupted, [this]() -> bool { return GetIsAlive(); }, &CorruptedVfx, GetMesh(), FName("DeathSocket"));
+	bIsHijackAble = false;
 }
 
 void AEnemy::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
@@ -421,23 +424,30 @@ void AEnemy::ReceiveEmpEffect(const float InEffectDuration) { ApplyDisablingActi
 
 void AEnemy::SetHijackOutline(const bool bState)
 {
-	bHijackOutlineState = bState;
+	bIsLookedAtByPlayer = bState;
 	GetMesh()->SetOverlayMaterial(bState ? HijackOutlineMaterial : nullptr);
 	if (bState)
 	{
+		AI_ShowHpBar();
 		if (!HijackableVfx)
 		{
 			if (bHijackVfxAttachRequested) return;
 			bHijackVfxAttachRequested = true;
-			AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bHijackOutlineState; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
+			AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
 		}
 		else HijackableVfx->Activate(true);
 	}
-	else DisableHijackViableVfx();
+	else
+	{
+		AI_HideHpBar();
+		DisableHijackViableVfx();
+	}
 }
 
-void AEnemy::SetUnHijackOutline(const bool bState) const
+void AEnemy::SetUnHijackOutline(const bool bState)
 {
+	bIsLookedAtByPlayer = bState;
+	if (bIsLookedAtByPlayer) AI_ShowHpBar();
 	GetMesh()->SetOverlayMaterial(bState ? UnHijackOutlineMaterial : nullptr);
 }
 
@@ -552,10 +562,10 @@ void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float I
 	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.02f, false);
 	ProcessDamageReason(InDamageReason, InDamage);
 	if (CurrentHp <= 0.f || !AI_HpBar || !AI_HpBarComponent) return;
-    AI_HpBarComponent->SetVisibility(true);
-	AI_HpBarComponent->SetComponentTickEnabled(true);
+	AI_ShowHpBar();
 	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
-	GetWorldTimerManager().SetTimer(AI_HideHpBarHandle, this, &AEnemy::AI_HideHpBar, 2.f, false);
+	bHasBeenDamagedRecently = true;
+	GetWorldTimerManager().SetTimer(AI_HideHpBarHandle, this, &AEnemy::AI_HideHpBarByTimer, 2.f, false);
 }
 
 void AEnemy::AI_Destroy()
@@ -602,6 +612,12 @@ void AEnemy::AI_DestroyVfxs()
 		HijackableVfx->DeactivateImmediate();
 		HijackableVfx->DestroyComponent();
 		HijackableVfx = nullptr;
+	}
+	if (CorruptedVfx)
+	{
+		CorruptedVfx->DeactivateImmediate();
+		CorruptedVfx->DestroyComponent();
+		CorruptedVfx = nullptr;
 	}
 }
 
@@ -961,6 +977,7 @@ void AEnemy::ApplyEmpEffect(const float InEffectDuration)
 void AEnemy::AI_SetupData()
 {
 	CurrentHp = MaxHp = AI_Data->GetMaxHp();
+	bIsHijackAble = AI_Data->GetIsPossessable();
 	SetMaxWalkSpeed(EMoveMode::Walk);
 }
 
@@ -1003,9 +1020,15 @@ void AEnemy::AI_TriggerEmpExplosion()
 
 void AEnemy::AI_HideHpBar() const
 {
-	if (!AI_HpBarComponent) return;
+	if (!AI_HpBarComponent || bIsLookedAtByPlayer || bHasBeenDamagedRecently) return;
     AI_HpBarComponent->SetVisibility(false);
 	AI_HpBarComponent->SetComponentTickEnabled(false);
+}
+
+void AEnemy::AI_HideHpBarByTimer()
+{
+	bHasBeenDamagedRecently = false;
+	AI_HideHpBar();
 }
 
 void AEnemy::AI_ClearShootPause()
@@ -1053,6 +1076,12 @@ void AEnemy::AI_TimeDilationChange(const float InDilation) const
 	if (!bIsAlive) return;
 	GetCharacterMovement()->SetComponentTickInterval(1.f / 30.f / InDilation);
 	GetMesh()->SetComponentTickInterval(1.f / 30.f / InDilation);
+}
+
+void AEnemy::AI_ShowHpBar() const
+{
+	AI_HpBarComponent->SetVisibility(true);
+	AI_HpBarComponent->SetComponentTickEnabled(true);
 }
 
 void AEnemy::P_ChangeHoldingShootState(const bool bState)
@@ -1481,12 +1510,10 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 			}
 		}
 	}
-	if (CurrentLookedAtEnemy)
-	{
-		CurrentLookedAtEnemy->SetHijackOutline(false);
-		CurrentLookedAtEnemy->SetUnHijackOutline(false);
-		CurrentLookedAtEnemy = nullptr;
-	}
+	if (!CurrentLookedAtEnemy) return;
+	CurrentLookedAtEnemy->SetHijackOutline(false);
+	CurrentLookedAtEnemy->SetUnHijackOutline(false);
+	CurrentLookedAtEnemy = nullptr;
 }
 
 void AEnemy::P_TriggerCriticalDamageIndicator() const { if (P_HUD) P_HUD->ToggleCriticalDamageIndicator(); }
@@ -1568,7 +1595,7 @@ void AEnemy::P_FinishHijackProcess()
 	DelegateManager->OnEnemyDeath.Unbind();
 	if (Controller) Controller->Possess(HijackTarget);
 	InitiateDeath();
-	AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp);
+	AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp, true);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(false, HijackDelayAnimationSpeed);
 	P_AddAndSetHijackPulse(0.f);

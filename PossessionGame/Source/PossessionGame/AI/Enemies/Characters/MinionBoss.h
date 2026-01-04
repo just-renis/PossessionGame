@@ -86,7 +86,7 @@ private:
 	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent) override;
 	void CheckDistanceOfLaserEyeTrigger();
 	void DealLaserDamageToPlayer() const;
-	virtual void SetUnHijackOutline(const bool bState) const override {}
+	virtual void SetUnHijackOutline(const bool bState) override {}
 	void SetMoveDirectlyToPlayer();
 	virtual void ClearTimers() override;
 	virtual void ApplyEmpEffect(const float InEffectDuration) override;

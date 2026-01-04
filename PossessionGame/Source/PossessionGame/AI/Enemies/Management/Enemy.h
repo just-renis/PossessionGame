@@ -116,7 +116,7 @@ public:
 	void AI_TriggerVectorBlastSpecialImpact();
 	void AI_SetupRespawn();
 	void AI_ProcessSpawnEffects();
-	void AI_SetRespawnRequest(const float InHpPercentage);
+	void AI_SetRespawnRequest(const float InHpPercentage, const bool bIsCorrupted);
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection);
 	virtual void AI_StunEffectEnded();
 
@@ -146,7 +146,7 @@ public:
 	void StopSound(const ESound InSoundName);
 	virtual void ReceiveEmpEffect(const float InEffectDuration);
 	void SetHijackOutline(const bool bState);
-	virtual void SetUnHijackOutline(const bool bState) const;
+	virtual void SetUnHijackOutline(const bool bState);
 	virtual void EmpEffectEnded();
 	void SetInputState(const bool bState) { bIsInputLocked = bState; }
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
@@ -284,7 +284,6 @@ private:
 	bool bCanRun = true;
 	bool bIsRunning = false;
 	bool bWasRunningBeforeShooting = false;
-	bool bHijackOutlineState = false;
 	bool bIsSliding = false;
 	bool bIsDoubleJumpOccured = false;
 	bool bIsImmortal = false;
@@ -298,6 +297,9 @@ private:
 	bool bPlayerRunModeIsToggle = false;
 	bool bIsHoldingShoot = false;
 	bool bIsSelectedFourthOptionB = false;
+	bool bIsLookedAtByPlayer = false;
+	bool bHasBeenDamagedRecently = false;
+	bool bIsHijackAble = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -442,6 +444,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> VectorBlastSpecialImpactVfx;
 	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> CorruptedVfx;
+	UPROPERTY()
 	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
 	UPROPERTY()
 	TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager;
@@ -460,6 +464,7 @@ private:
 	void AI_DestroyHpBar();
 	void AI_TriggerEmpExplosion();
 	void AI_HideHpBar() const;
+	void AI_HideHpBarByTimer();
 	void AI_ClearShootPause();
 	void AI_SetCharacterMovementSpeed() const;
 	void AI_DisableDamageTakenRedFlash() const;
@@ -467,6 +472,7 @@ private:
 	void AI_MainShootLogic();
 	void AI_StopAbilitiesEvents() const;
 	void AI_TimeDilationChange(const float InDilation) const;
+	void AI_ShowHpBar() const;
 
 	int32 P_GetFirstSlotAbilityIndex() const { return P_FirstSlotAbilityIndex; }
 	int32 P_GetSecondSlotAbilityIndex() const { return P_SecondSlotAbilityIndex; }
