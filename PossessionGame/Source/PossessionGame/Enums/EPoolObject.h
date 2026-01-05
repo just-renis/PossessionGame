@@ -28,5 +28,7 @@ enum class EPoolObject : uint8
 	SamuraiProjectile,
 	BreacherBarrel,
 	BreacherDynamite,
-	WraithMolotov
+	WraithMolotov,
+	WraithTrap,
+	WraithMeteorTrigger
 };

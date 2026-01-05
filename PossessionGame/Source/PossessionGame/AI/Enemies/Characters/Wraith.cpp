@@ -2,6 +2,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Projectiles/Throwables/WraithMolotov.h"
+#include "PossessionGame/Projectiles/Throwables/WraithTrap.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
@@ -10,12 +11,23 @@
 
 void AWraith::P_InitiateThrowMolotov()
 {
-	const TObjectPtr<AWraithMolotov> Molotov = Cast<AWraithMolotov>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectWithCapFromPool(EPoolObject::WraithMolotov, Weapon->GetHandsSocketLocation(FName("MolotovSocket")), Weapon->GetHandsSocketRotation(FName("MolotovSocket"))));
+	const TObjectPtr<AWraithMolotov> Molotov = Cast<AWraithMolotov>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectWithCapFromPool(EPoolObject::WraithMolotov, Weapon->GetHandsSocketLocation(FName("ThrowSocket")), Weapon->GetHandsSocketRotation(FName("ThrowSocket"))));
 	if (!Molotov) return;
 	Molotov->Initialize(this);
 	Molotov->Init();
 	//AssetsManager->PlaySound2D(ESound::RangerThrowMine);
 	Molotov->Throw();
+	SetIsActionInMotion(false); // WHEN ANIMATION EXISTS REMOVE THIS SHIT.
+}
+
+void AWraith::P_InitiateThrowTrap()
+{
+	const TObjectPtr<AWraithTrap> Trap = Cast<AWraithTrap>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectWithCapFromPool(EPoolObject::WraithTrap, Weapon->GetHandsSocketLocation(FName("ThrowSocket")), Weapon->GetHandsSocketRotation(FName("ThrowSocket"))));
+	if (!Trap) return;
+	Trap->Initialize(this);
+	Trap->Init();
+	//AssetsManager->PlaySound2D(ESound::RangerThrowMine);
+	Trap->Throw();
 	SetIsActionInMotion(false); // WHEN ANIMATION EXISTS REMOVE THIS SHIT.
 }
 

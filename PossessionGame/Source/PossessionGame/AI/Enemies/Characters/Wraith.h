@@ -10,6 +10,7 @@ class POSSESSIONGAME_API AWraith : public AEnemy
 	GENERATED_BODY()
 public:
 	void P_InitiateThrowMolotov();
+	void P_InitiateThrowTrap();
 private:
 	virtual void AI_SetupWeapon() override;
 

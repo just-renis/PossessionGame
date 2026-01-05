@@ -104,5 +104,7 @@ enum class EVfx : uint16
 	Stunned,
 	Corrupted,
 	WraithBulletTrail,
-	WraithMolotovRadius
+	WraithMolotovRadius,
+	WraithTrap,
+	WraithMeteor
 };
