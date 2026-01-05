@@ -8,7 +8,9 @@ UCLASS()
 class POSSESSIONGAME_API AWraith : public AEnemy
 {
 	GENERATED_BODY()
-
+public:
+	void P_InitiateThrowMolotov();
+private:
 	virtual void AI_SetupWeapon() override;
 
 	virtual void P_Setup() override;

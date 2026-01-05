@@ -97,6 +97,7 @@ EUpgrade UPoolingManager::GetUpgradeFromPoolObjectName(const EPoolObject InObjec
 	switch (InObjectName)
 	{
 		case EPoolObject::RangerMine: return EUpgrade::RangerAbility3;
+		case EPoolObject::BreacherBarrel: return EUpgrade::BreacherAbility1;
 		case EPoolObject::BreacherDynamite: return EUpgrade::BreacherAbility3;
 		default: return EUpgrade::None;
 	}

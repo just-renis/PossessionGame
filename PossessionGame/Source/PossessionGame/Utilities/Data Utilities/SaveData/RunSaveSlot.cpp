@@ -203,6 +203,7 @@ EUpgrade URunSaveSlot::GetUpgradeByPoolObjectName(const EPoolObject InPoolObject
 		case EPoolObject::CloneProjectile: return EUpgrade::TricksterAbility3;
 		case EPoolObject::BreacherBarrel: return EUpgrade::BreacherAbility1;
 		case EPoolObject::BreacherDynamite: return EUpgrade::BreacherAbility3;
+		case EPoolObject::WraithMolotov: return EUpgrade::WraithAbility1;
 		default: ;
 	}
 	return EUpgrade::None;
@@ -217,6 +218,7 @@ TArray<EUpgrade> URunSaveSlot::GetUpgradesByPoolObjectName(const EPoolObject InP
 			case EPoolObject::RangerGrenadeLauncherProjectile: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2, EUpgrade::RangerAbility3 });
 			case EPoolObject::TricksterEmpProjectile: case EPoolObject::TricksterPoisonProjectile: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
 			case EPoolObject::BreacherBarrel: case EPoolObject::BreacherDynamite: return TArray({ EUpgrade::BreacherAbility1, EUpgrade::BreacherAbility2, EUpgrade::BreacherAbility3 });
+			case EPoolObject::WraithMolotov: return TArray({ EUpgrade::WraithAbility1, EUpgrade::WraithAbility2, EUpgrade::WraithAbility3 });
 			default: ;
 		}
 	}
@@ -228,6 +230,7 @@ TArray<EUpgrade> URunSaveSlot::GetUpgradesByPoolObjectName(const EPoolObject InP
 			case EPoolObject::RangerProjectile: case EPoolObject::RangerGrenadeLauncherProjectile: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2, EUpgrade::RangerAbility3 });
 			case EPoolObject::TricksterProjectile: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
 			case EPoolObject::BreacherProjectile: return TArray({ EUpgrade::BreacherAbility1, EUpgrade::BreacherAbility2, EUpgrade::BreacherAbility3 });
+			case EPoolObject::WraithProjectile: return TArray({ EUpgrade::WraithAbility1, EUpgrade::WraithAbility2, EUpgrade::WraithAbility3 });
 			default: ;
 		}
 	}

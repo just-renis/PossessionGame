@@ -21,6 +21,7 @@ private:
 	ARangerMine();
 
 	bool bAlreadyLanded = false;
+	FTimerHandle ExplosionHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta = (AllowPrivateAccess = true))
 	float SpecialUpgradeDamageMultiplier = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Explosion", meta = (AllowPrivateAccess = true))
@@ -37,8 +38,6 @@ private:
 	TObjectPtr<UAudioComponent> DeploySfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> ExplosionSfx;
-	UPROPERTY()
-	FTimerHandle ExplosionHandle;
 	
 	float UpgradeAppliance() const;
 
