@@ -14,4 +14,4 @@ void UGuardianAbility3::P_Execute()
 
 bool UGuardianAbility3::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void UGuardianAbility3::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<AGuardian>(AbilityProprietor); }
+void UGuardianAbility3::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<AGuardian>(InAbilityProprietor); }

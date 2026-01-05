@@ -57,7 +57,7 @@ protected:
 
 	virtual bool IsProprietorPossessed() { return false; }
 	
-	virtual void SetProprietor(TObjectPtr<AEnemy> InAbilityProprietor) {}
+	virtual void SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) {}
 	void UseCharge() { CurrentChargesAmount--; }
 	virtual void CooldownLogic(const float InDeltaTime);
 private:

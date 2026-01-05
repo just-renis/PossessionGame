@@ -35,4 +35,4 @@ void UTricksterAbility3::P_StopAbility()
 
 bool UTricksterAbility3::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void UTricksterAbility3::SetProprietor(TObjectPtr<AEnemy> InAbilityProprietor) { Proprietor = Cast<ATrickster>(InAbilityProprietor); }
+void UTricksterAbility3::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<ATrickster>(InAbilityProprietor); }

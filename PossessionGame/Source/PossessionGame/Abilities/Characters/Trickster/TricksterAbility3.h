@@ -19,5 +19,5 @@ class POSSESSIONGAME_API UTricksterAbility3 : public UAbility
 
 	virtual bool IsProprietorPossessed() override;
 
-	virtual void SetProprietor(TObjectPtr<AEnemy> InAbilityProprietor) override;
+	virtual void SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) override;
 };

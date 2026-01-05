@@ -42,7 +42,7 @@ float URangerAbility1::AI_GetCooldownReduction()
 
 bool URangerAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void URangerAbility1::SetProprietor(TObjectPtr<AEnemy> InAbilityProprietor) { Proprietor = Cast<ARanger>(InAbilityProprietor); }
+void URangerAbility1::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<ARanger>(InAbilityProprietor); }
 
 void URangerAbility1::CooldownLogic(const float InDeltaTime)
 {

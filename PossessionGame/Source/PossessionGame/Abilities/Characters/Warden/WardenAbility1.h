@@ -25,7 +25,7 @@ class POSSESSIONGAME_API UWardenAbility1 : public UAbility
 	
 	virtual bool IsProprietorPossessed() override;
 	
-	virtual void SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) override;
+	virtual void SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) override;
 	void TriggerBeamShake() const;
 	void TriggerBeamEnd() const;
 };

@@ -16,12 +16,11 @@ public:
 private:
 	float Dilation = 2.5f;
 	float TimeStopPulseDistance = 0.f;
+	FTimerHandle ProcessTimeStopHandle;
 	UPROPERTY()
 	TObjectPtr<AGuardian> Proprietor;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_TimeStop;
-	UPROPERTY()
-	FTimerHandle ProcessTimeStopHandle;
 
 	void P_TimeStopProcess();
 	void P_TimeStopRegressProcess();
@@ -29,6 +28,6 @@ private:
 
 	virtual bool IsProprietorPossessed() override;
 	
-	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) override;
+	virtual void SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) override;
 	void SetTimeStopProcess();
 };

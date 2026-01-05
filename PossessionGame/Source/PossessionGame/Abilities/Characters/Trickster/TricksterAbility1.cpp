@@ -24,7 +24,7 @@ void UTricksterAbility1::P_Execute()
 
 bool UTricksterAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void UTricksterAbility1::SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ATrickster>(AbilityProprietor); }
+void UTricksterAbility1::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<ATrickster>(InAbilityProprietor); }
 
 void UTricksterAbility1::CooldownLogic(const float InDeltaTime)
 {

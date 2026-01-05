@@ -71,7 +71,7 @@ void UGuardianAbility2::P_StopTimeStopProcess()
 
 bool UGuardianAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void UGuardianAbility2::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<AGuardian>(AbilityProprietor); }
+void UGuardianAbility2::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<AGuardian>(InAbilityProprietor); }
 
 void UGuardianAbility2::SetTimeStopProcess()
 {

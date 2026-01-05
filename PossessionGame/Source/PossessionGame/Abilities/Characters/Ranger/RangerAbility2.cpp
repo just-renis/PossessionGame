@@ -28,7 +28,7 @@ void URangerAbility2::P_Execute()
 
 bool URangerAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void URangerAbility2::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ARanger>(AbilityProprietor); }
+void URangerAbility2::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<ARanger>(InAbilityProprietor); }
 
 void URangerAbility2::Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
 {

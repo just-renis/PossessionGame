@@ -42,4 +42,4 @@ void USpyAbility1::P_StopAbility()
 
 bool USpyAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void USpyAbility1::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ASpy>(AbilityProprietor); }
+void USpyAbility1::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<ASpy>(InAbilityProprietor); }

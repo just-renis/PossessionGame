@@ -3,4 +3,4 @@
 
 bool UTankAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void UTankAbility1::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ATank>(AbilityProprietor); }
+void UTankAbility1::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<ATank>(InAbilityProprietor); }

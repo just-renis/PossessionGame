@@ -18,5 +18,5 @@ class POSSESSIONGAME_API UGuardianAbility3 : public UAbility
 	
 	virtual bool IsProprietorPossessed() override;
 	
-	virtual void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) override;
+	virtual void SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) override;
 };

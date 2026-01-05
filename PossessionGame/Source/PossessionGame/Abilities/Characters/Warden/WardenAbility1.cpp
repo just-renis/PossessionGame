@@ -22,7 +22,7 @@ void UWardenAbility1::AI_StopAbility()
 
 bool UWardenAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void UWardenAbility1::SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<AWarden>(AbilityProprietor); }
+void UWardenAbility1::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<AWarden>(InAbilityProprietor); }
 
 void UWardenAbility1::TriggerBeamShake() const
 {

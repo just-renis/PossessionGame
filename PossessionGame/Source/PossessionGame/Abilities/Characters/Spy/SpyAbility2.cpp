@@ -17,14 +17,14 @@ void USpyAbility2::P_Execute() { CastLineTrace(); }
 
 bool USpyAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void USpyAbility2::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ASpy>(AbilityProprietor); }
+void USpyAbility2::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<ASpy>(InAbilityProprietor); }
 
 void USpyAbility2::CastLineTrace()
 {
 	FHitResult HitResult;
 	FCollisionQueryParams QueryParams;
-	FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
-	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
+	const FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
+	const FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	QueryParams.AddIgnoredActor(Proprietor);
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, Proprietor->GetXRayState() ? ECC_GameTraceChannel3 : ECC_GameTraceChannel5, QueryParams)) TryHitEnemy(HitResult);
 }

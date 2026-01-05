@@ -31,9 +31,9 @@ void UMinionBossAbility2::AI_StopAbility()
 
 bool UMinionBossAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void UMinionBossAbility2::SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor)
+void UMinionBossAbility2::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor)
 {
-	Proprietor = Cast<AMinionBoss>(AbilityProprietor);
+	Proprietor = Cast<AMinionBoss>(InAbilityProprietor);
 	Proprietor->GetStopLaserDelegate().BindUObject(this, &UMinionBossAbility2::DisableLaser);
 	Proprietor->GetLaserActivityStateDelegate().BindUObject(this, &UMinionBossAbility2::GetLaserActivityState);
 }

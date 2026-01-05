@@ -39,7 +39,7 @@ float UBreacherAbility2::AI_SpecialCooldownMultiplier()
 
 bool UBreacherAbility2::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void UBreacherAbility2::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ABreacher>(AbilityProprietor); }
+void UBreacherAbility2::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<ABreacher>(InAbilityProprietor); }
 
 void UBreacherAbility2::CooldownLogic(const float InDeltaTime)
 {

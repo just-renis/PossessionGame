@@ -37,7 +37,7 @@ class POSSESSIONGAME_API UMinionBossAbility2 : public UAbility
 	bool GetLaserActivityState() const { return bIsLaserActive; }
 	virtual bool IsProprietorPossessed() override;
 	
-	virtual void SetProprietor(const TObjectPtr<AEnemy> AbilityProprietor) override;
+	virtual void SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) override;
 	virtual void CooldownLogic(const float InDeltaTime) override;
 	void StopLaser();
 	void TurnOffLaserEye() const;

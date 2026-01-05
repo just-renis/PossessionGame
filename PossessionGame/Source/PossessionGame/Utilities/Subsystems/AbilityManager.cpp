@@ -19,6 +19,9 @@
 #include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility2.h"
 #include "PossessionGame/Abilities/Characters/Trickster/TricksterAbility3.h"
 #include "PossessionGame/Abilities/Characters/Warden/WardenAbility1.h"
+#include "PossessionGame/Abilities/Characters/Wraith/WraithAbility1.h"
+#include "PossessionGame/Abilities/Characters/Wraith/WraithAbility2.h"
+#include "PossessionGame/Abilities/Characters/Wraith/WraithAbility3.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 
 EAbility UAbilityManager::GetAbilityName(const ECharacterType InCharacterName, const int32 InAbilityIndex)
@@ -67,6 +70,9 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::Breacher, 2, EAbility::BreacherAbility3, UBreacherAbility3::StaticClass());
     AddAbility(ECharacterType::Tank, 0, EAbility::TankAbility1, UTankAbility1::StaticClass());
     AddAbility(ECharacterType::Tank, 1, EAbility::TankAbility2, UTankAbility2::StaticClass());
+    AddAbility(ECharacterType::Wraith, 0, EAbility::WraithAbility1, UWraithAbility1::StaticClass());
+    AddAbility(ECharacterType::Wraith, 1, EAbility::WraithAbility2, UWraithAbility2::StaticClass());
+    AddAbility(ECharacterType::Wraith, 2, EAbility::WraithAbility3, UWraithAbility3::StaticClass());
 }
 
 void UAbilityManager::AddAbility(const ECharacterType InCharacterName, const int32 InAbilityIndex, const EAbility InAbilityName, const TSubclassOf<UAbility>& InAbilityClass)

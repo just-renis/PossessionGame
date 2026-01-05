@@ -21,4 +21,4 @@ void UBreacherAbility1::P_Execute()
 
 bool UBreacherAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void UBreacherAbility1::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<ABreacher>(AbilityProprietor); }
+void UBreacherAbility1::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<ABreacher>(InAbilityProprietor); }

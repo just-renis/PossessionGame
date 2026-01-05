@@ -19,5 +19,5 @@ private:
 	
 	bool IsProprietorPossessed();
 	
-	void SetProprietor(TObjectPtr<AEnemy> AbilityProprietor);
+	virtual void SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) override;
 };

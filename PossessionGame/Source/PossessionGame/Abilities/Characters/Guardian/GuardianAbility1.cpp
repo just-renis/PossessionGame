@@ -65,7 +65,7 @@ void UGuardianAbility1::P_StopAbility()
 
 bool UGuardianAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
-void UGuardianAbility1::SetProprietor(TObjectPtr<AEnemy> AbilityProprietor) { Proprietor = Cast<AGuardian>(AbilityProprietor); }
+void UGuardianAbility1::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<AGuardian>(InAbilityProprietor); }
 
 void UGuardianAbility1::SetupUpgradeAppliance(const bool bIsPlayer)
 {
