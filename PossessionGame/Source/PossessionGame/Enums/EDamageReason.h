@@ -12,5 +12,6 @@ enum class EDamageReason : uint8
     MinionDamage,
     TricksterPoisonDamage,
     RangerGrenadeDamage,
-    BreacherBashDamage
+    BreacherBashDamage,
+    WraithDamage
 };

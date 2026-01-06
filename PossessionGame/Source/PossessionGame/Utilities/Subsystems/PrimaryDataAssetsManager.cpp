@@ -787,6 +787,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_WraithMolotovRadius", EVfx::WraithMolotovRadius);
 	VfxsMap.Add("PA_WraithTrap", EVfx::WraithTrap);
 	VfxsMap.Add("PA_WraithMeteor", EVfx::WraithMeteor);
+	VfxsMap.Add("PA_WraithBulletExplosion", EVfx::WraithBulletExplosion);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

@@ -104,7 +104,7 @@ void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const F
 	ProjectileData = InProjectileData;
 	ProjectileData.ProjectileName = EPoolObject::CloneProjectile;
 	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
-	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AProjectile::DestroyThis, ProjectileData.LifeSpan, false);
+	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AProjectile::DestroyThis, ProjectileData.LifeSpan);
 	const FAdditionalProjectileData AdditionalProjectileData = ProjectileData.GetMultiProjectileData(0).Data[0];
 	MovementComponent->InitialSpeed = AdditionalProjectileData.InitialSpeed;
 	MovementComponent->MaxSpeed = AdditionalProjectileData.MaxSpeed;

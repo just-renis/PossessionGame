@@ -27,8 +27,10 @@ public:
 	void SetupProjectile(const FProjectileData& InProjectileData, const int32 InWhich);
 	void SetDirection(const FVector& InDirection) const;
 protected:
+	bool bIsActive = true;
 	float Damage;
 	float DefaultDamage;
+	FTimerHandle DestroyHandle;
 	FProjectileData ProjectileData;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UProjectileMovementComponent> MovementComponent;
@@ -36,6 +38,8 @@ protected:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 	UPROPERTY()
@@ -60,12 +64,8 @@ protected:
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 private:
-	bool bIsActive = true;
 	float TimeDilation = 1.f;
 	FVector StartLocation;
-	FTimerHandle DestroyHandle;
-	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
 	UPROPERTY()
 	TObjectPtr<UUpgradeManager> UpgradeManager;
 
