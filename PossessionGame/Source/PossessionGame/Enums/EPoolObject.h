@@ -13,6 +13,7 @@ enum class EPoolObject : uint8
 	MinionBossProjectile,
 	TricksterPoisonProjectile,
 	TricksterEmpProjectile,
+	TricksterPoisonArea,
 	RangerGrenadeLauncherProjectile,
 	RangerShield,
 	DamageNumber,
@@ -30,5 +31,7 @@ enum class EPoolObject : uint8
 	BreacherDynamite,
 	WraithMolotov,
 	WraithTrap,
-	WraithMeteorTrigger
+	WraithMeteorTrigger,
+	WraithMolotovArea,
+	WraithTrapArea
 };

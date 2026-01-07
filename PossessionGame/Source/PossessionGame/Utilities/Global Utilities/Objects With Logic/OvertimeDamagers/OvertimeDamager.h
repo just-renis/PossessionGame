@@ -2,14 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/Interfaces/DamageReasonProvider.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "OvertimeDamager.generated.h"
 
+enum class EPoolObject : uint8;
 enum class EDamageReason : uint8;
 class AEnemy;
 class USphereComponent;
 
 UCLASS()
-class POSSESSIONGAME_API AOvertimeDamager : public AActor, public IDamageReasonProvider
+class POSSESSIONGAME_API AOvertimeDamager : public APoolObject, public IDamageReasonProvider
 {
 	GENERATED_BODY()
 public:
@@ -20,6 +22,7 @@ protected:
 	bool bIsPlayer;
 	float Damage;
 	float DamageTick;
+	EPoolObject ObjectName;
 	EDamageReason DamageReason;
 	UPROPERTY()
 	TArray<TObjectPtr<AEnemy>> Targets;
@@ -35,8 +38,9 @@ private:
 	virtual EDamageReason GetDamageReason() const override { return DamageReason; }
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void DestroyThis();
+	virtual void Disable(const bool bHide) override;
 	virtual void DealOvertimeDamage() {}
+	void ReturnToPool();
 	UFUNCTION()
 	void AddOverlappedTarget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

@@ -18,6 +18,9 @@ public:
 	float GetDamageOuterRadius() const { return DamageOuterRadius; }
 	float GetDamageFalloff() const { return DamageFalloff; }
 	float GetDirectionMultiplier() const { return DirectionMultiplier; }
+	float GetOvertimeTickTrigger() const { return OvertimeTickTrigger; }
+	float GetOvertimeAreaLifeSpan() const { return OvertimeAreaLifeSpan; }
+	float GetOvertimeAreaSize() const { return OvertimeAreaSize; }
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	bool bNeedsOnHitEvent = false;
@@ -39,4 +42,12 @@ private:
 	float DamageOuterRadius = 0.f;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bIsDealingRadiusDamage", EditConditionHides, AllowPrivateAccess = true))
 	float DamageFalloff = 0.f;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	bool bProjectileDealsOvertimeDamage = false;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bProjectileDealsOvertimeDamage", AllowPrivateAccess = true))
+	float OvertimeTickTrigger = 0.f;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bProjectileDealsOvertimeDamage", AllowPrivateAccess = true))
+	float OvertimeAreaLifeSpan = 0.f;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bProjectileDealsOvertimeDamage", AllowPrivateAccess = true))
+	float OvertimeAreaSize = 0.f;
 };

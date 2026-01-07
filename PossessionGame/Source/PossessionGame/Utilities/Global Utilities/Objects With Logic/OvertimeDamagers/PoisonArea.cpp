@@ -2,12 +2,19 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EVariation.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/VariationManager.h"
+
+void APoisonArea::BeginPlay()
+{
+	Super::BeginPlay();
+	ObjectName = EPoolObject::TricksterPoisonArea;
+}
 
 void APoisonArea::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason)
 {
