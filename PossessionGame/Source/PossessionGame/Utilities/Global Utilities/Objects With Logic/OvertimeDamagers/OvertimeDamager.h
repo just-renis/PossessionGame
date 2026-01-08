@@ -17,7 +17,7 @@ class POSSESSIONGAME_API AOvertimeDamager : public APoolObject, public IDamageRe
 public:
 	AOvertimeDamager();
 	
-	virtual void Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason);
+	virtual void Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason, const FRotator& InRotation);
 protected:
 	bool bIsPlayer;
 	float Damage;

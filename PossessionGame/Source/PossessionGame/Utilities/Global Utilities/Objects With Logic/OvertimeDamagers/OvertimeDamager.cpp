@@ -4,7 +4,7 @@
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 
-void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason)
+void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason, const FRotator& InRotation)
 {
 	bIsPlayer = bInIsPlayerObject;
 	Damage = InDamage;
@@ -21,7 +21,7 @@ void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage,
 AOvertimeDamager::AOvertimeDamager()
 {
 	Radius = CreateDefaultSubobject<USphereComponent>("radius");
-	RootComponent = Radius;
+	Radius->SetupAttachment(RootComponent);
 	Radius->SetCollisionProfileName("TriggerPlayer");
 	Radius->SetGenerateOverlapEvents(false);
 	Radius->OnComponentBeginOverlap.AddDynamic(this, &AOvertimeDamager::AddOverlappedTarget);
