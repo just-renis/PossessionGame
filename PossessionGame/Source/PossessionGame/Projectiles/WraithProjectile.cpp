@@ -18,6 +18,7 @@ void AWraithProjectile::DestroyThis()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTimeDilationChanged.RemoveAll(this);
 	DisableProjectileComponents();
 	if (BulletTrailComponent) BulletTrailComponent->SetHiddenInGame(true);
+	DealAreaDamage();
 	GetWorldTimerManager().SetTimer(ExplosionVfxHandle, this, &AWraithProjectile::ReturnObjectToPoolAfterExplosionVfxFinished, ExplosionLength);
 }
 
