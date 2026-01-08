@@ -115,7 +115,8 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Trail }), EVfx::BreacherBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Muzzle }), EVfx::BreacherMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Impact }), EVfx::BreacherBulletImpact },
-		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Trail }), EVfx::WraithBulletTrail }
+		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Trail }), EVfx::WraithBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Muzzle }), EVfx::WraithMuzzle }
 	};
 	CharacterVfxCombinationsMap =
 	{
@@ -784,6 +785,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_Stunned", EVfx::Stunned);
 	VfxsMap.Add("PA_Corrupted", EVfx::Corrupted);
 	VfxsMap.Add("PA_WraithBulletTrail", EVfx::WraithBulletTrail);
+	VfxsMap.Add("PA_WraithMuzzle", EVfx::WraithMuzzle);
 	VfxsMap.Add("PA_WraithMolotovRadius", EVfx::WraithMolotovRadius);
 	VfxsMap.Add("PA_WraithTrap", EVfx::WraithTrap);
 	VfxsMap.Add("PA_WraithMeteor", EVfx::WraithMeteor);
