@@ -35,7 +35,7 @@ void AWraithMolotovArea::Setup(const bool bInIsPlayerObject, const float InDamag
 	if (!RadiusVfx)
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithMolotovRadius, nullptr, &RadiusVfx, RootComponent, NAME_None,
-		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, Attributes);
+		false, FVector::ZeroVector, FRotator(-90.f, 0.f, 0.f), EAttachLocation::SnapToTarget, false, EVariation::Default, Attributes);
 	}
 	else
 	{

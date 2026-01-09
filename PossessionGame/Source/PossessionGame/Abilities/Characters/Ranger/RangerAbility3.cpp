@@ -18,7 +18,7 @@ void URangerAbility3::P_Execute()
 		return;
 	}
 	Proprietor->SetIsActionInMotion(true);
-	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::ThrowMine);
+	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Throw);
 	Proprietor->P_InitiateThrowMine();
 	if (bRangerBlueVariationEnabled) GetWorld()->GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddCriticalDamageStack();
 	Super::P_Execute();

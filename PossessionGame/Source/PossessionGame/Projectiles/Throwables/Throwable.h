@@ -34,7 +34,7 @@ protected:
 
 	float GetPlayerLevelAllGlobalDamageBonus() const;
 
-	virtual void OnImpact(const FHitResult& Hit);
+	virtual void OnImpact(const FHitResult& InHit);
 	void PlaySound(const ESound InSoundName);
 	virtual void SetupOnHitEvent();
 };

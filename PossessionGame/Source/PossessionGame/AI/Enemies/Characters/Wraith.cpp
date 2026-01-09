@@ -17,7 +17,6 @@ void AWraith::P_InitiateThrowMolotov()
 	Molotov->Init();
 	//AssetsManager->PlaySound2D(ESound::RangerThrowMine);
 	Molotov->Throw();
-	SetIsActionInMotion(false); // WHEN ANIMATION EXISTS REMOVE THIS SHIT.
 }
 
 void AWraith::P_InitiateThrowTrap()
@@ -28,8 +27,6 @@ void AWraith::P_InitiateThrowTrap()
 	Trap->Init();
 	//AssetsManager->PlaySound2D(ESound::RangerThrowMine);
 	Trap->Throw();
-
-	SetIsActionInMotion(false); // WHEN ANIMATION EXISTS REMOVE THIS SHIT.
 }
 void AWraith::AI_SetupWeapon()
 {

@@ -34,10 +34,10 @@ float AThrowable::GetPlayerLevelAllGlobalDamageBonus() const
 	return Data->GetDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 }
 
-void AThrowable::OnImpact(const FHitResult& Hit)
+void AThrowable::OnImpact(const FHitResult& InHit)
 {
 	Mesh->OnComponentHit.RemoveAll(this);
-	SetActorLocation(Hit.ImpactNormal, true);
+	SetActorLocation(InHit.ImpactNormal, true);
 	SetActorRotation(FRotator::ZeroRotator);
 	Mesh->SetSimulatePhysics(false);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);

@@ -17,7 +17,7 @@ enum class EHandsAnimState : uint8
 	Jump,
 	Slide,
 	DeployClone,
-	ThrowMine,
+	Throw,
 	BreacherThrow,
 	BreacherBash,
 	StunEffect

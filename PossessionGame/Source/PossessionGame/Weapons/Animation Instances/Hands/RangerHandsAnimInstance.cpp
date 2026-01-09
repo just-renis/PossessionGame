@@ -4,5 +4,5 @@
 void URangerHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted)
 {
 	Super::OnMontageEnd(InMontage, bIsInterrupted);
-	if (IsMontage(EHandsAnimState::GrenadeLaunch, InMontage) || IsMontage(EHandsAnimState::DeployShield, InMontage) || IsMontage(EHandsAnimState::ThrowMine, InMontage)) (void)OnHandsMontageEnd.ExecuteIfBound(false);
+	if (IsMontage(EHandsAnimState::GrenadeLaunch, InMontage) || IsMontage(EHandsAnimState::DeployShield, InMontage) || IsMontage(EHandsAnimState::Throw, InMontage)) (void)OnHandsMontageEnd.ExecuteIfBound(false);
 }

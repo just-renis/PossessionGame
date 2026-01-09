@@ -21,7 +21,7 @@ void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage,
 AOvertimeDamager::AOvertimeDamager()
 {
 	Radius = CreateDefaultSubobject<USphereComponent>("radius");
-	Radius->SetupAttachment(RootComponent);
+	RootComponent = Radius;
 	Radius->SetCollisionProfileName("TriggerPlayer");
 	Radius->SetGenerateOverlapEvents(false);
 	Radius->OnComponentBeginOverlap.AddDynamic(this, &AOvertimeDamager::AddOverlappedTarget);

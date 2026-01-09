@@ -1,23 +1,16 @@
 ﻿#include "WraithMolotov.h"
-#include "NiagaraComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamagers/OvertimeDamager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 
-void AWraithMolotov::Disable(const bool bHide)
+void AWraithMolotov::OnImpact(const FHitResult& InHit)
 {
-	if (RadiusVfx) RadiusVfx->DeactivateImmediate();
-	Super::Disable(bHide);
-}
-
-void AWraithMolotov::OnImpact(const FHitResult& Hit)
-{
-	Super::OnImpact(Hit);
-	const TObjectPtr<AOvertimeDamager> BurnArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMolotovArea, Hit.Location, Hit.Normal.Rotation()));
+	Super::OnImpact(InHit);
+	const TObjectPtr<AOvertimeDamager> BurnArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMolotovArea, InHit.Location, InHit.Normal.Rotation()));
 	BurnArea->Init();
-	BurnArea->Setup(true, Data->GetDamage(), Data->GetOvertimeTickTrigger(), Data->GetOvertimeAreaLifeSpan(), Data->GetOvertimeAreaSize(), EDamageReason::WraithMolotovDamage, Hit.Normal.Rotation());
+	BurnArea->Setup(true, Data->GetDamage(), Data->GetOvertimeTickTrigger(), Data->GetOvertimeAreaLifeSpan(), Data->GetOvertimeAreaSize(), EDamageReason::WraithMolotovDamage, InHit.Normal.Rotation());
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::WraithMolotov, this);
 }
 
