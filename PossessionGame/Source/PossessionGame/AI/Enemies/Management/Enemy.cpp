@@ -1080,6 +1080,7 @@ void AEnemy::AI_TimeDilationChange(const float InDilation) const
 
 void AEnemy::AI_ShowHpBar() const
 {
+	if (!AI_HpBarComponent) return;
 	AI_HpBarComponent->SetVisibility(true);
 	AI_HpBarComponent->SetComponentTickEnabled(true);
 }
