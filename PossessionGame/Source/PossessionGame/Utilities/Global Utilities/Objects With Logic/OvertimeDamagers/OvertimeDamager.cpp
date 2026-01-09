@@ -4,7 +4,7 @@
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 
-void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason, const FRotator& InRotation)
+void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason)
 {
 	bIsPlayer = bInIsPlayerObject;
 	Damage = InDamage;

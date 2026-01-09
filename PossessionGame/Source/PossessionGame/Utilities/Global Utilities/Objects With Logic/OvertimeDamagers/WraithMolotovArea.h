@@ -18,5 +18,5 @@ class POSSESSIONGAME_API AWraithMolotovArea : public AOvertimeDamager
 
 	virtual void BeginPlay() override;
 	virtual void DealOvertimeDamage() override;
-	virtual void Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason, const FRotator& InRotation) override;
+	virtual void Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason) override;
 };

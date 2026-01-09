@@ -46,7 +46,7 @@ void APoisonGrenade::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 	const TObjectPtr<AOvertimeDamager> PoisonArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::TricksterPoisonArea, Hit.Location, Hit.Normal.Rotation()));
 	PoisonArea->Init();
-	PoisonArea->Setup(ProjectileData.bIsPlayerProjectile, Damage, ProjectileData.OvertimeTickTrigger, ModifiedOvertimeAreaLifeSpan, ModifiedOvertimeAreaSize, EDamageReason::TricksterPoisonDamage, Hit.Normal.Rotation());
+	PoisonArea->Setup(ProjectileData.bIsPlayerProjectile, Damage, ProjectileData.OvertimeTickTrigger, ModifiedOvertimeAreaLifeSpan, ModifiedOvertimeAreaSize, EDamageReason::TricksterPoisonDamage);
 }
 
 void APoisonGrenade::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact)

@@ -25,9 +25,9 @@ void AWraithMolotovArea::DealOvertimeDamage()
 	}
 }
 
-void AWraithMolotovArea::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason, const FRotator& InRotation)
+void AWraithMolotovArea::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason)
 {
-	Super::Setup(bInIsPlayerObject, InDamage, InDamageTick, InLifeSpan, InRadiusSize, InDamageReason, InRotation);
+	Super::Setup(bInIsPlayerObject, InDamage, InDamageTick, InLifeSpan, InRadiusSize, InDamageReason);
 	TMap<FName, FNiagaraAttribute> Attributes;
 	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility1, EUpgradeAttribute::Size, true);
 	const float CollisionRadius = DefaultRadius + DefaultRadius * RadiusIncrease * 0.01f;

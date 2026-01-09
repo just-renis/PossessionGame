@@ -1,26 +1,17 @@
 ﻿#include "WraithTrap.h"
-#include "NiagaraComponent.h"
-#include "PossessionGame/Enums/EUpgrade.h"
-#include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
-#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
-#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
+#include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
+#include "PossessionGame/Enums/EDamageReason.h"
+#include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamagers/OvertimeDamager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 
-void AWraithTrap::Disable(const bool bHide)
+void AWraithTrap::OnImpact(const FHitResult& InHit)
 {
-	if (RadiusVfx) RadiusVfx->DeactivateImmediate();
-	Super::Disable(bHide);
-}
-
-void AWraithTrap::OnImpact(const FHitResult& Hit)
-{
-	Super::OnImpact(Hit);
-	TMap<FName, FNiagaraAttribute> Attributes;
-	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility2, EUpgradeAttribute::Size, true);
-	const float CollisionRadius = DefaultRadius + DefaultRadius * RadiusIncrease * 0.01f;
-	Attributes.Add(FName("Mesh Uniform Scale"), FNiagaraAttribute(true, CollisionRadius / DefaultRadius));
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTrap, nullptr, &RadiusVfx, Mesh, NAME_None,
-	false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, Attributes);
+	Super::OnImpact(InHit);
+	const TObjectPtr<AOvertimeDamager> TrapArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithTrapArea, InHit.Location, InHit.Normal.Rotation()));
+	TrapArea->Init();
+	TrapArea->Setup(true, Data->GetDamage(), Data->GetOvertimeTickTrigger(), Data->GetOvertimeAreaLifeSpan(), Data->GetOvertimeAreaSize(), EDamageReason::None);
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::WraithTrap, this);
 }
 
 void AWraithTrap::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

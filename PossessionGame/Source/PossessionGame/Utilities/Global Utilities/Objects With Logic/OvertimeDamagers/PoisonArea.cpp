@@ -16,10 +16,10 @@ void APoisonArea::BeginPlay()
 	ObjectName = EPoolObject::TricksterPoisonArea;
 }
 
-void APoisonArea::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason, const FRotator& InRotation)
+void APoisonArea::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason)
 {
 	bIsActionSpeedReduceUpgradeTaken = GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility1, EUpgradeAttribute::Special1);
-	Super::Setup(bInIsPlayerObject, InDamage, InDamageTick, InLifeSpan, InRadiusSize, InDamageReason, InRotation);
+	Super::Setup(bInIsPlayerObject, InDamage, InDamageTick, InLifeSpan, InRadiusSize, InDamageReason);
 }
 
 void APoisonArea::DealOvertimeDamage()

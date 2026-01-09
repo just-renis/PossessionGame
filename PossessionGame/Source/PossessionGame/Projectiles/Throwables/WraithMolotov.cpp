@@ -10,7 +10,7 @@ void AWraithMolotov::OnImpact(const FHitResult& InHit)
 	Super::OnImpact(InHit);
 	const TObjectPtr<AOvertimeDamager> BurnArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMolotovArea, InHit.Location, InHit.Normal.Rotation()));
 	BurnArea->Init();
-	BurnArea->Setup(true, Data->GetDamage(), Data->GetOvertimeTickTrigger(), Data->GetOvertimeAreaLifeSpan(), Data->GetOvertimeAreaSize(), EDamageReason::WraithMolotovDamage, InHit.Normal.Rotation());
+	BurnArea->Setup(true, Data->GetDamage(), Data->GetOvertimeTickTrigger(), Data->GetOvertimeAreaLifeSpan(), Data->GetOvertimeAreaSize(), EDamageReason::WraithMolotovDamage);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::WraithMolotov, this);
 }
 
