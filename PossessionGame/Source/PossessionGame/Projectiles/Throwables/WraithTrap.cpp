@@ -12,6 +12,7 @@ void AWraithTrap::OnImpact(const FHitResult& InHit)
 	TrapArea->Init();
 	TrapArea->Setup(true, Data->GetDamage(), Data->GetOvertimeTickTrigger(), Data->GetOvertimeAreaLifeSpan(), Data->GetOvertimeAreaSize(), EDamageReason::None);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::WraithTrap, this);
+	//WFJNDCL
 }
 
 void AWraithTrap::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
