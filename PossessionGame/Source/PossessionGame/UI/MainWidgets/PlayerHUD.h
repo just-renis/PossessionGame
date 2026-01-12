@@ -44,7 +44,8 @@ public:
 	void ShowMinorAnnouncement(const FText& InText, const ESound InSound);
 	void ShowOutOfAmmo();
 	void SetAbilityIcon(const int32 InAbilityIndex, const int32 InAbilityIconIndex);
-	void PlayHijackAnim(const bool bState, const float InPlaybackSpeed) { PlayAnimation(HijackInitiateAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse, InPlaybackSpeed); }
+	void PlayHijackAnim(const bool bState, const float InPlaybackSpeed);
+	void CancelHijackInitiateAnim() { PlayAnimation(HijackInitiateAnim, 1, 1, EUMGSequencePlayMode::Reverse); }
 private:
 	bool bIsHidden = false;
 	bool bDisplayOutOfAmmoAvailable = true;

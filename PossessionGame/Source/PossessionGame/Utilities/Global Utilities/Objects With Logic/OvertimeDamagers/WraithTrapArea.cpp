@@ -1,5 +1,6 @@
 ﻿#include "WraithTrapArea.h"
 #include "NiagaraComponent.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
@@ -19,7 +20,8 @@ void AWraithTrapArea::DealOvertimeDamage()
 	for (int32 i = 0; i < Targets.Num(); i++)
 	{
 		if (!Targets[i]) continue;
-	//	UGameplayStatics::ApplyDamage(Targets[i], Damage, nullptr, this, UDamageType::StaticClass());
+		Targets[i]->SetupBurningState(Damage, EffectTick, DamageTick);
+		//UGameplayStatics::ApplyDamage(Targets[i], Damage, nullptr, this, UDamageType::StaticClass());
 	}
 }
 

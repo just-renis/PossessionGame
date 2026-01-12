@@ -9,7 +9,6 @@
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
-#include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 float UWaveManagerHUD::GetWaveAnnouncementEndTime() const { return AnnouncementAnim->GetEndTime(); }
 
@@ -87,6 +86,11 @@ void UWaveManagerHUD::ToggleFinishOffEnemiesText(const bool bState)
 		PlayAnimation(FinishOffEnemiesFadeInAnim);
 	}
 	if (FinishOfEnemiesText) FinishOfEnemiesText->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+}
+
+void UWaveManagerHUD::PlayHijackInitiateAnim(const bool bIsForward, const float InPlayRate)
+{
+	PlayAnimation(HijackInitiateAnim, 0, 1, bIsForward ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse, InPlayRate);
 }
 
 FString UWaveManagerHUD::GetConvertedNumber(const int32 InNumber)

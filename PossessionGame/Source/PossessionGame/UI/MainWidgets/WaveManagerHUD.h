@@ -25,7 +25,8 @@ public:
 	void UpdateObjective(const EGameMode InGameMode, const int32 InData) const;
 	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective, const bool bShowUpgradeSelection = false);
 	void ToggleFinishOffEnemiesText(const bool bState);
-	void PlayHijackInitiateAnim(const bool bIsForward, const float InPlayRate) { PlayAnimation(HijackInitiateAnim, 0, 1, bIsForward ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse, InPlayRate); }
+	void PlayHijackInitiateAnim(const bool bIsForward, const float InPlayRate);
+	void CancelHijackInitiateAnim() { PlayAnimation(HijackInitiateAnim, 1, 1, EUMGSequencePlayMode::Reverse); }
 private:
 	FTimerHandle AnnouncementHandle;
 	FTimerHandle TimerUpdateHandle;

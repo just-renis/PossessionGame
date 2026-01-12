@@ -119,7 +119,9 @@ void UPlayerHUD::ConfigureUIs()
 
 void UPlayerHUD::PlayFadeOutAnim(const bool bState)
 {
+	UE_LOG(LogTemp, Error, TEXT("PLAY FADE OUT ANIM 0 IMPORTANT %i"), bState);
 	if (bState == bIsHidden) return;
+	UE_LOG(LogTemp, Error, TEXT("PLAY FADE OUT ANIM 1 IMPORTANT %i"), bState);
 	bIsHidden = bState;
 	PlayAnimation(FadeOutAnim, GetAnimationCurrentTime(FadeOutAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }
@@ -195,6 +197,11 @@ void UPlayerHUD::ShowOutOfAmmo()
 }
 
 void UPlayerHUD::SetAbilityIcon(const int32 InAbilityIndex, const int32 InAbilityIconIndex) { GetAbilityPanel()->SetAbilityIcon(InAbilityIndex, InAbilityIconIndex); }
+
+void UPlayerHUD::PlayHijackAnim(const bool bState, const float InPlaybackSpeed)
+{
+	PlayAnimation(HijackInitiateAnim, 0, 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse, InPlaybackSpeed);
+}
 
 TObjectPtr<UAbilitiesPanelUI> UPlayerHUD::GetAbilityPanel()
 {

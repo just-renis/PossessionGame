@@ -182,6 +182,7 @@ public:
 	void SetMovementSpeedMultiplier(const float InMultiplier);
 	void RemoveDisablingActionEffect();
 	void SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick);
+	//void SetupSlowingState(const float InSlowValue, const float InBurningDuration, const float InSlowingTick);
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -564,6 +565,7 @@ private:
 	void P_OpenUpgradeSelection();
 	void P_SetupRunMode();
 	void P_CheckStoppedMoving() const;
+	void P_CancelHijackingProcess();
 
 	EDamageReason ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser);
 

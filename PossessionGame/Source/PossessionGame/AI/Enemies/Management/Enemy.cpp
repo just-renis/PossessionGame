@@ -1596,6 +1596,11 @@ void AEnemy::P_SetupSuperJump()
 
 void AEnemy::P_FinishHijackProcess()
 {
+	if (!HijackTarget || !HijackTarget->GetIsAlive())
+	{
+		P_CancelHijackingProcess();
+		return;
+	}
 	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
 	GetWorldTimerManager().ClearTimer(HijackLockInToTargetHandle);
 	P_StopAllAbilities(true);
@@ -1612,6 +1617,11 @@ void AEnemy::P_FinishHijackProcess()
 
 void AEnemy::P_ChangeFovWhileHijackingProcess()
 {
+	if (!HijackTarget || !HijackTarget->GetIsAlive())
+	{
+		P_CancelHijackingProcess();
+		return;
+	}
 	Camera->SetFieldOfView(Camera->FieldOfView - 0.4f);
 	if (Camera->FieldOfView <= 80.f)
 	{
@@ -1669,6 +1679,21 @@ void AEnemy::P_CheckStoppedMoving() const
 	if (!RunVfx) return;
 	if (GetVelocity().SizeSquared() < KINDA_SMALL_NUMBER) RunVfx->DeactivateImmediate();
 	else if (bIsRunning) RunVfx->Activate();
+}
+
+void AEnemy::P_CancelHijackingProcess()
+{
+	UE_LOG(LogTemp, Error, TEXT("CANCEL HIJACK"));
+	Camera->FieldOfView = 90.f;
+	bIsInputLocked = false;
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
+	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
+	GetWorldTimerManager().ClearTimer(HijackFovChangeHandle);
+	GetWorldTimerManager().ClearTimer(HijackLockInToTargetHandle);
+	HijackTarget = nullptr;
+	if (P_HUD) P_HUD->CancelHijackInitiateAnim();
+	P_AddAndSetHijackPulse(0.f);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->CancelHijackInitiateAnim();
 }
 
 EDamageReason AEnemy::ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser)
