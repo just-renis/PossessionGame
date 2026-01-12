@@ -1,5 +1,6 @@
 ﻿#include "PoisonGrenade.h"
 #include "Components/AudioComponent.h"
+#include "PossessionGame/Data Assets/Base Data Assets/DamageOverTimeData.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EUpgrade.h"
@@ -30,9 +31,10 @@ void APoisonGrenade::PlayImpactSound()
 void APoisonGrenade::SpawnSecondProjectileImpactVfx(const FHitResult& Hit)
 {
 	const float EffectDurationIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TricksterAbility1, EUpgradeAttribute::EffectDuration, ProjectileData.bIsPlayerProjectile);
-	ModifiedOvertimeAreaLifeSpan = ProjectileData.OvertimeAreaLifeSpan;
-	ModifiedOvertimeAreaSize = DefaultOvertimeAreaSize = ProjectileData.OvertimeAreaSize;
-	ModifiedOvertimeAreaLifeSpan += ProjectileData.OvertimeAreaLifeSpan * EffectDurationIncrease * 0.01f;
+	const TObjectPtr<UDamageOverTimeData> DamageOverTimeData = ProjectileData.DamageOverTimeData;
+	ModifiedOvertimeAreaLifeSpan = DamageOverTimeData->GetAreaLifeSpan();
+	ModifiedOvertimeAreaSize = DefaultOvertimeAreaSize = DamageOverTimeData->GetAreaSize();
+	ModifiedOvertimeAreaLifeSpan += DamageOverTimeData->GetAreaLifeSpan() * EffectDurationIncrease * 0.01f;
 	const float SizeIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TricksterAbility1, EUpgradeAttribute::Size, ProjectileData.bIsPlayerProjectile);
 	ModifiedOvertimeAreaSize += DefaultOvertimeAreaSize * SizeIncrease * 0.01f;
 	Attributes.Add(FName("Loop Duration"), FNiagaraAttribute(true, ModifiedOvertimeAreaLifeSpan));
@@ -46,7 +48,8 @@ void APoisonGrenade::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 	const TObjectPtr<AOvertimeDamager> PoisonArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::TricksterPoisonArea, Hit.Location, Hit.Normal.Rotation()));
 	PoisonArea->Init();
-	PoisonArea->Setup(ProjectileData.bIsPlayerProjectile, Damage, ProjectileData.OvertimeTickTrigger, ModifiedOvertimeAreaLifeSpan, ModifiedOvertimeAreaSize, EDamageReason::TricksterPoisonDamage);
+	const TObjectPtr<UDamageOverTimeData> DamageOverTimeData = ProjectileData.DamageOverTimeData;
+	PoisonArea->Setup(ProjectileData.bIsPlayerProjectile, Damage, DamageOverTimeData->GetDamageTick(), ModifiedOvertimeAreaLifeSpan, ModifiedOvertimeAreaSize, EDamageReason::TricksterPoisonDamage);
 }
 
 void APoisonGrenade::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact)

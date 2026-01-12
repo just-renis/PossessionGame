@@ -482,6 +482,15 @@ void AEnemy::RemoveDisablingActionEffect()
 	if (DisablingActionsEffectsCount == 0) AllDisablingActionsFinished();
 }
 
+void AEnemy::SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick)
+{
+	const bool bIsAlreadyBurning = BurningLogicData.GetIsBurning();
+	const bool bIsBurningTickSame = BurningLogicData == InBurningTick;
+	BurningLogicData.AddBurnState(InBurningDamage, InBurningTick);
+	if (!bIsAlreadyBurning || !bIsBurningTickSame) GetWorldTimerManager().SetTimer(BurningTickingHandle, this, &AEnemy::ReceiveBurnDamage, InBurningTick, true);
+	GetWorldTimerManager().SetTimer(BurningStateFinishHandle, this, &AEnemy::StopBurningState, InBurningDuration);
+}
+
 float AEnemy::AI_GetShootPause() { return AI_Data->GetShootPause(); }
 
 void AEnemy::AI_SetupAbilities()
@@ -840,7 +849,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 		if (EventInstigator != GetController()) ReceiveDamage(Damage, EDamageReason::None, PointDamageEvent, RadialDamageEvent);
 		return Damage;
 	}
-	ReceiveDamage(Damage, DamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(DamageCauser)->GetDamageReason() : EDamageReason::None, PointDamageEvent, RadialDamageEvent);
+	ReceiveDamage(Damage, ReceiveDamageReason(DamageCauser), PointDamageEvent, RadialDamageEvent);
 	return Damage;
 }
 
@@ -881,17 +890,13 @@ void AEnemy::BeginPlay()
 
 void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	ClearTimers();
 	if (AnimInstance) AnimInstance->ClearTimers();
 	GetWorldTimerManager().ClearTimer(AI_ClearShootPauseHandle);
-	GetWorldTimerManager().ClearTimer(AI_TriggerDeathVoiceLineHandle);
 	GetWorldTimerManager().ClearTimer(AI_SetCharacterMovementSpeedHandle);
-	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 	GetWorldTimerManager().ClearTimer(AI_HideHpBarHandle);
 	GetWorldTimerManager().ClearTimer(AI_DamageTakenEffectHandle);
 	GetWorldTimerManager().ClearTimer(P_ContinuousFovChangeHandle);
-	GetWorldTimerManager().ClearTimer(P_ControlLogicHandle);
-	GetWorldTimerManager().ClearTimer(P_DetectIfPlayerPointingAtOutlineObjectsHandle);
-	GetWorldTimerManager().ClearTimer(P_TriggerCriticalDamageIndicatorHandle);
 	GetWorldTimerManager().ClearTimer(P_DeathHandle);
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	GetWorldTimerManager().ClearTimer(CheckIfFallOutOfWorldHandle);
@@ -950,6 +955,8 @@ void AEnemy::ClearTimers()
 	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
 	GetWorldTimerManager().ClearTimer(P_CheckStoppedMovingHandle);
 	GetWorldTimerManager().ClearTimer(ActionSpeedHandle);
+	GetWorldTimerManager().ClearTimer(BurningTickingHandle);
+	GetWorldTimerManager().ClearTimer(BurningStateFinishHandle);
 }
 
 void AEnemy::AllDisablingActionsFinished()
@@ -1664,6 +1671,12 @@ void AEnemy::P_CheckStoppedMoving() const
 	else if (bIsRunning) RunVfx->Activate();
 }
 
+EDamageReason AEnemy::ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser)
+{
+	if (!InDamageCauser) return EDamageReason::None;
+	return InDamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(InDamageCauser)->GetDamageReason() : EDamageReason::None;
+}
+
 void AEnemy::TickAbilities(const float InDeltaTime)
 {
 	for (const TPair<int32, TObjectPtr<UAbility>> Ability : Abilities) Ability.Value->Tick(InDeltaTime);
@@ -1906,4 +1919,15 @@ void AEnemy::DisableSkeletalMesh() const
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetGenerateOverlapEvents(false);
 	GetMesh()->SetNotifyRigidBodyCollision(false);
+}
+
+void AEnemy::StopBurningState()
+{
+	BurningLogicData.StopBurnState();
+	GetWorldTimerManager().ClearTimer(BurningTickingHandle);
+}
+
+void AEnemy::ReceiveBurnDamage()
+{
+	UGameplayStatics::ApplyDamage(this, BurningLogicData.Damage, nullptr, nullptr, UDamageType::StaticClass());
 }

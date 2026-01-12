@@ -64,6 +64,34 @@ struct FConductionLogicData
 	void Reset() { Stacks.Empty(); }
 };
 
+USTRUCT()
+struct FBurningLogicData
+{
+	GENERATED_BODY()
+	
+	bool bIsBurning = false;
+	float Damage = 0.f;
+	float DamageTick = 0.f;
+
+	bool GetIsBurning() const { return bIsBurning; }
+	bool operator==(const float InDamageTick) const { return InDamageTick == DamageTick; } 
+	float GetDamage() const { return Damage; }
+	float GetDamageTick() const { return DamageTick; }
+	
+	void AddBurnState(const float InDamage, const float InDamageTick)
+	{
+		bIsBurning = true;
+		Damage = InDamage;
+		DamageTick = InDamageTick;
+	}
+	void StopBurnState()
+	{
+		bIsBurning = false;
+		Damage = 0.f;
+		DamageTick = 0.f;
+	}
+};
+
 UCLASS(Abstract)
 class POSSESSIONGAME_API AEnemy : public ACharacter
 {
@@ -153,6 +181,7 @@ public:
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
 	void SetMovementSpeedMultiplier(const float InMultiplier);
 	void RemoveDisablingActionEffect();
+	void SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick);
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -346,7 +375,10 @@ private:
 	FTimerHandle HijackLockInToTargetHandle;
 	FTimerHandle HijackInvincibilityDelayHandle;
 	FTimerHandle RecoverFromDisablingEffectHandle;
+	FTimerHandle BurningTickingHandle;
+	FTimerHandle BurningStateFinishHandle;
 	FConductionLogicData ConductionLogicData;
+	FBurningLogicData BurningLogicData;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
 	float HijackDelay = 0.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
@@ -533,6 +565,8 @@ private:
 	void P_SetupRunMode();
 	void P_CheckStoppedMoving() const;
 
+	EDamageReason ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser);
+
 	void TickAbilities(const float InDeltaTime);
 	void SetupStimuliSource();
 	void ChangeXRayState(const bool bState) const;
@@ -559,4 +593,6 @@ private:
 	void PlayStunAffectedVfx(const float InEffectDuration);
 	void ApplyDisablingActionEffect(const float InEffectDuration, const EDisablingEffect InEffectName);
 	void DisableSkeletalMesh() const;
+	void StopBurningState();
+	void ReceiveBurnDamage();
 };

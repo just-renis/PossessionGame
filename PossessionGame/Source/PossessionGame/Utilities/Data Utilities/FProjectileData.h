@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "FProjectileData.generated.h"
 
+class UDamageOverTimeData;
 class AEnemy;
 
 USTRUCT()
@@ -50,11 +51,7 @@ struct POSSESSIONGAME_API FProjectileData
 	UPROPERTY(EditAnywhere)
 	bool bProjectileDealsOvertimeDamage = false;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "bProjectileDealsOvertimeDamage", EditConditionHides))
-	float OvertimeTickTrigger = 0.f;
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "bProjectileDealsOvertimeDamage", EditConditionHides))
-	float OvertimeAreaLifeSpan = 0.f;
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "bProjectileDealsOvertimeDamage", EditConditionHides))
-	float OvertimeAreaSize = 0.f;
+	TObjectPtr<UDamageOverTimeData> DamageOverTimeData;
 	UPROPERTY(EditAnywhere)
 	bool bProjectileAppliesEffect = false;
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "bProjectileAppliesEffect", EditConditionHides))

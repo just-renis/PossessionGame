@@ -1,8 +1,18 @@
 ﻿#include "OvertimeDamager.h"
 #include "Components/SphereComponent.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Data Assets/Base Data Assets/DamageOverTimeData.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+
+void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData, const EDamageReason InDamageReason)
+{
+	bIsPlayer = bInIsPlayerObject;
+	Damage = InDamageOverTimeData->GetDamage();
+	DamageReason = InDamageReason;
+	DamageTick = InDamageOverTimeData->GetDamageTick();
+	EffectTick = InDamageOverTimeData->GetEffectDuration();
+}
 
 void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason)
 {
@@ -10,12 +20,7 @@ void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage,
 	Damage = InDamage;
 	DamageReason = InDamageReason;
 	DamageTick = InDamageTick;
-	Radius->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	Radius->SetSphereRadius(InRadiusSize);
-	Radius->SetGenerateOverlapEvents(true);
-	Radius->UpdateOverlaps();
-	GetWorldTimerManager().SetTimer(DamageOvertimeHandle, this, &AOvertimeDamager::DealOvertimeDamage, DamageTick, true);
-	GetWorldTimerManager().SetTimer(DestroyThisHandle, this, &AOvertimeDamager::ReturnToPool, InLifeSpan, false);
+	SetupRadiusAndTimers(InRadiusSize, InLifeSpan);
 }
 
 AOvertimeDamager::AOvertimeDamager()
@@ -31,6 +36,16 @@ AOvertimeDamager::AOvertimeDamager()
 void AOvertimeDamager::AddTarget(const TObjectPtr<AEnemy>& InTarget) { Targets.Add(InTarget); }
 
 void AOvertimeDamager::RemoveTarget(const TObjectPtr<AEnemy>& InTarget) { Targets.Remove(InTarget); }
+
+void AOvertimeDamager::SetupRadiusAndTimers(const float InAreaSize, const float InLifeSpan)
+{
+	Radius->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Radius->SetSphereRadius(InAreaSize);
+	Radius->SetGenerateOverlapEvents(true);
+	Radius->UpdateOverlaps();
+	GetWorldTimerManager().SetTimer(DamageOvertimeHandle, this, &AOvertimeDamager::DealOvertimeDamage, DamageTick, true);
+	GetWorldTimerManager().SetTimer(DestroyThisHandle, this, &AOvertimeDamager::ReturnToPool, InLifeSpan, false);
+}
 
 void AOvertimeDamager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
