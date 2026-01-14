@@ -21,6 +21,8 @@ private:
 	ARangerMine();
 
 	bool bAlreadyLanded = false;
+	bool bIsFirstSpecialUpgradeTaken = false;
+	float CurrentCollisionRadius;
 	FTimerHandle ExplosionHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta = (AllowPrivateAccess = true))
 	float SpecialUpgradeDamageMultiplier = 2.f;
@@ -47,6 +49,7 @@ private:
 	void Explode();
 	void ChangeRadiusVfx(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttributeName);
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
+	void UpdateRadiusVfxSize(const bool bIsUpdate);
 	UFUNCTION()
 	void TriggeredCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

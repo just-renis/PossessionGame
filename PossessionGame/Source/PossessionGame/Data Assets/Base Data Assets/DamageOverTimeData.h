@@ -14,6 +14,7 @@ public:
 	float GetAreaLifeSpan() const { return AreaLifeSpan; }
 	float GetAreaSize() const { return AreaSize; }
 	float GetEffectDuration() const { return EffectDuration; }
+	float GetEffectStrength() const { return EffectStrength; }
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	float DamageTick = 0.f;
@@ -27,4 +28,6 @@ private:
 	bool bInflictsEffect = false;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bInflictsEffect", AllowPrivateAccess = true))
 	float EffectDuration = 0.f;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bInflictsEffect", AllowPrivateAccess = true))
+	float EffectStrength = 0.f;
 };

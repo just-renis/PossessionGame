@@ -22,6 +22,8 @@ class POSSESSIONGAME_API AWraithMolotovArea : public AOvertimeDamager
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	float DefaultFlamesAmount = 100.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultAuraRadius = 4.15f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	float DefaultAuraLifetime = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	float DefaultFlameLifetime = 3.f;

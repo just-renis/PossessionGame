@@ -12,6 +12,7 @@ void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDam
 	DamageReason = InDamageReason;
 	DamageTick = InDamageOverTimeData->GetDamageTick();
 	EffectTick = InDamageOverTimeData->GetEffectDuration();
+	EffectStrength = InDamageOverTimeData->GetEffectStrength();
 }
 
 void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason)

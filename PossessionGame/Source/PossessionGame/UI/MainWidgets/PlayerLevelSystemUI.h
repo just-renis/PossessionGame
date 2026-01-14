@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerLevelSystemUI.generated.h"
 
+class UCloseButtonUI;
 class UHorizontalBox;
 class USaveSlot;
 class UHorizontalBoxSlot;
@@ -17,6 +18,7 @@ class POSSESSIONGAME_API UPlayerLevelSystemUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void OpenUI();
+	UFUNCTION()
 	void CloseUI();
 private:
 	int32 PlayerLevelMaxAmount = 8;
@@ -32,6 +34,8 @@ private:
 	TMap<ELevelSystemUpgradeTexture, TObjectPtr<UObject>> IconTextures;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVerticalBox> OptionsBox;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCloseButtonUI> CloseButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> FadeInAnim;
 	UPROPERTY()

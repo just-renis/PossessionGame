@@ -19,6 +19,7 @@ enum class EUpgradeAttribute : uint8
 	ProjectileSpeed,
 	Impulse,
 	TimeDilation,
+	EffectStrength,
     Special1,
     Special2,
     Special3

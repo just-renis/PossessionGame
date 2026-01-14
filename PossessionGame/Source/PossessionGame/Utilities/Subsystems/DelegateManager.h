@@ -101,6 +101,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnTerminalHackRoomFinish, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FSendHackTerminalRoomMode, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemyDeathOccurred, const TObjectPtr<AActor>&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTimeDilationChanged, const float);
+DECLARE_MULTICAST_DELEGATE_OneParam(FUpdateRangerMinesRadius, const bool);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType, const EVariation);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AEnemy>&, bool);
@@ -193,6 +194,7 @@ public:
 	FSendHackTerminalRoomMode SendHackTerminalRoomMode;
 	FOnEnemyDeathOccurred OnEnemyDeathOccurred;
 	FOnTimeDilationChanged OnTimeDilationChanged;
+	FUpdateRangerMinesRadius UpdateRangerMinesRadius;
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
 	FOnVariationSelection OnVariationSelection;
 	FOnTargetChange OnTargetChange;

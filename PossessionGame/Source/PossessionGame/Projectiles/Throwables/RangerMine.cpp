@@ -52,13 +52,17 @@ float ARangerMine::UpgradeAppliance() const
 void ARangerMine::BeginPlay()
 {
 	Super::BeginPlay();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSpecialUpgradeAdded.AddUObject(this, &ARangerMine::ChangeRadiusVfx);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->UpdateRangerMinesRadius.AddUObject(this, &ARangerMine::UpdateRadiusVfxSize);
 	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1))
 	{
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineSpecialRadius, [this]() -> bool { return bAlreadyLanded; }, &ImpactVfx, Mesh);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineSpecialRadius, [this]() -> bool { return bAlreadyLanded; }, &RadiusVfx, Mesh);
 	}
-	else GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineImpact, [this]() -> bool { return bAlreadyLanded; }, &ImpactVfx, Mesh);
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineRadius, [this]() -> bool { return bAlreadyLanded; }, &RadiusVfx, Mesh);
+	else
+	{
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSpecialUpgradeAdded.AddUObject(this, &ARangerMine::ChangeRadiusVfx);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineRadius, [this]() -> bool { return bAlreadyLanded; }, &RadiusVfx, Mesh);
+	}
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineImpact, [this]() -> bool { return bAlreadyLanded; }, &ImpactVfx, Mesh);
 }
 
 void ARangerMine::OnImpact(const FHitResult& Hit)
@@ -67,16 +71,7 @@ void ARangerMine::OnImpact(const FHitResult& Hit)
 	bAlreadyLanded = true;
 	PlaySound(ESound::RangerDeployMine);
 	if (ImpactVfx) ImpactVfx->Activate();
-	if (RadiusVfx)
-	{
-		TMap<FName, FNiagaraAttribute> Attributes;
-		const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::Size, true);
-		const float CollisionRadius = DefaultCollisionRadius + DefaultCollisionRadius * RadiusIncrease * 0.01f;
-		Attributes.Add(FName("Mesh Uniform Scale"), FNiagaraAttribute(true, CollisionRadius / DefaultCollisionRadius));
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->UpdateVfxAttributes(RadiusVfx, Attributes);
-		MineTriggerCollision->SetSphereRadius(CollisionRadius);
-		RadiusVfx->Activate();
-	}
+	UpdateRadiusVfxSize(false);
 	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
@@ -111,17 +106,38 @@ void ARangerMine::Explode()
 
 void ARangerMine::ChangeRadiusVfx(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttributeName)
 {
-	if (RadiusVfx)
+	TWeakObjectPtr WeakThis = this;
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->LoadVfx(EVfx::RangerMineSpecialRadius, [WeakThis]
 	{
-		RadiusVfx->DestroyComponent();
-		RadiusVfx = nullptr;
-	}
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineSpecialRadius, [this]() -> bool { return bAlreadyLanded; }, &RadiusVfx, Mesh);
+		if (!WeakThis.IsValid() || !WeakThis.Get()) return;
+		if (WeakThis->RadiusVfx)
+		{
+			WeakThis->RadiusVfx->DestroyComponent();
+			WeakThis->RadiusVfx = nullptr;
+		}
+		WeakThis->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineSpecialRadius, [WeakThis]() -> bool { return WeakThis->bAlreadyLanded; }, &WeakThis->RadiusVfx, WeakThis->Mesh);
+		WeakThis->UpdateRadiusVfxSize(false);
+	});
 }
 
 void ARangerMine::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (FMath::IsNearlyEqual(Hit.ImpactNormal.Z, 1.f, 0.1f)) OnImpact(Hit);
+}
+
+void ARangerMine::UpdateRadiusVfxSize(const bool bIsUpdate)
+{
+	if (!RadiusVfx) return;
+	TMap<FName, FNiagaraAttribute> Attributes;
+	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility3, EUpgradeAttribute::Size, true);
+	const float CollisionRadius = DefaultCollisionRadius + DefaultCollisionRadius * RadiusIncrease * 0.01f;
+	if (bIsUpdate && FMath::IsNearlyEqual(CurrentCollisionRadius, CollisionRadius, 0.1f)) return;
+	CurrentCollisionRadius = CollisionRadius;
+	Attributes.Add(FName("Mesh Uniform Scale"), FNiagaraAttribute(true, CurrentCollisionRadius / DefaultCollisionRadius));
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->UpdateVfxAttributes(RadiusVfx, Attributes);
+	MineTriggerCollision->SetSphereRadius(CurrentCollisionRadius);
+	RadiusVfx->DeactivateImmediate();
+	RadiusVfx->Activate();
 }
 
 void ARangerMine::TriggeredCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

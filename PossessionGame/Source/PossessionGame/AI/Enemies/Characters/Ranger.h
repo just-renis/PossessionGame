@@ -24,16 +24,14 @@ public:
 	void SpawnShield();
 private:
 	bool bIsMineSpecialUpgrade1Taken = false;
+	FTimerHandle TryTriggeringGrenadeHandle;
+	FTimerHandle MineThrowHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Grenade Launcher", meta = (AllowPrivateAccess = true))
 	float GrenadeTriggerRadiusInMetres = 10.f;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> AI_GrenadeMuzzleFlashComponent;
 	UPROPERTY()
 	TObjectPtr<USphereComponent> AI_GrenadeTrigger;
-	UPROPERTY()
-	FTimerHandle TryTriggeringGrenadeHandle;
-	UPROPERTY()
-	FTimerHandle MineThrowHandle;
 
 	virtual void AI_TriggerDeathVoiceLine() override;
 	virtual void AI_SetupWeapon() override;
@@ -50,6 +48,7 @@ private:
 	void P_ChangeRangerVariationMuzzle();
 	void P_ThrowMine();
 	virtual void P_WeaponShoot() override;
+	virtual void P_ApplyUpgradeOnSelection() override;
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

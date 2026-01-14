@@ -162,6 +162,12 @@ void ARanger::P_ThrowMine()
 
 void ARanger::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::RangerProjectile); }
 
+void ARanger::P_ApplyUpgradeOnSelection()
+{
+	Super::P_ApplyUpgradeOnSelection();
+	DelegateManager->UpdateRangerMinesRadius.Broadcast(true);
+}
+
 void ARanger::BeginPlay()
 {
 	CharacterName = ECharacterType::Ranger;

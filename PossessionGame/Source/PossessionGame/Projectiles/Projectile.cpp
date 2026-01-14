@@ -78,9 +78,10 @@ void AProjectile::PlaySound(const ESound InSoundName) { Sounds[InSoundName]->Sou
 void AProjectile::OnImpact(const FHitResult& Hit)
 {
 	DestroyThis();
+	PlayImpactSound();
+	if (!ProjectileData.bIsImpactOnPlayerVfxEnabled && Hit.GetActor()->ActorHasTag("Player")) return;
 	SpawnFirstProjectileImpactVfx(Hit);
 	SpawnSecondProjectileImpactVfx(Hit);
-	PlayImpactSound();
 }
 
 void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich)

@@ -1,7 +1,6 @@
 ﻿#include "PoisonArea.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
-#include "PossessionGame/Data Assets/Base Data Assets/DamageOverTimeData.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
@@ -17,10 +16,10 @@ void APoisonArea::BeginPlay()
 	ObjectName = EPoolObject::TricksterPoisonArea;
 }
 
-void APoisonArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData, const EDamageReason InDamageReason)
+void APoisonArea::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason)
 {
 	bIsActionSpeedReduceUpgradeTaken = GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility1, EUpgradeAttribute::Special1);
-	Super::Setup(bInIsPlayerObject, InDamageOverTimeData, InDamageReason);
+	Super::Setup(bInIsPlayerObject, InDamage, InDamageTick, InLifeSpan, InRadiusSize, InDamageReason);
 }
 
 void APoisonArea::DealOvertimeDamage()

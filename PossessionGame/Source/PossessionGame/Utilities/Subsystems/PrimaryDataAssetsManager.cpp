@@ -180,6 +180,25 @@ void UPrimaryDataAssetsManager::RemoveStoredSound(const ESound InSoundName)
 	}
 }
 
+void UPrimaryDataAssetsManager::LoadVfx(const EVfx InVfxName, TFunction<void()> InCallback)
+{
+	if (InVfxName == EVfx::None) return;
+	FVfxContainer& VfxData = GetVfxData(InVfxName);
+	VfxData.AddVfxLoadedCallback(InCallback);
+	if (!GetCanAsyncLoadHappen() || VfxData.GetVfxContainer()->GetVfxEffect().IsValid() || VfxData.GetIsInLoad()) return;
+	VfxData.SetIsInLoad(true);
+	TWeakObjectPtr WeakWorld = GetWorld();
+	FVfxContainer* VfxContainer = &VfxData;
+	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(VfxContainer->GetVfxContainer()->GetVfxEffect().ToSoftObjectPath(), [this, WeakWorld, VfxContainer]
+	{
+		if (!WeakWorld.IsValid() || !IsAsyncAssetWorldValid(WeakWorld.Get()) || !VfxContainer) return;
+		UE_LOG(LogTemp, Error, TEXT("LOADED %s"), *VfxContainer->GetVfxContainer()->GetVfxName().ToString());
+		VfxContainer->SetIsLoaded(true);
+		VfxContainer->TriggerVfxsCallbacks();
+	});
+	AddAsyncHandle(Handle);
+}
+
 void UPrimaryDataAssetsManager::AttachVfx(const EVfx InVfxName, TFunction<bool()> InCallbackOfDeactivation, TObjectPtr<UNiagaraComponent>* InVfxComponent, const TObjectPtr<USceneComponent>& InAttachTo, const FName InSocketName, const bool bDeactivate, const FVector& InLocation, const FRotator& InRotation, const EAttachLocation::Type InAttachType, const bool bAutoDestroy, const EVariation InVariationName, const TMap<FName, FNiagaraAttribute>& InAttributes)
 {
 	if (InVfxName == EVfx::None) return;

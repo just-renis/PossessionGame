@@ -461,11 +461,21 @@ void AEnemy::ChangeOverlappingPoisonAreasInState(const bool bState)
 {
 	if (bState)
 	{
-		if (++OverlappingPoisonAreas == 1) SetActionSpeed(1.f / (bIsHijacked ? 2.f : 3.f), true);
+		if (++OverlappingPoisonAreas == 1)
+		{
+			PoisonActionSpeedReduction = ActionSpeed - ActionSpeed / (bIsHijacked ? 2.f : 3.f);
+			SetActionSpeed(ActionSpeed - PoisonActionSpeedReduction);
+			if (!bIsHijacked) TogglePoisonSlowVfx(true);
+		}
 	}
 	else
 	{
-		if (OverlappingPoisonAreas > 0 && --OverlappingPoisonAreas == 0) SetActionSpeed(1.f, true);
+		if (OverlappingPoisonAreas > 0 && --OverlappingPoisonAreas == 0)
+		{
+			SetActionSpeed(ActionSpeed + PoisonActionSpeedReduction);
+			PoisonActionSpeedReduction = 0.f;
+			if (!bIsHijacked) TogglePoisonSlowVfx(false);
+		}
 	}
 }
 
@@ -489,6 +499,21 @@ void AEnemy::SetupBurningState(const float InBurningDamage, const float InBurnin
 	BurningLogicData.AddBurnState(InBurningDamage, InBurningTick);
 	if (!bIsAlreadyBurning || !bIsBurningTickSame) GetWorldTimerManager().SetTimer(BurningTickingHandle, this, &AEnemy::ReceiveBurnDamage, InBurningTick, true);
 	GetWorldTimerManager().SetTimer(BurningStateFinishHandle, this, &AEnemy::StopBurningState, InBurningDuration);
+}
+
+void AEnemy::AddSlowingStack(const float InSlowPercentage)
+{
+	SlowingStacks++;
+	WraithTrapActionSpeedReduction = FMath::Pow(1.f - InSlowPercentage, SlowingStacks);
+	ActionSpeed = FMath::Pow(1.f - InSlowPercentage, SlowingStacks);
+	UE_LOG(LogTemp, Error, TEXT("CURRENT ACTION SPEED: %f"), ActionSpeed);
+	SetActionSpeed(ActionSpeed);
+}
+
+void AEnemy::RemoveSlowingStacks()
+{
+	SlowingStacks = 0;
+	//ActionSpeed 
 }
 
 float AEnemy::AI_GetShootPause() { return AI_Data->GetShootPause(); }
@@ -668,6 +693,7 @@ void AEnemy::P_SetupAbilities()
 
 void AEnemy::P_Setup()
 {
+	ResetActionSpeed();
 	if (bAffectedByEmp) EmpEffectEnded();
 	if (bAffectedByStun) AI_StunEffectEnded();
 	ConductionLogicData.Reset();
@@ -1683,7 +1709,6 @@ void AEnemy::P_CheckStoppedMoving() const
 
 void AEnemy::P_CancelHijackingProcess()
 {
-	UE_LOG(LogTemp, Error, TEXT("CANCEL HIJACK"));
 	Camera->FieldOfView = 90.f;
 	bIsInputLocked = false;
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
@@ -1806,26 +1831,6 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 	else EmpAffectedVfx->Activate(true);
 }
 
-void AEnemy::TogglePoisonSlowAffectedVfx(const bool bState)
-{
-	if (!PoisonSlowAffectedVfx)
-	{
-		if (bPoisonSlowVfxAttachRequested) return;
-		bPoisonSlowVfxAttachRequested = true;
-		bIsPoisonSlowAffected = true;
-		AssetsManager->AttachVfx(EVfx::PoisonSlowAffected, [this]() -> bool { return GetIsAlive() && bIsPoisonSlowAffected; }, &PoisonSlowAffectedVfx, GetMesh(), FName("DeathSocket"));
-	}
-	else
-	{
-		if (bState) PoisonSlowAffectedVfx->Activate(true);
-		else
-		{
-			bIsPoisonSlowAffected = false;
-			PoisonSlowAffectedVfx->DeactivateImmediate();
-		}
-	}
-}
-
 void AEnemy::DisableHijackViableVfx() const { if (HijackableVfx) HijackableVfx->DeactivateImmediate(); }
 
 void AEnemy::DisableVfxs() const
@@ -1849,12 +1854,11 @@ void AEnemy::ToggleTimeDilation()
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
-void AEnemy::SetActionSpeed(const float InSpeed, const bool bIsPoisonToggle)
+void AEnemy::SetActionSpeed(const float InSpeed)
 {
 	if (!AI_Data || !AnimInstance || !Weapon) return;
 	ActionSpeed = InSpeed + AdditionalActionSpeedValue;
 	bActionSpeedModified = !FMath::IsNearlyEqual(InSpeed, 1.f, 0.1f); 
-	if (bIsPoisonToggle && !bIsHijacked) TogglePoisonSlowAffectedVfx(bActionSpeedModified);
 	SetMaxWalkSpeed(CurrentMoveMode);
 	AnimInstance->SetGlobalPlayRate(ActionSpeed);
 	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
@@ -1879,14 +1883,22 @@ void AEnemy::AddAdditionalActionSpeed(const float InValue, const float InDuratio
 {
 	if (InDuration > 0.f) GetWorldTimerManager().SetTimer(ActionSpeedHandle, this, &AEnemy::ResetAdditionalActionSpeed, InDuration);
 	AdditionalActionSpeedValue += InValue;
-	SetActionSpeed(ActionSpeed, false);
+	SetActionSpeed(ActionSpeed);
 }
 
 void AEnemy::ResetAdditionalActionSpeed()
 {
 	ActionSpeed -= AdditionalActionSpeedValue;
 	AdditionalActionSpeedValue = 0.f;
-	SetActionSpeed(ActionSpeed, false);
+	SetActionSpeed(ActionSpeed);
+}
+
+void AEnemy::ResetActionSpeed()
+{
+	SlowingStacks = 0;
+	ActionSpeed = 1.f;
+	AdditionalActionSpeedValue = 0.f;
+	SetActionSpeed(ActionSpeed);
 }
 
 void AEnemy::ApplyStunEffect(const float InEffectDuration)
@@ -1952,7 +1964,24 @@ void AEnemy::StopBurningState()
 	GetWorldTimerManager().ClearTimer(BurningTickingHandle);
 }
 
-void AEnemy::ReceiveBurnDamage()
+void AEnemy::ReceiveBurnDamage() { UGameplayStatics::ApplyDamage(this, BurningLogicData.Damage, nullptr, nullptr, UDamageType::StaticClass()); }
+
+void AEnemy::TogglePoisonSlowVfx(const bool bState)
 {
-	UGameplayStatics::ApplyDamage(this, BurningLogicData.Damage, nullptr, nullptr, UDamageType::StaticClass());
+	if (!PoisonSlowAffectedVfx)
+	{
+		if (bPoisonSlowVfxAttachRequested) return;
+		bPoisonSlowVfxAttachRequested = true;
+		bIsPoisonSlowAffected = true;
+		AssetsManager->AttachVfx(EVfx::PoisonSlowAffected, [this]() -> bool { return GetIsAlive() && bIsPoisonSlowAffected; }, &PoisonSlowAffectedVfx, GetMesh(), FName("DeathSocket"));
+	}
+	else
+	{
+		if (bState) PoisonSlowAffectedVfx->Activate(true);
+		else
+		{
+			bIsPoisonSlowAffected = false;
+			PoisonSlowAffectedVfx->DeactivateImmediate();
+		}
+	}
 }

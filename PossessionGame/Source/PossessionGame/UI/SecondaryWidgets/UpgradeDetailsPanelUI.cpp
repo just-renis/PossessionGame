@@ -359,7 +359,7 @@ FString UUpgradeDetailsPanelUI::GetHealthUpgradeString(const TObjectPtr<UCodexDa
 	{
 		if (const TObjectPtr<UCharacterData> CharacterData = InCodexData->GetCharacterData(bForPlayer, GetCharacterByUpgradeName()))
 		{
-			return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatHealth, bForPlayer),
+			return GetUpgradeChangeString(InRunSaveSlot->GetHpUpgradesForEnemy(GetCharacterByUpgradeName()),
 			CharacterData->GetMaxHp(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
 		}
 	}
@@ -692,6 +692,7 @@ void UUpgradeDetailsPanelUI::SelectUpgrade()
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UpgradeCardSelect);
 	bHasBeenSelected = true;
 	PlayAnimation(PressAnim);
+	if (UpgradeChoice.Rarity != EUpgradeChoice::Legendary) SpecialAttribute = EUpgradeAttribute::None;
 	GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->AddUpgrade(GetGameInstance(), UpgradeName, UpgradeChoice, SpecialAttribute);
 	SpecialAttribute = EUpgradeAttribute::None;
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->TriggerUpgradeMenuCloseAnimation();

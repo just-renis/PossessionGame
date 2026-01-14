@@ -119,9 +119,7 @@ void UPlayerHUD::ConfigureUIs()
 
 void UPlayerHUD::PlayFadeOutAnim(const bool bState)
 {
-	UE_LOG(LogTemp, Error, TEXT("PLAY FADE OUT ANIM 0 IMPORTANT %i"), bState);
 	if (bState == bIsHidden) return;
-	UE_LOG(LogTemp, Error, TEXT("PLAY FADE OUT ANIM 1 IMPORTANT %i"), bState);
 	bIsHidden = bState;
 	PlayAnimation(FadeOutAnim, GetAnimationCurrentTime(FadeOutAnim), 1, bState ? EUMGSequencePlayMode::Forward : EUMGSequencePlayMode::Reverse);
 }

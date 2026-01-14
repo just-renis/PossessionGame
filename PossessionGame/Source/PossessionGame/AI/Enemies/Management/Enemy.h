@@ -150,7 +150,7 @@ public:
 
 	virtual void P_RemoveReloadSound() {}
 	void P_ReEnableRunIfToggleMode();
-	void P_ApplyUpgradeOnSelection();
+	virtual void P_ApplyUpgradeOnSelection();
 	void P_UseAbility(const int32 InAbilityIndex);
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo) const;
 	void P_UpdateAmmoHUD(const int32 WeaponAmmo, const int32 MaxAmmo) const;
@@ -182,7 +182,8 @@ public:
 	void SetMovementSpeedMultiplier(const float InMultiplier);
 	void RemoveDisablingActionEffect();
 	void SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick);
-	//void SetupSlowingState(const float InSlowValue, const float InBurningDuration, const float InSlowingTick);
+	void AddSlowingStack(const float InSlowPercentage);
+	void RemoveSlowingStacks();
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -341,11 +342,14 @@ private:
 	float AdditionalActionSpeedValue = 0.f;
 	float SavedRespawnHpPercentage = 1.f;
 	float HijackDelayAnimationSpeed = 1.f;
+	float PoisonActionSpeedReduction = 0.f;
+	float WraithTrapActionSpeedReduction = 0.f;
 	int32 P_FirstSlotAbilityIndex = 0;
 	int32 P_SecondSlotAbilityIndex = 1;
 	int32 OverlappingPoisonAreas = 0;
 	int32 DisablingActionsEffectsCount = 0;
 	int32 CurrentJumpCount = 0;
+	int32 SlowingStacks = 0;
 	uint32 RunBindTurnOnHandle;
 	uint32 RunBindTurnOffHandle;
 	FTimerHandle AI_ClearShootPauseHandle;
@@ -582,19 +586,20 @@ private:
 	void OpenInfoPanel();
 	void CloseInfoPanel();
 	void PlayEmpAffectedVfx(const float InEffectDuration);
-	void TogglePoisonSlowAffectedVfx(const bool bState);
 	void DisableHijackViableVfx() const;
 	void DisableVfxs() const;
 	void SetupTutorialManager();
 	void ToggleTimeDilation();
-	void SetActionSpeed(const float InSpeed, const bool bIsPoisonToggle);
+	void SetActionSpeed(const float InSpeed);
 	void SetupMeshOptimization() const;
 	void AddAdditionalActionSpeed(const float InValue, const float InDuration);
 	void ResetAdditionalActionSpeed();
+	void ResetActionSpeed();
 	void ApplyStunEffect(const float InEffectDuration);
 	void PlayStunAffectedVfx(const float InEffectDuration);
 	void ApplyDisablingActionEffect(const float InEffectDuration, const EDisablingEffect InEffectName);
 	void DisableSkeletalMesh() const;
 	void StopBurningState();
 	void ReceiveBurnDamage();
+	void TogglePoisonSlowVfx(const bool bState);
 };

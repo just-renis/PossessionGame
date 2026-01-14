@@ -49,6 +49,7 @@ void AWraithMolotovArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UD
 	Attributes.Add(FName("FloorAuraRadius"), FNiagaraAttribute(true, FloorAuraRadius));
 	Attributes.Add(FName("BubblesRadius"), FNiagaraAttribute(true, BubblesRadius));
 	Attributes.Add(FName("FlamesAmount"), FNiagaraAttribute(true, FlamesAmount));
+	//Attributes.Add(FName("AuraRadius"), FNiagaraAttribute(true, FlamesAmount));
 	Attributes.Add(FName("FloorAuraLifetime"), FNiagaraAttribute(true, LifeSpan));
 	Attributes.Add(FName("AuraLifetime"), FNiagaraAttribute(true, AuraLifetime));
 	Attributes.Add(FName("FlameLifetime"), FNiagaraAttribute(true, FlameLifetime));

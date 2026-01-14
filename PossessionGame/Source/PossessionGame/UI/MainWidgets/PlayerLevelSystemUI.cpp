@@ -1,6 +1,7 @@
 ﻿#include "PlayerLevelSystemUI.h"
 #include "PlayerHUD.h"
 #include "Blueprint/WidgetTree.h"
+#include "Components/Button.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
 #include "Components/Spacer.h"
@@ -11,6 +12,7 @@
 #include "PossessionGame/Enums/ELevelSystemUpgradeTexture.h"
 #include "PossessionGame/Enums/EPlayerLevelUpgradeId.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/UI/SecondaryWidgets/CloseButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/PlayerLevelOptionUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -41,6 +43,7 @@ void UPlayerLevelSystemUI::NativeConstruct()
 	Super::NativeConstruct();
 	FadeOutDelegate.BindDynamic(this, &UPlayerLevelSystemUI::Hide);
 	SetupPlayerOptions();
+	CloseButton->Get()->OnClicked.AddDynamic(this, &UPlayerLevelSystemUI::CloseUI);
 }
 
 void UPlayerLevelSystemUI::SetupPlayerOptions()
