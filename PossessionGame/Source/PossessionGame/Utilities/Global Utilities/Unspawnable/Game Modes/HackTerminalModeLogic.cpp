@@ -11,7 +11,7 @@ void UHackTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager,
 {
 	Super::Init(InWaveManager, InGameModeData);
 	Data = Cast<UHackTerminalModeData>(InGameModeData);
-	ReservedEnemiesHpPool = UnreservedEnemiesHpPool = Data->GetEnemiesHpPool();
+	UpdateHpPoolInitialValues();
 	SetupWaveManagerUI();
 	PlaySound(ESound::GeneratorDisableAnnouncement);
 	WaveManager->GetDelegateManager()->OnHackModeStart.Broadcast();
@@ -79,7 +79,7 @@ void UHackTerminalModeLogic::FinishTerminalHack()
 {
 	PlaySound(ESound::GeneratorCompleted);
 	TotalAmountOfEnemiesKilled = 0;
-	UnreservedEnemiesHpPool = ReservedEnemiesHpPool = Data->GetEnemiesHpPool();
+	UpdateHpPoolInitialValues();
 	WaveManager->GetDelegateManager()->OnBossDeath.Broadcast();
 	WaveManager->GetDelegateManager()->OnTerminalHackRoomFinish.Broadcast(CurrentTerminalRoomMode);
 	if (++TerminalsHackedAmount >= Data->GetTerminalsAmountToHack()) Finalize();
@@ -105,5 +105,15 @@ void UHackTerminalModeLogic::StopSpawning()
 void UHackTerminalModeLogic::UpdateHpPoolBar(const float InHp)
 {
 	UnreservedEnemiesHpPool -= InHp;
-	(void)WaveManager->GetDelegateManager()->UpdateGlobalHpBar.ExecuteIfBound(UnreservedEnemiesHpPool, Data->GetEnemiesHpPool());
+	(void)WaveManager->GetDelegateManager()->UpdateGlobalHpBar.ExecuteIfBound(UnreservedEnemiesHpPool, TotalEnemiesHpPool);
+}
+
+void UHackTerminalModeLogic::UpdateHpPoolInitialValues()
+{
+	TotalEnemiesHpPool = ReservedEnemiesHpPool = UnreservedEnemiesHpPool = Data->GetEnemiesHpPool();
+	if (WaveManager->GetDelegateManager()->RequestPlayerHp.IsBound())
+	{
+		UnreservedEnemiesHpPool += WaveManager->GetDelegateManager()->RequestPlayerHp.Execute();
+		TotalEnemiesHpPool = UnreservedEnemiesHpPool;
+	}
 }

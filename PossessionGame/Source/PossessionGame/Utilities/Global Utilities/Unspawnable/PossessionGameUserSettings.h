@@ -21,9 +21,9 @@ public:
 	virtual void LoadSettings(const bool bForceReload) override;
 private:
 	UPROPERTY(Config)
-	bool bIsMotionBlurEnabled = true;
+	bool bIsMotionBlurEnabled = false;
 	UPROPERTY(Config)
-	int32 AntiAliasingMethod = 4;
+	int32 AntiAliasingMethod = 1;
 	UPROPERTY(Config)
 	float GammaValue = 2.2f;
 };

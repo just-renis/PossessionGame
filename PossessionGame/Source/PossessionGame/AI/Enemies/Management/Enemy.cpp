@@ -321,7 +321,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		#endif
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &AEnemy::P_TryInteracting); // F
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack); // V
-		//- 19 reserved was stomp, -14 right click reserved.
+		//- 19 reserved was stomp.
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::OpenInfoPanel); // Tab
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel); // Tab
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_InitiateSlide); // C
@@ -331,28 +331,24 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::PossessedBy(AController* NewController)
 {
-	if (!bIsHijacked)
-	{
-		Super::PossessedBy(NewController);
-		if (Cast<APlayerController>(NewController))
-		{
-			DelegateManager->OnTimeDilationChanged.RemoveAll(this);
-			bIsInvincible = true;
-			GetWorldTimerManager().SetTimer(HijackInvincibilityDelayHandle, this, &AEnemy::P_TurnOffInvincibility, InvincibilityDelay);
-			DisableAllVfxAfterPossession();
-			bIsActionInMotion = false;
-			P_TriggerGlitchingEffect();
-			P_ToggleCriticallyDamagedEffects(0.f);
-			AssetsManager->PlaySound2D(ESound::OnHijack);
-			AssetsManager->RemoveStoredSound(ESound::GuardianSlowMotion);
-			AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeepFps);
-			GetWorldTimerManager().SetTimer(AI_TriggerDeathVoiceLineHandle, this, &AEnemy::AI_TriggerDeathVoiceLine, 1.f, false);
-			P_Setup();
-			DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(NSLOCTEXT("ST_Localization", "Hijacked", "Hijacked"));
-			(void)DelegateManager->OnHijack.ExecuteIfBound(this);
-			SetInputState(false);
-		}
-	}
+	if (bIsHijacked) return;
+	Super::PossessedBy(NewController);
+	if (!Cast<APlayerController>(NewController)) return;
+	DelegateManager->OnTimeDilationChanged.RemoveAll(this);
+	bIsInvincible = true;
+	GetWorldTimerManager().SetTimer(HijackInvincibilityDelayHandle, this, &AEnemy::P_TurnOffInvincibility, InvincibilityDelay);
+	DisableAllVfxAfterPossession();
+	bIsActionInMotion = false;
+	P_TriggerGlitchingEffect();
+	P_ToggleCriticallyDamagedEffects(0.f);
+	AssetsManager->PlaySound2D(ESound::OnHijack);
+	AssetsManager->RemoveStoredSound(ESound::GuardianSlowMotion);
+	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeepFps);
+	GetWorldTimerManager().SetTimer(AI_TriggerDeathVoiceLineHandle, this, &AEnemy::AI_TriggerDeathVoiceLine, 1.f);
+	P_Setup();
+	DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(NSLOCTEXT("ST_Localization", "Hijacked", "Hijacked"));
+	(void)DelegateManager->OnHijack.ExecuteIfBound(this);
+	SetInputState(false);
 }
 
 void AEnemy::InitiateDeath()
@@ -384,6 +380,10 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 	if (InDamageReason == EDamageReason::GuardianDamage && EVariation::GuardianVariationGold == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Guardian)) { ConductionLogicData.AddStack(); }
 	InDamage += InDamage * ConductionLogicData.GetDamageTakenPercentage();
 	CurrentHp -= InDamage;
+	if (DelegateManager->RequestCurrentGameMode.IsBound() && DelegateManager->RequestCurrentGameMode.Execute() == EGameMode::HackTerminalsMode)
+	{
+		(void)DelegateManager->HackTerminalSubtractHp.ExecuteIfBound(InDamage + (CurrentHp <= 0.f ? CurrentHp : 0.f));
+	}
 	if (bIsHijacked)
 	{
 		P_HandlingDamageTaken();
@@ -588,10 +588,6 @@ void AEnemy::AI_PlayDeathSound() { PlaySound(ESound::MechanicalDeath); }
 
 void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
 {
-	if (DelegateManager->RequestCurrentGameMode.IsBound() && DelegateManager->RequestCurrentGameMode.Execute() == EGameMode::HackTerminalsMode)
-	{
-		(void)DelegateManager->HackTerminalSubtractHp.ExecuteIfBound(InDamage + (CurrentHp <= 0.f ? CurrentHp : 0.f));
-	}
 	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 1.f);
 	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.02f, false);
 	ProcessDamageReason(InDamageReason, InDamage);
@@ -715,6 +711,7 @@ void AEnemy::P_Setup()
 	DelegateManager->ApplySecretBoostHealth.BindUObject(this, &AEnemy::P_ApplySecretBoostHp);
 	DelegateManager->AddActionSpeedBoost.RemoveAll(this);
 	DelegateManager->OnRunModeChange.BindUObject(this, &AEnemy::P_SetupRunMode);
+	DelegateManager->RequestPlayerHp.BindUObject(this, &AEnemy::GetCurrentHp);
 	Tags.Remove("AliveEnemy");
 	Tags.Add("Player");
 	P_ReceiveCurrentlySelectedVariation();
@@ -1136,11 +1133,7 @@ void AEnemy::P_SetupData()
 	MaxHp += SaveSlot->GetPlayerLevelAllGlobalHpBonus(MaxHp);
 	MaxHp += MaxHp * SaveSlotManager->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardHealth) * 0.01f;
 	CurrentHp = MaxHp * HpPercentage;
-	if (SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SecondOptionB) && CurrentHp < MaxHp)
-	{
-		CurrentHp += MaxHp * 0.25f;
-		if (CurrentHp >= MaxHp) CurrentHp = MaxHp;
-	}
+	if (SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::SecondOptionB) && CurrentHp < MaxHp) CurrentHp = FMath::Min(CurrentHp + MaxHp * 0.25f, MaxHp);
 	bIsHijacked = true;
 	GetWorldTimerManager().ClearTimer(AI_PlaySpawnSoundHandle);
 	bCanShoot = true;

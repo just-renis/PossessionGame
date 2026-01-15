@@ -42,6 +42,7 @@ DECLARE_DELEGATE_RetVal(int32, FRequestCurrentTimer);
 DECLARE_DELEGATE_RetVal(float, FRequestCurrentXpNerf);
 DECLARE_DELEGATE_RetVal(ECharacterType, FRequestCurrentCharacter);
 DECLARE_DELEGATE_RetVal(EGameMode, FRequestCurrentGameMode);
+DECLARE_DELEGATE_RetVal(float, FRequestPlayerHp);
 DECLARE_DELEGATE_OneParam(FOnPlayerDamageDealt, bool);
 DECLARE_DELEGATE_OneParam(FRequestTriggerCameraShake, const ECameraShake);
 DECLARE_DELEGATE_OneParam(FRequestStopCameraShake, const ECameraShake);
@@ -135,6 +136,7 @@ public:
 	FRequestCurrentXpNerf RequestCurrentXpNerf;
 	FRequestCurrentCharacter RequestCurrentCharacter;
 	FRequestCurrentGameMode RequestCurrentGameMode;
+	FRequestPlayerHp RequestPlayerHp;
 	FOnPlayerDamageDealt OnPlayerDamageDealt;
 	FRequestTriggerCameraShake RequestTriggerCameraShake;
 	FRequestStopCameraShake RequestStopCameraShake;

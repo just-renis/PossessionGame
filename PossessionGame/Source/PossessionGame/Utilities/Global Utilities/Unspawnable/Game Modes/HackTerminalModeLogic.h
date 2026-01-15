@@ -15,6 +15,7 @@ class POSSESSIONGAME_API UHackTerminalModeLogic : public UGameModeBaseLogic
 	int32 TerminalsHackedAmount = 0;
 	float UnreservedEnemiesHpPool;
 	float ReservedEnemiesHpPool;
+	float TotalEnemiesHpPool;
 	EGameMode CurrentTerminalRoomMode;
 	UPROPERTY()
 	TObjectPtr<UHackTerminalModeData> Data;
@@ -29,4 +30,5 @@ class POSSESSIONGAME_API UHackTerminalModeLogic : public UGameModeBaseLogic
 	void FinishTerminalHack();
 	void StopSpawning();
 	void UpdateHpPoolBar(const float InHp);
+	void UpdateHpPoolInitialValues();
 };
