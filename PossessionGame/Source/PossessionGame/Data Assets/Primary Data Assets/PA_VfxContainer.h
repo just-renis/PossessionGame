@@ -2,21 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "PossessionGame/Enums/EUserParamType.h"
 #include "PA_VfxContainer.generated.h"
 
 enum class EVariation : uint8;
 class UNiagaraSystem;
-
-UENUM()
-enum class EUserParamType : uint8
-{
-	Bool,
-	Int,
-	Float,
-	Vector,
-	Color,
-	Material
-};
 
 USTRUCT()
 struct FDynamicMaterialParams

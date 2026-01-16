@@ -116,7 +116,7 @@ void UMinionBossAbility2::UpdateLaserEndLocation()
 	Proprietor->GetLaserCollision()->SetWorldRotation(NewRotation);
 	Proprietor->GetLaserCollision()->SetCapsuleSize(35.f, Distance * 0.5f);
 	// Laser length vfx change.
-	Proprietor->GetLaser()->SetFloatParameter(FName("_Length"), Distance * 0.0007f);
+	Proprietor->GetLaser()->SetVariableFloat(FName("_Length"), Distance * 0.0007f);
 }
 
 void UMinionBossAbility2::ReceivePlayerPosition()

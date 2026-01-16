@@ -154,8 +154,8 @@ void AWarden::TriggerBeam()
 	BeamCollision->SetWorldRotation(BeamRotation);
 	BeamCollision->SetCapsuleSize(35.f, Distance * 0.5f);
 	// Beam length vfx change.
-	BeamVfx->SetVectorParameter(FName("Scale Factor 1"), FVector(Distance * DistanceMulti, 1.f, 1.f));
-	BeamVfx->SetVectorParameter(FName("Scale Factor001"), FVector(Distance * DistanceMulti, 1.f, 1.f));
+	BeamVfx->SetVariableVec3(FName("Scale Factor 1"), FVector(Distance * DistanceMulti, 1.f, 1.f));
+	BeamVfx->SetVariableVec3(FName("Scale Factor001"), FVector(Distance * DistanceMulti, 1.f, 1.f));
 	BeamVfx->Activate(true);
 }
 

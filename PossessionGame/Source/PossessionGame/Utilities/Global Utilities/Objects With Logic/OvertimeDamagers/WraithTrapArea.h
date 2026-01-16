@@ -11,8 +11,32 @@ class POSSESSIONGAME_API AWraithTrapArea : public AOvertimeDamager
 {
 	GENERATED_BODY()
 
+	float DefaultVfxLifetime = 5.f;
+	float DefaultVfxRadius = 500.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))
-	float DefaultRadius = 360.f;
+	float DefaultRadius = 500.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))
+	float CollisionScalingOffsetSizeMultiplier = 0.84f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultAuraRadius = 4.15f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultFloorAuraRadius = 11.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultSmokeRadius = 200.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultSmokeCount = 50.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultBubbleCount = 100.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultGhostCount = 10.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultGhostRadius = 400.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultSmokeLifetime = 4.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultBubbleLifetime = 4.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultGhostLifetime = 4.f;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> RadiusVfx;
 

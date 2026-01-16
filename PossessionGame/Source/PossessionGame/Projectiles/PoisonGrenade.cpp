@@ -37,9 +37,9 @@ void APoisonGrenade::SpawnSecondProjectileImpactVfx(const FHitResult& Hit)
 	ModifiedOvertimeAreaLifeSpan += DamageOverTimeData->GetAreaLifeSpan() * EffectDurationIncrease * 0.01f;
 	const float SizeIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TricksterAbility1, EUpgradeAttribute::Size, ProjectileData.bIsPlayerProjectile);
 	ModifiedOvertimeAreaSize += DefaultOvertimeAreaSize * SizeIncrease * 0.01f;
-	Attributes.Add(FName("Loop Duration"), FNiagaraAttribute(true, ModifiedOvertimeAreaLifeSpan));
-	Attributes.Add(FName("Uniform Sprite Size Max"), FNiagaraAttribute(true, ModifiedOvertimeAreaSize));
-	Attributes.Add(FName("Uniform Sprite Size Min"), FNiagaraAttribute(true, ModifiedOvertimeAreaSize));
+	Attributes.Add(FName("Loop Duration"), FNiagaraAttribute(EUserParamType::Float, ModifiedOvertimeAreaLifeSpan));
+	Attributes.Add(FName("Uniform Sprite Size Max"), FNiagaraAttribute(EUserParamType::Float, ModifiedOvertimeAreaSize));
+	Attributes.Add(FName("Uniform Sprite Size Min"), FNiagaraAttribute(EUserParamType::Float, ModifiedOvertimeAreaSize));
 	SpawnProjectileImpactVfx(Hit, false);
 }
 

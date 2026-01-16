@@ -1819,7 +1819,7 @@ void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 {
 	if (!EmpAffectedVfx)
 	{
-		AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, &EmpAffectedVfx, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(true, InEffectDuration)}});
+		AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, &EmpAffectedVfx, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(EUserParamType::Float, InEffectDuration)}});
 	}
 	else EmpAffectedVfx->Activate(true);
 }
@@ -1920,12 +1920,14 @@ void AEnemy::PlayStunAffectedVfx(const float InEffectDuration)
 {
 	if (!StunAffectedVfx)
 	{
-		AssetsManager->AttachVfx(EVfx::Stunned, [this]() -> bool { return GetIsAlive(); }, &StunAffectedVfx, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(true, InEffectDuration)}});
+		AssetsManager->AttachVfx(EVfx::Stunned, [this]() -> bool { return GetIsAlive(); }, &StunAffectedVfx, GetMesh(),
+		FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget,
+		false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(EUserParamType::Float, InEffectDuration)}});
 	}
 	else
 	{
 		TMap<FName, FNiagaraAttribute> Attributes;
-		Attributes.Add(FName("Loop Duration"), FNiagaraAttribute(true, InEffectDuration));
+		Attributes.Add(FName("Loop Duration"), FNiagaraAttribute(EUserParamType::Float, InEffectDuration));
 		AssetsManager->UpdateVfxAttributes(StunAffectedVfx, Attributes);
 		StunAffectedVfx->Activate(true);
 	}

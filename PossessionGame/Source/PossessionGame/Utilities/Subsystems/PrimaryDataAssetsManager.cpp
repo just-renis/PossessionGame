@@ -192,7 +192,6 @@ void UPrimaryDataAssetsManager::LoadVfx(const EVfx InVfxName, TFunction<void()> 
 	TSharedPtr<FStreamableHandle> Handle = UAssetManager::GetStreamableManager().RequestAsyncLoad(VfxContainer->GetVfxContainer()->GetVfxEffect().ToSoftObjectPath(), [this, WeakWorld, VfxContainer]
 	{
 		if (!WeakWorld.IsValid() || !IsAsyncAssetWorldValid(WeakWorld.Get()) || !VfxContainer) return;
-		UE_LOG(LogTemp, Error, TEXT("LOADED %s"), *VfxContainer->GetVfxContainer()->GetVfxName().ToString());
 		VfxContainer->SetIsLoaded(true);
 		VfxContainer->TriggerVfxsCallbacks();
 	});
@@ -296,14 +295,12 @@ void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraCom
 	if (!InVfxComponent) return;
 	for (const TPair<FName, FNiagaraAttribute> Attribute : InAttributes)
 	{
-		if (!Attribute.Value.bIsReplacingValue)
+		switch (Attribute.Value.ParamType)
 		{
-			if (FMath::IsNearlyEqual(Attribute.Value.Value, 0.f, 0.001f)) continue;
-			const float ComponentAttributeValue = GetVfxAttributeValue(InVfxComponent, Attribute.Key);
-			const float AttributeValue = ComponentAttributeValue + ComponentAttributeValue * (Attribute.Value.Value * 0.01f);
-			InVfxComponent->SetVariableFloat(Attribute.Key, AttributeValue);
+			case EUserParamType::Float: InVfxComponent->SetVariableFloat(Attribute.Key, Attribute.Value.FloatValue); break;
+			case EUserParamType::Vector: InVfxComponent->SetVariableVec3(Attribute.Key, Attribute.Value.VectorValue); break;
+			default: ;
 		}
-		else InVfxComponent->SetVariableFloat(Attribute.Key, Attribute.Value.Value);
 	}
 }
 
@@ -836,11 +833,11 @@ void UPrimaryDataAssetsManager::SetupVfx(const FVfxContainer& InVfxData, TFuncti
 	{
 		switch (Param.Value.ParamType)
 		{
-			case EUserParamType::Bool: InVfxComponent->SetBoolParameter(Param.Key, Param.Value.bBoolValue); break;
-			case EUserParamType::Int: InVfxComponent->SetIntParameter(Param.Key, Param.Value.IntValue); break;
-			case EUserParamType::Float: InVfxComponent->SetFloatParameter(Param.Key, Param.Value.FloatValue); break;
-			case EUserParamType::Vector: InVfxComponent->SetVectorParameter(Param.Key, Param.Value.VectorValue); break;
-			case EUserParamType::Color: InVfxComponent->SetColorParameter(Param.Key, Param.Value.ColorValue); break;
+			case EUserParamType::Bool: InVfxComponent->SetVariableBool(Param.Key, Param.Value.bBoolValue); break;
+			case EUserParamType::Int: InVfxComponent->SetVariableInt(Param.Key, Param.Value.IntValue); break;
+			case EUserParamType::Float: InVfxComponent->SetVariableFloat(Param.Key, Param.Value.FloatValue); break;
+			case EUserParamType::Vector: InVfxComponent->SetVariableVec3(Param.Key, Param.Value.VectorValue); break;
+			case EUserParamType::Color: InVfxComponent->SetVariableLinearColor(Param.Key, Param.Value.ColorValue); break;
 			case EUserParamType::Material:
 				FNiagaraVariable NiagaraParamName(UMaterialInterface::StaticClass(), Param.Key);
 				TObjectPtr<UMaterialInstanceDynamic> MI_Dynamic = Cast<UMaterialInstanceDynamic>(NiagaraParams.GetUObject(NiagaraParamName));

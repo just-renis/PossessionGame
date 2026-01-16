@@ -11,10 +11,12 @@ class POSSESSIONGAME_API AWraithMolotovArea : public AOvertimeDamager
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))
-	float TEST = 100.f;
+	float DefaultVfxLifetime = 4.f;
+	float DefaultVfxRadius = 360.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))
 	float DefaultRadius = 360.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))
+	float CollisionScalingOffsetSizeMultiplier = 1.1f;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	float DefaultFloorAuraRadius = 11.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))

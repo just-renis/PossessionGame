@@ -133,7 +133,7 @@ void ARangerMine::UpdateRadiusVfxSize(const bool bIsUpdate)
 	const float CollisionRadius = DefaultCollisionRadius + DefaultCollisionRadius * RadiusIncrease * 0.01f;
 	if (bIsUpdate && FMath::IsNearlyEqual(CurrentCollisionRadius, CollisionRadius, 0.1f)) return;
 	CurrentCollisionRadius = CollisionRadius;
-	Attributes.Add(FName("Mesh Uniform Scale"), FNiagaraAttribute(true, CurrentCollisionRadius / DefaultCollisionRadius));
+	Attributes.Add(FName("Mesh Uniform Scale"), FNiagaraAttribute(EUserParamType::Float, CurrentCollisionRadius / DefaultCollisionRadius));
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->UpdateVfxAttributes(RadiusVfx, Attributes);
 	MineTriggerCollision->SetSphereRadius(CurrentCollisionRadius);
 	RadiusVfx->DeactivateImmediate();

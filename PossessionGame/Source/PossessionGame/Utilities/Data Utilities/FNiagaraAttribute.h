@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "PossessionGame/Enums/EUserParamType.h"
 #include "FNiagaraAttribute.generated.h"
 
 USTRUCT()
@@ -7,9 +8,11 @@ struct POSSESSIONGAME_API FNiagaraAttribute
 {
 	GENERATED_BODY()
 
-	FNiagaraAttribute() : bIsReplacingValue(false), Value(0.f) {}
-	FNiagaraAttribute(const bool bInReplace, const float InFloat) : bIsReplacingValue(bInReplace), Value(InFloat) {}
+	FNiagaraAttribute() : ParamType(EUserParamType::Float), FloatValue(0.f), VectorValue(FVector::ZeroVector) {}
+	FNiagaraAttribute(const EUserParamType InParamType, const float InFloat) : ParamType(InParamType), FloatValue(InFloat), VectorValue() {}
+	FNiagaraAttribute(const EUserParamType InParamType, const FVector& InVector) : ParamType(InParamType), FloatValue(), VectorValue(InVector) {}
 
-	bool bIsReplacingValue;
-	float Value;
+	EUserParamType ParamType;
+	float FloatValue;
+	FVector VectorValue;
 };

@@ -29,31 +29,34 @@ void AWraithMolotovArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UD
 {
 	Super::Setup(bInIsPlayerObject, InDamageOverTimeData, InDamageReason);
 	TMap<FName, FNiagaraAttribute> Attributes;
-	const float RadiusIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility1, EUpgradeAttribute::Size, true) * 0.01f;
-	float LifeSpanIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility1, EUpgradeAttribute::EffectDuration, true) * 0.01f;
-	LifeSpanIncrease += TEST;
+	const float RadiusIncrease = 1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility1, EUpgradeAttribute::Size, true) * 0.01f;
+	const float LifeSpanIncrease = 1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility1, EUpgradeAttribute::EffectDuration, true) * 0.01f;
+
 	const float DefaultLifeSpan = InDamageOverTimeData->GetAreaLifeSpan();
+	const float CollisionRadius = DefaultRadius * RadiusIncrease;
+	const float LifeSpan = DefaultLifeSpan * LifeSpanIncrease;
+
+	const float DifferenceRadiusDelta = DefaultRadius / DefaultVfxRadius;
+	const float DifferenceLifetimeDelta = DefaultLifeSpan / DefaultVfxLifetime;
 	
-	const float CollisionRadius = DefaultRadius + DefaultRadius * RadiusIncrease;
-	const float LifeSpan = DefaultLifeSpan + DefaultLifeSpan * LifeSpanIncrease;
+	const float FloorAuraRadius = DefaultFloorAuraRadius * RadiusIncrease * DifferenceRadiusDelta;
+	const float BubblesRadius = DefaultBubblesRadius * RadiusIncrease * DifferenceRadiusDelta;
+	const float FlamesAmount = DefaultFlamesAmount * RadiusIncrease * DifferenceRadiusDelta;
+	const float AuraRadius = DefaultAuraRadius * RadiusIncrease * DifferenceRadiusDelta;
+	const float AuraLifetime = DefaultAuraLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
+	const float FlameLifetime = DefaultFlameLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
+	const float BubblesLifetime = DefaultBubblesLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
+	SetupRadiusAndTimers(CollisionRadius * CollisionScalingOffsetSizeMultiplier, LifeSpan);
 	
-	const float FloorAuraRadius = DefaultFloorAuraRadius + DefaultFloorAuraRadius * RadiusIncrease;
-	const float BubblesRadius = DefaultBubblesRadius + DefaultBubblesRadius * RadiusIncrease;
-	const float FlamesAmount = DefaultFlamesAmount + DefaultFlamesAmount * RadiusIncrease;
-	const float AuraLifetime = DefaultAuraLifetime + DefaultAuraLifetime * LifeSpanIncrease;
-	const float FlameLifetime = DefaultFlameLifetime + DefaultFlameLifetime * LifeSpanIncrease;
-	const float BubblesLifetime = DefaultBubblesLifetime + DefaultBubblesLifetime * LifeSpanIncrease;
-	SetupRadiusAndTimers(CollisionRadius, LifeSpan);
-	
-	Attributes.Add(FName("FlameRadius"), FNiagaraAttribute(true, CollisionRadius));
-	Attributes.Add(FName("FloorAuraRadius"), FNiagaraAttribute(true, FloorAuraRadius));
-	Attributes.Add(FName("BubblesRadius"), FNiagaraAttribute(true, BubblesRadius));
-	Attributes.Add(FName("FlamesAmount"), FNiagaraAttribute(true, FlamesAmount));
-	//Attributes.Add(FName("AuraRadius"), FNiagaraAttribute(true, FlamesAmount));
-	Attributes.Add(FName("FloorAuraLifetime"), FNiagaraAttribute(true, LifeSpan));
-	Attributes.Add(FName("AuraLifetime"), FNiagaraAttribute(true, AuraLifetime));
-	Attributes.Add(FName("FlameLifetime"), FNiagaraAttribute(true, FlameLifetime));
-	Attributes.Add(FName("BubblesLifetime"), FNiagaraAttribute(true, BubblesLifetime));
+	Attributes.Add(FName("FlameRadius"), FNiagaraAttribute(EUserParamType::Float, CollisionRadius));
+	Attributes.Add(FName("FloorAuraRadius"), FNiagaraAttribute(EUserParamType::Float, FloorAuraRadius));
+	Attributes.Add(FName("BubblesRadius"), FNiagaraAttribute(EUserParamType::Float, BubblesRadius));
+	Attributes.Add(FName("FlamesAmount"), FNiagaraAttribute(EUserParamType::Float, FlamesAmount));
+	Attributes.Add(FName("AuraRadius"), FNiagaraAttribute(EUserParamType::Vector, FVector(AuraRadius, AuraRadius, 0.25f)));
+	Attributes.Add(FName("FloorAuraLifetime"), FNiagaraAttribute(EUserParamType::Float, LifeSpan));
+	Attributes.Add(FName("AuraLifetime"), FNiagaraAttribute(EUserParamType::Float, AuraLifetime));
+	Attributes.Add(FName("FlameLifetime"), FNiagaraAttribute(EUserParamType::Float, FlameLifetime));
+	Attributes.Add(FName("BubblesLifetime"), FNiagaraAttribute(EUserParamType::Float, BubblesLifetime));
 	if (!RadiusVfx)
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithMolotovRadius, nullptr, &RadiusVfx, RootComponent, NAME_None,
