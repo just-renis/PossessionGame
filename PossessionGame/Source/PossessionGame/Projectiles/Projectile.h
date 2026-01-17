@@ -57,7 +57,7 @@ protected:
 	virtual void InitCloneProjectile(FProjectileData& InProjectileData, const FRotator& Rotation) override;
 	void DisableProjectileComponents() const;
 	virtual void SpawnProjectileImpactVfx(const FHitResult& InHit, const bool bFirstImpact);
-	void DealAreaDamage();
+	virtual void DealAreaDamage();
 	void DealDamageToSentientActor(const bool bIsPlayerProjectile, const TObjectPtr<AActor>& OtherActor, const FHitResult& Hit);
 	virtual void SpawnFirstProjectileImpactVfx(const FHitResult& Hit);
 	virtual void DestroyThis();

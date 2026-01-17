@@ -1,8 +1,17 @@
 ﻿#include "WraithProjectile.h"
 #include "NiagaraComponent.h"
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+
+AWraithProjectile::AWraithProjectile()
+{
+	ExplosionSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ExplosionSfx"));
+	ExplosionSfx->SetAutoActivate(false);
+	ExplosionSfx->SetupAttachment(Mesh);
+	Sounds.Add(ESound::WraithShootExplode, ExplosionSfx);
+}
 
 void AWraithProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich)
 {
@@ -30,4 +39,10 @@ void AWraithProjectile::DestroyThis()
 void AWraithProjectile::ReturnObjectToPoolAfterExplosionVfxFinished()
 {
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(ProjectileData.ProjectileName, this);
+}
+
+void AWraithProjectile::DealAreaDamage()
+{
+	Super::DealAreaDamage();
+	PlaySound(ESound::WraithShootExplode);
 }

@@ -144,5 +144,7 @@ enum class ESound : uint16
 	UpgradeAvailable,
 	WraithOnHijack,
 	WraithSpawn,
-	WraithDeath
+	WraithDeath,
+	WraithShoot,
+	WraithShootExplode
 };

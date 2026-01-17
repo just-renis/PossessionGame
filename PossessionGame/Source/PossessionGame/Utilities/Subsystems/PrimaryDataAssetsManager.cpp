@@ -680,6 +680,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_WraithOnHijack", ESound::WraithOnHijack);
 	SoundMap.Add("PA_WraithSpawn", ESound::WraithSpawn);
 	SoundMap.Add("PA_WraithDeath", ESound::WraithDeath);
+	SoundMap.Add("PA_WraithShoot", ESound::WraithShoot);
+	SoundMap.Add("PA_WraithShootExplode", ESound::WraithShootExplode);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
