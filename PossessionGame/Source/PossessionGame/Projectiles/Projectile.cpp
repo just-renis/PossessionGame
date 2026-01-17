@@ -141,7 +141,6 @@ void AProjectile::DealAreaDamage()
 {
 	TArray<TObjectPtr<AActor>> IgnoredActors;
 	if (!ProjectileData.bCanBeDamagedByOwnProjectile && !ProjectileData.bIsPlayerProjectile) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
-	DrawDebugSphere(GetWorld(), GetActorLocation(), ProjectileData.DamageInnerRadius, 32, FColor::Green, false, 3.f);
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Damage, ProjectileData.RadiusMinimumDamage,
 	GetActorLocation(), ProjectileData.DamageInnerRadius, ProjectileData.DamageOuterRadius, ProjectileData.DamageFalloff, UDamageType::StaticClass(),
 	IgnoredActors, this, ProjectileData.GetProprietor()->GetController(), ECC_GameTraceChannel4);

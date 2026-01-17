@@ -38,6 +38,8 @@ TObjectPtr<UWidget> UPlayerLevelSystemUI::GenerateLevelText(const int32 InIndex)
 	return LevelText;
 }
 
+FString UPlayerLevelSystemUI::GetRichTag(const bool bIsNumberTag) { return bIsNumberTag ? FString("<BigUpgradeAttributeGreen>") : FString("<BigUpgradeAttributeText>"); }
+
 void UPlayerLevelSystemUI::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -112,6 +114,7 @@ void UPlayerLevelSystemUI::SetupSecondLevelOption(const TObjectPtr<UHorizontalBo
 
 void UPlayerLevelSystemUI::SetupLevelOptions(const int32 InIndex, const TObjectPtr<USaveSlot>& InSaveSlot, const TObjectPtr<UHorizontalBox>& InHorizontalBox)
 {
+	SetupLevelOptionsDescriptions();
 	const TObjectPtr<UPlayerLevelOptionUI> FirstPlayerLevelOptionWidget = CreateWidget<UPlayerLevelOptionUI>(this, PlayerLevelOptionClass);
 	if (const TObjectPtr<UHorizontalBoxSlot> FirstLevelOption = Cast<UHorizontalBoxSlot>(InHorizontalBox->AddChild(FirstPlayerLevelOptionWidget))) SetupFirstLevelOption(FirstLevelOption);
 	const TObjectPtr<UPlayerLevelOptionUI> SecondPlayerLevelOptionWidget = CreateWidget<UPlayerLevelOptionUI>(this, PlayerLevelOptionClass);
@@ -140,6 +143,51 @@ void UPlayerLevelSystemUI::SetupSpacerBetweenLevelOptions() const
 		Size.Value = 0.1f;
 		ElementSlot->SetSize(Size);
 	}
+}
+
+void UPlayerLevelSystemUI::SetupLevelOptionsDescriptions()
+{
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::FirstOptionA, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeFirstOptionA", "{0}to all damage{1}"),
+		FText::FromString(GetRichTag(true) + "+15% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::FirstOptionB, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeFirstOptionB", "{0}to all characters HP{1}"),
+		FText::FromString(GetRichTag(true) + "+25% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::SecondOptionA, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeSecondOptionA", "{0}hijacking speed{1}"),
+		FText::FromString(GetRichTag(true) + "+30% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::SecondOptionB, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeSecondOptionB", "{0}Hijacking a damaged robot restores{1}max HP{2}"),
+		FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " 25% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::ThirdOptionA, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeThirdOptionA", "{0}critical damage{1}"),
+		FText::FromString(GetRichTag(true) + "+20% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::ThirdOptionB, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeThirdOptionB", "{0}all characters HP{1}"),
+		FText::FromString(GetRichTag(true) + "+50 </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::FourthOptionA, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeFourthOptionA", "{0}Hijacking robot gives{1}all damage for{2}Boost does not stack{3}"),
+		FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + "+35% </>" + GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " 6 s </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::FourthOptionB, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeFourthOptionB", "{0}Hijacking robot gives{1}taken damage for{2}Boost does not stack{3}"),
+		FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + "-40% </>" + GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " 4 s </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::FifthOptionA, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeFifthOptionA", "{0}Quick melee and stomp for each player level gets{1}damage{2}"),
+		FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " +15% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::FifthOptionB, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeFifthOptionB", "{0}All weapons for each player level gets{1}damage{2}"),
+		FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " +5% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::SixthOptionA, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeSixthOptionA", "{0}all characters HP{1}"),
+		FText::FromString(GetRichTag(true) + "+50% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::SixthOptionB, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeSixthOptionB", "{0}all damage{1}"),
+		FText::FromString(GetRichTag(true) + "+30% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::SeventhOptionA, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeSeventhOptionA", "{0}Improve 'Ability cooldown reduction' boost after hijacking by{1}"),
+    	FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " 100% -> 175%</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::SeventhOptionB, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeSeventhOptionB", "{0}Increase 'Ability cooldown reduction' boost duration after hijacking by{1}"),
+		FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " 8 s -> 12 s</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::EighthOptionA, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeEighthOptionA", "{0}Weapons have{1}chance to deal double damage{2}"),
+		FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " 25% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::EighthOptionB, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeEighthOptionB", "{0}critical damage{1}"),
+		FText::FromString(GetRichTag(true) + "+40% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::NinthOptionA, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeNinthOptionA", "{0}Grants a stack which increases all damage by{1}for each ability used, stack duration{2}"),
+		FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " 5% </>" + GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + "10 s</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::NinthOptionB, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeNinthOptionB", "{0}Grants a stack which boosts critical damage by{1}for each critical hit dealt, stack duration{2}"),
+		FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " 10% </>" + GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + "8 s</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::TenthOptionA, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeTenthOptionA", "{0}All enemies give{1}more upgrade XP{2}"),
+		FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " 35% </>" + GetRichTag(false)), FText::FromString("</>")));
+	UpgradeDescriptions.Add(EPlayerLevelUpgradeId::TenthOptionB, FText::Format(NSLOCTEXT("ST_Localization", "LevelUpgradeTenthOptionB", "{0}Each kill within{1}of the previous kill increases the upgrade XP multiplier by{2}Bonus resets if the chain breaks{3}"),
+		FText::FromString(GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " 2 s </>" + GetRichTag(false)), FText::FromString("</>" + GetRichTag(true) + " 10%</>" + GetRichTag(false)), FText::FromString("</>")));
+	
 }
 
 void UPlayerLevelSystemUI::Hide()

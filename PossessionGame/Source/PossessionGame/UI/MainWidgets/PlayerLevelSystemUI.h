@@ -42,6 +42,7 @@ private:
 	FWidgetAnimationDynamicEvent FadeOutDelegate;
 	
 	TObjectPtr<UWidget> GenerateLevelText(const int32 InIndex) const;
+	FString GetRichTag(const bool bIsNumberTag);
 
 	virtual void NativeConstruct() override;
 	void SetupPlayerOptions();
@@ -51,6 +52,7 @@ private:
 	void SetupSecondLevelOption(const TObjectPtr<UHorizontalBoxSlot>& InElement);
 	void SetupLevelOptions(const int32 InIndex, const TObjectPtr<USaveSlot>& InSaveSlot, const TObjectPtr<UHorizontalBox>& InHorizontalBox);
 	void SetupSpacerBetweenLevelOptions() const;
+	void SetupLevelOptionsDescriptions();
 	UFUNCTION()
 	void Hide();
 };
