@@ -78,8 +78,14 @@ void AWraithTrapArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDama
 	}
 }
 
+void AWraithTrapArea::AddTarget(const TObjectPtr<AEnemy>& InTarget)
+{
+	Super::AddTarget(InTarget);
+	InTarget->AddActiveWraithTrap();
+}
+
 void AWraithTrapArea::RemoveTarget(const TObjectPtr<AEnemy>& InTarget)
 {
 	Super::RemoveTarget(InTarget);
-	InTarget->RemoveSlowingStacks();
+	InTarget->RemoveActiveWraithTrap();
 }

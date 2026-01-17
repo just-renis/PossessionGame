@@ -43,5 +43,6 @@ class POSSESSIONGAME_API AWraithTrapArea : public AOvertimeDamager
 	virtual void BeginPlay() override;
 	virtual void DealOvertimeDamage() override;
 	virtual void Setup(const bool bInIsPlayerObject, const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData, const EDamageReason InDamageReason) override;
+	virtual void AddTarget(const TObjectPtr<AEnemy>& InTarget) override;
 	virtual void RemoveTarget(const TObjectPtr<AEnemy>& InTarget) override;
 };

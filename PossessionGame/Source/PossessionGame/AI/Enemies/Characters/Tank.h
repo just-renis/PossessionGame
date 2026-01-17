@@ -23,6 +23,8 @@ private:
 	virtual void AI_PlayShootMontage() override;
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_TriggerDeathVoiceLine() override;
+	virtual void AI_PlaySpawnSound() override;
+	virtual void AI_PlayDeathSound() override;
 
 	bool P_GetIsLeftOrRightInputNotPressed();
 	

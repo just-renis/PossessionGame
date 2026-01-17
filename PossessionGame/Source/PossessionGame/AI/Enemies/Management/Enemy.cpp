@@ -506,7 +506,6 @@ void AEnemy::AddSlowingStack(const float InSlowPercentage)
 	SlowingStacks++;
 	WraithTrapActionSpeedReduction = 1.f - FMath::Pow(1.f - InSlowPercentage, SlowingStacks);
 	ActionSpeed = FMath::Pow(1.f - InSlowPercentage, SlowingStacks);
-	UE_LOG(LogTemp, Error, TEXT("SUBTRACT CURRENT ACTION SPEED: %f"), ActionSpeed);
 	SetActionSpeed(ActionSpeed);
 }
 
@@ -515,8 +514,9 @@ void AEnemy::RemoveSlowingStacks()
 	SlowingStacks = 0;
 	ActionSpeed += WraithTrapActionSpeedReduction;
 	SetActionSpeed(ActionSpeed);
-	UE_LOG(LogTemp, Error, TEXT("ADD CURRENT ACTION SPEED: %f"), ActionSpeed);
 }
+
+void AEnemy::RemoveActiveWraithTrap() { if (--ActiveWraithTrapCount == 0) RemoveSlowingStacks(); }
 
 float AEnemy::AI_GetShootPause() { return AI_Data->GetShootPause(); }
 

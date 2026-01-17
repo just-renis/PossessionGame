@@ -1,10 +1,13 @@
 ﻿#include "Wraith.h"
+
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Projectiles/Throwables/WraithMolotov.h"
 #include "PossessionGame/Projectiles/Throwables/WraithTrap.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -28,11 +31,34 @@ void AWraith::P_InitiateThrowTrap()
 	//AssetsManager->PlaySound2D(ESound::RangerThrowMine);
 	Trap->Throw();
 }
+
+AWraith::AWraith()
+{
+	SpawnSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("SpawnSfx"));
+	SpawnSfx->SetAutoActivate(false);
+	SpawnSfx->SetupAttachment(GetMesh());
+	DeathSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("DeathSfx"));
+	DeathSfx->SetAutoActivate(false);
+	DeathSfx->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::WraithSpawn, SpawnSfx);
+	Sounds.Add(ESound::WraithDeath, DeathSfx);
+}
+
 void AWraith::AI_SetupWeapon()
 {
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::WraithWeapon, GetMesh());
 	Super::AI_SetupWeapon();
 }
+
+void AWraith::AI_PlaySpawnSound() { PlaySound(ESound::WraithSpawn, true); }
+
+void AWraith::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::WraithDeath);
+}
+
+void AWraith::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::WraithOnHijack); }
 
 void AWraith::P_Setup()
 {

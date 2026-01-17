@@ -96,6 +96,14 @@ void ABreacher::AI_SetupWeapon()
 
 void ABreacher::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::BreacherOnHijack); }
 
+void ABreacher::AI_PlaySpawnSound() { PlaySound(ESound::BreacherSpawn, true); }
+
+void ABreacher::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::BreacherDeath);
+}
+
 void ABreacher::AI_TryTriggeringBash()
 {
 	if (!CanAbilityBeExecuted(1) || GetIsActionInMotion() || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;

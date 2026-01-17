@@ -544,22 +544,21 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_WaveCompleted", ESound::WaveCompleted);
 	SoundMap.Add("PA_RangerShoot", ESound::RangerShoot);
 	SoundMap.Add("PA_RangerReload", ESound::RangerReload);
-	SoundMap.Add("PA_OnPossession", ESound::OnHijack);
-	SoundMap.Add("PA_ReadyToPossess", ESound::ReadyToHijack);
+	SoundMap.Add("PA_OnHijack", ESound::OnHijack);
+	SoundMap.Add("PA_ReadyToHijack", ESound::ReadyToHijack);
 	SoundMap.Add("PA_TakeDamageLayer1", ESound::TakeDamageLayer1);
 	SoundMap.Add("PA_TakeDamageLayer2", ESound::TakeDamageLayer2);
 	SoundMap.Add("PA_CriticalDamageBeepFps", ESound::CriticalDamageBeepFps);
 	SoundMap.Add("PA_CriticalDamageBeepComputer", ESound::CriticalDamageBeepComputer);
 	SoundMap.Add("PA_CriticalHealthEnter", ESound::CriticalHealthEnter);
 	SoundMap.Add("PA_PlayerDeath", ESound::PlayerDeath);
-	SoundMap.Add("PA_RangerOnPossession", ESound::RangerOnHijack);
+	SoundMap.Add("PA_RangerOnHijack", ESound::RangerOnHijack);
 	SoundMap.Add("PA_RangerSpawn", ESound::RangerSpawn);
 	SoundMap.Add("PA_RangerDeath", ESound::RangerDeath);
 	SoundMap.Add("PA_RangerDeployShield", ESound::RangerDeployShield);
 	SoundMap.Add("PA_RangerDissolveShield", ESound::RangerDissolveShield);
 	SoundMap.Add("PA_RangerGrenadeLaunch", ESound::RangerGrenadeLaunch);
 	SoundMap.Add("PA_RangerGrenadeExplosion", ESound::RangerGrenadeExplosion);
-	SoundMap.Add("PA_GuardianSlowMotion", ESound::GuardianSlowMotion);
 	SoundMap.Add("PA_RangerGrenadeLaunchAim", ESound::RangerGrenadeLaunchAim);
 	SoundMap.Add("PA_MinionShoot", ESound::MinionShoot);
 	SoundMap.Add("PA_MinionSpawn", ESound::MinionSpawn);
@@ -568,7 +567,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TricksterReload", ESound::TricksterReload);
 	SoundMap.Add("PA_TricksterSpawn", ESound::TricksterSpawn);
 	SoundMap.Add("PA_TricksterDeath", ESound::TricksterDeath);
-	SoundMap.Add("PA_TricksterOnPossession", ESound::TricksterOnHijack);
+	SoundMap.Add("PA_TricksterOnHijack", ESound::TricksterOnHijack);
 	SoundMap.Add("PA_TricksterGrenadeThrow", ESound::TricksterGrenadeThrow);
 	SoundMap.Add("PA_TricksterPoisonImpact", ESound::TricksterPoisonImpact);
 	SoundMap.Add("PA_TricksterPoisonRelease", ESound::TricksterPoisonRelease);
@@ -578,8 +577,10 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_GuardianShoot", ESound::GuardianShoot);
 	SoundMap.Add("PA_GuardianSpawn", ESound::GuardianSpawn);
 	SoundMap.Add("PA_GuardianDeath", ESound::GuardianDeath);
+	SoundMap.Add("PA_GuardianOnHijack", ESound::GuardianOnHijack);
 	SoundMap.Add("PA_GuardianOverChargeStart", ESound::GuardianOverChargeStart);
 	SoundMap.Add("PA_GuardianOverChargeEnd", ESound::GuardianOverChargeEnd);
+	SoundMap.Add("PA_GuardianSlowMotion", ESound::GuardianSlowMotion);
 	SoundMap.Add("PA_MinionBossStomp", ESound::MinionBossStomp);
 	SoundMap.Add("PA_MinionBossShoot", ESound::MinionBossShoot);
 	SoundMap.Add("PA_MinionBossLaserEyeCharge", ESound::MinionBossLaserEyeCharge);
@@ -676,6 +677,9 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TankWeaponChargeUp", ESound::TankWeaponChargeUp);
 	SoundMap.Add("PA_HijackInProgress", ESound::HijackInProgress);
 	SoundMap.Add("PA_UpgradeAvailable", ESound::UpgradeAvailable);
+	SoundMap.Add("PA_WraithOnHijack", ESound::WraithOnHijack);
+	SoundMap.Add("PA_WraithSpawn", ESound::WraithSpawn);
+	SoundMap.Add("PA_WraithDeath", ESound::WraithDeath);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

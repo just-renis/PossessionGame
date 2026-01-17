@@ -26,8 +26,8 @@ ATank::ATank()
 	DeathSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("DeathSfx"));
 	DeathSfx->SetAutoActivate(false);
 	DeathSfx->SetupAttachment(GetMesh());
-	Sounds.Add(ESound::BreacherSpawn, SpawnSfx);
-	Sounds.Add(ESound::BreacherDeath, DeathSfx);
+	Sounds.Add(ESound::TankSpawn, SpawnSfx);
+	Sounds.Add(ESound::TankDeath, DeathSfx);
 }
 
 void ATank::AI_ReloadLogic() { if (!bIsActionInMotion && Weapon->GetIsReloadEnabled()) AI_Reload(); }
@@ -50,6 +50,14 @@ void ATank::AI_SetupWeapon()
 }
 
 void ATank::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::TankOnHijack); }
+
+void ATank::AI_PlaySpawnSound() { PlaySound(ESound::TankSpawn, true); }
+
+void ATank::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::TankDeath);
+}
 
 bool ATank::P_GetIsLeftOrRightInputNotPressed()
 {

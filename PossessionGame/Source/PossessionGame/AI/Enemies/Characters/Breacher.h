@@ -67,6 +67,8 @@ private:
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_TriggerDeathVoiceLine() override;
+	virtual void AI_PlaySpawnSound() override;
+	virtual void AI_PlayDeathSound() override;
 	void AI_TryTriggeringBash();
 	void AI_Bash();
 	void AI_ActivateBashWindUpVfx();

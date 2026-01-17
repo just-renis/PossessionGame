@@ -99,6 +99,8 @@ void AGuardian::AI_PlayDeathSound()
 
 void AGuardian::AI_PlaySpawnSound() { PlaySound(ESound::GuardianSpawn, true); }
 
+void AGuardian::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::GuardianOnHijack); }
+
 void AGuardian::AI_PlayDeathElectrification()
 {
 	AssetsManager->AttachVfx(EVfx::GuardianDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");

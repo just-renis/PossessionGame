@@ -43,6 +43,7 @@ enum class ESound : uint16
 	GuardianShoot,
 	GuardianSpawn,
 	GuardianDeath,
+	GuardianOnHijack,
 	GuardianOverChargeStart,
 	GuardianOverChargeEnd,
 	GuardianSlowMotion,
@@ -140,5 +141,8 @@ enum class ESound : uint16
 	TankWeaponChargeUp,
 	TankWeaponChargeDown,
 	HijackInProgress,
-	UpgradeAvailable
+	UpgradeAvailable,
+	WraithOnHijack,
+	WraithSpawn,
+	WraithDeath
 };

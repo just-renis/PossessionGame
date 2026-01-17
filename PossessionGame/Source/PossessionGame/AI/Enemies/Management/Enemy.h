@@ -184,6 +184,8 @@ public:
 	void SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick);
 	void AddSlowingStack(const float InSlowPercentage);
 	void RemoveSlowingStacks();
+	void AddActiveWraithTrap() { ActiveWraithTrapCount++; }
+	void RemoveActiveWraithTrap();
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -350,6 +352,7 @@ private:
 	int32 DisablingActionsEffectsCount = 0;
 	int32 CurrentJumpCount = 0;
 	int32 SlowingStacks = 0;
+	int32 ActiveWraithTrapCount = 0;
 	uint32 RunBindTurnOnHandle;
 	uint32 RunBindTurnOffHandle;
 	FTimerHandle AI_ClearShootPauseHandle;
