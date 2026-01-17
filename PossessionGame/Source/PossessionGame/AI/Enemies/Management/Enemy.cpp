@@ -504,16 +504,18 @@ void AEnemy::SetupBurningState(const float InBurningDamage, const float InBurnin
 void AEnemy::AddSlowingStack(const float InSlowPercentage)
 {
 	SlowingStacks++;
-	WraithTrapActionSpeedReduction = FMath::Pow(1.f - InSlowPercentage, SlowingStacks);
+	WraithTrapActionSpeedReduction = 1.f - FMath::Pow(1.f - InSlowPercentage, SlowingStacks);
 	ActionSpeed = FMath::Pow(1.f - InSlowPercentage, SlowingStacks);
-	UE_LOG(LogTemp, Error, TEXT("CURRENT ACTION SPEED: %f"), ActionSpeed);
+	UE_LOG(LogTemp, Error, TEXT("SUBTRACT CURRENT ACTION SPEED: %f"), ActionSpeed);
 	SetActionSpeed(ActionSpeed);
 }
 
 void AEnemy::RemoveSlowingStacks()
 {
 	SlowingStacks = 0;
-	//ActionSpeed 
+	ActionSpeed += WraithTrapActionSpeedReduction;
+	SetActionSpeed(ActionSpeed);
+	UE_LOG(LogTemp, Error, TEXT("ADD CURRENT ACTION SPEED: %f"), ActionSpeed);
 }
 
 float AEnemy::AI_GetShootPause() { return AI_Data->GetShootPause(); }
