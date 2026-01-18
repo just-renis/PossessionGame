@@ -1,13 +1,24 @@
 ﻿#include "WraithTrap.h"
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamagers/OvertimeDamager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+
+AWraithTrap::AWraithTrap()
+{
+	DeploySfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ImpactSfx"));
+	DeploySfx->SetAutoActivate(false);
+	DeploySfx->SetupAttachment(Mesh);
+	Sounds.Add(ESound::WraithTrapImpact, DeploySfx);
+}
 
 void AWraithTrap::OnImpact(const FHitResult& InHit)
 {
 	Super::OnImpact(InHit);
+	PlaySound(ESound::WraithTrapImpact);
 	const TObjectPtr<AOvertimeDamager> TrapArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithTrapArea, InHit.Location + FVector::UpVector, InHit.Normal.Rotation()));
 	TrapArea->Init();
 	TrapArea->Setup(true, Data->GetDamageOverTimeData(), EDamageReason::None);

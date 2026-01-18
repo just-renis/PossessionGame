@@ -25,7 +25,7 @@ void ABreacherBarrel::Explode()
 	NormalDamage += PlayerLevelGlobalDamageBoost;
 	MinimumDamage += PlayerLevelGlobalDamageBoost;
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
-	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
+	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, Proprietor->GetInstigatorController(), ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(bIsTripleDamageRolled ? EVfx::BreacherSpecialBarrelExplosion : EVfx::BreacherBarrelExplosion, nullptr, GetActorLocation());
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestObjectWithCapRemoval.ExecuteIfBound(EPoolObject::BreacherBarrel, this);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::BreacherBarrel, this);

@@ -51,7 +51,7 @@ void ABreacherDynamite::Explode()
 	NormalDamage += PlayerLevelGlobalDamageBoost;
 	MinimumDamage += PlayerLevelGlobalDamageBoost;
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, SavedSpecialExplosionLocation, InnerRadius, OuterRadius,
-	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
+	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, Proprietor->GetInstigatorController(), ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::BreacherDynamiteExplosion, nullptr, SavedSpecialExplosionLocation);
 	PlaySound(ESound::BreacherDynamiteExplosion);
 }

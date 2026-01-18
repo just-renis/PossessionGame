@@ -5,5 +5,6 @@ enum class EMarkerType : uint8
 {
     Diamond,
     Exclamation,
-    Question
+    Question,
+    RedArrow
 };

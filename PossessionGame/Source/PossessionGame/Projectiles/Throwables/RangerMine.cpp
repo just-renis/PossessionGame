@@ -92,7 +92,7 @@ void ARangerMine::DealAreaDamage()
 	NormalDamage += UpgradeDamageBoost;
 	MinimumDamage += UpgradeDamageBoost;
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), NormalDamage, MinimumDamage, GetActorLocation(), InnerRadius, OuterRadius,
-	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, nullptr, ECC_GameTraceChannel4);
+	Data->GetDamageFalloff(), UDamageType::StaticClass(), TArray<AActor*>(), this, Proprietor->GetInstigatorController(), ECC_GameTraceChannel4);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::RangerMineExplosion, nullptr, GetActorLocation());
 }
 

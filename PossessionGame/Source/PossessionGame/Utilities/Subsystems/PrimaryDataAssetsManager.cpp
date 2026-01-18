@@ -604,6 +604,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_UpgradePanelFadeIn", ESound::UpgradePanelFadeIn);
 	SoundMap.Add("PA_UpgradePanelFadeOut", ESound::UpgradePanelFadeOut);
 	SoundMap.Add("PA_UpgradeChoicesFadeIn", ESound::UpgradeChoicesFadeIn);
+	SoundMap.Add("PA_UpgradeAvailable", ESound::UpgradeAvailable);
 	SoundMap.Add("PA_TaskAnnouncement", ESound::TaskAnnouncement);
 	SoundMap.Add("PA_LevelUp", ESound::LevelUp);
 	SoundMap.Add("PA_GeneratorCompleted", ESound::GeneratorCompleted);
@@ -676,12 +677,13 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TankWeaponChargeDown", ESound::TankWeaponChargeDown);
 	SoundMap.Add("PA_TankWeaponChargeUp", ESound::TankWeaponChargeUp);
 	SoundMap.Add("PA_HijackInProgress", ESound::HijackInProgress);
-	SoundMap.Add("PA_UpgradeAvailable", ESound::UpgradeAvailable);
 	SoundMap.Add("PA_WraithOnHijack", ESound::WraithOnHijack);
 	SoundMap.Add("PA_WraithSpawn", ESound::WraithSpawn);
 	SoundMap.Add("PA_WraithDeath", ESound::WraithDeath);
 	SoundMap.Add("PA_WraithShoot", ESound::WraithShoot);
 	SoundMap.Add("PA_WraithShootExplode", ESound::WraithShootExplode);
+	SoundMap.Add("PA_WraithMolotovImpact", ESound::WraithMolotovImpact);
+	SoundMap.Add("PA_WraithTrapImpact", ESound::WraithTrapImpact);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
