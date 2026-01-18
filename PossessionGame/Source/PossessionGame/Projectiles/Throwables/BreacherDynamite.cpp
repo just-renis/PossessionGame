@@ -25,13 +25,13 @@ ABreacherDynamite::ABreacherDynamite()
 
 void ABreacherDynamite::PrimaryExplode()
 {
-	bInExplosionProcess = true;
+	bIsActionInProcess = true;
 	SavedSpecialExplosionLocation = GetActorLocation();
 	Explode();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.RemoveAll(this);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestObjectWithCapRemoval.ExecuteIfBound(EPoolObject::BreacherDynamite, this);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::BreacherDynamite, this);
-	bInExplosionProcess = false;
+	bIsActionInProcess = false;
 	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility3, EUpgradeAttribute::Special1))
 	{
 		GetWorldTimerManager().SetTimer(SpecialExplosionDelayHandle, this, &ABreacherDynamite::Explode, SpecialExplosionDelay);

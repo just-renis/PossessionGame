@@ -11,6 +11,9 @@ class POSSESSIONGAME_API APoolObject : public AActor
 {
 	GENERATED_BODY()
 public:
+	bool GetIsActive() const { return bIsActive; }
+	bool GetIsActionInProcess() const { return bIsActionInProcess; }
+	
 	virtual void Init(const bool bInIsPlayerObject = true);
 	virtual void Init(const float InData, FLinearColor InColor, const bool bHide = true); // Damage numbers.
 	virtual void InitClone(const bool bIsSpawnedByPlayer, const TObjectPtr<USkeletalMesh> InSkeletalMesh, const TObjectPtr<USkeletalMesh> InWeaponMesh); // Clones.
@@ -18,4 +21,7 @@ public:
 	virtual void InitCloneProjectile(FProjectileData& InProjectileData, const FRotator& Rotation); // For clone projectile.
 	virtual void Disable(const bool bHide = true);
 	void SetPoolObjectState(const bool bState, const bool bHide = true);
+protected:
+	bool bIsActionInProcess = false;
+	bool bIsActive = false;
 };

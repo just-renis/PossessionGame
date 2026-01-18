@@ -29,8 +29,6 @@ struct POSSESSIONGAME_API FExistingObjectsWithCapData
 	int32 IndexToUse = -1;
 	int32 DefaultAmountCap = 1;
 	int32 AmountCap = 1;
-	UPROPERTY()
-	TArray<TObjectPtr<AThrowable>> Objects;
 };
 
 UCLASS()

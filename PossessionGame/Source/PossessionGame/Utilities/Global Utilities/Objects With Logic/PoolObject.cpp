@@ -14,6 +14,7 @@ void APoolObject::Disable(const bool bHide) { SetPoolObjectState(false, bHide); 
 
 void APoolObject::SetPoolObjectState(const bool bState, const bool bHide)
 {
+	bIsActive = bState;
 	SetActorEnableCollision(bState);
 	if (bHide) SetActorHiddenInGame(!bState);
 	SetActorTickEnabled(bState);

@@ -101,7 +101,7 @@ void ARangerMine::Explode()
 	DealAreaDamage();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestObjectWithCapRemoval.ExecuteIfBound(EPoolObject::RangerMine, this);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::RangerMine, this);
-	bInExplosionProcess = false;
+	bIsActionInProcess = false;
 }
 
 void ARangerMine::ChangeRadiusVfx(const EUpgrade InUpgradeName, const EUpgradeAttribute InSpecialUpgradeAttributeName)
@@ -143,7 +143,7 @@ void ARangerMine::UpdateRadiusVfxSize(const bool bIsUpdate)
 void ARangerMine::TriggeredCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag(FName("AliveEnemy"))) return;
-	bInExplosionProcess = true;
+	bIsActionInProcess = true;
 	PlaySound(ESound::RangerDetonateMine);
 	DestroyThis();
 	GetWorldTimerManager().SetTimer(ExplosionHandle, this, &ARangerMine::Explode, ExplosionDelay);

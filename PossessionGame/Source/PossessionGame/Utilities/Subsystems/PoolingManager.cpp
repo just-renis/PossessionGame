@@ -15,10 +15,18 @@ bool UPoolingManager::CanObjectBeThrown(const EPoolObject InObjectName)
 		Data->IndexToUse = -1;
 		const int32 CapFromUpgrade = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(GetUpgradeFromPoolObjectName(InObjectName), EUpgradeAttribute::Cap, true);
 		Data->AmountCap = Data->DefaultAmountCap + CapFromUpgrade;
-		if (Data->Objects.Num() < Data->AmountCap) return true;
-		for (int32 i = 0; i < Data->Objects.Num(); i++)
+		if (Pool[InObjectName].Objects.Num() < Data->AmountCap) return true;
+		for (int32 i = 0; i < Pool[InObjectName].Objects.Num(); i++)
 		{
-			if (!Data->Objects[i]->GetInExplosionProcess())
+			if (!Pool[InObjectName].Objects[i]->GetIsActive())
+			{
+				Data->IndexToUse = i;
+				return true;
+			}
+		}
+		for (int32 i = 0; i < Pool[InObjectName].Objects.Num(); i++)
+		{
+			if (!Pool[InObjectName].Objects[i]->GetIsActionInProcess())
 			{
 				Data->IndexToUse = i;
 				return true;
@@ -46,25 +54,25 @@ TObjectPtr<APoolObject> UPoolingManager::SpawnObjectFromPool(const EPoolObject I
 
 TObjectPtr<APoolObject> UPoolingManager::SpawnObjectWithCapFromPool(const EPoolObject InObjectName, const FVector& InLocation, const FRotator& InRotation)
 {
-	if (FExistingObjectsWithCapData* Data = ExistingObjectsWithCap.Find(InObjectName))
+	if (const FExistingObjectsWithCapData* Data = ExistingObjectsWithCap.Find(InObjectName))
 	{
-		TObjectPtr<AThrowable> Object;
-		if (Data->Objects.Num() < Data->AmountCap) Data->IndexToUse = -1;
+		TObjectPtr<APoolObject> Object;
 		if (Data->IndexToUse != -1)
 		{
-			ReturnObjectToPool(InObjectName, Data->Objects[Data->IndexToUse]);
-			Data->Objects[Data->IndexToUse]->Disable(true);
-			Data->Objects.RemoveAt(Data->IndexToUse);
-			Object = Cast<AThrowable>(Pool[InObjectName].Objects.Pop());
+			Object = Pool[InObjectName].Objects[Data->IndexToUse];
+			Pool[InObjectName].Objects.RemoveAt(Data->IndexToUse);
+			ReturnObjectToPool(InObjectName, Object);
+			Object->Init();
+			Object->SetActorLocationAndRotation(InLocation, InRotation);
 		}
 		if (!Object)
 		{
-			if (Pool[InObjectName].Objects.IsEmpty()) AllocatePoolObject(InObjectName);
+			if (Pool[InObjectName].Objects.Num() < Data->AmountCap) AllocatePoolObject(InObjectName);
 			Object = Cast<AThrowable>(Pool[InObjectName].Objects.Pop());
+			Object->Init();
+			Object->SetActorLocationAndRotation(InLocation, InRotation);
+			Pool[InObjectName].Objects.Add(Object);
 		}
-		Object->Init();
-		Object->SetActorLocationAndRotation(InLocation, InRotation);
-		Data->Objects.Add(Object);
 		return Object;
 	}
 	return nullptr;
@@ -115,5 +123,5 @@ void UPoolingManager::SpawnDamageNumber(const FLinearColor InColor, const float 
 
 void UPoolingManager::RemoveExistingObject(const EPoolObject InObjectName, const TObjectPtr<AThrowable>& InObject)
 {
-	if (FExistingObjectsWithCapData* Data = ExistingObjectsWithCap.Find(InObjectName)) Data->Objects.Remove(InObject);
+	Pool[InObjectName].Objects.Remove(InObject);
 }

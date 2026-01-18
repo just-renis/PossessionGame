@@ -18,7 +18,7 @@ void AWraith::P_InitiateThrowMolotov()
 	if (!Molotov) return;
 	Molotov->Initialize(this);
 	Molotov->Init();
-	//AssetsManager->PlaySound2D(ESound::RangerThrowMine);
+	AssetsManager->PlaySound2D(ESound::WraithThrow);
 	Molotov->Throw();
 }
 
@@ -28,7 +28,7 @@ void AWraith::P_InitiateThrowTrap()
 	if (!Trap) return;
 	Trap->Initialize(this);
 	Trap->Init();
-	//AssetsManager->PlaySound2D(ESound::RangerThrowMine);
+	AssetsManager->PlaySound2D(ESound::WraithThrow);
 	Trap->Throw();
 }
 
