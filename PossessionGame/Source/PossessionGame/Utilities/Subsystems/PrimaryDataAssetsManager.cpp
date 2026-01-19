@@ -127,7 +127,8 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FCharacterPairWrapper({ ECharacterType::Minion, EVfxType::Spawn }), EVfx::MinionSpawn },
 		{FCharacterPairWrapper({ ECharacterType::Warden, EVfxType::Spawn }), EVfx::WardenSpawn },
 		{FCharacterPairWrapper({ ECharacterType::MinionBoss, EVfxType::Spawn }), EVfx::MinionBossSpawn },
-		{FCharacterPairWrapper({ ECharacterType::Breacher, EVfxType::Spawn }), EVfx::BreacherSpawn }
+		{FCharacterPairWrapper({ ECharacterType::Breacher, EVfxType::Spawn }), EVfx::BreacherSpawn },
+		{FCharacterPairWrapper({ ECharacterType::Wraith, EVfxType::Spawn }), EVfx::WraithSpawn }
 	};
 	PrimaryInit();
 }
@@ -820,6 +821,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_WraithMolotovTrail", EVfx::WraithMolotovTrail);
 	VfxsMap.Add("PA_WraithTrapTrail", EVfx::WraithTrapTrail);
 	VfxsMap.Add("PA_WraithMeteorShowerTrail", EVfx::WraithMeteorShowerTrail);
+	VfxsMap.Add("PA_WraithDeathElectrification", EVfx::WraithDeathElectrification);
+	VfxsMap.Add("PA_WraithSpawn", EVfx::WraithSpawn);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

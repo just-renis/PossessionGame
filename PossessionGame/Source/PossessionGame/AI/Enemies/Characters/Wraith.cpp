@@ -60,6 +60,11 @@ void AWraith::AI_PlayDeathSound()
 
 void AWraith::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::WraithOnHijack); }
 
+void AWraith::AI_PlayDeathElectrification()
+{
+	AssetsManager->AttachVfx(EVfx::WraithDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
+}
+
 void AWraith::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
