@@ -15,7 +15,7 @@
 
 void AWraith::P_InitiateThrowMolotov()
 {
-	const TObjectPtr<AWraithMolotov> Molotov = Cast<AWraithMolotov>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMolotov, GetSocketLocation(FName("SensorSocket")), GetMesh()->GetSocketRotation(FName("SensorSocket"))));
+	const TObjectPtr<AWraithMolotov> Molotov = Cast<AWraithMolotov>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMolotov, Weapon->GetHandsSocketLocation(FName("ThrowSocket")), Weapon->GetHandsSocketRotation(FName("ThrowSocket"))));
 	if (!Molotov) return;
 	Molotov->Initialize(this);
 	Molotov->Init(true);
@@ -25,7 +25,7 @@ void AWraith::P_InitiateThrowMolotov()
 
 void AWraith::P_InitiateThrowTrap()
 {
-	const TObjectPtr<AWraithTrap> Trap = Cast<AWraithTrap>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithTrap, GetSocketLocation(FName("SensorSocket")), GetMesh()->GetSocketRotation(FName("SensorSocket"))));
+	const TObjectPtr<AWraithTrap> Trap = Cast<AWraithTrap>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithTrap, Weapon->GetHandsSocketLocation(FName("ThrowSocket")), Weapon->GetHandsSocketRotation(FName("ThrowSocket"))));
 	if (!Trap) return;
 	Trap->Initialize(this);
 	Trap->Init(true);
@@ -35,7 +35,7 @@ void AWraith::P_InitiateThrowTrap()
 
 void AWraith::P_InitiateThrowMeteorShower()
 {
-	const TObjectPtr<AWraithMeteorTrigger> MeteorTrigger = Cast<AWraithMeteorTrigger>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMeteorTrigger, GetSocketLocation(FName("SensorSocket")), GetMesh()->GetSocketRotation(FName("SensorSocket"))));
+	const TObjectPtr<AWraithMeteorTrigger> MeteorTrigger = Cast<AWraithMeteorTrigger>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMeteorTrigger, Weapon->GetHandsSocketLocation(FName("ThrowSocket")), Weapon->GetHandsSocketRotation(FName("ThrowSocket"))));
 	if (!MeteorTrigger) return;
 	MeteorTrigger->Initialize(this);
 	MeteorTrigger->Init(true);

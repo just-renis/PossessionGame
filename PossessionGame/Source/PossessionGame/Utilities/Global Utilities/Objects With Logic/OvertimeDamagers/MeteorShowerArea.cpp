@@ -6,3 +6,8 @@ void AMeteorShowerArea::BeginPlay()
 	Super::BeginPlay();
 	ObjectName = EPoolObject::WraithMeteorShowerArea;
 }
+
+void AMeteorShowerArea::DealOvertimeDamage()
+{
+	
+}
