@@ -1,5 +1,4 @@
 ﻿#include "WraithTrap.h"
-
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"

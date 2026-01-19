@@ -8,7 +8,7 @@ void UWraithAbility3::P_Execute()
 {
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Throw);
-	Proprietor->P_InitiateThrowMolotov();
+	Proprietor->P_InitiateThrowMeteorShower();
 	Super::P_Execute();
 }
 

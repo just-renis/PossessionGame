@@ -1,9 +1,19 @@
 ﻿#include "WraithMeteorTrigger.h"
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamagers/OvertimeDamager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+
+AWraithMeteorTrigger::AWraithMeteorTrigger()
+{
+	DeploySfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ImpactSfx"));
+	DeploySfx->SetAutoActivate(false);
+	DeploySfx->SetupAttachment(Mesh);
+	Sounds.Add(ESound::WraithMeteorTriggerImpact, DeploySfx);
+}
 
 void AWraithMeteorTrigger::BeginPlay()
 {
@@ -16,7 +26,7 @@ void AWraithMeteorTrigger::BeginPlay()
 void AWraithMeteorTrigger::OnImpact(const FHitResult& InHit)
 {
 	Super::OnImpact(InHit);
-	//PlaySound(ESound::WraithTrapImpact);
+	PlaySound(ESound::WraithMeteorTriggerImpact);
 	const TObjectPtr<AOvertimeDamager> MeteorShowerArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMeteorShowerArea, InHit.Location + FVector::UpVector, InHit.Normal.Rotation()));
 	MeteorShowerArea->Init();
 	MeteorShowerArea->Setup(true, Data->GetDamageOverTimeData(), EDamageReason::None);

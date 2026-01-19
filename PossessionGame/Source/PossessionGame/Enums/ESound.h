@@ -149,5 +149,7 @@ enum class ESound : uint16
 	WraithShootExplode,
 	WraithMolotovImpact,
 	WraithTrapImpact,
-	WraithThrow
+	WraithThrow,
+	WraithMeteorTriggerImpact,
+	WraithMeteorSpawn
 };

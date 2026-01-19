@@ -8,7 +8,11 @@ UCLASS()
 class POSSESSIONGAME_API AWraithMeteorTrigger : public AThrowable
 {
 	GENERATED_BODY()
+
+	AWraithMeteorTrigger();
 	
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> DeploySfx;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MI_MeshBaseMaterial;
 
