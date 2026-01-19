@@ -11,7 +11,7 @@ class POSSESSIONGAME_API AWraithMolotovArea : public AOvertimeDamager
 {
 	GENERATED_BODY()
 	
-	float DefaultVfxLifetime = 4.f;
+	float DefaultVfxLifetime = 5.f;
 	float DefaultVfxRadius = 360.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))
 	float DefaultRadius = 360.f;
@@ -26,11 +26,13 @@ class POSSESSIONGAME_API AWraithMolotovArea : public AOvertimeDamager
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	float DefaultAuraRadius = 4.15f;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
-	float DefaultAuraLifetime = 3.f;
+	float DefaultAuraLifetime = 4.55f;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	float DefaultFlameLifetime = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	float DefaultBubblesLifetime = 4.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultFloorAuraLifetime = 4.55f;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> RadiusVfx;
 

@@ -181,6 +181,11 @@ void ABreacher::AI_DisableActions(const float InEffectDuration, const EDisabling
 	GetWorldTimerManager().ClearTimer(StopBashHandle);
 }
 
+void ABreacher::AI_PlayDeathElectrification()
+{
+	AssetsManager->AttachVfx(EVfx::BreacherDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
+}
+
 void ABreacher::AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (!OtherActor || OtherActor == this || FMath::Abs(Hit.Normal.Z) > 0.5f) return;
@@ -291,9 +296,7 @@ void ABreacher::TriggerBashOverlap()
 				float BashDamage = P_DefaultBashDamage;
 				const TObjectPtr<URunSaveSlot> RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 				BashDamage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::BreacherAbility2, EUpgradeAttribute::FlatDamage, bIsHijacked);
-				UE_LOG(LogTemp, Error, TEXT("BEFORE BASH: %f"), BashDamage);
 				BashDamage += BashDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
-				UE_LOG(LogTemp, Error, TEXT("AFTER BASH: %f"), BashDamage);
 				Cast<AEnemy>(HitActor)->AI_ReceiveStunEffect(false, P_BashStunDuration, BashDamage, HitDirection);
 			}
 			else

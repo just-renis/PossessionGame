@@ -809,6 +809,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_BreacherBashDash", EVfx::BreacherBashDash);
 	VfxsMap.Add("PA_BreacherBashDashTrail", EVfx::BreacherBashDashTrail);
 	VfxsMap.Add("PA_BreacherSpecialBarrelExplosion", EVfx::BreacherSpecialBarrelExplosion);
+	VfxsMap.Add("PA_BreacherDeathElectrification", EVfx::BreacherDeathElectrification);
 	VfxsMap.Add("PA_Stunned", EVfx::Stunned);
 	VfxsMap.Add("PA_Corrupted", EVfx::Corrupted);
 	VfxsMap.Add("PA_WraithBulletTrail", EVfx::WraithBulletTrail);

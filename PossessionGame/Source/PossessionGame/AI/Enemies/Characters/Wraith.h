@@ -11,6 +11,7 @@ class POSSESSIONGAME_API AWraith : public AEnemy
 public:
 	void P_InitiateThrowMolotov();
 	void P_InitiateThrowTrap();
+	void P_InitiateThrowMeteorShower();
 private:
 	AWraith();
 

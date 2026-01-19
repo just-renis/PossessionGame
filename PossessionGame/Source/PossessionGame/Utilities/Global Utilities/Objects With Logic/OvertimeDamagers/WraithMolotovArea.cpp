@@ -34,7 +34,6 @@ void AWraithMolotovArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UD
 
 	const float DefaultLifeSpan = InDamageOverTimeData->GetAreaLifeSpan();
 	const float CollisionRadius = DefaultRadius * RadiusIncrease;
-	const float LifeSpan = DefaultLifeSpan * LifeSpanIncrease;
 
 	const float DifferenceRadiusDelta = DefaultRadius / DefaultVfxRadius;
 	const float DifferenceLifetimeDelta = DefaultLifeSpan / DefaultVfxLifetime;
@@ -46,14 +45,15 @@ void AWraithMolotovArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UD
 	const float AuraLifetime = DefaultAuraLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
 	const float FlameLifetime = DefaultFlameLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
 	const float BubblesLifetime = DefaultBubblesLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
-	SetupRadiusAndTimers(CollisionRadius * CollisionScalingOffsetSizeMultiplier, LifeSpan);
+	const float FloorAuraLifetime = DefaultFloorAuraLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
+	SetupRadiusAndTimers(CollisionRadius * CollisionScalingOffsetSizeMultiplier, DefaultLifeSpan * LifeSpanIncrease);
 	
 	Attributes.Add(FName("FlameRadius"), FNiagaraAttribute(EUserParamType::Float, CollisionRadius));
 	Attributes.Add(FName("FloorAuraRadius"), FNiagaraAttribute(EUserParamType::Float, FloorAuraRadius));
 	Attributes.Add(FName("BubblesRadius"), FNiagaraAttribute(EUserParamType::Float, BubblesRadius));
 	Attributes.Add(FName("FlamesAmount"), FNiagaraAttribute(EUserParamType::Float, FlamesAmount));
 	Attributes.Add(FName("AuraRadius"), FNiagaraAttribute(EUserParamType::Vector, FVector(AuraRadius, AuraRadius, 0.25f)));
-	Attributes.Add(FName("FloorAuraLifetime"), FNiagaraAttribute(EUserParamType::Float, LifeSpan));
+	Attributes.Add(FName("FloorAuraLifetime"), FNiagaraAttribute(EUserParamType::Float, FloorAuraLifetime));
 	Attributes.Add(FName("AuraLifetime"), FNiagaraAttribute(EUserParamType::Float, AuraLifetime));
 	Attributes.Add(FName("FlameLifetime"), FNiagaraAttribute(EUserParamType::Float, FlameLifetime));
 	Attributes.Add(FName("BubblesLifetime"), FNiagaraAttribute(EUserParamType::Float, BubblesLifetime));

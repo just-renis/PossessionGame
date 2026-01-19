@@ -76,6 +76,7 @@ private:
 	void AI_ActivateBashDashTrailVfx();
 	virtual void AI_DestroyVfxs() override;
 	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName) override;
+	virtual void AI_PlayDeathElectrification() override;
 	UFUNCTION()
 	void AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 

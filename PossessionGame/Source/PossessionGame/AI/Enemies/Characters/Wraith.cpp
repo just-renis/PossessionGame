@@ -3,6 +3,7 @@
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Projectiles/Throwables/WraithMeteorTrigger.h"
 #include "PossessionGame/Projectiles/Throwables/WraithMolotov.h"
 #include "PossessionGame/Projectiles/Throwables/WraithTrap.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -30,6 +31,16 @@ void AWraith::P_InitiateThrowTrap()
 	Trap->Init(true);
 	AssetsManager->PlaySound2D(ESound::WraithThrow);
 	Trap->Throw();
+}
+
+void AWraith::P_InitiateThrowMeteorShower()
+{
+	const TObjectPtr<AWraithMeteorTrigger> MeteorTrigger = Cast<AWraithMeteorTrigger>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMeteorTrigger, GetSocketLocation(FName("SensorSocket")), GetMesh()->GetSocketRotation(FName("SensorSocket"))));
+	if (!MeteorTrigger) return;
+	MeteorTrigger->Initialize(this);
+	MeteorTrigger->Init(true);
+	AssetsManager->PlaySound2D(ESound::WraithThrow);
+	MeteorTrigger->Throw();
 }
 
 AWraith::AWraith()
