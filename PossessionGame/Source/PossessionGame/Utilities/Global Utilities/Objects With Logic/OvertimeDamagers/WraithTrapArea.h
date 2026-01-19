@@ -32,11 +32,15 @@ class POSSESSIONGAME_API AWraithTrapArea : public AOvertimeDamager
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
 	float DefaultGhostRadius = 400.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
-	float DefaultSmokeLifetime = 4.f;
+	float DefaultAuraLifetime = 4.55f;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
-	float DefaultBubbleLifetime = 4.f;
+	float DefaultFloorAuraLifetime = 4.55f;
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
-	float DefaultGhostLifetime = 4.f;
+	float DefaultSmokeLifetime = 3.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultBubbleLifetime = 3.75f;
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx", meta = (AllowPrivateAccess = true))
+	float DefaultGhostLifetime = 3.8f;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> RadiusVfx;
 

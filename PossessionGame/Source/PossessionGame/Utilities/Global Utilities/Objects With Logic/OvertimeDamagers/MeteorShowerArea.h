@@ -8,4 +8,6 @@ UCLASS()
 class POSSESSIONGAME_API AMeteorShowerArea : public AOvertimeDamager
 {
 	GENERATED_BODY()
+
+	virtual void BeginPlay() override;
 };

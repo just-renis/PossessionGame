@@ -34,7 +34,6 @@ void AWraithTrapArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDama
 
 	const float DefaultLifeSpan = InDamageOverTimeData->GetAreaLifeSpan();
 	const float CollisionRadius = DefaultRadius * RadiusIncrease;
-	const float LifeSpan = DefaultLifeSpan * LifeSpanIncrease;
 
 	const float DifferenceRadiusDelta = DefaultRadius / DefaultVfxRadius;
 	const float DifferenceLifetimeDelta = DefaultLifeSpan / DefaultVfxLifetime;
@@ -46,11 +45,12 @@ void AWraithTrapArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDama
 	const float BubbleCount = DefaultBubbleCount * RadiusIncrease * DifferenceRadiusDelta;
 	const float GhostCount = DefaultGhostCount * RadiusIncrease * DifferenceRadiusDelta;
 	const float GhostRadius = DefaultGhostRadius * RadiusIncrease * DifferenceRadiusDelta;
+	const float AuraLifetime = DefaultAuraLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
+	const float FloorAuraLifetime = DefaultFloorAuraLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
 	const float SmokeLifetime = DefaultSmokeLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
 	const float BubbleLifetime = DefaultBubbleLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
 	const float GhostLifetime = DefaultGhostLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
-	const float BaseLifeSpan = LifeSpan * DifferenceLifetimeDelta;
-	SetupRadiusAndTimers(CollisionRadius * CollisionScalingOffsetSizeMultiplier, LifeSpan);
+	SetupRadiusAndTimers(CollisionRadius * CollisionScalingOffsetSizeMultiplier, DefaultLifeSpan * LifeSpanIncrease);
 	
 	Attributes.Add(FName("BubbleRadius"), FNiagaraAttribute(EUserParamType::Float, CollisionRadius * DifferenceRadiusDelta));
 	Attributes.Add(FName("AuraRadius"), FNiagaraAttribute(EUserParamType::Vector, FVector(AuraRadius, AuraRadius, 0.25f)));
@@ -61,8 +61,8 @@ void AWraithTrapArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDama
 	Attributes.Add(FName("GhostCount"), FNiagaraAttribute(EUserParamType::Float, GhostCount));
 	Attributes.Add(FName("GhostRadius"), FNiagaraAttribute(EUserParamType::Float, GhostRadius));
 	
-	Attributes.Add(FName("AuraLifetime"), FNiagaraAttribute(EUserParamType::Float, BaseLifeSpan));
-	Attributes.Add(FName("FloorAuraLifetime"), FNiagaraAttribute(EUserParamType::Float, BaseLifeSpan));
+	Attributes.Add(FName("AuraLifetime"), FNiagaraAttribute(EUserParamType::Float, AuraLifetime));
+	Attributes.Add(FName("FloorAuraLifetime"), FNiagaraAttribute(EUserParamType::Float, FloorAuraLifetime));
 	Attributes.Add(FName("SmokeLifetime"), FNiagaraAttribute(EUserParamType::Float, SmokeLifetime));
 	Attributes.Add(FName("BubbleLifetime"), FNiagaraAttribute(EUserParamType::Float, BubbleLifetime));
 	Attributes.Add(FName("GhostLifetime"), FNiagaraAttribute(EUserParamType::Float, GhostLifetime));
