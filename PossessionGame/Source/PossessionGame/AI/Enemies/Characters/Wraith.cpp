@@ -17,7 +17,7 @@ void AWraith::P_InitiateThrowMolotov()
 	const TObjectPtr<AWraithMolotov> Molotov = Cast<AWraithMolotov>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMolotov, GetSocketLocation(FName("SensorSocket")), GetMesh()->GetSocketRotation(FName("SensorSocket"))));
 	if (!Molotov) return;
 	Molotov->Initialize(this);
-	Molotov->Init();
+	Molotov->Init(true);
 	AssetsManager->PlaySound2D(ESound::WraithThrow);
 	Molotov->Throw();
 }
@@ -27,7 +27,7 @@ void AWraith::P_InitiateThrowTrap()
 	const TObjectPtr<AWraithTrap> Trap = Cast<AWraithTrap>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithTrap, GetSocketLocation(FName("SensorSocket")), GetMesh()->GetSocketRotation(FName("SensorSocket"))));
 	if (!Trap) return;
 	Trap->Initialize(this);
-	Trap->Init();
+	Trap->Init(true);
 	AssetsManager->PlaySound2D(ESound::WraithThrow);
 	Trap->Throw();
 }

@@ -8,4 +8,9 @@ UCLASS()
 class POSSESSIONGAME_API AWraithMeteorTrigger : public AThrowable
 {
 	GENERATED_BODY()
+	
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MI_MeshBaseMaterial;
+
+	virtual void BeginPlay() override;
 };

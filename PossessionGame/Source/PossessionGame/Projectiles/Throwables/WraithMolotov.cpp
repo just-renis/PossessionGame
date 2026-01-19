@@ -1,4 +1,5 @@
 ﻿#include "WraithMolotov.h"
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EDamageReason.h"
@@ -6,6 +7,7 @@
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamagers/OvertimeDamager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AWraithMolotov::AWraithMolotov()
 {
@@ -13,6 +15,21 @@ AWraithMolotov::AWraithMolotov()
 	DeploySfx->SetAutoActivate(false);
 	DeploySfx->SetupAttachment(Mesh);
 	Sounds.Add(ESound::WraithMolotovImpact, DeploySfx);
+}
+
+void AWraithMolotov::Init(const bool bInIsPlayerObject)
+{
+	Super::Init(bInIsPlayerObject);
+	if (!TrailVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithMolotovTrail, [this]() -> bool { return bIsActive; }, &TrailVfx, Mesh, FName("TrailSocket"));
+	else TrailVfx->Activate(true);
+}
+
+void AWraithMolotov::BeginPlay()
+{
+	Super::BeginPlay();
+	if (!Mesh->GetMaterial(0)) return;
+	MI_MeshBaseMaterial = Mesh->CreateAndSetMaterialInstanceDynamic(0);
+	MI_MeshBaseMaterial->SetVectorParameterValue("Color", FLinearColor(0.571f, 0.296f, 0.f));
 }
 
 void AWraithMolotov::OnImpact(const FHitResult& InHit)

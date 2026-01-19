@@ -1,4 +1,6 @@
 ﻿#include "WraithTrap.h"
+
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EDamageReason.h"
@@ -6,6 +8,7 @@
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamagers/OvertimeDamager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AWraithTrap::AWraithTrap()
 {
@@ -13,6 +16,21 @@ AWraithTrap::AWraithTrap()
 	DeploySfx->SetAutoActivate(false);
 	DeploySfx->SetupAttachment(Mesh);
 	Sounds.Add(ESound::WraithTrapImpact, DeploySfx);
+}
+
+void AWraithTrap::Init(const bool bInIsPlayerObject)
+{
+	Super::Init(bInIsPlayerObject);
+	if (!TrailVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTrapTrail, [this]() -> bool { return bIsActive; }, &TrailVfx, Mesh, FName("TrailSocket"));
+	else TrailVfx->Activate(true);
+}
+
+void AWraithTrap::BeginPlay()
+{
+	Super::BeginPlay();
+	if (!Mesh->GetMaterial(0)) return;
+	MI_MeshBaseMaterial = Mesh->CreateAndSetMaterialInstanceDynamic(0);
+	MI_MeshBaseMaterial->SetVectorParameterValue("Color", FLinearColor(0.3f, 0.f, 0.571f));
 }
 
 void AWraithTrap::OnImpact(const FHitResult& InHit)
