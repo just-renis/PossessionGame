@@ -5,8 +5,6 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
-void AThrowable::Initialize(const TObjectPtr<AActor>& InProprietor) { Proprietor = InProprietor; }
-
 void AThrowable::Throw()
 {
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -15,6 +13,12 @@ void AThrowable::Throw()
 	Mesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 	Mesh->AddImpulse((-GetActorRightVector() + GetActorForwardVector() * Data->GetDirectionMultiplier()).GetSafeNormal() * Data->GetImpulseForce(), NAME_None, true);
 	SetupOnHitEvent();
+}
+
+void AThrowable::Init(const TObjectPtr<AEnemy> InProprietor)
+{
+	Super::Init(InProprietor);
+	Proprietor = InProprietor;
 }
 
 void AThrowable::Disable(const bool bHide)

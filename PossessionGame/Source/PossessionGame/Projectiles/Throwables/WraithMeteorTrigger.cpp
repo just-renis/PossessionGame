@@ -28,7 +28,7 @@ void AWraithMeteorTrigger::OnImpact(const FHitResult& InHit)
 	Super::OnImpact(InHit);
 	PlaySound(ESound::WraithMeteorTriggerImpact);
 	const TObjectPtr<AOvertimeDamager> MeteorShowerArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMeteorShowerArea, InHit.Location + FVector::UpVector, InHit.Normal.Rotation()));
-	MeteorShowerArea->Init();
+	MeteorShowerArea->Init(Proprietor);
 	MeteorShowerArea->Setup(true, Data->GetDamageOverTimeData(), EDamageReason::None);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::WraithMeteorTrigger, this);
 }

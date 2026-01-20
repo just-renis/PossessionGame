@@ -1,6 +1,7 @@
 ﻿#include "BreacherDynamite.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/ESound.h"
@@ -56,9 +57,9 @@ void ABreacherDynamite::Explode()
 	PlaySound(ESound::BreacherDynamiteExplosion);
 }
 
-void ABreacherDynamite::Init(const bool bInIsPlayerObject)
+void ABreacherDynamite::Init(const TObjectPtr<AEnemy> InProprietor)
 {
-	Super::Init(bInIsPlayerObject);
+	Super::Init(InProprietor);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.AddUObject(this, &ABreacherDynamite::PrimaryExplode);
 }
 

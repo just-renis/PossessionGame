@@ -11,7 +11,7 @@ class POSSESSIONGAME_API AWraithTrap : public AThrowable
 {
 	GENERATED_BODY()
 public:
-	virtual void Init(const bool bInIsPlayerObject) override;
+	virtual void Init(const TObjectPtr<AEnemy> InProprietor) override;
 private:
 	AWraithTrap();
 

@@ -17,9 +17,9 @@ AWraithTrap::AWraithTrap()
 	Sounds.Add(ESound::WraithTrapImpact, DeploySfx);
 }
 
-void AWraithTrap::Init(const bool bInIsPlayerObject)
+void AWraithTrap::Init(const TObjectPtr<AEnemy> InProprietor)
 {
-	Super::Init(bInIsPlayerObject);
+	Super::Init(InProprietor);
 	if (!TrailVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTrapTrail, [this]() -> bool { return bIsActive; }, &TrailVfx, Mesh, FName("TrailSocket"));
 	else TrailVfx->Activate(true);
 }

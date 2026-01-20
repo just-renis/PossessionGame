@@ -17,9 +17,9 @@ AWraithMolotov::AWraithMolotov()
 	Sounds.Add(ESound::WraithMolotovImpact, DeploySfx);
 }
 
-void AWraithMolotov::Init(const bool bInIsPlayerObject)
+void AWraithMolotov::Init(const TObjectPtr<AEnemy> InProprietor)
 {
-	Super::Init(bInIsPlayerObject);
+	Super::Init(InProprietor);
 	if (!TrailVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithMolotovTrail, [this]() -> bool { return bIsActive; }, &TrailVfx, Mesh, FName("TrailSocket"));
 	else TrailVfx->Activate(true);
 }

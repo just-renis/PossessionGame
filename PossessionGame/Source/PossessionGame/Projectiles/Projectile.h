@@ -31,11 +31,12 @@ protected:
 	float Damage;
 	float DefaultDamage;
 	FTimerHandle DestroyHandle;
-	FProjectileData ProjectileData;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UProjectileMovementComponent> MovementComponent;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
+	UPROPERTY()
+	FProjectileData ProjectileData;
 	UPROPERTY()
 	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
 	UPROPERTY()

@@ -1,6 +1,7 @@
 ﻿#include "BreacherBarrel.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
@@ -38,10 +39,10 @@ void ABreacherBarrel::Disable(const bool bHide)
 	Super::Disable(bHide);
 }
 
-void ABreacherBarrel::Init(const bool bInIsPlayerObject)
+void ABreacherBarrel::Init(const TObjectPtr<AEnemy> InProprietor)
 {
 	bIsAlreadyExploding = false;
-	Super::Init(bInIsPlayerObject);
+	Super::Init(InProprietor);
 }
 
 ABreacherBarrel::ABreacherBarrel()

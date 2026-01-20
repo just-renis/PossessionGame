@@ -8,7 +8,7 @@ UCLASS()
 class POSSESSIONGAME_API AWraithMeteorTrigger : public AThrowable
 {
 	GENERATED_BODY()
-
+	
 	AWraithMeteorTrigger();
 	
 	UPROPERTY()

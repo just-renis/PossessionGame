@@ -4,8 +4,6 @@
 #include "Throwable.h"
 #include "BreacherBarrel.generated.h"
 
-class UNiagaraComponent;
-
 UCLASS()
 class POSSESSIONGAME_API ABreacherBarrel : public AThrowable
 {
@@ -13,7 +11,7 @@ class POSSESSIONGAME_API ABreacherBarrel : public AThrowable
 public:
 	void Explode();
 	virtual void Disable(const bool bHide) override;
-	virtual void Init(const bool bInIsPlayerObject) override;
+	virtual void Init(const TObjectPtr<AEnemy> InProprietor) override;
 private:
 	ABreacherBarrel();
 

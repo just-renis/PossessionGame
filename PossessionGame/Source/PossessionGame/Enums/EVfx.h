@@ -115,5 +115,6 @@ enum class EVfx : uint16
 	WraithTrapTrail,
 	WraithMeteorShowerTrail,
 	WraithDeathElectrification,
-	WraithSpawn
+	WraithSpawn,
+	WraithTriggerMeteorImpact
 };

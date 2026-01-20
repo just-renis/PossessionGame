@@ -30,6 +30,8 @@ protected:
 	EDamageReason DamageReason;
 	UPROPERTY()
 	TArray<TObjectPtr<AEnemy>> Targets;
+
+	TObjectPtr<USphereComponent> GetCollisionComponent() { return Radius; }
 	
 	virtual void AddTarget(const TObjectPtr<AEnemy>& InTarget);
 	virtual void RemoveTarget(const TObjectPtr<AEnemy>& InTarget);

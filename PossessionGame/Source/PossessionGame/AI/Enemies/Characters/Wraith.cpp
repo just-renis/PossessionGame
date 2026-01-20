@@ -17,8 +17,7 @@ void AWraith::P_InitiateThrowMolotov()
 {
 	const TObjectPtr<AWraithMolotov> Molotov = Cast<AWraithMolotov>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMolotov, Weapon->GetHandsSocketLocation(FName("ThrowSocket")), Weapon->GetHandsSocketRotation(FName("ThrowSocket"))));
 	if (!Molotov) return;
-	Molotov->Initialize(this);
-	Molotov->Init(true);
+	Molotov->Init(this);
 	AssetsManager->PlaySound2D(ESound::WraithThrow);
 	Molotov->Throw();
 }
@@ -27,8 +26,7 @@ void AWraith::P_InitiateThrowTrap()
 {
 	const TObjectPtr<AWraithTrap> Trap = Cast<AWraithTrap>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithTrap, Weapon->GetHandsSocketLocation(FName("ThrowSocket")), Weapon->GetHandsSocketRotation(FName("ThrowSocket"))));
 	if (!Trap) return;
-	Trap->Initialize(this);
-	Trap->Init(true);
+	Trap->Init(this);
 	AssetsManager->PlaySound2D(ESound::WraithThrow);
 	Trap->Throw();
 }
@@ -37,8 +35,7 @@ void AWraith::P_InitiateThrowMeteorShower()
 {
 	const TObjectPtr<AWraithMeteorTrigger> MeteorTrigger = Cast<AWraithMeteorTrigger>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMeteorTrigger, Weapon->GetHandsSocketLocation(FName("ThrowSocket")), Weapon->GetHandsSocketRotation(FName("ThrowSocket"))));
 	if (!MeteorTrigger) return;
-	MeteorTrigger->Initialize(this);
-	MeteorTrigger->Init(true);
+	MeteorTrigger->Init(this);
 	AssetsManager->PlaySound2D(ESound::WraithThrow);
 	MeteorTrigger->Throw();
 }

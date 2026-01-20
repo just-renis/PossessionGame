@@ -9,6 +9,7 @@ class POSSESSIONGAME_API UCodexProjectileData : public UDataAsset
 {
 	GENERATED_BODY()
 public:
+	bool CanBeDamagedByOwnProjectile() const { return bCanBeDamagedByOwnProjectile; }
 	int32 GetAmount() const { return Amount; }
 	float GetDamage() const { return Damage; }
 	float GetEffectDuration() const { return EffectDuration; }
@@ -16,6 +17,8 @@ public:
 	float GetDamageInnerRadius() const { return DamageInnerRadius; }
 	float GetDamageOuterRadius() const { return DamageOuterRadius; }
 private:
+	UPROPERTY(EditAnywhere)
+	bool bCanBeDamagedByOwnProjectile = false;
 	UPROPERTY(EditAnywhere)
 	int32 Amount = 1;
 	UPROPERTY(EditAnywhere)

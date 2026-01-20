@@ -12,8 +12,8 @@ class POSSESSIONGAME_API AThrowable : public APoolObject
 {
 	GENERATED_BODY()
 public:
-	void Initialize(const TObjectPtr<AActor>& InProprietor);
 	virtual void Throw();
+	virtual void Init(const TObjectPtr<AEnemy> InProprietor) override;
 	virtual void Disable(const bool bHide) override;
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {}
@@ -25,7 +25,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY()
-	TObjectPtr<AActor> Proprietor;
+	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
