@@ -451,6 +451,8 @@ private:
 	TSubclassOf<UCameraShakeBase> QuickMeleeCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> StunnedCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> WraithMeteorLandCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> HijackOutlineMaterial;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))

@@ -3,7 +3,9 @@
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Base Data Assets/CodexProjectileData.h"
+#include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -40,6 +42,7 @@ void AWraithMeteorProjectile::Landed()
 {
 	const TObjectPtr<UCodexProjectileData> Data = GetProjectileData();
 	if (!Data || !Proprietor) return;
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::WraithMeteorLandCameraShake);
 	Damage = DefaultDamage = Data->GetDamage();
 	TArray<TObjectPtr<AActor>> IgnoredActors;
 	if (!Data->CanBeDamagedByOwnProjectile() && !bIsHijacked) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();

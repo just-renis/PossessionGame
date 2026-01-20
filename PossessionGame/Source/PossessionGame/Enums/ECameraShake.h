@@ -9,5 +9,6 @@ enum class ECameraShake : uint8
     PlayerReceiveDamage,
     PlayerQuickMelee,
     PlayerStomp,
-    PlayerStunned
+    PlayerStunned,
+    WraithMeteorLandCameraShake
 };
