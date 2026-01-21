@@ -1098,7 +1098,8 @@ void AEnemy::AI_StopAbilitiesEvents() const
 		case EStateTreeEvent::RangerLaunchGrenade: AI_StopAbility(0); break;
 		case EStateTreeEvent::RangerDeployShield: AI_StopAbility(1); break;
 		case EStateTreeEvent::TricksterLaunchPoisonGrenade: AI_StopAbility(0); break;
-		case EStateTreeEvent::BreacherBash: AI_StopAbility(0); break;
+		case EStateTreeEvent::BreacherBash: AI_StopAbility(1); break;
+		case EStateTreeEvent::WraithMeteorShower: AI_StopAbility(2); break;
 		default: ;
 	}
 }

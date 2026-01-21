@@ -17,6 +17,12 @@ void AMeteorShowerArea::BeginPlay()
 
 void AMeteorShowerArea::DealOvertimeDamage() { SpawnMeteor(); }
 
+void AMeteorShowerArea::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
+{
+	Super::InitWithProprietor(InProprietor);
+	Proprietor = InProprietor;
+}
+
 void AMeteorShowerArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData, const EDamageReason InDamageReason)
 {
 	bIsHijacked = bInIsPlayerObject;
@@ -27,7 +33,7 @@ void AMeteorShowerArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDa
 	const float DefaultLifeSpan = InDamageOverTimeData->GetAreaLifeSpan();
 	const float CollisionRadius = DefaultRadius * RadiusIncrease;
 	
-	SetupRadiusAndTimers(CollisionRadius/* * CollisionScalingOffsetSizeMultiplier*/, DefaultLifeSpan * LifeSpanIncrease);
+	SetupRadiusAndTimers(CollisionRadius/* CollisionScalingOffsetSizeMultiplier*/, DefaultLifeSpan * LifeSpanIncrease);
 	if (!DeployVfx)
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTriggerMeteorImpact, nullptr, &DeployVfx, RootComponent, NAME_None,
@@ -43,6 +49,6 @@ void AMeteorShowerArea::SpawnMeteor()
 	RandDir2D.Normalize();
 	const float Distance = FMath::FRandRange(0.f, GetCollisionComponent()->GetScaledSphereRadius() - MeteorSpawnRadiusReduction);
 	const FVector RandomLocation(Center.X + RandDir2D.X * Distance, Center.Y + RandDir2D.Y * Distance, Center.Z);
-	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMeteorProjectile, RandomLocation)->Init(Proprietor);
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMeteorProjectile, RandomLocation)->InitWithProprietor(Proprietor);
 	DrawDebugSphere(GetWorld(), RandomLocation, 10.f, 32, FColor::Green, false, 2.f);
 }

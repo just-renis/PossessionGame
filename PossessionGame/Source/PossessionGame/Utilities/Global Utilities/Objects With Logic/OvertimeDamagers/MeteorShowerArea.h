@@ -25,7 +25,7 @@ class POSSESSIONGAME_API AMeteorShowerArea : public AOvertimeDamager
 
 	virtual void BeginPlay() override;
 	virtual void DealOvertimeDamage() override;
-	virtual void Init(const TObjectPtr<AEnemy> InProprietor) override { Proprietor = InProprietor; }
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	virtual void Setup(const bool bInIsPlayerObject, const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData, const EDamageReason InDamageReason) override;
 	virtual void AddTarget(const TObjectPtr<AEnemy>& InTarget) override {}
 	virtual void RemoveTarget(const TObjectPtr<AEnemy>& InTarget) override {}

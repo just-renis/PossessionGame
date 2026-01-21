@@ -11,7 +11,7 @@ class POSSESSIONGAME_API ABreacherBarrel : public AThrowable
 public:
 	void Explode();
 	virtual void Disable(const bool bHide) override;
-	virtual void Init(const TObjectPtr<AEnemy> InProprietor) override;
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 private:
 	ABreacherBarrel();
 

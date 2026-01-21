@@ -37,7 +37,7 @@ void ABreacher::P_ThrowBarrel()
 {
 	const TObjectPtr<ABreacherBarrel> Barrel = Cast<ABreacherBarrel>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectWithCapFromPool(EPoolObject::BreacherBarrel, Weapon->GetHandsSocketLocation(FName("BarrelSocket")), Weapon->GetHandsSocketRotation(FName("BarrelSocket"))));
 	if (!Barrel) return;
-	Barrel->Init(this);
+	Barrel->InitWithProprietor(this);
 	AssetsManager->PlaySound2D(ESound::BreacherThrowBarrel);
 	Barrel->Throw();
 }
@@ -61,7 +61,7 @@ void ABreacher::P_ThrowDynamite()
 {
 	const TObjectPtr<ABreacherDynamite> Dynamite = Cast<ABreacherDynamite>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectWithCapFromPool(EPoolObject::BreacherDynamite, Weapon->GetHandsSocketLocation(FName("BarrelSocket")), Weapon->GetHandsSocketRotation(FName("BarrelSocket"))));
 	if (!Dynamite) return;
-	Dynamite->Init(this);
+	Dynamite->InitWithProprietor(this);
 	AssetsManager->PlaySound2D(ESound::BreacherThrowBarrel);
 	Dynamite->Throw();
 }

@@ -9,19 +9,19 @@
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
+void AWraithTrap::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
+{
+	Super::InitWithProprietor(InProprietor);
+	if (!TrailVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTrapTrail, [this]() -> bool { return bIsActive; }, &TrailVfx, Mesh, FName("TrailSocket"));
+	else TrailVfx->Activate(true);
+}
+
 AWraithTrap::AWraithTrap()
 {
 	DeploySfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ImpactSfx"));
 	DeploySfx->SetAutoActivate(false);
 	DeploySfx->SetupAttachment(Mesh);
 	Sounds.Add(ESound::WraithTrapImpact, DeploySfx);
-}
-
-void AWraithTrap::Init(const TObjectPtr<AEnemy> InProprietor)
-{
-	Super::Init(InProprietor);
-	if (!TrailVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTrapTrail, [this]() -> bool { return bIsActive; }, &TrailVfx, Mesh, FName("TrailSocket"));
-	else TrailVfx->Activate(true);
 }
 
 void AWraithTrap::BeginPlay()

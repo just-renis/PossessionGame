@@ -1,8 +1,8 @@
 ﻿#include "PoolObject.h"
 
-void APoolObject::Init(const bool bInIsPlayerObject) { SetPoolObjectState(true); }
+void APoolObject::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) { SetPoolObjectState(true); }
 
-void APoolObject::Init(const TObjectPtr<AEnemy> InProprietor) { SetPoolObjectState(true); }
+void APoolObject::Init(const bool bInIsPlayerObject) { SetPoolObjectState(true); }
 
 void APoolObject::Init(const float InData, FLinearColor InColor, const bool bHide) { SetPoolObjectState(true, bHide); }
 

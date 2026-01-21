@@ -13,7 +13,7 @@ class POSSESSIONGAME_API AThrowable : public APoolObject
 	GENERATED_BODY()
 public:
 	virtual void Throw();
-	virtual void Init(const TObjectPtr<AEnemy> InProprietor) override;
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	virtual void Disable(const bool bHide) override;
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {}

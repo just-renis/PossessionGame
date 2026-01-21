@@ -19,9 +19,9 @@ AWraithMeteorProjectile::AWraithMeteorProjectile()
 	Sounds.Add(ESound::WraithMeteorSpawn, SpawnSfx);
 }
 
-void AWraithMeteorProjectile::Init(const TObjectPtr<AEnemy> InProprietor)
+void AWraithMeteorProjectile::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
 {
-	Super::Init(InProprietor);
+	Super::InitWithProprietor(InProprietor);
 	Proprietor = InProprietor;
 	if (!Proprietor) return;
 	PlaySound(ESound::WraithMeteorSpawn);

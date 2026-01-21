@@ -39,10 +39,10 @@ void ABreacherBarrel::Disable(const bool bHide)
 	Super::Disable(bHide);
 }
 
-void ABreacherBarrel::Init(const TObjectPtr<AEnemy> InProprietor)
+void ABreacherBarrel::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
 {
 	bIsAlreadyExploding = false;
-	Super::Init(InProprietor);
+	Super::InitWithProprietor(InProprietor);
 }
 
 ABreacherBarrel::ABreacherBarrel()

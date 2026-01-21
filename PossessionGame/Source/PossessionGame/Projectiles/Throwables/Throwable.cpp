@@ -15,9 +15,9 @@ void AThrowable::Throw()
 	SetupOnHitEvent();
 }
 
-void AThrowable::Init(const TObjectPtr<AEnemy> InProprietor)
+void AThrowable::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
 {
-	Super::Init(InProprietor);
+	Super::InitWithProprietor(InProprietor);
 	Proprietor = InProprietor;
 }
 

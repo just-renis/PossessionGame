@@ -37,7 +37,7 @@ class POSSESSIONGAME_API AWraithMeteorProjectile : public APoolObject
 
 	TObjectPtr<UCodexProjectileData> GetProjectileData() const { return bIsHijacked ? P_ProjectileData : AI_ProjectileData; }
 
-	virtual void Init(const TObjectPtr<AEnemy> InProprietor) override;
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	void ReturnToPool();
 	void Landed();
 	void PlaySound(const ESound InSoundName);

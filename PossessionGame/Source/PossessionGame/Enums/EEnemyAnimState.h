@@ -14,5 +14,6 @@ enum class EEnemyAnimState : uint8
 	ShootLaser,
 	StopLaser,
 	StunEffect,
-	Bash
+	Bash,
+	MeteorShower
 };

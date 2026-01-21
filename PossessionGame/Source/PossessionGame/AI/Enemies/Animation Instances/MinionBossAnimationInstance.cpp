@@ -21,9 +21,6 @@ void UMinionBossAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, bool bI
 
 void UMinionBossAnimationInstance::MontageWithHoldEnd()
 {
-	switch (MontageStateInHold)
-	{
-		case EEnemyAnimState::ShootLaser: Proprietor->AI_StopAbility(1); break;
-		default: ;
-	}
+	if (MontageStateInHold != EEnemyAnimState::ShootLaser) return;
+	Proprietor->AI_StopAbility(1);
 }

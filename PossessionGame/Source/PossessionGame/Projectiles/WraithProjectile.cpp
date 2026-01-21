@@ -19,10 +19,7 @@ void AWraithProjectile::Init(FProjectileData& InProjectileData, const FRotator& 
 	Super::Init(InProjectileData, Rotation, InWhich);
 }
 
-void AWraithProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	SpawnFirstProjectileImpactVfx(Hit);
-}
+void AWraithProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) { SpawnFirstProjectileImpactVfx(Hit); }
 
 void AWraithProjectile::DestroyThis()
 {

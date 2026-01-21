@@ -11,7 +11,7 @@ class POSSESSIONGAME_API AWraithMolotov : public AThrowable
 {
 	GENERATED_BODY()
 public:
-	virtual void Init(const TObjectPtr<AEnemy> InProprietor) override;
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 private:
 	AWraithMolotov();
 	
