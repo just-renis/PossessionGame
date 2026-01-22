@@ -7,7 +7,6 @@
 
 void UWraithAbility3::AI_Execute()
 {
-	Proprietor->SetIsActionInMotion(true);
 	Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
 	Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::MeteorShower, Proprietor->AI_GetMeteorShowerLifeSpan(), false);
 	Proprietor->AI_InitiateMeteorShower();

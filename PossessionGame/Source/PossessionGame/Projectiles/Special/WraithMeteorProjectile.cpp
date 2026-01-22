@@ -26,15 +26,30 @@ void AWraithMeteorProjectile::InitWithProprietor(const TObjectPtr<AEnemy> InProp
 	if (!Proprietor) return;
 	PlaySound(ESound::WraithMeteorSpawn);
 	bIsHijacked = Proprietor->GetIsHijacked();
-	if (!DeployVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithMeteor, nullptr, &DeployVfx, RootComponent);
-	else DeployVfx->Activate(true);
+	if (bIsHijacked)
+	{
+		if (!PlayerDeployVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithMeteor, nullptr, &PlayerDeployVfx, RootComponent);
+		else PlayerDeployVfx->Activate(true);
+	}
+	else
+	{
+		if (!EnemyDeployVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::EnemyWraithMeteor, nullptr, &EnemyDeployVfx, RootComponent);
+		else EnemyDeployVfx->Activate(true);
+	}
 	GetWorld()->GetTimerManager().SetTimer(MeteorLandHandle, this, &AWraithMeteorProjectile::Landed, MeteorLandTime);
 	GetWorld()->GetTimerManager().SetTimer(LifeSpanFinishedHandle, this, &AWraithMeteorProjectile::ReturnToPool, DefaultLifeSpan);
 }
 
 void AWraithMeteorProjectile::ReturnToPool()
 {
-	if (DeployVfx) DeployVfx->DeactivateImmediate();
+	if (bIsHijacked)
+	{
+		if (PlayerDeployVfx) PlayerDeployVfx->DeactivateImmediate();
+	}
+	else
+	{
+		if (EnemyDeployVfx) EnemyDeployVfx->DeactivateImmediate();
+	}
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::WraithMeteorProjectile, this);
 }
 

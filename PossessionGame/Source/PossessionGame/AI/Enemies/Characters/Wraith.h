@@ -16,6 +16,7 @@ public:
 	
 	void AI_EnableTriggeringMeteorShower();
 	void AI_InitiateMeteorShower();
+	void AI_FinishMeteorShower();
 	
 	void P_InitiateThrowMolotov();
 	void P_InitiateThrowTrap();
@@ -27,6 +28,8 @@ private:
 	FTimerHandle AI_TriggerMeteorShowerHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "AI Data", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UDamageOverTimeData> AI_MeteorShowerData;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> MeteorChargeBallVfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DeathSfx;
 	UPROPERTY()

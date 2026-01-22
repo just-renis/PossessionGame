@@ -1,6 +1,9 @@
 ﻿#include "Wraith.h"
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
+#include "PossessionGame/AI/Enemies/Controllers/WraithAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
+#include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Projectiles/Throwables/WraithMeteorTrigger.h"
@@ -82,15 +85,23 @@ void AWraith::AI_EnableTriggeringMeteorShower()
 
 void AWraith::AI_InitiateMeteorShower()
 {
+	if (!MeteorChargeBallVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::EnemyWraithMeteorChargeBall, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &MeteorChargeBallVfx, GetMesh(), FName("MeteorChargeBallSocket"));
+	else MeteorChargeBallVfx->Activate(true);
 	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 500.f;
-	const FVector CachedSpawnLocation = SpawnLocation;
 	FHitResult GroundHit;
-	DrawDebugLine(GetWorld(), SpawnLocation, GetActorLocation(), FColor::Red, false, 3.f);
 	if (GetWorld()->LineTraceSingleByChannel(GroundHit, SpawnLocation, SpawnLocation + FVector::DownVector * 2000.f, ECC_Visibility)) SpawnLocation = GroundHit.ImpactPoint;
-	DrawDebugLine(GetWorld(), CachedSpawnLocation, SpawnLocation, FColor::Red, false, 3.f);
 	const TObjectPtr<AOvertimeDamager> MeteorShowerArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMeteorShowerArea, SpawnLocation + FVector::UpVector));
 	MeteorShowerArea->InitWithProprietor(this);
 	MeteorShowerArea->Setup(false, AI_MeteorShowerData, EDamageReason::None);
+}
+
+void AWraith::AI_FinishMeteorShower()
+{
+	if (MeteorChargeBallVfx) MeteorChargeBallVfx->DeactivateImmediate();
+	GetAnimInstance()->SetIsControlRigEnabled(true);
+	SetIsActionInMotion(false);
+	(void)Cast<AWraithAIController>(GetAI())->OnMeteorShowerFinished.ExecuteIfBound();
+	AI_StopAbility(2);
 }
 
 void AWraith::AI_TryTriggeringMeteorShower()

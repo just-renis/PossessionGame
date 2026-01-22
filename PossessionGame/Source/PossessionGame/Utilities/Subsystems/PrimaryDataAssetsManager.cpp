@@ -827,6 +827,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_WraithDeathElectrification", EVfx::WraithDeathElectrification);
 	VfxsMap.Add("PA_WraithSpawn", EVfx::WraithSpawn);
 	VfxsMap.Add("PA_WraithTriggerMeteorImpact", EVfx::WraithTriggerMeteorImpact);
+	VfxsMap.Add("PA_EnemyWraithMeteor", EVfx::EnemyWraithMeteor);
+	VfxsMap.Add("PA_EnemyWraithMeteorChargeBall", EVfx::EnemyWraithMeteorChargeBall);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

@@ -1,12 +1,10 @@
 ﻿#include "WraithAnimationInstance.h"
-#include "PossessionGame/AI/Enemies/Controllers/WraithAIController.h"
+#include "PossessionGame/AI/Enemies/Characters/Wraith.h"
 
 void UWraithAnimationInstance::MontageWithHoldEnd()
 {
 	Super::MontageWithHoldEnd();
 	if (MontageStateInHold != EEnemyAnimState::MeteorShower) return;
-	Proprietor->GetAnimInstance()->SetIsControlRigEnabled(true);
-	Proprietor->SetIsActionInMotion(false);
-	(void)Cast<AWraithAIController>(Proprietor->GetAI())->OnMeteorShowerFinished.ExecuteIfBound();
-	Proprietor->AI_StopAbility(2);
+	StopMontage(EEnemyAnimState::MeteorShower, 0.1f);
+	Cast<AWraith>(Proprietor)->AI_FinishMeteorShower();
 }

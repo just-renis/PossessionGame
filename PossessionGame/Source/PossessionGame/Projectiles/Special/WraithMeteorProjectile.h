@@ -27,7 +27,9 @@ class POSSESSIONGAME_API AWraithMeteorProjectile : public APoolObject
 	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCodexProjectileData> P_ProjectileData;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> DeployVfx;
+	TObjectPtr<UNiagaraComponent> PlayerDeployVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> EnemyDeployVfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> SpawnSfx;
 	UPROPERTY()
