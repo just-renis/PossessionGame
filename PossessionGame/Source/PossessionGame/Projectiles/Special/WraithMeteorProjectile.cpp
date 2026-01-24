@@ -5,10 +5,12 @@
 #include "PossessionGame/Data Assets/Base Data Assets/CodexProjectileData.h"
 #include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 AWraithMeteorProjectile::AWraithMeteorProjectile()
 {
@@ -59,6 +61,7 @@ void AWraithMeteorProjectile::Landed()
 	if (!Data || !Proprietor) return;
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::WraithMeteorLandCameraShake);
 	Damage = DefaultDamage = Data->GetDamage();
+	Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelPureGlobalDamageBonus();
 	TArray<TObjectPtr<AActor>> IgnoredActors;
 	if (!Data->CanBeDamagedByOwnProjectile() && !bIsHijacked) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Damage, Damage, GetActorLocation(), Data->GetDamageInnerRadius(),

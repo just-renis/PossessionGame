@@ -23,7 +23,9 @@ public:
 protected:
 	bool bIsPlayer;
 	float Damage;
+	float DefaultDamage;
 	float DamageTick;
+	float DefaultDamageTick;
 	float EffectTick;
 	float EffectStrength;
 	EPoolObject ObjectName;

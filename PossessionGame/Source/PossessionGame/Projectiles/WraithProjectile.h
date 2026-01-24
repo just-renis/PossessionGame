@@ -23,5 +23,5 @@ class POSSESSIONGAME_API AWraithProjectile : public AProjectile
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
 	virtual void DestroyThis() override;
 	void ReturnObjectToPoolAfterExplosionVfxFinished();
-	virtual void DealAreaDamage() override;
+	virtual void DealAreaDamage(const float InOtherDamageSource = -1.f) override;
 };

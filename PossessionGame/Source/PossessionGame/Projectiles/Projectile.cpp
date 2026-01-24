@@ -137,11 +137,11 @@ void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool b
 	InHit.ImpactPoint, InHit.ImpactNormal.Rotation(), ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetVariation() : EVariation::Default, Attributes);
 }
 
-void AProjectile::DealAreaDamage()
+void AProjectile::DealAreaDamage(const float InOtherSourceDamage)
 {
 	TArray<TObjectPtr<AActor>> IgnoredActors;
 	if (!ProjectileData.bCanBeDamagedByOwnProjectile && !ProjectileData.bIsPlayerProjectile) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
-	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Damage, ProjectileData.RadiusMinimumDamage,
+	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), InOtherSourceDamage > 0.f ? InOtherSourceDamage : Damage, ProjectileData.RadiusMinimumDamage,
 	GetActorLocation(), ProjectileData.DamageInnerRadius, ProjectileData.DamageOuterRadius, ProjectileData.DamageFalloff, UDamageType::StaticClass(),
 	IgnoredActors, this, ProjectileData.GetProprietor()->GetController(), ECC_GameTraceChannel4);
 }

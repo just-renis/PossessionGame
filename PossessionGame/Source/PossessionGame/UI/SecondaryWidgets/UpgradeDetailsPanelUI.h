@@ -78,14 +78,17 @@ private:
 	FString GetImpulseUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
 	FString GetTimeDilationUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
 	FString GetMiscDamageUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
+	FString GetOverTimeTickUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute);
 	FString GetProjectileAmountByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InProjectileName);
 	FString GetProjectileSpeedByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InProjectileName);
 	FString GetProjectileDamageByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InProjectileName);
 	FString GetThrowableDamageByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InThrowableName);
+	FString GetOverTimeDamageByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InThrowableName);
 	FString GetCapUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName);
 	FString GetSizeUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName);
 	FString GetEffectUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName);
-
+	FString GetOverTimeTickByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName);
+	
 	virtual void NativeConstruct() override;
 	void SetUpgradeText(const bool bIsPlayerUpgrade);
 	void SetUpgradeChoiceBackground();

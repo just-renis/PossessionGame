@@ -20,6 +20,7 @@ enum class EUpgradeAttribute : uint8
 	Impulse,
 	TimeDilation,
 	EffectStrength,
+	OverTimeTick,
     Special1,
     Special2,
     Special3

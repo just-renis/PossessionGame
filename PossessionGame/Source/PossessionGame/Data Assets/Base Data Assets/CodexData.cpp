@@ -66,6 +66,19 @@ TObjectPtr<UCodexProjectileData> UCodexData::GetProjectileData(const bool bIsPla
 	return nullptr;
 }
 
+TObjectPtr<UDamageOverTimeData> UCodexData::GetDamageOverTimeData(const bool bIsPlayer, const EPoolObject InDamageOverTimeName)
+{
+	if (bIsPlayer)
+	{
+		if (const TObjectPtr<UDamageOverTimeData>* Data = PlayerDamageOverTimeData.Find(InDamageOverTimeName)) return *Data;
+	}
+	else
+	{
+		if (const TObjectPtr<UDamageOverTimeData>* Data = EnemyDamageOverTimeData.Find(InDamageOverTimeName)) return *Data;
+	}
+	return nullptr;
+}
+
 TObjectPtr<UMiscData> UCodexData::GetMiscData(const bool bIsPlayer, const EUpgrade InUpgradeName)
 {
 	if (bIsPlayer)

@@ -4,6 +4,7 @@
 #include "Engine/DataAsset.h"
 #include "CodexData.generated.h"
 
+class UDamageOverTimeData;
 enum class EUpgrade : uint8;
 class UMiscData;
 class UCharacterData;
@@ -25,6 +26,7 @@ public:
 	TObjectPtr<UDestructibleData> GetDestructibleData(const bool bIsPlayer, const EPoolObject InDestructibleName);
 	TObjectPtr<UThrowableData> GetThrowableData(const bool bIsPlayer, const EPoolObject InThrowableName);
 	TObjectPtr<UCodexProjectileData> GetProjectileData(const bool bIsPlayer, const EPoolObject InProjectileName);
+	TObjectPtr<UDamageOverTimeData> GetDamageOverTimeData(const bool bIsPlayer, const EPoolObject InDamageOverTimeName);
 	TObjectPtr<UMiscData> GetMiscData(const bool bIsPlayer, const EUpgrade InUpgradeName);
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -47,6 +49,10 @@ private:
 	TMap<EPoolObject, TObjectPtr<UCodexProjectileData>> EnemyProjectilesData;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TMap<EPoolObject, TObjectPtr<UCodexProjectileData>> PlayerProjectilesData;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TMap<EPoolObject, TObjectPtr<UDamageOverTimeData>> EnemyDamageOverTimeData;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TMap<EPoolObject, TObjectPtr<UDamageOverTimeData>> PlayerDamageOverTimeData;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TMap<EUpgrade, TObjectPtr<UMiscData>> EnemyMiscData;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))

@@ -8,9 +8,9 @@
 void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData, const EDamageReason InDamageReason)
 {
 	bIsPlayer = bInIsPlayerObject;
-	Damage = InDamageOverTimeData->GetDamage();
+	Damage = DefaultDamage = InDamageOverTimeData->GetDamage();
 	DamageReason = InDamageReason;
-	DamageTick = InDamageOverTimeData->GetDamageTick();
+	DamageTick = DefaultDamageTick = InDamageOverTimeData->GetDamageTick();
 	EffectTick = InDamageOverTimeData->GetEffectDuration();
 	EffectStrength = InDamageOverTimeData->GetEffectStrength();
 }
@@ -18,9 +18,9 @@ void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDam
 void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason)
 {
 	bIsPlayer = bInIsPlayerObject;
-	Damage = InDamage;
+	Damage = DefaultDamage = InDamage;
 	DamageReason = InDamageReason;
-	DamageTick = InDamageTick;
+	DamageTick = DefaultDamageTick = InDamageTick;
 	SetupRadiusAndTimers(InRadiusSize, InLifeSpan);
 }
 

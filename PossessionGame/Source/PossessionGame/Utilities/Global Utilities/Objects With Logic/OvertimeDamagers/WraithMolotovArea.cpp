@@ -21,6 +21,8 @@ void AWraithMolotovArea::DealOvertimeDamage()
 	for (int32 i = 0; i < Targets.Num(); i++)
 	{
 		if (!Targets[i]) continue;
+		Damage = DefaultDamage + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility1, EUpgradeAttribute::FlatDamage, true);
+		DamageTick = DefaultDamageTick - GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility1, EUpgradeAttribute::OverTimeTick, true);
 		Targets[i]->SetupBurningState(Damage, EffectTick, DamageTick);
 	}
 }
