@@ -50,6 +50,7 @@ void AWraithTrapArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDama
 	const float SmokeLifetime = DefaultSmokeLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
 	const float BubbleLifetime = DefaultBubbleLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
 	const float GhostLifetime = DefaultGhostLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
+	DamageTick = DefaultDamageTick - GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility2, EUpgradeAttribute::OverTimeTick, true);
 	SetupRadiusAndTimers(CollisionRadius * CollisionScalingOffsetSizeMultiplier, DefaultLifeSpan * LifeSpanIncrease);
 	
 	Attributes.Add(FName("BubbleRadius"), FNiagaraAttribute(EUserParamType::Float, CollisionRadius * DifferenceRadiusDelta));

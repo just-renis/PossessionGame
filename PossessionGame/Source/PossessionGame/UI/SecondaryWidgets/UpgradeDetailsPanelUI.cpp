@@ -486,6 +486,7 @@ FString UUpgradeDetailsPanelUI::GetEffectDurationUpgradeString(const TObjectPtr<
 		case EUpgrade::GuardianAbility3: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::VectorBlastProjectile);
 		case EUpgrade::WraithAbility1: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMolotovArea);
 		case EUpgrade::WraithAbility2: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithTrapArea);
+		case EUpgrade::WraithAbility3: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMeteorShowerArea);
 		default: return FString();
 	}
 }
@@ -554,6 +555,8 @@ FString UUpgradeDetailsPanelUI::GetOverTimeTickUpgradeString(const TObjectPtr<UC
 	switch (UpgradeName)
 	{
 		case EUpgrade::WraithAbility1: return GetOverTimeTickByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMolotovArea);
+		case EUpgrade::WraithAbility2: return GetOverTimeTickByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithTrapArea);
+		case EUpgrade::WraithAbility3: return GetOverTimeTickByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMeteorShowerArea);
 		default: return FString();
 	}
 }
@@ -697,6 +700,7 @@ FString UUpgradeDetailsPanelUI::GetEffectUpgradeByName(const TObjectPtr<UCodexDa
 			break;
 		case EPoolObject::WraithMolotovArea:
 		case EPoolObject::WraithTrapArea:
+		case EPoolObject::WraithMeteorShowerArea:
 			if (const TObjectPtr<UDamageOverTimeData> OverTimeData = InCodexData->GetDamageOverTimeData(bForPlayer, InObjectName))
 			{
 				return 	GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::EffectDuration, bForPlayer),

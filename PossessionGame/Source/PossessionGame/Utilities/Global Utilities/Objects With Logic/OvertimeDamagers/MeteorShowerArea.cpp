@@ -27,13 +27,9 @@ void AMeteorShowerArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDa
 {
 	bIsHijacked = bInIsPlayerObject;
 	Super::Setup(bInIsPlayerObject, InDamageOverTimeData, InDamageReason);
-	const float RadiusIncrease = 1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility3, EUpgradeAttribute::Size, true) * 0.01f;
-	const float LifeSpanIncrease = 1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility3, EUpgradeAttribute::EffectDuration, true) * 0.01f;
-
-	const float DefaultLifeSpan = InDamageOverTimeData->GetAreaLifeSpan();
-	const float CollisionRadius = DefaultRadius * RadiusIncrease;
-	
-	SetupRadiusAndTimers(CollisionRadius/* CollisionScalingOffsetSizeMultiplier*/, DefaultLifeSpan * LifeSpanIncrease);
+	const float LifeSpanIncrease = 1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility3, EUpgradeAttribute::EffectDuration, bInIsPlayerObject) * 0.01f;
+	DamageTick = DefaultDamageTick - GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility3, EUpgradeAttribute::OverTimeTick, bInIsPlayerObject);
+	SetupRadiusAndTimers(DefaultRadius, InDamageOverTimeData->GetAreaLifeSpan() * LifeSpanIncrease);
 	if (!DeployVfx)
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTriggerMeteorImpact, nullptr, &DeployVfx, RootComponent, NAME_None,
@@ -50,5 +46,4 @@ void AMeteorShowerArea::SpawnMeteor()
 	const float Distance = FMath::FRandRange(0.f, GetCollisionComponent()->GetScaledSphereRadius() - MeteorSpawnRadiusReduction);
 	const FVector RandomLocation(Center.X + RandDir2D.X * Distance, Center.Y + RandDir2D.Y * Distance, Center.Z);
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithMeteorProjectile, RandomLocation)->InitWithProprietor(Proprietor);
-	DrawDebugSphere(GetWorld(), RandomLocation, 10.f, 32, FColor::Green, false, 2.f);
 }

@@ -68,28 +68,32 @@ USTRUCT()
 struct FBurningLogicData
 {
 	GENERATED_BODY()
-	
-	bool bIsBurning = false;
-	float Damage = 0.f;
-	float DamageTick = 0.f;
 
 	bool GetIsBurning() const { return bIsBurning; }
 	bool operator==(const float InDamageTick) const { return InDamageTick == DamageTick; } 
 	float GetDamage() const { return Damage; }
 	float GetDamageTick() const { return DamageTick; }
+	float GetSpecialExplosionDamageBoostPercentage() const { return SpecialExplosionDamageBoostPercentage; }
 	
-	void AddBurnState(const float InDamage, const float InDamageTick)
+	void AddBurnState(const float InDamage, const float InDamageTick, const float InSpecialExplosionDamageBoostPercentage)
 	{
 		bIsBurning = true;
 		Damage = InDamage;
 		DamageTick = InDamageTick;
+		SpecialExplosionDamageBoostPercentage = InSpecialExplosionDamageBoostPercentage;
 	}
 	void StopBurnState()
 	{
 		bIsBurning = false;
 		Damage = 0.f;
 		DamageTick = 0.f;
+		SpecialExplosionDamageBoostPercentage = 1.f;
 	}
+private:
+	bool bIsBurning = false;
+	float Damage = 0.f;
+	float DamageTick = 0.f;
+	float SpecialExplosionDamageBoostPercentage = 1.f;
 };
 
 UCLASS(Abstract)
@@ -181,7 +185,7 @@ public:
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
 	void SetMovementSpeedMultiplier(const float InMultiplier);
 	void RemoveDisablingActionEffect();
-	void SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick);
+	void SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick, const float InBurningDamageBoostPercentage = 1.f);
 	void AddSlowingStack(const float InSlowPercentage);
 	void RemoveSlowingStacks();
 	void AddActiveWraithTrap() { ActiveWraithTrapCount++; }
@@ -429,10 +433,14 @@ private:
 	float SlideCameraZ = 0.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Other", meta = (AllowPrivateAccess = true))
 	float ExplosionRadiusFromEmpUpgradeInMetres = 5.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Other", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Other", meta = (AllowPrivateAccess = true))
 	float AnyExplosionImpulseStrength = 1500.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Other", meta = (EditConditionHides = "bCanSlide", AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Other", meta = (AllowPrivateAccess = true))
 	float AnyExplosionUpwardsImpulseAxisAddition = 2.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Death Effects | Wraith Molotov Explosion", meta = (AllowPrivateAccess = true))
+	float MolotovExplosionRadius = 300.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Death Effects | Wraith Molotov Explosion", meta = (AllowPrivateAccess = true))
+	float MolotovExplosionBaseDamage= 50.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Optimization", meta = (AllowPrivateAccess = true))
 	float PlayerTakeDamageEffectDelay = 0.2f;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))

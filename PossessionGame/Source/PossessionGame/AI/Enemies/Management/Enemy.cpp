@@ -403,7 +403,17 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 	if (bIsAlive && CurrentHp <= 0)
 	{
 		if (bIsHijacked) P_Death();
-		else ProcessKillDamageReason(InDamageReason);
+		else
+		{
+			if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility1, EUpgradeAttribute::Special1) && BurningLogicData.GetIsBurning())
+			{
+				const float TrueMolotovExplosionBaseDamage = MolotovExplosionBaseDamage * BurningLogicData.GetSpecialExplosionDamageBoostPercentage();
+				UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), TrueMolotovExplosionBaseDamage, TrueMolotovExplosionBaseDamage,
+				GetActorLocation(), MolotovExplosionRadius, MolotovExplosionRadius, 0.f, UDamageType::StaticClass(),
+				TArray<AActor*>(), this, GetController(), ECC_GameTraceChannel4);
+			}
+			ProcessKillDamageReason(InDamageReason);
+		}
 		InitiateDeath();
 	}
 }
@@ -492,11 +502,11 @@ void AEnemy::RemoveDisablingActionEffect()
 	if (DisablingActionsEffectsCount == 0) AllDisablingActionsFinished();
 }
 
-void AEnemy::SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick)
+void AEnemy::SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick, const float InBurningDamageBoostPercentage)
 {
 	const bool bIsAlreadyBurning = BurningLogicData.GetIsBurning();
 	const bool bIsBurningTickSame = BurningLogicData == InBurningTick;
-	BurningLogicData.AddBurnState(InBurningDamage, InBurningTick);
+	BurningLogicData.AddBurnState(InBurningDamage, InBurningTick, InBurningDamageBoostPercentage);
 	if (!bIsAlreadyBurning || !bIsBurningTickSame) GetWorldTimerManager().SetTimer(BurningTickingHandle, this, &AEnemy::ReceiveBurnDamage, InBurningTick, true);
 	GetWorldTimerManager().SetTimer(BurningStateFinishHandle, this, &AEnemy::StopBurningState, InBurningDuration);
 }
@@ -1963,7 +1973,7 @@ void AEnemy::StopBurningState()
 	GetWorldTimerManager().ClearTimer(BurningTickingHandle);
 }
 
-void AEnemy::ReceiveBurnDamage() { UGameplayStatics::ApplyDamage(this, BurningLogicData.Damage, nullptr, nullptr, UDamageType::StaticClass()); }
+void AEnemy::ReceiveBurnDamage() { UGameplayStatics::ApplyDamage(this, BurningLogicData.GetDamage(), nullptr, nullptr, UDamageType::StaticClass()); }
 
 void AEnemy::TogglePoisonSlowVfx(const bool bState)
 {

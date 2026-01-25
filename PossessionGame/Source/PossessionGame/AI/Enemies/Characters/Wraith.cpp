@@ -135,6 +135,7 @@ void AWraith::AllDisablingActionsFinished()
 void AWraith::ClearTimers()
 {
 	Super::ClearTimers();
+	if (MeteorChargeBallVfx) MeteorChargeBallVfx->DeactivateImmediate();
 	GetWorldTimerManager().ClearTimer(AI_TriggerMeteorShowerHandle);
 	bIsMeteorShowerTriggerInitiated = false;
 }

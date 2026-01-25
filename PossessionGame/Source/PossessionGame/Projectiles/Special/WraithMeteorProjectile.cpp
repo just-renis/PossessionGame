@@ -5,6 +5,8 @@
 #include "PossessionGame/Data Assets/Base Data Assets/CodexProjectileData.h"
 #include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/EPoolObject.h"
+#include "PossessionGame/Enums/EUpgrade.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
@@ -61,7 +63,14 @@ void AWraithMeteorProjectile::Landed()
 	if (!Data || !Proprietor) return;
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::WraithMeteorLandCameraShake);
 	Damage = DefaultDamage = Data->GetDamage();
-	Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelPureGlobalDamageBonus();
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	Damage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::WraithAbility3, EUpgradeAttribute::FlatDamage, bIsHijacked);
+	if (bIsHijacked) Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelPureGlobalDamageBonus();
+	else
+	{
+		const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::WraithAbility3, EUpgradeAttribute::DamagePercentage, bIsHijacked);
+		Damage += DefaultDamage * DamagePercentage * 0.01f;
+	}
 	TArray<TObjectPtr<AActor>> IgnoredActors;
 	if (!Data->CanBeDamagedByOwnProjectile() && !bIsHijacked) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Damage, Damage, GetActorLocation(), Data->GetDamageInnerRadius(),
