@@ -13,6 +13,7 @@ class POSSESSIONGAME_API AWraithTrapArea : public AOvertimeDamager
 
 	float DefaultVfxLifetime = 5.f;
 	float DefaultVfxRadius = 500.f;
+	float EffectDuration = 0.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))
 	float DefaultRadius = 500.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))

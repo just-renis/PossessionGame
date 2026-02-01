@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "PossessionGame/Interfaces/DamageReasonProvider.h"
 #include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "WraithMeteorProjectile.generated.h"
@@ -9,7 +10,7 @@ class UCodexProjectileData;
 class UNiagaraComponent;
 
 UCLASS()
-class POSSESSIONGAME_API AWraithMeteorProjectile : public APoolObject
+class POSSESSIONGAME_API AWraithMeteorProjectile : public APoolObject, public IDamageReasonProvider
 {
 	GENERATED_BODY()
 
@@ -38,6 +39,7 @@ class POSSESSIONGAME_API AWraithMeteorProjectile : public APoolObject
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	TObjectPtr<UCodexProjectileData> GetProjectileData() const { return bIsHijacked ? P_ProjectileData : AI_ProjectileData; }
+	virtual EDamageReason GetDamageReason() const override;
 
 	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	void ReturnToPool();

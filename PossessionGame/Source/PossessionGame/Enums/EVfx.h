@@ -118,5 +118,7 @@ enum class EVfx : uint16
 	WraithSpawn,
 	WraithTriggerMeteorImpact,
 	EnemyWraithMeteor,
-	EnemyWraithMeteorChargeBall
+	EnemyWraithMeteorChargeBall,
+	GeneratorRoomSmoke,
+	GeneratorRoomPipeSmoke
 };

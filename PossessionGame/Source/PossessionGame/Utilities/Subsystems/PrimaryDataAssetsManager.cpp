@@ -463,6 +463,7 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 		case ECharacterType::Tank: return EPoolObject::TankProjectile;
 		case ECharacterType::Guardian: return EPoolObject::GuardianProjectile;
 		case ECharacterType::MinionBoss: return EPoolObject::MinionBossProjectile;
+		case ECharacterType::PyroBoss: return EPoolObject::PyroBossProjectile;
 		default: return EPoolObject::None;
 	}
 }
@@ -493,6 +494,7 @@ EWeapon UPrimaryDataAssetsManager::GetWeaponByCharacter(const ECharacterType InC
 		case ECharacterType::Guardian: return EWeapon::GuardianWeapon;
 		case ECharacterType::MinionBoss: return EWeapon::MinionBossHandWeapon;
 		case ECharacterType::Warden: return EWeapon::WardenBlasterWeapon;
+		case ECharacterType::PyroBoss: return EWeapon::PyroBossWeapon;
 		default: return EWeapon::None;
 	}
 }
@@ -533,6 +535,7 @@ void UPrimaryDataAssetsManager::SetupWeaponsPrimaryAssets()
 	WeaponsMap.Add("PA_WardenBlasterWeapon", EWeapon::WardenBlasterWeapon);
 	WeaponsMap.Add("PA_BreacherWeapon", EWeapon::BreacherWeapon);
 	WeaponsMap.Add("PA_WraithWeapon", EWeapon::WraithWeapon);
+	WeaponsMap.Add("PA_PyroBossWeapon", EWeapon::PyroBossWeapon);
 	FillContainers(WeaponsMap, WeaponContainers, "Weapon");
 	WeaponsMap.Empty();
 }
@@ -705,6 +708,7 @@ void UPrimaryDataAssetsManager::SetupCharactersPrimaryAssets()
 	CharactersMap.Add("PA_Samurai", ECharacterType::Samurai);
 	CharactersMap.Add("PA_Guardian", ECharacterType::Guardian);
 	CharactersMap.Add("PA_MinionBoss", ECharacterType::MinionBoss);
+	CharactersMap.Add("PA_PyroBoss", ECharacterType::PyroBoss);
 	CharactersMap.Add("PA_Warden", ECharacterType::Warden);
 	FillContainers<ECharacterType, FCharacterContainer, UPA_CharacterContainer>(CharactersMap, CharacterContainers, "Character");
 	CharactersMap.Empty();
@@ -829,6 +833,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_WraithTriggerMeteorImpact", EVfx::WraithTriggerMeteorImpact);
 	VfxsMap.Add("PA_EnemyWraithMeteor", EVfx::EnemyWraithMeteor);
 	VfxsMap.Add("PA_EnemyWraithMeteorChargeBall", EVfx::EnemyWraithMeteorChargeBall);
+	VfxsMap.Add("PA_GeneratorRoomPipeSmoke", EVfx::GeneratorRoomPipeSmoke);
+	VfxsMap.Add("PA_GeneratorRoomSmoke", EVfx::GeneratorRoomSmoke);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

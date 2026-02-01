@@ -2,6 +2,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Characters/Guardian.h"
 #include "PossessionGame/Data Assets/Base Data Assets/AbilityData.h"
+#include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
@@ -55,8 +56,8 @@ void UGuardianAbility2::P_TimeStopRegressProcess()
 	MID_TimeStop->SetScalarParameterValue("PulseDistance", TimeStopPulseDistance);
 	if (TimeStopPulseDistance <= 0.f)
 	{
-		TimeStopPulseDistance = 0.f;
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::GuardianTimeStopPulse, MID_TimeStop, 0.f);
+		TimeStopPulseDistance = 0.f;
 	}
 }
 

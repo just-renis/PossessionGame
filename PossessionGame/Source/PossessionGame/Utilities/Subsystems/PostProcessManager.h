@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "PostProcessManager.generated.h"
 
@@ -19,9 +18,7 @@ public:
 	void FadeOutDeathMaterials();
 private:
 	float FadingOutDeathMaterialsCounter;
-	UPROPERTY()
 	FTimerHandle DisableGlitchingMaterialHandle;
-	UPROPERTY()
 	FTimerHandle FadingOfDeathMaterialsHandle;
 	UPROPERTY()
 	TObjectPtr<APostProcessVolume> PostProcessVolume;

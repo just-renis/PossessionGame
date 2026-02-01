@@ -16,10 +16,12 @@ class POSSESSIONGAME_API ATerminal : public AInteractableObject
 
 	int32 RotationTimes = 0;
 	FTimerHandle ValveRotationHandle;
-	UPROPERTY(EditAnywhere, Category = "Individual Values", meta = (AllowPrivateAccess = true))
-	bool bIsValve = false;
 	UPROPERTY(EditAnywhere, Category = "Mode", meta = (AllowPrivateAccess = true))
 	EGameMode RoomMode;
+	UPROPERTY(EditAnywhere, Category = "Individual Values | Valve", meta = (AllowPrivateAccess = true))
+	bool bIsValve = false;
+	UPROPERTY(EditAnywhere, Category = "Individual Values | Valve", meta = (EditCondition = "bIsValve", EditConditionHides, AllowPrivateAccess = true))
+	FVector SmokePipeOffset;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 

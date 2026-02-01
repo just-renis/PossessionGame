@@ -5,6 +5,8 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EUpgrade.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Projectiles/Throwables/WraithMeteorTrigger.h"
 #include "PossessionGame/Projectiles/Throwables/WraithMolotov.h"
@@ -97,6 +99,7 @@ void AWraith::AI_InitiateMeteorShower()
 
 void AWraith::AI_FinishMeteorShower()
 {
+	if (bIsHijacked) return;
 	if (MeteorChargeBallVfx) MeteorChargeBallVfx->DeactivateImmediate();
 	GetAnimInstance()->SetIsControlRigEnabled(true);
 	SetIsActionInMotion(false);
@@ -113,6 +116,7 @@ void AWraith::AI_TryTriggeringMeteorShower()
 
 void AWraith::P_Setup()
 {
+	if (MeteorChargeBallVfx) MeteorChargeBallVfx->DeactivateImmediate();
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &AWraith::SetIsActionInMotion);
@@ -138,4 +142,35 @@ void AWraith::ClearTimers()
 	if (MeteorChargeBallVfx) MeteorChargeBallVfx->DeactivateImmediate();
 	GetWorldTimerManager().ClearTimer(AI_TriggerMeteorShowerHandle);
 	bIsMeteorShowerTriggerInitiated = false;
+}
+
+void AWraith::ReceiveBurnDamage()
+{
+	if (!bIsHijacked && DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility1, EUpgradeAttribute::Special1))
+	{
+		Heal(BurningLogicData.GetDamage());
+	}
+	else Super::ReceiveBurnDamage();
+}
+
+void AWraith::ReceiveMeteorBurnDamage()
+{
+	if (!bIsHijacked && DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility1, EUpgradeAttribute::Special1))
+	{
+		Heal(MeteorBurningLogicData.GetDamage());
+	}
+	else Super::ReceiveMeteorBurnDamage();
+}
+
+void AWraith::AddSlowingStack(const float InSlowPercentage)
+{
+	if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility2, EUpgradeAttribute::Special1))
+	{
+		if (WraithTrapSlowEffectLingerHandle.IsValid()) GetWorldTimerManager().ClearTimer(WraithTrapSlowEffectLingerHandle);
+		SlowingStacks++;
+		WraithTrapActionSpeedReduction = -1.f + FMath::Pow(1.f - InSlowPercentage, SlowingStacks);
+		ActionSpeed = 2.f - FMath::Pow(1.f - InSlowPercentage, SlowingStacks);
+		SetActionSpeed(ActionSpeed);
+	}
+	else Super::AddSlowingStack(InSlowPercentage);
 }

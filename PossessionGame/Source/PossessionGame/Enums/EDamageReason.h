@@ -14,5 +14,7 @@ enum class EDamageReason : uint8
     RangerGrenadeDamage,
     BreacherBashDamage,
     WraithDamage,
-    WraithMolotovDamage
+    WraithMolotovDamage,
+    WraithEnemyMeteor,
+    WraithPlayerMeteor
 };

@@ -318,6 +318,48 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 				default: break;
 			}
 			break;
+		case EUpgrade::WraithAbility1:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial1.1", "{0}ENEMIES THAT DIE WHILE BURNING EXPLODE.{1}"),
+						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+					}
+					return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial1.2", "{0}BURNING ON WRAITH HEALS THEM.{1}"),
+					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+				default: break;
+			}
+			break;
+		case EUpgrade::WraithAbility2:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial2.1", "{0}ENEMIES LEAVING TRAP’S RADIUS REMAIN SLOWED FOR THE FULL EFFECT DURATION.{1}"),
+						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+					}
+					return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial2.2", "{0}WRAITHS INSTEAD OF BEING SLOWED, GAIN INCREASED ACTION SPEED BASED ON SLOW STACKS.{1}"),
+					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+				default: break;
+			}
+			break;
+		case EUpgrade::WraithAbility3:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.1", "{0}ENEMIES STRUCK BY A METEOR ARE SET ON FIRE.{1}"),
+						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+					}
+					return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.2", "{0}WRAITH METEORS IGNITE THE PLAYER.{1}"),
+					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+				default: break;
+			}
+			break;
 		default: ;
 	}
 	return FText();

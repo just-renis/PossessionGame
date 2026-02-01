@@ -32,7 +32,7 @@ void AWraithTrapArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDama
 	const float RadiusIncrease = 1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility2, EUpgradeAttribute::Size, true) * 0.01f;
 	const float LifeSpanIncrease = 1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility2, EUpgradeAttribute::EffectDuration, true) * 0.01f;
 
-	const float DefaultLifeSpan = InDamageOverTimeData->GetAreaLifeSpan();
+	const float DefaultLifeSpan = EffectDuration = InDamageOverTimeData->GetAreaLifeSpan() * LifeSpanIncrease;
 	const float CollisionRadius = DefaultRadius * RadiusIncrease;
 
 	const float DifferenceRadiusDelta = DefaultRadius / DefaultVfxRadius;
@@ -51,7 +51,7 @@ void AWraithTrapArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDama
 	const float BubbleLifetime = DefaultBubbleLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
 	const float GhostLifetime = DefaultGhostLifetime * LifeSpanIncrease * DifferenceLifetimeDelta;
 	DamageTick = DefaultDamageTick - GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility2, EUpgradeAttribute::OverTimeTick, true);
-	SetupRadiusAndTimers(CollisionRadius * CollisionScalingOffsetSizeMultiplier, DefaultLifeSpan * LifeSpanIncrease);
+	SetupRadiusAndTimers(CollisionRadius * CollisionScalingOffsetSizeMultiplier, DefaultLifeSpan);
 	
 	Attributes.Add(FName("BubbleRadius"), FNiagaraAttribute(EUserParamType::Float, CollisionRadius * DifferenceRadiusDelta));
 	Attributes.Add(FName("AuraRadius"), FNiagaraAttribute(EUserParamType::Vector, FVector(AuraRadius, AuraRadius, 0.25f)));
@@ -88,5 +88,5 @@ void AWraithTrapArea::AddTarget(const TObjectPtr<AEnemy>& InTarget)
 void AWraithTrapArea::RemoveTarget(const TObjectPtr<AEnemy>& InTarget)
 {
 	Super::RemoveTarget(InTarget);
-	InTarget->RemoveActiveWraithTrap();
+	InTarget->RemoveActiveWraithTrap(EffectDuration);
 }

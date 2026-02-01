@@ -4,6 +4,8 @@
 #include "Engine/DataAsset.h"
 #include "GameModeData.generated.h"
 
+enum class ECharacterType : uint8;
+
 UCLASS()
 class POSSESSIONGAME_API UGameModeData : public UDataAsset
 {

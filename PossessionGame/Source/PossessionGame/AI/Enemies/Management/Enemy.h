@@ -96,6 +96,34 @@ private:
 	float SpecialExplosionDamageBoostPercentage = 1.f;
 };
 
+USTRUCT()
+struct FMeteorBurningLogicData
+{
+	GENERATED_BODY()
+
+	bool GetIsBurning() const { return bIsBurning; }
+	bool operator==(const float InDamageTick) const { return InDamageTick == DamageTick; } 
+	float GetDamage() const { return Damage; }
+	float GetDamageTick() const { return DamageTick; }
+	
+	void AddBurnState(const float InDamage, const float InDamageTick)
+	{
+		bIsBurning = true;
+		Damage = InDamage;
+		DamageTick = InDamageTick;
+	}
+	void StopBurnState()
+	{
+		bIsBurning = false;
+		Damage = 0.f;
+		DamageTick = 0.f;
+	}
+private:
+	bool bIsBurning = false;
+	float Damage = 0.f;
+	float DamageTick = 0.f;
+};
+
 UCLASS(Abstract)
 class POSSESSIONGAME_API AEnemy : public ACharacter
 {
@@ -111,7 +139,6 @@ public:
 	bool GetIsAbilityInAction() const { return bIsAbilityInAction; }
 	bool GetIsStomping() const { return bIsStomping; }
 	bool GetIsHijackActionViable() const { return bCanHijackOtherEnemy; }
-	bool GetIsActionSpeedModified() const { return bActionSpeedModified; }
 	bool GetIsHijackAble() const;
 	bool CanAbilityBeExecuted(const int32 AbilityIndex) const;
 	bool GetIsSliding() const { return bIsSliding; }
@@ -186,10 +213,11 @@ public:
 	void SetMovementSpeedMultiplier(const float InMultiplier);
 	void RemoveDisablingActionEffect();
 	void SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick, const float InBurningDamageBoostPercentage = 1.f);
-	void AddSlowingStack(const float InSlowPercentage);
+	void SetupMeteorBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick);
+	virtual void AddSlowingStack(const float InSlowPercentage);
 	void RemoveSlowingStacks();
 	void AddActiveWraithTrap() { ActiveWraithTrapCount++; }
-	void RemoveActiveWraithTrap();
+	void RemoveActiveWraithTrap(const float InEffectDuration);
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -203,9 +231,15 @@ protected:
 	float MaxHp;
 	float CurrentHp;
 	float DamageReduction = 1.f;
+	float WraithTrapActionSpeedReduction = 0.f;
+	float ActionSpeed = 1.f;
+	int32 SlowingStacks = 0;
 	ECharacterType CharacterName;
 	EVariation Variation;
 	EMoveMode CurrentMoveMode;
+	FBurningLogicData BurningLogicData;
+	FMeteorBurningLogicData MeteorBurningLogicData;
+	FTimerHandle WraithTrapSlowEffectLingerHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompRadiusInMeters = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
@@ -214,6 +248,8 @@ protected:
 	FLinearColor DamageNumberColor = FLinearColor::White;
 	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
 	FLinearColor CriticalDamageNumberColor = FLinearColor::Red;
+	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
+	FLinearColor HealNumberColor = FLinearColor::Green;
 	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputMappingContext> PlayerMappingContext;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -244,6 +280,8 @@ protected:
 	TObjectPtr<UEnhancedPlayerInput> P_InputManager;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> VectorBlastSpecialImpactUpgrade;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> WraithBurnExplosionSfx;
 	UPROPERTY()
 	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent;
 	UPROPERTY()
@@ -309,6 +347,10 @@ protected:
 	virtual void AllDisablingActionsFinished();
 	virtual void RecoverFromDisablingEffect();
 	virtual void ApplyEmpEffect(const float InEffectDuration);
+	virtual void ReceiveBurnDamage();
+	virtual void ReceiveMeteorBurnDamage();
+	void Heal(const float InHealAmount);
+	void SetActionSpeed(const float InSpeed);
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanHijackOtherEnemy = false;
@@ -324,7 +366,6 @@ private:
 	bool bIsSliding = false;
 	bool bIsDoubleJumpOccured = false;
 	bool bIsImmortal = false;
-	bool bActionSpeedModified = false;
 	bool bIsPoisonSlowAffected = false;
 	bool bHijackVfxAttachRequested = false;
 	bool bPoisonSlowVfxAttachRequested = false;
@@ -343,19 +384,16 @@ private:
 	float FovChangeTick;
 	float TargetFov;
 	float DefaultCameraZ;
-	float ActionSpeed = 1.f;
 	float MovementSpeedMultiplier = 1.f;
 	float AdditionalActionSpeedValue = 0.f;
 	float SavedRespawnHpPercentage = 1.f;
 	float HijackDelayAnimationSpeed = 1.f;
 	float PoisonActionSpeedReduction = 0.f;
-	float WraithTrapActionSpeedReduction = 0.f;
 	int32 P_FirstSlotAbilityIndex = 0;
 	int32 P_SecondSlotAbilityIndex = 1;
 	int32 OverlappingPoisonAreas = 0;
 	int32 DisablingActionsEffectsCount = 0;
 	int32 CurrentJumpCount = 0;
-	int32 SlowingStacks = 0;
 	int32 ActiveWraithTrapCount = 0;
 	uint32 RunBindTurnOnHandle;
 	uint32 RunBindTurnOffHandle;
@@ -389,8 +427,9 @@ private:
 	FTimerHandle RecoverFromDisablingEffectHandle;
 	FTimerHandle BurningTickingHandle;
 	FTimerHandle BurningStateFinishHandle;
+	FTimerHandle MeteorBurningTickingHandle;
+	FTimerHandle MeteorBurningStateFinishHandle;
 	FConductionLogicData ConductionLogicData;
-	FBurningLogicData BurningLogicData;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
 	float HijackDelay = 0.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
@@ -467,6 +506,8 @@ private:
 	TObjectPtr<UMaterialInterface> UnHijackOutlineMaterial;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_HijackPulse;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_Burn;
 	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
@@ -476,7 +517,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<APossessionGameGameModeBase> GameModeBase;
 	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> MI_MeshEmissiveMaterial;
+	TObjectPtr<UMaterialInstanceDynamic> MID_MeshEmissiveMaterial;
 	UPROPERTY()
 	TObjectPtr<UPossessionGameInstance> GameInstance;
 	UPROPERTY()
@@ -503,6 +544,8 @@ private:
 	TObjectPtr<AEnemy> HijackTarget;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_HijackPulse;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Burn;
 	UPROPERTY()
 	TObjectPtr<UCameraShakeBase> MinionBossLaserShakeInstance;
 	UPROPERTY()
@@ -583,6 +626,8 @@ private:
 	void P_SetupRunMode();
 	void P_CheckStoppedMoving() const;
 	void P_CancelHijackingProcess();
+	void P_AddAndSetBurnVfx();
+	void P_RemoveBurnVfx() const;
 
 	EDamageReason ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser);
 
@@ -590,7 +635,7 @@ private:
 	void SetupStimuliSource();
 	void ChangeXRayState(const bool bState) const;
 	void SetupUserSettings() const;
-	void ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage) const;
+	void ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage);
 	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;
 	virtual void Landed(const FHitResult& Hit) override;
 	void CheckIfFallOutOfWorld();
@@ -603,7 +648,6 @@ private:
 	void DisableVfxs() const;
 	void SetupTutorialManager();
 	void ToggleTimeDilation();
-	void SetActionSpeed(const float InSpeed);
 	void SetupMeshOptimization() const;
 	void AddAdditionalActionSpeed(const float InValue, const float InDuration);
 	void ResetAdditionalActionSpeed();
@@ -613,6 +657,6 @@ private:
 	void ApplyDisablingActionEffect(const float InEffectDuration, const EDisablingEffect InEffectName);
 	void DisableSkeletalMesh() const;
 	void StopBurningState();
-	void ReceiveBurnDamage();
+	void StopMeteorBurningState();
 	void TogglePoisonSlowVfx(const bool bState);
 };

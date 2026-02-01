@@ -23,6 +23,8 @@ AWraithMeteorProjectile::AWraithMeteorProjectile()
 	Sounds.Add(ESound::WraithMeteorSpawn, SpawnSfx);
 }
 
+EDamageReason AWraithMeteorProjectile::GetDamageReason() const { return bIsHijacked ? EDamageReason::WraithPlayerMeteor : EDamageReason::WraithEnemyMeteor; }
+
 void AWraithMeteorProjectile::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
 {
 	Super::InitWithProprietor(InProprietor);

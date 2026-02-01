@@ -88,7 +88,11 @@ AEnemy::AEnemy()
 	VectorBlastSpecialImpactUpgrade = CreateDefaultSubobject<UAudioComponent>(FName("VectorBlastSpecialImpactUpgrade"));
 	VectorBlastSpecialImpactUpgrade->SetAutoActivate(false);
 	VectorBlastSpecialImpactUpgrade->SetupAttachment(GetMesh());
+	WraithBurnExplosionSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("WraithBurnExplosionSfx"));
+	WraithBurnExplosionSfx->SetAutoActivate(false);
+	WraithBurnExplosionSfx->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::VectorBlastSpecialImpactUpgrade, VectorBlastSpecialImpactUpgrade);
+	Sounds.Add(ESound::RangerGrenadeExplosion, WraithBurnExplosionSfx);
 }
 
 bool AEnemy::GetIsHijackAble() const { return bIsHijackAble; }
@@ -148,7 +152,7 @@ void AEnemy::AI_SetupUpgradesAppliance()
 
 void AEnemy::AI_SetupShootLogic()
 {
-	GetWorld()->GetTimerManager().SetTimer(AI_ShootLogicHandle, this, &AEnemy::AI_MainShootLogic, GetWeapon()->GetShootCooldown(), true);
+	GetWorld()->GetTimerManager().SetTimer(AI_ShootLogicHandle, this, &AEnemy::AI_MainShootLogic, 1.f / 60.f, true);
 	if (!GetWeapon()->GetIsFirstShotWasShot())
 	{
 		GetWeapon()->SetFirstShotWasShot();
@@ -172,11 +176,11 @@ void AEnemy::AI_SetupRespawn()
 	MeshEmissiveMaterialOpacityValue = 0.5f;
 	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
 	{
-		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MID_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
 		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
 	}
 	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
-	if (MI_MeshEmissiveMaterial) MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
+	if (MID_MeshEmissiveMaterial) MID_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
 }
 
 void AEnemy::AI_ProcessSpawnEffects()
@@ -184,7 +188,7 @@ void AEnemy::AI_ProcessSpawnEffects()
 	AssetsManager->SpawnVfx(AssetsManager->GetCharacterVfxName(CharacterName, EVfxType::Spawn), [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetMesh()->GetSocketLocation("SpawnSocket"));
 	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
 	{
-		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MI_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
+		if (GetMesh()->GetMaterial(i)->GetName().Contains("Emissive")) MID_MeshEmissiveMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
 		else MI_MeshBaseMaterial = GetMesh()->CreateAndSetMaterialInstanceDynamic(i);
 	}
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", 0.7f);
@@ -377,7 +381,6 @@ void AEnemy::InitiateDeath()
 void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent)
 {
 	if (bIsSelectedFourthOptionB) InDamage *= GameInstance->GetSubsystem<UPlayerDataManager>()->GetRecentHijackBoost();
-	if (InDamageReason == EDamageReason::GuardianDamage && EVariation::GuardianVariationGold == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Guardian)) { ConductionLogicData.AddStack(); }
 	InDamage += InDamage * ConductionLogicData.GetDamageTakenPercentage();
 	CurrentHp -= InDamage;
 	if (DelegateManager->RequestCurrentGameMode.IsBound() && DelegateManager->RequestCurrentGameMode.Execute() == EGameMode::HackTerminalsMode)
@@ -386,6 +389,19 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 	}
 	if (bIsHijacked)
 	{
+		switch (InDamageReason)
+		{
+			case EDamageReason::GuardianDamage:
+				if (EVariation::GuardianVariationGold == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Guardian)) { ConductionLogicData.AddStack(); }
+				break;
+			case EDamageReason::WraithEnemyMeteor:
+				if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility3, EUpgradeAttribute::Special1))
+				{
+					SetupMeteorBurningState(1.f, 3.f, 0.2f);
+				}
+				break;
+			default: ;
+		}
 		P_HandlingDamageTaken();
 		P_ShowReceivedDamageNumber(InDamage);
 	}
@@ -407,6 +423,8 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 		{
 			if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility1, EUpgradeAttribute::Special1) && BurningLogicData.GetIsBurning())
 			{
+				PlaySound(ESound::RangerGrenadeExplosion);
+				AssetsManager->SpawnVfx(EVfx::RangerGrenadeExplosion, nullptr, GetActorLocation());
 				const float TrueMolotovExplosionBaseDamage = MolotovExplosionBaseDamage * BurningLogicData.GetSpecialExplosionDamageBoostPercentage();
 				UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), TrueMolotovExplosionBaseDamage, TrueMolotovExplosionBaseDamage,
 				GetActorLocation(), MolotovExplosionRadius, MolotovExplosionRadius, 0.f, UDamageType::StaticClass(),
@@ -511,8 +529,22 @@ void AEnemy::SetupBurningState(const float InBurningDamage, const float InBurnin
 	GetWorldTimerManager().SetTimer(BurningStateFinishHandle, this, &AEnemy::StopBurningState, InBurningDuration);
 }
 
+void AEnemy::SetupMeteorBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick)
+{
+	const bool bIsAlreadyBurning = MeteorBurningLogicData.GetIsBurning();
+	const bool bIsBurningTickSame = MeteorBurningLogicData == InBurningTick;
+	MeteorBurningLogicData.AddBurnState(InBurningDamage, InBurningTick);
+	if (!bIsAlreadyBurning || !bIsBurningTickSame)
+	{
+		if (bIsHijacked) P_AddAndSetBurnVfx();
+		GetWorldTimerManager().SetTimer(MeteorBurningTickingHandle, this, &AEnemy::ReceiveMeteorBurnDamage, InBurningTick, true);
+	}
+	GetWorldTimerManager().SetTimer(MeteorBurningStateFinishHandle, this, &AEnemy::StopMeteorBurningState, InBurningDuration);
+}
+
 void AEnemy::AddSlowingStack(const float InSlowPercentage)
 {
+	if (WraithTrapSlowEffectLingerHandle.IsValid()) GetWorldTimerManager().ClearTimer(WraithTrapSlowEffectLingerHandle);
 	SlowingStacks++;
 	WraithTrapActionSpeedReduction = 1.f - FMath::Pow(1.f - InSlowPercentage, SlowingStacks);
 	ActionSpeed = FMath::Pow(1.f - InSlowPercentage, SlowingStacks);
@@ -526,7 +558,14 @@ void AEnemy::RemoveSlowingStacks()
 	SetActionSpeed(ActionSpeed);
 }
 
-void AEnemy::RemoveActiveWraithTrap() { if (--ActiveWraithTrapCount == 0) RemoveSlowingStacks(); }
+void AEnemy::RemoveActiveWraithTrap(const float InEffectDuration)
+{
+	if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility2, EUpgradeAttribute::Special1))
+	{
+		GetWorldTimerManager().SetTimer(WraithTrapSlowEffectLingerHandle, this, &AEnemy::RemoveSlowingStacks, InEffectDuration);
+	}
+	else if (--ActiveWraithTrapCount == 0) RemoveSlowingStacks();
+}
 
 float AEnemy::AI_GetShootPause() { return AI_Data->GetShootPause(); }
 
@@ -744,6 +783,7 @@ void AEnemy::P_Setup()
 	P_SetupAbilities();
 	DelegateManager->OnEnemyDeath.BindUObject(this, &AEnemy::P_OnEnemyDeathEvents);
 	GetWorldTimerManager().SetTimer(P_CheckStoppedMovingHandle, this, &AEnemy::P_CheckStoppedMoving, 0.25f, true);
+	MID_Burn = UMaterialInstanceDynamic::Create(MI_Burn, this);
 }
 
 void AEnemy::P_Shoot()
@@ -791,6 +831,7 @@ void AEnemy::P_SetupLeftClickInputCompletedState()
 
 void AEnemy::P_Destroy()
 {
+	P_RemoveBurnVfx();
 	P_RemoveReloadSound();
 	DelegateManager->RequestTriggerCameraShake.Unbind();
 	GetMesh()->SetHiddenInGame(false);
@@ -881,7 +922,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 			LaunchDir.Normalize();
 			LaunchCharacter(LaunchDir * AnyExplosionImpulseStrength, true, true);
 		}
-		if (EventInstigator != GetController()) ReceiveDamage(Damage, EDamageReason::None, PointDamageEvent, RadialDamageEvent);
+		if (EventInstigator != GetController()) ReceiveDamage(Damage, ReceiveDamageReason(DamageCauser), PointDamageEvent, RadialDamageEvent);
 		return Damage;
 	}
 	ReceiveDamage(Damage, ReceiveDamageReason(DamageCauser), PointDamageEvent, RadialDamageEvent);
@@ -1016,6 +1057,33 @@ void AEnemy::ApplyEmpEffect(const float InEffectDuration)
 	GetWorldTimerManager().SetTimer(EmpEffectEndHandle, this, &AEnemy::EmpEffectEnded, InEffectDuration);
 }
 
+void AEnemy::ReceiveBurnDamage() { UGameplayStatics::ApplyDamage(this, BurningLogicData.GetDamage(), nullptr, nullptr, UDamageType::StaticClass()); }
+
+void AEnemy::ReceiveMeteorBurnDamage() { UGameplayStatics::ApplyDamage(this, MeteorBurningLogicData.GetDamage(), nullptr, nullptr, UDamageType::StaticClass()); }
+
+void AEnemy::Heal(const float InHealAmount)
+{
+	CurrentHp += InHealAmount;
+	if (CurrentHp > MaxHp) CurrentHp = MaxHp;
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(HealNumberColor, InHealAmount, GetActorLocation(), GetActorForwardVector());
+	if (!AI_HpBar || !AI_HpBarComponent) return;
+	AI_ShowHpBar();
+	AI_HpBar->UpdateHpBar(CurrentHp, MaxHp);
+	GetWorldTimerManager().SetTimer(AI_HideHpBarHandle, this, &AEnemy::AI_HideHpBarByTimer, 2.f, false);
+}
+
+void AEnemy::SetActionSpeed(const float InSpeed)
+{
+	if (!AI_Data || !AnimInstance || !Weapon) return;
+	ActionSpeed = InSpeed + AdditionalActionSpeedValue;
+	//bActionSpeedModified = !FMath::IsNearlyEqual(InSpeed, 1.f, 0.1f); LEFT ONLY IF LATER IT WOULD BE NEEDED.
+	SetMaxWalkSpeed(CurrentMoveMode);
+	AnimInstance->SetGlobalPlayRate(ActionSpeed);
+	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
+	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ActionSpeed);
+	else if (Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->SetGlobalPlayRate(ActionSpeed);
+}
+
 void AEnemy::AI_SetupData()
 {
 	CurrentHp = MaxHp = AI_Data->GetMaxHp();
@@ -1094,7 +1162,7 @@ void AEnemy::AI_MainShootLogic()
 {
 	if (!AI || GetIsActionInMotion() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
 	if (!GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) AI_InitiateShooting();
-	if (!GetIsActionSpeedModified() || GetWeapon()->AI_CanShoot()) AI_ShootLogic();
+	if (GetWeapon()->AI_CanShoot()) AI_ShootLogic();
 }
 
 void AEnemy::AI_StopAbilitiesEvents() const
@@ -1262,7 +1330,7 @@ void AEnemy::P_ToggleRun(const bool bState)
 
 void AEnemy::P_OnEnemyDeathEvents(float InXp, const ECharacterType InCharacterName) const
 {
-	if (InCharacterName != ECharacterType::Warden && InCharacterName != ECharacterType::MinionBoss && DelegateManager->RequestCurrentXpNerf.IsBound()) InXp *= DelegateManager->RequestCurrentXpNerf.Execute();
+	if (InCharacterName != ECharacterType::Warden && InCharacterName != ECharacterType::MinionBoss && InCharacterName != ECharacterType::PyroBoss && DelegateManager->RequestCurrentXpNerf.IsBound()) InXp *= DelegateManager->RequestCurrentXpNerf.Execute();
 	P_AddXp(InXp);
 }
 
@@ -1728,6 +1796,18 @@ void AEnemy::P_CancelHijackingProcess()
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->CancelHijackInitiateAnim();
 }
 
+void AEnemy::P_AddAndSetBurnVfx()
+{
+	if (!MID_Burn) MID_Burn = UMaterialInstanceDynamic::Create(MI_Burn, this);
+	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::PlayerBurnEffect, MID_Burn, 1.f);
+}
+
+void AEnemy::P_RemoveBurnVfx() const
+{
+	if (!MID_Burn) return;
+	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::PlayerBurnEffect, MID_Burn, 0.f);
+}
+
 EDamageReason AEnemy::ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser)
 {
 	if (!InDamageCauser) return EDamageReason::None;
@@ -1760,11 +1840,17 @@ void AEnemy::SetupUserSettings() const
 	if (!UserSettings->IsMappingContextRegistered(PlayerMappingContext)) UserSettings->RegisterInputMappingContext(PlayerMappingContext);
 }
 
-void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage) const
+void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage)
 {
 	switch (InDamageReason)
 	{
 		case EDamageReason::TricksterPoisonDamage: SaveSlotManager->GetSaveSlot()->ProgressVariationUnlock(EVariation::TricksterVariationPurple, InDamage); break;
+		case EDamageReason::WraithPlayerMeteor:
+			if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility3, EUpgradeAttribute::Special1))
+			{
+				SetupMeteorBurningState(2.f, 3.f, 0.2f);
+			}
+		break;
 		default: ;
 	}
 }
@@ -1808,7 +1894,7 @@ void AEnemy::SpawnCondenseMaterialsProcess()
 	MeshBaseMaterialCondenseValue -= 0.015f;
 	MeshEmissiveMaterialOpacityValue += 0.025f;
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
-	if (MI_MeshEmissiveMaterial) MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
+	if (MID_MeshEmissiveMaterial) MID_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
 	if (MeshEmissiveMaterialOpacityValue >= 0.5f) GetWorldTimerManager().ClearTimer(SpawnCondenseMaterialsProcessHandle);
 }
 
@@ -1817,7 +1903,7 @@ void AEnemy::DestroyCondenseMaterialsProcess()
 	MeshBaseMaterialCondenseValue += 0.015f;
 	MeshEmissiveMaterialOpacityValue -= 0.025f;
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
-	if (MI_MeshEmissiveMaterial) MI_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
+	if (MID_MeshEmissiveMaterial) MID_MeshEmissiveMaterial->SetScalarParameterValue("Opacity", MeshEmissiveMaterialOpacityValue);
 	if (MeshEmissiveMaterialOpacityValue <= 0.f)
 	{
 		GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);
@@ -1859,18 +1945,6 @@ void AEnemy::ToggleTimeDilation()
 {
 	if (!FMath::IsNearlyEqual(UGameplayStatics::GetGlobalTimeDilation(GetWorld()), GameInstance->GetGlobalTimeDilation(), 0.01f)) UGameplayStatics::SetGlobalTimeDilation(GetWorld(), GameInstance->GetGlobalTimeDilation());
 	else UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
-}
-
-void AEnemy::SetActionSpeed(const float InSpeed)
-{
-	if (!AI_Data || !AnimInstance || !Weapon) return;
-	ActionSpeed = InSpeed + AdditionalActionSpeedValue;
-	bActionSpeedModified = !FMath::IsNearlyEqual(InSpeed, 1.f, 0.1f); 
-	SetMaxWalkSpeed(CurrentMoveMode);
-	AnimInstance->SetGlobalPlayRate(ActionSpeed);
-	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
-	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ActionSpeed);
-	else if (Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->SetGlobalPlayRate(ActionSpeed);
 }
 
 void AEnemy::SetupMeshOptimization() const
@@ -1973,7 +2047,12 @@ void AEnemy::StopBurningState()
 	GetWorldTimerManager().ClearTimer(BurningTickingHandle);
 }
 
-void AEnemy::ReceiveBurnDamage() { UGameplayStatics::ApplyDamage(this, BurningLogicData.GetDamage(), nullptr, nullptr, UDamageType::StaticClass()); }
+void AEnemy::StopMeteorBurningState()
+{
+	if (bIsHijacked) P_RemoveBurnVfx();
+	MeteorBurningLogicData.StopBurnState();
+	GetWorldTimerManager().ClearTimer(MeteorBurningTickingHandle);
+}
 
 void AEnemy::TogglePoisonSlowVfx(const bool bState)
 {

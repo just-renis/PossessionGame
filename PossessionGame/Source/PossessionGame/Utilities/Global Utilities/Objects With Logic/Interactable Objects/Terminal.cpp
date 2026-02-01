@@ -3,6 +3,7 @@
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 ATerminal::ATerminal()
 {
@@ -71,5 +72,8 @@ void ATerminal::ToggleInteractableWidget(const bool bState)
 void ATerminal::ProcessRotationOfValve()
 {
 	Mesh->AddLocalRotation(FRotator(0.f, 10.f, 0.f));
-	if (++RotationTimes >= 36) GetWorldTimerManager().ClearTimer(ValveRotationHandle);
+	if (++RotationTimes < 36) return;
+	GetWorldTimerManager().ClearTimer(ValveRotationHandle);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::GeneratorRoomSmoke, nullptr, GetActorLocation() + FVector::BackwardVector * 400.f);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::GeneratorRoomPipeSmoke, nullptr, GetActorLocation() + SmokePipeOffset);
 }
