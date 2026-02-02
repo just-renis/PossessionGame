@@ -117,7 +117,8 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Impact }), EVfx::BreacherBulletImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Trail }), EVfx::WraithBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Muzzle }), EVfx::WraithMuzzle },
-		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Impact }), EVfx::WraithBulletImpact }
+		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Impact }), EVfx::WraithBulletImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::PyroBossProjectile, EVfxType::Trail }), EVfx::PyroBossProjectileTrail }
 	};
 	CharacterVfxCombinationsMap =
 	{
@@ -835,6 +836,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_EnemyWraithMeteorChargeBall", EVfx::EnemyWraithMeteorChargeBall);
 	VfxsMap.Add("PA_GeneratorRoomPipeSmoke", EVfx::GeneratorRoomPipeSmoke);
 	VfxsMap.Add("PA_GeneratorRoomSmoke", EVfx::GeneratorRoomSmoke);
+	VfxsMap.Add("PA_PyroBossProjectileTrail", EVfx::PyroBossProjectileTrail);
+	VfxsMap.Add("PA_PyroBossProjectileFirePool", EVfx::PyroBossProjectileFirePool);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
