@@ -4,7 +4,7 @@
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/ESound.h"
-#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/OvertimeDamagers/OvertimeDamager.h"
+#include "PossessionGame/OvertimeDamagers/OvertimeDamager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 
 AWraithMeteorTrigger::AWraithMeteorTrigger()

@@ -389,6 +389,7 @@ private:
 	float SavedRespawnHpPercentage = 1.f;
 	float HijackDelayAnimationSpeed = 1.f;
 	float PoisonActionSpeedReduction = 0.f;
+	float P_BurnVfxRadiusValue = 4.f;
 	int32 P_FirstSlotAbilityIndex = 0;
 	int32 P_SecondSlotAbilityIndex = 1;
 	int32 OverlappingPoisonAreas = 0;
@@ -413,6 +414,7 @@ private:
 	FTimerHandle P_SlideEndHandle;
 	FTimerHandle P_TakeDamageEffectsHandle;
 	FTimerHandle P_CheckStoppedMovingHandle;
+	FTimerHandle P_ProcessBurnVfxHandle;
 	FTimerHandle DestroyHandle;
 	FTimerHandle CheckIfFallOutOfWorldHandle;
 	FTimerHandle DestroyCondenseMaterialsProcessHandle;
@@ -628,6 +630,7 @@ private:
 	void P_CancelHijackingProcess();
 	void P_AddAndSetBurnVfx();
 	void P_RemoveBurnVfx() const;
+	void P_ProcessBurnVfx();
 
 	EDamageReason ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser);
 

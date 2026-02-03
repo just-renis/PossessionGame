@@ -783,7 +783,6 @@ void AEnemy::P_Setup()
 	P_SetupAbilities();
 	DelegateManager->OnEnemyDeath.BindUObject(this, &AEnemy::P_OnEnemyDeathEvents);
 	GetWorldTimerManager().SetTimer(P_CheckStoppedMovingHandle, this, &AEnemy::P_CheckStoppedMoving, 0.25f, true);
-	MID_Burn = UMaterialInstanceDynamic::Create(MI_Burn, this);
 }
 
 void AEnemy::P_Shoot()
@@ -1799,6 +1798,7 @@ void AEnemy::P_CancelHijackingProcess()
 void AEnemy::P_AddAndSetBurnVfx()
 {
 	if (!MID_Burn) MID_Burn = UMaterialInstanceDynamic::Create(MI_Burn, this);
+	GetWorldTimerManager().SetTimer(P_ProcessBurnVfxHandle, this, &AEnemy::P_ProcessBurnVfx, 0.025f, true);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::PlayerBurnEffect, MID_Burn, 1.f);
 }
 
@@ -1806,6 +1806,18 @@ void AEnemy::P_RemoveBurnVfx() const
 {
 	if (!MID_Burn) return;
 	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::PlayerBurnEffect, MID_Burn, 0.f);
+}
+
+void AEnemy::P_ProcessBurnVfx()
+{
+	if (!MID_Burn) return;
+	P_BurnVfxRadiusValue -= 0.1875f;
+	MID_Burn->SetScalarParameterValue(FName("Radius"), P_BurnVfxRadiusValue);
+	if (P_BurnVfxRadiusValue <= 2.51f)
+	{
+		P_BurnVfxRadiusValue = 4.f;
+		GetWorldTimerManager().ClearTimer(P_ProcessBurnVfxHandle);
+	}
 }
 
 EDamageReason AEnemy::ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser)

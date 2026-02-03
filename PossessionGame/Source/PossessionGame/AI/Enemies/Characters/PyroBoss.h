@@ -9,6 +9,8 @@ class POSSESSIONGAME_API APyroBoss : public AEnemy
 {
 	GENERATED_BODY()
 
+	FTimerHandle TESTHandle;
+
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 	virtual void AI_SetupWeapon() override;
 
@@ -16,4 +18,6 @@ class POSSESSIONGAME_API APyroBoss : public AEnemy
 	virtual void InitiateDeath() override;
 	virtual void ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent) override;
 	virtual void ApplyEmpEffect(const float InEffectDuration) override;
+
+	void TEST();
 };

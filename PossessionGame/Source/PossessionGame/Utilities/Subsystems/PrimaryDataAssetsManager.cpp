@@ -838,6 +838,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_GeneratorRoomSmoke", EVfx::GeneratorRoomSmoke);
 	VfxsMap.Add("PA_PyroBossProjectileTrail", EVfx::PyroBossProjectileTrail);
 	VfxsMap.Add("PA_PyroBossProjectileFirePool", EVfx::PyroBossProjectileFirePool);
+	VfxsMap.Add("PA_PyroBossEnvironmentFire", EVfx::PyroBossEnvironmentFire);
+	VfxsMap.Add("PA_PyroBossFloorFireWarning", EVfx::PyroBossFloorFireWarning);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
