@@ -692,6 +692,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_WraithThrow", ESound::WraithThrow);
 	SoundMap.Add("PA_WraithMeteorTriggerImpact", ESound::WraithMeteorTriggerImpact);
 	SoundMap.Add("PA_WraithMeteorSpawn", ESound::WraithMeteorSpawn);
+	SoundMap.Add("PA_PlayerBurning", ESound::PlayerBurning);
+	SoundMap.Add("PA_PlayerCaughtOnFire", ESound::PlayerCaughtOnFire);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
