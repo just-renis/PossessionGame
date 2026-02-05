@@ -23,6 +23,8 @@ class POSSESSIONGAME_API AWraithMeteorProjectile : public APoolObject, public ID
 	float DefaultDamage;
 	FTimerHandle MeteorLandHandle;
 	FTimerHandle LifeSpanFinishedHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Debug", meta = (AllowPrivateAccess = true))
+	bool bEnableDebug = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCodexProjectileData> AI_ProjectileData;
 	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))

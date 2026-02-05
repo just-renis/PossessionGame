@@ -75,6 +75,7 @@ void AWraithMeteorProjectile::Landed()
 	}
 	TArray<TObjectPtr<AActor>> IgnoredActors;
 	if (!Data->CanBeDamagedByOwnProjectile() && !bIsHijacked) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
+	if (bEnableDebug) DrawDebugSphere(GetWorld(), GetActorLocation(), Data->GetDamageInnerRadius(), 32, FColor::Green, false, 3.f);
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Damage, Damage, GetActorLocation(), Data->GetDamageInnerRadius(),
 	Data->GetDamageOuterRadius(), 0.f, UDamageType::StaticClass(), IgnoredActors, this, Proprietor->GetController(), ECC_GameTraceChannel4);
 }
