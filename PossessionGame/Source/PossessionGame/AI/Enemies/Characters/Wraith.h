@@ -49,6 +49,5 @@ private:
 	virtual void AllDisablingActionsFinished() override;
 	virtual void ClearTimers() override;
 	virtual void ReceiveBurnDamage() override;
-	virtual void ReceiveMeteorBurnDamage() override;
 	virtual void AddSlowingStack(const float InSlowPercentage) override;
 };

@@ -153,15 +153,6 @@ void AWraith::ReceiveBurnDamage()
 	else Super::ReceiveBurnDamage();
 }
 
-void AWraith::ReceiveMeteorBurnDamage()
-{
-	if (!bIsHijacked && DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility1, EUpgradeAttribute::Special1))
-	{
-		Heal(MeteorBurningLogicData.GetDamage());
-	}
-	else Super::ReceiveMeteorBurnDamage();
-}
-
 void AWraith::AddSlowingStack(const float InSlowPercentage)
 {
 	if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility2, EUpgradeAttribute::Special1))

@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PlayerHUD.generated.h"
 
+enum class EWarningIndicator : uint8;
 enum class ESound : uint16;
 enum class EEnemyHpBar : uint8;
 class UPrimaryDataAssetsManager;
@@ -34,7 +35,9 @@ public:
 	void UpdateAbilityUI(const TObjectPtr<UAbility>& InAbility);
 	void Reset();
 	void UpdateHijackIndicator(const bool bState, const FText& InKeyName = FText());
-	void ToggleCriticalDamageIndicator() const;
+	void SetWarningIndicator(const EWarningIndicator InWarningIndicator) const;
+	void ToggleWarningIndicator() const;
+	void DisableWarningIndicator() const;
 	void ConfigureUIs();
 	void PlayFadeOutAnim(const bool bState);
 	void UpdateReceiveDamageInv();
@@ -65,6 +68,8 @@ private:
 	FTimerHandle MinorAnnouncementDisplayHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Enemy Hp Bars Data", meta = (AllowPrivateAccess = true))
 	TMap<EEnemyHpBar, TObjectPtr<UTexture2D>> EnemyHpBars;
+	UPROPERTY(EditDefaultsOnly, Category = "Indicators", meta = (AllowPrivateAccess = true))
+	TMap<EWarningIndicator, TObjectPtr<UTexture2D>> WarningIndicators;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> DamageTickTexture;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -136,7 +141,11 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UProgressBar> GlobalHpBar;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInvalidationBox> CriticalDamageIndicator;
+	TObjectPtr<UInvalidationBox> WarningIndicatorBox;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> LeftWarningIndicator;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> RightWarningIndicator;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInvalidationBox> GlobalHpBarInv;
 	UPROPERTY(meta = (BindWidget))

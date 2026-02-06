@@ -3,8 +3,11 @@
 #include "CoreMinimal.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/Character.h"
+#include "PossessionGame/Enums/EBurningType.h"
 #include "Enemy.generated.h"
 
+enum class EBurningType : uint8;
+enum class EWarningIndicator : uint8;
 class USaveSlotManager;
 enum class EWidget : uint8;
 enum class EDisablingEffect : uint8;
@@ -70,14 +73,16 @@ struct FBurningLogicData
 	GENERATED_BODY()
 
 	bool GetIsBurning() const { return bIsBurning; }
-	bool operator==(const float InDamageTick) const { return InDamageTick == DamageTick; } 
+	bool operator==(const float InDamageTick) const { return InDamageTick == DamageTick; }
+	EBurningType GetBurningType() const { return BurningType; }
 	float GetDamage() const { return Damage; }
 	float GetDamageTick() const { return DamageTick; }
 	float GetSpecialExplosionDamageBoostPercentage() const { return SpecialExplosionDamageBoostPercentage; }
 	
-	void AddBurnState(const float InDamage, const float InDamageTick, const float InSpecialExplosionDamageBoostPercentage)
+	void AddBurnState(const EBurningType InBurningType, const float InDamage, const float InDamageTick, const float InSpecialExplosionDamageBoostPercentage)
 	{
 		bIsBurning = true;
+		BurningType = InBurningType;
 		Damage = InDamage;
 		DamageTick = InDamageTick;
 		SpecialExplosionDamageBoostPercentage = InSpecialExplosionDamageBoostPercentage;
@@ -85,43 +90,17 @@ struct FBurningLogicData
 	void StopBurnState()
 	{
 		bIsBurning = false;
+		BurningType = EBurningType::None;
 		Damage = 0.f;
 		DamageTick = 0.f;
 		SpecialExplosionDamageBoostPercentage = 1.f;
 	}
 private:
 	bool bIsBurning = false;
+	EBurningType BurningType = EBurningType::None;
 	float Damage = 0.f;
 	float DamageTick = 0.f;
 	float SpecialExplosionDamageBoostPercentage = 1.f;
-};
-
-USTRUCT()
-struct FMeteorBurningLogicData
-{
-	GENERATED_BODY()
-
-	bool GetIsBurning() const { return bIsBurning; }
-	bool operator==(const float InDamageTick) const { return InDamageTick == DamageTick; } 
-	float GetDamage() const { return Damage; }
-	float GetDamageTick() const { return DamageTick; }
-	
-	void AddBurnState(const float InDamage, const float InDamageTick)
-	{
-		bIsBurning = true;
-		Damage = InDamage;
-		DamageTick = InDamageTick;
-	}
-	void StopBurnState()
-	{
-		bIsBurning = false;
-		Damage = 0.f;
-		DamageTick = 0.f;
-	}
-private:
-	bool bIsBurning = false;
-	float Damage = 0.f;
-	float DamageTick = 0.f;
 };
 
 UCLASS(Abstract)
@@ -212,8 +191,7 @@ public:
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
 	void SetMovementSpeedMultiplier(const float InMultiplier);
 	void RemoveDisablingActionEffect();
-	void SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick, const float InBurningDamageBoostPercentage = 1.f);
-	void SetupMeteorBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick);
+	void SetupBurningState(const EBurningType InBurningType, const float InBurningDamage, const float InBurningDuration, const float InBurningTick, const float InBurningDamageBoostPercentage = 1.f);
 	virtual void AddSlowingStack(const float InSlowPercentage);
 	void RemoveSlowingStacks();
 	void AddActiveWraithTrap() { ActiveWraithTrapCount++; }
@@ -238,7 +216,6 @@ protected:
 	EVariation Variation;
 	EMoveMode CurrentMoveMode;
 	FBurningLogicData BurningLogicData;
-	FMeteorBurningLogicData MeteorBurningLogicData;
 	FTimerHandle WraithTrapSlowEffectLingerHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompRadiusInMeters = 3.f;
@@ -348,7 +325,6 @@ protected:
 	virtual void RecoverFromDisablingEffect();
 	virtual void ApplyEmpEffect(const float InEffectDuration);
 	virtual void ReceiveBurnDamage();
-	virtual void ReceiveMeteorBurnDamage();
 	void Heal(const float InHealAmount);
 	void SetActionSpeed(const float InSpeed);
 private:
@@ -398,6 +374,7 @@ private:
 	int32 ActiveWraithTrapCount = 0;
 	uint32 RunBindTurnOnHandle;
 	uint32 RunBindTurnOffHandle;
+	EWarningIndicator CurrentWarningIndicator;
 	FTimerHandle AI_ClearShootPauseHandle;
 	FTimerHandle AI_TriggerDeathVoiceLineHandle;
 	FTimerHandle AI_SetCharacterMovementSpeedHandle;
@@ -415,6 +392,7 @@ private:
 	FTimerHandle P_TakeDamageEffectsHandle;
 	FTimerHandle P_CheckStoppedMovingHandle;
 	FTimerHandle P_ProcessBurnVfxHandle;
+	FTimerHandle P_TriggerBurnIndicatorHandle;
 	FTimerHandle DestroyHandle;
 	FTimerHandle CheckIfFallOutOfWorldHandle;
 	FTimerHandle DestroyCondenseMaterialsProcessHandle;
@@ -429,8 +407,6 @@ private:
 	FTimerHandle RecoverFromDisablingEffectHandle;
 	FTimerHandle BurningTickingHandle;
 	FTimerHandle BurningStateFinishHandle;
-	FTimerHandle MeteorBurningTickingHandle;
-	FTimerHandle MeteorBurningStateFinishHandle;
 	FConductionLogicData ConductionLogicData;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
 	float HijackDelay = 0.5f;
@@ -629,8 +605,10 @@ private:
 	void P_CheckStoppedMoving() const;
 	void P_CancelHijackingProcess();
 	void P_AddAndSetBurnVfx();
-	void P_RemoveBurnVfx() const;
+	void P_RemoveBurnVfx();
 	void P_ProcessBurnVfx();
+	void P_TriggerBurnIndicator() const;
+	void P_SetWarningIndicator(const EWarningIndicator InWarningIndicator);
 
 	EDamageReason ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser);
 
@@ -660,6 +638,5 @@ private:
 	void ApplyDisablingActionEffect(const float InEffectDuration, const EDisablingEffect InEffectName);
 	void DisableSkeletalMesh() const;
 	void StopBurningState();
-	void StopMeteorBurningState();
 	void TogglePoisonSlowVfx(const bool bState);
 };

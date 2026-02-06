@@ -32,7 +32,7 @@ void AWraithMolotovArea::DealOvertimeDamage()
 			BurnExplosionBoostPercentage += GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 			BurnExplosionBoostPercentage += GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
 		}
-		Targets[i]->SetupBurningState(Damage, EffectTick, DamageTick, BurnExplosionBoostPercentage);
+		Targets[i]->SetupBurningState(EBurningType::Molotov, Damage, EffectTick, DamageTick, BurnExplosionBoostPercentage);
 	}
 }
 

@@ -12,7 +12,7 @@ bool UEnemyAnimationInstance::IsPlaying(const EEnemyAnimState InState)
         LoadMontageIfNotLoaded(InState);
         return Montage_IsPlaying(Montages.Find(InState)->Get());
     }
-    UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in IsPlaying"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
+    //UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in IsPlaying"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));
     return false;
 }
 

@@ -33,6 +33,7 @@
 #include "PossessionGame/Enums/EUIBar.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EVfxType.h"
+#include "PossessionGame/Enums/EWarningIndicator.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/Interfaces/Interactable.h"
 #include "PossessionGame/UI/MainWidgets/AbilitiesMenuUI.h"
@@ -348,6 +349,7 @@ void AEnemy::PossessedBy(AController* NewController)
 	AssetsManager->PlaySound2D(ESound::OnHijack);
 	AssetsManager->RemoveStoredSound(ESound::GuardianSlowMotion);
 	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeepFps);
+	AssetsManager->RemoveStoredSound(ESound::PlayerBurning);
 	GetWorldTimerManager().SetTimer(AI_TriggerDeathVoiceLineHandle, this, &AEnemy::AI_TriggerDeathVoiceLine, 1.f);
 	P_Setup();
 	DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(NSLOCTEXT("ST_Localization", "Hijacked", "Hijacked"));
@@ -397,7 +399,7 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 			case EDamageReason::WraithEnemyMeteor:
 				if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility3, EUpgradeAttribute::Special1))
 				{
-					SetupMeteorBurningState(1.f, 3.f, 0.2f);
+					SetupBurningState(EBurningType::Meteor, 1.f, 3.f, 0.2f);
 				}
 				break;
 			default: ;
@@ -520,26 +522,15 @@ void AEnemy::RemoveDisablingActionEffect()
 	if (DisablingActionsEffectsCount == 0) AllDisablingActionsFinished();
 }
 
-void AEnemy::SetupBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick, const float InBurningDamageBoostPercentage)
+void AEnemy::SetupBurningState(const EBurningType InBurningType, const float InBurningDamage, const float InBurningDuration, const float InBurningTick, const float InBurningDamageBoostPercentage)
 {
-	const bool bIsAlreadyBurning = BurningLogicData.GetIsBurning();
-	const bool bIsBurningTickSame = BurningLogicData == InBurningTick;
-	BurningLogicData.AddBurnState(InBurningDamage, InBurningTick, InBurningDamageBoostPercentage);
-	if (!bIsAlreadyBurning || !bIsBurningTickSame) GetWorldTimerManager().SetTimer(BurningTickingHandle, this, &AEnemy::ReceiveBurnDamage, InBurningTick, true);
-	GetWorldTimerManager().SetTimer(BurningStateFinishHandle, this, &AEnemy::StopBurningState, InBurningDuration);
-}
-
-void AEnemy::SetupMeteorBurningState(const float InBurningDamage, const float InBurningDuration, const float InBurningTick)
-{
-	const bool bIsAlreadyBurning = MeteorBurningLogicData.GetIsBurning();
-	const bool bIsBurningTickSame = MeteorBurningLogicData == InBurningTick;
-	MeteorBurningLogicData.AddBurnState(InBurningDamage, InBurningTick);
-	if (!bIsAlreadyBurning || !bIsBurningTickSame)
+	if (BurningLogicData.GetBurningType() != InBurningType)
 	{
 		if (bIsHijacked) P_AddAndSetBurnVfx();
-		GetWorldTimerManager().SetTimer(MeteorBurningTickingHandle, this, &AEnemy::ReceiveMeteorBurnDamage, InBurningTick, true);
+		GetWorldTimerManager().SetTimer(BurningTickingHandle, this, &AEnemy::ReceiveBurnDamage, InBurningTick, true);
 	}
-	GetWorldTimerManager().SetTimer(MeteorBurningStateFinishHandle, this, &AEnemy::StopMeteorBurningState, InBurningDuration);
+	BurningLogicData.AddBurnState(InBurningType, InBurningDamage, InBurningTick, InBurningDamageBoostPercentage);
+	GetWorldTimerManager().SetTimer(BurningStateFinishHandle, this, &AEnemy::StopBurningState, InBurningDuration);
 }
 
 void AEnemy::AddSlowingStack(const float InSlowPercentage)
@@ -1058,8 +1049,6 @@ void AEnemy::ApplyEmpEffect(const float InEffectDuration)
 
 void AEnemy::ReceiveBurnDamage() { UGameplayStatics::ApplyDamage(this, BurningLogicData.GetDamage(), nullptr, nullptr, UDamageType::StaticClass()); }
 
-void AEnemy::ReceiveMeteorBurnDamage() { UGameplayStatics::ApplyDamage(this, MeteorBurningLogicData.GetDamage(), nullptr, nullptr, UDamageType::StaticClass()); }
-
 void AEnemy::Heal(const float InHealAmount)
 {
 	CurrentHp += InHealAmount;
@@ -1075,7 +1064,6 @@ void AEnemy::SetActionSpeed(const float InSpeed)
 {
 	if (!AI_Data || !AnimInstance || !Weapon) return;
 	ActionSpeed = InSpeed + AdditionalActionSpeedValue;
-	//bActionSpeedModified = !FMath::IsNearlyEqual(InSpeed, 1.f, 0.1f); LEFT ONLY IF LATER IT WOULD BE NEEDED.
 	SetMaxWalkSpeed(CurrentMoveMode);
 	AnimInstance->SetGlobalPlayRate(ActionSpeed);
 	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
@@ -1426,10 +1414,10 @@ void AEnemy::P_TriggerTakeDamageEffects()
 
 void AEnemy::P_EnableCriticalDamageIndicator()
 {
+	P_SetWarningIndicator(EWarningIndicator::CriticalDamage);
 	GetWorldTimerManager().SetTimer(P_TriggerCriticalDamageIndicatorHandle, this, &AEnemy::P_TriggerCriticalDamageIndicator, 0.5f, true);
 	bIsCriticallyDamaged = true;
 	P_ToggleCriticallyDamagedEffects(1.f);
-	P_HUD->ToggleCriticalDamageIndicator();
 	AssetsManager->PlaySound2D(ESound::CriticalHealthEnter);
 	AssetsManager->PlaySound2D(ESound::CriticalDamageBeepFps, true);
 }
@@ -1447,6 +1435,7 @@ void AEnemy::P_InitiateDeathEvents()
 	P_ConfigurePostProcessEffectsAfterDeath();
 	AssetsManager->RemoveStoredSound(ESound::GuardianSlowMotion);
 	AssetsManager->RemoveStoredSound(ESound::CriticalDamageBeepFps);
+	AssetsManager->RemoveStoredSound(ESound::PlayerBurning);
 	DelegateManager->OnPlayerDeath.Broadcast();
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, 3.f, FLinearColor::Black, false, true);
 	if (!DelegateManager->RequestIsArenaMode.Execute()) GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UDeathScreenUI>(EWidget::DeathMenuUI)->OpenUI();
@@ -1624,7 +1613,7 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 	CurrentLookedAtEnemy = nullptr;
 }
 
-void AEnemy::P_TriggerCriticalDamageIndicator() const { if (P_HUD) P_HUD->ToggleCriticalDamageIndicator(); }
+void AEnemy::P_TriggerCriticalDamageIndicator() const { if (P_HUD) P_HUD->ToggleWarningIndicator(); }
 
 void AEnemy::P_ContinuousFovChange()
 {
@@ -1797,13 +1786,21 @@ void AEnemy::P_CancelHijackingProcess()
 
 void AEnemy::P_AddAndSetBurnVfx()
 {
+	P_SetWarningIndicator(EWarningIndicator::Burn);
+	GetWorldTimerManager().SetTimer(P_TriggerBurnIndicatorHandle, this, &AEnemy::P_TriggerBurnIndicator, 0.25f, true);
+	AssetsManager->PlaySound2D(ESound::PlayerCaughtOnFire);
+	AssetsManager->PlaySound2D(ESound::PlayerBurning, true);
 	if (!MID_Burn) MID_Burn = UMaterialInstanceDynamic::Create(MI_Burn, this);
 	GetWorldTimerManager().SetTimer(P_ProcessBurnVfxHandle, this, &AEnemy::P_ProcessBurnVfx, 0.025f, true);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::PlayerBurnEffect, MID_Burn, 1.f);
 }
 
-void AEnemy::P_RemoveBurnVfx() const
+void AEnemy::P_RemoveBurnVfx()
 {
+	UE_LOG(LogTemp, Error, TEXT("P_REMOVE BURN SFX"));
+	AssetsManager->RemoveStoredSound(ESound::PlayerBurning);
+	if (P_HUD) P_HUD->DisableWarningIndicator();
+	GetWorldTimerManager().ClearTimer(P_TriggerBurnIndicatorHandle);
 	if (!MID_Burn) return;
 	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::PlayerBurnEffect, MID_Burn, 0.f);
 }
@@ -1818,6 +1815,20 @@ void AEnemy::P_ProcessBurnVfx()
 		P_BurnVfxRadiusValue = 4.f;
 		GetWorldTimerManager().ClearTimer(P_ProcessBurnVfxHandle);
 	}
+}
+
+void AEnemy::P_TriggerBurnIndicator() const
+{
+	if (!P_HUD) return;
+	P_HUD->ToggleWarningIndicator();
+}
+
+void AEnemy::P_SetWarningIndicator(const EWarningIndicator InWarningIndicator)
+{
+	UE_LOG(LogTemp, Error, TEXT("WARNING INDICATOR: %s"), *UEnum::GetValueAsString(InWarningIndicator));
+	if (!P_HUD || CurrentWarningIndicator == EWarningIndicator::CriticalDamage) return;
+	CurrentWarningIndicator = InWarningIndicator;
+	P_HUD->SetWarningIndicator(InWarningIndicator);
 }
 
 EDamageReason AEnemy::ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser)
@@ -1860,7 +1871,7 @@ void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float
 		case EDamageReason::WraithPlayerMeteor:
 			if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility3, EUpgradeAttribute::Special1))
 			{
-				SetupMeteorBurningState(2.f, 3.f, 0.2f);
+				SetupBurningState(EBurningType::Meteor, 2.f, 3.f, 0.2f);
 			}
 		break;
 		default: ;
@@ -2055,15 +2066,9 @@ void AEnemy::DisableSkeletalMesh() const
 
 void AEnemy::StopBurningState()
 {
+	if (bIsHijacked) P_RemoveBurnVfx();
 	BurningLogicData.StopBurnState();
 	GetWorldTimerManager().ClearTimer(BurningTickingHandle);
-}
-
-void AEnemy::StopMeteorBurningState()
-{
-	if (bIsHijacked) P_RemoveBurnVfx();
-	MeteorBurningLogicData.StopBurnState();
-	GetWorldTimerManager().ClearTimer(MeteorBurningTickingHandle);
 }
 
 void AEnemy::TogglePoisonSlowVfx(const bool bState)

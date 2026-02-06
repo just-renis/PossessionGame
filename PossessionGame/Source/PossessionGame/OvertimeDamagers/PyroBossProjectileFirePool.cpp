@@ -25,7 +25,7 @@ void APyroBossProjectileFirePool::DealOvertimeDamage()
 	for (int32 i = 0; i < Targets.Num(); i++)
 	{
 		if (!Targets[i]) continue;
-		Targets[i]->SetupBurningState(Damage, EffectTick, DamageTick);
+		Targets[i]->SetupBurningState(EBurningType::PyroBossProjectileFirePool, Damage, EffectTick, DamageTick);
 	}
 }
 

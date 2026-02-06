@@ -26,7 +26,7 @@ void APyroBoss::BeginPlay()
 	CharacterName = ECharacterType::PyroBoss;
 	Super::BeginPlay();
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::MinionBoss);
-	GetWorldTimerManager().SetTimer(TESTHandle, this, &APyroBoss::TEST, 1.f, true);
+	GetWorldTimerManager().SetTimer(TESTHandle, this, &APyroBoss::TEST, 6.f, true);
 }
 
 void APyroBoss::InitiateDeath()

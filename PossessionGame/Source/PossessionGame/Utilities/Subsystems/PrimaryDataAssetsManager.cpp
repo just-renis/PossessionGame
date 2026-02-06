@@ -312,6 +312,7 @@ void UPrimaryDataAssetsManager::SetupSound2D(const FSoundContainer& InSoundData,
 	if (InSoundData.GetSoundContainer()->bIsCharacterTypeDependant) VolumeMultiplier = bIsPlayer ? InSoundData.GetSoundContainer()->PlayerVolume : InSoundData.GetSoundContainer()->EnemyVolume;
 	if (bStoreSoundRef)
 	{
+		if (StoredSounds.Contains(InSoundName)) return;
 		StoredSounds.Add(InSoundName, UGameplayStatics::SpawnSound2D(GetGameInstance()->GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), VolumeMultiplier));
 	}
 	else UGameplayStatics::PlaySound2D(GetGameInstance()->GetWorld(), InSoundData.GetSoundContainer()->Sound.Get(), VolumeMultiplier);

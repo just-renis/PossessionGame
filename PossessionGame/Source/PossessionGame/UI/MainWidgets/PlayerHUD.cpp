@@ -101,16 +101,32 @@ void UPlayerHUD::UpdateHijackIndicator(const bool bState, const FText& InKeyName
 	else if (PressKeyBindSizeBox) PressKeyBindSizeBox->SetRenderOpacity(0.f);
 }
 
-void UPlayerHUD::ToggleCriticalDamageIndicator() const
+void UPlayerHUD::SetWarningIndicator(const EWarningIndicator InWarningIndicator) const
 {
-	if (!CriticalDamageIndicator) return;
-	CriticalDamageIndicator->SetVisibility(CriticalDamageIndicator->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
+	if (!LeftWarningIndicator || !RightWarningIndicator) return;
+	if (const TObjectPtr<UTexture2D>* WarningIndicatorTexture = WarningIndicators.Find(InWarningIndicator))
+	{
+		LeftWarningIndicator->SetBrushFromTexture(*WarningIndicatorTexture);
+		RightWarningIndicator->SetBrushFromTexture(*WarningIndicatorTexture);	
+	}
+}
+
+void UPlayerHUD::ToggleWarningIndicator() const
+{
+	if (!WarningIndicatorBox) return;
+	WarningIndicatorBox->SetVisibility(WarningIndicatorBox->GetVisibility() == ESlateVisibility::SelfHitTestInvisible ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
+}
+
+void UPlayerHUD::DisableWarningIndicator() const
+{
+	if (!WarningIndicatorBox) return;
+	WarningIndicatorBox->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UPlayerHUD::ConfigureUIs()
 {
 	if (AnnouncementInv) AnnouncementInv->SetVisibility(ESlateVisibility::Collapsed);
-	if (CriticalDamageIndicator) CriticalDamageIndicator->SetVisibility(ESlateVisibility::Collapsed);
+	if (WarningIndicatorBox) WarningIndicatorBox->SetVisibility(ESlateVisibility::Collapsed);
 	if (InfoPanel) InfoPanel->Setup(CharacterType);
 	if (!GetAbilityPanel()) return;
 	GetAbilityPanel()->CollapseAbilityIcon(0);
