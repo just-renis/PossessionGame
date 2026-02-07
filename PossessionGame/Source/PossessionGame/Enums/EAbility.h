@@ -26,5 +26,6 @@ enum class EAbility : uint8
     TankAbility2,
     WraithAbility1,
     WraithAbility2,
-    WraithAbility3
+    WraithAbility3,
+    PyroBossAbility1
 };

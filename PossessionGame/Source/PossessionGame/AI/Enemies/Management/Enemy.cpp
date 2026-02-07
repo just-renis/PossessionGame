@@ -1158,13 +1158,14 @@ void AEnemy::AI_StopAbilitiesEvents() const
 	switch (AI->GetCurrentStateTreeEvent())
 	{
 		case EStateTreeEvent::WardenBeamShot: AI_StopAbility(0); break;
-		case EStateTreeEvent::MinionBossStomp: AI_StopAbility(0); break;
-		case EStateTreeEvent::MinionBossLaserEye: AI_StopAbility(1); break;
 		case EStateTreeEvent::RangerLaunchGrenade: AI_StopAbility(0); break;
 		case EStateTreeEvent::RangerDeployShield: AI_StopAbility(1); break;
 		case EStateTreeEvent::TricksterLaunchPoisonGrenade: AI_StopAbility(0); break;
 		case EStateTreeEvent::BreacherBash: AI_StopAbility(1); break;
 		case EStateTreeEvent::WraithMeteorShower: AI_StopAbility(2); break;
+		case EStateTreeEvent::MinionBossStomp: AI_StopAbility(0); break;
+		case EStateTreeEvent::MinionBossLaserEye: AI_StopAbility(1); break;
+		case EStateTreeEvent::PyroBossActivateFireFloor: AI_StopAbility(0); break;
 		default: ;
 	}
 }
@@ -1797,7 +1798,6 @@ void AEnemy::P_AddAndSetBurnVfx()
 
 void AEnemy::P_RemoveBurnVfx()
 {
-	UE_LOG(LogTemp, Error, TEXT("P_REMOVE BURN SFX"));
 	AssetsManager->RemoveStoredSound(ESound::PlayerBurning);
 	if (P_HUD) P_HUD->DisableWarningIndicator();
 	GetWorldTimerManager().ClearTimer(P_TriggerBurnIndicatorHandle);
@@ -1825,7 +1825,6 @@ void AEnemy::P_TriggerBurnIndicator() const
 
 void AEnemy::P_SetWarningIndicator(const EWarningIndicator InWarningIndicator)
 {
-	UE_LOG(LogTemp, Error, TEXT("WARNING INDICATOR: %s"), *UEnum::GetValueAsString(InWarningIndicator));
 	if (!P_HUD || CurrentWarningIndicator == EWarningIndicator::CriticalDamage) return;
 	CurrentWarningIndicator = InWarningIndicator;
 	P_HUD->SetWarningIndicator(InWarningIndicator);

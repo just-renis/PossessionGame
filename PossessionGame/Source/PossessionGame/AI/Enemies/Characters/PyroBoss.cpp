@@ -1,12 +1,17 @@
 ﻿#include "PyroBoss.h"
-
 #include "Algo/RandomShuffle.h"
+#include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
+
+void APyroBoss::MarkFloorLavaAbilityReady()
+{
+	GetWorldTimerManager().SetTimer(ActivateFloorLavaHandle, this, &APyroBoss::ActivateFloorLava, 0.25f, true);
+}
 
 void APyroBoss::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
 {
@@ -26,7 +31,6 @@ void APyroBoss::BeginPlay()
 	CharacterName = ECharacterType::PyroBoss;
 	Super::BeginPlay();
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::MinionBoss);
-	GetWorldTimerManager().SetTimer(TESTHandle, this, &APyroBoss::TEST, 6.f, true);
 }
 
 void APyroBoss::InitiateDeath()
@@ -43,8 +47,11 @@ void APyroBoss::ReceiveDamage(float InDamage, const EDamageReason InDamageReason
 
 void APyroBoss::ApplyEmpEffect(const float InEffectDuration) { Super::ApplyEmpEffect(InEffectDuration * 0.5f); }
 
-void APyroBoss::TEST()
+void APyroBoss::ActivateFloorLava()
 {
+	if (IsActionsDisabled()) return;
+	GetWorldTimerManager().ClearTimer(ActivateFloorLavaHandle);
+	if (AI) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::PyroBossActivateFireFloor);
 	TArray Indices = { 0, 1, 2, 3, 4, 5, 6, 7 };
 	Algo::RandomShuffle(Indices);
 	const int32 A = Indices[0];

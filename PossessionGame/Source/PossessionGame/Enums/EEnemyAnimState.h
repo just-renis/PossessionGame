@@ -15,5 +15,6 @@ enum class EEnemyAnimState : uint8
 	StopLaser,
 	StunEffect,
 	Bash,
-	MeteorShower
+	MeteorShower,
+	ActivateFloorLava
 };

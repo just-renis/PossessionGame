@@ -23,6 +23,7 @@ void FStateTreeData::TriggerEvent(const EStateTreeEvent InEventName) const
 		case EStateTreeEvent::WardenBeamShot: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Warden.BeamShot")); break;
 		case EStateTreeEvent::BreacherBash: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Breacher.Bash")); break;
 		case EStateTreeEvent::WraithMeteorShower: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Wraith.MeteorShower")); break;
+		case EStateTreeEvent::PyroBossActivateFireFloor: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.PyroBoss.ActivateFireFloor")); break;
 		default: ;
 	}
 }
