@@ -20,14 +20,34 @@ void APyroBossFireFloor::BeginPlay()
 {
 	Super::BeginPlay();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->TriggerFireFloors.AddUObject(this, &APyroBossFireFloor::TriggerFireWarning);
+	TWeakObjectPtr WeakThis = this;
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->LoadVfx(EVfx::PyroBossFloorFireWarning, [WeakThis]
+	{
+		if (!WeakThis.IsValid() || !WeakThis.Get()) return;
+		if (WeakThis->WarningFire)
+		{
+			WeakThis->WarningFire->DestroyComponent();
+			WeakThis->WarningFire = nullptr;
+		}
+		WeakThis->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::PyroBossFloorFireWarning, nullptr, &WeakThis->WarningFire, WeakThis->Mesh, NAME_None, true);
+	});
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->LoadVfx(EVfx::PyroBossEnvironmentFire, [WeakThis]
+	{
+		if (!WeakThis.IsValid() || !WeakThis.Get()) return;
+		if (WeakThis->EnvironmentFire)
+		{
+			WeakThis->EnvironmentFire->DestroyComponent();
+			WeakThis->EnvironmentFire = nullptr;
+		}
+		WeakThis->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::PyroBossEnvironmentFire, nullptr, &WeakThis->EnvironmentFire, WeakThis->Mesh, NAME_None, true);
+	});
 }
 
 void APyroBossFireFloor::TriggerFireWarning(const TArray<int32>& InIds)
 {
 	if (!InIds.Contains(Id)) return;
 	bIsWarningActive = true;
-	if (!WarningFire) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::PyroBossFloorFireWarning, [this]() -> bool { return bIsWarningActive; }, &WarningFire, Mesh);
-	else WarningFire->Activate(true);
+	if (WarningFire) WarningFire->Activate(true);
 	GetWorldTimerManager().SetTimer(TriggerFireHandle, this, &APyroBossFireFloor::TriggerFire, TriggerFireTime);
 }
 
@@ -37,8 +57,7 @@ void APyroBossFireFloor::TriggerFire()
 	bIsWarningActive = false;
 	if (Collision) Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	bIsFireActive = true;
-	if (!EnvironmentFire) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::PyroBossEnvironmentFire, [this]() -> bool { return bIsFireActive; }, &EnvironmentFire, Mesh);
-	else EnvironmentFire->Activate(true);
+	if (EnvironmentFire) EnvironmentFire->Activate(true);
 	GetWorldTimerManager().SetTimer(FireUptimeHandle, this, &APyroBossFireFloor::TurnOffFire, FireUptime);
 }
 

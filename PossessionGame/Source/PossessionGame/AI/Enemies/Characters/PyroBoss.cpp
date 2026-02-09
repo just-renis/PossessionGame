@@ -52,11 +52,10 @@ void APyroBoss::ActivateFloorLava()
 	if (IsActionsDisabled()) return;
 	GetWorldTimerManager().ClearTimer(ActivateFloorLavaHandle);
 	if (AI) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::PyroBossActivateFireFloor);
+	const float HpPercentageLeft = CurrentHp / MaxHp;
+	const int32 NumIndicesToUse = HpPercentageLeft > 0.7f ? 1.f : HpPercentageLeft > 0.4f ? 2 : 3;
 	TArray Indices = { 0, 1, 2, 3, 4, 5, 6, 7 };
 	Algo::RandomShuffle(Indices);
-	const int32 A = Indices[0];
-	const int32 B = Indices[1];
-	const int32 C = Indices[2];
-	Indices = TArray { A, B, C };
+	Indices.SetNum(NumIndicesToUse);
 	DelegateManager->TriggerFireFloors.Broadcast(Indices);
 }
