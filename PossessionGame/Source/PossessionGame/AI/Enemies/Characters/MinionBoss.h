@@ -78,7 +78,6 @@ private:
 	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName) override;
 	
 	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void HandleDeactivation() override;
 	virtual void DestroyThis() override;
 	virtual void InitiateDeath() override;

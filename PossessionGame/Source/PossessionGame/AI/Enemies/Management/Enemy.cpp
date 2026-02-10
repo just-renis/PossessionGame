@@ -1166,6 +1166,7 @@ void AEnemy::AI_StopAbilitiesEvents() const
 		case EStateTreeEvent::MinionBossStomp: AI_StopAbility(0); break;
 		case EStateTreeEvent::MinionBossLaserEye: AI_StopAbility(1); break;
 		case EStateTreeEvent::PyroBossActivateFireFloor: AI_StopAbility(0); break;
+		case EStateTreeEvent::PyroBossStomp: AI_StopAbility(1); break;
 		default: ;
 	}
 }
@@ -2006,6 +2007,7 @@ void AEnemy::ResetActionSpeed()
 
 void AEnemy::ApplyStunEffect(const float InEffectDuration)
 {
+	if (FMath::IsNearlyEqual(InEffectDuration, 0.f, 0.01f)) return;
 	if (!bIsHijacked)
 	{
 		bAffectedByStun = true;

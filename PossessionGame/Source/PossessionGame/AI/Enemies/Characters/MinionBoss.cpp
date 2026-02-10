@@ -188,14 +188,6 @@ void AMinionBoss::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(TryTriggerStompHandle, this, &AMinionBoss::TryTriggerStomp, 0.2f, true);
 }
 
-void AMinionBoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	GetWorld()->GetTimerManager().ClearTimer(TryTriggerStompHandle);
-	GetWorld()->GetTimerManager().ClearTimer(CheckLaserEyeDistanceHandle);
-	GetWorld()->GetTimerManager().ClearTimer(DealLaserDamageToPlayerHandle);
-	Super::EndPlay(EndPlayReason);
-}
-
 void AMinionBoss::HandleDeactivation()
 {
 	for (int32 i = 0; i < Weapons.Num(); i++) Weapons[i]->DeactivateWeapon();

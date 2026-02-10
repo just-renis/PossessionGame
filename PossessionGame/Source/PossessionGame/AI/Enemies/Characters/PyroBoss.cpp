@@ -1,5 +1,6 @@
 ﻿#include "PyroBoss.h"
 #include "Algo/RandomShuffle.h"
+#include "Engine/OverlapResult.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
@@ -11,6 +12,11 @@
 void APyroBoss::MarkFloorLavaAbilityReady()
 {
 	GetWorldTimerManager().SetTimer(ActivateFloorLavaHandle, this, &APyroBoss::ActivateFloorLava, 0.25f, true);
+}
+
+void APyroBoss::MarkStompAbilityReady()
+{
+	GetWorldTimerManager().SetTimer(ActivateStompHandle, this, &APyroBoss::ActivateStomp, 0.25f, true);
 }
 
 void APyroBoss::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
@@ -49,13 +55,39 @@ void APyroBoss::ApplyEmpEffect(const float InEffectDuration) { Super::ApplyEmpEf
 
 void APyroBoss::ActivateFloorLava()
 {
-	if (IsActionsDisabled()) return;
+	if (!AI || IsActionsDisabled() || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	SetIsActionInMotion(true);
 	GetWorldTimerManager().ClearTimer(ActivateFloorLavaHandle);
-	if (AI) AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::PyroBossActivateFireFloor);
+	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::PyroBossActivateFireFloor);
 	const float HpPercentageLeft = CurrentHp / MaxHp;
-	const int32 NumIndicesToUse = HpPercentageLeft > 0.7f ? 1.f : HpPercentageLeft > 0.4f ? 2 : 3;
+	const int32 NumIndicesToUse = HpPercentageLeft > SecondPhaseHpPercentage ? 1.f : HpPercentageLeft > ThirdPhaseHpPercentage ? 2.f : 3.f;
 	TArray Indices = { 0, 1, 2, 3, 4, 5, 6, 7 };
 	Algo::RandomShuffle(Indices);
 	Indices.SetNum(NumIndicesToUse);
 	DelegateManager->TriggerFireFloors.Broadcast(Indices);
+}
+
+void APyroBoss::ActivateStomp()
+{
+	if (!AI || IsActionsDisabled() || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompTriggerRadiusInMeters * 100.f), Params);
+	for (const FOverlapResult& Overlap : Overlaps)
+	{
+		TObjectPtr<AActor> Actor = Overlap.GetActor();
+		if (!Actor || !Actor->ActorHasTag("Player")) continue;
+		SetIsActionInMotion(true);
+		GetWorldTimerManager().ClearTimer(ActivateStompHandle);
+		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::PyroBossStomp);
+		return;
+	}
+}
+
+void APyroBoss::ClearTimers()
+{
+	Super::ClearTimers();
+	GetWorldTimerManager().ClearTimer(ActivateFloorLavaHandle);
+	GetWorldTimerManager().ClearTimer(ActivateStompHandle);
 }

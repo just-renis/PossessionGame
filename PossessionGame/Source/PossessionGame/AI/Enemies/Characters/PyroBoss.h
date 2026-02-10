@@ -9,9 +9,23 @@ class POSSESSIONGAME_API APyroBoss : public AEnemy
 {
 	GENERATED_BODY()
 public:
+	float GetStompRadius() const { return StompRadiusInMeters; }
+	float GetStompDamage() const { return StompDamage; }
+	float GetStunDuration() const { return StunDuration; }
+	
 	void MarkFloorLavaAbilityReady();
+	void MarkStompAbilityReady();
 private:
 	FTimerHandle ActivateFloorLavaHandle;
+	FTimerHandle ActivateStompHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
+	float SecondPhaseHpPercentage = 0.7f;
+	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
+	float ThirdPhaseHpPercentage = 0.4f;
+	UPROPERTY(EditDefaultsOnly, Category = "Stomp", meta = (AllowPrivateAccess = true))
+	float StompTriggerRadiusInMeters = 4.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Stomp", meta = (AllowPrivateAccess = true))
+	float StunDuration = 1.f;
 	
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 	virtual void AI_SetupWeapon() override;
@@ -21,4 +35,6 @@ private:
 	virtual void ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent) override;
 	virtual void ApplyEmpEffect(const float InEffectDuration) override;
 	void ActivateFloorLava();
+	void ActivateStomp();
+	virtual void ClearTimers() override;
 };

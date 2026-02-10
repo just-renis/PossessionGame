@@ -4,7 +4,6 @@
 
 void UPyroBossAbility1::AI_Execute()
 {
-	Proprietor->SetIsActionInMotion(true);
 	Proprietor->SetIsAbilityInAction(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::ActivateFloorLava);
 	Super::AI_Execute();

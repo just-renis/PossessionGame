@@ -72,5 +72,4 @@ void APyroBossFireFloor::AddOverlappedTarget(UPrimitiveComponent* OverlappedComp
 {
 	if (!OtherActor->ActorHasTag("Player")) return;
 	Cast<AEnemy>(OtherActor)->SetupBurningState(EBurningType::PyroBossEnvironmentFire, 3.f, 4.f, 0.25f);
-	if (Collision) Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
