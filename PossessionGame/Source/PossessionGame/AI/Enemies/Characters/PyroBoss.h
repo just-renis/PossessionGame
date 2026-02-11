@@ -16,6 +16,8 @@ public:
 	void MarkFloorLavaAbilityReady();
 	void MarkStompAbilityReady();
 private:
+	APyroBoss();
+	
 	FTimerHandle ActivateFloorLavaHandle;
 	FTimerHandle ActivateStompHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
@@ -28,9 +30,23 @@ private:
 	float StunDuration = 1.f;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> SendSignalVfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> SpawnSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> DeathSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> TakeDamageSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> ActivateFlameFloorSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> InitiateFlameFloorSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> StompSfx;
 	
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 	virtual void AI_SetupWeapon() override;
+	virtual void AI_PlaySpawnSound() override;
+	virtual void AI_PlayDeathSound() override;
 
 	virtual void BeginPlay() override;
 	virtual void InitiateDeath() override;

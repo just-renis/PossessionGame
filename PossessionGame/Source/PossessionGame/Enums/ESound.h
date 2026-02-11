@@ -161,5 +161,6 @@ enum class ESound : uint16
 	PyroBossInitiateFlameFloor,
 	PyroBossProjectileImpact,
 	PyroBossShoot,
-	PyroBossStomp
+	PyroBossStomp,
+	HackTerminalSmoke
 };

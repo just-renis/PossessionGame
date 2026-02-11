@@ -1,7 +1,8 @@
 ﻿#include "PyroBoss.h"
-
 #include "NiagaraComponent.h"
 #include "Algo/RandomShuffle.h"
+#include "Components/AudioComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Engine/OverlapResult.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECharacterType.h"
@@ -22,6 +23,39 @@ void APyroBoss::MarkStompAbilityReady()
 	GetWorldTimerManager().SetTimer(ActivateStompHandle, this, &APyroBoss::ActivateStomp, 0.25f, true);
 }
 
+APyroBoss::APyroBoss()
+{
+	if (AI_HpBarComponent)
+	{
+		AI_HpBarComponent->DestroyComponent();
+		AI_HpBarComponent = nullptr;
+	}
+	SpawnSfx = CreateDefaultSubobject<UAudioComponent>("SpawnSfx");
+	SpawnSfx->SetAutoActivate(false);
+	SpawnSfx->SetupAttachment(GetMesh());
+	DeathSfx = CreateDefaultSubobject<UAudioComponent>("DeathSfx");
+	DeathSfx->SetAutoActivate(false);
+	DeathSfx->SetupAttachment(GetMesh());
+	TakeDamageSfx = CreateDefaultSubobject<UAudioComponent>("TakeDamageSfx");
+	TakeDamageSfx->SetAutoActivate(false);
+	TakeDamageSfx->SetupAttachment(GetMesh());
+	ActivateFlameFloorSfx = CreateDefaultSubobject<UAudioComponent>("ActivateFlameFloorSfx");
+	ActivateFlameFloorSfx->SetAutoActivate(false);
+	ActivateFlameFloorSfx->SetupAttachment(GetMesh());
+	InitiateFlameFloorSfx = CreateDefaultSubobject<UAudioComponent>("InitiateFlameFloorSfx");
+	InitiateFlameFloorSfx->SetAutoActivate(false);
+	InitiateFlameFloorSfx->SetupAttachment(GetMesh());
+	StompSfx = CreateDefaultSubobject<UAudioComponent>("StompSfx");
+	StompSfx->SetAutoActivate(false);
+	StompSfx->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::PyroBossSpawn, SpawnSfx);
+	Sounds.Add(ESound::PyroBossDeath, DeathSfx);
+	Sounds.Add(ESound::PyroBossTakeDamage, TakeDamageSfx);
+	Sounds.Add(ESound::PyroBossActivateFlameFloor, ActivateFlameFloorSfx);
+	Sounds.Add(ESound::PyroBossInitiateFlameFloor, InitiateFlameFloorSfx);
+	Sounds.Add(ESound::PyroBossStomp, StompSfx);
+}
+
 void APyroBoss::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
 {
 	if (bHitByOtherAI) return;
@@ -33,6 +67,14 @@ void APyroBoss::AI_SetupWeapon()
 {
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::PyroBossWeapon, GetMesh());
 	Super::AI_SetupWeapon();
+}
+
+void APyroBoss::AI_PlaySpawnSound() { PlaySound(ESound::PyroBossSpawn, true); }
+
+void APyroBoss::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::PyroBossDeath);
 }
 
 void APyroBoss::BeginPlay()
@@ -51,6 +93,7 @@ void APyroBoss::InitiateDeath()
 void APyroBoss::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent)
 {
 	Super::ReceiveDamage(InDamage, InDamageReason, PointDamageEvent, RadialDamageEvent);
+	if (FMath::RandRange(1, 10) >= 9) PlaySound(ESound::PyroBossTakeDamage);
 	(void)DelegateManager->UpdateGlobalHpBar.ExecuteIfBound(CurrentHp, MaxHp);
 }
 
@@ -59,6 +102,8 @@ void APyroBoss::ApplyEmpEffect(const float InEffectDuration) { Super::ApplyEmpEf
 void APyroBoss::ActivateFloorLava()
 {
 	if (!AI || IsActionsDisabled() || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	PlaySound(ESound::PyroBossActivateFlameFloor);
+	PlaySound(ESound::PyroBossInitiateFlameFloor);
 	SetIsActionInMotion(true);
 	if (!SendSignalVfx) AssetsManager->AttachVfx(EVfx::PyroBossSendSignal, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &SendSignalVfx, GetMesh(), FName("DeathSocket"));
 	else SendSignalVfx->Activate(true);
@@ -86,6 +131,7 @@ void APyroBoss::ActivateStomp()
 		SetIsActionInMotion(true);
 		GetWorldTimerManager().ClearTimer(ActivateStompHandle);
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::PyroBossStomp);
+		PlaySound(ESound::PyroBossStomp);
 		return;
 	}
 }

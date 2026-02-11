@@ -705,6 +705,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_PyroBossProjectileImpact", ESound::PyroBossProjectileImpact);
 	SoundMap.Add("PA_PyroBossShoot", ESound::PyroBossShoot);
 	SoundMap.Add("PA_PyroBossStomp", ESound::PyroBossStomp);
+	SoundMap.Add("PA_HackTerminalSmoke", ESound::HackTerminalSmoke);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

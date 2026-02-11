@@ -9,6 +9,11 @@ class POSSESSIONGAME_API APyroBossWeapon : public AOneHandedWeapon
 {
 	GENERATED_BODY()
 
+	APyroBossWeapon();
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> ShootSfx;
+
 	virtual void AI_Shoot() override;
 
 	virtual void BeginPlay() override;
