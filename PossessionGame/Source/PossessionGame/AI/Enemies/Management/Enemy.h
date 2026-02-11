@@ -606,7 +606,8 @@ private:
 	void P_CancelHijackingProcess();
 	void P_AddAndSetBurnVfx();
 	void P_RemoveBurnVfx();
-	void P_ProcessBurnVfx();
+	void P_ProcessBurnVfxForward();
+	void P_ProcessBurnVfxReverse();
 	void P_TriggerBurnIndicator() const;
 	void P_SetWarningIndicator(const EWarningIndicator InWarningIndicator);
 

@@ -153,5 +153,13 @@ enum class ESound : uint16
 	WraithMeteorTriggerImpact,
 	WraithMeteorSpawn,
 	PlayerBurning,
-	PlayerCaughtOnFire
+	PlayerCaughtOnFire,
+	PyroBossSpawn,
+	PyroBossDeath,
+	PyroBossTakeDamage,
+	PyroBossActivateFlameFloor,
+	PyroBossInitiateFlameFloor,
+	PyroBossProjectileImpact,
+	PyroBossShoot,
+	PyroBossStomp
 };

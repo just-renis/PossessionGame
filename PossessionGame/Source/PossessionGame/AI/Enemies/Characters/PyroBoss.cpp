@@ -1,4 +1,6 @@
 ﻿#include "PyroBoss.h"
+
+#include "NiagaraComponent.h"
 #include "Algo/RandomShuffle.h"
 #include "Engine/OverlapResult.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
@@ -7,6 +9,7 @@
 #include "PossessionGame/Enums/EEnemyHpBar.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 
 void APyroBoss::MarkFloorLavaAbilityReady()
@@ -57,6 +60,8 @@ void APyroBoss::ActivateFloorLava()
 {
 	if (!AI || IsActionsDisabled() || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
 	SetIsActionInMotion(true);
+	if (!SendSignalVfx) AssetsManager->AttachVfx(EVfx::PyroBossSendSignal, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &SendSignalVfx, GetMesh(), FName("DeathSocket"));
+	else SendSignalVfx->Activate(true);
 	GetWorldTimerManager().ClearTimer(ActivateFloorLavaHandle);
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::PyroBossActivateFireFloor);
 	const float HpPercentageLeft = CurrentHp / MaxHp;

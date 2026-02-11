@@ -26,6 +26,8 @@ private:
 	float StompTriggerRadiusInMeters = 4.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Stomp", meta = (AllowPrivateAccess = true))
 	float StunDuration = 1.f;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> SendSignalVfx;
 	
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 	virtual void AI_SetupWeapon() override;

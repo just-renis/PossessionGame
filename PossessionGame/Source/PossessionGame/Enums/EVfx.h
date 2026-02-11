@@ -124,5 +124,6 @@ enum class EVfx : uint16
 	PyroBossProjectileTrail,
 	PyroBossProjectileFirePool,
 	PyroBossEnvironmentFire,
-	PyroBossFloorFireWarning
+	PyroBossFloorFireWarning,
+	PyroBossSendSignal
 };

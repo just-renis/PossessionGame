@@ -1793,7 +1793,7 @@ void AEnemy::P_AddAndSetBurnVfx()
 	AssetsManager->PlaySound2D(ESound::PlayerCaughtOnFire);
 	AssetsManager->PlaySound2D(ESound::PlayerBurning, true);
 	if (!MID_Burn) MID_Burn = UMaterialInstanceDynamic::Create(MI_Burn, this);
-	GetWorldTimerManager().SetTimer(P_ProcessBurnVfxHandle, this, &AEnemy::P_ProcessBurnVfx, 0.025f, true);
+	GetWorldTimerManager().SetTimer(P_ProcessBurnVfxHandle, this, &AEnemy::P_ProcessBurnVfxForward, 0.025f, true);
 	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::PlayerBurnEffect, MID_Burn, 1.f);
 }
 
@@ -1803,19 +1803,32 @@ void AEnemy::P_RemoveBurnVfx()
 	if (P_HUD) P_HUD->DisableWarningIndicator();
 	GetWorldTimerManager().ClearTimer(P_TriggerBurnIndicatorHandle);
 	if (!MID_Burn) return;
-	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::PlayerBurnEffect, MID_Burn, 0.f);
+	GetWorldTimerManager().SetTimer(P_ProcessBurnVfxHandle, this, &AEnemy::P_ProcessBurnVfxReverse, 0.025f, true);
 }
 
-void AEnemy::P_ProcessBurnVfx()
+void AEnemy::P_ProcessBurnVfxForward()
 {
 	if (!MID_Burn) return;
 	P_BurnVfxRadiusValue -= 0.1875f;
-	MID_Burn->SetScalarParameterValue(FName("Radius"), P_BurnVfxRadiusValue);
 	if (P_BurnVfxRadiusValue <= 2.51f)
+	{
+		P_BurnVfxRadiusValue = 2.5f;
+		GetWorldTimerManager().ClearTimer(P_ProcessBurnVfxHandle);
+	}
+	MID_Burn->SetScalarParameterValue(FName("Radius"), P_BurnVfxRadiusValue);
+}
+
+void AEnemy::P_ProcessBurnVfxReverse()
+{
+	if (!MID_Burn) return;
+	P_BurnVfxRadiusValue += 0.1875f;
+	if (P_BurnVfxRadiusValue >= 3.99f)
 	{
 		P_BurnVfxRadiusValue = 4.f;
 		GetWorldTimerManager().ClearTimer(P_ProcessBurnVfxHandle);
+		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::PlayerBurnEffect, MID_Burn, 0.f);
 	}
+	MID_Burn->SetScalarParameterValue(FName("Radius"), P_BurnVfxRadiusValue);
 }
 
 void AEnemy::P_TriggerBurnIndicator() const

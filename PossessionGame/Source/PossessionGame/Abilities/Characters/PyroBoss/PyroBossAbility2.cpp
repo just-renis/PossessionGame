@@ -5,7 +5,6 @@
 
 void UPyroBossAbility2::AI_Execute()
 {
-	UE_LOG(LogTemp, Error, TEXT("EXECUTE STOMP"));
 	Proprietor->SetIsAbilityInAction(true);
 	Proprietor->GetAnimInstance()->SetNonBlendableSlotState(true);
 	Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Stomp);
@@ -51,7 +50,6 @@ void UPyroBossAbility2::CooldownLogic(const float InDeltaTime)
 	if (CurrentChargesAmount > 0)
 	{
 		bFirstStompSucceed = false;
-		UE_LOG(LogTemp, Error, TEXT("MARK STOMP READY"));
 		Proprietor->MarkStompAbilityReady();
 	}
 }

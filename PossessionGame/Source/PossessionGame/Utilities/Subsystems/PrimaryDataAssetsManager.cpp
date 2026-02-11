@@ -695,6 +695,16 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_WraithMeteorSpawn", ESound::WraithMeteorSpawn);
 	SoundMap.Add("PA_PlayerBurning", ESound::PlayerBurning);
 	SoundMap.Add("PA_PlayerCaughtOnFire", ESound::PlayerCaughtOnFire);
+	SoundMap.Add("PA_BreacherDeath", ESound::BreacherDeath);
+	SoundMap.Add("PA_BreacherSpawn", ESound::BreacherSpawn);
+	SoundMap.Add("PA_PyroBossSpawn", ESound::PyroBossSpawn);
+	SoundMap.Add("PA_PyroBossDeath", ESound::PyroBossDeath);
+	SoundMap.Add("PA_PyroBossTakeDamage", ESound::PyroBossTakeDamage);
+	SoundMap.Add("PA_PyroBossActivateFlameFloor", ESound::PyroBossActivateFlameFloor);
+	SoundMap.Add("PA_PyroBossInitiateFlameFloor", ESound::PyroBossInitiateFlameFloor);
+	SoundMap.Add("PA_PyroBossProjectileImpact", ESound::PyroBossProjectileImpact);
+	SoundMap.Add("PA_PyroBossShoot", ESound::PyroBossShoot);
+	SoundMap.Add("PA_PyroBossStomp", ESound::PyroBossStomp);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -843,6 +853,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_PyroBossProjectileFirePool", EVfx::PyroBossProjectileFirePool);
 	VfxsMap.Add("PA_PyroBossEnvironmentFire", EVfx::PyroBossEnvironmentFire);
 	VfxsMap.Add("PA_PyroBossFloorFireWarning", EVfx::PyroBossFloorFireWarning);
+	VfxsMap.Add("PA_PyroBossSendSignal", EVfx::PyroBossSendSignal);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
