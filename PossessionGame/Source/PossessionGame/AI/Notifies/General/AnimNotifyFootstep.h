@@ -14,5 +14,5 @@ class POSSESSIONGAME_API UAnimNotifyFootstep : public UAnimNotify
 	UPROPERTY(EditAnywhere, Category = "Sound", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USoundBase> Sound;
 
-	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 };

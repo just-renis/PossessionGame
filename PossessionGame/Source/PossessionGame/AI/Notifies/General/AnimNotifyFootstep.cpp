@@ -4,7 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
-void UAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+void UAnimNotifyFootstep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	if (!MeshComp || !Sound) return;
 	const TObjectPtr<AActor> Owner = MeshComp->GetOwner();

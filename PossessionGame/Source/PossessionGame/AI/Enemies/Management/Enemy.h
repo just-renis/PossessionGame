@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EBurningType.h"
 #include "Enemy.generated.h"
 
+enum class EPoolObject : uint8;
 enum class EBurningType : uint8;
 enum class EWarningIndicator : uint8;
 class USaveSlotManager;
@@ -157,6 +158,7 @@ public:
 	void AI_SetRespawnRequest(const float InHpPercentage, const bool bIsCorrupted);
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection);
 	virtual void AI_StunEffectEnded();
+	void AI_TriggerGrenadeProjection(const EPoolObject InProjectileName, const EVfx InMarkerVfxName);
 
 	virtual void P_RemoveReloadSound() {}
 	void P_ReEnableRunIfToggleMode();

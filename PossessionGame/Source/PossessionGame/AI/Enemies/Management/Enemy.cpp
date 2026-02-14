@@ -220,6 +220,35 @@ void AEnemy::AI_StunEffectEnded()
 	RemoveDisablingActionEffect();
 }
 
+void AEnemy::AI_TriggerGrenadeProjection(const EPoolObject InProjectileName, const EVfx InMarkerVfxName)
+{
+	FProjectileData* ProjectileData = GetWeapon()->GetProjectileData(InProjectileName);
+	if (!ProjectileData) return;
+	const int32 ProjectileAmount = 1 + GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(InProjectileName, EUpgradeAttribute::ProjectilesAmount, false, true);
+	const FAdditionalProjectiles AdditionalProjectilesData = ProjectileData->GetMultiProjectileData(ProjectileAmount);
+	for (int32 i = 0; i < ProjectileAmount; i++)
+	{
+		FPredictProjectilePathParams PathParams;
+		PathParams.StartLocation = GetWeapon()->GetSocketLocation(ProjectileData->ProjectileSocketName);
+		const FRotator BaseRotation = GetWeapon()->GetSocketRotation(ProjectileData->ProjectileSocketName);
+		const FVector FinalDirection = BaseRotation.RotateVector(AdditionalProjectilesData.Data[i].Direction);
+		PathParams.LaunchVelocity = FinalDirection.GetSafeNormal() * AdditionalProjectilesData.Data[i].MaxSpeed;
+		PathParams.bTraceWithCollision = true;
+		PathParams.ProjectileRadius = 1.f;
+		PathParams.MaxSimTime = 8.f;
+		PathParams.SimFrequency = 30.f;
+		PathParams.OverrideGravityZ = GetWorld()->GetGravityZ() * AdditionalProjectilesData.Data[i].GravityScale;
+		PathParams.TraceChannel = ECC_GameTraceChannel6;
+		FPredictProjectilePathResult PathResult;
+		if (UGameplayStatics::PredictProjectilePath(GetWorld(), PathParams, PathResult))
+		{
+			FRotator MarkerRotation = PathResult.HitResult.ImpactNormal.Rotation();
+			MarkerRotation.Pitch -= 90.f; 
+			AssetsManager->SpawnVfx(InMarkerVfxName, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, PathResult.HitResult.Location, MarkerRotation);
+		}
+	}
+}
+
 void AEnemy::P_ReEnableRunIfToggleMode()
 {
 	if (!bPlayerRunModeIsToggle || !bWasRunningBeforeShooting) return;
