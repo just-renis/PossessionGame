@@ -183,11 +183,14 @@ EUpgrade URunSaveSlot::GetUpgradeByAbilityName(const EAbility InAbilityName)
 		case EAbility::BreacherAbility1: return EUpgrade::BreacherAbility1;
 		case EAbility::BreacherAbility2: return EUpgrade::BreacherAbility2;
 		case EAbility::BreacherAbility3: return EUpgrade::BreacherAbility3;
-		case EAbility::TankAbility1: return EUpgrade::TankAbility1;
-		case EAbility::TankAbility2: return EUpgrade::TankAbility2;
 		case EAbility::WraithAbility1: return EUpgrade::WraithAbility1;
 		case EAbility::WraithAbility2: return EUpgrade::WraithAbility2;
 		case EAbility::WraithAbility3: return EUpgrade::WraithAbility3;
+		case EAbility::SpyAbility1: return EUpgrade::SpyAbility1;
+		case EAbility::SpyAbility2: return EUpgrade::SpyAbility2;
+		case EAbility::SpyAbility3: return EUpgrade::SpyAbility3;
+		case EAbility::TankAbility1: return EUpgrade::TankAbility1;
+		case EAbility::TankAbility2: return EUpgrade::TankAbility2;
 		default: ;
 	}
 	return EUpgrade::None;

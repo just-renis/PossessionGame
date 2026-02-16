@@ -83,11 +83,14 @@ EAbility UUpgradeDetailsPanelUI::GetAbilityByUpgradeName() const
 		case EUpgrade::BreacherAbility1: return EAbility::BreacherAbility1;
 		case EUpgrade::BreacherAbility2: return EAbility::BreacherAbility2;
 		case EUpgrade::BreacherAbility3: return EAbility::BreacherAbility3;
-		case EUpgrade::TankAbility1: return EAbility::TankAbility1;
-		case EUpgrade::TankAbility2: return EAbility::TankAbility2;
 		case EUpgrade::WraithAbility1: return EAbility::WraithAbility1;
 		case EUpgrade::WraithAbility2: return EAbility::WraithAbility2;
 		case EUpgrade::WraithAbility3: return EAbility::WraithAbility3;
+		case EUpgrade::SpyAbility1: return EAbility::SpyAbility1;
+		case EUpgrade::SpyAbility2: return EAbility::SpyAbility2;
+		case EUpgrade::SpyAbility3: return EAbility::SpyAbility3;
+		case EUpgrade::TankAbility1: return EAbility::TankAbility1;
+		case EUpgrade::TankAbility2: return EAbility::TankAbility2;
 		default: return EAbility::None;
 	}
 }

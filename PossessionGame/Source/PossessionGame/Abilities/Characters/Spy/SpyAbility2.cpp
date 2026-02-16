@@ -31,14 +31,12 @@ void USpyAbility2::CastLineTrace()
 
 void USpyAbility2::TryHitEnemy(FHitResult& HitResult)
 {
-	if (HitResult.GetActor()->ActorHasTag("Enemy"))
-	{
-		TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
-		if (Enemy->GetIsAlive()) Execute(HitResult);
-	}
+	if (!HitResult.GetActor()->ActorHasTag("Enemy")) return;
+	const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
+	if (Enemy->GetIsAlive()) Execute(HitResult);
 }
 
-void USpyAbility2::Execute(FHitResult& HitResult)
+void USpyAbility2::Execute(const FHitResult& HitResult)
 {
 	Proprietor->SetActorLocation(HitResult.Location);
 	Super::P_Execute();

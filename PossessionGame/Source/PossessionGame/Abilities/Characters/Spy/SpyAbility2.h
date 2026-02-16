@@ -23,5 +23,5 @@ private:
 	virtual void SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) override;
 	void CastLineTrace();
 	void TryHitEnemy(FHitResult& HitResult);
-	void Execute(FHitResult& HitResult);
+	void Execute(const FHitResult& HitResult);
 };

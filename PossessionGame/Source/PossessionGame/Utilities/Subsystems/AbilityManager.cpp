@@ -70,13 +70,16 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::Breacher, 0, EAbility::BreacherAbility1, UBreacherAbility1::StaticClass());
     AddAbility(ECharacterType::Breacher, 1, EAbility::BreacherAbility2, UBreacherAbility2::StaticClass());
     AddAbility(ECharacterType::Breacher, 2, EAbility::BreacherAbility3, UBreacherAbility3::StaticClass());
-    AddAbility(ECharacterType::Tank, 0, EAbility::TankAbility1, UTankAbility1::StaticClass());
-    AddAbility(ECharacterType::Tank, 1, EAbility::TankAbility2, UTankAbility2::StaticClass());
     AddAbility(ECharacterType::Wraith, 0, EAbility::WraithAbility1, UWraithAbility1::StaticClass());
     AddAbility(ECharacterType::Wraith, 1, EAbility::WraithAbility2, UWraithAbility2::StaticClass());
     AddAbility(ECharacterType::Wraith, 2, EAbility::WraithAbility3, UWraithAbility3::StaticClass());
     AddAbility(ECharacterType::PyroBoss, 0, EAbility::PyroBossAbility1, UPyroBossAbility1::StaticClass());
     AddAbility(ECharacterType::PyroBoss, 1, EAbility::PyroBossAbility2, UPyroBossAbility2::StaticClass());
+    AddAbility(ECharacterType::Spy, 0, EAbility::SpyAbility1, USpyAbility1::StaticClass());
+    AddAbility(ECharacterType::Spy, 1, EAbility::SpyAbility2, USpyAbility2::StaticClass());
+    AddAbility(ECharacterType::Spy, 2, EAbility::SpyAbility3, USpyAbility3::StaticClass());
+    AddAbility(ECharacterType::Tank, 0, EAbility::TankAbility1, UTankAbility1::StaticClass());
+    AddAbility(ECharacterType::Tank, 1, EAbility::TankAbility2, UTankAbility2::StaticClass());
 }
 
 void UAbilityManager::AddAbility(const ECharacterType InCharacterName, const int32 InAbilityIndex, const EAbility InAbilityName, const TSubclassOf<UAbility>& InAbilityClass)

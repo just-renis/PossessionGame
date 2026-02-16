@@ -58,6 +58,7 @@ void UAbilitiesMenuUI::OpenUI()
 	TricksterCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	BreacherCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	WraithCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
+	SpyCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	TankCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	FirstTimeOpenInstance = false;
 	TriggerSwitchOnTheFirstOpen();
@@ -77,6 +78,7 @@ void UAbilitiesMenuUI::CloseUI()
 	TricksterCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	BreacherCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	WraithCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
+	SpyCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	TankCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	SaveSlot->SaveSlot();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestAddAbilitiesToUpgradePool.ExecuteIfBound(SaveSlot);
@@ -94,12 +96,14 @@ void UAbilitiesMenuUI::NativeConstruct()
 	TricksterCharacterAbilities->SetAbilitiesIconData();
 	BreacherCharacterAbilities->SetAbilitiesIconData();
 	WraithCharacterAbilities->SetAbilitiesIconData();
+	SpyCharacterAbilities->SetAbilitiesIconData();
 	TankCharacterAbilities->SetAbilitiesIconData();
 	GuardianCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	RangerCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	TricksterCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	BreacherCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	WraithCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
+	SpyCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	TankCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 }
 

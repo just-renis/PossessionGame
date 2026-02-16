@@ -208,4 +208,5 @@ void USaveSlot::AddDefaultAbilities()
 	if (GetCharacterChosenAbilities(ECharacterType::Breacher).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Breacher, 0, -1);
 	if (GetCharacterChosenAbilities(ECharacterType::Tank).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Tank, 0, -1);
 	if (GetCharacterChosenAbilities(ECharacterType::Wraith).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Wraith, 0, -1);
+	if (GetCharacterChosenAbilities(ECharacterType::Spy).Abilities.IsEmpty()) AddChosenAbilities(ECharacterType::Spy, 0, -1);
 }

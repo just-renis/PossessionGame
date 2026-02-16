@@ -16,9 +16,12 @@ enum class EUpgrade : uint8
 	BreacherAbility1,
 	BreacherAbility2,
 	BreacherAbility3,
-	TankAbility1,
-	TankAbility2,
 	WraithAbility1,
 	WraithAbility2,
-	WraithAbility3
+	WraithAbility3,
+	SpyAbility1,
+	SpyAbility2,
+	SpyAbility3,
+	TankAbility1,
+	TankAbility2
 };

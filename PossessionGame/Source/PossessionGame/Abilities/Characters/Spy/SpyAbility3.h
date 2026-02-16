@@ -16,8 +16,8 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<ASpy> Proprietor;
-	
-	bool IsProprietorPossessed();
+
+	virtual bool IsProprietorPossessed() override;
 	
 	virtual void SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) override;
 };
