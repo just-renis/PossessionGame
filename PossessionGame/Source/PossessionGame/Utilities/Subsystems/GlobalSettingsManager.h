@@ -12,6 +12,7 @@ class POSSESSIONGAME_API UGlobalSettingsManager : public UGameInstanceSubsystem
 	GENERATED_BODY()
 public:
 	bool GetIsGodModeEnabled() const { return bIsGodModeEnabled; }
+	bool GetIsXrayEnabled() const { return bIsXrayEnabled; }
 	FVector2D GetMouseSensitivity() const { return MouseSensitivity; }
 	FText GetKeyBindText(const FName& InKeyName) const;
 	FText* GetKeyDisplayName(const FKey& InKeyName);
@@ -22,8 +23,11 @@ public:
 	void SetMouseHorizontalSensitivity(const float InValue) { MouseSensitivity.X = InValue; }
 	void SetMouseVerticalSensitivity(const float InValue) { MouseSensitivity.Y = InValue; }
 	void SetCodexData(const TObjectPtr<UCodexData>& InCodexData) { CodexData = InCodexData; }
+	void SetXray(const bool bState) { bIsXrayEnabled = bState; }
+	void Init(const TObjectPtr<UDelegateManager>& InDelegateManager);
 private:
 	bool bIsGodModeEnabled = false;
+	bool bIsXrayEnabled = false;
 	FVector2D MouseSensitivity = FVector2D(1.f, 1.f);
 	UPROPERTY()
 	TObjectPtr<UCodexData> CodexData;

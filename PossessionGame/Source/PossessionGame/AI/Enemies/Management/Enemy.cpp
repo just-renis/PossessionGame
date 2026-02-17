@@ -676,8 +676,8 @@ void AEnemy::AI_Destroy()
 	if (AI)
 	{
 		GetWorld()->GetSubsystem<UEnemyCommunicator>()->RemoveEnemy(this);
-		DelegateManager->OnXRayThroughWallsChange.RemoveAll(this);
-		ChangeXRayState(false);
+		DelegateManager->OnXrayChange.RemoveAll(this);
+		ChangeXrayState(false);
 		AI_StopAllAbilities();
 		GetMesh()->SetAnimInstanceClass(nullptr);
 		GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
@@ -975,7 +975,8 @@ void AEnemy::BeginPlay()
 	GetWorldTimerManager().SetTimer(CheckIfFallOutOfWorldHandle, this, &AEnemy::CheckIfFallOutOfWorld, 5.f, true);
 	GetWorldTimerManager().SetTimer(AI_SetCharacterMovementSpeedHandle, this, &AEnemy::AI_SetCharacterMovementSpeed, 0.05f, true);
 	GetWorldTimerManager().SetTimer(AI_PlaySpawnSoundHandle, this, &AEnemy::AI_PlaySpawnSound, 3.f + UKismetMathLibrary::RandomInteger(4), false);
-	DelegateManager->OnXRayThroughWallsChange.AddUObject(this, &AEnemy::ChangeXRayState);
+	ChangeXrayState(GlobalSettingsManager->GetIsXrayEnabled());
+	DelegateManager->OnXrayChange.AddUObject(this, &AEnemy::ChangeXrayState);
 	DelegateManager->AddActionSpeedBoost.AddUObject(this, &AEnemy::AddAdditionalActionSpeed);
 	DelegateManager->OnTimeDilationChanged.AddUObject(this, &AEnemy::AI_TimeDilationChange);
 	AI_Setup();
@@ -1892,7 +1893,7 @@ void AEnemy::SetupStimuliSource()
 	StimuliSource->RegisterWithPerceptionSystem();
 }
 
-void AEnemy::ChangeXRayState(const bool bState) const
+void AEnemy::ChangeXrayState(const bool bState) const
 {
 	GetMesh()->SetRenderCustomDepth(bState);
 	GetMesh()->SetCustomDepthStencilValue(bState);

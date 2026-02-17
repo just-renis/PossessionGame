@@ -27,6 +27,7 @@ void UPossessionGameInstance::Init()
 	GetSubsystem<UDelegateManager>()->LoadLevel.BindUObject(this, &UPossessionGameInstance::OpenLevel);
 	GetSubsystem<UDelegateManager>()->RequestAddAbilitiesToUpgradePool.BindUObject(this, &UPossessionGameInstance::AddAvailableUpgrades);
 	GetSubsystem<UDelegateManager>()->RequestIsDemo.BindUObject(this, &UPossessionGameInstance::IsDemo);
+	GetSubsystem<UGlobalSettingsManager>()->Init(GetSubsystem<UDelegateManager>());
 	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
 	if (GetSubsystem<USaveSlotManager>()->GetMetaSaveSlot()->GetIsFirstLaunch())
 	{

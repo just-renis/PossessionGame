@@ -1,7 +1,19 @@
 #include "SpyWeapon.h"
+#include "Camera/CameraComponent.h"
+#include "PossessionGame/AI/Enemies/Characters/Spy.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Enums/EVfxType.h"
+#include "PossessionGame/Projectiles/Throwables/BreacherBarrel.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
+
+void ASpyWeapon::AI_Shoot()
+{
+	//PlaySound(ESound::TricksterShoot);
+	Super::AI_Shoot();
+	ShootProjectile(EPoolObject::SpyProjectile, false, NAME_None, true);
+}
 
 void ASpyWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
@@ -29,22 +41,25 @@ void ASpyWeapon::BeginPlay()
 	AnimInstance->SetWeaponName(Name);
 }
 
-void ASpyWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, const bool bFromFirstWeapon)
+void ASpyWeapon::HitScanLogic()
 {
-	Super::ShootProjectile(InProjectileName, bIsFromAbility);
-	if (CurrentAmmo <= MagazineCap * 0.1f) OnAmmoPercentageChanged.Broadcast(10);
-	else if (CurrentAmmo <= MagazineCap * 0.5f) OnAmmoPercentageChanged.Broadcast(50);
-}
-
-void ASpyWeapon::SetConceal(bool bState)
-{
-	Mesh->SetScalarParameterValueOnMaterials("Opacity", bState ? 0.2f : 1.f);
-	HandsMesh->SetScalarParameterValueOnMaterials("Opacity", bState ? 0.2f : 1.f);
-}
-
-void ASpyWeapon::AI_Shoot()
-{
-	//PlaySound(ESound::TricksterShoot);
-	Super::AI_Shoot();
-	ShootProjectile(EPoolObject::SpyProjectile, false, NAME_None, true);
+	FHitResult HitResult;
+	const FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
+	FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
+	EndLocation += FVector(FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()), FMath::RandRange(-P_GetHitScanCalcSpread(), P_GetHitScanCalcSpread()));
+	FpsTrailVfxLogic();
+	FCollisionQueryParams QueryParams;
+	QueryParams.bTraceComplex = false;
+	QueryParams.bReturnPhysicalMaterial = false;
+	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 3.f);
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, Cast<ASpy>(Proprietor)->GetXrayState() ? ECC_GameTraceChannel3 : ECC_Visibility, QueryParams))
+	{
+		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), nullptr, HitResult.Location, HitResult.ImpactNormal.Rotation(), Proprietor->GetVariation());
+		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible"))
+		{
+			HitResult.TraceStart = StartLocation;
+			DealPointDamage(HitResult);
+		}
+		else if (HitResult.GetActor()->ActorHasTag("BreacherBarrel")) Cast<ABreacherBarrel>(HitResult.GetActor())->Explode();
+	}
 }

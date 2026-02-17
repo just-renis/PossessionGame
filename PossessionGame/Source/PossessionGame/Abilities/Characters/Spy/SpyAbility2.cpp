@@ -1,16 +1,15 @@
 #include "SpyAbility2.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Characters/Spy.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 
 void USpyAbility2::AI_Execute()
 {
-	if (CanExecute())
-	{
-		Proprietor->SetActorLocation(GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetFarthestEnemyLocation(Proprietor->GetActorLocation()));
-		Proprietor->StopConcealingAbility(false);
-		Super::AI_Execute();
-	}
+	if (!CanExecute()) return;
+	Proprietor->SetActorLocation(GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetFarthestEnemyLocation(Proprietor->GetActorLocation()));
+	Super::AI_Execute();
 }
 
 void USpyAbility2::P_Execute() { CastLineTrace(); }
@@ -26,20 +25,45 @@ void USpyAbility2::CastLineTrace()
 	const FVector StartLocation = Proprietor->GetCamera()->GetComponentLocation();
 	const FVector EndLocation = StartLocation + Proprietor->GetCamera()->GetForwardVector() * 15000.f;
 	QueryParams.AddIgnoredActor(Proprietor);
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, Proprietor->GetXRayState() ? ECC_GameTraceChannel3 : ECC_GameTraceChannel5, QueryParams)) TryHitEnemy(HitResult);
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, Proprietor->GetXrayState() ? ECC_GameTraceChannel3 : ECC_GameTraceChannel5, QueryParams)) TryHitEnemy(HitResult);
 }
 
-void USpyAbility2::TryHitEnemy(FHitResult& HitResult)
+void USpyAbility2::TryHitEnemy(const FHitResult& HitResult)
 {
 	if (!HitResult.GetActor()->ActorHasTag("Enemy")) return;
-	const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
-	if (Enemy->GetIsAlive()) Execute(HitResult);
+	Target = Cast<AEnemy>(HitResult.GetActor());
+	if (!Target) return;
+	TargetLocation = Target->GetActorLocation();
+	if (Target->GetIsAlive()) InitiateProcess();
 }
 
-void USpyAbility2::Execute(const FHitResult& HitResult)
+void USpyAbility2::InitiateProcess()
 {
-	Proprietor->SetActorLocation(HitResult.Location);
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Dilation);
+	DelegateManager->OnTimeDilationChanged.Broadcast(Dilation);
+	DefaultCameraLocation = Proprietor->GetCamera()->GetComponentLocation();
+	Proprietor->SetInputState(true);
+	Proprietor->GetWorldTimerManager().SetTimer(TransferHandle, this, &USpyAbility2::ProcessTransfer, 0.02f * Dilation, true);
 	Super::P_Execute();
-	Cast<AEnemy>(HitResult.GetActor())->InitiateDeath();
-	Proprietor->StopConcealingAbility();
+}
+
+void USpyAbility2::ProcessTransfer()
+{
+	const FVector CurrentCameraLocation = Proprietor->GetCamera()->GetComponentLocation();
+	const FVector Direction = (TargetLocation - CurrentCameraLocation).GetSafeNormal();
+	const FVector NewLocation = CurrentCameraLocation + Direction * TransferSpeed;
+	Proprietor->GetCamera()->SetWorldLocation(NewLocation);
+	const float Distance = FVector::Dist(NewLocation, TargetLocation);
+	if (Distance <= TransferSpeed) FinishTransfer();
+}
+
+void USpyAbility2::FinishTransfer()
+{
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
+	DelegateManager->OnTimeDilationChanged.Broadcast(1.f);
+	Proprietor->GetCamera()->SetWorldLocation(DefaultCameraLocation);
+	Proprietor->SetInputState(false);
+	Proprietor->GetWorldTimerManager().ClearTimer(TransferHandle);
+	Proprietor->SetActorLocation(TargetLocation);
+	if (Target && Target->GetIsAlive()) Target->InitiateDeath();
 }

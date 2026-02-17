@@ -15,6 +15,13 @@ public:
 	
 	virtual void P_Execute() override;
 private:
+	float TransferSpeed = 100.f;
+	float Dilation = 0.01f;
+	FTimerHandle TransferHandle;
+	FVector TargetLocation;
+	FVector DefaultCameraLocation;
+	UPROPERTY()
+	TObjectPtr<AEnemy> Target;
 	UPROPERTY()
 	TObjectPtr<ASpy> Proprietor;
 	
@@ -22,6 +29,8 @@ private:
 	
 	virtual void SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) override;
 	void CastLineTrace();
-	void TryHitEnemy(FHitResult& HitResult);
-	void Execute(const FHitResult& HitResult);
+	void TryHitEnemy(const FHitResult& HitResult);
+	void InitiateProcess();
+	void ProcessTransfer();
+	void FinishTransfer();
 };

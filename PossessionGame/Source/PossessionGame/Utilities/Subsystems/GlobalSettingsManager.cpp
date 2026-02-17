@@ -1,4 +1,6 @@
 #include "GlobalSettingsManager.h"
+
+#include "DelegateManager.h"
 #include "EnhancedInputSubsystems.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 
@@ -21,3 +23,5 @@ FText UGlobalSettingsManager::GetKeyBindText(const FName& InKeyName) const
 FText* UGlobalSettingsManager::GetKeyDisplayName(const FKey& InKeyName) { return CustomKeyDisplayNames.Find(InKeyName); }
 
 FText* UGlobalSettingsManager::GetLocalizedMappingName(const FString& InMappingName) { return LocalizedActionDisplayNames.Find(InMappingName); }
+
+void UGlobalSettingsManager::Init(const TObjectPtr<UDelegateManager>& InDelegateManager) { InDelegateManager->OnXrayChange.AddUObject(this, &UGlobalSettingsManager::SetXray); }

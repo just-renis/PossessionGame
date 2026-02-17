@@ -617,7 +617,7 @@ private:
 
 	void TickAbilities(const float InDeltaTime);
 	void SetupStimuliSource();
-	void ChangeXRayState(const bool bState) const;
+	void ChangeXrayState(const bool bState) const;
 	void SetupUserSettings() const;
 	void ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage);
 	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;

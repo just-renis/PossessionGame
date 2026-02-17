@@ -2,28 +2,23 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
-#include "PossessionGame/Interfaces/Concealable.h"
 #include "Spy.generated.h"
 
 UCLASS()
-class POSSESSIONGAME_API ASpy : public AEnemy, public IConcealable
+class POSSESSIONGAME_API ASpy : public AEnemy
 {
 	GENERATED_BODY()
 public:
-	bool GetXRayState() const { return bXRayEnabled; }
+	bool GetXrayState() const { return bXrayEnabled; }
 	
-	virtual void SetConceal(const bool bState) override;
-	void SetXRayState(const bool bState) { bXRayEnabled = bState; }
-	void StopConcealingAbility(const bool bIsPlayer = true);
+	void SetXrayState(const bool bState) { bXrayEnabled = bState; }
 private:
-	bool bXRayEnabled = false;
+	bool bXrayEnabled = false;
 	
 	virtual void AI_SetupWeapon() override;
-	virtual void AI_ShootLogic() override;
 	virtual void AI_SetController() override;
 
 	virtual void P_Setup() override;
-	virtual void P_Shoot() override;
 	virtual void P_SetupLeftClickInputStartedState() override;
 	virtual void P_SetupLeftClickInputTriggeredState() override {}
 	virtual void P_WeaponShoot() override;

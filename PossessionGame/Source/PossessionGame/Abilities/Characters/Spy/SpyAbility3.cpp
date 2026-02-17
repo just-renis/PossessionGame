@@ -4,8 +4,8 @@
 
 void USpyAbility3::P_Execute()
 {
-	DelegateManager->OnXRayThroughWallsChange.Broadcast(true);
-	Proprietor->SetXRayState(true);
+	DelegateManager->OnXrayChange.Broadcast(true);
+	Proprietor->SetXrayState(true);
 	bIsAbilityInDuration = true;
 	Super::P_Execute();
 }
@@ -15,8 +15,8 @@ void USpyAbility3::P_StopAbility()
 	if (bIsAbilityInDuration)
 	{
 		Super::P_StopAbility();
-		Proprietor->SetXRayState(false);
-		DelegateManager->OnXRayThroughWallsChange.Broadcast(false);
+		Proprietor->SetXrayState(false);
+		DelegateManager->OnXrayChange.Broadcast(false);
 	}
 }
 

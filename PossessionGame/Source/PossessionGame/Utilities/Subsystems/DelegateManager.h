@@ -90,7 +90,7 @@ DECLARE_MULTICAST_DELEGATE(FOnDetonateDynamites);
 DECLARE_MULTICAST_DELEGATE(FOnLevelUp);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGlobalGraphicsSettingChange, uint8);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnConcealAbilityChange, const TObjectPtr<AEnemy>&);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnXRayThroughWallsChange, bool);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnXrayChange, bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeaponAmmoChangeOneParam, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameModeInitiator, const EGameMode);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTerminalHackFinish, const EGameMode);
@@ -185,7 +185,7 @@ public:
 	FOnLevelUp OnLevelUp;
 	FOnGlobalGraphicsSettingChange OnGlobalGraphicsSettingChange;
 	FOnConcealAbilityChange OnConcealAbilityChange;
-	FOnXRayThroughWallsChange OnXRayThroughWallsChange;
+	FOnXrayChange OnXrayChange;
 	FOnWeaponAmmoChangeOneParam OnWeaponAmmoChangeOneParam;
 	FOnGameModeInitiator OnGameModeInitiator;
 	FOnTerminalHackFinish OnTerminalHackFinish;
