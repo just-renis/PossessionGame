@@ -15,7 +15,7 @@ public:
 	
 	virtual void P_Execute() override;
 private:
-	float TransferSpeed = 300.f;
+	float TransferSpeed = 150.f;
 	FTimerHandle TransferHandle;
 	FVector TargetLocation;
 	UPROPERTY()
