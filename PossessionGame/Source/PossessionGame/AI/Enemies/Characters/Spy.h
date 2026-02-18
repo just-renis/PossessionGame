@@ -19,6 +19,8 @@ private:
 	bool bIsSecondAbilityActive = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Teleport;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> TeleportKillCameraShake;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> TeleportLinesVfx;
 	UPROPERTY()
@@ -31,6 +33,7 @@ private:
 	virtual void P_SetupLeftClickInputStartedState() override;
 	virtual void P_SetupLeftClickInputTriggeredState() override {}
 	virtual void P_WeaponShoot() override;
+	virtual void P_MakeCameraShake(const ECameraShake InCameraShakeName) override;
 	
 	virtual void BeginPlay() override;
 	void SetTeleportMaterialValue(const float InValue);

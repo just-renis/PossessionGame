@@ -3,7 +3,9 @@
 #include "InputMappingContext.h"
 #include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Controllers/SpyAIController.h"
+#include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
@@ -22,6 +24,7 @@ void ASpy::StartTeleportProcess()
 
 void ASpy::FinishTeleportProcess()
 {
+	P_MakeCameraShake(ECameraShake::SpyTeleportKillCameraShake);
 	Camera->SetWorldLocation(GetActorLocation() + FVector::UpVector * 60.f);
 	bIsInvincible = false;
 	bIsSecondAbilityActive = false;
@@ -49,6 +52,12 @@ void ASpy::P_SetupLeftClickInputStartedState()
 }
 
 void ASpy::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::SpyProjectile); }
+
+void ASpy::P_MakeCameraShake(const ECameraShake InCameraShakeName)
+{
+	if (InCameraShakeName == ECameraShake::SpyTeleportKillCameraShake) UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(TeleportKillCameraShake);
+	else Super::P_MakeCameraShake(InCameraShakeName);
+}
 
 void ASpy::BeginPlay()
 {
