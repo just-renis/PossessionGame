@@ -771,6 +771,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_SpyBulletTrail", EVfx::SpyBulletTrail);
 	VfxsMap.Add("PA_SpyBulletImpact", EVfx::SpyBulletImpact);
 	VfxsMap.Add("PA_SpyFpsBulletTrail", EVfx::SpyFpsBulletTrail);
+	VfxsMap.Add("PA_SpyTeleportLines", EVfx::SpyTeleportLines);
 	VfxsMap.Add("PA_TankMuzzle", EVfx::TankMuzzle);
 	VfxsMap.Add("PA_TankBulletTrail", EVfx::TankBulletTrail);
 	VfxsMap.Add("PA_TankBulletImpact", EVfx::TankBulletImpact);

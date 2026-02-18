@@ -13,5 +13,6 @@ enum class EPostProcessMaterial : uint8
     GuardianShield,
     GuardianTimeStopPulse,
     HijackPulse,
-    PlayerBurnEffect
+    PlayerBurnEffect,
+    SpyTeleportEffect
 };

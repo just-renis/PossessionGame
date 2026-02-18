@@ -1,8 +1,6 @@
 #include "SpyAbility2.h"
 #include "Camera/CameraComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Characters/Spy.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 
 void USpyAbility2::AI_Execute()
@@ -39,11 +37,9 @@ void USpyAbility2::TryHitEnemy(const FHitResult& HitResult)
 
 void USpyAbility2::InitiateProcess()
 {
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Dilation);
-	DelegateManager->OnTimeDilationChanged.Broadcast(Dilation);
-	DefaultCameraLocation = Proprietor->GetCamera()->GetComponentLocation();
+	Proprietor->StartTeleportProcess();
 	Proprietor->SetInputState(true);
-	Proprietor->GetWorldTimerManager().SetTimer(TransferHandle, this, &USpyAbility2::ProcessTransfer, 0.02f * Dilation, true);
+	Proprietor->GetWorldTimerManager().SetTimer(TransferHandle, this, &USpyAbility2::ProcessTransfer, 0.02f, true);
 	Super::P_Execute();
 }
 
@@ -59,9 +55,7 @@ void USpyAbility2::ProcessTransfer()
 
 void USpyAbility2::FinishTransfer()
 {
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
-	DelegateManager->OnTimeDilationChanged.Broadcast(1.f);
-	Proprietor->GetCamera()->SetWorldLocation(DefaultCameraLocation);
+	Proprietor->FinishTeleportProcess();
 	Proprietor->SetInputState(false);
 	Proprietor->GetWorldTimerManager().ClearTimer(TransferHandle);
 	Proprietor->SetActorLocation(TargetLocation);

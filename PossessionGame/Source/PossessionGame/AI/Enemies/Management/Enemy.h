@@ -208,6 +208,7 @@ protected:
 	bool bIsAbilityInAction = false;
 	bool bAffectedByEmp = false;
 	bool bAffectedByStun = false;
+	bool bIsInvincible = false;
 	float MaxHp;
 	float CurrentHp;
 	float DamageReduction = 1.f;
@@ -343,11 +344,9 @@ private:
 	bool bWasRunningBeforeShooting = false;
 	bool bIsSliding = false;
 	bool bIsDoubleJumpOccured = false;
-	bool bIsImmortal = false;
 	bool bIsPoisonSlowAffected = false;
 	bool bHijackVfxAttachRequested = false;
 	bool bPoisonSlowVfxAttachRequested = false;
-	bool bIsInvincible = false;
 	bool bAIRespawnRequested = false;
 	bool bPlayerTakeDamageEffectsEnabled = true;
 	bool bPlayerRunModeIsToggle = false;
@@ -356,6 +355,7 @@ private:
 	bool bIsLookedAtByPlayer = false;
 	bool bHasBeenDamagedRecently = false;
 	bool bIsHijackAble = false;
+	bool bIsImmortal = false;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;

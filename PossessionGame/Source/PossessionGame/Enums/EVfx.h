@@ -43,6 +43,7 @@ enum class EVfx : uint16
 	SpyBulletImpact,
 	SpyMuzzle,
 	SpyFpsBulletTrail,
+	SpyTeleportLines,
 	TankBulletTrail,
 	TankBulletImpact,
 	TankMuzzle,

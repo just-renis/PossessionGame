@@ -15,11 +15,9 @@ public:
 	
 	virtual void P_Execute() override;
 private:
-	float TransferSpeed = 100.f;
-	float Dilation = 0.01f;
+	float TransferSpeed = 300.f;
 	FTimerHandle TransferHandle;
 	FVector TargetLocation;
-	FVector DefaultCameraLocation;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Target;
 	UPROPERTY()

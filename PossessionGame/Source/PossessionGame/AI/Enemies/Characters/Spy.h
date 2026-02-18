@@ -12,8 +12,17 @@ public:
 	bool GetXrayState() const { return bXrayEnabled; }
 	
 	void SetXrayState(const bool bState) { bXrayEnabled = bState; }
+	void StartTeleportProcess();
+	void FinishTeleportProcess();
 private:
 	bool bXrayEnabled = false;
+	bool bIsSecondAbilityActive = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_Teleport;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> TeleportLinesVfx;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Teleport;
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_SetController() override;
@@ -24,4 +33,5 @@ private:
 	virtual void P_WeaponShoot() override;
 	
 	virtual void BeginPlay() override;
+	void SetTeleportMaterialValue(const float InValue);
 };
