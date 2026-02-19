@@ -35,8 +35,11 @@ public:
 private:
 	AMinionBoss();
 
+	float WeaponShootCooldownTimer;
 	FStopLaser StopLaser;
 	FRequestLaserActivityState RequestLaserActivityState;
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Shoot Cooldown", meta = (AllowPrivateAccess = true))
+	float WeaponShootCooldown;
 	
 	bool bIsMoveDirectlyToPlayerTriggered = false;
 	bool bIsStompAvailable = false;

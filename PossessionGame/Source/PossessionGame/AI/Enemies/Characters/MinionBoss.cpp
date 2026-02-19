@@ -115,16 +115,19 @@ void AMinionBoss::AI_SetupWeapon()
 		Weapons[i]->SetProprietor(this);
 		Weapons[i]->PostProprietorSetup();
 	}
-	AI->SetShootCooldown(Weapons[0]->GetShootCooldown());
+	AI->SetShootCooldown(WeaponShootCooldown);
 }
 
 void AMinionBoss::AI_ShootLogic()
 {
+	WeaponShootCooldownTimer += 1.f / 60.f;
+	if (WeaponShootCooldownTimer < WeaponShootCooldown) return;
 	if (!bIsActionInMotion && bCanShoot) AI_Shoot();
 }
 
 void AMinionBoss::AI_Shoot()
 {
+	WeaponShootCooldownTimer = 0.f;
 	Weapons[CurrentWeaponIndex++]->AI_Shoot();
 	if (CurrentWeaponIndex >= 4) CurrentWeaponIndex = 0;
 }
@@ -181,6 +184,7 @@ void AMinionBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::MinionBoss;
 	Super::BeginPlay();
+	WeaponShootCooldownTimer = WeaponShootCooldown;
 	LaserCollision->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionBeginOverlap);
 	LaserCollision->OnComponentEndOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionEndOverlap);
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::MinionBoss);

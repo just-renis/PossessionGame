@@ -11,11 +11,6 @@ EStateTreeRunStatus USTTaskShoot::EnterState(FStateTreeExecutionContext& Context
 	CachedController = Cast<AEnemyAIController>(Context.GetOwner());
 	CachedController->GetStateTreeData().OnStateTreeEvent.BindUObject(this, &USTTaskShoot::FinishTaskByEvent);
 	GetWorld()->GetTimerManager().SetTimer(ShootLogicHandle, this, &USTTaskShoot::ShootLogic, CachedController->GetProprietor()->GetWeapon()->GetShootCooldown(), true);
-	if (!CachedController->GetProprietor()->GetWeapon()->GetIsFirstShotWasShot())
-	{
-		CachedController->GetProprietor()->GetWeapon()->SetFirstShotWasShot();
-		ShootLogic();
-	}
 	return Super::EnterState(Context, Transition);
 }
 

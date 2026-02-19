@@ -154,11 +154,6 @@ void AEnemy::AI_SetupUpgradesAppliance()
 void AEnemy::AI_SetupShootLogic()
 {
 	GetWorld()->GetTimerManager().SetTimer(AI_ShootLogicHandle, this, &AEnemy::AI_MainShootLogic, 1.f / 60.f, true);
-	if (!GetWeapon()->GetIsFirstShotWasShot())
-	{
-		GetWeapon()->SetFirstShotWasShot();
-		AI_MainShootLogic();
-	}
 }
 
 void AEnemy::AI_TriggerVectorBlastSpecialImpact()

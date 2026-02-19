@@ -29,7 +29,6 @@ public:
 
 	bool GetIsReloadEnabled() const { return bIsReloadEnabled; }
 	bool GetIsPossessed() const { return bIsPossessed; }
-	bool GetIsFirstShotWasShot() const { return bFirstShotWasShot; }
 	int32 GetShootCyclesUntilReload() const { return ShootCyclesUntilReload; }
 	int32 GetCurrentAmmoAmount() const { return CurrentAmmo; }
 	int32 GetTotalAmmoAmount() const { return TotalAmmo; }
@@ -74,7 +73,6 @@ public:
 	void P_StopReloadAnimation();
 	
 	virtual void SetWeaponMeshScaleToOriginal() { Mesh->SetRelativeScale3D(OriginalScale); }
-	void SetFirstShotWasShot() { bFirstShotWasShot = true; }
 	virtual void DestroyThis();
 	virtual void SetToOriginalSettings();
 	virtual void DeactivateWeapon();
@@ -150,7 +148,6 @@ protected:
 	virtual void MuzzleLogicFromAbility() {}
 	virtual void FpsTrailVfxLogic();
 private:
-	bool bFirstShotWasShot = false;
 	int32 ShootCyclesUntilReload;
 	FTimerHandle DisableComponentTickHandle;
 	UPROPERTY(EditAnywhere, Category = "Camera", meta = (AllowPrivateAccess = true))

@@ -1,5 +1,4 @@
 ﻿#include "MinionBossHandWeapon.h"
-
 #include "Components/AudioComponent.h"
 
 AMinionBossHandWeapon::AMinionBossHandWeapon()
