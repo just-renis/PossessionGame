@@ -1,8 +1,8 @@
 ﻿#include "SpyHandsAnimInstance.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Enums/EHandsAnimState.h"
 
-void USpyHandsAnimInstance::NativeBeginPlay()
+void USpyHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted)
 {
-	Super::NativeBeginPlay();
-	//GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->OnInvisibilityChange.AddUObject(this, &USpyHandsAnimInstance::SetIsInvisible); SOMETHING
+	Super::OnMontageEnd(InMontage, bIsInterrupted);
+	if (IsMontage(EHandsAnimState::TeleportImpact, InMontage)) (void)OnHandsMontageEnd.ExecuteIfBound(false);
 }

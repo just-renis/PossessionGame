@@ -1,7 +1,10 @@
 #include "SpyAbility2.h"
 #include "Camera/CameraComponent.h"
 #include "PossessionGame/AI/Enemies/Characters/Spy.h"
+#include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
+#include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
+#include "PossessionGame/Weapons/Management/Weapon.h"
 
 void USpyAbility2::AI_Execute()
 {
@@ -37,6 +40,8 @@ void USpyAbility2::TryHitEnemy(const FHitResult& HitResult)
 
 void USpyAbility2::InitiateProcess()
 {
+	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontageWithHold(EHandsAnimState::TeleportTravel, -1.f);
+	Proprietor->SetIsActionInMotion(true);
 	Proprietor->StartTeleportProcess();
 	Proprietor->SetInputState(true);
 	Proprietor->GetWorldTimerManager().SetTimer(TransferHandle, this, &USpyAbility2::ProcessTransfer, 0.02f, true);
@@ -55,6 +60,7 @@ void USpyAbility2::ProcessTransfer()
 
 void USpyAbility2::FinishTransfer()
 {
+	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::TeleportImpact);
 	Proprietor->FinishTeleportProcess();
 	Proprietor->SetInputState(false);
 	Proprietor->GetWorldTimerManager().ClearTimer(TransferHandle);

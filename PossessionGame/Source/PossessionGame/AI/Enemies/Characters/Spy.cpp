@@ -12,6 +12,7 @@
 #include "PossessionGame/Weapons/Character Weapons/SpyWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
+#include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 
 void ASpy::StartTeleportProcess()
 {
@@ -44,6 +45,7 @@ void ASpy::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
+	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ASpy::SetIsActionInMotion);
 }
 
 void ASpy::P_SetupLeftClickInputStartedState()

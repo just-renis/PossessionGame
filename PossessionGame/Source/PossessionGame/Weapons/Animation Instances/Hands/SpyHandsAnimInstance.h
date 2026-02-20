@@ -8,10 +8,6 @@ UCLASS()
 class POSSESSIONGAME_API USpyHandsAnimInstance : public UHandsAnimInstance
 {
 	GENERATED_BODY()
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
-	bool bIsInvisible = false;
 
-	virtual void NativeBeginPlay() override;
-	void SetIsInvisible(bool bState) { bIsInvisible = !bState; }
+	virtual void OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted) override;
 };

@@ -35,19 +35,19 @@ public:
 private:
 	AMinionBoss();
 
-	float WeaponShootCooldownTimer;
 	FStopLaser StopLaser;
 	FRequestLaserActivityState RequestLaserActivityState;
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Shoot Cooldown", meta = (AllowPrivateAccess = true))
-	float WeaponShootCooldown;
 	
 	bool bIsMoveDirectlyToPlayerTriggered = false;
 	bool bIsStompAvailable = false;
+	float WeaponShootCooldownTimer;
 	int32 CurrentWeaponIndex = 0;
 	FTimerHandle CheckLaserEyeDistanceHandle;
 	FTimerHandle DealLaserDamageToPlayerHandle;
 	FTimerHandle MoveDirectlyToPlayerHandle;
 	FTimerHandle TryTriggerStompHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Shoot Cooldown", meta = (AllowPrivateAccess = true))
+	float WeaponShootCooldown;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompTriggerRadiusInMeters = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
