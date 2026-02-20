@@ -14,6 +14,20 @@
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 
+void ASpy::SetXrayState(const bool bState)
+{
+	bXrayEnabled = bState;
+	if (!MID_Xray) MID_Xray = UMaterialInstanceDynamic::Create(MI_Xray, this);
+	if (!MID_DarkXray) MID_DarkXray = UMaterialInstanceDynamic::Create(MID_DarkXray, this);
+	if (bState)
+	{
+		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyXrayEffect, MID_Xray, 1.f);
+		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyDarkXrayEffect, MID_DarkXray, 1.f);
+		GetWorldTimerManager().SetTimer(ProcessXrayMaterialsHandle, this, &ASpy::ProcessXrayMaterialsActivation, 0.025f, true);
+	}
+	else GetWorldTimerManager().SetTimer(ProcessXrayMaterialsHandle, this, &ASpy::ProcessXrayMaterialsDeactivation, 0.025f, true);
+}
+
 void ASpy::StartTeleportProcess()
 {
 	bIsInvincible = true;
@@ -25,10 +39,10 @@ void ASpy::StartTeleportProcess()
 
 void ASpy::FinishTeleportProcess()
 {
+	bIsSecondAbilityActive = false;
 	P_MakeCameraShake(ECameraShake::SpyTeleportKillCameraShake);
 	Camera->SetWorldLocation(GetActorLocation() + FVector::UpVector * 60.f);
 	bIsInvincible = false;
-	bIsSecondAbilityActive = false;
 	if (TeleportLinesVfx) TeleportLinesVfx->DeactivateImmediate();
 	SetTeleportMaterialValue(0.f);
 }
@@ -83,4 +97,40 @@ void ASpy::SetTeleportMaterialValue(const float InValue)
 		MID_Teleport->SetScalarParameterValue(FName("Radius"), 0.f);
 	}
 	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyTeleportEffect, MID_Teleport, InValue);
+}
+
+void ASpy::ProcessXrayMaterialsActivation()
+{
+	if (!MID_Xray || !MID_DarkXray) return;
+	XrayColorRadius -= 0.16f;
+	XrayRadialRadius -= 0.03f;
+	XrayDarkness -= 0.1f;
+	UE_LOG(LogTemp, Error, TEXT("ProcessXrayMaterialsActivation %f"), XrayDarkness);
+	MID_Xray->SetScalarParameterValue(FName("ColorRadius"), XrayColorRadius);
+	MID_Xray->SetScalarParameterValue(FName("RadialRadius"), XrayRadialRadius);
+	MID_DarkXray->SetScalarParameterValue(FName("Darkness"), XrayDarkness);
+	if (++XrayCountLoops >= 10)
+	{
+		GetWorldTimerManager().ClearTimer(ProcessXrayMaterialsHandle);
+		XrayCountLoops = 0;
+	}
+}
+
+void ASpy::ProcessXrayMaterialsDeactivation()
+{
+	if (!MID_Xray || !MID_DarkXray) return;
+	XrayColorRadius += 0.16f;
+	XrayRadialRadius += 0.03f;
+	XrayDarkness += 0.1f;
+	UE_LOG(LogTemp, Error, TEXT("ProcessXrayMaterialsDeactivation %f"), XrayDarkness);
+	MID_Xray->SetScalarParameterValue(FName("ColorRadius"), XrayColorRadius);
+	MID_Xray->SetScalarParameterValue(FName("RadialRadius"), XrayRadialRadius);
+	MID_DarkXray->SetScalarParameterValue(FName("Darkness"), XrayDarkness);
+	if (++XrayCountLoops >= 10)
+	{
+		GetWorldTimerManager().ClearTimer(ProcessXrayMaterialsHandle);
+		XrayCountLoops = 0;
+		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyXrayEffect, MID_Xray, 0.f);
+		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyDarkXrayEffect, MID_DarkXray, 0.f);
+	}
 }

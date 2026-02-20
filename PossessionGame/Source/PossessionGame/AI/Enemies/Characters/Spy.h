@@ -11,20 +11,33 @@ class POSSESSIONGAME_API ASpy : public AEnemy
 public:
 	bool GetXrayState() const { return bXrayEnabled; }
 	
-	void SetXrayState(const bool bState) { bXrayEnabled = bState; }
+	void SetXrayState(const bool bState);
 	void StartTeleportProcess();
 	void FinishTeleportProcess();
 private:
 	bool bXrayEnabled = false;
 	bool bIsSecondAbilityActive = false;
+	float XrayColorRadius = 3.f;
+	float XrayRadialRadius = 1.f;
+	float XrayDarkness = 1.f;
+	int32 XrayCountLoops = 0;
+	FTimerHandle ProcessXrayMaterialsHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Teleport;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_Xray;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_DarkXray;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> TeleportKillCameraShake;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> TeleportLinesVfx;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Teleport;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Xray;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_DarkXray;
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_SetController() override;
@@ -37,4 +50,6 @@ private:
 	
 	virtual void BeginPlay() override;
 	void SetTeleportMaterialValue(const float InValue);
+	void ProcessXrayMaterialsActivation();
+	void ProcessXrayMaterialsDeactivation();
 };

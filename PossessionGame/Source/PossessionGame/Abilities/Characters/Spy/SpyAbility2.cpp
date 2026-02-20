@@ -60,8 +60,8 @@ void USpyAbility2::ProcessTransfer()
 
 void USpyAbility2::FinishTransfer()
 {
-	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::TeleportImpact);
 	Proprietor->FinishTeleportProcess();
+	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::TeleportImpact);
 	Proprietor->SetInputState(false);
 	Proprietor->GetWorldTimerManager().ClearTimer(TransferHandle);
 	Proprietor->SetActorLocation(TargetLocation);
