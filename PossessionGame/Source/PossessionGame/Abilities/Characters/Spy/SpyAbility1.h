@@ -11,9 +11,6 @@ class POSSESSIONGAME_API USpyAbility1 : public UAbility
 {
 	GENERATED_BODY()
 public:
-	virtual void AI_Execute() override;
-	virtual void AI_StopAbility() override;
-
 	virtual void P_Execute() override;
 	virtual void P_StopAbility() override;
 private:

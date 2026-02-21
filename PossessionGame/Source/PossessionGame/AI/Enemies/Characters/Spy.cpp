@@ -31,6 +31,7 @@ void ASpy::SetXrayState(const bool bState)
 
 void ASpy::StartTeleportProcess()
 {
+	if (bIsFirstAbilityActive) P_StopAbility(0);
 	bIsInvincible = true;
 	bIsSecondAbilityActive = true;
 	if (!TeleportLinesVfx) AssetsManager->AttachVfx(EVfx::SpyTeleportLines, [this]() -> bool { return GetIsAlive() && bIsSecondAbilityActive && bIsHijacked; }, &TeleportLinesVfx, Camera);
@@ -68,12 +69,28 @@ void ASpy::P_SetupLeftClickInputStartedState()
 	EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(8).Action, ETriggerEvent::Started, this, &ASpy::P_Shoot);
 }
 
-void ASpy::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::SpyProjectile); }
+void ASpy::P_WeaponShoot()
+{
+	if (bIsFirstAbilityActive) P_StopAbility(0);
+	Weapon->P_Shoot(EPoolObject::SpyProjectile);
+}
 
 void ASpy::P_MakeCameraShake(const ECameraShake InCameraShakeName)
 {
 	if (InCameraShakeName == ECameraShake::SpyTeleportKillCameraShake) UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(TeleportKillCameraShake);
 	else Super::P_MakeCameraShake(InCameraShakeName);
+}
+
+void ASpy::P_ProcessMeleeAttack()
+{
+	if (bIsFirstAbilityActive) P_StopAbility(0);
+	Super::P_ProcessMeleeAttack();
+}
+
+void ASpy::P_InitiateStomp()
+{
+	if (bIsFirstAbilityActive) P_StopAbility(0);
+	Super::P_InitiateStomp();
 }
 
 void ASpy::BeginPlay()
@@ -136,4 +153,10 @@ void ASpy::ProcessXrayMaterialsDeactivation()
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyXrayEffect, MID_Xray, 0.f);
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyDarkXrayEffect, MID_DarkXray, 0.f);
 	}
+}
+
+float ASpy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (bIsFirstAbilityActive) return 0.f;
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }

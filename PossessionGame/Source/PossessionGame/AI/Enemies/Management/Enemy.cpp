@@ -929,6 +929,38 @@ void AEnemy::P_MakeCameraShake(const ECameraShake InCameraShakeName)
 	}
 }
 
+void AEnemy::P_StopAbility(const int32 InAbilityIndex)
+{
+	if (const TObjectPtr<UAbility>* Ability = Abilities.Find(InAbilityIndex)) (*Ability)->P_StopAbility();
+}
+
+void AEnemy::P_ProcessMeleeAttack()
+{
+	(void)DelegateManager->MeleeAttackOccured.ExecuteIfBound();
+	FCollisionQueryParams OverlapParams;
+	OverlapParams.AddIgnoredActor(this);
+	TArray<FOverlapResult> Overlaps;
+	const FVector Origin = GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1") - GetActorForwardVector() * 30.f;
+	GetWorld()->OverlapMultiByProfile(Overlaps, Origin, FQuat::Identity, FName("TriggerDamageable"), FCollisionShape::MakeSphere(QuickMeleeAttackRadiusInMeters * 100.f), OverlapParams);
+	for (const FOverlapResult& Overlap : Overlaps)
+	{
+		TObjectPtr<AActor> Actor = Overlap.GetActor();
+		if (!Actor || (!Actor->ActorHasTag("AliveEnemy") && !Actor->ActorHasTag("Destructible"))) return;
+		FVector ToTarget = (Actor->GetActorLocation() - Origin).GetSafeNormal();
+		if (FVector::DotProduct(GetActorForwardVector(), ToTarget) < 0.342f) return;
+		FHitResult Hit;
+		FCollisionQueryParams TraceParams;
+		TraceParams.AddIgnoredActor(this);
+		TraceParams.AddIgnoredActor(Actor);
+		if (GetWorld()->LineTraceSingleByChannel(Hit, Origin, Actor->GetActorLocation(), ECC_Visibility, TraceParams)) return;
+		const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
+		const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionA);
+		const float TrueQuickMeleeDamage = QuickMeleeAttackDamage + (bIsUpgradeSelected ? QuickMeleeAttackDamage * SaveSlot->GetPlayerLevel() * 0.15f : 0.f);
+		UGameplayStatics::ApplyDamage(Actor, TrueQuickMeleeDamage, GetController(), this, UDamageType::StaticClass());
+		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
+	}
+}
+
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (bIsInvincible) return 0.f;
@@ -1007,8 +1039,6 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorldTimerManager().ClearTimer(P_DeathHandle);
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	GetWorldTimerManager().ClearTimer(CheckIfFallOutOfWorldHandle);
-	GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);
-	GetWorldTimerManager().ClearTimer(SpawnCondenseMaterialsProcessHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -1064,6 +1094,8 @@ void AEnemy::ClearTimers()
 	GetWorldTimerManager().ClearTimer(ActionSpeedHandle);
 	GetWorldTimerManager().ClearTimer(BurningTickingHandle);
 	GetWorldTimerManager().ClearTimer(BurningStateFinishHandle);
+	GetWorldTimerManager().ClearTimer(DestroyCondenseMaterialsProcessHandle);
+	GetWorldTimerManager().ClearTimer(SpawnCondenseMaterialsProcessHandle);
 }
 
 void AEnemy::AllDisablingActionsFinished()
@@ -1499,33 +1531,6 @@ void AEnemy::P_QuickMeleeAttack()
 	P_ProcessMeleeAttack();
 }
 
-void AEnemy::P_ProcessMeleeAttack()
-{
-	(void)DelegateManager->MeleeAttackOccured.ExecuteIfBound();
-	FCollisionQueryParams OverlapParams;
-	OverlapParams.AddIgnoredActor(this);
-	TArray<FOverlapResult> Overlaps;
-	const FVector Origin = GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1") - GetActorForwardVector() * 30.f;
-	GetWorld()->OverlapMultiByProfile(Overlaps, Origin, FQuat::Identity, FName("TriggerDamageable"), FCollisionShape::MakeSphere(QuickMeleeAttackRadiusInMeters * 100.f), OverlapParams);
-	for (const FOverlapResult& Overlap : Overlaps)
-	{
-		TObjectPtr<AActor> Actor = Overlap.GetActor();
-		if (!Actor || (!Actor->ActorHasTag("AliveEnemy") && !Actor->ActorHasTag("Destructible"))) return;
-		FVector ToTarget = (Actor->GetActorLocation() - Origin).GetSafeNormal();
-		if (FVector::DotProduct(GetActorForwardVector(), ToTarget) < 0.342f) return;
-		FHitResult Hit;
-		FCollisionQueryParams TraceParams;
-		TraceParams.AddIgnoredActor(this);
-		TraceParams.AddIgnoredActor(Actor);
-		if (GetWorld()->LineTraceSingleByChannel(Hit, Origin, Actor->GetActorLocation(), ECC_Visibility, TraceParams)) return;
-		const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
-		const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionA);
-		const float TrueQuickMeleeDamage = QuickMeleeAttackDamage + (bIsUpgradeSelected ? QuickMeleeAttackDamage * SaveSlot->GetPlayerLevel() * 0.15f : 0.f);
-		UGameplayStatics::ApplyDamage(Actor, TrueQuickMeleeDamage, GetController(), this, UDamageType::StaticClass());
-		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
-	}
-}
-
 void AEnemy::P_SetupNavArea()
 {
 	NavAreaModifier = GetWorld()->SpawnActor<ANavAreaModifier>(P_NavAreaDefaultClass, GetActorLocation(), GetActorRotation());
@@ -1953,6 +1958,7 @@ void AEnemy::CheckIfFallOutOfWorld() { if (GetActorLocation().Z <= -1000.f) bIsH
 
 void AEnemy::SpawnCondenseMaterialsProcess()
 {
+	if (!MI_MeshBaseMaterial) return;
 	MeshBaseMaterialCondenseValue -= 0.015f;
 	MeshEmissiveMaterialOpacityValue += 0.025f;
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);
@@ -1962,6 +1968,7 @@ void AEnemy::SpawnCondenseMaterialsProcess()
 
 void AEnemy::DestroyCondenseMaterialsProcess()
 {
+	if (!MI_MeshBaseMaterial) return;
 	MeshBaseMaterialCondenseValue += 0.015f;
 	MeshEmissiveMaterialOpacityValue -= 0.025f;
 	MI_MeshBaseMaterial->SetScalarParameterValue("Progress", MeshBaseMaterialCondenseValue);

@@ -306,6 +306,8 @@ protected:
 	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
 	virtual void P_MakeCameraShake(const ECameraShake InCameraShakeName);
 	virtual void P_WeaponShoot() {}
+	void P_StopAbility(const int32 InAbilityIndex);
+	virtual void P_ProcessMeleeAttack();
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	float ReceiveDefaultMovementSpeed() const;
@@ -578,7 +580,6 @@ private:
 	void P_InUpgradeSelection();
 	void P_TryInteracting();
 	void P_QuickMeleeAttack();
-	void P_ProcessMeleeAttack();
 	void P_SetupNavArea();
 	void P_OnVariationSelection(const ECharacterType InCharacterType);
 	void P_OnAbilitiesOrLevelMenuSelectionEnd(const EWidget InWidgetName);

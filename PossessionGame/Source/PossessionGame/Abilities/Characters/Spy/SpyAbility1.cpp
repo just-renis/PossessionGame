@@ -1,26 +1,10 @@
 #include "SpyAbility1.h"
 #include "PossessionGame/AI/Enemies/Characters/Spy.h"
 
-void USpyAbility1::AI_Execute()
-{
-	if (CanExecute())
-	{
-		bIsAbilityInDuration = true;
-		Super::AI_Execute();
-	}
-}
-
-void USpyAbility1::AI_StopAbility()
-{
-	if (bIsAbilityInDuration)
-	{
-		Super::AI_StopAbility();
-	}
-}
-
 void USpyAbility1::P_Execute()
 {
 	bIsAbilityInDuration = true;
+	Proprietor->SetFirstAbilityActiveState(true);
 	Super::P_Execute();
 }
 
@@ -28,6 +12,7 @@ void USpyAbility1::P_StopAbility()
 {
 	if (bIsAbilityInDuration)
 	{
+		Proprietor->SetFirstAbilityActiveState(false);
 		Super::P_StopAbility();
 	}
 }

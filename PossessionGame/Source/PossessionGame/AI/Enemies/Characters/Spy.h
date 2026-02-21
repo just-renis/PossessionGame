@@ -14,8 +14,10 @@ public:
 	void SetXrayState(const bool bState);
 	void StartTeleportProcess();
 	void FinishTeleportProcess();
+	void SetFirstAbilityActiveState(const bool bState) { bIsFirstAbilityActive = bState; }
 private:
 	bool bXrayEnabled = false;
+	bool bIsFirstAbilityActive = false;
 	bool bIsSecondAbilityActive = false;
 	float XrayColorRadius = 3.f;
 	float XrayRadialRadius = 1.f;
@@ -51,9 +53,12 @@ private:
 	virtual void P_SetupLeftClickInputTriggeredState() override {}
 	virtual void P_WeaponShoot() override;
 	virtual void P_MakeCameraShake(const ECameraShake InCameraShakeName) override;
+	virtual void P_ProcessMeleeAttack() override;
+	virtual void P_InitiateStomp() override;
 	
 	virtual void BeginPlay() override;
 	void SetTeleportMaterialValue(const float InValue);
 	void ProcessXrayMaterialsActivation();
 	void ProcessXrayMaterialsDeactivation();
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };
