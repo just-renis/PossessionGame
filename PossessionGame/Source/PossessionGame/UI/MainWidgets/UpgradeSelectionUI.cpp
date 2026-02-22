@@ -93,6 +93,9 @@ FText UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 		case EUpgrade::WraithAbility1: return NSLOCTEXT("ST_Localization", "MolotovUpgrade", "MOLOTOV");
 		case EUpgrade::WraithAbility2: return NSLOCTEXT("ST_Localization", "TrapUpgrade", "TRAP");
 		case EUpgrade::WraithAbility3: return NSLOCTEXT("ST_Localization", "MeteorShowerUpgrade", "METEOR SHOWER");
+		case EUpgrade::SpyAbility1: return NSLOCTEXT("ST_Localization", "InvincibilityUpgrade", "INVINCIBILITY");
+		case EUpgrade::SpyAbility2: return NSLOCTEXT("ST_Localization", "TeleportKillUpgrade", "TELEPORT KILL");
+		case EUpgrade::SpyAbility3: return NSLOCTEXT("ST_Localization", "XrayUpgrade", "X-RAY VISION");
 		default: ;
 	}
 	return FText::GetEmpty();

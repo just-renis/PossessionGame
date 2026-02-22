@@ -63,6 +63,7 @@ ECharacterType UUpgradeDetailsPanelUI::GetCharacterByUpgradeName() const
 		case EUpgrade::BreacherAbility1: case EUpgrade::BreacherAbility2: case EUpgrade::BreacherAbility3: return ECharacterType::Breacher;
 		case EUpgrade::TankAbility1: case EUpgrade::TankAbility2: return ECharacterType::Tank;
 		case EUpgrade::WraithAbility1: case EUpgrade::WraithAbility2: case EUpgrade::WraithAbility3: return ECharacterType::Wraith;
+		case EUpgrade::SpyAbility1: case EUpgrade::SpyAbility2: case EUpgrade::SpyAbility3: return ECharacterType::Spy;
 		default: return ECharacterType::Random;
 	}
 }
@@ -350,6 +351,48 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 			}
 			break;
 		case EUpgrade::WraithAbility3:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.1", "{0}ENEMIES STRUCK BY A METEOR ARE SET ON FIRE.{1}"),
+						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+					}
+					return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.2", "{0}WRAITH METEORS IGNITE THE PLAYER.{1}"),
+					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+				default: break;
+			}
+			break;
+		case EUpgrade::SpyAbility1:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.1", "{0}ENEMIES STRUCK BY A METEOR ARE SET ON FIRE.{1}"),
+						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+					}
+					return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.2", "{0}WRAITH METEORS IGNITE THE PLAYER.{1}"),
+					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+				default: break;
+			}
+			break;
+		case EUpgrade::SpyAbility2:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.1", "{0}ENEMIES STRUCK BY A METEOR ARE SET ON FIRE.{1}"),
+						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+					}
+					return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.2", "{0}WRAITH METEORS IGNITE THE PLAYER.{1}"),
+					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+				default: break;
+			}
+			break;
+		case EUpgrade::SpyAbility3:
 			switch (InUpgradeAttribute)
 			{
 				case EUpgradeAttribute::Special1:
