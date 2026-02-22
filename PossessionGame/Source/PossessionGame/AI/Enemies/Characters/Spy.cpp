@@ -49,6 +49,24 @@ void ASpy::FinishTeleportProcess()
 	SetTeleportMaterialValue(0.f);
 }
 
+void ASpy::SetFirstAbilityActiveState(const bool bState)
+{
+	bIsFirstAbilityActive = bState;
+	if (!MID_Invincibility) MID_Invincibility = UMaterialInstanceDynamic::Create(MI_Invincibility, this);
+	if (bState)
+	{
+		if (!InvincibilityVfx) AssetsManager->AttachVfx(EVfx::SpyInvincibility, [this]() -> bool { return GetIsAlive() && bIsFirstAbilityActive && bIsHijacked; }, &InvincibilityVfx, GetMesh(), FName("DeathSocket"));
+		else InvincibilityVfx->Activate(true);
+		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyInvincibilityEffect, MID_Invincibility, 1.f);
+		GetWorldTimerManager().SetTimer(ProcessInvincibilityMaterialHandle, this, &ASpy::ProcessInvincibilityMaterialActivation, 0.025f, true);
+	}
+	else
+	{
+		if (InvincibilityVfx) InvincibilityVfx->DeactivateImmediate();
+		GetWorldTimerManager().SetTimer(ProcessInvincibilityMaterialHandle, this, &ASpy::ProcessInvincibilityMaterialDeactivation, 0.025f, true);
+	}
+}
+
 void ASpy::AI_SetupWeapon()
 {
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::SpyWeapon, GetMesh());
@@ -130,7 +148,6 @@ void ASpy::ProcessXrayMaterialsActivation()
 	XrayColorRadius -= 0.16f;
 	XrayRadialRadius -= 0.03f;
 	XrayDarkness -= 0.1f;
-	UE_LOG(LogTemp, Error, TEXT("ProcessXrayMaterialsActivation %f"), XrayDarkness);
 	MID_Xray->SetScalarParameterValue(FName("ColorRadius"), XrayColorRadius);
 	MID_Xray->SetScalarParameterValue(FName("RadialRadius"), XrayRadialRadius);
 	MID_DarkXray->SetScalarParameterValue(FName("Darkness"), XrayDarkness);
@@ -147,7 +164,6 @@ void ASpy::ProcessXrayMaterialsDeactivation()
 	XrayColorRadius += 0.16f;
 	XrayRadialRadius += 0.03f;
 	XrayDarkness += 0.1f;
-	UE_LOG(LogTemp, Error, TEXT("ProcessXrayMaterialsDeactivation %f"), XrayDarkness);
 	MID_Xray->SetScalarParameterValue(FName("ColorRadius"), XrayColorRadius);
 	MID_Xray->SetScalarParameterValue(FName("RadialRadius"), XrayRadialRadius);
 	MID_DarkXray->SetScalarParameterValue(FName("Darkness"), XrayDarkness);
@@ -158,6 +174,35 @@ void ASpy::ProcessXrayMaterialsDeactivation()
 		GetMesh()->SetMaterial(0, MI_DefaultMaterial);
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyXrayEffect, MID_Xray, 0.f);
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyDarkXrayEffect, MID_DarkXray, 0.f);
+	}
+}
+
+void ASpy::ProcessInvincibilityMaterialActivation()
+{
+	if (!MID_Invincibility) return;
+	InvincibilityColorRadius -= 0.16f;
+	InvincibilityRadialRadius -= 0.03f;
+	MID_Invincibility->SetScalarParameterValue(FName("ColorRadius"), InvincibilityColorRadius);
+	MID_Invincibility->SetScalarParameterValue(FName("RadialRadius"), InvincibilityRadialRadius);
+	if (++InvincibilityCountLoops >= 10)
+	{
+		GetWorldTimerManager().ClearTimer(ProcessInvincibilityMaterialHandle);
+		InvincibilityCountLoops = 0;
+	}
+}
+
+void ASpy::ProcessInvincibilityMaterialDeactivation()
+{
+	if (!MID_Invincibility) return;
+	InvincibilityColorRadius += 0.16f;
+	InvincibilityRadialRadius += 0.03f;
+	MID_Invincibility->SetScalarParameterValue(FName("ColorRadius"), InvincibilityColorRadius);
+	MID_Invincibility->SetScalarParameterValue(FName("RadialRadius"), InvincibilityRadialRadius);
+	if (++InvincibilityCountLoops >= 10)
+	{
+		GetWorldTimerManager().ClearTimer(ProcessInvincibilityMaterialHandle);
+		InvincibilityCountLoops = 0;
+		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyInvincibilityEffect, MID_Invincibility, 0.f);
 	}
 }
 

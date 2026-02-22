@@ -16,5 +16,6 @@ enum class EPostProcessMaterial : uint8
     PlayerBurnEffect,
     SpyTeleportEffect,
     SpyXrayEffect,
-    SpyDarkXrayEffect
+    SpyDarkXrayEffect,
+    SpyInvincibilityEffect
 };

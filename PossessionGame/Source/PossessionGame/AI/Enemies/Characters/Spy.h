@@ -14,7 +14,7 @@ public:
 	void SetXrayState(const bool bState);
 	void StartTeleportProcess();
 	void FinishTeleportProcess();
-	void SetFirstAbilityActiveState(const bool bState) { bIsFirstAbilityActive = bState; }
+	void SetFirstAbilityActiveState(const bool bState);
 private:
 	bool bXrayEnabled = false;
 	bool bIsFirstAbilityActive = false;
@@ -22,12 +22,18 @@ private:
 	float XrayColorRadius = 3.f;
 	float XrayRadialRadius = 1.f;
 	float XrayDarkness = 1.f;
+	float InvincibilityColorRadius = 3.f;
+	float InvincibilityRadialRadius = 1.f;
 	int32 XrayCountLoops = 0;
+	int32 InvincibilityCountLoops = 0;
 	FTimerHandle ProcessXrayMaterialsHandle;
+	FTimerHandle ProcessInvincibilityMaterialHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Teleport;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Xray;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_Invincibility;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_DarkXray;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
@@ -37,9 +43,13 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> TeleportLinesVfx;
 	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> InvincibilityVfx;
+	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Teleport;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Xray;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Invincibility;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_DarkXray;
 	UPROPERTY()
@@ -61,5 +71,7 @@ private:
 	void SetTeleportMaterialValue(const float InValue);
 	void ProcessXrayMaterialsActivation();
 	void ProcessXrayMaterialsDeactivation();
+	void ProcessInvincibilityMaterialActivation();
+	void ProcessInvincibilityMaterialDeactivation();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };

@@ -8,7 +8,6 @@
 
 void USpyAbility2::AI_Execute()
 {
-	UE_LOG(LogTemp, Error, TEXT("SPY TRIES TO TELEPORT"));
 	if (!CanExecute()) return;
 	(void)DelegateManager->OnToBubbleTeleport.ExecuteIfBound(Proprietor);
 	Super::AI_Execute();
