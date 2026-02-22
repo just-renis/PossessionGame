@@ -2,14 +2,15 @@
 #include "Camera/CameraComponent.h"
 #include "PossessionGame/AI/Enemies/Characters/Spy.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
-#include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
 void USpyAbility2::AI_Execute()
 {
+	UE_LOG(LogTemp, Error, TEXT("SPY TRIES TO TELEPORT"));
 	if (!CanExecute()) return;
-	Proprietor->SetActorLocation(GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetFarthestEnemyLocation(Proprietor->GetActorLocation()));
+	(void)DelegateManager->OnToBubbleTeleport.ExecuteIfBound(Proprietor);
 	Super::AI_Execute();
 }
 

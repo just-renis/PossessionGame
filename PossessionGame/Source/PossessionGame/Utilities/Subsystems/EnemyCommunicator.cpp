@@ -3,6 +3,7 @@
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/TeleportBubble.h"
 #include "PossessionGame/Utilities/Global Utilities/Unspawnable/PossessionGameGameModeBase.h"
 
 FVector UEnemyCommunicator::GetPointLocation(ECharacterType InCharacterType, FVector InLocation)
@@ -31,6 +32,7 @@ FVector UEnemyCommunicator::GetPointLocation(ECharacterType InCharacterType, FVe
 
 FVector UEnemyCommunicator::GetTargetLocation() const { return Target ? Target->GetActorLocation() : FVector(NAN, NAN, NAN); }
 
+// DO NOT USE, INCORRECT AND CRASH INDULGING, REWORK IF THIS FUNCTION WILL EVER BE NEEDED.
 FVector UEnemyCommunicator::GetFarthestEnemyLocation(const FVector& InFromLocation)
 {
 	float Distance = 0.f;
@@ -85,42 +87,41 @@ void UEnemyCommunicator::AddEnemy(const TObjectPtr<AActor>& InEnemy) { Enemies.A
 
 void UEnemyCommunicator::RemoveEnemy(const TObjectPtr<AActor>& InEnemy) { Enemies.Remove(InEnemy); }
 
-void UEnemyCommunicator::AddPoint(int32 Key, const FEQSPointData& Data) { PointsAroundTarget.Add(Key, Data); }
+void UEnemyCommunicator::AddPoint(const int32 InKey, const FEQSPointData& InData) { PointsAroundTarget.Add(InKey, InData); }
 
-void UEnemyCommunicator::RemovePoint(int32 Key) { PointsAroundTarget.Remove(Key); }
+void UEnemyCommunicator::RemovePoint(const int32 InKey) { PointsAroundTarget.Remove(InKey); }
 
 void UEnemyCommunicator::InitDelegates(const TObjectPtr<UDelegateManager>& InDelegateManager)
 {
 	DelegateManager = InDelegateManager;
 	DelegateManager->OnConcealAbilityChange.AddUObject(this, &UEnemyCommunicator::SetTarget);
+	DelegateManager->OnToBubbleTeleport.BindUObject(this, &UEnemyCommunicator::TeleportToBubble);
 }
 
 void UEnemyCommunicator::TargetQueryResult(TSharedPtr<FEnvQueryResult> Result)
 {
 	OnEQSFinish.Broadcast();
-	if (Result->IsSuccessful())
-	{
-		if (WITH_EDITOR && GameModeBase && GameModeBase->GetIsDebugModeEnabled())
+	#if WITH_EDITOR
+		if (!Result->IsSuccessful() || !GameModeBase || !GameModeBase->GetIsDebugModeEnabled()) return;
+		for (TPair<int32, FEQSPointData> PointData : PointsAroundTarget)
 		{
-			for (TPair<int32, FEQSPointData> PointData : PointsAroundTarget)
+			const FEQSPointData& Data = PointData.Value;
+			switch (TSet<ECharacterType>::TConstIterator It = Data.ViableCharacters.CreateConstIterator(); *It)
 			{
-				const FEQSPointData& Data = PointData.Value;
-				switch (TSet<ECharacterType>::TConstIterator It = Data.ViableCharacters.CreateConstIterator(); *It)
-				{
-					case ECharacterType::Minion:
-						DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Blue, false, 1.0f);
-						break;
-					case ECharacterType::Ranger:
-						DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Red, false, 1.0f);
-						break;
-					case ECharacterType::Trickster:
-						DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Green, false, 1.0f);
-					default: ;
-				}
+				case ECharacterType::Minion:
+					DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Blue, false, 1.0f);
+					break;
+				case ECharacterType::Ranger:
+					DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Red, false, 1.0f);
+					break;
+				case ECharacterType::Trickster:
+					DrawDebugSphere(GetWorld(), Data.Location, 20.f, 16, FColor::Green, false, 1.0f);
+					break;
+				default: ;
 			}
 		}
-	}
-	else UE_LOG(LogTemp, Warning, TEXT("EQS Query Result: Failure - Reason: %s"), *UEnum::GetValueAsString(Result->GetRawStatus()));
+		UE_LOG(LogTemp, Warning, TEXT("EQS Query Result: Failure - Reason: %s"), *UEnum::GetValueAsString(Result->GetRawStatus()));
+	#endif
 }
 
 void UEnemyCommunicator::GeneratePointsAroundTarget()
@@ -134,4 +135,19 @@ void UEnemyCommunicator::Deinitialize()
 {
 	if (GetWorld()) GetWorld()->GetTimerManager().ClearTimer(EQSPointsGenerationHandle);
 	Super::Deinitialize();
+}
+
+void UEnemyCommunicator::TeleportToBubble(const TObjectPtr<AActor>& InActor)
+{
+	if (!InActor) return;
+	TArray<TObjectPtr<ATeleportBubble>> ValidBubbles;
+	const EGameMode CurrentGameMode = DelegateManager->RequestCurrentGameMode.Execute();
+	UE_LOG(LogTemp, Error, TEXT("CURRENT GAME MODE: %s"), *UEnum::GetValueAsString(CurrentGameMode));
+	for (const TObjectPtr<ATeleportBubble>& Bubble : TeleportBubbles)
+	{
+		if (Bubble && Bubble->IsCorrectGameMode(CurrentGameMode)) ValidBubbles.Add(Bubble);
+	}
+	if (ValidBubbles.IsEmpty()) return;
+	const int32 Index = FMath::RandRange(0, ValidBubbles.Num() - 1);
+	ValidBubbles[Index]->Teleport(InActor);
 }

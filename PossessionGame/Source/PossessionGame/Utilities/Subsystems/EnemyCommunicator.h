@@ -4,6 +4,8 @@
 #include "PossessionGame/Utilities/Data Utilities/FEQSPointData.h"
 #include "EnemyCommunicator.generated.h"
 
+enum class EGameMode : uint8;
+class ATeleportBubble;
 class AEnemy;
 class APossessionGameGameModeBase;
 struct FEnvQueryResult;
@@ -30,14 +32,14 @@ public:
 	void SetTarget(const TObjectPtr<AEnemy>& InTarget);
 	void AddEnemy(const TObjectPtr<AActor>& InEnemy);
 	void RemoveEnemy(const TObjectPtr<AActor>& InEnemy);
-	void AddPoint(int32 Key, const FEQSPointData& Data);
-	void RemovePoint(int32 Key);
+	void AddPoint(const int32 InKey, const FEQSPointData& InData);
+	void RemovePoint(const int32 InKey);
+	void AddTeleportBubble(const TObjectPtr<ATeleportBubble>& InTeleportBubble) { TeleportBubbles.Add(InTeleportBubble); }
 private:
 	bool bWasTargetSet = false;
 	int32 EnemiesAmount = 0;
-	FOnEQSFinish OnEQSFinish;
-	UPROPERTY()
 	FTimerHandle EQSPointsGenerationHandle;
+	FOnEQSFinish OnEQSFinish;
 	UPROPERTY()
 	TObjectPtr<APossessionGameGameModeBase> GameModeBase;
 	UPROPERTY()
@@ -49,10 +51,13 @@ private:
 	UPROPERTY()
 	TArray<TObjectPtr<AActor>> Enemies;
 	UPROPERTY()
+	TArray<TObjectPtr<ATeleportBubble>> TeleportBubbles;
+	UPROPERTY()
 	TMap<int32, FEQSPointData> PointsAroundTarget;
 
 	void InitDelegates(const TObjectPtr<UDelegateManager>& InDelegateManager);
 	void TargetQueryResult(TSharedPtr<FEnvQueryResult> Result);
 	void GeneratePointsAroundTarget();
 	virtual void Deinitialize() override;
+	void TeleportToBubble(const TObjectPtr<AActor>& InActor);
 };

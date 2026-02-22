@@ -4,9 +4,6 @@ UENUM()
 enum class EAbility : uint8
 {
     None,
-    SpyAbility1,
-    SpyAbility2,
-    SpyAbility3,
     RangerAbility1,
     RangerAbility2,
     RangerAbility3,
@@ -16,17 +13,20 @@ enum class EAbility : uint8
     GuardianAbility1,
     GuardianAbility2,
     GuardianAbility3,
+    WardenAbility1,
     MinionBossAbility1,
     MinionBossAbility2,
-    WardenAbility1,
     BreacherAbility1,
     BreacherAbility2,
     BreacherAbility3,
-    TankAbility1,
-    TankAbility2,
     WraithAbility1,
     WraithAbility2,
     WraithAbility3,
     PyroBossAbility1,
-    PyroBossAbility2
+    PyroBossAbility2,
+    SpyAbility1,
+    SpyAbility2,
+    SpyAbility3,
+    TankAbility1,
+    TankAbility2
 };
