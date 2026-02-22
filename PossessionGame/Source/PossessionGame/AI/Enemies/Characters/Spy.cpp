@@ -57,6 +57,12 @@ void ASpy::AI_SetupWeapon()
 
 void ASpy::AI_SetController() { AI = Cast<ASpyAIController>(GetController()); }
 
+void ASpy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
+{
+	if (CanAbilityBeExecuted(1) && !IsActionsDisabled() && !bIsActionInMotion && CurrentHp <= MaxHp * 0.4f && CurrentHp > 0) AI_UseAbility(1);
+	Super::AI_ReceivedDamage(InDamageReason, InDamage);
+}
+
 void ASpy::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);

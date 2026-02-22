@@ -47,6 +47,7 @@ private:
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_SetController() override;
+	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage) override;
 
 	virtual void P_Setup() override;
 	virtual void P_SetupLeftClickInputStartedState() override;
