@@ -21,7 +21,6 @@ void ASpy::SetXrayState(const bool bState)
 	if (!MID_DarkXray) MID_DarkXray = UMaterialInstanceDynamic::Create(MID_DarkXray, this);
 	if (bState)
 	{
-		GetMesh()->SetMaterial(0, MI_UnlitMaterial);
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyXrayEffect, MID_Xray, 1.f);
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyDarkXrayEffect, MID_DarkXray, 1.f);
 		GetWorldTimerManager().SetTimer(ProcessXrayMaterialsHandle, this, &ASpy::ProcessXrayMaterialsActivation, 0.025f, true);
@@ -52,6 +51,9 @@ void ASpy::FinishTeleportProcess()
 void ASpy::SetFirstAbilityActiveState(const bool bState)
 {
 	bIsFirstAbilityActive = bState;
+	bIsSlidePrimaryAnim = !bState;
+	bIsJumpPrimaryAnim = !bState;
+	Cast<ASpyWeapon>(Weapon)->SetInvincibilityState(bState);
 	if (!MID_Invincibility) MID_Invincibility = UMaterialInstanceDynamic::Create(MI_Invincibility, this);
 	if (bState)
 	{
@@ -121,7 +123,6 @@ void ASpy::BeginPlay()
 {
 	CharacterName = ECharacterType::Spy;
 	Super::BeginPlay();
-	MI_DefaultMaterial = GetMesh()->GetMaterial(0);
 }
 
 void ASpy::SetTeleportMaterialValue(const float InValue)
@@ -171,7 +172,6 @@ void ASpy::ProcessXrayMaterialsDeactivation()
 	{
 		GetWorldTimerManager().ClearTimer(ProcessXrayMaterialsHandle);
 		XrayCountLoops = 0;
-		GetMesh()->SetMaterial(0, MI_DefaultMaterial);
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyXrayEffect, MID_Xray, 0.f);
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyDarkXrayEffect, MID_DarkXray, 0.f);
 	}

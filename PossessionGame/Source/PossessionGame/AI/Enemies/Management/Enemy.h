@@ -209,6 +209,8 @@ protected:
 	bool bAffectedByEmp = false;
 	bool bAffectedByStun = false;
 	bool bIsInvincible = false;
+	bool bIsJumpPrimaryAnim = true;
+	bool bIsSlidePrimaryAnim = true;
 	float MaxHp;
 	float CurrentHp;
 	float DamageReduction = 1.f;

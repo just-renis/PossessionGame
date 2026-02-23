@@ -8,6 +8,17 @@ UCLASS()
 class POSSESSIONGAME_API ASpyWeapon : public AOneHandedWeapon
 {
 	GENERATED_BODY()
+public:
+	void SetInvincibilityState(const bool bState);
+private:
+	float MaterialEmissiveEffect = 0.f;
+	float MaterialWidth = 0.f;
+	float MaterialHue = 0.f;
+	float MaterialColorStrength = 1.f;
+	int32 MaterialChangeCountLoops = 0;
+	FTimerHandle ProcessInvincibilityMaterialHandle;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_DefaultMaterial;
 	
 	virtual void AI_Shoot() override;
 	
@@ -17,4 +28,6 @@ class POSSESSIONGAME_API ASpyWeapon : public AOneHandedWeapon
 	
 	virtual void BeginPlay() override;
 	virtual void HitScanLogic() override;
+	void ProcessInvincibilityMaterialActivation();
+	void ProcessInvincibilityMaterialDeactivation();
 };

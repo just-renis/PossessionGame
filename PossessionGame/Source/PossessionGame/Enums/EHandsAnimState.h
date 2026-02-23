@@ -22,5 +22,7 @@ enum class EHandsAnimState : uint8
 	BreacherBash,
 	StunEffect,
 	TeleportTravel,
-	TeleportImpact
+	TeleportImpact,
+	JumpSecondary,
+	SlideSecondary
 };

@@ -810,7 +810,11 @@ void AEnemy::P_Shoot()
 			if (bPlayerRunModeIsToggle) bWasRunningBeforeShooting = true;
 			P_ToggleRun(false);
 		}
-		if (bIsSliding) Weapon->GetHandsAnimInstance()->StopMontage(EHandsAnimState::Slide, 0.f);
+		if (bIsSliding)
+		{
+			Weapon->GetHandsAnimInstance()->StopMontage(EHandsAnimState::Slide, 0.f);
+			Weapon->GetHandsAnimInstance()->StopMontage(EHandsAnimState::SlideSecondary, 0.f);
+		}
 		P_WeaponShoot();
 		return;
 	}
@@ -894,7 +898,7 @@ void AEnemy::P_InitiateJump()
 	else GetCharacterMovement()->JumpZVelocity = JumpVelocity;
 	Jump();
 	CurrentJumpCount++;
-	Weapon->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Jump);
+	Weapon->GetHandsAnimInstance()->PlayMontage(bIsJumpPrimaryAnim ? EHandsAnimState::Jump : EHandsAnimState::JumpSecondary);
 	bIsDoubleJumpOccured = CurrentJumpCount == 2;
 	AssetsManager->PlaySound2D(bIsDoubleJumpOccured ? ESound::DoubleJump : ESound::Jump);
 }
@@ -1695,13 +1699,14 @@ void AEnemy::P_InitiateSlide()
 	if (SlideDir.IsNearlyZero()) SlideDir = GetActorForwardVector();
 	LaunchCharacter(SlideDir.GetSafeNormal() * SlideStrength, true, false);
 	GetWorld()->GetTimerManager().SetTimer(P_SlideEndHandle, this, &AEnemy::P_EndSlide, SlideDuration, false);
-	Weapon->GetHandsAnimInstance()->PlayMontageWithHold(EHandsAnimState::Slide, SlideDuration);
+	Weapon->GetHandsAnimInstance()->PlayMontageWithHold(bIsSlidePrimaryAnim ? EHandsAnimState::Slide : EHandsAnimState::SlideSecondary, SlideDuration);
 }
 
 void AEnemy::P_EndSlide()
 {
 	Camera->SetRelativeLocation(FVector(0.f, 0.f, DefaultCameraZ));
 	Weapon->GetHandsAnimInstance()->StopMontage(EHandsAnimState::Slide, 0.1f);
+	Weapon->GetHandsAnimInstance()->StopMontage(EHandsAnimState::SlideSecondary, 0.1f);
 	bIsSliding = false;
 	AddActorWorldOffset(FVector(0.f, 0.f, GetDefaultHalfHeight() - SlideHeight));
 	GetCapsuleComponent()->SetCapsuleHalfHeight(GetDefaultHalfHeight());
