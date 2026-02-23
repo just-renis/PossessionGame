@@ -646,7 +646,6 @@ void AEnemy::AI_Reload() const
 		Weapon->GetMesh()->SetComponentTickEnabled(true);
 		Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::AIReload);
 	}
-	Weapon->AI_Reload();
 	Weapon->AI_ResetShootCycles();
 }
 

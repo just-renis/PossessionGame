@@ -101,19 +101,21 @@ void ASpy::AI_DisableTeleportVfx() const
 
 void ASpy::AI_SetupTeleportVfx()
 {
-	TWeakObjectPtr WeakThis = this;
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->LoadVfx(EVfx::AI_SpyTeleport, [WeakThis]
+	if (AssetsManager->IsVfxAlreadyLoaded(EVfx::AI_SpyTeleport)) AssetsManager->AttachVfx(EVfx::AI_SpyTeleport, nullptr, &AI_TeleportVfx, GetMesh(), FName("DeathSocket"), true);
+	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("ATTACH VFX 0 %s"), *WeakThis->GetName());
-		if (!WeakThis.IsValid() || !WeakThis.Get()) return;
-		if (WeakThis->AI_TeleportVfx)
+		TWeakObjectPtr WeakThis = this;
+		AssetsManager->LoadVfx(EVfx::AI_SpyTeleport, [WeakThis]
 		{
-			WeakThis->AI_TeleportVfx->DestroyComponent();
-			WeakThis->AI_TeleportVfx = nullptr;
-		}
-		UE_LOG(LogTemp, Error, TEXT("ATTACH VFX 1 %s"), *WeakThis->GetName());
-		WeakThis->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::AI_SpyTeleport, nullptr, &WeakThis->AI_TeleportVfx, WeakThis->GetMesh(), FName("DeathSocket"), true);
-	});
+			if (!WeakThis.IsValid() || !WeakThis.Get()) return;
+			if (WeakThis->AI_TeleportVfx)
+			{
+				WeakThis->AI_TeleportVfx->DestroyComponent();
+				WeakThis->AI_TeleportVfx = nullptr;
+			}
+			WeakThis->AssetsManager->AttachVfx(EVfx::AI_SpyTeleport, nullptr, &WeakThis->AI_TeleportVfx, WeakThis->GetMesh(), FName("DeathSocket"), true);
+		});
+	}
 }
 
 void ASpy::P_Setup()

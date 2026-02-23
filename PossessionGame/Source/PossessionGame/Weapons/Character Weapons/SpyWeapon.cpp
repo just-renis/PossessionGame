@@ -22,13 +22,7 @@ ASpyWeapon::ASpyWeapon()
 	ShootSfx->SetAutoActivate(false);
 	ShootSfx->SetupAttachment(Mesh);
 	Sounds.Add(ESound::SpyShoot, ShootSfx);
-	ReloadSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ReloadSfx"));
-	ReloadSfx->SetAutoActivate(false);
-	ReloadSfx->SetupAttachment(Mesh);
-	Sounds.Add(ESound::SpyReload, ReloadSfx);
 }
-
-void ASpyWeapon::AI_Reload() { PlaySound(ESound::SpyReload, true); }
 
 void ASpyWeapon::AI_Shoot()
 {

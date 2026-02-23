@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EVariation.h"
@@ -160,8 +161,9 @@ class POSSESSIONGAME_API UPrimaryDataAssetsManager : public UGameInstanceSubsyst
 {
 	GENERATED_BODY()
 public:
-	bool IsAsyncLoadingFinished();
 	bool GetCanAsyncLoadHappen() const { return bCanAsyncLoadHappen; }
+	bool IsAsyncLoadingFinished();
+	bool IsVfxAlreadyLoaded(const EVfx InVfxName);
 	float GetVfxAttributeValue(const TObjectPtr<UNiagaraComponent>& InComponent, const FName InVfxAttributeName);
 	EVfx GetProjectileVfxName(const EPoolObject InProjectileName, const EVfxType InVfxType);
 	EVfx GetProjectileVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType);

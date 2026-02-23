@@ -1,21 +1,11 @@
 #include "TricksterWeapon.h"
 #include "NiagaraComponent.h"
-#include "Components/AudioComponent.h"
 #include "PossessionGame/AI/Enemies/Characters/Trickster.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
-
-ATricksterWeapon::ATricksterWeapon()
-{
-	Sounds.Add(ESound::TricksterReload, CreateDefaultSubobject<UAudioComponent>(TEXT("reloadSound")));
-	Sounds[ESound::TricksterReload]->SetAutoActivate(false);
-	Sounds[ESound::TricksterReload]->SetupAttachment(RootComponent);
-}
-
-void ATricksterWeapon::AI_Reload() { PlaySound(ESound::TricksterReload, true); }
 
 void ATricksterWeapon::P_Reload()
 {
@@ -26,18 +16,18 @@ void ATricksterWeapon::P_Reload()
 
 void ATricksterWeapon::P_PlayOverChargeVfx()
 {
-	if (FirstWeaponOverChargeComponent) FirstWeaponOverChargeComponent->Activate();
-	else AssetsManager->AttachVfx(EVfx::TricksterReload, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed() && Proprietor->GetWeapon()->GetHandsAnimInstance()->GetIsReloading(); }, &FirstWeaponOverChargeComponent, FirstWeapon->GetMesh(), "OverChargeSocket");
-	if (SecondWeaponOverChargeComponent) SecondWeaponOverChargeComponent->Activate();
-	else AssetsManager->AttachVfx(EVfx::TricksterReload, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed() && Proprietor->GetWeapon()->GetHandsAnimInstance()->GetIsReloading(); }, &SecondWeaponOverChargeComponent, SecondWeapon->GetMesh(), "OverChargeSocket");
+	if (FirstWeaponOverChargeVfx) FirstWeaponOverChargeVfx->Activate();
+	else AssetsManager->AttachVfx(EVfx::TricksterReload, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed() && Proprietor->GetWeapon()->GetHandsAnimInstance()->GetIsReloading(); }, &FirstWeaponOverChargeVfx, FirstWeapon->GetMesh(), "OverChargeSocket");
+	if (SecondWeaponOverChargeVfx) SecondWeaponOverChargeVfx->Activate();
+	else AssetsManager->AttachVfx(EVfx::TricksterReload, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed() && Proprietor->GetWeapon()->GetHandsAnimInstance()->GetIsReloading(); }, &SecondWeaponOverChargeVfx, SecondWeapon->GetMesh(), "OverChargeSocket");
 }
 
 void ATricksterWeapon::P_StopOverChargeVfx() const
 {
-	if (FirstWeaponOverChargeComponent && SecondWeaponOverChargeComponent)
+	if (FirstWeaponOverChargeVfx && SecondWeaponOverChargeVfx)
 	{
-		FirstWeaponOverChargeComponent->Deactivate();
-		SecondWeaponOverChargeComponent->Deactivate();
+		FirstWeaponOverChargeVfx->Deactivate();
+		SecondWeaponOverChargeVfx->Deactivate();
 	}
 }
 

@@ -17,12 +17,7 @@ ARangerWeapon::ARangerWeapon()
 	Sounds.Add(ESound::RangerShoot, CreateDefaultSubobject<UAudioComponent>(TEXT("shootSound")));
 	Sounds[ESound::RangerShoot]->SetAutoActivate(false);
 	Sounds[ESound::RangerShoot]->SetupAttachment(Mesh);
-	Sounds.Add(ESound::RangerReload, CreateDefaultSubobject<UAudioComponent>(TEXT("reloadSound")));
-	Sounds[ESound::RangerReload]->SetAutoActivate(false);
-	Sounds[ESound::RangerReload]->SetupAttachment(Mesh);
 }
-
-void ARangerWeapon::AI_Reload() { PlaySound(ESound::RangerReload, true); }
 
 void ARangerWeapon::AI_Shoot()
 {

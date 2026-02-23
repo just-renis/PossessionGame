@@ -1,12 +1,21 @@
 ﻿#include "WraithWeapon.h"
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 
+AWraithWeapon::AWraithWeapon()
+{
+	ShootSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ShootSfx"));
+	ShootSfx->SetAutoActivate(false);
+	ShootSfx->SetupAttachment(Mesh);
+	Sounds.Add(ESound::WraithShoot, ShootSfx);
+}
+
 void AWraithWeapon::AI_Shoot()
 {
-	//PlaySound(ESound::RangerShoot, true);
+	PlaySound(ESound::WraithShoot, true);
 	Super::AI_Shoot();
 	ShootProjectile(EPoolObject::WraithProjectile, false);
 }

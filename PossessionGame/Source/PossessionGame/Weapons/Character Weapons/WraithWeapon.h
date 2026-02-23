@@ -9,6 +9,11 @@ class POSSESSIONGAME_API AWraithWeapon : public AOneHandedWeapon
 {
 	GENERATED_BODY()
 
+	AWraithWeapon();
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> ShootSfx;
+
 	virtual void AI_Shoot() override;
 
 	virtual void P_UpdateAmmoTextHUD() override;

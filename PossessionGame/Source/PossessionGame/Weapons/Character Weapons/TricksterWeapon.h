@@ -11,14 +11,10 @@ class POSSESSIONGAME_API ATricksterWeapon : public ADualWieldingWeapon
 public:
 	void P_StopOverChargeVfx() const;
 private:
-	ATricksterWeapon();
-
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> FirstWeaponOverChargeComponent;
+	TObjectPtr<UNiagaraComponent> FirstWeaponOverChargeVfx;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> SecondWeaponOverChargeComponent;
-
-	virtual void AI_Reload() override;
+	TObjectPtr<UNiagaraComponent> SecondWeaponOverChargeVfx;
 
 	virtual void P_Reload() override;
 	void P_PlayOverChargeVfx();

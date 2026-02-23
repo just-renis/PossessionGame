@@ -17,7 +17,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> GrenadeLaunchSpecialVfx;
 	
-	virtual void AI_Reload() override;
 	virtual void AI_Shoot() override;
 	
 	virtual float P_UpgradeDamageAppliance() override;

@@ -53,7 +53,6 @@ public:
 	bool AI_CanShoot() const;
 	virtual void AI_Shoot();
 	void AI_ResetShootCycles();
-	virtual void AI_Reload() {}
 	
 	virtual bool P_CanReload(const int32 InOtherAmmoSource = -1);
 	virtual bool P_CanShoot();

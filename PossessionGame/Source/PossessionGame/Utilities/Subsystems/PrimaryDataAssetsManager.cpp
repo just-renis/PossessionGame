@@ -31,6 +31,8 @@ bool UPrimaryDataAssetsManager::IsAsyncLoadingFinished()
 	return AsyncHandles.IsEmpty();
 }
 
+bool UPrimaryDataAssetsManager::IsVfxAlreadyLoaded(const EVfx InVfxName) { return GetVfxData(InVfxName).GetVfxContainer()->GetVfxEffect().IsValid(); }
+
 float UPrimaryDataAssetsManager::GetVfxAttributeValue(const TObjectPtr<UNiagaraComponent>& InComponent, const FName InVfxAttributeName)
 {
 	float RetrievedValue = 0.f;
@@ -187,9 +189,7 @@ void UPrimaryDataAssetsManager::LoadVfx(const EVfx InVfxName, TFunction<void()> 
 	if (InVfxName == EVfx::None) return;
 	FVfxContainer& VfxData = GetVfxData(InVfxName);
 	VfxData.AddVfxLoadedCallback(InCallback);
-	UE_LOG(LogTemp, Error, TEXT("ADD VFX 0 %s"), *UEnum::GetValueAsString(InVfxName));
 	if (!GetCanAsyncLoadHappen() || VfxData.GetVfxContainer()->GetVfxEffect().IsValid() || VfxData.GetIsInLoad()) return;
-	UE_LOG(LogTemp, Error, TEXT("ADD VFX 1 %s"), *UEnum::GetValueAsString(InVfxName));
 	VfxData.SetIsInLoad(true);
 	TWeakObjectPtr WeakWorld = GetWorld();
 	FVfxContainer* VfxContainer = &VfxData;
@@ -198,7 +198,6 @@ void UPrimaryDataAssetsManager::LoadVfx(const EVfx InVfxName, TFunction<void()> 
 		if (!WeakWorld.IsValid() || !IsAsyncAssetWorldValid(WeakWorld.Get()) || !VfxContainer) return;
 		VfxContainer->SetIsLoaded(true);
 		VfxContainer->TriggerVfxsCallbacks();
-		UE_LOG(LogTemp, Error, TEXT("ADD VFX 2 %s"), *VfxContainer->GetVfxContainer()->GetVfxName().ToString());
 	});
 	AddAsyncHandle(Handle);
 }

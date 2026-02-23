@@ -26,7 +26,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> ReloadSfx;
 
-	virtual void AI_Reload() override;
 	virtual void AI_Shoot() override;
 	
 	virtual void P_Shoot(const EPoolObject InProjectileName) override;

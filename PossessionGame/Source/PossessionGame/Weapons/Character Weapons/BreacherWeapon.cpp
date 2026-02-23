@@ -14,11 +14,6 @@ ABreacherWeapon::ABreacherWeapon()
 	Sounds[ESound::BreacherShoot]->SetupAttachment(Mesh);
 }
 
-void ABreacherWeapon::AI_Reload()
-{
-	Super::AI_Reload();
-}
-
 void ABreacherWeapon::AI_Shoot()
 {
 	PlaySound(ESound::BreacherShoot, true);
