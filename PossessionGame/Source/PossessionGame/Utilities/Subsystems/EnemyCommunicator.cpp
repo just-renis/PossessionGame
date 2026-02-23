@@ -142,7 +142,6 @@ void UEnemyCommunicator::TeleportToBubble(const TObjectPtr<AActor>& InActor)
 	if (!InActor) return;
 	TArray<TObjectPtr<ATeleportBubble>> ValidBubbles;
 	const EGameMode CurrentGameMode = DelegateManager->RequestCurrentGameMode.Execute();
-	UE_LOG(LogTemp, Error, TEXT("CURRENT GAME MODE: %s"), *UEnum::GetValueAsString(CurrentGameMode));
 	for (const TObjectPtr<ATeleportBubble>& Bubble : TeleportBubbles)
 	{
 		if (Bubble && Bubble->IsCorrectGameMode(CurrentGameMode)) ValidBubbles.Add(Bubble);

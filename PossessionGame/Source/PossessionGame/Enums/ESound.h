@@ -162,5 +162,9 @@ enum class ESound : uint16
 	PyroBossProjectileImpact,
 	PyroBossShoot,
 	PyroBossStomp,
-	HackTerminalSmoke
+	HackTerminalSmoke,
+	SpyShoot,
+	SpyReload,
+	SpyPlayerSnatchStart,
+	SpySnatchImpact
 };

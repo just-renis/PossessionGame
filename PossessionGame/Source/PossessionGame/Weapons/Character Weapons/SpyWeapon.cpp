@@ -1,5 +1,6 @@
 #include "SpyWeapon.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "PossessionGame/AI/Enemies/Characters/Spy.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EVfxType.h"
@@ -15,21 +16,37 @@ void ASpyWeapon::SetInvincibilityState(const bool bState)
 	GetWorldTimerManager().SetTimer(ProcessInvincibilityMaterialHandle, this, bState ? &ASpyWeapon::ProcessInvincibilityMaterialActivation : &ASpyWeapon::ProcessInvincibilityMaterialDeactivation, 0.02f, true);
 }
 
+ASpyWeapon::ASpyWeapon()
+{
+	ShootSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ShootSfx"));
+	ShootSfx->SetAutoActivate(false);
+	ShootSfx->SetupAttachment(Mesh);
+	Sounds.Add(ESound::SpyShoot, ShootSfx);
+	ReloadSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ReloadSfx"));
+	ReloadSfx->SetAutoActivate(false);
+	ReloadSfx->SetupAttachment(Mesh);
+	Sounds.Add(ESound::SpyReload, ReloadSfx);
+}
+
+void ASpyWeapon::AI_Reload() { PlaySound(ESound::SpyReload, true); }
+
 void ASpyWeapon::AI_Shoot()
 {
-	//PlaySound(ESound::TricksterShoot);
+	PlaySound(ESound::SpyShoot, true);
 	Super::AI_Shoot();
 	ShootProjectile(EPoolObject::SpyProjectile, false, NAME_None, true);
 }
 
 void ASpyWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
+	AssetsManager->PlaySound2D(ESound::SpyShoot);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Shoot);
 	Super::P_Shoot(InProjectileName);
 }
 
 void ASpyWeapon::P_Reload()
 {
+	AssetsManager->PlaySound2D(ESound::SpyReload, true);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Reload);
 	if (AnimInstance) AnimInstance->PlayMontage(EWeaponAnimState::Reload);
 }

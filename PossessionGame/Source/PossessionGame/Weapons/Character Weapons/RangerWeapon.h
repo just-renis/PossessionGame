@@ -15,7 +15,7 @@ public:
 	ARangerWeapon();
 private:
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> GrenadeLaunchSpecialComponent;
+	TObjectPtr<UNiagaraComponent> GrenadeLaunchSpecialVfx;
 	
 	virtual void AI_Reload() override;
 	virtual void AI_Shoot() override;

@@ -31,6 +31,7 @@ void ASpy::SetXrayState(const bool bState)
 void ASpy::StartTeleportProcess()
 {
 	if (bIsFirstAbilityActive) P_StopAbility(0);
+	AssetsManager->PlaySound2D(ESound::SpyPlayerSnatchStart);
 	bIsInvincible = true;
 	bIsSecondAbilityActive = true;
 	if (!TeleportLinesVfx) AssetsManager->AttachVfx(EVfx::SpyTeleportLines, [this]() -> bool { return GetIsAlive() && bIsSecondAbilityActive && bIsHijacked; }, &TeleportLinesVfx, Camera);
@@ -41,6 +42,7 @@ void ASpy::StartTeleportProcess()
 void ASpy::FinishTeleportProcess()
 {
 	bIsSecondAbilityActive = false;
+	AssetsManager->PlaySound2D(ESound::SpySnatchImpact);
 	P_MakeCameraShake(ECameraShake::SpyTeleportKillCameraShake);
 	Camera->SetWorldLocation(GetActorLocation() + FVector::UpVector * 60.f);
 	bIsInvincible = false;
@@ -79,8 +81,39 @@ void ASpy::AI_SetController() { AI = Cast<ASpyAIController>(GetController()); }
 
 void ASpy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
 {
-	if (CanAbilityBeExecuted(1) && !IsActionsDisabled() && !bIsActionInMotion && CurrentHp <= MaxHp * 0.4f && CurrentHp > 0) AI_UseAbility(1);
+	if (CanAbilityBeExecuted(1) && !IsActionsDisabled() && !bIsActionInMotion && CurrentHp <= MaxHp * 0.4f && CurrentHp > 0)
+	{
+		if (AI_TeleportVfx)
+		{
+			GetWorldTimerManager().SetTimer(DisableAITeleportVfxHandle, this, &ASpy::AI_DisableTeleportVfx, 1.f);
+			AI_TeleportVfx->Activate(true);
+		}
+		AI_UseAbility(1);
+	}
 	Super::AI_ReceivedDamage(InDamageReason, InDamage);
+}
+
+void ASpy::AI_DisableTeleportVfx() const
+{
+	if (!AI_TeleportVfx) return;
+	AI_TeleportVfx->DeactivateImmediate();
+}
+
+void ASpy::AI_SetupTeleportVfx()
+{
+	TWeakObjectPtr WeakThis = this;
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->LoadVfx(EVfx::AI_SpyTeleport, [WeakThis]
+	{
+		UE_LOG(LogTemp, Error, TEXT("ATTACH VFX 0 %s"), *WeakThis->GetName());
+		if (!WeakThis.IsValid() || !WeakThis.Get()) return;
+		if (WeakThis->AI_TeleportVfx)
+		{
+			WeakThis->AI_TeleportVfx->DestroyComponent();
+			WeakThis->AI_TeleportVfx = nullptr;
+		}
+		UE_LOG(LogTemp, Error, TEXT("ATTACH VFX 1 %s"), *WeakThis->GetName());
+		WeakThis->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::AI_SpyTeleport, nullptr, &WeakThis->AI_TeleportVfx, WeakThis->GetMesh(), FName("DeathSocket"), true);
+	});
 }
 
 void ASpy::P_Setup()
@@ -119,10 +152,13 @@ void ASpy::P_InitiateStomp()
 	Super::P_InitiateStomp();
 }
 
+void ASpy::P_RemoveReloadSound() { AssetsManager->RemoveStoredSound(ESound::SpyReload); }
+
 void ASpy::BeginPlay()
 {
 	CharacterName = ECharacterType::Spy;
 	Super::BeginPlay();
+	AI_SetupTeleportVfx();
 }
 
 void ASpy::SetTeleportMaterialValue(const float InValue)

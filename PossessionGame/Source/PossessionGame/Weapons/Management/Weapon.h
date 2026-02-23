@@ -93,6 +93,7 @@ protected:
 	bool bIsWeaponDetachable = true;
 	int32 MagazineCap;
 	int32 TotalAmmo;
+	int32 CurrentAmmo;
 	float ShootCooldown;
 	float HitScanDamage;
 	float ShootTimer = 0.f;
@@ -100,8 +101,6 @@ protected:
 	float ReverseActionSpeed = 1.f;
 	EWeapon Name;
 	FVector OriginalScale;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	int32 CurrentAmmo;
 	UPROPERTY()
 	TObjectPtr<UWeaponAnimInstance> AnimInstance;
 	UPROPERTY()

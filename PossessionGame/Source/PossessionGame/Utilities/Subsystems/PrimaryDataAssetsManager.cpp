@@ -187,7 +187,9 @@ void UPrimaryDataAssetsManager::LoadVfx(const EVfx InVfxName, TFunction<void()> 
 	if (InVfxName == EVfx::None) return;
 	FVfxContainer& VfxData = GetVfxData(InVfxName);
 	VfxData.AddVfxLoadedCallback(InCallback);
+	UE_LOG(LogTemp, Error, TEXT("ADD VFX 0 %s"), *UEnum::GetValueAsString(InVfxName));
 	if (!GetCanAsyncLoadHappen() || VfxData.GetVfxContainer()->GetVfxEffect().IsValid() || VfxData.GetIsInLoad()) return;
+	UE_LOG(LogTemp, Error, TEXT("ADD VFX 1 %s"), *UEnum::GetValueAsString(InVfxName));
 	VfxData.SetIsInLoad(true);
 	TWeakObjectPtr WeakWorld = GetWorld();
 	FVfxContainer* VfxContainer = &VfxData;
@@ -196,6 +198,7 @@ void UPrimaryDataAssetsManager::LoadVfx(const EVfx InVfxName, TFunction<void()> 
 		if (!WeakWorld.IsValid() || !IsAsyncAssetWorldValid(WeakWorld.Get()) || !VfxContainer) return;
 		VfxContainer->SetIsLoaded(true);
 		VfxContainer->TriggerVfxsCallbacks();
+		UE_LOG(LogTemp, Error, TEXT("ADD VFX 2 %s"), *VfxContainer->GetVfxContainer()->GetVfxName().ToString());
 	});
 	AddAsyncHandle(Handle);
 }
@@ -706,6 +709,10 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_PyroBossShoot", ESound::PyroBossShoot);
 	SoundMap.Add("PA_PyroBossStomp", ESound::PyroBossStomp);
 	SoundMap.Add("PA_HackTerminalSmoke", ESound::HackTerminalSmoke);
+	SoundMap.Add("PA_SpyShoot", ESound::SpyShoot);
+	SoundMap.Add("PA_SpyReload", ESound::SpyReload);
+	SoundMap.Add("PA_SpyPlayerSnatchStart", ESound::SpyPlayerSnatchStart);
+	SoundMap.Add("PA_SpySnatchImpact", ESound::SpySnatchImpact);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -773,6 +780,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_SpyFpsBulletTrail", EVfx::SpyFpsBulletTrail);
 	VfxsMap.Add("PA_SpyTeleportLines", EVfx::SpyTeleportLines);
 	VfxsMap.Add("PA_SpyInvincibility", EVfx::SpyInvincibility);
+	VfxsMap.Add("PA_AISpyTeleport", EVfx::AI_SpyTeleport);
 	VfxsMap.Add("PA_TankMuzzle", EVfx::TankMuzzle);
 	VfxsMap.Add("PA_TankBulletTrail", EVfx::TankBulletTrail);
 	VfxsMap.Add("PA_TankBulletImpact", EVfx::TankBulletImpact);

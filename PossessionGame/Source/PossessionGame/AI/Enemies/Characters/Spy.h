@@ -28,6 +28,7 @@ private:
 	int32 InvincibilityCountLoops = 0;
 	FTimerHandle ProcessXrayMaterialsHandle;
 	FTimerHandle ProcessInvincibilityMaterialHandle;
+	FTimerHandle DisableAITeleportVfxHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Teleport;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
@@ -43,6 +44,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> InvincibilityVfx;
 	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> AI_TeleportVfx;
+	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Teleport;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Xray;
@@ -54,6 +57,8 @@ private:
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_SetController() override;
 	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage) override;
+	void AI_DisableTeleportVfx() const;
+	void AI_SetupTeleportVfx();
 
 	virtual void P_Setup() override;
 	virtual void P_SetupLeftClickInputStartedState() override;
@@ -62,6 +67,7 @@ private:
 	virtual void P_MakeCameraShake(const ECameraShake InCameraShakeName) override;
 	virtual void P_ProcessMeleeAttack() override;
 	virtual void P_InitiateStomp() override;
+	virtual void P_RemoveReloadSound() override;
 	
 	virtual void BeginPlay() override;
 	void SetTeleportMaterialValue(const float InValue);
@@ -69,7 +75,5 @@ private:
 	void ProcessXrayMaterialsDeactivation();
 	void ProcessInvincibilityMaterialActivation();
 	void ProcessInvincibilityMaterialDeactivation();
-	void ProcessInvincibilityHandsMaterialActivation();
-	void ProcessInvincibilityHandsMaterialDeactivation();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };
