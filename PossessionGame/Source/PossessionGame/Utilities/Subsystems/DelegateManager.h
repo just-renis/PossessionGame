@@ -35,6 +35,7 @@ DECLARE_DELEGATE(FOnPlayerGhostDestroy);
 DECLARE_DELEGATE(FOnPlayerBashKill);
 DECLARE_DELEGATE(FOnRunModeChange);
 DECLARE_DELEGATE_RetVal(int32, FOnRunFinished);
+DECLARE_DELEGATE_RetVal(bool, FRequestIsSpyMarkerRequired);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsTimeStopUsed);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsArenaMode);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsDemo);
@@ -131,6 +132,7 @@ public:
 	FOnPlayerBashKill OnPlayerBashKill;
 	FOnRunModeChange OnRunModeChange;
 	FOnRunFinished OnRunFinished;
+	FRequestIsSpyMarkerRequired RequestIsSpyMarkerRequired;
 	FRequestIsTimeStopUsed RequestIsTimeStopUsed;
 	FRequestIsArenaMode RequestIsArenaMode;
 	FRequestIsDemo RequestIsDemo;

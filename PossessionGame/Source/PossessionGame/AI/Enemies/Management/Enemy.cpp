@@ -490,11 +490,23 @@ void AEnemy::SetHijackOutline(const bool bState)
 			AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
 		}
 		else HijackableVfx->Activate(true);
+		UE_LOG(LogTemp, Error, TEXT("SPY SNATCH CHECK 0"));
+		if (DelegateManager->RequestIsSpyMarkerRequired.IsBound() && DelegateManager->RequestIsSpyMarkerRequired.Execute())
+		{
+		UE_LOG(LogTemp, Error, TEXT("SPY SNATCH CHECK 1"));
+			if (!SpySnatchMarkerVfx)
+			{
+		UE_LOG(LogTemp, Error, TEXT("SPY SNATCH CHECK 2"));
+				AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
+			}
+			else SpySnatchMarkerVfx->Activate(true);
+		}
 	}
 	else
 	{
 		AI_HideHpBar();
 		DisableHijackViableVfx();
+		if (DelegateManager->RequestIsSpyMarkerRequired.IsBound() && DelegateManager->RequestIsSpyMarkerRequired.Execute()) DisableSpySnatchMarkerVfx();
 	}
 }
 
@@ -707,6 +719,12 @@ void AEnemy::AI_DestroyVfxs()
 		HijackableVfx->DeactivateImmediate();
 		HijackableVfx->DestroyComponent();
 		HijackableVfx = nullptr;
+	}
+	if (SpySnatchMarkerVfx)
+	{
+		SpySnatchMarkerVfx->DeactivateImmediate();
+		SpySnatchMarkerVfx->DestroyComponent();
+		SpySnatchMarkerVfx = nullptr;
 	}
 	if (CorruptedVfx)
 	{
@@ -1083,7 +1101,11 @@ void AEnemy::DestroyThis()
 
 void AEnemy::DestroyImmediately() { Destroy(); }
 
-void AEnemy::DisableAllVfxAfterPossession() { DisableHijackViableVfx(); }
+void AEnemy::DisableAllVfxAfterPossession()
+{
+	DisableHijackViableVfx();
+	DisableSpySnatchMarkerVfx();
+}
 
 void AEnemy::ClearTimers()
 {
@@ -1990,18 +2012,18 @@ void AEnemy::CloseInfoPanel() { /*if (P_HUD) P_HUD->ToggleInfoPanel(false);*/ }
 
 void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 {
-	if (!EmpAffectedVfx)
-	{
-		AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, &EmpAffectedVfx, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(EUserParamType::Float, InEffectDuration)}});
-	}
+	if (!EmpAffectedVfx) AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, &EmpAffectedVfx, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(EUserParamType::Float, InEffectDuration)}});
 	else EmpAffectedVfx->Activate(true);
 }
 
 void AEnemy::DisableHijackViableVfx() const { if (HijackableVfx) HijackableVfx->DeactivateImmediate(); }
 
+void AEnemy::DisableSpySnatchMarkerVfx() const { if (SpySnatchMarkerVfx) SpySnatchMarkerVfx->DeactivateImmediate(); }
+
 void AEnemy::DisableVfxs() const
 {
 	DisableHijackViableVfx();
+	DisableSpySnatchMarkerVfx();
 	if (LevelUpVfx) LevelUpVfx->DeactivateImmediate();
 	if (RunVfx) RunVfx->DeactivateImmediate();
 }

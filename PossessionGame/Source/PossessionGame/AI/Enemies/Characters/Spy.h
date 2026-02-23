@@ -60,6 +60,8 @@ private:
 	void AI_DisableTeleportVfx() const;
 	void AI_SetupTeleportVfx();
 
+	bool P_IsSnatchAbilityAvailable() const;
+
 	virtual void P_Setup() override;
 	virtual void P_SetupLeftClickInputStartedState() override;
 	virtual void P_SetupLeftClickInputTriggeredState() override {}
@@ -68,6 +70,7 @@ private:
 	virtual void P_ProcessMeleeAttack() override;
 	virtual void P_InitiateStomp() override;
 	virtual void P_RemoveReloadSound() override;
+	virtual void P_Destroy() override;
 	
 	virtual void BeginPlay() override;
 	void SetTeleportMaterialValue(const float InValue);

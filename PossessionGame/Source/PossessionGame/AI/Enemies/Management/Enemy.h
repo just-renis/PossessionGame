@@ -522,6 +522,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> CorruptedVfx;
 	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> SpySnatchMarkerVfx;
+	UPROPERTY()
 	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
 	UPROPERTY()
 	TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager;
@@ -632,6 +634,7 @@ private:
 	void CloseInfoPanel();
 	void PlayEmpAffectedVfx(const float InEffectDuration);
 	void DisableHijackViableVfx() const;
+	void DisableSpySnatchMarkerVfx() const;
 	void DisableVfxs() const;
 	void SetupTutorialManager();
 	void ToggleTimeDilation();
