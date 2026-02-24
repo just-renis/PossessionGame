@@ -84,9 +84,9 @@ void APyroBoss::BeginPlay()
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::MinionBoss);
 }
 
-void APyroBoss::InitiateDeath()
+void APyroBoss::InitiateDeath(const FVector& InImpulse)
 {
-	Super::InitiateDeath();
+	Super::InitiateDeath(InImpulse);
 	DelegateManager->OnBossDeath.Broadcast();
 }
 

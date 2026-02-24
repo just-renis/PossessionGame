@@ -227,10 +227,10 @@ void AGuardian::ToggleShieldVfx(const bool bState, const EVfx InVfxName)
 	}
 }
 
-void AGuardian::InitiateDeath()
+void AGuardian::InitiateDeath(const FVector& InImpulse)
 {
 	if (bIsHijacked) DelegateManager->RequestIsTimeStopUsed.Unbind();
-	Super::InitiateDeath();
+	Super::InitiateDeath(InImpulse);
 }
 
 void AGuardian::TurnOffShieldPostProcess() const

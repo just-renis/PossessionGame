@@ -54,7 +54,7 @@ private:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void GrenadeMuzzleFlashLogic();
 	virtual void PossessedBy(AController* NewController) override;
-	virtual void InitiateDeath() override;
+	virtual void InitiateDeath(const FVector& InImpulse) override;
 	virtual void AllDisablingActionsFinished() override;
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };

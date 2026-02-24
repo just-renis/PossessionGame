@@ -70,7 +70,7 @@ private:
 	virtual void P_ProcessMeleeAttack() override;
 	virtual void P_InitiateStomp() override;
 	virtual void P_RemoveReloadSound() override;
-	virtual void P_Destroy() override;
+	virtual void P_FinishHijackProcess() override;
 	
 	virtual void BeginPlay() override;
 	void SetTeleportMaterialValue(const float InValue);

@@ -381,7 +381,7 @@ void AEnemy::PossessedBy(AController* NewController)
 	SetInputState(false);
 }
 
-void AEnemy::InitiateDeath()
+void AEnemy::InitiateDeath(const FVector& InImpulse)
 {
 	DisableVfxs();
 	GetMesh()->SetOverlayMaterial(nullptr);
@@ -400,7 +400,7 @@ void AEnemy::InitiateDeath()
 	}
 	else P_Destroy();
 	AI_PlayDeathElectrification();
-	HandleDeactivation();
+	HandleDeactivation(InImpulse);
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AEnemy::DestroyThis, DestroyAfter, false);
 }
 
@@ -483,22 +483,11 @@ void AEnemy::SetHijackOutline(const bool bState)
 	if (bState)
 	{
 		AI_ShowHpBar();
-		if (!HijackableVfx)
-		{
-			if (bHijackVfxAttachRequested) return;
-			bHijackVfxAttachRequested = true;
-			AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
-		}
+		if (!HijackableVfx) AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
 		else HijackableVfx->Activate(true);
-		UE_LOG(LogTemp, Error, TEXT("SPY SNATCH CHECK 0"));
 		if (DelegateManager->RequestIsSpyMarkerRequired.IsBound() && DelegateManager->RequestIsSpyMarkerRequired.Execute())
 		{
-		UE_LOG(LogTemp, Error, TEXT("SPY SNATCH CHECK 1"));
-			if (!SpySnatchMarkerVfx)
-			{
-		UE_LOG(LogTemp, Error, TEXT("SPY SNATCH CHECK 2"));
-				AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
-			}
+			if (!SpySnatchMarkerVfx) AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
 			else SpySnatchMarkerVfx->Activate(true);
 		}
 	}
@@ -514,7 +503,23 @@ void AEnemy::SetUnHijackOutline(const bool bState)
 {
 	bIsLookedAtByPlayer = bState;
 	if (bIsLookedAtByPlayer) AI_ShowHpBar();
-	GetMesh()->SetOverlayMaterial(bState ? UnHijackOutlineMaterial : nullptr);
+	if (bState)
+	{
+		GetMesh()->SetOverlayMaterial(UnHijackOutlineMaterial);
+		if (DelegateManager->RequestIsSpyMarkerRequired.IsBound() && DelegateManager->RequestIsSpyMarkerRequired.Execute())
+		{
+			if (!SpySnatchMarkerVfx)
+			{
+				AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
+			}
+			else SpySnatchMarkerVfx->Activate(true);
+		}
+	}
+	else
+	{
+		GetMesh()->SetOverlayMaterial(nullptr);
+		if (DelegateManager->RequestIsSpyMarkerRequired.IsBound() && DelegateManager->RequestIsSpyMarkerRequired.Execute()) DisableSpySnatchMarkerVfx();
+	}
 }
 
 void AEnemy::EmpEffectEnded()
@@ -982,6 +987,27 @@ void AEnemy::P_ProcessMeleeAttack()
 	}
 }
 
+void AEnemy::P_FinishHijackProcess()
+{
+	if (!HijackTarget || !HijackTarget->GetIsAlive())
+	{
+		P_CancelHijackingProcess();
+		return;
+	}
+	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
+	GetWorldTimerManager().ClearTimer(HijackLockInToTargetHandle);
+	P_StopAllAbilities(true);
+	const FVector SpawnLocation = GetActorLocation();
+	DelegateManager->OnEnemyDeath.Unbind();
+	if (Controller) Controller->Possess(HijackTarget);
+	InitiateDeath();
+	AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp, true);
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
+	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(false, HijackDelayAnimationSpeed);
+	P_AddAndSetHijackPulse(0.f);
+	DestroyImmediately();
+}
+
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (bIsInvincible) return 0.f;
@@ -1080,7 +1106,7 @@ void AEnemy::AttachDestructible(const TObjectPtr<ADestructible>& Destructible, c
 	Destructible->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 }
 
-void AEnemy::HandleDeactivation()
+void AEnemy::HandleDeactivation(const FVector& InImpulse)
 {
 	if (Weapon) Weapon->DeactivateWeapon();
 	GetCapsuleComponent()->DestroyComponent();
@@ -1088,6 +1114,7 @@ void AEnemy::HandleDeactivation()
 	GetMesh()->SetAnimInstanceClass(nullptr);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->AddImpulse(InImpulse);
 }
 
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->CharacterMesh.Get()); }
@@ -1740,27 +1767,6 @@ void AEnemy::P_SetupSuperJump()
 	GetWorldTimerManager().ClearTimer(P_SlideEndHandle);
 	P_EndSlide();
 	GetCharacterMovement()->JumpZVelocity = JumpVelocity * 2.f;
-}
-
-void AEnemy::P_FinishHijackProcess()
-{
-	if (!HijackTarget || !HijackTarget->GetIsAlive())
-	{
-		P_CancelHijackingProcess();
-		return;
-	}
-	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
-	GetWorldTimerManager().ClearTimer(HijackLockInToTargetHandle);
-	P_StopAllAbilities(true);
-	const FVector SpawnLocation = GetActorLocation();
-	DelegateManager->OnEnemyDeath.Unbind();
-	if (Controller) Controller->Possess(HijackTarget);
-	InitiateDeath();
-	AssetsManager->RequestSpawnEnemy(CharacterName, SpawnLocation, CurrentHp / MaxHp, true);
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(false, HijackDelayAnimationSpeed);
-	P_AddAndSetHijackPulse(0.f);
-	DestroyImmediately();
 }
 
 void AEnemy::P_ChangeFovWhileHijackingProcess()

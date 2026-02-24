@@ -196,10 +196,10 @@ void ARanger::PossessedBy(AController* NewController)
 	if (NewController && NewController->IsPlayerController()) AI_DestroyGrenadeTrigger();
 }
 
-void ARanger::InitiateDeath()
+void ARanger::InitiateDeath(const FVector& InImpulse)
 {
 	AI_DestroyGrenadeTrigger();
-	Super::InitiateDeath();
+	Super::InitiateDeath(InImpulse);
 }
 
 void ARanger::AllDisablingActionsFinished()

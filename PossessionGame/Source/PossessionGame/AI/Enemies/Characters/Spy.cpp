@@ -123,7 +123,6 @@ bool ASpy::P_IsSnatchAbilityAvailable() const { return CanAbilityBeExecuted(1); 
 void ASpy::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
-	UE_LOG(LogTemp, Error, TEXT("BIND SNATCH"));
 	DelegateManager->RequestIsSpyMarkerRequired.BindUObject(this, &ASpy::P_IsSnatchAbilityAvailable);
 	Super::P_Setup();
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ASpy::SetIsActionInMotion);
@@ -160,11 +159,10 @@ void ASpy::P_InitiateStomp()
 
 void ASpy::P_RemoveReloadSound() { AssetsManager->RemoveStoredSound(ESound::SpyReload); }
 
-void ASpy::P_Destroy()
+void ASpy::P_FinishHijackProcess()
 {
-	UE_LOG(LogTemp, Error, TEXT("SPY MARKER UNBIND"));
 	DelegateManager->RequestIsSpyMarkerRequired.Unbind();
-	Super::P_Destroy();
+	Super::P_FinishHijackProcess();
 }
 
 void ASpy::BeginPlay()

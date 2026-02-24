@@ -106,10 +106,10 @@ void AWarden::DisableBeamCollision()
 	GetWorldTimerManager().ClearTimer(BeamDisableCollisionHandle);
 }
 
-void AWarden::InitiateDeath()
+void AWarden::InitiateDeath(const FVector& InImpulse)
 {
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Usb, GetActorLocation())->Init();
-	Super::InitiateDeath();
+	Super::InitiateDeath(InImpulse);
 	DelegateManager->OnBossDeath.Broadcast();
 }
 
