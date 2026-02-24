@@ -1272,7 +1272,7 @@ void AEnemy::AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent)
 
 void AEnemy::AI_MainShootLogic()
 {
-	if (!AI || GetIsActionInMotion() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
+	if (!AI || !bAllowedToShoot || GetIsActionInMotion() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
 	if (!GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) AI_InitiateShooting();
 	if (GetWeapon()->AI_CanShoot()) AI_ShootLogic();
 }

@@ -91,11 +91,24 @@ void UEnemyCommunicator::AddPoint(const int32 InKey, const FEQSPointData& InData
 
 void UEnemyCommunicator::RemovePoint(const int32 InKey) { PointsAroundTarget.Remove(InKey); }
 
+FVector UEnemyCommunicator::ReceiveBubbleLocation()
+{
+	TArray<TObjectPtr<ATeleportBubble>> ValidBubbles;
+	const EGameMode CurrentGameMode = DelegateManager->RequestCurrentGameMode.Execute();
+	for (const TObjectPtr<ATeleportBubble>& Bubble : TeleportBubbles)
+	{
+		if (Bubble && Bubble->IsCorrectGameMode(CurrentGameMode)) ValidBubbles.Add(Bubble);
+	}
+	if (ValidBubbles.IsEmpty()) return FVector(NAN, NAN, NAN);
+	const int32 Index = FMath::RandRange(0, ValidBubbles.Num() - 1);
+	return ValidBubbles[Index]->GetActorLocation();
+}
+
 void UEnemyCommunicator::InitDelegates(const TObjectPtr<UDelegateManager>& InDelegateManager)
 {
 	DelegateManager = InDelegateManager;
 	DelegateManager->OnConcealAbilityChange.AddUObject(this, &UEnemyCommunicator::SetTarget);
-	DelegateManager->OnToBubbleTeleport.BindUObject(this, &UEnemyCommunicator::TeleportToBubble);
+	DelegateManager->RequestBubbleLocation.BindUObject(this, &UEnemyCommunicator::ReceiveBubbleLocation);
 }
 
 void UEnemyCommunicator::TargetQueryResult(TSharedPtr<FEnvQueryResult> Result)
@@ -135,18 +148,4 @@ void UEnemyCommunicator::Deinitialize()
 {
 	if (GetWorld()) GetWorld()->GetTimerManager().ClearTimer(EQSPointsGenerationHandle);
 	Super::Deinitialize();
-}
-
-void UEnemyCommunicator::TeleportToBubble(const TObjectPtr<AActor>& InActor)
-{
-	if (!InActor) return;
-	TArray<TObjectPtr<ATeleportBubble>> ValidBubbles;
-	const EGameMode CurrentGameMode = DelegateManager->RequestCurrentGameMode.Execute();
-	for (const TObjectPtr<ATeleportBubble>& Bubble : TeleportBubbles)
-	{
-		if (Bubble && Bubble->IsCorrectGameMode(CurrentGameMode)) ValidBubbles.Add(Bubble);
-	}
-	if (ValidBubbles.IsEmpty()) return;
-	const int32 Index = FMath::RandRange(0, ValidBubbles.Num() - 1);
-	ValidBubbles[Index]->Teleport(InActor);
 }

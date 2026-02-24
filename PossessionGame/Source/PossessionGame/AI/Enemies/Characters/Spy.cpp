@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Controllers/SpyAIController.h"
 #include "PossessionGame/Enums/ECameraShake.h"
+#include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
@@ -163,6 +164,12 @@ void ASpy::P_FinishHijackProcess()
 {
 	DelegateManager->RequestIsSpyMarkerRequired.Unbind();
 	Super::P_FinishHijackProcess();
+}
+
+float ASpy::ReceiveMovementSpeedModification() const
+{
+	if (bIsSecondAbilityActive && !bIsHijacked && CurrentMoveMode == EMoveMode::Run) return AI_TeleportRunSpeed;
+	return 1.f;
 }
 
 void ASpy::BeginPlay()

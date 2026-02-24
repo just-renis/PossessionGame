@@ -24,6 +24,7 @@ private:
 	float XrayDarkness = 1.f;
 	float InvincibilityColorRadius = 3.f;
 	float InvincibilityRadialRadius = 1.f;
+	float AI_TeleportRunSpeed = 3.f;
 	int32 XrayCountLoops = 0;
 	int32 InvincibilityCountLoops = 0;
 	FTimerHandle ProcessXrayMaterialsHandle;
@@ -71,6 +72,8 @@ private:
 	virtual void P_InitiateStomp() override;
 	virtual void P_RemoveReloadSound() override;
 	virtual void P_FinishHijackProcess() override;
+
+	virtual float ReceiveMovementSpeedModification() const override;
 	
 	virtual void BeginPlay() override;
 	void SetTeleportMaterialValue(const float InValue);

@@ -54,10 +54,11 @@ private:
 	TArray<TObjectPtr<ATeleportBubble>> TeleportBubbles;
 	UPROPERTY()
 	TMap<int32, FEQSPointData> PointsAroundTarget;
+	
+	FVector ReceiveBubbleLocation();
 
 	void InitDelegates(const TObjectPtr<UDelegateManager>& InDelegateManager);
 	void TargetQueryResult(TSharedPtr<FEnvQueryResult> Result);
 	void GeneratePointsAroundTarget();
 	virtual void Deinitialize() override;
-	void TeleportToBubble(const TObjectPtr<AActor>& InActor);
 };

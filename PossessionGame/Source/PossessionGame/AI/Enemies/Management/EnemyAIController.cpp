@@ -88,7 +88,7 @@ void AEnemyAIController::AdjustCustomFocus()
 {
 	if (!Proprietor->GetIsActionInMotion())
 	{
-		FVector TargetLocation = EnemyCommunicator->GetTargetLocation();
+		FVector TargetLocation = bIsUsingEQS ? EnemyCommunicator->GetTargetLocation() : StateTreeData.GetMoveLocation();
 		if ((Proprietor->GetMoveMode() != EMoveMode::Walk || TargetLocation.ContainsNaN()) && bIsControlRigAvailableToToggle) Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
 		else
 		{
@@ -177,10 +177,13 @@ void AEnemyAIController::SetupEQSTarget()
 
 void AEnemyAIController::SetEQSTargetLocation()
 {
+	if (!bIsUsingEQS) return;
 	const FVector PointLocation = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetPointLocation(Proprietor->GetCharacterName(), Proprietor->GetActorLocation());
 	(void)OnEqsTargetUpdate.ExecuteIfBound();
-	if (!PointLocation.ContainsNaN()) GetStateTreeData().SetEQSPointLocation(PointLocation);
+	if (!PointLocation.ContainsNaN()) SetTargetLocation(PointLocation);
 }
+
+void AEnemyAIController::SetTargetLocation(const FVector& InLocation) { GetStateTreeData().SetEQSPointLocation(InLocation); }
 
 void AEnemyAIController::StopStateTreeLogic() const
 {

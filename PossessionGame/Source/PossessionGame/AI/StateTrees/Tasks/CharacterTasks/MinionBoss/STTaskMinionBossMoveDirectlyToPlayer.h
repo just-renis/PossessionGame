@@ -9,12 +9,11 @@ class POSSESSIONGAME_API USTTaskMinionBossMoveDirectlyToPlayer : public USTTaskM
 {
 	GENERATED_BODY()
 
+	FTimerHandle MoveDirectlyToPlayerHandle;
 	UPROPERTY(EditAnywhere, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	float MoveDirectlyToPlayerDuration = 5.f;
 	UPROPERTY(EditAnywhere, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	float MoveSpeedMultiplier = 2.f;
-	UPROPERTY()
-	FTimerHandle MoveDirectlyToPlayerHandle;
 
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
 

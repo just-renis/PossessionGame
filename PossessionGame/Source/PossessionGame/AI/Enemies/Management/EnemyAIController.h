@@ -33,6 +33,8 @@ public:
 	void SetStateTreeCurrentEvent(const EStateTreeEvent InCurrentStateTreeEvent) { CurrentStateTreeEvent = InCurrentStateTreeEvent; }
 	void SetControlRigAvailabilityToggle(const bool bState) { bIsControlRigAvailableToToggle = bState; }
 	void SetEQSTargetLocation(const FVector& InLocation) const { EQSTarget->SetActorLocation(InLocation); }
+	void SetIsUsingEQS(const bool bState) { bIsUsingEQS = bState; }
+	void SetCustomFocusState(const bool bState) { bCustomFocusEnabled = bState; }
 	void SetShootCooldown(const float InValue);
 	void SetReloadDelay(const float InValue);
 	virtual void DestroyThis();
@@ -42,6 +44,7 @@ public:
 	virtual void SetupAI();
 	void ResumeLogic() const;
 	void StopLogic(const bool bNeedCleanup);
+	void SetTargetLocation(const FVector& InLocation);
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStateTreeComponent> StateTree;
@@ -56,10 +59,11 @@ protected:
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 private:
 	bool bIsControlRigAvailableToToggle = true;
-	EStateTreeEvent CurrentStateTreeEvent;
-	FOnEqsTargetUpdate OnEqsTargetUpdate;
+	bool bIsUsingEQS = true;
 	FTimerHandle AdjustCustomFocusHandle;
 	FTimerHandle OnLostSightOfPawnHandle;
+	EStateTreeEvent CurrentStateTreeEvent;
+	FOnEqsTargetUpdate OnEqsTargetUpdate;
 	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
 	bool bPredictionEnabled = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))

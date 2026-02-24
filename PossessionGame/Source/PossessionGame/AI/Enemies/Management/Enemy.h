@@ -176,6 +176,7 @@ public:
 	virtual FLinearColor GetDamageNumberColor() const { return DamageNumberColor; }
 
 	void SetIsAbilityInAction(const bool bState) { bIsAbilityInAction = bState; }
+	void SetIsAllowedToShoot(const bool bState) { bAllowedToShoot = bState; }
 	void SetIsActionInMotion(const bool bState);
 	virtual void Tick(const float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -203,6 +204,7 @@ protected:
 	bool bCanReload = true;
 	bool bIsHijacked = false;
 	bool bCanShoot = false;
+	bool bAllowedToShoot = true;
 	bool bIsActionInMotion = false;
 	bool bShootPauseActive = false;
 	bool bIsAbilityInAction = false;
