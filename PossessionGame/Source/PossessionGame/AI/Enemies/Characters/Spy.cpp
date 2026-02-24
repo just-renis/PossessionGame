@@ -85,7 +85,7 @@ void ASpy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InD
 	{
 		if (AI_TeleportVfx)
 		{
-			GetWorldTimerManager().SetTimer(DisableAITeleportVfxHandle, this, &ASpy::AI_DisableTeleportVfx, 1.f);
+			GetWorldTimerManager().SetTimer(DisableAITeleportVfxHandle, this, &ASpy::AI_DisableTeleportVfx, 10.f);
 			AI_TeleportVfx->Activate(true);
 		}
 		AI_UseAbility(1);
