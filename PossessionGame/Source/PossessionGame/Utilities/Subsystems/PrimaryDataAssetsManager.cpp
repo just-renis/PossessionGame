@@ -712,6 +712,9 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_SpyReload", ESound::SpyReload);
 	SoundMap.Add("PA_SpyPlayerSnatchStart", ESound::SpyPlayerSnatchStart);
 	SoundMap.Add("PA_SpySnatchImpact", ESound::SpySnatchImpact);
+	SoundMap.Add("PA_SpySpawn", ESound::SpySpawn);
+	SoundMap.Add("PA_SpyDeath", ESound::SpyDeath);
+	SoundMap.Add("PA_SpyOnHijack", ESound::SpyOnHijack);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

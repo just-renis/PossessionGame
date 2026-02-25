@@ -3,10 +3,10 @@
 #include "InputMappingContext.h"
 #include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Controllers/SpyAIController.h"
 #include "PossessionGame/Enums/ECameraShake.h"
-#include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
@@ -72,6 +72,18 @@ void ASpy::SetFirstAbilityActiveState(const bool bState)
 	}
 }
 
+ASpy::ASpy()
+{
+	SpawnSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("SpawnSfx"));
+	SpawnSfx->SetAutoActivate(false);
+	SpawnSfx->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::SpySpawn, SpawnSfx);
+	DeathSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("DeathSfx"));
+	DeathSfx->SetAutoActivate(false);
+	DeathSfx->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::SpyDeath, DeathSfx);
+}
+
 void ASpy::AI_SetupWeapon()
 {
 	Weapon = GetWorld()->GetGameInstance()->GetSubsystem<UWeaponManager>()->GetWeapon(GetWorld(), EWeapon::SpyWeapon, GetMesh());
@@ -117,6 +129,16 @@ void ASpy::AI_SetupTeleportVfx()
 			WeakThis->AssetsManager->AttachVfx(EVfx::AI_SpyTeleport, nullptr, &WeakThis->AI_TeleportVfx, WeakThis->GetMesh(), FName("DeathSocket"), true);
 		});
 	}
+}
+
+void ASpy::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::SpyOnHijack); }
+
+void ASpy::AI_PlaySpawnSound() { PlaySound(ESound::SpySpawn, true); }
+
+void ASpy::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::SpyDeath);
 }
 
 bool ASpy::P_IsSnatchAbilityAvailable() const { return CanAbilityBeExecuted(1); }
@@ -168,7 +190,8 @@ void ASpy::P_FinishHijackProcess()
 
 float ASpy::ReceiveMovementSpeedModification() const
 {
-	if (!GetAI()->GetIsUsingEQS() && !bIsHijacked) return AI_TeleportRunSpeed;
+	if (!AI) return 1.f;
+	if (!AI->GetIsUsingEQS() && !bIsHijacked) return AI_TeleportRunSpeed;
 	return 1.f;
 }
 
