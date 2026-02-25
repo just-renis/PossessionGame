@@ -84,6 +84,7 @@ private:
 	virtual void P_InitiateStomp() override;
 	virtual void P_RemoveReloadSound() override;
 	virtual void P_FinishHijackProcess() override;
+	virtual void P_ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 
 	virtual float ReceiveMovementSpeedModification() const override;
 	

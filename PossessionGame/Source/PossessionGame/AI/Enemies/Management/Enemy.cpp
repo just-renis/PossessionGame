@@ -390,6 +390,7 @@ void AEnemy::InitiateDeath(const FVector& InImpulse)
 	Tags.Remove("AliveEnemy");
 	if (!bIsHijacked)
 	{
+		if (CurrentHp > 0.f && IsHackTerminalsGameMode()) (void)DelegateManager->HackTerminalSubtractHp.ExecuteIfBound(CurrentHp);
 		AI_PlayDeathSound();
 		AI_PlayDeathExplosion();
 		AI_Destroy();
@@ -409,10 +410,7 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 	if (bIsSelectedFourthOptionB) InDamage *= GameInstance->GetSubsystem<UPlayerDataManager>()->GetRecentHijackBoost();
 	InDamage += InDamage * ConductionLogicData.GetDamageTakenPercentage();
 	CurrentHp -= InDamage;
-	if (DelegateManager->RequestCurrentGameMode.IsBound() && DelegateManager->RequestCurrentGameMode.Execute() == EGameMode::HackTerminalsMode)
-	{
-		(void)DelegateManager->HackTerminalSubtractHp.ExecuteIfBound(InDamage + (CurrentHp <= 0.f ? CurrentHp : 0.f));
-	}
+	if (IsHackTerminalsGameMode()) (void)DelegateManager->HackTerminalSubtractHp.ExecuteIfBound(InDamage + (CurrentHp <= 0.f ? CurrentHp : 0.f));
 	if (bIsHijacked)
 	{
 		switch (InDamageReason)
@@ -485,17 +483,15 @@ void AEnemy::SetHijackOutline(const bool bState)
 		AI_ShowHpBar();
 		if (!HijackableVfx) AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
 		else HijackableVfx->Activate(true);
-		if (DelegateManager->RequestIsSpyMarkerRequired.IsBound() && DelegateManager->RequestIsSpyMarkerRequired.Execute())
-		{
-			if (!SpySnatchMarkerVfx) AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
-			else SpySnatchMarkerVfx->Activate(true);
-		}
+		if (!AI_IsSpySnatchVfxAvailable()) return;
+		if (!SpySnatchMarkerVfx) AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
+		else SpySnatchMarkerVfx->Activate(true);
 	}
 	else
 	{
 		AI_HideHpBar();
 		DisableHijackViableVfx();
-		if (DelegateManager->RequestIsSpyMarkerRequired.IsBound() && DelegateManager->RequestIsSpyMarkerRequired.Execute()) DisableSpySnatchMarkerVfx();
+		if (AI_IsSpySnatchVfxAvailable()) DisableSpySnatchMarkerVfx();
 	}
 }
 
@@ -506,19 +502,14 @@ void AEnemy::SetUnHijackOutline(const bool bState)
 	if (bState)
 	{
 		GetMesh()->SetOverlayMaterial(UnHijackOutlineMaterial);
-		if (DelegateManager->RequestIsSpyMarkerRequired.IsBound() && DelegateManager->RequestIsSpyMarkerRequired.Execute())
-		{
-			if (!SpySnatchMarkerVfx)
-			{
-				AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
-			}
-			else SpySnatchMarkerVfx->Activate(true);
-		}
+		if (!AI_IsSpySnatchVfxAvailable()) return;
+		if (!SpySnatchMarkerVfx) AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
+		else SpySnatchMarkerVfx->Activate(true);
 	}
 	else
 	{
 		GetMesh()->SetOverlayMaterial(nullptr);
-		if (DelegateManager->RequestIsSpyMarkerRequired.IsBound() && DelegateManager->RequestIsSpyMarkerRequired.Execute()) DisableSpySnatchMarkerVfx();
+		if (AI_IsSpySnatchVfxAvailable()) DisableSpySnatchMarkerVfx();
 	}
 }
 
@@ -1195,6 +1186,8 @@ void AEnemy::SetActionSpeed(const float InSpeed)
 	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ActionSpeed);
 	else if (Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->SetGlobalPlayRate(ActionSpeed);
 }
+
+bool AEnemy::AI_IsSpySnatchVfxAvailable() const { return !bIsBoss && DelegateManager->RequestIsSpyMarkerRequired.IsBound() && DelegateManager->RequestIsSpyMarkerRequired.Execute(); }
 
 void AEnemy::AI_SetupData()
 {
@@ -1906,6 +1899,8 @@ void AEnemy::P_SetWarningIndicator(const EWarningIndicator InWarningIndicator)
 	CurrentWarningIndicator = InWarningIndicator;
 	P_HUD->SetWarningIndicator(InWarningIndicator);
 }
+
+bool AEnemy::IsHackTerminalsGameMode() const { return DelegateManager->RequestCurrentGameMode.IsBound() && DelegateManager->RequestCurrentGameMode.Execute() == EGameMode::HackTerminalsMode; }
 
 EDamageReason AEnemy::ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser)
 {

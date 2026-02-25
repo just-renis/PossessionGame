@@ -183,6 +183,7 @@ void AMinionBoss::AI_DisableActions(const float InEffectDuration, const EDisabli
 void AMinionBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::MinionBoss;
+	bIsBoss = true;
 	Super::BeginPlay();
 	WeaponShootCooldownTimer = WeaponShootCooldown;
 	LaserCollision->OnComponentBeginOverlap.AddDynamic(this, &AMinionBoss::OnLaserCollisionBeginOverlap);

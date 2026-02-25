@@ -182,6 +182,12 @@ void ASpy::P_FinishHijackProcess()
 	Super::P_FinishHijackProcess();
 }
 
+void ASpy::P_ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection)
+{
+	if (bIsSecondAbilityActive) return;
+	Super::P_ReceiveStunEffect(InEffectDuration, InDamage, InHitDirection);
+}
+
 float ASpy::ReceiveMovementSpeedModification() const
 {
 	if (!AI) return 1.f;

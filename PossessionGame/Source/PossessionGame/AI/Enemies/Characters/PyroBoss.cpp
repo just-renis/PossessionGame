@@ -80,6 +80,7 @@ void APyroBoss::AI_PlayDeathSound()
 void APyroBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::PyroBoss;
+	bIsBoss = true;
 	Super::BeginPlay();
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::MinionBoss);
 }

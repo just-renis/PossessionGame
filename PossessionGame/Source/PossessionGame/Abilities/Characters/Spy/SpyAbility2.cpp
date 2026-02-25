@@ -43,7 +43,7 @@ void USpyAbility2::TryHitEnemy(const FHitResult& HitResult)
 {
 	if (!HitResult.GetActor()->ActorHasTag("Enemy")) return;
 	Target = Cast<AEnemy>(HitResult.GetActor());
-	if (!Target) return;
+	if (!Target || Target->IsBoss()) return;
 	TargetLocation = Target->GetActorLocation();
 	if (Target->GetIsAlive()) InitiateProcess();
 }

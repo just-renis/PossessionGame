@@ -78,6 +78,7 @@ void AWarden::AI_DisableActions(const float InEffectDuration, const EDisablingEf
 void AWarden::BeginPlay()
 {
 	CharacterName = ECharacterType::Warden;
+	bIsBoss = true;
 	Super::BeginPlay();
 	bCanShoot = true;
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Warden);

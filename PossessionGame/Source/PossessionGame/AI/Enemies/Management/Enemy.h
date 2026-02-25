@@ -125,6 +125,7 @@ public:
 	bool GetIsAffectedByEmp() const { return bAffectedByEmp; }
 	bool GetIsAffectedByStun() const { return bAffectedByStun; }
 	bool IsActionsDisabled() const { return DisablingActionsEffectsCount > 0; }
+	bool IsBoss() const { return bIsBoss; }
 	float GetActionSpeed() const { return ActionSpeed; }
 	float GetDamageReduction() const { return DamageReduction; }
 	float GetCurrentHp() const { return CurrentHp; }
@@ -214,6 +215,7 @@ protected:
 	bool bIsInvincible = false;
 	bool bIsJumpPrimaryAnim = true;
 	bool bIsSlidePrimaryAnim = true;
+	bool bIsBoss = false;
 	float MaxHp;
 	float CurrentHp;
 	float DamageReduction = 1.f;
@@ -541,6 +543,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<USaveSlotManager> SaveSlotManager;
 
+	bool AI_IsSpySnatchVfxAvailable() const;
+	
 	void AI_SetupData();
 	void AI_StopAllAbilities();
 	void AI_SetupHpBar();
@@ -620,6 +624,7 @@ private:
 	void P_TriggerBurnIndicator() const;
 	void P_SetWarningIndicator(const EWarningIndicator InWarningIndicator);
 
+	bool IsHackTerminalsGameMode() const;
 	EDamageReason ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser);
 
 	void TickAbilities(const float InDeltaTime);
