@@ -25,6 +25,7 @@ protected:
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
 	virtual void ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
 private:
+	FTimerHandle CheckForNewMoveReqHandle;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bFinishTaskOnMoveCompleted = true;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
@@ -55,8 +56,6 @@ private:
 	float Distance = 0.f;
 	UPROPERTY(EditAnywhere, Category = "Move Mode Switch", meta = (EditCondition = "bMoveModeSwitchEnabled"))
 	EGenericAICheck Operator = EGenericAICheck::Equal;
-	UPROPERTY()
-	FTimerHandle CheckForNewMoveReqHandle;
 
 	static EStateTreeRunStatus PathFollowingRequestResultHandling(EPathFollowingRequestResult::Type MoveResult);
 	FAIMoveRequest SetupAndGetMoveReq();

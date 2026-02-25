@@ -25,6 +25,7 @@ public:
 	AEnemyAIController();
 
 	bool CanExecuteAbility(const int32 InAbilityIndex) const { return Proprietor->CanAbilityBeExecuted(InAbilityIndex); }
+	bool GetIsUsingEQS() const { return bIsUsingEQS; }
 	EStateTreeEvent GetCurrentStateTreeEvent() const { return CurrentStateTreeEvent; }
 	TObjectPtr<AEnemy> GetProprietor() { return Proprietor; }
 	FStateTreeData& GetStateTreeData() { return StateTreeData; }
@@ -45,6 +46,7 @@ public:
 	void ResumeLogic() const;
 	void StopLogic(const bool bNeedCleanup);
 	void SetTargetLocation(const FVector& InLocation);
+	virtual void ResetOnReachedNonEqsPoint() {}
 protected:
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStateTreeComponent> StateTree;

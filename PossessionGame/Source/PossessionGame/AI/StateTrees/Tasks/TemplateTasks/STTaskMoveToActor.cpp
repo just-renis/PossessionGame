@@ -88,6 +88,7 @@ EMoveMode USTTaskMoveToActor::ReceiveMoveMode() const
 void USTTaskMoveToActor::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
 	CachedController->GetStateTreeData().SetEQSPointAvailability(false);
+	if (!CachedController->GetIsUsingEQS()) CachedController->ResetOnReachedNonEqsPoint();
 	if (bFinishTaskOnMoveCompleted)
 	{
 		FinishTask();

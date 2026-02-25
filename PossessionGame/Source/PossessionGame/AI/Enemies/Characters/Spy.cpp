@@ -168,7 +168,7 @@ void ASpy::P_FinishHijackProcess()
 
 float ASpy::ReceiveMovementSpeedModification() const
 {
-	if (bIsSecondAbilityActive && !bIsHijacked && CurrentMoveMode == EMoveMode::Run) return AI_TeleportRunSpeed;
+	if (!GetAI()->GetIsUsingEQS() && !bIsHijacked) return AI_TeleportRunSpeed;
 	return 1.f;
 }
 

@@ -12,4 +12,6 @@ class POSSESSIONGAME_API ASpyAIController : public AEnemyAIController
 	GENERATED_BODY()
 public:
 	FOnMovementToBubbleFinished OnMovementToBubbleFinished;
+private:
+	virtual void ResetOnReachedNonEqsPoint() override;
 };

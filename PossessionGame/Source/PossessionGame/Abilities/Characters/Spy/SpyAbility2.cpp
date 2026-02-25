@@ -3,6 +3,7 @@
 #include "PossessionGame/AI/Enemies/Characters/Spy.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Enums/EMoveMode.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -10,11 +11,15 @@
 void USpyAbility2::AI_Execute()
 {
 	if (!CanExecute() || !DelegateManager->RequestBubbleLocation.IsBound()) return;
-	Proprietor->GetAI()->SetIsUsingEQS(false);
-	Proprietor->SetIsAllowedToShoot(false);
 	const FVector BubbleLocation = DelegateManager->RequestBubbleLocation.Execute();
-	if (!BubbleLocation.ContainsNaN()) Proprietor->GetAI()->SetTargetLocation(BubbleLocation);
-	//else "reached location"
+	if (!BubbleLocation.ContainsNaN())
+	{
+		Proprietor->GetAI()->SetTargetLocation(BubbleLocation);
+		Proprietor->GetAI()->SetIsUsingEQS(false);
+		Proprietor->AI_SetMoveMode(EMoveMode::Run);
+		Proprietor->SetIsAllowedToShoot(false);
+	}
+	else return;
 	Super::AI_Execute();
 }
 
