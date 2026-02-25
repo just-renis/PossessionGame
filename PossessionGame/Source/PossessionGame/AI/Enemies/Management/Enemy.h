@@ -159,6 +159,7 @@ public:
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection);
 	virtual void AI_StunEffectEnded();
 	void AI_TriggerGrenadeProjection(const EPoolObject InProjectileName, const EVfx InMarkerVfxName);
+	virtual void AI_OnReachedNonEqsPoint() {}
 
 	virtual void P_RemoveReloadSound() {}
 	void P_ReEnableRunIfToggleMode();

@@ -715,6 +715,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_SpySpawn", ESound::SpySpawn);
 	SoundMap.Add("PA_SpyDeath", ESound::SpyDeath);
 	SoundMap.Add("PA_SpyOnHijack", ESound::SpyOnHijack);
+	SoundMap.Add("PA_AISpyDash", ESound::AI_SpyDash);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

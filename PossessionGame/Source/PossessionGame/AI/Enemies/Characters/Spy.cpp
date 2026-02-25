@@ -82,6 +82,10 @@ ASpy::ASpy()
 	DeathSfx->SetAutoActivate(false);
 	DeathSfx->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::SpyDeath, DeathSfx);
+	AI_DashSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("AI_DashSfx"));
+	AI_DashSfx->SetAutoActivate(false);
+	AI_DashSfx->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::AI_SpyDash, AI_DashSfx);
 }
 
 void ASpy::AI_SetupWeapon()
@@ -94,15 +98,7 @@ void ASpy::AI_SetController() { AI = Cast<ASpyAIController>(GetController()); }
 
 void ASpy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
 {
-	if (CanAbilityBeExecuted(1) && !IsActionsDisabled() && !bIsActionInMotion && CurrentHp <= MaxHp * 0.4f && CurrentHp > 0)
-	{
-		if (AI_TeleportVfx)
-		{
-			GetWorldTimerManager().SetTimer(DisableAITeleportVfxHandle, this, &ASpy::AI_DisableTeleportVfx, 10.f);
-			AI_TeleportVfx->Activate(true);
-		}
-		AI_UseAbility(1);
-	}
+	if (CanAbilityBeExecuted(1) && !IsActionsDisabled() && !bIsActionInMotion && CurrentHp <= MaxHp * 0.4f && CurrentHp > 0) AI_UseDashToLocationAbility();
 	Super::AI_ReceivedDamage(InDamageReason, InDamage);
 }
 
@@ -110,25 +106,6 @@ void ASpy::AI_DisableTeleportVfx() const
 {
 	if (!AI_TeleportVfx) return;
 	AI_TeleportVfx->DeactivateImmediate();
-}
-
-void ASpy::AI_SetupTeleportVfx()
-{
-	if (AssetsManager->IsVfxAlreadyLoaded(EVfx::AI_SpyTeleport)) AssetsManager->AttachVfx(EVfx::AI_SpyTeleport, nullptr, &AI_TeleportVfx, GetMesh(), FName("DeathSocket"), true);
-	else
-	{
-		TWeakObjectPtr WeakThis = this;
-		AssetsManager->LoadVfx(EVfx::AI_SpyTeleport, [WeakThis]
-		{
-			if (!WeakThis.IsValid() || !WeakThis.Get()) return;
-			if (WeakThis->AI_TeleportVfx)
-			{
-				WeakThis->AI_TeleportVfx->DestroyComponent();
-				WeakThis->AI_TeleportVfx = nullptr;
-			}
-			WeakThis->AssetsManager->AttachVfx(EVfx::AI_SpyTeleport, nullptr, &WeakThis->AI_TeleportVfx, WeakThis->GetMesh(), FName("DeathSocket"), true);
-		});
-	}
 }
 
 void ASpy::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::SpyOnHijack); }
@@ -141,10 +118,27 @@ void ASpy::AI_PlayDeathSound()
 	PlaySound(ESound::SpyDeath);
 }
 
+void ASpy::AI_OnReachedNonEqsPoint()
+{
+	bIsSecondAbilityActive = false;
+	SetIsAllowedToShoot(true);
+	AI_DisableTeleportVfx();
+}
+
+void ASpy::AI_UseDashToLocationAbility()
+{
+	bIsSecondAbilityActive = true;
+	PlaySound(ESound::AI_SpyDash, true);
+	if (!AI_TeleportVfx) AssetsManager->AttachVfx(EVfx::AI_SpyTeleport, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed() && bIsSecondAbilityActive && !bIsHijacked; }, &AI_TeleportVfx, GetMesh(), FName("DeathSocket"));
+	else AI_TeleportVfx->Activate(true);
+	AI_UseAbility(1);
+}
+
 bool ASpy::P_IsSnatchAbilityAvailable() const { return CanAbilityBeExecuted(1); }
 
 void ASpy::P_Setup()
 {
+	bIsSecondAbilityActive = false;
 	DelegateManager->OnWeaponAmmoChangeTwoParams.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	DelegateManager->RequestIsSpyMarkerRequired.BindUObject(this, &ASpy::P_IsSnatchAbilityAvailable);
 	Super::P_Setup();
@@ -191,7 +185,7 @@ void ASpy::P_FinishHijackProcess()
 float ASpy::ReceiveMovementSpeedModification() const
 {
 	if (!AI) return 1.f;
-	if (!AI->GetIsUsingEQS() && !bIsHijacked) return AI_TeleportRunSpeed;
+	if (!AI->GetIsUsingEQS() && !bIsHijacked) return AI_DashSpeedMultiplier;
 	return 1.f;
 }
 
@@ -199,7 +193,6 @@ void ASpy::BeginPlay()
 {
 	CharacterName = ECharacterType::Spy;
 	Super::BeginPlay();
-	AI_SetupTeleportVfx();
 }
 
 void ASpy::SetTeleportMaterialValue(const float InValue)

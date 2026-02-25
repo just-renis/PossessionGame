@@ -169,5 +169,6 @@ enum class ESound : uint16
 	SpySnatchImpact,
 	SpySpawn,
 	SpyDeath,
-	SpyOnHijack
+	SpyOnHijack,
+	AI_SpyDash
 };

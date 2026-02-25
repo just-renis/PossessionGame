@@ -3,5 +3,5 @@
 void ASpyAIController::ResetOnReachedNonEqsPoint()
 {
 	SetIsUsingEQS(true);
-	Proprietor->SetIsAllowedToShoot(true);
+	Proprietor->AI_OnReachedNonEqsPoint();
 }

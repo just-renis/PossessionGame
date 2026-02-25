@@ -26,12 +26,12 @@ private:
 	float XrayDarkness = 1.f;
 	float InvincibilityColorRadius = 3.f;
 	float InvincibilityRadialRadius = 1.f;
-	float AI_TeleportRunSpeed = 3.f;
 	int32 XrayCountLoops = 0;
 	int32 InvincibilityCountLoops = 0;
 	FTimerHandle ProcessXrayMaterialsHandle;
 	FTimerHandle ProcessInvincibilityMaterialHandle;
-	FTimerHandle DisableAITeleportVfxHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "AI Variables", meta = (AllowPrivateAccess = true))
+	float AI_DashSpeedMultiplier = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Teleport;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
@@ -60,15 +60,18 @@ private:
 	TObjectPtr<UAudioComponent> SpawnSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DeathSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> AI_DashSfx;
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_SetController() override;
 	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage) override;
 	void AI_DisableTeleportVfx() const;
-	void AI_SetupTeleportVfx();
 	virtual void AI_TriggerDeathVoiceLine() override;
 	virtual void AI_PlaySpawnSound() override;
 	virtual void AI_PlayDeathSound() override;
+	virtual void AI_OnReachedNonEqsPoint() override;
+	void AI_UseDashToLocationAbility();
 
 	bool P_IsSnatchAbilityAvailable() const;
 
