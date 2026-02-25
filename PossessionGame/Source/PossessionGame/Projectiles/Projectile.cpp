@@ -228,6 +228,10 @@ void AProjectile::AI_SetupUpgradesAppliance()
 	const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage, false);
 	Damage += DefaultDamage * DamagePercentage * 0.01f;
 	Damage += AI_UpgradeDamageAppliance();
+	if (GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::SpyAbility3, EUpgradeAttribute::Special1))
+	{
+		if (FMath::RandRange(1, 4) == 1) Damage *= 2.f;
+	}
 }
 
 void AProjectile::AI_TimeDilationChange(const float InTimeDilation)

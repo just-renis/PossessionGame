@@ -157,9 +157,9 @@ void APlayerGhost::DetectIfPointingAtEnemy()
 		{
 			if (Enemy != CurrentLookedAtEnemy)
 			{
-				if (CurrentLookedAtEnemy) CurrentLookedAtEnemy->SetHijackOutline(false);
-				if (Enemy->GetIsHijackAble()) Enemy->SetHijackOutline(true);
-				else Enemy->SetUnHijackOutline(true);
+				if (CurrentLookedAtEnemy) CurrentLookedAtEnemy->AI_SetHijackOutline(false);
+				if (Enemy->GetIsHijackAble()) Enemy->AI_SetHijackOutline(true);
+				else Enemy->AI_SetUnHijackOutline(true);
 				CurrentLookedAtEnemy = Enemy;
 			}
 			return;
@@ -167,8 +167,8 @@ void APlayerGhost::DetectIfPointingAtEnemy()
 	}
 	if (CurrentLookedAtEnemy)
 	{
-		CurrentLookedAtEnemy->SetHijackOutline(false);
-		CurrentLookedAtEnemy->SetUnHijackOutline(false);
+		CurrentLookedAtEnemy->AI_SetHijackOutline(false);
+		CurrentLookedAtEnemy->AI_SetUnHijackOutline(false);
 		CurrentLookedAtEnemy = nullptr;
 	}
 }

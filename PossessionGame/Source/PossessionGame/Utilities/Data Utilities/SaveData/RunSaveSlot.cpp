@@ -234,6 +234,8 @@ TArray<EUpgrade> URunSaveSlot::GetUpgradesByPoolObjectName(const EPoolObject InP
 			case EPoolObject::TricksterProjectile: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
 			case EPoolObject::BreacherProjectile: return TArray({ EUpgrade::BreacherAbility1, EUpgrade::BreacherAbility2, EUpgrade::BreacherAbility3 });
 			case EPoolObject::WraithProjectile: return TArray({ EUpgrade::WraithAbility1, EUpgrade::WraithAbility2, EUpgrade::WraithAbility3 });
+			case EPoolObject::SpyProjectile: return TArray({ EUpgrade::SpyAbility1, EUpgrade::SpyAbility2, EUpgrade::SpyAbility3 });
+			case EPoolObject::TankProjectile: return TArray({ EUpgrade::TankAbility1, EUpgrade::TankAbility2, EUpgrade::TankAbility3 });
 			default: ;
 		}
 	}
@@ -248,6 +250,8 @@ TArray<EUpgrade> URunSaveSlot::GetHpUpgradesByCharacterName(const ECharacterType
 		case ECharacterType::Trickster: return TArray({ EUpgrade::TricksterAbility1, EUpgrade::TricksterAbility2, EUpgrade::TricksterAbility3 });
 		case ECharacterType::Ranger: return TArray({ EUpgrade::RangerAbility1, EUpgrade::RangerAbility2, EUpgrade::RangerAbility3 });
 		case ECharacterType::Breacher: return TArray({ EUpgrade::BreacherAbility1, EUpgrade::BreacherAbility2, EUpgrade::BreacherAbility3 });
+		case ECharacterType::Wraith: return TArray({ EUpgrade::WraithAbility1, EUpgrade::WraithAbility2, EUpgrade::WraithAbility3 });
+		case ECharacterType::Spy: return TArray({ EUpgrade::SpyAbility1, EUpgrade::SpyAbility2, EUpgrade::SpyAbility3 });
 		default: ;
 	}
 	return {};

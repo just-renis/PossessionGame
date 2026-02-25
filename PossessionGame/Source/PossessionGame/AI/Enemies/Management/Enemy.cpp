@@ -244,6 +244,33 @@ void AEnemy::AI_TriggerGrenadeProjection(const EPoolObject InProjectileName, con
 	}
 }
 
+void AEnemy::AI_SetHijackOutline(const bool bState)
+{
+	bIsLookedAtByPlayer = bState;
+	AI_SetSpySnatchMarker(bState);
+	if (bState)
+	{
+		GetMesh()->SetOverlayMaterial(HijackOutlineMaterial);
+		AI_ShowHpBar();
+		if (!HijackableVfx) AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
+		else HijackableVfx->Activate(true);
+	}
+	else
+	{
+		GetMesh()->SetOverlayMaterial(nullptr);
+		AI_HideHpBar();
+		DisableHijackViableVfx();
+	}
+}
+
+void AEnemy::AI_SetUnHijackOutline(const bool bState)
+{
+	bIsLookedAtByPlayer = bState;
+	if (bIsLookedAtByPlayer) AI_ShowHpBar();
+	AI_SetSpySnatchMarker(bState);
+	GetMesh()->SetOverlayMaterial(bState ? UnHijackOutlineMaterial : nullptr);
+}
+
 void AEnemy::P_ReEnableRunIfToggleMode()
 {
 	if (!bPlayerRunModeIsToggle || !bWasRunningBeforeShooting) return;
@@ -473,45 +500,6 @@ void AEnemy::StopSound(const ESound InSoundName)
 }
 
 void AEnemy::ReceiveEmpEffect(const float InEffectDuration) { ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Emp); }
-
-void AEnemy::SetHijackOutline(const bool bState)
-{
-	bIsLookedAtByPlayer = bState;
-	GetMesh()->SetOverlayMaterial(bState ? HijackOutlineMaterial : nullptr);
-	if (bState)
-	{
-		AI_ShowHpBar();
-		if (!HijackableVfx) AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
-		else HijackableVfx->Activate(true);
-		if (!AI_IsSpySnatchVfxAvailable()) return;
-		if (!SpySnatchMarkerVfx) AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
-		else SpySnatchMarkerVfx->Activate(true);
-	}
-	else
-	{
-		AI_HideHpBar();
-		DisableHijackViableVfx();
-		if (AI_IsSpySnatchVfxAvailable()) DisableSpySnatchMarkerVfx();
-	}
-}
-
-void AEnemy::SetUnHijackOutline(const bool bState)
-{
-	bIsLookedAtByPlayer = bState;
-	if (bIsLookedAtByPlayer) AI_ShowHpBar();
-	if (bState)
-	{
-		GetMesh()->SetOverlayMaterial(UnHijackOutlineMaterial);
-		if (!AI_IsSpySnatchVfxAvailable()) return;
-		if (!SpySnatchMarkerVfx) AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
-		else SpySnatchMarkerVfx->Activate(true);
-	}
-	else
-	{
-		GetMesh()->SetOverlayMaterial(nullptr);
-		if (AI_IsSpySnatchVfxAvailable()) DisableSpySnatchMarkerVfx();
-	}
-}
 
 void AEnemy::EmpEffectEnded()
 {
@@ -747,6 +735,20 @@ void AEnemy::AI_DisableActions(const float InEffectDuration, const EDisablingEff
 	}
 }
 
+float AEnemy::P_GetMeleeDamage()
+{
+	const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
+	const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionA);
+	return QuickMeleeAttackDamage + (bIsUpgradeSelected ? QuickMeleeAttackDamage * SaveSlot->GetPlayerLevel() * 0.15f : 0.f);
+}
+
+float AEnemy::P_GetStompDamage()
+{
+	const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
+	const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionA);
+	return StompDamage + (bIsUpgradeSelected ? StompDamage * SaveSlot->GetPlayerLevel() * 0.15f : 0.f);
+}
+
 void AEnemy::P_SetupAbilities()
 {
 	TArray<int32> ChosenAbilities = SaveSlotManager->GetSaveSlot()->GetCharacterChosenAbilities(CharacterName).Abilities;
@@ -970,10 +972,7 @@ void AEnemy::P_ProcessMeleeAttack()
 		TraceParams.AddIgnoredActor(this);
 		TraceParams.AddIgnoredActor(Actor);
 		if (GetWorld()->LineTraceSingleByChannel(Hit, Origin, Actor->GetActorLocation(), ECC_Visibility, TraceParams)) return;
-		const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
-		const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionA);
-		const float TrueQuickMeleeDamage = QuickMeleeAttackDamage + (bIsUpgradeSelected ? QuickMeleeAttackDamage * SaveSlot->GetPlayerLevel() * 0.15f : 0.f);
-		UGameplayStatics::ApplyDamage(Actor, TrueQuickMeleeDamage, GetController(), this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(Actor, P_GetMeleeDamage(), GetController(), this, UDamageType::StaticClass());
 		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
 	}
 }
@@ -1303,6 +1302,18 @@ void AEnemy::AI_ShowHpBar() const
 	AI_HpBarComponent->SetComponentTickEnabled(true);
 }
 
+void AEnemy::AI_SetSpySnatchMarker(const bool bState)
+{
+	if (!bState && SpySnatchMarkerVfx)
+	{
+		DisableSpySnatchMarkerVfx();
+		return;
+	}
+	if (!AI_IsSpySnatchVfxAvailable()) return;
+	if (!SpySnatchMarkerVfx) AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
+	else SpySnatchMarkerVfx->Activate(true);
+}
+
 void AEnemy::P_ChangeHoldingShootState(const bool bState)
 {
 	bIsHoldingShoot = bState;
@@ -1626,10 +1637,7 @@ void AEnemy::P_StompImpact(const FVector& InHitLocation)
 		Params.AddIgnoredActor(this);
 		Params.AddIgnoredActor(Actor);
 		if (GetWorld()->LineTraceSingleByChannel(Hit, InHitLocation, Actor->GetActorLocation(), ECC_Visibility, Params)) continue;
-		const TObjectPtr<USaveSlot> SaveSlot = SaveSlotManager->GetSaveSlot();
-		const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionA);
-		const float TrueStompDamage = StompDamage + (bIsUpgradeSelected ? StompDamage * SaveSlot->GetPlayerLevel() * 0.15f : 0.f);
-		UGameplayStatics::ApplyDamage(Actor, TrueStompDamage, nullptr, this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(Actor, P_GetStompDamage(), nullptr, this, UDamageType::StaticClass());
 		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
 	}
 }
@@ -1676,18 +1684,19 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 			{
 				if (Enemy != CurrentLookedAtEnemy)
 				{
-					if (CurrentLookedAtEnemy) CurrentLookedAtEnemy->SetHijackOutline(false);
-					if (Enemy->GetIsHijackAble()) Enemy->SetHijackOutline(true);
-					else Enemy->SetUnHijackOutline(true);
+					if (CurrentLookedAtEnemy) CurrentLookedAtEnemy->AI_SetHijackOutline(false);
+					if (Enemy->GetIsHijackAble()) Enemy->AI_SetHijackOutline(true);
+					else Enemy->AI_SetUnHijackOutline(true);
 					CurrentLookedAtEnemy = Enemy;
 				}
+				//else Enemy->AI_SetSpySnatchMarker(true);
 				return;
 			}
 		}
 	}
 	if (!CurrentLookedAtEnemy) return;
-	CurrentLookedAtEnemy->SetHijackOutline(false);
-	CurrentLookedAtEnemy->SetUnHijackOutline(false);
+	CurrentLookedAtEnemy->AI_SetHijackOutline(false);
+	CurrentLookedAtEnemy->AI_SetUnHijackOutline(false);
 	CurrentLookedAtEnemy = nullptr;
 }
 

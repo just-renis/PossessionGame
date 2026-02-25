@@ -23,5 +23,6 @@ enum class EUpgrade : uint8
 	SpyAbility2,
 	SpyAbility3,
 	TankAbility1,
-	TankAbility2
+	TankAbility2,
+	TankAbility3
 };

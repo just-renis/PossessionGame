@@ -8,6 +8,8 @@
 #include "PossessionGame/AI/Enemies/Controllers/SpyAIController.h"
 #include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
+#include "PossessionGame/Enums/EUpgrade.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/SpyWeapon.h"
@@ -67,6 +69,8 @@ void ASpy::SetFirstAbilityActiveState(const bool bState)
 	}
 	else
 	{
+		BoostedAttacksAmount = static_cast<int32>(FirstAbilityAbsorbedDamage) / FirstAbilityAbsorbedAmountRequired;
+		FirstAbilityAbsorbedDamage = 0.f;
 		if (InvincibilityVfx) InvincibilityVfx->DeactivateImmediate();
 		GetWorldTimerManager().SetTimer(ProcessInvincibilityMaterialHandle, this, &ASpy::ProcessInvincibilityMaterialDeactivation, 0.025f, true);
 	}
@@ -135,6 +139,28 @@ void ASpy::AI_UseDashToLocationAbility()
 }
 
 bool ASpy::P_IsSnatchAbilityAvailable() const { return CanAbilityBeExecuted(1); }
+
+float ASpy::P_GetMeleeDamage()
+{
+	const float MeleeDamage = Super::P_GetMeleeDamage();
+	if (IsBoostedAttacksAvailable())
+	{
+		SubtractBoostedAttack();
+		return MeleeDamage + QuickMeleeAttackDamage * 0.3f;
+	}
+	return MeleeDamage;
+}
+
+float ASpy::P_GetStompDamage()
+{
+	const float StompAttackDamage = Super::P_GetStompDamage();
+	if (IsBoostedAttacksAvailable())
+	{
+		SubtractBoostedAttack();
+		return StompAttackDamage + StompDamage * 0.3f;
+	}
+	return StompAttackDamage;
+}
 
 void ASpy::P_Setup()
 {
@@ -284,6 +310,10 @@ void ASpy::ProcessInvincibilityMaterialDeactivation()
 
 float ASpy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (bIsFirstAbilityActive) return 0.f;
+	if (bIsFirstAbilityActive)
+	{
+		if (GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::SpyAbility1, EUpgradeAttribute::Special1)) FirstAbilityAbsorbedDamage += DamageAmount;
+		return 0.f;
+	}
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }

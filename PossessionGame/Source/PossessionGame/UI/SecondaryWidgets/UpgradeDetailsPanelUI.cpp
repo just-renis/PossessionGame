@@ -505,6 +505,9 @@ FString UUpgradeDetailsPanelUI::GetDamageUpgradeString(const TObjectPtr<UCodexDa
 		case EUpgrade::BreacherAbility3: return GetThrowableDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::BreacherDynamite);
 		case EUpgrade::WraithAbility1: return GetOverTimeDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMolotovArea);
 		case EUpgrade::WraithAbility3: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMeteorProjectile);
+		case EUpgrade::SpyAbility1: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::SpyProjectile);
+		case EUpgrade::SpyAbility2: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::SpyProjectile);
+		case EUpgrade::SpyAbility3: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::SpyProjectile);
 		default: return FString();
 	}
 }

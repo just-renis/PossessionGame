@@ -126,9 +126,11 @@ public:
 	bool GetIsAffectedByStun() const { return bAffectedByStun; }
 	bool IsActionsDisabled() const { return DisablingActionsEffectsCount > 0; }
 	bool IsBoss() const { return bIsBoss; }
+	bool IsBoostedAttacksAvailable() const { return BoostedAttacksAmount > 0; }
 	float GetActionSpeed() const { return ActionSpeed; }
 	float GetDamageReduction() const { return DamageReduction; }
 	float GetCurrentHp() const { return CurrentHp; }
+	float GetMaxHp() const { return MaxHp; }
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
 	EVariation GetVariation() const { return Variation; }
@@ -160,6 +162,8 @@ public:
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection);
 	virtual void AI_StunEffectEnded();
 	void AI_TriggerGrenadeProjection(const EPoolObject InProjectileName, const EVfx InMarkerVfxName);
+	void AI_SetHijackOutline(const bool bState);
+	virtual void AI_SetUnHijackOutline(const bool bState);
 	virtual void AI_OnReachedNonEqsPoint() {}
 
 	virtual void P_RemoveReloadSound() {}
@@ -188,8 +192,6 @@ public:
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired = false);
 	void StopSound(const ESound InSoundName);
 	virtual void ReceiveEmpEffect(const float InEffectDuration);
-	void SetHijackOutline(const bool bState);
-	virtual void SetUnHijackOutline(const bool bState);
 	virtual void EmpEffectEnded();
 	void SetInputState(const bool bState) { bIsInputLocked = bState; }
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
@@ -201,6 +203,7 @@ public:
 	void RemoveSlowingStacks();
 	void AddActiveWraithTrap() { ActiveWraithTrapCount++; }
 	void RemoveActiveWraithTrap(const float InEffectDuration);
+	void SubtractBoostedAttack() { BoostedAttacksAmount--; }
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -222,6 +225,7 @@ protected:
 	float WraithTrapActionSpeedReduction = 0.f;
 	float ActionSpeed = 1.f;
 	int32 SlowingStacks = 0;
+	int32 BoostedAttacksAmount = 0;
 	ECharacterType CharacterName;
 	EVariation Variation;
 	EMoveMode CurrentMoveMode;
@@ -231,6 +235,8 @@ protected:
 	float StompRadiusInMeters = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompDamage = 40.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
+	float QuickMeleeAttackDamage = 20.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
 	FLinearColor DamageNumberColor = FLinearColor::White;
 	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
@@ -293,6 +299,9 @@ protected:
 	virtual void AI_Destroy();
 	virtual void AI_DestroyVfxs();
 	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName);
+
+	virtual float P_GetMeleeDamage();
+	virtual float P_GetStompDamage();
 
 	virtual void P_SetupAbilities();
 	virtual void P_Setup();
@@ -428,8 +437,6 @@ private:
 	float DestroyAfter = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
 	float QuickMeleeAttackRadiusInMeters = 2.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
-	float QuickMeleeAttackDamage = 20.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	bool bCanStomp = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
@@ -560,6 +567,7 @@ private:
 	void AI_StopAbilitiesEvents() const;
 	void AI_TimeDilationChange(const float InDilation) const;
 	void AI_ShowHpBar() const;
+	void AI_SetSpySnatchMarker(const bool bState);
 
 	int32 P_GetFirstSlotAbilityIndex() const { return P_FirstSlotAbilityIndex; }
 	int32 P_GetSecondSlotAbilityIndex() const { return P_SecondSlotAbilityIndex; }

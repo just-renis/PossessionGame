@@ -31,6 +31,16 @@ void ASpyWeapon::AI_Shoot()
 	ShootProjectile(EPoolObject::SpyProjectile, false, NAME_None, true);
 }
 
+float ASpyWeapon::P_UpgradeDamageAppliance()
+{
+	if (Proprietor->IsBoostedAttacksAvailable())
+	{
+		Proprietor->SubtractBoostedAttack();
+		return P_ReceiveHitScanDamage() * 0.3f;
+	}
+	return Super::P_UpgradeDamageAppliance();
+}
+
 void ASpyWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
 	AssetsManager->PlaySound2D(ESound::SpyShoot);

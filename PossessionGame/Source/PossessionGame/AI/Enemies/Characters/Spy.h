@@ -26,8 +26,10 @@ private:
 	float XrayDarkness = 1.f;
 	float InvincibilityColorRadius = 3.f;
 	float InvincibilityRadialRadius = 1.f;
+	float FirstAbilityAbsorbedDamage = 0.f;
 	int32 XrayCountLoops = 0;
 	int32 InvincibilityCountLoops = 0;
+	int32 FirstAbilityAbsorbedAmountRequired = 75;
 	FTimerHandle ProcessXrayMaterialsHandle;
 	FTimerHandle ProcessInvincibilityMaterialHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "AI Variables", meta = (AllowPrivateAccess = true))
@@ -74,6 +76,8 @@ private:
 	void AI_UseDashToLocationAbility();
 
 	bool P_IsSnatchAbilityAvailable() const;
+	virtual float P_GetMeleeDamage() override;
+	virtual float P_GetStompDamage() override;
 
 	virtual void P_Setup() override;
 	virtual void P_SetupLeftClickInputStartedState() override;

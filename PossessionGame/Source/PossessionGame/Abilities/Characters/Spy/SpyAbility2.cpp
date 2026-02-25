@@ -4,6 +4,8 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EMoveMode.h"
+#include "PossessionGame/Enums/EUpgrade.h"
+#include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
@@ -50,6 +52,14 @@ void USpyAbility2::TryHitEnemy(const FHitResult& HitResult)
 
 void USpyAbility2::InitiateProcess()
 {
+	if (Proprietor->GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::SpyAbility2, EUpgradeAttribute::Special1))
+	{
+		if (FMath::RandRange(1, 10) <= 3)
+		{
+			Super::P_Execute();
+			return;
+		}
+	}
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontageWithHold(EHandsAnimState::TeleportTravel, -1.f);
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->StartTeleportProcess();
