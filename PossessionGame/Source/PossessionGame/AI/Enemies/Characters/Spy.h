@@ -16,6 +16,8 @@ public:
 	void FinishTeleportProcess();
 	void SetFirstAbilityActiveState(const bool bState);
 private:
+	ASpy();
+	
 	bool bXrayEnabled = false;
 	bool bIsFirstAbilityActive = false;
 	bool bIsSecondAbilityActive = false;
@@ -54,12 +56,19 @@ private:
 	TObjectPtr<UMaterialInstanceDynamic> MID_Invincibility;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_DarkXray;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> SpawnSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> DeathSfx;
 	
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_SetController() override;
 	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage) override;
 	void AI_DisableTeleportVfx() const;
 	void AI_SetupTeleportVfx();
+	virtual void AI_TriggerDeathVoiceLine() override;
+	virtual void AI_PlaySpawnSound() override;
+	virtual void AI_PlayDeathSound() override;
 
 	bool P_IsSnatchAbilityAvailable() const;
 

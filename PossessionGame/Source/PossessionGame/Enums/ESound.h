@@ -166,5 +166,8 @@ enum class ESound : uint16
 	SpyShoot,
 	SpyReload,
 	SpyPlayerSnatchStart,
-	SpySnatchImpact
+	SpySnatchImpact,
+	SpySpawn,
+	SpyDeath,
+	SpyOnHijack
 };
