@@ -73,8 +73,13 @@ void AWraithMeteorProjectile::Landed()
 		const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::WraithAbility3, EUpgradeAttribute::DamagePercentage, bIsHijacked);
 		Damage += DefaultDamage * DamagePercentage * 0.01f;
 	}
-	TArray<TObjectPtr<AActor>> IgnoredActors;
-	if (!Data->CanBeDamagedByOwnProjectile() && !bIsHijacked) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
+	TArray<AActor*> IgnoredActors;
+	if (!Data->CanBeDamagedByOwnProjectile() && !bIsHijacked)
+	{
+		const TArray<TObjectPtr<AEnemy>>& Enemies = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
+		IgnoredActors.Reserve(Enemies.Num());
+		for (AEnemy* Enemy : Enemies) IgnoredActors.Add(Enemy);
+	}
 	if (bEnableDebug) DrawDebugSphere(GetWorld(), GetActorLocation(), Data->GetDamageInnerRadius(), 32, FColor::Green, false, 3.f);
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Damage, Damage, GetActorLocation(), Data->GetDamageInnerRadius(),
 	Data->GetDamageOuterRadius(), 0.f, UDamageType::StaticClass(), IgnoredActors, this, Proprietor->GetController(), ECC_GameTraceChannel4);

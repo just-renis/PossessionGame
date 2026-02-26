@@ -49,7 +49,7 @@ FVector UEnemyCommunicator::GetFarthestEnemyLocation(const FVector& InFromLocati
 	return Enemies[Index]->GetActorLocation();
 }
 
-TObjectPtr<AActor> UEnemyCommunicator::GetClosestEnemy(const FVector& InFromLocation, const TObjectPtr<AActor>& InIgnoreEnemy)
+TObjectPtr<AEnemy> UEnemyCommunicator::GetClosestEnemy(const FVector& InFromLocation, const TObjectPtr<AActor>& InIgnoreEnemy)
 {
 	if (!GetIsEnemiesAvailable()) return nullptr;
 	float Distance = FLT_MAX;
@@ -83,9 +83,9 @@ void UEnemyCommunicator::SetTarget(const TObjectPtr<AEnemy>& InTarget)
 	GetWorld()->GetTimerManager().SetTimer(EQSPointsGenerationHandle, this, &UEnemyCommunicator::GeneratePointsAroundTarget, 1.f, true);
 }
 
-void UEnemyCommunicator::AddEnemy(const TObjectPtr<AActor>& InEnemy) { Enemies.Add(InEnemy); }
+void UEnemyCommunicator::AddEnemy(const TObjectPtr<AEnemy>& InEnemy) { Enemies.Add(InEnemy); }
 
-void UEnemyCommunicator::RemoveEnemy(const TObjectPtr<AActor>& InEnemy) { Enemies.Remove(InEnemy); }
+void UEnemyCommunicator::RemoveEnemy(const TObjectPtr<AEnemy>& InEnemy) { Enemies.Remove(InEnemy); }
 
 void UEnemyCommunicator::AddPoint(const int32 InKey, const FEQSPointData& InData) { PointsAroundTarget.Add(InKey, InData); }
 

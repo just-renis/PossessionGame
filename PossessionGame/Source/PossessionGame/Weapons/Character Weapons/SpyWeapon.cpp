@@ -1,11 +1,18 @@
 #include "SpyWeapon.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Characters/Spy.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Enums/EPlayerLevelUpgradeId.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Projectiles/Throwables/BreacherBarrel.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Weapons/Animation Instances/Hands/SpyHandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
@@ -61,6 +68,46 @@ void ASpyWeapon::P_Setup()
 	Mesh->SetComponentTickEnabled(true);
 }
 
+void ASpyWeapon::P_DealDamageThroughWeakPoint(const FHitResult& InHitResult)
+{
+	const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
+	const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionB);
+	const bool bIsUpgradeSelectedEightOptionA = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::EighthOptionA);
+	
+	const float SecretBoostDamage = DefaultHitScanDamage + DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
+
+	const float AfterUpgradeApplianceDamage = SecretBoostDamage + P_UpgradeDamageAppliance();
+	
+	float AfterPlayerLevelAllGlobalDamage = AfterUpgradeApplianceDamage + P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
+	
+	AfterPlayerLevelAllGlobalDamage += DefaultHitScanDamage * (bIsUpgradeSelected ? SaveSlot->GetPlayerLevel() * 0.05f : 0.f);
+	
+	AfterPlayerLevelAllGlobalDamage += DefaultHitScanDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetPoisonAreaStackBoost(); // Trickster Purple Variation Damage Boost.
+
+	AfterPlayerLevelAllGlobalDamage *= WeakPointDamagePercentage;
+	
+	if (bIsUpgradeSelectedEightOptionA && FMath::RandRange(1, 100) < 26) AfterPlayerLevelAllGlobalDamage *= 2.f;
+	
+	const float RangeMultiplier = P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
+	if (FMath::IsNearlyEqual(RangeMultiplier, 0.f, 0.01f)) return;
+	const bool bIsCritical = InHitResult.BoneName.IsEqual(FName("head"));
+	(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
+	
+	float CriticalDamageMultiplier = 1.f;
+	if (bIsCritical) CriticalDamageMultiplier = P_GetCriticalDamage();
+	CriticalDamageMultiplier += GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerBlueVariationStackBoost(); // Ranger Blue Variation Critical Damage Boost.
+	float FinalDamageOutput = AfterPlayerLevelAllGlobalDamage * CriticalDamageMultiplier * RangeMultiplier;
+	P_ProcessFinalDamageOutput(FinalDamageOutput);
+	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), FinalDamageOutput, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
+}
+
+void ASpyWeapon::P_ProcessFinalDamageOutput(float& OutFinalDamageOutput)
+{
+	if (!bReduceDamageThroughObjects) return;
+	OutFinalDamageOutput *= ReduceDamageThroughObjectsPercentage;
+	bReduceDamageThroughObjects = false;
+}
+
 void ASpyWeapon::BeginPlay()
 {
 	Name = EWeapon::SpyWeapon;
@@ -82,9 +129,25 @@ void ASpyWeapon::HitScanLogic()
 	QueryParams.bTraceComplex = false;
 	QueryParams.bReturnPhysicalMaterial = false;
 	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 3.f);
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, Cast<ASpy>(Proprietor)->GetXrayState() ? ECC_GameTraceChannel3 : ECC_Visibility, QueryParams))
+	const bool XrayState = Cast<ASpy>(Proprietor)->GetXrayState();
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, XrayState ? ECC_GameTraceChannel3 : ECC_Visibility, QueryParams))
 	{
 		AssetsManager->SpawnVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Impact), nullptr, HitResult.Location, HitResult.ImpactNormal.Rotation(), Proprietor->GetVariation());
+		if (XrayState)
+		{
+			FHitResult NonXrayHitResult;
+			if (GetWorld()->LineTraceSingleByChannel(NonXrayHitResult, StartLocation, EndLocation, ECC_Visibility, QueryParams))
+			{
+				if (NonXrayHitResult.GetActor() != HitResult.GetActor()) bReduceDamageThroughObjects = true;
+			}
+			const TObjectPtr<UPrimitiveComponent> HitComp = HitResult.GetComponent();
+			if (HitComp && HitComp->ComponentHasTag("WeakSpot"))
+			{
+				HitResult.TraceStart = StartLocation;
+				P_DealDamageThroughWeakPoint(HitResult);
+				return;
+			}
+		}
 		if (HitResult.GetActor()->ActorHasTag("Enemy") || HitResult.GetActor()->ActorHasTag("Destructible"))
 		{
 			HitResult.TraceStart = StartLocation;

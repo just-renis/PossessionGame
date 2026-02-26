@@ -12,11 +12,14 @@ public:
 	void SetInvincibilityState(const bool bState);
 private:
 	ASpyWeapon();
-	
+
+	bool bReduceDamageThroughObjects = false;
+	float ReduceDamageThroughObjectsPercentage = 0.8f;
 	float MaterialEmissiveEffect = 0.f;
 	float MaterialWidth = 0.f;
 	float MaterialHue = 0.f;
 	float MaterialColorStrength = 1.f;
+	float WeakPointDamagePercentage = 1.4f;
 	int32 MaterialChangeCountLoops = 0;
 	FTimerHandle ProcessInvincibilityMaterialHandle;
 	UPROPERTY()
@@ -33,6 +36,8 @@ private:
 	virtual void P_Shoot(const EPoolObject InProjectileName) override;
 	virtual void P_Reload() override;
 	virtual void P_Setup() override;
+	void P_DealDamageThroughWeakPoint(const FHitResult& InHitResult);
+	virtual void P_ProcessFinalDamageOutput(float& OutFinalDamageOutput) override;
 	
 	virtual void BeginPlay() override;
 	virtual void HitScanLogic() override;

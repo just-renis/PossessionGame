@@ -7,6 +7,7 @@
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
@@ -54,7 +55,7 @@ void USpyAbility2::InitiateProcess()
 {
 	if (Proprietor->GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::SpyAbility2, EUpgradeAttribute::Special1))
 	{
-		if (FMath::RandRange(1, 10) <= 3)
+		if (FMath::RandRange(1, 10) < 3)
 		{
 			Super::P_Execute();
 			return;
@@ -84,6 +85,13 @@ void USpyAbility2::FinishTransfer()
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::TeleportImpact);
 	Proprietor->SetInputState(false);
 	Proprietor->GetWorldTimerManager().ClearTimer(TransferHandle);
-	if (Target && Target->GetIsAlive()) Target->InitiateDeath();
+	if (Target && Target->GetIsAlive())
+	{
+		if (Proprietor->GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::SpyAbility2, EUpgradeAttribute::Special1))
+		{
+			if (const TObjectPtr<AEnemy> ClosestEnemy = Proprietor->GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetClosestEnemy(Target->GetActorLocation(), Target)) ClosestEnemy->AI_ReduceHalfHp();
+		}
+		Target->InitiateDeath();
+	}
 	Proprietor->SetActorLocation(TargetLocation);
 }

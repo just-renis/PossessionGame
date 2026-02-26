@@ -10,3 +10,9 @@ float ASpyProjectile::AI_UpgradeDamageAppliance()
 	const float DamageBuff = 2.f - Proprietor->GetCurrentHp() / Proprietor->GetMaxHp();
 	return DefaultDamage * DamageBuff;
 }
+
+void ASpyProjectile::AI_FinalChangesToDamage()
+{
+	if (!GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::SpyAbility3, EUpgradeAttribute::Special1)) return;
+	if (FMath::RandRange(1, 4) == 1) Damage *= 2.f;
+}

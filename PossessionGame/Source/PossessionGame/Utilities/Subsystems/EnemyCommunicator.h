@@ -24,14 +24,14 @@ public:
 	FVector GetTargetLocation() const;
 	TObjectPtr<AEnemy>& GetTarget() { return Target; }
 	FVector GetFarthestEnemyLocation(const FVector& InFromLocation);
-	TObjectPtr<AActor> GetClosestEnemy(const FVector& InFromLocation, const TObjectPtr<AActor>& InIgnoreEnemy = nullptr);
+	TObjectPtr<AEnemy> GetClosestEnemy(const FVector& InFromLocation, const TObjectPtr<AActor>& InIgnoreEnemy = nullptr);
 	FOnEQSFinish& GetEQSDelegate() { return OnEQSFinish; }
-	TArray<TObjectPtr<AActor>>& GetAllEnemies() { return Enemies; }
+	TArray<TObjectPtr<AEnemy>>& GetAllEnemies() { return Enemies; }
 
 	void Init(TObjectPtr<UDelegateManager> InDelegateManager, TObjectPtr<UEnvQuery> InTargetEQS);
 	void SetTarget(const TObjectPtr<AEnemy>& InTarget);
-	void AddEnemy(const TObjectPtr<AActor>& InEnemy);
-	void RemoveEnemy(const TObjectPtr<AActor>& InEnemy);
+	void AddEnemy(const TObjectPtr<AEnemy>& InEnemy);
+	void RemoveEnemy(const TObjectPtr<AEnemy>& InEnemy);
 	void AddPoint(const int32 InKey, const FEQSPointData& InData);
 	void RemovePoint(const int32 InKey);
 	void AddTeleportBubble(const TObjectPtr<ATeleportBubble>& InTeleportBubble) { TeleportBubbles.Add(InTeleportBubble); }
@@ -49,7 +49,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 	UPROPERTY()
-	TArray<TObjectPtr<AActor>> Enemies;
+	TArray<TObjectPtr<AEnemy>> Enemies;
 	UPROPERTY()
 	TArray<TObjectPtr<ATeleportBubble>> TeleportBubbles;
 	UPROPERTY()

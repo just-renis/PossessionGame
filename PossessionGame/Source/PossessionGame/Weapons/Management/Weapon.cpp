@@ -343,7 +343,10 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	float CriticalDamageMultiplier = 1.f;
 	if (bIsCritical) CriticalDamageMultiplier = P_GetCriticalDamage();
 	CriticalDamageMultiplier += GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerBlueVariationStackBoost(); // Ranger Blue Variation Critical Damage Boost.
-	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), AfterPlayerLevelAllGlobalDamage * CriticalDamageMultiplier * RangeMultiplier, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
+	
+	float FinalDamageOutput = AfterPlayerLevelAllGlobalDamage * CriticalDamageMultiplier * RangeMultiplier;
+	P_ProcessFinalDamageOutput(FinalDamageOutput);
+	UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), FinalDamageOutput, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 }
 
 void AWeapon::FpsTrailVfxLogic()

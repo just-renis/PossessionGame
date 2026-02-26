@@ -6,6 +6,7 @@
 #include "PossessionGame/Enums/EBurningType.h"
 #include "Enemy.generated.h"
 
+class USphereComponent;
 enum class EPoolObject : uint8;
 enum class EBurningType : uint8;
 enum class EWarningIndicator : uint8;
@@ -164,6 +165,7 @@ public:
 	void AI_TriggerGrenadeProjection(const EPoolObject InProjectileName, const EVfx InMarkerVfxName);
 	void AI_SetHijackOutline(const bool bState);
 	virtual void AI_SetUnHijackOutline(const bool bState);
+	void AI_ReduceHalfHp();
 	virtual void AI_OnReachedNonEqsPoint() {}
 
 	virtual void P_RemoveReloadSound() {}
@@ -479,6 +481,8 @@ private:
 	float MolotovExplosionBaseDamage= 50.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Optimization", meta = (AllowPrivateAccess = true))
 	float PlayerTakeDamageEffectDelay = 0.2f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Weak Spots", meta = (AllowPrivateAccess = true))
+	int32 WeakSpotsAmount = 10;
 	UPROPERTY(EditAnywhere, Category = "Nav", meta = (AllowPrivateAccess = true))
 	TSubclassOf<ANavAreaModifier> P_NavAreaDefaultClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
@@ -505,6 +509,8 @@ private:
 	TObjectPtr<UMaterialInterface> MI_HijackPulse;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Burn;
+	UPROPERTY(EditDefaultsOnly, Category = "Weak Spot Data", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMesh> WeakSpotMesh;
 	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
@@ -549,6 +555,8 @@ private:
 	TObjectPtr<UCameraShakeBase> MinionBossLaserShakeInstance;
 	UPROPERTY()
 	TObjectPtr<USaveSlotManager> SaveSlotManager;
+	UPROPERTY()
+	TArray<TObjectPtr<UStaticMeshComponent>> WeakSpots;
 
 	bool AI_IsSpySnatchVfxAvailable() const;
 	
@@ -568,6 +576,8 @@ private:
 	void AI_TimeDilationChange(const float InDilation) const;
 	void AI_ShowHpBar() const;
 	void AI_SetSpySnatchMarker(const bool bState);
+	void AI_ChangeWeakSpotsState(const bool bState);
+	void AI_AddWeakSpots();
 
 	int32 P_GetFirstSlotAbilityIndex() const { return P_FirstSlotAbilityIndex; }
 	int32 P_GetSecondSlotAbilityIndex() const { return P_SecondSlotAbilityIndex; }
@@ -631,13 +641,14 @@ private:
 	void P_ProcessBurnVfxReverse();
 	void P_TriggerBurnIndicator() const;
 	void P_SetWarningIndicator(const EWarningIndicator InWarningIndicator);
+	void P_RemoveWeakSpots();
 
 	bool IsHackTerminalsGameMode() const;
 	EDamageReason ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser);
 
 	void TickAbilities(const float InDeltaTime);
 	void SetupStimuliSource();
-	void ChangeXrayState(const bool bState) const;
+	void ChangeXrayState(const bool bState);
 	void SetupUserSettings() const;
 	void ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage);
 	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;

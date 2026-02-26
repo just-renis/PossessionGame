@@ -46,6 +46,8 @@ protected:
 	UPROPERTY()
 	TMap<FName, FNiagaraAttribute> Attributes;
 	
+	virtual void AI_FinalChangesToDamage() {}
+	
 	virtual float GetModifiedLifeSpan() const { return ProjectileData.LifeSpan; }
 	virtual float GetModifiedProjectileInitialSpeed(const float InBaseInitialSpeed) const { return 0.f; }
 	virtual float GetModifiedProjectileMaxSpeed(const float InBaseMaxSpeed) const { return 0.f; }

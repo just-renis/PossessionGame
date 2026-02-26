@@ -370,11 +370,11 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.1", "{0}ENEMIES STRUCK BY A METEOR ARE SET ON FIRE.{1}"),
-						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+						return FText::Format(NSLOCTEXT("ST_Localization", "SpyAbilitySpecial1.1", "{0}FOR EVERY{1}DAMAGE ABSORBED, YOUR ATTACKS DEAL{2}DAMAGE, APPLYING TO EACH ATTACK UNTIL THE BONUS IS SPENT.{3}"),
+						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(false) + " 75 </><UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(false) + " +30% </><UpgradeAttributeText>"), FText::FromString("</>"));
 					}
-					return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.2", "{0}WRAITH METEORS IGNITE THE PLAYER.{1}"),
-					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+					return FText::Format(NSLOCTEXT("ST_Localization", "SpyAbilitySpecial1.2", "{0}SPY DEALS{1}DAMAGE PER{1}MISSING HEALTH.{2}"),
+					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(true) + " +1% </><UpgradeAttributeText>"), FText::FromString("</>"));
 				default: break;
 			}
 			break;
@@ -384,11 +384,11 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.1", "{0}ENEMIES STRUCK BY A METEOR ARE SET ON FIRE.{1}"),
-						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+						return FText::Format(NSLOCTEXT("ST_Localization", "SpyAbilitySpecial2.1", "{0}AFTER SNATCH COMPLETES, NEAREST NON-BOSS ENEMY LOSES{1}HP.{2}"),
+						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(false) + " 50% </><UpgradeAttributeText>"), FText::FromString("</>"));
 					}
-					return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.2", "{0}WRAITH METEORS IGNITE THE PLAYER.{1}"),
-					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+					return FText::Format(NSLOCTEXT("ST_Localization", "SpyAbilitySpecial2.2", "{0}CHANCE THAT SNATCH COULD BE CANCELLED ON ANY ENEMY.{1}"),
+					FText::FromString(GetRichTextTag(true) + "20% </><UpgradeAttributeText>"), FText::FromString("</>"));
 				default: break;
 			}
 			break;
@@ -398,11 +398,11 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 				case EUpgradeAttribute::Special1:
 					if (!bForEnemy)
 					{
-						return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.1", "{0}ENEMIES STRUCK BY A METEOR ARE SET ON FIRE.{1}"),
+						return FText::Format(NSLOCTEXT("ST_Localization", "SpyAbilitySpecial3.1", "{0}REVEAL ENEMY WEAK SPOTS. SHOOTING THEM DEALS INCREASED DAMAGE.{1}"),
 						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
 					}
-					return FText::Format(NSLOCTEXT("ST_Localization", "WraithAbilitySpecial3.2", "{0}WRAITH METEORS IGNITE THE PLAYER.{1}"),
-					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+					return FText::Format(NSLOCTEXT("ST_Localization", "SpyAbilitySpecial3.2", "{0}SPY HAS{1}CHANCE TO DEAL DOUBLE DAMAGE.{2}"),
+					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(true) + " 25% </><UpgradeAttributeText>"), FText::FromString("</>"));
 				default: break;
 			}
 			break;

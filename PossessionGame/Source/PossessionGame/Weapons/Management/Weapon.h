@@ -132,6 +132,7 @@ protected:
 	
 	virtual void P_Setup();
 	void P_LoadDataIfNotLoaded(const EWeapon InPrimaryDataAssetName);
+	virtual void P_ProcessFinalDamageOutput(float& OutFinalDamageOutput) {}
 	
 	virtual void BeginPlay() override;
 	virtual void Tick(const float DeltaTime) override;

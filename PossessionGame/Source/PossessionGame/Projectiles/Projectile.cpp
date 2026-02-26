@@ -139,8 +139,13 @@ void AProjectile::SpawnProjectileImpactVfx(const FHitResult& InHit, const bool b
 
 void AProjectile::DealAreaDamage(const float InOtherSourceDamage)
 {
-	TArray<TObjectPtr<AActor>> IgnoredActors;
-	if (!ProjectileData.bCanBeDamagedByOwnProjectile && !ProjectileData.bIsPlayerProjectile) IgnoredActors = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
+	TArray<AActor*> IgnoredActors;
+	if (!ProjectileData.bCanBeDamagedByOwnProjectile && !ProjectileData.bIsPlayerProjectile)
+	{
+		const TArray<TObjectPtr<AEnemy>>& Enemies = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetAllEnemies();
+		IgnoredActors.Reserve(Enemies.Num());
+		for (AEnemy* Enemy : Enemies) IgnoredActors.Add(Enemy);
+	}
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), InOtherSourceDamage > 0.f ? InOtherSourceDamage : Damage, ProjectileData.RadiusMinimumDamage,
 	GetActorLocation(), ProjectileData.DamageInnerRadius, ProjectileData.DamageOuterRadius, ProjectileData.DamageFalloff, UDamageType::StaticClass(),
 	IgnoredActors, this, ProjectileData.GetProprietor()->GetController(), ECC_GameTraceChannel4);
@@ -150,6 +155,7 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 {
 	if (!bIsPlayerProjectile)
 	{
+		AI_FinalChangesToDamage();
 		UGameplayStatics::ApplyPointDamage(OtherActor, Damage, (Hit.Location - GetActorLocation()).GetSafeNormal() * 2.f, Hit, ProjectileData.GetProprietor()->GetController(), this, UDamageType::StaticClass());
 		return;
 	}
@@ -228,10 +234,6 @@ void AProjectile::AI_SetupUpgradesAppliance()
 	const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::DamagePercentage, false);
 	Damage += DefaultDamage * DamagePercentage * 0.01f;
 	Damage += AI_UpgradeDamageAppliance();
-	if (GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::SpyAbility3, EUpgradeAttribute::Special1))
-	{
-		if (FMath::RandRange(1, 4) == 1) Damage *= 2.f;
-	}
 }
 
 void AProjectile::AI_TimeDilationChange(const float InTimeDilation)

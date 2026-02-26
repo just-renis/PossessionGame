@@ -271,6 +271,8 @@ void AEnemy::AI_SetUnHijackOutline(const bool bState)
 	GetMesh()->SetOverlayMaterial(bState ? UnHijackOutlineMaterial : nullptr);
 }
 
+void AEnemy::AI_ReduceHalfHp() { ReceiveDamage(MaxHp * 0.5f, EDamageReason::None, nullptr, nullptr); }
+
 void AEnemy::P_ReEnableRunIfToggleMode()
 {
 	if (!bPlayerRunModeIsToggle || !bWasRunningBeforeShooting) return;
@@ -770,6 +772,7 @@ void AEnemy::P_SetupAbilities()
 
 void AEnemy::P_Setup()
 {
+	P_RemoveWeakSpots();
 	ResetActionSpeed();
 	if (bAffectedByEmp) EmpEffectEnded();
 	if (bAffectedByStun) AI_StunEffectEnded();
@@ -1048,6 +1051,7 @@ void AEnemy::BeginPlay()
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
 	SetMesh(CharacterName);
 	SetupMeshOptimization();
+	if (WeakSpotMesh) AI_AddWeakSpots();
 	SetAnimInstance();
 	Tags.Add("Enemy");
 	Tags.Add("AliveEnemy");
@@ -1312,6 +1316,50 @@ void AEnemy::AI_SetSpySnatchMarker(const bool bState)
 	if (!AI_IsSpySnatchVfxAvailable()) return;
 	if (!SpySnatchMarkerVfx) AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
 	else SpySnatchMarkerVfx->Activate(true);
+}
+
+void AEnemy::AI_ChangeWeakSpotsState(const bool bState)
+{
+	if (!bState)
+	{
+		for (int32 i = 0; i < WeakSpots.Num(); i++)
+		{
+			if (!WeakSpots[i]) continue;
+			WeakSpots[i]->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			WeakSpots[i]->SetVisibility(false);
+		}
+		return;
+	}
+	TSet<int32> RandomIndices;
+	while (RandomIndices.Num() < 4)
+	{
+		const int32 RandIndex = FMath::RandRange(0, WeakSpots.Num() - 1);
+		if (!RandomIndices.Contains(RandIndex) && WeakSpots[RandIndex])
+		{
+			RandomIndices.Add(RandIndex);
+			WeakSpots[RandIndex]->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+			WeakSpots[RandIndex]->SetVisibility(true);
+		}
+	}
+}
+
+void AEnemy::AI_AddWeakSpots()
+{
+	for (int32 i = 1; i <= WeakSpotsAmount; i++)
+	{
+		TObjectPtr<UStaticMeshComponent> WeakSpotMeshComponent = NewObject<UStaticMeshComponent>(this);
+		WeakSpotMeshComponent->RegisterComponent();
+		WeakSpotMeshComponent->SetStaticMesh(WeakSpotMesh);
+		WeakSpotMeshComponent->SetComponentTickEnabled(false);
+		FString SocketName = FString::Printf(TEXT("WeakSpotSocket%i"), i);
+		WeakSpotMeshComponent->ComponentTags.Add("WeakSpot");
+		WeakSpotMeshComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(SocketName));
+		WeakSpotMeshComponent->SetCollisionProfileName(FName("WeakSpot"));
+		WeakSpotMeshComponent->SetVisibility(false);
+		WeakSpotMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		WeakSpotMeshComponent->SetWorldScale3D(FVector(0.25f));
+		WeakSpots.Add(WeakSpotMeshComponent);
+	}
 }
 
 void AEnemy::P_ChangeHoldingShootState(const bool bState)
@@ -1909,6 +1957,17 @@ void AEnemy::P_SetWarningIndicator(const EWarningIndicator InWarningIndicator)
 	P_HUD->SetWarningIndicator(InWarningIndicator);
 }
 
+void AEnemy::P_RemoveWeakSpots()
+{
+	for (int32 i = WeakSpots.Num() - 1; i >= 0; i--)
+	{
+		if (!WeakSpots[i]) continue;
+		WeakSpots[i]->DestroyComponent();
+		WeakSpots[i] = nullptr;
+	}
+	WeakSpots.Empty(); 
+}
+
 bool AEnemy::IsHackTerminalsGameMode() const { return DelegateManager->RequestCurrentGameMode.IsBound() && DelegateManager->RequestCurrentGameMode.Execute() == EGameMode::HackTerminalsMode; }
 
 EDamageReason AEnemy::ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser)
@@ -1930,10 +1989,12 @@ void AEnemy::SetupStimuliSource()
 	StimuliSource->RegisterWithPerceptionSystem();
 }
 
-void AEnemy::ChangeXrayState(const bool bState) const
+void AEnemy::ChangeXrayState(const bool bState)
 {
 	GetMesh()->SetRenderCustomDepth(bState);
 	GetMesh()->SetCustomDepthStencilValue(bState);
+	if (!DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::SpyAbility3, EUpgradeAttribute::Special1)) return;
+	AI_ChangeWeakSpotsState(bState);
 }
 
 void AEnemy::SetupUserSettings() const

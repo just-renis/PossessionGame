@@ -10,4 +10,5 @@ class POSSESSIONGAME_API ASpyProjectile : public AProjectile
 	GENERATED_BODY()
 
 	virtual float AI_UpgradeDamageAppliance() override;
+	virtual void AI_FinalChangesToDamage() override;
 };
