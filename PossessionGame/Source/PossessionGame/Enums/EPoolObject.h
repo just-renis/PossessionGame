@@ -37,5 +37,7 @@ enum class EPoolObject : uint8
 	WraithMeteorShowerArea,
 	WraithMeteorProjectile,
 	PyroBossProjectile,
-	PyroBossProjectileFirePool
+	PyroBossProjectileFirePool,
+	TankGravitationalPull,
+	TankGravitationalPullArea
 };

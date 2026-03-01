@@ -185,6 +185,10 @@ public:
 
 	void SetIsAbilityInAction(const bool bState) { bIsAbilityInAction = bState; }
 	void SetIsAllowedToShoot(const bool bState) { bAllowedToShoot = bState; }
+	void AddActiveWraithTrap() { ActiveWraithTrapCount++; }
+	void SubtractBoostedAttack() { BoostedAttacksAmount--; }
+	void SetInputState(const bool bState) { bIsInputLocked = bState; }
+	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 	void SetIsActionInMotion(const bool bState);
 	virtual void Tick(const float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -195,17 +199,14 @@ public:
 	void StopSound(const ESound InSoundName);
 	virtual void ReceiveEmpEffect(const float InEffectDuration);
 	virtual void EmpEffectEnded();
-	void SetInputState(const bool bState) { bIsInputLocked = bState; }
-	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
 	void SetMovementSpeedMultiplier(const float InMultiplier);
 	void RemoveDisablingActionEffect();
 	void SetupBurningState(const EBurningType InBurningType, const float InBurningDamage, const float InBurningDuration, const float InBurningTick, const float InBurningDamageBoostPercentage = 1.f);
 	virtual void AddSlowingStack(const float InSlowPercentage);
 	void RemoveSlowingStacks();
-	void AddActiveWraithTrap() { ActiveWraithTrapCount++; }
 	void RemoveActiveWraithTrap(const float InEffectDuration);
-	void SubtractBoostedAttack() { BoostedAttacksAmount--; }
+	void Pull(const FVector& InPullLocation, const float InPullStrength);
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -432,6 +433,7 @@ private:
 	FTimerHandle RecoverFromDisablingEffectHandle;
 	FTimerHandle BurningTickingHandle;
 	FTimerHandle BurningStateFinishHandle;
+	FTimerHandle GravitationalPullHandle;
 	FConductionLogicData ConductionLogicData;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
 	float HijackDelay = 0.5f;

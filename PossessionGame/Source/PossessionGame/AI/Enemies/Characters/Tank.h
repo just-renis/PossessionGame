@@ -10,6 +10,7 @@ class POSSESSIONGAME_API ATank : public AEnemy
 	GENERATED_BODY()
 public:
 	virtual void P_Shoot() override;
+	void P_InitiateThrowGravitationalPull();
 private:
 	ATank();
 

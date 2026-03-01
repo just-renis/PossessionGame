@@ -14,7 +14,7 @@ void UBreacherAbility1::P_Execute()
 		return;
 	}
 	Proprietor->SetIsActionInMotion(true);
-	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::BreacherThrow);
+	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::Throw);
 	Proprietor->P_ThrowBarrel();
 	Super::P_Execute();
 }

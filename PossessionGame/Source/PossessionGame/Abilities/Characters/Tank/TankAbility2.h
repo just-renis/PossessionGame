@@ -10,7 +10,9 @@ UCLASS()
 class POSSESSIONGAME_API UTankAbility2 : public UAbility
 {
 	GENERATED_BODY()
-	
+public:
+	virtual void P_Execute() override;
+private:
 	UPROPERTY()
 	TObjectPtr<ATank> Proprietor;
 	

@@ -594,6 +594,16 @@ void AEnemy::RemoveActiveWraithTrap(const float InEffectDuration)
 	else if (--ActiveWraithTrapCount == 0) RemoveSlowingStacks();
 }
 
+void AEnemy::Pull(const FVector& InPullLocation, const float InPullStrength)
+{
+	const FVector CurrentLocation = GetActorLocation();
+	FVector Direction = InPullLocation - CurrentLocation;
+	Direction.Z = 0.f;
+	if (Direction.Size() <= KINDA_SMALL_NUMBER) return;
+	Direction.Normalize();
+	AddMovementInput(Direction, InPullStrength);
+}
+
 float AEnemy::AI_GetShootPause() { return AI_Data->GetShootPause(); }
 
 void AEnemy::AI_SetupAbilities()

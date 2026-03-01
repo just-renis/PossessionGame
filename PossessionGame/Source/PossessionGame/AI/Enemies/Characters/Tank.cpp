@@ -4,7 +4,9 @@
 #include "InputMappingContext.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Projectiles/Throwables/GravitationalPull.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/TankWeapon.h"
@@ -16,6 +18,14 @@ void ATank::P_Shoot()
 {
 	if (bIsInputLocked || !Weapon->P_CanShoot()) return;
 	Weapon->P_Shoot(EPoolObject::TankProjectile);
+}
+
+void ATank::P_InitiateThrowGravitationalPull()
+{
+	const TObjectPtr<AGravitationalPull> GravitationalPull = Cast<AGravitationalPull>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::TankGravitationalPull, Weapon->GetHandsSocketLocation(FName("ThrowSocket")), Weapon->GetHandsSocketRotation(FName("ThrowSocket"))));
+	if (!GravitationalPull) return;
+	GravitationalPull->InitWithProprietor(this);
+	GravitationalPull->Throw();
 }
 
 ATank::ATank()
