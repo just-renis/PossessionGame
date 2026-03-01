@@ -24,11 +24,16 @@ void ASpy::SetXrayState(const bool bState)
 	if (!MID_DarkXray) MID_DarkXray = UMaterialInstanceDynamic::Create(MID_DarkXray, this);
 	if (bState)
 	{
+		AssetsManager->PlaySound2D(ESound::SpyXrayOn);
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyXrayEffect, MID_Xray, 1.f);
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyDarkXrayEffect, MID_DarkXray, 1.f);
 		GetWorldTimerManager().SetTimer(ProcessXrayMaterialsHandle, this, &ASpy::ProcessXrayMaterialsActivation, 0.025f, true);
 	}
-	else GetWorldTimerManager().SetTimer(ProcessXrayMaterialsHandle, this, &ASpy::ProcessXrayMaterialsDeactivation, 0.025f, true);
+	else
+	{
+		AssetsManager->PlaySound2D(ESound::SpyXrayOff);
+		GetWorldTimerManager().SetTimer(ProcessXrayMaterialsHandle, this, &ASpy::ProcessXrayMaterialsDeactivation, 0.025f, true);
+	}
 }
 
 void ASpy::StartTeleportProcess()
@@ -62,6 +67,7 @@ void ASpy::SetFirstAbilityActiveState(const bool bState)
 	if (!MID_Invincibility) MID_Invincibility = UMaterialInstanceDynamic::Create(MI_Invincibility, this);
 	if (bState)
 	{
+		AssetsManager->PlaySound2D(ESound::SpyInvincibilityOn);
 		if (!InvincibilityVfx) AssetsManager->AttachVfx(EVfx::SpyInvincibility, [this]() -> bool { return GetIsAlive() && bIsFirstAbilityActive && bIsHijacked; }, &InvincibilityVfx, GetMesh(), FName("DeathSocket"));
 		else InvincibilityVfx->Activate(true);
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyInvincibilityEffect, MID_Invincibility, 1.f);
@@ -69,6 +75,7 @@ void ASpy::SetFirstAbilityActiveState(const bool bState)
 	}
 	else
 	{
+		AssetsManager->PlaySound2D(ESound::SpyInvincibilityOff);
 		BoostedAttacksAmount = static_cast<int32>(FirstAbilityAbsorbedDamage) / FirstAbilityAbsorbedAmountRequired;
 		FirstAbilityAbsorbedDamage = 0.f;
 		if (InvincibilityVfx) InvincibilityVfx->DeactivateImmediate();

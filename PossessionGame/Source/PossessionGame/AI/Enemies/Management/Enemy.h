@@ -406,6 +406,8 @@ private:
 	FTimerHandle AI_DamageTakenEffectHandle;
 	FTimerHandle AI_ShootLogicHandle;
 	FTimerHandle AI_RespawnTimerHandle;
+	FTimerHandle AI_DisableHijackOutlineHandle;
+	FTimerHandle AI_DisableUnHijackOutlineHandle;
 	FTimerHandle P_DetectIfPlayerPointingAtOutlineObjectsHandle;
 	FTimerHandle P_TriggerCriticalDamageIndicatorHandle;
 	FTimerHandle P_DeathHandle;
@@ -541,8 +543,6 @@ private:
 	TObjectPtr<UNiagaraComponent> CorruptedVfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> SpySnatchMarkerVfx;
-	UPROPERTY()
-	TObjectPtr<AEnemy> CurrentLookedAtEnemy;
 	UPROPERTY()
 	TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager;
 	UPROPERTY()

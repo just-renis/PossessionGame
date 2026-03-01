@@ -252,8 +252,15 @@ void AEnemy::AI_SetHijackOutline(const bool bState)
 	{
 		GetMesh()->SetOverlayMaterial(HijackOutlineMaterial);
 		AI_ShowHpBar();
-		if (!HijackableVfx) AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
-		else HijackableVfx->Activate(true);
+		if (!HijackableVfx)
+		{
+			if (AssetsManager->GetVfxData(EVfx::HijackViable).GetIsInLoad() && !AssetsManager->GetVfxData(EVfx::HijackViable).GetIsLoaded()) return;
+			AssetsManager->AttachVfx(EVfx::HijackViable, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &HijackableVfx, GetMesh(), FName("RootSocket"));
+		}
+		else if (!HijackableVfx->IsActive()) HijackableVfx->Activate();
+		FTimerDelegate TimerDel;
+		TimerDel.BindUObject(this, &AEnemy::AI_SetHijackOutline, false);
+		GetWorldTimerManager().SetTimer(AI_DisableHijackOutlineHandle, TimerDel, 0.016f, false);
 	}
 	else
 	{
@@ -266,9 +273,16 @@ void AEnemy::AI_SetHijackOutline(const bool bState)
 void AEnemy::AI_SetUnHijackOutline(const bool bState)
 {
 	bIsLookedAtByPlayer = bState;
-	if (bIsLookedAtByPlayer) AI_ShowHpBar();
 	AI_SetSpySnatchMarker(bState);
-	GetMesh()->SetOverlayMaterial(bState ? UnHijackOutlineMaterial : nullptr);
+	if (bState)
+	{
+		AI_ShowHpBar();
+		GetMesh()->SetOverlayMaterial(UnHijackOutlineMaterial);
+		FTimerDelegate TimerDel;
+		TimerDel.BindUObject(this, &AEnemy::AI_SetUnHijackOutline, false);
+		GetWorldTimerManager().SetTimer(AI_DisableUnHijackOutlineHandle, TimerDel, 0.016f, false);
+	}
+	else GetMesh()->SetOverlayMaterial(nullptr);
 }
 
 void AEnemy::AI_ReduceHalfHp() { ReceiveDamage(MaxHp * 0.5f, EDamageReason::None, nullptr, nullptr); }
@@ -1308,14 +1322,18 @@ void AEnemy::AI_ShowHpBar() const
 
 void AEnemy::AI_SetSpySnatchMarker(const bool bState)
 {
-	if (!bState && SpySnatchMarkerVfx)
+	if (!bState)
 	{
 		DisableSpySnatchMarkerVfx();
 		return;
 	}
 	if (!AI_IsSpySnatchVfxAvailable()) return;
-	if (!SpySnatchMarkerVfx) AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
-	else SpySnatchMarkerVfx->Activate(true);
+	if (!SpySnatchMarkerVfx)
+	{
+		if (AssetsManager->GetVfxData(EVfx::SpySnatchMarker).GetIsInLoad() && !AssetsManager->GetVfxData(EVfx::SpySnatchMarker).GetIsLoaded()) return;
+		AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
+	}
+	else if (!SpySnatchMarkerVfx->IsActive()) SpySnatchMarkerVfx->Activate();
 }
 
 void AEnemy::AI_ChangeWeakSpotsState(const bool bState)
@@ -1730,22 +1748,12 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 			const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
 			if (Enemy && Enemy->GetIsAlive())
 			{
-				if (Enemy != CurrentLookedAtEnemy)
-				{
-					if (CurrentLookedAtEnemy) CurrentLookedAtEnemy->AI_SetHijackOutline(false);
-					if (Enemy->GetIsHijackAble()) Enemy->AI_SetHijackOutline(true);
-					else Enemy->AI_SetUnHijackOutline(true);
-					CurrentLookedAtEnemy = Enemy;
-				}
+				if (Enemy->GetIsHijackAble()) Enemy->AI_SetHijackOutline(true);
+				else Enemy->AI_SetUnHijackOutline(true);
 				//else Enemy->AI_SetSpySnatchMarker(true);
-				return;
 			}
 		}
 	}
-	if (!CurrentLookedAtEnemy) return;
-	CurrentLookedAtEnemy->AI_SetHijackOutline(false);
-	CurrentLookedAtEnemy->AI_SetUnHijackOutline(false);
-	CurrentLookedAtEnemy = nullptr;
 }
 
 void AEnemy::P_TriggerCriticalDamageIndicator() const { if (P_HUD) P_HUD->ToggleWarningIndicator(); }

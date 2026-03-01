@@ -155,20 +155,8 @@ void APlayerGhost::DetectIfPointingAtEnemy()
 		const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
 		if (Enemy && Enemy->GetIsAlive())
 		{
-			if (Enemy != CurrentLookedAtEnemy)
-			{
-				if (CurrentLookedAtEnemy) CurrentLookedAtEnemy->AI_SetHijackOutline(false);
-				if (Enemy->GetIsHijackAble()) Enemy->AI_SetHijackOutline(true);
-				else Enemy->AI_SetUnHijackOutline(true);
-				CurrentLookedAtEnemy = Enemy;
-			}
-			return;
+			if (Enemy->GetIsHijackAble()) Enemy->AI_SetHijackOutline(true);
+			else Enemy->AI_SetUnHijackOutline(true);
 		}
-	}
-	if (CurrentLookedAtEnemy)
-	{
-		CurrentLookedAtEnemy->AI_SetHijackOutline(false);
-		CurrentLookedAtEnemy->AI_SetUnHijackOutline(false);
-		CurrentLookedAtEnemy = nullptr;
 	}
 }
