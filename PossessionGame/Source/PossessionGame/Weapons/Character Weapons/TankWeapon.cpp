@@ -1,4 +1,6 @@
 #include "TankWeapon.h"
+
+#include "NiagaraComponent.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -33,6 +35,8 @@ void ATankWeapon::P_SetupTransfer(bool bSetToFirstHand)
 {
 	Super::P_SetupTransfer(bSetToFirstHand);
 	AnimInstance->StopAllMontages(0.f);
+	if (!HandBallVfx) AssetsManager->AttachVfx(EVfx::TankHandBall, [this]() -> bool { return Proprietor ? Proprietor->GetIsAlive() : false; }, &HandBallVfx, GetMesh(), FName("BallSocket"));
+	else HandBallVfx->Activate(true);
 }
 
 void ATankWeapon::P_Setup()

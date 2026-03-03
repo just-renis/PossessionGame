@@ -20,6 +20,9 @@ public:
 	virtual void P_Reload() override;
 	virtual void P_SetupTransfer(bool bSetToFirstHand) override;
 private:
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> HandBallVfx;
+	
 	virtual void P_Setup() override;
 	
 	virtual void BeginPlay() override;
