@@ -49,6 +49,7 @@ public:
 	TObjectPtr<USkeletalMeshComponent>& GetMesh() { return Mesh; }
 	TObjectPtr<UNiagaraComponent>& GetMuzzleFlashComponent() { return MuzzleFlashComponent; }
 	TObjectPtr<AEnemy>& GetProprietor() { return Proprietor; }
+	TObjectPtr<USkeletalMeshComponent>& GetHandsMesh() { return HandsMesh; }
 	
 	bool AI_CanShoot() const;
 	virtual void AI_Shoot();

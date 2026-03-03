@@ -28,6 +28,44 @@ void ATank::P_InitiateThrowGravitationalPull()
 	GravitationalPull->Throw();
 }
 
+void ATank::P_UseShield()
+{
+	if (!Weapon) return;
+	const TObjectPtr<USkeletalMeshComponent> HandsMesh = Weapon->GetHandsMesh();
+	if (!HandsMesh) return;
+	for (int32 i = 0; i < ShieldPartsAmount; i++)
+	{
+		TObjectPtr<UStaticMeshComponent> ShieldMeshComponent = NewObject<UStaticMeshComponent>(this);
+		ShieldMeshComponent->RegisterComponent();
+		ShieldMeshComponent->SetStaticMesh(ShieldMesh);
+		ShieldMeshComponent->SetComponentTickEnabled(false);
+		//WeakSpotMeshComponent->ComponentTags.Add("WeakSpot");
+		ShieldMeshComponent->AttachToComponent(HandsMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("ShieldSocket"));
+
+		const float Angle = -2.f * PI * (i % 10) / ShieldPartsAmount;
+		float Z = 5.f * sin(Angle);
+		float BendRadius = ShieldPartXOffset * 5; // total curvature radius
+		float Theta = i / 10 / 4.f * (PI / 4.f); // 5 rows -> 0 to PI/4 radians
+		float X = BendRadius * sin(Theta);
+
+		FVector Position(X, ShieldPartYOffset * (i % 10), Z * ShieldPartZOffset);
+		UE_LOG(LogTemp, Error, TEXT("POSITION: %s"), *Position.ToString());
+		
+
+		// Orient object to face outward (normal at that point)
+		//ShieldMeshComponent->SetRelativeLocation(Position);
+		ShieldMeshComponent->AddRelativeLocation(Position);
+		FVector Normal = Position.GetSafeNormal();
+		FRotator Rotation = Normal.Rotation();
+		ShieldMeshComponent->SetRelativeRotation(Rotation);
+		//WeakSpotMeshComponent->SetCollisionProfileName(FName("WeakSpot"));
+		//WeakSpotMeshComponent->SetVisibility(false);
+		ShieldMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//WeakSpotMeshComponent->SetWorldScale3D(FVector(0.25f));
+		ShieldParts.Add(ShieldMeshComponent, 10.f);
+	}
+}
+
 ATank::ATank()
 {
 	SpawnSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("SpawnSfx"));

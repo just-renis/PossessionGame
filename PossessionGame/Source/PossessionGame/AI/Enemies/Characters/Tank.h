@@ -11,13 +11,28 @@ class POSSESSIONGAME_API ATank : public AEnemy
 public:
 	virtual void P_Shoot() override;
 	void P_InitiateThrowGravitationalPull();
+	void P_UseShield();
 private:
 	ATank();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
+	int32 ShieldPartsAmount = 50;
+	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
+	float ShieldPartYOffset = 150.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
+	float ShieldPartXOffset = 150.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
+	float ShieldPartZOffset = 150.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
+	TArray<TObjectPtr<UStaticMesh>> ShieldMeshes;
+	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMesh> ShieldMesh;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DeathSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> SpawnSfx;
+	UPROPERTY()
+	TMap<TObjectPtr<UStaticMeshComponent>, float> ShieldParts;
 	
 	virtual void AI_ReloadLogic() override;
 	virtual void AI_SetCanShoot(const bool bState) override;
