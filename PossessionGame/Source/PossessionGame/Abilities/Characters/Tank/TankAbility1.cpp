@@ -8,6 +8,12 @@ void UTankAbility1::P_Execute()
 	Super::P_Execute();
 }
 
+void UTankAbility1::P_StopAbility()
+{
+	Proprietor->P_DisableShield();
+	Super::P_StopAbility();
+}
+
 bool UTankAbility1::IsProprietorPossessed() { return Proprietor->GetIsHijacked(); }
 
 void UTankAbility1::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprietor) { Proprietor = Cast<ATank>(InAbilityProprietor); }

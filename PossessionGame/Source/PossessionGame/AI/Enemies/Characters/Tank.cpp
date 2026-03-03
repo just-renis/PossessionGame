@@ -30,6 +30,16 @@ void ATank::P_InitiateThrowGravitationalPull()
 
 void ATank::P_UseShield()
 {
+	if (!ShieldParts.IsEmpty())
+	{
+		for (TPair<TObjectPtr<UStaticMeshComponent>, float>& ShieldPart : ShieldParts)
+		{
+			ShieldPart.Key->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+			ShieldPart.Key->SetVisibility(true);
+			ShieldPart.Value = DefaultShieldPartHp;
+		}
+		return;
+	}
 	if (!Weapon) return;
 	const TObjectPtr<USkeletalMeshComponent> HandsMesh = Weapon->GetHandsMesh();
 	if (!HandsMesh) return;
@@ -39,25 +49,37 @@ void ATank::P_UseShield()
 		ShieldMeshComponent->RegisterComponent();
 		ShieldMeshComponent->SetStaticMesh(ShieldMeshes[i]);
 		ShieldMeshComponent->SetComponentTickEnabled(false);
-		//WeakSpotMeshComponent->ComponentTags.Add("WeakSpot");
+		ShieldMeshComponent->ComponentTags.Add("TankShieldPart");
 		ShieldMeshComponent->AttachToComponent(HandsMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("ShieldSocket"));
-
-		
-
-		//ShieldMeshComponent->SetRelativeLocation(Position);
-		//WeakSpotMeshComponent->SetCollisionProfileName(FName("WeakSpot"));
-		//WeakSpotMeshComponent->SetVisibility(false);
-		ShieldMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		ShieldMeshComponent->SetCollisionProfileName(FName("TankShieldPart"));
 		//WeakSpotMeshComponent->SetWorldScale3D(FVector(0.25f));
-		ShieldParts.Add(ShieldMeshComponent, 10.f);
+		ShieldParts.Add(ShieldMeshComponent, DefaultShieldPartHp);
 	}
 }
-/*const float Angle = -2.f * PI * (i % 10) / ShieldPartsAmount;
-float Z = sin(Angle);
 
-FVector Position(ShieldPartYOffset * (i / 10), -1500.f + ShieldPartYOffset * (i % 10), Z * ShieldPartZOffset);
-UE_LOG(LogTemp, Error, TEXT("POSITION: %s"), *Position.ToString());
-		ShieldMeshComponent->AddRelativeLocation(Position);*/
+void ATank::P_DisableShield()
+{
+	for (const TPair<TObjectPtr<UStaticMeshComponent>, float> ShieldPart : ShieldParts)
+	{
+		if (!ShieldPart.Key->GetVisibleFlag()) continue;
+		ShieldPart.Key->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		ShieldPart.Key->SetVisibility(false);
+	}
+}
+
+void ATank::P_ShieldComponentReceiveDamage(const TObjectPtr<UStaticMeshComponent>& InShieldPart, const int32 InDamage)
+{
+	if (!InShieldPart) return;
+	if (float* ShieldPartHp = ShieldParts.Find(InShieldPart))
+	{
+		*ShieldPartHp -= InDamage;
+		if (*ShieldPartHp <= 0.f)
+		{
+			InShieldPart->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			InShieldPart->SetVisibility(false);
+		}
+	}
+}
 
 ATank::ATank()
 {
@@ -143,7 +165,6 @@ void ATank::P_ToggleChargeMinigun(const bool bState)
 		}
 	}
 	else P_StopChargingMinigun();
-	//if (P_GetIsLeftOrRightInputNotPressed() || bState) SetInitialWalkSpeed(!bState);
 }
 
 void ATank::P_StopChargingMinigun()
@@ -160,7 +181,6 @@ void ATank::P_StopMinigun()
 {
 	if (Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp)) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::ChargeUp);
 	else Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::Shoot);
-	//SetInitialWalkSpeed(true);
 }
 
 void ATank::BeginPlay()

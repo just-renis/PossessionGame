@@ -12,9 +12,13 @@ public:
 	virtual void P_Shoot() override;
 	void P_InitiateThrowGravitationalPull();
 	void P_UseShield();
+	void P_DisableShield();
+	void P_ShieldComponentReceiveDamage(const TObjectPtr<UStaticMeshComponent>& InShieldPart, const int32 InDamage);
 private:
 	ATank();
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
+	float DefaultShieldPartHp = 10.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<UStaticMesh>> ShieldMeshes;
 	UPROPERTY()
