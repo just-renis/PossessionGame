@@ -32,11 +32,11 @@ void ATank::P_UseShield()
 {
 	if (!ShieldParts.IsEmpty())
 	{
-		for (TPair<TObjectPtr<UStaticMeshComponent>, float>& ShieldPart : ShieldParts)
+		for (TPair<TObjectPtr<UStaticMeshComponent>, FShieldPartData>& ShieldPart : ShieldParts)
 		{
 			ShieldPart.Key->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 			ShieldPart.Key->SetVisibility(true);
-			ShieldPart.Value = DefaultShieldPartHp;
+			ShieldPart.Value.SetHp(DefaultShieldPartHp);
 		}
 		return;
 	}
@@ -52,14 +52,15 @@ void ATank::P_UseShield()
 		ShieldMeshComponent->ComponentTags.Add("TankShieldPart");
 		ShieldMeshComponent->AttachToComponent(HandsMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("ShieldSocket"));
 		ShieldMeshComponent->SetCollisionProfileName(FName("TankShieldPart"));
+		FShieldPartData ShieldPartData(DefaultShieldPartHp, ShieldMeshComponent->CreateAndSetMaterialInstanceDynamic(0));
 		//WeakSpotMeshComponent->SetWorldScale3D(FVector(0.25f));
-		ShieldParts.Add(ShieldMeshComponent, DefaultShieldPartHp);
+		ShieldParts.Add(ShieldMeshComponent, ShieldPartData);
 	}
 }
 
 void ATank::P_DisableShield()
 {
-	for (const TPair<TObjectPtr<UStaticMeshComponent>, float> ShieldPart : ShieldParts)
+	for (const TPair<TObjectPtr<UStaticMeshComponent>, FShieldPartData> ShieldPart : ShieldParts)
 	{
 		if (!ShieldPart.Key->GetVisibleFlag()) continue;
 		ShieldPart.Key->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -70,10 +71,10 @@ void ATank::P_DisableShield()
 void ATank::P_ShieldComponentReceiveDamage(const TObjectPtr<UStaticMeshComponent>& InShieldPart, const int32 InDamage)
 {
 	if (!InShieldPart) return;
-	if (float* ShieldPartHp = ShieldParts.Find(InShieldPart))
+	if (FShieldPartData* ShieldPartData = ShieldParts.Find(InShieldPart))
 	{
-		*ShieldPartHp -= InDamage;
-		if (*ShieldPartHp <= 0.f)
+		ShieldPartData->TakeDamage(InDamage, GetWorld());
+		if (ShieldPartData->GetHp() <= 0.f)
 		{
 			InShieldPart->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			InShieldPart->SetVisibility(false);
