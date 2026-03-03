@@ -35,7 +35,8 @@ void ATankWeapon::P_SetupTransfer(bool bSetToFirstHand)
 {
 	Super::P_SetupTransfer(bSetToFirstHand);
 	AnimInstance->StopAllMontages(0.f);
-	if (!HandBallVfx) AssetsManager->AttachVfx(EVfx::TankHandBall, [this]() -> bool { return Proprietor ? Proprietor->GetIsAlive() : false; }, &HandBallVfx, GetMesh(), FName("BallSocket"));
+	if (!HandsMesh) return;
+	if (!HandBallVfx) AssetsManager->AttachVfx(EVfx::TankHandBall, [this]() -> bool { return Proprietor ? Proprietor->GetIsAlive() : false; }, &HandBallVfx, HandsMesh, FName("BallSocket"));
 	else HandBallVfx->Activate(true);
 }
 

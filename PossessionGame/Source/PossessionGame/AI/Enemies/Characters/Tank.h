@@ -62,6 +62,8 @@ private:
 	TObjectPtr<UAudioComponent> SpawnSfx;
 	UPROPERTY()
 	TMap<TObjectPtr<UStaticMeshComponent>, FShieldPartData> ShieldParts;
+	UPROPERTY()
+	TMap<TObjectPtr<UStaticMeshComponent>, FTimerHandle> ShieldPartsTakeDamageHandles;
 	
 	virtual void AI_ReloadLogic() override;
 	virtual void AI_SetCanShoot(const bool bState) override;
