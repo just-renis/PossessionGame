@@ -793,6 +793,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TankBulletTrail", EVfx::TankBulletTrail);
 	VfxsMap.Add("PA_TankBulletImpact", EVfx::TankBulletImpact);
 	VfxsMap.Add("PA_TankFpsBulletTrail", EVfx::TankFpsBulletTrail);
+	VfxsMap.Add("PA_TankHandBall", EVfx::TankHandBall);
 	VfxsMap.Add("PA_GuardianSpawn", EVfx::GuardianSpawn);
 	VfxsMap.Add("PA_GuardianBulletTrail", EVfx::GuardianBulletTrail);
 	VfxsMap.Add("PA_GuardianBulletImpact", EVfx::GuardianBulletImpact);

@@ -51,6 +51,7 @@ enum class EVfx : uint16
 	TankBulletImpact,
 	TankMuzzle,
 	TankFpsBulletTrail,
+	TankHandBall,
 	GuardianSpawn,
 	GuardianBulletTrail,
 	GuardianMuzzle,

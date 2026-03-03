@@ -44,8 +44,8 @@ void ATank::P_UseShield()
 
 		const float Angle = -2.f * PI * (i % 10) / ShieldPartsAmount;
 		float Z = 5.f * sin(Angle);
-		float BendRadius = ShieldPartXOffset * 5; // total curvature radius
-		float Theta = i / 10 / 4.f * (PI / 4.f); // 5 rows -> 0 to PI/4 radians
+		float BendRadius = ShieldPartXOffset * 5;
+		float Theta = i / 10 / 4.f * (PI / 4.f);
 		float X = BendRadius * sin(Theta);
 
 		FVector Position(X, ShieldPartYOffset * (i % 10), Z * ShieldPartZOffset);
