@@ -33,31 +33,18 @@ void ATank::P_UseShield()
 	if (!Weapon) return;
 	const TObjectPtr<USkeletalMeshComponent> HandsMesh = Weapon->GetHandsMesh();
 	if (!HandsMesh) return;
-	for (int32 i = 0; i < ShieldPartsAmount; i++)
+	for (int32 i = 0; i < ShieldMeshes.Num(); i++)
 	{
 		TObjectPtr<UStaticMeshComponent> ShieldMeshComponent = NewObject<UStaticMeshComponent>(this);
 		ShieldMeshComponent->RegisterComponent();
-		ShieldMeshComponent->SetStaticMesh(ShieldMesh);
+		ShieldMeshComponent->SetStaticMesh(ShieldMeshes[i]);
 		ShieldMeshComponent->SetComponentTickEnabled(false);
 		//WeakSpotMeshComponent->ComponentTags.Add("WeakSpot");
 		ShieldMeshComponent->AttachToComponent(HandsMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("ShieldSocket"));
 
-		const float Angle = -2.f * PI * (i % 10) / ShieldPartsAmount;
-		float Z = 5.f * sin(Angle);
-		float BendRadius = ShieldPartXOffset * 5;
-		float Theta = i / 10 / 4.f * (PI / 4.f);
-		float X = BendRadius * sin(Theta);
-
-		FVector Position(X, ShieldPartYOffset * (i % 10), Z * ShieldPartZOffset);
-		UE_LOG(LogTemp, Error, TEXT("POSITION: %s"), *Position.ToString());
 		
 
-		// Orient object to face outward (normal at that point)
 		//ShieldMeshComponent->SetRelativeLocation(Position);
-		ShieldMeshComponent->AddRelativeLocation(Position);
-		FVector Normal = Position.GetSafeNormal();
-		FRotator Rotation = Normal.Rotation();
-		ShieldMeshComponent->SetRelativeRotation(Rotation);
 		//WeakSpotMeshComponent->SetCollisionProfileName(FName("WeakSpot"));
 		//WeakSpotMeshComponent->SetVisibility(false);
 		ShieldMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -65,6 +52,12 @@ void ATank::P_UseShield()
 		ShieldParts.Add(ShieldMeshComponent, 10.f);
 	}
 }
+/*const float Angle = -2.f * PI * (i % 10) / ShieldPartsAmount;
+float Z = sin(Angle);
+
+FVector Position(ShieldPartYOffset * (i / 10), -1500.f + ShieldPartYOffset * (i % 10), Z * ShieldPartZOffset);
+UE_LOG(LogTemp, Error, TEXT("POSITION: %s"), *Position.ToString());
+		ShieldMeshComponent->AddRelativeLocation(Position);*/
 
 ATank::ATank()
 {

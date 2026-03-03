@@ -14,19 +14,9 @@ public:
 	void P_UseShield();
 private:
 	ATank();
-
-	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
-	int32 ShieldPartsAmount = 50;
-	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
-	float ShieldPartYOffset = 150.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
-	float ShieldPartXOffset = 150.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
-	float ShieldPartZOffset = 150.f;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<UStaticMesh>> ShieldMeshes;
-	UPROPERTY(EditDefaultsOnly, Category = "Shield", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UStaticMesh> ShieldMesh;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DeathSfx;
 	UPROPERTY()
