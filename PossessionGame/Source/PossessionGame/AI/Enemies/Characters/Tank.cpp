@@ -28,60 +28,6 @@ void ATank::P_InitiateThrowGravitationalPull()
 	GravitationalPull->Throw();
 }
 
-void ATank::P_UseShield()
-{
-	if (!ShieldParts.IsEmpty())
-	{
-		for (TPair<TObjectPtr<UStaticMeshComponent>, FShieldPartData>& ShieldPart : ShieldParts)
-		{
-			ShieldPart.Key->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-			ShieldPart.Key->SetVisibility(true);
-			ShieldPart.Value.SetHp(DefaultShieldPartHp);
-		}
-		return;
-	}
-	if (!Weapon) return;
-	const TObjectPtr<USkeletalMeshComponent> HandsMesh = Weapon->GetHandsMesh();
-	if (!HandsMesh) return;
-	for (int32 i = 0; i < ShieldMeshes.Num(); i++)
-	{
-		TObjectPtr<UStaticMeshComponent> ShieldMeshComponent = NewObject<UStaticMeshComponent>(this);
-		ShieldMeshComponent->RegisterComponent();
-		ShieldMeshComponent->SetStaticMesh(ShieldMeshes[i]);
-		ShieldMeshComponent->SetComponentTickEnabled(false);
-		ShieldMeshComponent->ComponentTags.Add("TankShieldPart");
-		ShieldMeshComponent->AttachToComponent(HandsMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("ShieldSocket"));
-		ShieldMeshComponent->SetCollisionProfileName(FName("TankShieldPart"));
-		FShieldPartData ShieldPartData(DefaultShieldPartHp, ShieldMeshComponent->CreateAndSetMaterialInstanceDynamic(0));
-		//WeakSpotMeshComponent->SetWorldScale3D(FVector(0.25f));
-		ShieldParts.Add(ShieldMeshComponent, ShieldPartData);
-	}
-}
-
-void ATank::P_DisableShield()
-{
-	for (const TPair<TObjectPtr<UStaticMeshComponent>, FShieldPartData> ShieldPart : ShieldParts)
-	{
-		if (!ShieldPart.Key->GetVisibleFlag()) continue;
-		ShieldPart.Key->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		ShieldPart.Key->SetVisibility(false);
-	}
-}
-
-void ATank::P_ShieldComponentReceiveDamage(const TObjectPtr<UStaticMeshComponent>& InShieldPart, const int32 InDamage)
-{
-	if (!InShieldPart) return;
-	if (FShieldPartData* ShieldPartData = ShieldParts.Find(InShieldPart))
-	{
-		ShieldPartData->TakeDamage(InDamage, GetWorld());
-		if (ShieldPartData->GetHp() <= 0.f)
-		{
-			InShieldPart->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			InShieldPart->SetVisibility(false);
-		}
-	}
-}
-
 ATank::ATank()
 {
 	SpawnSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("SpawnSfx"));

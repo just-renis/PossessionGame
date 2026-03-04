@@ -4,7 +4,6 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "PossessionGame/AI/Enemies/Characters/Tank.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EPlayerLevelUpgradeId.h"
 #include "PossessionGame/Enums/EUpgrade.h"
@@ -214,14 +213,6 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 			Cast<ABreacherBarrel>(OtherActor)->Explode();
 			return;
 		}
-	}
-	else if (OtherComp && OtherComp->ComponentHasTag("TankShieldPart"))
-	{
-		const TObjectPtr<ATank> Tank = Cast<ATank>(OtherActor);
-		if (!Tank) return;
-		AI_FinalChangesToDamage();
-		Tank->P_ShieldComponentReceiveDamage(Cast<UStaticMeshComponent>(OtherComp), Damage);
-		return;
 	}
 	if (OtherActor->ActorHasTag("Destructible"))
 	{

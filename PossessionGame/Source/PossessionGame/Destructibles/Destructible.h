@@ -40,6 +40,5 @@ protected:
 private:
 	bool bIsDeactivated = false;
 	bool bIsAffectedByPhysics = false;
-	UPROPERTY()
 	FTimerHandle DestroyHandle;
 };

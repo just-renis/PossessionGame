@@ -17,6 +17,7 @@ public:
 	float GetDamageReduction() const { return DamageReduction; }
 	float GetHp() const { return Hp; }
 	EPoolObject GetObjectName() const { return ObjectName; }
+	FName GetCollisionProfileName(const bool bIsPlayerObject) const { return bIsPlayerObject ? PlayerCollisionProfileName : EnemyCollisionProfileName; }
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsLifeSpanImmediatelyAdded;
@@ -30,4 +31,8 @@ private:
 	float Hp;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	EPoolObject ObjectName;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	FName PlayerCollisionProfileName;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	FName EnemyCollisionProfileName;
 };

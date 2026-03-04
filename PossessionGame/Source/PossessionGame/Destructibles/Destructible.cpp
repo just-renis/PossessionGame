@@ -28,7 +28,7 @@ void ADestructible::Init(const bool bInIsPlayerObject)
 	Hp = Data->GetHp();
 	bIsAffectedByPhysics = Data->GetIsAffectedByPhysics();
 	bIsPlayerObject = bInIsPlayerObject;
-	Mesh->SetCollisionProfileName(bIsPlayerObject ? "PlayerDestructible" : "EnemyDestructible");
+	Mesh->SetCollisionProfileName(Data->GetCollisionProfileName(bIsPlayerObject));
 	if (Data->GetIsLifeSpanImmediatelyAdded()) SetThisLifeSpan();
 	SetUpgradesApplication();
 }
@@ -45,20 +45,18 @@ void ADestructible::ReceiveDamage(const float InDamage)
 float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) * DamageReduction;
+	if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, GetActorLocation(), GetActorForwardVector());
 	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
+		UE_LOG(LogTemp, Error, TEXT("HP %f"), Hp);
+		UE_LOG(LogTemp, Error, TEXT("DAMAGE: %f"), Damage);
 		if (const TObjectPtr<AProjectile> ProjectileCauser = Cast<AProjectile>(DamageCauser))
 		{
 			const bool bIsPlayerProjectile = ProjectileCauser->GetIsPlayerProjectile();
 			if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) Hp -= Damage;
 		}
-		if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, GetActorLocation(), GetActorForwardVector());
 	}
-	else
-	{
-		Hp -= Damage;
-		if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, GetActorLocation(), GetActorForwardVector());
-	}
+	else Hp -= Damage;
 	if (Hp > 0) return Damage;
 	if (bIsAffectedByPhysics)
 	{
