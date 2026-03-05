@@ -18,7 +18,13 @@ private:
 	float DecalDissolveValue = 0.f;
 	FTimerHandle SlamDecalHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Slam", meta = (AllowPrivateAccess = true))
+	float DecalLifespan = 4.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Slam", meta = (AllowPrivateAccess = true))
+	FVector DecalSize;
+	UPROPERTY(EditDefaultsOnly, Category = "Slam", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInstance> MI_Slam;
+	UPROPERTY(EditDefaultsOnly, Category = "Slam", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> SlamCameraShake;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DeathSfx;
 	UPROPERTY()
@@ -49,6 +55,7 @@ private:
 	void P_StopChargingMinigun();
 	virtual void P_WeaponShoot() override;
 	void P_ProcessSlamDecal();
+	virtual void P_MakeCameraShake(const ECameraShake InCameraShakeName) override;
 	UFUNCTION()
 	void P_StopMinigun();
 	

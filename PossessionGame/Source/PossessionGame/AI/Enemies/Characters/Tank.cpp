@@ -5,6 +5,7 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Projectiles/Throwables/GravitationalPull.h"
@@ -132,7 +133,6 @@ void ATank::P_ProcessSlamDecal()
 {
 	if (!MID_Slam) return;
 	DecalDissolveValue += 0.1f;
-		UE_LOG(LogTemp, Error, TEXT("DECAL VALUE: %f"), DecalDissolveValue);
 	MID_Slam->SetScalarParameterValue(FName("RadialDissolve"), DecalDissolveValue);
 	if (++DecalLoopsCount >= 10)
 	{
@@ -140,6 +140,12 @@ void ATank::P_ProcessSlamDecal()
 		DecalDissolveValue = 0.f;
 		DecalLoopsCount = 0;
 	}
+}
+
+void ATank::P_MakeCameraShake(const ECameraShake InCameraShakeName)
+{
+	if (InCameraShakeName == ECameraShake::TankSlamCameraShake) UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(SlamCameraShake);
+	else Super::P_MakeCameraShake(InCameraShakeName);
 }
 
 void ATank::P_StopMinigun()
@@ -163,12 +169,13 @@ void ATank::Landed(const FHitResult& Hit)
 	if (!Weapon) return;
 	const TObjectPtr<UHandsAnimInstance> HandsAnimInstance = Weapon->GetHandsAnimInstance();
 	if (!HandsAnimInstance || !HandsAnimInstance->IsPlaying(EHandsAnimState::JumpSecondary)) return;
+	P_MakeCameraShake(ECameraShake::TankSlamCameraShake);
 	AssetsManager->PlaySound2D(ESound::TankSlam);
 	if (!SlamVfx) AssetsManager->AttachVfx(EVfx::TankSlam, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &SlamVfx, GetMesh(), FName("RootSocket"));
 	else SlamVfx->Activate(true);
 	if (MID_Slam)
 	{
-		UGameplayStatics::SpawnDecalAtLocation(GetWorld(), MID_Slam, FVector(250.f), Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), 4.f);
+		UGameplayStatics::SpawnDecalAtLocation(GetWorld(), MID_Slam, DecalSize, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), DecalLifespan);
 		GetWorldTimerManager().SetTimer(SlamDecalHandle, this, &ATank::P_ProcessSlamDecal, 0.025f, true);
 	}
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Slam);
