@@ -4,6 +4,7 @@
 #include "InputMappingContext.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Projectiles/Throwables/GravitationalPull.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -136,4 +137,14 @@ void ATank::BeginPlay()
 	bCanReload = false;
 	Super::BeginPlay();
 	Cast<ATankWeapon>(Weapon)->OnAmmoEnded.BindUObject(this, &ATank::P_StopMinigun);
+}
+
+void ATank::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	if (!Weapon) return;
+	const TObjectPtr<UHandsAnimInstance> HandsAnimInstance = Weapon->GetHandsAnimInstance();
+	if (!HandsAnimInstance || !HandsAnimInstance->IsPlaying(EHandsAnimState::JumpSecondary)) return;
+	HandsAnimInstance->PlayMontage(EHandsAnimState::Slam);
+	P_StompImpact(GetSocketLocation("RootSocket"));
 }

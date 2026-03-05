@@ -28,8 +28,8 @@ TObjectPtr<UTexture2D> UAbilitiesMenuUI::GetAbilityIcon(const ECharacterType InC
 		case ECharacterType::Trickster: return TricksterCharacterAbilities->GetAbilityIcon(InAbilityIndex); 
 		case ECharacterType::Breacher: return BreacherCharacterAbilities->GetAbilityIcon(InAbilityIndex); 
 		case ECharacterType::Wraith: return WraithCharacterAbilities->GetAbilityIcon(InAbilityIndex);
-		case ECharacterType::Tank: return TankCharacterAbilities->GetAbilityIcon(InAbilityIndex);
 		case ECharacterType::Spy: return SpyCharacterAbilities->GetAbilityIcon(InAbilityIndex);
+		case ECharacterType::Tank: return TankCharacterAbilities->GetAbilityIcon(InAbilityIndex);
 		case ECharacterType::Samurai: return SamuraiCharacterAbilities->GetAbilityIcon(InAbilityIndex);
 		default: ;
 	}
@@ -166,12 +166,12 @@ void UAbilitiesMenuUI::SwitchCharacterAbilities(const ECharacterType InCharacter
 			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Wraith, WraithCharacterIcon);
 			ActiveWidgetIndex = 4;
 			break;
-		case ECharacterType::Tank:
-			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Tank, TankCharacterIcon);
-			ActiveWidgetIndex = 5;
-			break;
 		case ECharacterType::Spy:
 			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Spy, SpyCharacterIcon);
+			ActiveWidgetIndex = 5;
+			break;
+		case ECharacterType::Tank:
+			CurrentlySelectedCharacter.SetCurrentlySelectedCharacter(ECharacterType::Tank, TankCharacterIcon);
 			ActiveWidgetIndex = 6;
 			break;
 		case ECharacterType::Samurai:
@@ -234,8 +234,8 @@ void UAbilitiesMenuUI::UpdateAbilityIcon() const
 		case ECharacterType::Trickster: TricksterCharacterAbilities->SetAbilitiesIconData(); break;
 		case ECharacterType::Breacher: BreacherCharacterAbilities->SetAbilitiesIconData(); break;
 		case ECharacterType::Wraith: WraithCharacterAbilities->SetAbilitiesIconData(); break;
-		case ECharacterType::Tank: TankCharacterAbilities->SetAbilitiesIconData(); break;
 		case ECharacterType::Spy: SpyCharacterAbilities->SetAbilitiesIconData(); break;
+		case ECharacterType::Tank: TankCharacterAbilities->SetAbilitiesIconData(); break;
 		case ECharacterType::Samurai: SamuraiCharacterAbilities->SetAbilitiesIconData();
 		default: ;
 	}
@@ -258,8 +258,8 @@ void UAbilitiesMenuUI::FirstSlotResetClicked()
 		case ECharacterType::Trickster: TricksterCharacterAbilities->ResetFirstAbilitySlot(); break;
 		case ECharacterType::Breacher: BreacherCharacterAbilities->ResetFirstAbilitySlot(); break;
 		case ECharacterType::Wraith: WraithCharacterAbilities->ResetFirstAbilitySlot(); break;
-		case ECharacterType::Tank: TankCharacterAbilities->ResetFirstAbilitySlot(); break;
 		case ECharacterType::Spy: SpyCharacterAbilities->ResetFirstAbilitySlot(); break;
+		case ECharacterType::Tank: TankCharacterAbilities->ResetFirstAbilitySlot(); break;
 		case ECharacterType::Samurai: SamuraiCharacterAbilities->ResetFirstAbilitySlot();
 		default: ;
 	}
@@ -274,8 +274,8 @@ void UAbilitiesMenuUI::SecondSlotResetClicked()
 		case ECharacterType::Trickster: TricksterCharacterAbilities->ResetSecondAbilitySlot(); break;
 		case ECharacterType::Breacher: BreacherCharacterAbilities->ResetSecondAbilitySlot(); break;
 		case ECharacterType::Wraith: WraithCharacterAbilities->ResetSecondAbilitySlot(); break;
-		case ECharacterType::Tank: TankCharacterAbilities->ResetSecondAbilitySlot(); break;
 		case ECharacterType::Spy: SpyCharacterAbilities->ResetSecondAbilitySlot(); break;
+		case ECharacterType::Tank: TankCharacterAbilities->ResetSecondAbilitySlot(); break;
 		case ECharacterType::Samurai: SamuraiCharacterAbilities->ResetSecondAbilitySlot();
 		default: ;
 	}

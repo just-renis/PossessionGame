@@ -328,6 +328,9 @@ protected:
 	void P_StopAbility(const int32 InAbilityIndex);
 	virtual void P_ProcessMeleeAttack();
 	virtual void P_FinishHijackProcess();
+	virtual void P_BindQuickMeleeAction();
+	virtual void P_BindSlideAction();
+	void P_StompImpact(const FVector& InHitLocation);
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	float ReceiveDefaultMovementSpeed() const;
@@ -353,6 +356,7 @@ protected:
 	virtual void ReceiveBurnDamage();
 	void Heal(const float InHealAmount);
 	void SetActionSpeed(const float InSpeed);
+	virtual void Landed(const FHitResult& Hit) override;
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanHijackOtherEnemy = false;
@@ -618,7 +622,6 @@ private:
 	void P_Jump();
 	void P_Stomp();
 	void P_PlayLevelUpVfx();
-	void P_StompImpact(const FVector& InHitLocation);
 	void P_Death();
 	void P_ControlLogic();
 	void P_DetectIfPlayerPointingAtOutlineObjects();
@@ -654,7 +657,6 @@ private:
 	void SetupUserSettings() const;
 	void ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage);
 	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;
-	virtual void Landed(const FHitResult& Hit) override;
 	void CheckIfFallOutOfWorld();
 	void SpawnCondenseMaterialsProcess();
 	void DestroyCondenseMaterialsProcess();

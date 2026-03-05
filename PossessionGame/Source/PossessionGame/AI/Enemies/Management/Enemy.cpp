@@ -392,11 +392,11 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 			EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(16).Action, ETriggerEvent::Started, this, &AEnemy::ToggleTimeDilation); // B
 		#endif
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(17).Action, ETriggerEvent::Started, this, &AEnemy::P_TryInteracting); // F
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack); // V
+		P_BindQuickMeleeAction(); // V
 		//- 19 reserved was stomp.
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Started, this, &AEnemy::OpenInfoPanel); // Tab
 		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(20).Action, ETriggerEvent::Completed, this, &AEnemy::CloseInfoPanel); // Tab
-		EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_InitiateSlide); // C
+		P_BindSlideAction(); // C
 	}
 	if (!SaveSlotManager->GetSaveSlot()->GetIsTutorialFinished()) SetupTutorialManager();
 }
@@ -1025,6 +1025,28 @@ void AEnemy::P_FinishHijackProcess()
 	DestroyImmediately();
 }
 
+void AEnemy::P_BindQuickMeleeAction() { EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(18).Action, ETriggerEvent::Started, this, &AEnemy::P_QuickMeleeAttack); }
+
+void AEnemy::P_BindSlideAction() { EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(21).Action, ETriggerEvent::Started, this, &AEnemy::P_InitiateSlide); }
+
+void AEnemy::P_StompImpact(const FVector& InHitLocation)
+{
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByProfile(Overlaps, InHitLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompRadiusInMeters * 100.f));
+	for (const FOverlapResult& Result : Overlaps)
+	{
+		TObjectPtr<AActor> Actor = Result.GetActor();
+		if (!Actor || !Actor->ActorHasTag("AliveEnemy")) continue;
+		FHitResult Hit;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+		Params.AddIgnoredActor(Actor);
+		if (GetWorld()->LineTraceSingleByChannel(Hit, InHitLocation, Actor->GetActorLocation(), ECC_Visibility, Params)) continue;
+		UGameplayStatics::ApplyDamage(Actor, P_GetStompDamage(), nullptr, this, UDamageType::StaticClass());
+		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
+	}
+}
+
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (bIsInvincible) return 0.f;
@@ -1212,6 +1234,20 @@ void AEnemy::SetActionSpeed(const float InSpeed)
 	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
 	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ActionSpeed);
 	else if (Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->SetGlobalPlayRate(ActionSpeed);
+}
+
+void AEnemy::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	CurrentJumpCount = 0;
+	bIsDoubleJumpOccured = false;
+	if (!bIsStomping) return;
+	bIsStomping = false;
+	AssetsManager->PlaySound2D(ESound::PlayerStompLand);
+	AssetsManager->SpawnVfx(EVfx::PlayerStomp, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetSocketLocation("RootSocket"));
+	GetCharacterMovement()->AirControl = 1.f;
+	P_StompImpact(GetSocketLocation("RootSocket"));
+	P_MakeCameraShake(ECameraShake::PlayerStomp);
 }
 
 bool AEnemy::AI_IsSpySnatchVfxAvailable() const { return !bIsBoss && DelegateManager->RequestIsSpyMarkerRequired.IsBound() && DelegateManager->RequestIsSpyMarkerRequired.Execute(); }
@@ -1700,24 +1736,6 @@ void AEnemy::P_PlayLevelUpVfx()
 	else LevelUpVfx->Activate();
 }
 
-void AEnemy::P_StompImpact(const FVector& InHitLocation)
-{
-	TArray<FOverlapResult> Overlaps;
-	GetWorld()->OverlapMultiByProfile(Overlaps, InHitLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompRadiusInMeters * 100.f));
-	for (const FOverlapResult& Result : Overlaps)
-	{
-		TObjectPtr<AActor> Actor = Result.GetActor();
-		if (!Actor || !Actor->ActorHasTag("AliveEnemy")) continue;
-		FHitResult Hit;
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this);
-		Params.AddIgnoredActor(Actor);
-		if (GetWorld()->LineTraceSingleByChannel(Hit, InHitLocation, Actor->GetActorLocation(), ECC_Visibility, Params)) continue;
-		UGameplayStatics::ApplyDamage(Actor, P_GetStompDamage(), nullptr, this, UDamageType::StaticClass());
-		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
-	}
-}
-
 void AEnemy::P_Death()
 {
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
@@ -2050,22 +2068,6 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 		case EDamageReason::RangerGrenadeDamage: SaveSlotManager->GetSaveSlot()->ProgressVariationUnlock(EVariation::RangerVariationBlue, 1); break;
 		case EDamageReason::BreacherBashDamage: (void)DelegateManager->OnPlayerBashKill.ExecuteIfBound(); break;
 		default: ;
-	}
-}
-
-void AEnemy::Landed(const FHitResult& Hit)
-{
-	Super::Landed(Hit);
-	CurrentJumpCount = 0;
-	bIsDoubleJumpOccured = false;
-	if (bIsStomping)
-	{
-		bIsStomping = false;
-		AssetsManager->PlaySound2D(ESound::PlayerStompLand);
-		AssetsManager->SpawnVfx(EVfx::PlayerStomp, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, GetSocketLocation("RootSocket"));
-		GetCharacterMovement()->AirControl = 1.f;
-		P_StompImpact(GetSocketLocation("RootSocket"));
-		P_MakeCameraShake(ECameraShake::PlayerStomp);
 	}
 }
 

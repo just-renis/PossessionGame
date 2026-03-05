@@ -61,7 +61,7 @@ ECharacterType UUpgradeDetailsPanelUI::GetCharacterByUpgradeName() const
 		case EUpgrade::TricksterAbility1: case EUpgrade::TricksterAbility2: case EUpgrade::TricksterAbility3: return ECharacterType::Trickster;
 		case EUpgrade::GuardianAbility1: case EUpgrade::GuardianAbility2: case EUpgrade::GuardianAbility3: return ECharacterType::Guardian;
 		case EUpgrade::BreacherAbility1: case EUpgrade::BreacherAbility2: case EUpgrade::BreacherAbility3: return ECharacterType::Breacher;
-		case EUpgrade::TankAbility1: case EUpgrade::TankAbility2: return ECharacterType::Tank;
+		case EUpgrade::TankAbility1: case EUpgrade::TankAbility2: case EUpgrade::TankAbility3: return ECharacterType::Tank;
 		case EUpgrade::WraithAbility1: case EUpgrade::WraithAbility2: case EUpgrade::WraithAbility3: return ECharacterType::Wraith;
 		case EUpgrade::SpyAbility1: case EUpgrade::SpyAbility2: case EUpgrade::SpyAbility3: return ECharacterType::Spy;
 		default: return ECharacterType::Random;
@@ -92,6 +92,7 @@ EAbility UUpgradeDetailsPanelUI::GetAbilityByUpgradeName() const
 		case EUpgrade::SpyAbility3: return EAbility::SpyAbility3;
 		case EUpgrade::TankAbility1: return EAbility::TankAbility1;
 		case EUpgrade::TankAbility2: return EAbility::TankAbility2;
+		case EUpgrade::TankAbility3: return EAbility::TankAbility3;
 		default: return EAbility::None;
 	}
 }

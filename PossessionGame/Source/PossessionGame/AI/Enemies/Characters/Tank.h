@@ -33,6 +33,8 @@ private:
 	virtual void P_SetupLeftClickInputStartedState() override;
 	virtual void P_SetupLeftClickInputCompletedState() override;
 	virtual void P_SetupShiftInput() override {}
+	virtual void P_BindQuickMeleeAction() override {}
+	virtual void P_BindSlideAction() override {}
 	virtual void P_Destroy() override;
 	void P_ToggleChargeMinigun(const bool bState);
 	void P_StopChargingMinigun();
@@ -41,4 +43,5 @@ private:
 	void P_StopMinigun();
 	
 	virtual void BeginPlay() override;
+	virtual void Landed(const FHitResult& Hit) override;
 };
