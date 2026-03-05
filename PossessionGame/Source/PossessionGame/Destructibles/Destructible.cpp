@@ -48,8 +48,6 @@ float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 	if (!bIsPlayerObject) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(FLinearColor::White, Damage, GetActorLocation(), GetActorForwardVector());
 	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID))
 	{
-		UE_LOG(LogTemp, Error, TEXT("HP %f"), Hp);
-		UE_LOG(LogTemp, Error, TEXT("DAMAGE: %f"), Damage);
 		if (const TObjectPtr<AProjectile> ProjectileCauser = Cast<AProjectile>(DamageCauser))
 		{
 			const bool bIsPlayerProjectile = ProjectileCauser->GetIsPlayerProjectile();
