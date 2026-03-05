@@ -14,14 +14,13 @@ class POSSESSIONGAME_API ASecretCrate : public AInteractableObject
 
 	ASecretCrate();
 
+	FTimerHandle OpenAnimFinishedHandle;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> CrateMesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAnimSequence> OpenAnim;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
-	UPROPERTY()
-	FTimerHandle OpenAnimFinishedHandle;
 	
 	virtual TObjectPtr<USkeletalMeshComponent> GetSkeletalMesh() override { return CrateMesh; }
 

@@ -688,6 +688,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TankGravitationalBallActive", ESound::TankGravitationalBallActive);
 	SoundMap.Add("PA_TankSlamJump", ESound::TankSlamJump);
 	SoundMap.Add("PA_TankSlam", ESound::TankSlam);
+	SoundMap.Add("PA_TankShieldDeploy", ESound::TankShieldDeploy);
+	SoundMap.Add("PA_TankShieldDissolve", ESound::TankShieldDissolve);
 	SoundMap.Add("PA_HijackInProgress", ESound::HijackInProgress);
 	SoundMap.Add("PA_WraithOnHijack", ESound::WraithOnHijack);
 	SoundMap.Add("PA_WraithSpawn", ESound::WraithSpawn);

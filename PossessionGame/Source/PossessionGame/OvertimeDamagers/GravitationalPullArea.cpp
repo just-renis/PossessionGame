@@ -13,12 +13,14 @@ AGravitationalPullArea::AGravitationalPullArea()
 	PassiveSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("PassiveSfx"));
 	PassiveSfx->SetAutoActivate(false);
 	PassiveSfx->SetupAttachment(RootComponent);
+	Sounds.Add(ESound::TankGravitationalBallActive, PassiveSfx);
 }
 
 void AGravitationalPullArea::BeginPlay()
 {
 	Super::BeginPlay();
 	ObjectName = EPoolObject::TankGravitationalPullArea;
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(PassiveSfx, TFunction<bool()>(), ESound::TankGravitationalBallActive);
 }
 
 void AGravitationalPullArea::DealOvertimeDamage()
@@ -45,4 +47,9 @@ void AGravitationalPullArea::Setup(const bool bInIsPlayerObject, const TObjectPt
 	if (!ItselfVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::GravitationalPull, [this]() -> bool { return GetCollisionComponent()->GetVisibleFlag(); }, &ItselfVfx, GetCollisionComponent());
 	else ItselfVfx->Activate();
 	SetupRadiusAndTimers(InDamageOverTimeData->GetAreaSize(), InDamageOverTimeData->GetAreaLifeSpan());
+}
+
+void AGravitationalPullArea::PlaySound(const ESound InSoundName)
+{
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], TFunction<bool()>(), InSoundName);
 }

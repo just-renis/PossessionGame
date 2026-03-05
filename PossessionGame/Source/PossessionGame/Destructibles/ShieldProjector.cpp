@@ -1,6 +1,6 @@
 ﻿#include "ShieldProjector.h"
-
 #include "NiagaraComponent.h"
+#include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DestructibleData.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -9,6 +9,14 @@ AShieldProjector::AShieldProjector()
 	ProjectorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectorMesh"));
 	RootComponent = ProjectorMesh;
 	Mesh->SetupAttachment(RootComponent);
+	DeploySfx = CreateDefaultSubobject<UAudioComponent>(TEXT("DeploySfx"));
+	DeploySfx->SetAutoActivate(false);
+	DeploySfx->SetupAttachment(ProjectorMesh);
+	DissolveSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("DissolveSfx"));
+	DissolveSfx->SetAutoActivate(false);
+	DissolveSfx->SetupAttachment(ProjectorMesh);
+	Sounds.Add(ESound::TankShieldDeploy, DeploySfx);
+	Sounds.Add(ESound::TankShieldDissolve, DissolveSfx);
 }
 
 void AShieldProjector::BeginPlay()
@@ -54,12 +62,19 @@ void AShieldProjector::SetUpgradesApplication()
 
 void AShieldProjector::Disable(const bool bHide)
 {
+	PlaySound(ESound::TankShieldDissolve);
 	Super::Disable(bHide);
 	if (ConnectionVfx) ConnectionVfx->DeactivateImmediate();
+}
+
+void AShieldProjector::PlaySound(const ESound InSoundName)
+{
+	Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(Sounds[InSoundName], TFunction<bool()>(), InSoundName);
 }
 
 void AShieldProjector::OnProjectorLanded(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (!ProjectorMesh) return;
+	PlaySound(ESound::TankShieldDeploy);
 	ChangeProjectorCollisionState(false);
 }

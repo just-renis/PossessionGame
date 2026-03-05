@@ -144,6 +144,8 @@ enum class ESound : uint16
 	TankGravitationalBallActive,
 	TankSlamJump,
 	TankSlam,
+	TankShieldDeploy,
+	TankShieldDissolve,
 	HijackInProgress,
 	UpgradeAvailable,
 	WraithOnHijack,
