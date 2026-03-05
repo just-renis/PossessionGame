@@ -13,13 +13,20 @@ public:
 	void P_InitiateThrowGravitationalPull();
 private:
 	ATank();
-	
+
+	int32 DecalLoopsCount = 0;
+	float DecalDissolveValue = 0.f;
+	FTimerHandle SlamDecalHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Slam", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInstance> MI_Slam;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DeathSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> SpawnSfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> SlamVfx;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Slam;
 	
 	virtual void AI_ReloadLogic() override;
 	virtual void AI_SetCanShoot(const bool bState) override;
@@ -41,6 +48,7 @@ private:
 	void P_ToggleChargeMinigun(const bool bState);
 	void P_StopChargingMinigun();
 	virtual void P_WeaponShoot() override;
+	void P_ProcessSlamDecal();
 	UFUNCTION()
 	void P_StopMinigun();
 	

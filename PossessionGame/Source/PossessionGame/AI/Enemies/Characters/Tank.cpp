@@ -4,6 +4,7 @@
 #include "InputMappingContext.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Projectiles/Throwables/GravitationalPull.h"
@@ -127,6 +128,20 @@ void ATank::P_StopChargingMinigun()
 
 void ATank::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::TankProjectile); }
 
+void ATank::P_ProcessSlamDecal()
+{
+	if (!MID_Slam) return;
+	DecalDissolveValue += 0.1f;
+		UE_LOG(LogTemp, Error, TEXT("DECAL VALUE: %f"), DecalDissolveValue);
+	MID_Slam->SetScalarParameterValue(FName("RadialDissolve"), DecalDissolveValue);
+	if (++DecalLoopsCount >= 10)
+	{
+		GetWorldTimerManager().ClearTimer(SlamDecalHandle);
+		DecalDissolveValue = 0.f;
+		DecalLoopsCount = 0;
+	}
+}
+
 void ATank::P_StopMinigun()
 {
 	if (Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp)) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::ChargeUp);
@@ -138,6 +153,7 @@ void ATank::BeginPlay()
 	CharacterName = ECharacterType::Tank;
 	bCanReload = false;
 	Super::BeginPlay();
+	if (MI_Slam) MID_Slam = UMaterialInstanceDynamic::Create(MI_Slam, this);
 	Cast<ATankWeapon>(Weapon)->OnAmmoEnded.BindUObject(this, &ATank::P_StopMinigun);
 }
 
@@ -150,6 +166,11 @@ void ATank::Landed(const FHitResult& Hit)
 	AssetsManager->PlaySound2D(ESound::TankSlam);
 	if (!SlamVfx) AssetsManager->AttachVfx(EVfx::TankSlam, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &SlamVfx, GetMesh(), FName("RootSocket"));
 	else SlamVfx->Activate(true);
+	if (MID_Slam)
+	{
+		UGameplayStatics::SpawnDecalAtLocation(GetWorld(), MID_Slam, FVector(250.f), Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), 4.f);
+		GetWorldTimerManager().SetTimer(SlamDecalHandle, this, &ATank::P_ProcessSlamDecal, 0.025f, true);
+	}
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Slam);
 	P_StompImpact(GetSocketLocation("RootSocket"));
 }
