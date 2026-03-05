@@ -18,6 +18,8 @@ private:
 	TObjectPtr<UAudioComponent> DeathSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> SpawnSfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> SlamVfx;
 	
 	virtual void AI_ReloadLogic() override;
 	virtual void AI_SetCanShoot(const bool bState) override;

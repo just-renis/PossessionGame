@@ -684,6 +684,10 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_TankOnHijack", ESound::TankOnHijack);
 	SoundMap.Add("PA_TankWeaponChargeDown", ESound::TankWeaponChargeDown);
 	SoundMap.Add("PA_TankWeaponChargeUp", ESound::TankWeaponChargeUp);
+	SoundMap.Add("PA_TankGravitationalBallLaunch", ESound::TankGravitationalBallLaunch);
+	SoundMap.Add("PA_TankGravitationalBallActive", ESound::TankGravitationalBallActive);
+	SoundMap.Add("PA_TankSlamJump", ESound::TankSlamJump);
+	SoundMap.Add("PA_TankSlam", ESound::TankSlam);
 	SoundMap.Add("PA_HijackInProgress", ESound::HijackInProgress);
 	SoundMap.Add("PA_WraithOnHijack", ESound::WraithOnHijack);
 	SoundMap.Add("PA_WraithSpawn", ESound::WraithSpawn);
@@ -794,6 +798,9 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TankBulletImpact", EVfx::TankBulletImpact);
 	VfxsMap.Add("PA_TankFpsBulletTrail", EVfx::TankFpsBulletTrail);
 	VfxsMap.Add("PA_TankHandBall", EVfx::TankHandBall);
+	VfxsMap.Add("PA_TankShieldConnection", EVfx::TankShieldConnection);
+	VfxsMap.Add("PA_TankSlam", EVfx::TankSlam);
+	VfxsMap.Add("PA_GravitationalPull", EVfx::GravitationalPull);
 	VfxsMap.Add("PA_GuardianSpawn", EVfx::GuardianSpawn);
 	VfxsMap.Add("PA_GuardianBulletTrail", EVfx::GuardianBulletTrail);
 	VfxsMap.Add("PA_GuardianBulletImpact", EVfx::GuardianBulletImpact);

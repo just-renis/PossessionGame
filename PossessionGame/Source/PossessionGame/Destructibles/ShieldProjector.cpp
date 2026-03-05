@@ -1,5 +1,8 @@
 ﻿#include "ShieldProjector.h"
+
+#include "NiagaraComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DestructibleData.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AShieldProjector::AShieldProjector()
 {
@@ -17,6 +20,8 @@ void AShieldProjector::BeginPlay()
 void AShieldProjector::Init(const bool bInIsPlayerObject)
 {
 	Super::Init(bInIsPlayerObject);
+	if (!ConnectionVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::TankShieldConnection,[this]() -> bool { return ProjectorMesh->GetVisibleFlag(); }, &ConnectionVfx, ProjectorMesh);
+	else ConnectionVfx->Activate();
 	ChangeProjectorCollisionState(true);
 }
 
@@ -45,6 +50,12 @@ void AShieldProjector::SetThisLifeSpan()
 void AShieldProjector::SetUpgradesApplication()
 {
 	DamageReduction = Data->GetDamageReduction();
+}
+
+void AShieldProjector::Disable(const bool bHide)
+{
+	Super::Disable(bHide);
+	if (ConnectionVfx) ConnectionVfx->DeactivateImmediate();
 }
 
 void AShieldProjector::OnProjectorLanded(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

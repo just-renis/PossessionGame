@@ -2,6 +2,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
 #include "InputMappingContext.h"
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
@@ -25,6 +26,7 @@ void ATank::P_InitiateThrowGravitationalPull()
 {
 	const TObjectPtr<AGravitationalPull> GravitationalPull = Cast<AGravitationalPull>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::TankGravitationalPull, Weapon->GetHandsSocketLocation(FName("ThrowSocket")), Weapon->GetHandsSocketRotation(FName("ThrowSocket"))));
 	if (!GravitationalPull) return;
+	AssetsManager->PlaySound2D(ESound::TankGravitationalBallLaunch);
 	GravitationalPull->InitWithProprietor(this);
 	GravitationalPull->Throw();
 }
@@ -145,6 +147,9 @@ void ATank::Landed(const FHitResult& Hit)
 	if (!Weapon) return;
 	const TObjectPtr<UHandsAnimInstance> HandsAnimInstance = Weapon->GetHandsAnimInstance();
 	if (!HandsAnimInstance || !HandsAnimInstance->IsPlaying(EHandsAnimState::JumpSecondary)) return;
+	AssetsManager->PlaySound2D(ESound::TankSlam);
+	if (!SlamVfx) AssetsManager->AttachVfx(EVfx::TankSlam, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &SlamVfx, GetMesh(), FName("RootSocket"));
+	else SlamVfx->Activate(true);
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Slam);
 	P_StompImpact(GetSocketLocation("RootSocket"));
 }

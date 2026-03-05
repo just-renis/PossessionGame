@@ -4,6 +4,8 @@
 #include "PossessionGame/Destructibles/Destructible.h"
 #include "ShieldProjector.generated.h"
 
+class UNiagaraComponent;
+
 UCLASS()
 class POSSESSIONGAME_API AShieldProjector : public ADestructible
 {
@@ -15,6 +17,8 @@ class POSSESSIONGAME_API AShieldProjector : public ADestructible
 	float Duration = 10.f;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> ProjectorMesh;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> ConnectionVfx;
 
 	virtual void BeginPlay() override;
 	virtual void Init(const bool bInIsPlayerObject) override;
@@ -22,6 +26,7 @@ class POSSESSIONGAME_API AShieldProjector : public ADestructible
 	void ChangeProjectorCollisionState(const bool bState) const;
 	virtual void SetThisLifeSpan() override;
 	virtual void SetUpgradesApplication() override;
+	virtual void Disable(const bool bHide) override;
 	UFUNCTION()
 	void OnProjectorLanded(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };
