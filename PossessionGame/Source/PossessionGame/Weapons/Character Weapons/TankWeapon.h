@@ -19,6 +19,7 @@ public:
 	virtual void P_Shoot(const EPoolObject InProjectileName) override;
 	virtual void P_Reload() override;
 	virtual void P_SetupTransfer(bool bSetToFirstHand) override;
+	void P_BallRelease();
 private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> HandBallVfx;

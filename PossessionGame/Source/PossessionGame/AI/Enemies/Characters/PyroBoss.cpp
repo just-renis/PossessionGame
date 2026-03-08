@@ -82,7 +82,7 @@ void APyroBoss::BeginPlay()
 	CharacterName = ECharacterType::PyroBoss;
 	bIsBoss = true;
 	Super::BeginPlay();
-	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::MinionBoss);
+	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Boss);
 }
 
 void APyroBoss::InitiateDeath(const FVector& InImpulse)

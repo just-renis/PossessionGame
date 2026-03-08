@@ -15,5 +15,6 @@ enum class ECharacterType : uint8
 	Warden,
 	Breacher,
 	Wraith,
-	PyroBoss
+	PyroBoss,
+	SoldierBoss
 };

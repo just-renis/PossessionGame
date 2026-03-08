@@ -1560,7 +1560,7 @@ void AEnemy::P_ToggleRun(const bool bState)
 
 void AEnemy::P_OnEnemyDeathEvents(float InXp, const ECharacterType InCharacterName) const
 {
-	if (InCharacterName != ECharacterType::Warden && InCharacterName != ECharacterType::MinionBoss && InCharacterName != ECharacterType::PyroBoss && DelegateManager->RequestCurrentXpNerf.IsBound()) InXp *= DelegateManager->RequestCurrentXpNerf.Execute();
+	if (InCharacterName != ECharacterType::Warden && InCharacterName != ECharacterType::MinionBoss && InCharacterName != ECharacterType::PyroBoss && InCharacterName != ECharacterType::SoldierBoss && DelegateManager->RequestCurrentXpNerf.IsBound()) InXp *= DelegateManager->RequestCurrentXpNerf.Execute();
 	P_AddXp(InXp);
 }
 

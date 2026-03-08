@@ -18,5 +18,6 @@ enum class EWeapon : uint8
 	WardenBlasterWeapon,
 	BreacherWeapon,
 	WraithWeapon,
-	PyroBossWeapon
+	PyroBossWeapon,
+	SoldierBossWeapon
 };

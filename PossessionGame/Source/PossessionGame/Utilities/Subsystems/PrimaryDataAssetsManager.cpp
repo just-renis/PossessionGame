@@ -468,6 +468,7 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 		case ECharacterType::Guardian: return EPoolObject::GuardianProjectile;
 		case ECharacterType::MinionBoss: return EPoolObject::MinionBossProjectile;
 		case ECharacterType::PyroBoss: return EPoolObject::PyroBossProjectile;
+		case ECharacterType::SoldierBoss: return EPoolObject::SoldierBossProjectile;
 		default: return EPoolObject::None;
 	}
 }
@@ -499,6 +500,7 @@ EWeapon UPrimaryDataAssetsManager::GetWeaponByCharacter(const ECharacterType InC
 		case ECharacterType::MinionBoss: return EWeapon::MinionBossHandWeapon;
 		case ECharacterType::Warden: return EWeapon::WardenBlasterWeapon;
 		case ECharacterType::PyroBoss: return EWeapon::PyroBossWeapon;
+		case ECharacterType::SoldierBoss: return EWeapon::SoldierBossWeapon;
 		default: return EWeapon::None;
 	}
 }
@@ -540,6 +542,7 @@ void UPrimaryDataAssetsManager::SetupWeaponsPrimaryAssets()
 	WeaponsMap.Add("PA_BreacherWeapon", EWeapon::BreacherWeapon);
 	WeaponsMap.Add("PA_WraithWeapon", EWeapon::WraithWeapon);
 	WeaponsMap.Add("PA_PyroBossWeapon", EWeapon::PyroBossWeapon);
+	WeaponsMap.Add("PA_SoldierBossWeapon", EWeapon::SoldierBossWeapon);
 	FillContainers(WeaponsMap, WeaponContainers, "Weapon");
 	WeaponsMap.Empty();
 }
@@ -745,6 +748,7 @@ void UPrimaryDataAssetsManager::SetupCharactersPrimaryAssets()
 	CharactersMap.Add("PA_MinionBoss", ECharacterType::MinionBoss);
 	CharactersMap.Add("PA_PyroBoss", ECharacterType::PyroBoss);
 	CharactersMap.Add("PA_Warden", ECharacterType::Warden);
+	CharactersMap.Add("PA_SoldierBoss", ECharacterType::SoldierBoss);
 	FillContainers<ECharacterType, FCharacterContainer, UPA_CharacterContainer>(CharactersMap, CharacterContainers, "Character");
 	CharactersMap.Empty();
 }

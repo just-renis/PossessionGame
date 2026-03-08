@@ -31,6 +31,8 @@ void ATank::P_InitiateThrowGravitationalPull()
 	AssetsManager->PlaySound2D(ESound::TankGravitationalBallLaunch);
 	GravitationalPull->InitWithProprietor(this);
 	GravitationalPull->Throw();
+	if (!Weapon) return;
+	//Weapon->
 }
 
 ATank::ATank()
