@@ -10,7 +10,9 @@ UCLASS()
 class POSSESSIONGAME_API AGravitationalPull : public AThrowable
 {
 	GENERATED_BODY()
-
+public:
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
+private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BallVfx;
 

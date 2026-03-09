@@ -804,6 +804,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_TankBulletImpact", EVfx::TankBulletImpact);
 	VfxsMap.Add("PA_TankFpsBulletTrail", EVfx::TankFpsBulletTrail);
 	VfxsMap.Add("PA_TankHandBall", EVfx::TankHandBall);
+	VfxsMap.Add("PA_TankGravitationalBall", EVfx::TankGravitationalBall);
 	VfxsMap.Add("PA_TankShieldConnection", EVfx::TankShieldConnection);
 	VfxsMap.Add("PA_TankSlam", EVfx::TankSlam);
 	VfxsMap.Add("PA_GravitationalPull", EVfx::GravitationalPull);

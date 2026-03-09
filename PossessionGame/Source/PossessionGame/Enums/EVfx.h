@@ -52,6 +52,7 @@ enum class EVfx : uint16
 	TankMuzzle,
 	TankFpsBulletTrail,
 	TankHandBall,
+	TankGravitationalBall,
 	TankShieldConnection,
 	TankSlam,
 	GravitationalPull,
