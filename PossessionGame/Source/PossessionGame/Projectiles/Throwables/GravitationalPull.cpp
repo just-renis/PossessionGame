@@ -9,10 +9,7 @@
 void AGravitationalPull::BeginPlay()
 {
 	Super::BeginPlay();
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::TankHandBall, [this]() -> bool {  UE_LOG(LogTemp, Error, TEXT("MESH FLAG: %i"), Mesh->GetVisibleFlag()); return Mesh->GetVisibleFlag(); },
-	&BallVfx, Mesh, NAME_None, false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTargetIncludingScale, false, EVariation::Default,
-	TMap<FName, FNiagaraAttribute>({{FName("1"), FNiagaraAttribute(EUserParamType::Float, 0.f)}, {FName("2"), FNiagaraAttribute(EUserParamType::Float, 0.f)},
-	{FName("3"), FNiagaraAttribute(EUserParamType::Float, 0.f)}}));
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::TankHandBall, [this]() -> bool { return Mesh->GetVisibleFlag(); }, &BallVfx, Mesh);
 }
 
 void AGravitationalPull::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
