@@ -2,7 +2,10 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DestructibleData.h"
+#include "PossessionGame/Enums/EUpgrade.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
 AShieldProjector::AShieldProjector()
 {
@@ -51,13 +54,17 @@ void AShieldProjector::ChangeProjectorCollisionState(const bool bState) const
 
 void AShieldProjector::SetThisLifeSpan()
 {
-	LifeSpan = Data->GetLifeSpan();
+	const float EffectDurationIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TankAbility1, EUpgradeAttribute::EffectDuration, bIsPlayerObject);
+	LifeSpan = Data->GetLifeSpan() + Data->GetLifeSpan() * EffectDurationIncrease * 0.01f;
 	Super::SetThisLifeSpan();
 }
 
 void AShieldProjector::SetUpgradesApplication()
 {
-	DamageReduction = Data->GetDamageReduction();
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	Hp = Data->GetHp() + RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::TankAbility1, EUpgradeAttribute::FlatHealth, bIsPlayerObject);
+	const float ReductionIncrease = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::TankAbility1, EUpgradeAttribute::ReduceDamageTaken, bIsPlayerObject);
+	DamageReduction = Data->GetDamageReduction() / (1.f + ReductionIncrease * 0.01f);
 }
 
 void AShieldProjector::Disable(const bool bHide)

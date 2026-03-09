@@ -305,6 +305,7 @@ protected:
 
 	virtual float P_GetMeleeDamage();
 	virtual float P_GetStompDamage();
+	virtual float P_GetStompSize();
 
 	virtual void P_SetupAbilities();
 	virtual void P_Setup();

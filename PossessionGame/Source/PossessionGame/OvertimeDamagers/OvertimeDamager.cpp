@@ -13,7 +13,7 @@ void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDam
 	DamageReason = InDamageReason;
 	DamageTick = DefaultDamageTick = InDamageOverTimeData->GetDamageTick();
 	EffectTick = InDamageOverTimeData->GetEffectDuration();
-	EffectStrength = InDamageOverTimeData->GetEffectStrength();
+	SetupEffectStrength(InDamageOverTimeData);
 }
 
 void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason)
@@ -58,6 +58,8 @@ void AOvertimeDamager::Disable(const bool bHide)
 	GetWorldTimerManager().ClearTimer(DamageOvertimeHandle);
 	Super::Disable(bHide);
 }
+
+void AOvertimeDamager::SetupEffectStrength(const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData) { EffectStrength = InDamageOverTimeData->GetEffectStrength(); }
 
 void AOvertimeDamager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {

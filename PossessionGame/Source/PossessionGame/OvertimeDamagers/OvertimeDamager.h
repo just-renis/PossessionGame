@@ -40,6 +40,7 @@ protected:
 	virtual void RemoveTarget(const TObjectPtr<AEnemy>& InTarget);
 	void SetupRadiusAndTimers(const float InAreaSize, const float InLifeSpan);
 	virtual void Disable(const bool bHide) override;
+	virtual void SetupEffectStrength(const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData);
 private:
 	FTimerHandle DamageOvertimeHandle;
 	FTimerHandle DestroyThisHandle;

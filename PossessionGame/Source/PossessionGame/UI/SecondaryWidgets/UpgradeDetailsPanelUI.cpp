@@ -138,6 +138,7 @@ FText UUpgradeDetailsPanelUI::GetUpgradeTextFromSingularAttributeValue(const TPa
 		case EUpgradeAttribute::CloneAmount: return FText::FromString(GetRichTextTag(bForEnemy) + GetCloneAmountUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "CloneAmount", "CLONE AMOUNT").ToString() + "</>");
 		case EUpgradeAttribute::Size: return FText::FromString(GetRichTextTag(bForEnemy) + GetSizeUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Area", "AREA").ToString() + "</>");
 		case EUpgradeAttribute::EffectDuration: return FText::FromString(GetRichTextTag(bForEnemy) + GetEffectDurationUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "EffectDuration", "EFFECT DURATION").ToString() + "</>");
+		case EUpgradeAttribute::EffectStrength: return FText::FromString(GetRichTextTag(bForEnemy) + GetEffectStrengthUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "EffectDuration", "EFFECT STRENGTH").ToString() + "</>");
 		case EUpgradeAttribute::ReduceDamageTaken: return FText::FromString(GetRichTextTag(bForEnemy) + GetDamageReductionUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "DamageTaken", "DAMAGE TAKEN").ToString() + "</>");
 		case EUpgradeAttribute::Impulse: return FText::FromString(GetRichTextTag(bForEnemy) + GetImpulseUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "Impulse", "IMPULSE").ToString() + "</>");
 		case EUpgradeAttribute::TimeDilation: return FText::FromString(GetRichTextTag(bForEnemy) + GetTimeDilationUpgradeString(CodexData, RunSaveSlot, !bForEnemy, InAttribute) + "</><UpgradeAttributeText> " + NSLOCTEXT("ST_Localization", "TimeDilation", "TIME DILATION").ToString() + "</>");
@@ -462,10 +463,11 @@ FString UUpgradeDetailsPanelUI::GetHealthUpgradeString(const TObjectPtr<UCodexDa
 	}
 	else
 	{
-		if (const TObjectPtr<UDestructibleData> DestructibleData = InCodexData->GetDestructibleData(bForPlayer, EPoolObject::RangerShield))
+		switch (UpgradeName)
 		{
-			return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatHealth, bForPlayer),
-			DestructibleData->GetHp(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
+			case EUpgrade::RangerAbility2: return GeHpByName(InCodexData, InRunSaveSlot, true, InAttribute, EPoolObject::RangerShield);
+			case EUpgrade::TankAbility1: return GeHpByName(InCodexData, InRunSaveSlot, true, InAttribute, EPoolObject::TankShieldProjector);
+			default: return FString();
 		}
 	}
 	return FString();
@@ -477,7 +479,7 @@ FString UUpgradeDetailsPanelUI::GetAbilityUpgradeString(const TObjectPtr<UCodexD
 	{
 		switch (InAttribute.Key)
 		{
-		case EUpgradeAttribute::AbilityCooldownReduction:
+			case EUpgradeAttribute::AbilityCooldownReduction:
 				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::AbilityCooldownReduction, bForPlayer),
 				AbilityData->GetCooldownSecs(), InAttribute.Value, EUpgradeType::Reduction, EUpgradeUnit::Seconds);
 			case EUpgradeAttribute::AbilityDuration:
@@ -506,9 +508,7 @@ FString UUpgradeDetailsPanelUI::GetDamageUpgradeString(const TObjectPtr<UCodexDa
 		case EUpgrade::BreacherAbility3: return GetThrowableDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::BreacherDynamite);
 		case EUpgrade::WraithAbility1: return GetOverTimeDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMolotovArea);
 		case EUpgrade::WraithAbility3: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMeteorProjectile);
-		case EUpgrade::SpyAbility1: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::SpyProjectile);
-		case EUpgrade::SpyAbility2: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::SpyProjectile);
-		case EUpgrade::SpyAbility3: return GetProjectileDamageByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::SpyProjectile);
+		case EUpgrade::TankAbility3: return GetMiscDamageUpgradeString(InCodexData, InRunSaveSlot, bForPlayer, InAttribute);
 		default: return FString();
 	}
 }
@@ -564,6 +564,8 @@ FString UUpgradeDetailsPanelUI::GetSizeUpgradeString(const TObjectPtr<UCodexData
 		case EUpgrade::BreacherAbility3: return GetSizeUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::BreacherDynamite);
 		case EUpgrade::WraithAbility1: return GetSizeUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMolotovArea);
 		case EUpgrade::WraithAbility2: return GetSizeUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithTrapArea);
+		case EUpgrade::TankAbility2: return GetSizeUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TankGravitationalPullArea);
+		case EUpgrade::TankAbility3: return GetSizeUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::NotPoolableTankSlam);
 		default: return FString();
 	}
 }
@@ -572,13 +574,24 @@ FString UUpgradeDetailsPanelUI::GetEffectDurationUpgradeString(const TObjectPtr<
 {
 	switch (UpgradeName)
 	{
-		case EUpgrade::RangerAbility2: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::RangerShield);
-		case EUpgrade::TricksterAbility1: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TricksterPoisonProjectile);
-		case EUpgrade::TricksterAbility2: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TricksterEmpProjectile);
-		case EUpgrade::GuardianAbility3: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::VectorBlastProjectile);
-		case EUpgrade::WraithAbility1: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMolotovArea);
-		case EUpgrade::WraithAbility2: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithTrapArea);
-		case EUpgrade::WraithAbility3: return GetEffectUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMeteorShowerArea);
+		case EUpgrade::RangerAbility2: return GetEffectDurationUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::RangerShield);
+		case EUpgrade::TricksterAbility1: return GetEffectDurationUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TricksterPoisonProjectile);
+		case EUpgrade::TricksterAbility2: return GetEffectDurationUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TricksterEmpProjectile);
+		case EUpgrade::GuardianAbility3: return GetEffectDurationUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::VectorBlastProjectile);
+		case EUpgrade::WraithAbility1: return GetEffectDurationUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMolotovArea);
+		case EUpgrade::WraithAbility2: return GetEffectDurationUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithTrapArea);
+		case EUpgrade::WraithAbility3: return GetEffectDurationUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::WraithMeteorShowerArea);
+		case EUpgrade::TankAbility1: return GetEffectDurationUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TankShieldProjector);
+		case EUpgrade::TankAbility2: return GetEffectDurationUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TankGravitationalPullArea);
+		default: return FString();
+	}
+}
+
+FString UUpgradeDetailsPanelUI::GetEffectStrengthUpgradeString(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute)
+{
+	switch (UpgradeName)
+	{
+		case EUpgrade::TankAbility2: return GetEffectStrengthUpgradeByName(InCodexData, InRunSaveSlot, bForPlayer, InAttribute, EPoolObject::TankGravitationalPullArea);
 		default: return FString();
 	}
 }
@@ -596,6 +609,13 @@ FString UUpgradeDetailsPanelUI::GetDamageReductionUpgradeString(const TObjectPtr
 			break;
 		case EUpgrade::RangerAbility2:
 			if (const TObjectPtr<UDestructibleData> DestructibleData = InCodexData->GetDestructibleData(bForPlayer, EPoolObject::RangerShield))
+			{
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::ReduceDamageTaken, bForPlayer),
+				DestructibleData->GetDamageReduction(), InAttribute.Value, EUpgradeType::Reduction, EUpgradeUnit::Percentage);
+			}
+			break;
+		case EUpgrade::TankAbility1:
+			if (const TObjectPtr<UDestructibleData> DestructibleData = InCodexData->GetDestructibleData(bForPlayer, EPoolObject::TankShieldProjector))
 			{
 				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::ReduceDamageTaken, bForPlayer),
 				DestructibleData->GetDamageReduction(), InAttribute.Value, EUpgradeType::Reduction, EUpgradeUnit::Percentage);
@@ -759,22 +779,27 @@ FString UUpgradeDetailsPanelUI::GetSizeUpgradeByName(const TObjectPtr<UCodexData
 			break;
 		case EPoolObject::WraithMolotovArea:
 		case EPoolObject::WraithTrapArea:
+		case EPoolObject::TankGravitationalPullArea:
 			if (const TObjectPtr<UDamageOverTimeData> OverTimeData = InCodexData->GetDamageOverTimeData(bForPlayer, InObjectName))
 			{
 				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::Size, bForPlayer),
 				OverTimeData->GetAreaSize(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::Metres);
 			}
 			break;
+		case EPoolObject::NotPoolableTankSlam:
+			return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::Size, bForPlayer),
+			1.f, InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::Scale);
 		default: return FString();
 	}
 	return FString();
 }
 
-FString UUpgradeDetailsPanelUI::GetEffectUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName)
+FString UUpgradeDetailsPanelUI::GetEffectDurationUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName)
 {
 	switch (InObjectName)
 	{
 		case EPoolObject::RangerShield:
+		case EPoolObject::TankShieldProjector:
 			if (const TObjectPtr<UDestructibleData> DestructibleData = InCodexData->GetDestructibleData(bForPlayer, InObjectName))
 			{
 				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::EffectDuration, bForPlayer),
@@ -793,10 +818,35 @@ FString UUpgradeDetailsPanelUI::GetEffectUpgradeByName(const TObjectPtr<UCodexDa
 		case EPoolObject::WraithMolotovArea:
 		case EPoolObject::WraithTrapArea:
 		case EPoolObject::WraithMeteorShowerArea:
+		case EPoolObject::TankGravitationalPullArea:
 			if (const TObjectPtr<UDamageOverTimeData> OverTimeData = InCodexData->GetDamageOverTimeData(bForPlayer, InObjectName))
 			{
 				return 	GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::EffectDuration, bForPlayer),
 				OverTimeData->GetAreaLifeSpan(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::Seconds);
+			}
+			break;
+		default: return FString();
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GetEffectStrengthUpgradeByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName)
+{
+	switch (InObjectName)
+	{
+		case EPoolObject::RangerShield:
+		case EPoolObject::TankShieldProjector:
+			if (const TObjectPtr<UDestructibleData> DestructibleData = InCodexData->GetDestructibleData(bForPlayer, InObjectName))
+			{
+				return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::EffectDuration, bForPlayer),
+				DestructibleData->GetLifeSpan(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::Seconds);
+			}
+			break;
+		case EPoolObject::TankGravitationalPullArea:
+			if (const TObjectPtr<UDamageOverTimeData> OverTimeData = InCodexData->GetDamageOverTimeData(bForPlayer, InObjectName))
+			{
+				return 	GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::EffectStrength, bForPlayer),
+				OverTimeData->GetEffectStrength(), InAttribute.Value, EUpgradeType::Increase, EUpgradeUnit::None);
 			}
 			break;
 		default: return FString();
@@ -810,6 +860,16 @@ FString UUpgradeDetailsPanelUI::GetOverTimeTickByName(const TObjectPtr<UCodexDat
 	{
 		return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::OverTimeTick, bForPlayer),
 		DestructibleData->GetDamageTick(), InAttribute.Value, EUpgradeType::Subtraction, EUpgradeUnit::Seconds);
+	}
+	return FString();
+}
+
+FString UUpgradeDetailsPanelUI::GeHpByName(const TObjectPtr<UCodexData>& InCodexData, const TObjectPtr<URunSaveSlot>& InRunSaveSlot, const bool bForPlayer, const TPair<EUpgradeAttribute, float> InAttribute, const EPoolObject InObjectName)
+{
+	if (const TObjectPtr<UDestructibleData> DestructibleData = InCodexData->GetDestructibleData(bForPlayer, InObjectName))
+	{
+		return GetUpgradeChangeString(InRunSaveSlot->GetUpgradeAttributeValues(UpgradeName, EUpgradeAttribute::FlatHealth, bForPlayer),
+		DestructibleData->GetHp(), InAttribute.Value, EUpgradeType::Addition, EUpgradeUnit::None);
 	}
 	return FString();
 }
