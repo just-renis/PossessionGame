@@ -42,13 +42,37 @@ void ATankWeapon::P_SetupTransfer(bool bSetToFirstHand)
 void ATankWeapon::P_BallRelease()
 {
 	if (!HandBallVfx) return;
-//	AssetsManager->UpdateVfxAttributes();
+	HandBallVfx->SetVariableFloat(FName("1"), 0.f);
+	HandBallVfx->SetVariableFloat(FName("2"), 0.f);
+	HandBallVfx->SetVariableFloat(FName("3"), 0.f);
+	HandBallVfx->SetVariableFloat(FName("4"), 0.f);
+	HandBallVfx->SetVariableFloat(FName("5"), 0.f);
+	HandBallVfx->DeactivateImmediate();
+	HandBallVfx->Activate(true);
+	GetWorldTimerManager().SetTimer(UpdateHandBallVfxHandle, this, &ATankWeapon::P_UpdateHandBallVfx, 0.025f, true);
 }
 
 void ATankWeapon::P_Setup()
 {
 	Super::P_Setup();
 	Mesh->SetComponentTickEnabled(true);
+}
+
+void ATankWeapon::P_UpdateHandBallVfx()
+{
+	if (!HandBallVfx) return;
+	UpdateHandBallLoopCount++;
+	HandBallVfx->SetVariableFloat(FName("1"), 0.0045f * UpdateHandBallLoopCount);
+	HandBallVfx->SetVariableFloat(FName("2"), 0.1163f * UpdateHandBallLoopCount);
+	HandBallVfx->SetVariableFloat(FName("3"), 0.4678f * UpdateHandBallLoopCount);
+	HandBallVfx->SetVariableFloat(FName("4"), 0.6463f * UpdateHandBallLoopCount);
+	HandBallVfx->SetVariableFloat(FName("5"), 0.6131f * UpdateHandBallLoopCount);
+	HandBallVfx->Activate(true);
+	if (UpdateHandBallLoopCount >= 10)
+	{
+		UpdateHandBallLoopCount = 0;
+		GetWorldTimerManager().ClearTimer(UpdateHandBallVfxHandle);
+	}
 }
 
 void ATankWeapon::BeginPlay()

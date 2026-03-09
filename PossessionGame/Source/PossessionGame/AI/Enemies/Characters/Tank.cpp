@@ -32,7 +32,7 @@ void ATank::P_InitiateThrowGravitationalPull()
 	GravitationalPull->InitWithProprietor(this);
 	GravitationalPull->Throw();
 	if (!Weapon) return;
-	//Weapon->
+	Cast<ATankWeapon>(Weapon)->P_BallRelease();
 }
 
 ATank::ATank()
