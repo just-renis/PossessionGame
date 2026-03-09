@@ -12,10 +12,7 @@ void AGravitationalPull::BeginPlay()
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::TankHandBall, [this]() -> bool { return Mesh->GetVisibleFlag(); }, &BallVfx, Mesh);
 }
 
-void AGravitationalPull::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	if (FMath::IsNearlyEqual(Hit.ImpactNormal.Z, 1.f, 0.1f)) OnImpact(Hit);
-}
+void AGravitationalPull::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) { OnImpact(Hit); }
 
 void AGravitationalPull::OnImpact(const FHitResult& InHit)
 {
