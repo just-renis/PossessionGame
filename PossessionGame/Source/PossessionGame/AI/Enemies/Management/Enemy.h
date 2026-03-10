@@ -193,7 +193,7 @@ public:
 	virtual void Tick(const float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
-	virtual void InitiateDeath(const FVector& InImpulse = FVector::ZeroVector);
+	virtual void InitiateDeath();
 	virtual void ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent);
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired = false);
 	void StopSound(const ESound InSoundName);
@@ -345,7 +345,7 @@ protected:
 	virtual void SetAnimInstance();
 	void SetMaxWalkSpeed(const EMoveMode InMoveMode, float InNewSpeed = -1.f);
 	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
-	virtual void HandleDeactivation(const FVector& InImpulse);
+	virtual void HandleDeactivation();
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
 	virtual void DestroyThis();
 	virtual void DestroyImmediately();

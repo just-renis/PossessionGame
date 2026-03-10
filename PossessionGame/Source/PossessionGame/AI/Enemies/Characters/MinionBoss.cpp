@@ -193,10 +193,10 @@ void AMinionBoss::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(TryTriggerStompHandle, this, &AMinionBoss::TryTriggerStomp, 0.2f, true);
 }
 
-void AMinionBoss::HandleDeactivation(const FVector& InImpulse)
+void AMinionBoss::HandleDeactivation()
 {
 	for (int32 i = 0; i < Weapons.Num(); i++) Weapons[i]->DeactivateWeapon();
-	Super::HandleDeactivation(InImpulse);
+	Super::HandleDeactivation();
 }
 
 void AMinionBoss::DestroyThis()
@@ -205,13 +205,13 @@ void AMinionBoss::DestroyThis()
 	Super::DestroyThis();
 }
 
-void AMinionBoss::InitiateDeath(const FVector& InImpulse)
+void AMinionBoss::InitiateDeath()
 {
 	GetWorld()->GetTimerManager().ClearTimer(MoveDirectlyToPlayerHandle);
 	if (MI_Defeated) MI_MeshBaseMaterial = UMaterialInstanceDynamic::Create(MI_Defeated, this);
 	(void)StopLaser.ExecuteIfBound();
 	GetMesh()->SetMaterial(0, MI_MeshBaseMaterial);
-	Super::InitiateDeath(InImpulse);
+	Super::InitiateDeath();
 	DelegateManager->OnBossDeath.Broadcast();
 }
 

@@ -29,6 +29,7 @@ protected:
 	float DefaultDamageTick;
 	float EffectTick;
 	float EffectStrength;
+	float DamageBoostPercentage;
 	EPoolObject ObjectName;
 	EDamageReason DamageReason;
 	UPROPERTY()

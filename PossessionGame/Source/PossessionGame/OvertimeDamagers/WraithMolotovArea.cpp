@@ -6,7 +6,6 @@
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/FNiagaraAttribute.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -26,12 +25,9 @@ void AWraithMolotovArea::DealOvertimeDamage()
 		if (!Targets[i]) continue;
 		Damage = DefaultDamage + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility1, EUpgradeAttribute::FlatDamage, true);
 		DamageTick = DefaultDamageTick - GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::WraithAbility1, EUpgradeAttribute::OverTimeTick, true);
+		Damage += DefaultDamage * DamageBoostPercentage;
 		float BurnExplosionBoostPercentage = 1.f;
-		if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility1, EUpgradeAttribute::Special1))
-		{
-			BurnExplosionBoostPercentage += GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
-			BurnExplosionBoostPercentage += GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
-		}
+		if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility1, EUpgradeAttribute::Special1)) BurnExplosionBoostPercentage += DamageBoostPercentage;
 		Targets[i]->SetupBurningState(EBurningType::Molotov, Damage, EffectTick, DamageTick, BurnExplosionBoostPercentage);
 	}
 }

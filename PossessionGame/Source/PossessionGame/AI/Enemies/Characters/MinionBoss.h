@@ -81,9 +81,9 @@ private:
 	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName) override;
 	
 	virtual void BeginPlay() override;
-	virtual void HandleDeactivation(const FVector& InImpulse) override;
+	virtual void HandleDeactivation() override;
 	virtual void DestroyThis() override;
-	virtual void InitiateDeath(const FVector& InImpulse) override;
+	virtual void InitiateDeath() override;
 	void TryTriggerStomp();
 	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent) override;
 	void CheckDistanceOfLaserEyeTrigger();

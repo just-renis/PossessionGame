@@ -38,10 +38,10 @@ void ASamurai::SetupSamuraiHat()
 	AttachDestructible(SamuraiHat, "HatSocket");
 }
 
-void ASamurai::HandleDeactivation(const FVector& InImpulse)
+void ASamurai::HandleDeactivation()
 {
 	if (!SamuraiHat->GetIsDeactivated()) SamuraiHat->HandleDeactivation();
-	Super::HandleDeactivation(InImpulse);
+	Super::HandleDeactivation();
 }
 
 void ASamurai::SetAnimInstance() { AnimInstance = Cast<USamuraiAnimationInstance>(GetMesh()->GetAnimInstance()); }

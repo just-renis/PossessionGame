@@ -80,7 +80,7 @@ private:
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName) override;
 	virtual void DisableAllVfxAfterPossession() override;
 	void ToggleShieldVfx(const bool bState, const EVfx InVfxName);
-	virtual void InitiateDeath(const FVector& InImpulse) override;
+	virtual void InitiateDeath() override;
 	void TurnOffShieldPostProcess() const;
 	virtual void DestroyImmediately() override;
 	UFUNCTION()

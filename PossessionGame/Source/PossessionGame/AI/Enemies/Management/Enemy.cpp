@@ -424,7 +424,7 @@ void AEnemy::PossessedBy(AController* NewController)
 	SetInputState(false);
 }
 
-void AEnemy::InitiateDeath(const FVector& InImpulse)
+void AEnemy::InitiateDeath()
 {
 	DisableVfxs();
 	GetMesh()->SetOverlayMaterial(nullptr);
@@ -444,7 +444,7 @@ void AEnemy::InitiateDeath(const FVector& InImpulse)
 	}
 	else P_Destroy();
 	AI_PlayDeathElectrification();
-	HandleDeactivation(InImpulse);
+	HandleDeactivation();
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &AEnemy::DestroyThis, DestroyAfter, false);
 }
 
@@ -485,9 +485,14 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 	}
 	if (bIsAlive && CurrentHp <= 0)
 	{
-		if (bIsHijacked) P_Death();
+		if (bIsHijacked)
+		{
+			P_Death();
+			InitiateDeath();
+		}
 		else
 		{
+			InitiateDeath();
 			if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility1, EUpgradeAttribute::Special1) && BurningLogicData.GetIsBurning())
 			{
 				PlaySound(ESound::RangerGrenadeExplosion);
@@ -495,11 +500,10 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 				const float TrueMolotovExplosionBaseDamage = MolotovExplosionBaseDamage * BurningLogicData.GetSpecialExplosionDamageBoostPercentage();
 				UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), TrueMolotovExplosionBaseDamage, TrueMolotovExplosionBaseDamage,
 				GetActorLocation(), MolotovExplosionRadius, MolotovExplosionRadius, 0.f, UDamageType::StaticClass(),
-				TArray<AActor*>(), this, GetController(), ECC_GameTraceChannel4);
+				TArray<AActor*>{this}, this, GetController(), ECC_GameTraceChannel4);
 			}
 			ProcessKillDamageReason(InDamageReason);
 		}
-		InitiateDeath();
 	}
 }
 
@@ -1057,12 +1061,6 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	const FPointDamageEvent* PointDamageEvent = nullptr;
 	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
 	else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
-	if (GetMesh()->IsSimulatingPhysics())
-	{
-		if (RadialDamageEvent) GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
-		else if (PointDamageEvent) GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
-		return 0.f;
-	}
 	if (bIsHijacked)
 	{
 		if (RadialDamageEvent)
@@ -1148,15 +1146,13 @@ void AEnemy::AttachDestructible(const TObjectPtr<ADestructible>& Destructible, c
 	Destructible->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 }
 
-void AEnemy::HandleDeactivation(const FVector& InImpulse)
+void AEnemy::HandleDeactivation()
 {
 	if (Weapon) Weapon->DeactivateWeapon();
 	GetCapsuleComponent()->DestroyComponent();
 	if (AnimInstance) AnimInstance->ClearTimers();
 	GetMesh()->SetAnimInstanceClass(nullptr);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->AddImpulse(InImpulse);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->CharacterMesh.Get()); }

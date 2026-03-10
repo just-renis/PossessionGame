@@ -49,7 +49,7 @@ private:
 	virtual void AI_PlayDeathSound() override;
 
 	virtual void BeginPlay() override;
-	virtual void InitiateDeath(const FVector& InImpulse) override;
+	virtual void InitiateDeath() override;
 	virtual void ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent) override;
 	virtual void ApplyEmpEffect(const float InEffectDuration) override;
 	void ActivateFloorLava();

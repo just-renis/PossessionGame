@@ -56,7 +56,7 @@ private:
 
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
-	virtual void InitiateDeath(const FVector& InImpulse) override;
+	virtual void InitiateDeath() override;
 	virtual void ReceiveEmpEffect(const float InEffectDuration) override;
 	virtual void SetMoveMode(const EMoveMode InMoveMode) override;
 	virtual void AllDisablingActionsFinished() override;

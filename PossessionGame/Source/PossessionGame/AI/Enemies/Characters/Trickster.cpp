@@ -182,10 +182,10 @@ void ATrickster::PossessedBy(AController* NewController)
 	if (NewController && NewController->IsPlayerController()) AI_DestroyPoisonGrenadeTrigger();
 }
 
-void ATrickster::InitiateDeath(const FVector& InImpulse)
+void ATrickster::InitiateDeath()
 {
 	AI_DestroyPoisonGrenadeTrigger();
-	Super::InitiateDeath(InImpulse);
+	Super::InitiateDeath();
 }
 
 void ATrickster::ReceiveEmpEffect(const float InEffectDuration)
