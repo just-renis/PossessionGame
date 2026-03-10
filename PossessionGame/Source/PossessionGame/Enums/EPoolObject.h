@@ -41,5 +41,6 @@ enum class EPoolObject : uint8
 	TankGravitationalPull,
 	TankGravitationalPullArea,
 	TankShieldProjector,
+	NotPoolableTankSlam,
 	SoldierBossProjectile
 };

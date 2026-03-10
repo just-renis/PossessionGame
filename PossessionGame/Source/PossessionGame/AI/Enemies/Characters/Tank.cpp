@@ -8,10 +8,14 @@
 #include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
+#include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Projectiles/Throwables/GravitationalPull.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/TankWeapon.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
@@ -79,6 +83,16 @@ void ATank::AI_PlayDeathSound()
 bool ATank::P_GetIsLeftOrRightInputNotPressed()
 {
 	return !P_InputManager->IsPressed(FKey("LeftMouseButton")) && !P_InputManager->IsPressed(FKey("RightMouseButton"));
+}
+
+float ATank::P_GetStompDamage()
+{
+	return StompDamage + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TankAbility3, EUpgradeAttribute::FlatDamage, true) + StompDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
+}
+
+float ATank::P_GetStompSize()
+{
+	return Super::P_GetStompSize() * (1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TankAbility3, EUpgradeAttribute::Size, true) * 0.01f);
 }
 
 void ATank::P_Setup()

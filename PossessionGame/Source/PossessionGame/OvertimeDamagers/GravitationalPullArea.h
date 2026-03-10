@@ -25,5 +25,6 @@ class POSSESSIONGAME_API AGravitationalPullArea : public AOvertimeDamager
 	virtual void DealOvertimeDamage() override;
 	virtual void Disable(const bool bHide) override;
 	virtual void Setup(const bool bInIsPlayerObject, const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData, const EDamageReason InDamageReason) override;
+	virtual void SetupEffectStrength(const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData) override;
 	void PlaySound(const ESound InSoundName);
 };

@@ -43,6 +43,8 @@ private:
 	virtual void AI_PlayDeathSound() override;
 
 	bool P_GetIsLeftOrRightInputNotPressed();
+	virtual float P_GetStompDamage() override;
+	virtual float P_GetStompSize() override;
 	
 	virtual void P_Setup() override;
 	virtual void P_SetupLeftClickInputStartedState() override;

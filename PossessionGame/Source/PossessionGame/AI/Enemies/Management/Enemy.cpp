@@ -775,6 +775,8 @@ float AEnemy::P_GetStompDamage()
 	return StompDamage + (bIsUpgradeSelected ? StompDamage * SaveSlot->GetPlayerLevel() * 0.15f : 0.f);
 }
 
+float AEnemy::P_GetStompSize() { return StompRadiusInMeters * 100.f; }
+
 void AEnemy::P_SetupAbilities()
 {
 	TArray<int32> ChosenAbilities = SaveSlotManager->GetSaveSlot()->GetCharacterChosenAbilities(CharacterName).Abilities;
@@ -1032,7 +1034,7 @@ void AEnemy::P_BindSlideAction() { EnhancedInputComponent->BindAction(PlayerMapp
 void AEnemy::P_StompImpact(const FVector& InHitLocation)
 {
 	TArray<FOverlapResult> Overlaps;
-	GetWorld()->OverlapMultiByProfile(Overlaps, InHitLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompRadiusInMeters * 100.f));
+	GetWorld()->OverlapMultiByProfile(Overlaps, InHitLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(P_GetStompSize()));
 	for (const FOverlapResult& Result : Overlaps)
 	{
 		TObjectPtr<AActor> Actor = Result.GetActor();
