@@ -191,7 +191,8 @@ void ATank::Landed(const FHitResult& Hit)
 	else SlamVfx->Activate(true);
 	if (MID_Slam)
 	{
-		UGameplayStatics::SpawnDecalAtLocation(GetWorld(), MID_Slam, DecalSize, Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), DecalLifespan);
+		const float StompSize = P_GetStompSize();
+		UGameplayStatics::SpawnDecalAtLocation(GetWorld(), MID_Slam, FVector(10.f, StompSize, StompSize), Hit.ImpactPoint, Hit.ImpactNormal.Rotation(), DecalLifespan);
 		GetWorldTimerManager().SetTimer(SlamDecalHandle, this, &ATank::P_ProcessSlamDecal, 0.025f, true);
 	}
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Slam);
