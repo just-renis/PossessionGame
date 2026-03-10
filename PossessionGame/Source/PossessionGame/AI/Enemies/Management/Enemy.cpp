@@ -1061,6 +1061,12 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	const FPointDamageEvent* PointDamageEvent = nullptr;
 	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) RadialDamageEvent = static_cast<const FRadialDamageEvent*>(&DamageEvent);
 	else if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) PointDamageEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
+	if (GetMesh()->IsSimulatingPhysics())
+	{
+		if (RadialDamageEvent) GetMesh()->AddRadialImpulse(RadialDamageEvent->Origin, RadialDamageEvent->Params.OuterRadius, 200000.f, RIF_Linear);
+		else if (PointDamageEvent) GetMesh()->AddImpulseAtLocation(PointDamageEvent->ShotDirection * 10000.f, PointDamageEvent->HitInfo.Location);
+		return 0.f;
+	}
 	if (bIsHijacked)
 	{
 		if (RadialDamageEvent)
@@ -1152,7 +1158,9 @@ void AEnemy::HandleDeactivation()
 	GetCapsuleComponent()->DestroyComponent();
 	if (AnimInstance) AnimInstance->ClearTimers();
 	GetMesh()->SetAnimInstanceClass(nullptr);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetSimulatePhysics(true);
+	//GetMesh()->AddImpulse();
 }
 
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->CharacterMesh.Get()); }
