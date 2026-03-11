@@ -22,6 +22,14 @@
 #include "PossessionGame/Weapons/Management/Weapon.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
+void ATank::AI_SpawnShield()
+{
+	AI_Shield = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::AI_TankShield);
+	if (!AI_Shield) return;
+	AI_Shield->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("DeathSocket"));
+	AI_Shield->Init(false);
+}
+
 void ATank::P_Shoot()
 {
 	if (bIsInputLocked || !Weapon->P_CanShoot()) return;
@@ -80,6 +88,12 @@ void ATank::AI_PlayDeathSound()
 	PlaySound(ESound::TankDeath);
 }
 
+void ATank::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
+{
+	if (CanAbilityBeExecuted(0) && !IsActionsDisabled() && !bIsActionInMotion && CurrentHp <= MaxHp * 0.5f && CurrentHp > 0) AI_UseAbility(0);
+	Super::AI_ReceivedDamage(InDamageReason, InDamage);
+}
+
 bool ATank::P_GetIsLeftOrRightInputNotPressed()
 {
 	return !P_InputManager->IsPressed(FKey("LeftMouseButton")) && !P_InputManager->IsPressed(FKey("RightMouseButton"));
@@ -99,6 +113,7 @@ void ATank::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
+	if (AI_Shield) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::AI_TankShield, AI_Shield);
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ATank::SetIsActionInMotion);
 }
 
@@ -197,4 +212,10 @@ void ATank::Landed(const FHitResult& Hit)
 	}
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Slam);
 	P_StompImpact(GetSocketLocation("RootSocket"));
+}
+
+void ATank::InitiateDeath()
+{
+	if (AI_Shield) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::AI_TankShield, AI_Shield);
+	Super::InitiateDeath();
 }

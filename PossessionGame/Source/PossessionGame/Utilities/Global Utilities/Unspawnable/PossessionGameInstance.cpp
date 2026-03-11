@@ -6,6 +6,7 @@
 #include "PossessionGame/Utilities/Data Utilities/SaveData/MetaSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
+#include "PossessionGame/Utilities/Subsystems/AchievementManager.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/GlobalSettingsManager.h"
 #include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
@@ -28,6 +29,7 @@ void UPossessionGameInstance::Init()
 	GetSubsystem<UDelegateManager>()->RequestAddAbilitiesToUpgradePool.BindUObject(this, &UPossessionGameInstance::AddAvailableUpgrades);
 	GetSubsystem<UDelegateManager>()->RequestIsDemo.BindUObject(this, &UPossessionGameInstance::IsDemo);
 	GetSubsystem<UGlobalSettingsManager>()->Init(GetSubsystem<UDelegateManager>());
+	GetSubsystem<UAchievementManager>()->Init(GetSubsystem<UDelegateManager>());
 	const TObjectPtr<UPossessionGameUserSettings> GameUserSettings = Cast<UPossessionGameUserSettings>(GEngine->GetGameUserSettings());
 	if (GetSubsystem<USaveSlotManager>()->GetMetaSaveSlot()->GetIsFirstLaunch())
 	{

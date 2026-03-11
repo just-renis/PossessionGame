@@ -17,9 +17,7 @@ public:
 	void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
 private:
 	int32 ShieldMaterialValueChanger;
-	UPROPERTY()
 	FTimerHandle DissolveHandle;
-	UPROPERTY()
 	FTimerHandle MoveShieldHandle;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Proprietor;
