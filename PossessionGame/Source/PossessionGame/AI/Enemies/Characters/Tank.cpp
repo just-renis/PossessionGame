@@ -4,6 +4,7 @@
 #include "InputMappingContext.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
+#include "Engine/OverlapResult.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/ECharacterType.h"
@@ -30,7 +31,7 @@ void ATank::AI_SpawnShield()
 	AI_Shield->Init(false);
 	if (SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::TankAbility1, EUpgradeAttribute::Special1))
 	{
-		
+		GetWorldTimerManager().SetTimer(AI_ShieldScalingHandle, this, &ATank::AI_ProcessShieldScaling, 0.2f, true);
 	}
 }
 
@@ -98,6 +99,49 @@ void ATank::AI_ReceivedDamage(const EDamageReason InDamageReason, const float In
 	Super::AI_ReceivedDamage(InDamageReason, InDamage);
 }
 
+void ATank::AI_ProcessShieldScaling()
+{
+	if (++AI_ShieldScalingLoopsCount > 25)
+	{
+		AI_ResetShield();
+		return;
+	}
+	if (!AI_Shield) return;
+	AI_ShieldScale += 0.06f;
+	AI_Shield->SetActorScale3D(FVector(AI_ShieldScale));
+}
+
+void ATank::AI_ResetShield()
+{
+	GetWorldTimerManager().ClearTimer(AI_ShieldScalingHandle);
+	AI_ShieldScale = 3.f;
+	AI_ShieldScalingLoopsCount = 0;
+}
+
+void ATank::AI_AddLegendaryUpgrade(const EUpgrade InUpgradeName, const EUpgradeAttribute InUpgradeAttribute)
+{
+	if (InUpgradeAttribute != EUpgradeAttribute::Special1) return;
+	if (InUpgradeName == EUpgrade::TankAbility2)
+	{
+		bIsSpecialDamageReductionUpgradeTaken = true;
+		DamageReduction = FMath::Max(0.f, DamageReduction - 0.3f);
+	}
+	else if (InUpgradeName == EUpgrade::TankAbility3) bIsSpecialIgnoreNegativeEffectsUpgradeTaken = true;
+	if (bIsSpecialDamageReductionUpgradeTaken && bIsSpecialIgnoreNegativeEffectsUpgradeTaken) DelegateManager->OnSpecialUpgradeAdded.RemoveAll(this);
+}
+
+void ATank::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
+{
+	if (bIsSpecialIgnoreNegativeEffectsUpgradeTaken) return;
+	Super::AI_ReceiveStunEffect(bHitByOtherAI, InEffectDuration, InDamage, InHitDirection);
+}
+
+void ATank::AI_ReceiveEmpEffect(const float InEffectDuration)
+{
+	if (bIsSpecialIgnoreNegativeEffectsUpgradeTaken) return;
+	Super::AI_ReceiveEmpEffect(InEffectDuration);
+}
+
 bool ATank::P_GetIsLeftOrRightInputNotPressed()
 {
 	return !P_InputManager->IsPressed(FKey("LeftMouseButton")) && !P_InputManager->IsPressed(FKey("RightMouseButton"));
@@ -116,9 +160,12 @@ float ATank::P_GetStompSize()
 void ATank::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
+	if (!bIsSpecialDamageReductionUpgradeTaken) DelegateManager->OnSpecialUpgradeAdded.RemoveAll(this);
 	Super::P_Setup();
-	if (AI_Shield) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::AI_TankShield, AI_Shield);
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &ATank::SetIsActionInMotion);
+	if (!AI_Shield) return;
+	AI_ResetShield();
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::AI_TankShield, AI_Shield);
 }
 
 void ATank::P_SetupLeftClickInputStartedState()
@@ -183,6 +230,27 @@ void ATank::P_MakeCameraShake(const ECameraShake InCameraShakeName)
 	else Super::P_MakeCameraShake(InCameraShakeName);
 }
 
+void ATank::P_LegendarySlamStun(const FVector& InSlamLocation)
+{
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByProfile(Overlaps, InSlamLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(P_GetStompSize() * LegendaryStunRadiusMultiplier));
+	for (const FOverlapResult& Result : Overlaps)
+	{
+		TObjectPtr<AActor> Actor = Result.GetActor();
+		if (!Actor || !Actor->ActorHasTag("AliveEnemy")) continue;
+		FHitResult Hit;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+		Params.AddIgnoredActor(Actor);
+		if (GetWorld()->LineTraceSingleByChannel(Hit, InSlamLocation, Actor->GetActorLocation(), ECC_Visibility, Params)) continue;
+		if (const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(Actor))
+		{
+			UE_LOG(LogTemp, Error, TEXT("ENEMY GOT STUNNED: %s"), *Actor->GetName());
+			Enemy->AI_ReceiveStunEffect(false, LegendaryStunDuration, -1.f, FVector(NAN, NAN, NAN));
+		}
+	}
+}
+
 void ATank::P_StopMinigun()
 {
 	if (Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp)) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::ChargeUp);
@@ -196,6 +264,10 @@ void ATank::BeginPlay()
 	Super::BeginPlay();
 	if (MI_Slam) MID_Slam = UMaterialInstanceDynamic::Create(MI_Slam, this);
 	Cast<ATankWeapon>(Weapon)->OnAmmoEnded.BindUObject(this, &ATank::P_StopMinigun);
+	bIsSpecialDamageReductionUpgradeTaken = SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::TankAbility2, EUpgradeAttribute::Special1);
+	if (bIsSpecialDamageReductionUpgradeTaken) DamageReduction = FMath::Max(0.f, DamageReduction - 0.3f);
+	bIsSpecialIgnoreNegativeEffectsUpgradeTaken = SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::TankAbility3, EUpgradeAttribute::Special1);
+	if (!bIsSpecialDamageReductionUpgradeTaken || !bIsSpecialIgnoreNegativeEffectsUpgradeTaken) DelegateManager->OnSpecialUpgradeAdded.AddUObject(this, &ATank::AI_AddLegendaryUpgrade);
 }
 
 void ATank::Landed(const FHitResult& Hit)
@@ -215,11 +287,24 @@ void ATank::Landed(const FHitResult& Hit)
 		GetWorldTimerManager().SetTimer(SlamDecalHandle, this, &ATank::P_ProcessSlamDecal, 0.025f, true);
 	}
 	HandsAnimInstance->PlayMontage(EHandsAnimState::Slam);
-	P_StompImpact(GetSocketLocation("RootSocket"));
+	const FVector SlamLocation = GetSocketLocation("RootSocket");
+	P_StompImpact(SlamLocation);
+	if (SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::TankAbility3, EUpgradeAttribute::Special1)) P_LegendarySlamStun(SlamLocation);
 }
 
 void ATank::InitiateDeath()
 {
-	if (AI_Shield) GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::AI_TankShield, AI_Shield);
+	if (!bIsSpecialDamageReductionUpgradeTaken) DelegateManager->OnSpecialUpgradeAdded.RemoveAll(this);
+	if (AI_Shield)
+	{
+		AI_ResetShield();
+		GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::AI_TankShield, AI_Shield);
+	}
 	Super::InitiateDeath();
+}
+
+void ATank::SetActionSpeed(const float InSpeed)
+{
+	if (bIsSpecialIgnoreNegativeEffectsUpgradeTaken || InSpeed > 1.f) return;
+	Super::SetActionSpeed(InSpeed);
 }

@@ -33,6 +33,17 @@ void ADestructible::Init(const bool bInIsPlayerObject)
 	SetUpgradesApplication();
 }
 
+void ADestructible::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
+{
+	Super::InitWithProprietor(InProprietor);
+	Hp = Data->GetHp();
+	bIsAffectedByPhysics = Data->GetIsAffectedByPhysics();
+	bIsPlayerObject = InProprietor->GetIsHijacked();
+	Mesh->SetCollisionProfileName(Data->GetCollisionProfileName(bIsPlayerObject));
+	if (Data->GetIsLifeSpanImmediatelyAdded()) SetThisLifeSpan();
+	SetUpgradesApplication();
+}
+
 void ADestructible::ReceiveDamage(const float InDamage)
 {
 	Hp -= InDamage;

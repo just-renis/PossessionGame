@@ -146,6 +146,12 @@ void ATrickster::AI_DestroyVfxs()
 	AI_CloneAbilityRunVfx = nullptr;
 }
 
+void ATrickster::AI_ReceiveEmpEffect(const float InEffectDuration)
+{
+	if (DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility2, EUpgradeAttribute::Special1)) return;
+	Super::AI_ReceiveEmpEffect(InEffectDuration);
+}
+
 void ATrickster::AI_OnPlayerEnterPoisonGrenadeTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (IsActionsDisabled() || !OtherActor->ActorHasTag("Player")) return;
@@ -172,7 +178,7 @@ void ATrickster::BeginPlay()
 {
 	CharacterName = ECharacterType::Trickster;
 	Super::BeginPlay();
-	bIsCloneEnemyRunUpgradeTaken = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::TricksterAbility3, EUpgradeAttribute::Special1);
+	bIsCloneEnemyRunUpgradeTaken = SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::TricksterAbility3, EUpgradeAttribute::Special1);
 	if (bIsCloneEnemyRunUpgradeTaken) AssetsManager->AttachVfx(EVfx::AI_TricksterCloneAbilityRun, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &AI_CloneAbilityRunVfx, GetMesh(), FName("DeathSocket"));
 }
 
@@ -186,12 +192,6 @@ void ATrickster::InitiateDeath()
 {
 	AI_DestroyPoisonGrenadeTrigger();
 	Super::InitiateDeath();
-}
-
-void ATrickster::ReceiveEmpEffect(const float InEffectDuration)
-{
-	if (DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::TricksterAbility2, EUpgradeAttribute::Special1)) return;
-	Super::ReceiveEmpEffect(InEffectDuration);
 }
 
 void ATrickster::SetMoveMode(const EMoveMode InMoveMode)

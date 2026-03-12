@@ -25,10 +25,14 @@ class POSSESSIONGAME_API AShieldProjector : public ADestructible
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DissolveSfx;
 	UPROPERTY()
+	TObjectPtr<AEnemy> Proprietor;
+	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
+	void P_ShieldDestruction() const;
+
 	virtual void BeginPlay() override;
-	virtual void Init(const bool bInIsPlayerObject) override;
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	virtual void DestroyThis() override;
 	void ChangeProjectorCollisionState(const bool bState) const;
 	virtual void SetThisLifeSpan() override;

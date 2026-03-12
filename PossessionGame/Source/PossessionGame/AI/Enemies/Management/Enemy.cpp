@@ -202,10 +202,13 @@ void AEnemy::AI_SetRespawnRequest(const float InHpPercentage, const bool bIsCorr
 
 void AEnemy::AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection)
 {
-	InHitDirection.Z = 0.f;
-	GetCharacterMovement()->StopMovementImmediately();
-	if (!bHitByOtherAI) ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage, nullptr, nullptr);
-	LaunchCharacter(InHitDirection * (AI_Data ? AI_Data->GetBashImpulseForce() : 5000.f), true, true);
+	if (InDamage > 0.f && !bHitByOtherAI) ReceiveDamage(InDamage, EDamageReason::BreacherBashDamage, nullptr, nullptr);
+	if (!InHitDirection.ContainsNaN())
+	{
+		InHitDirection.Z = 0.f;
+		GetCharacterMovement()->StopMovementImmediately();
+		LaunchCharacter(InHitDirection * (AI_Data ? AI_Data->GetBashImpulseForce() : 5000.f), true, true);
+	}
 	ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Stun);
 }
 
@@ -286,6 +289,8 @@ void AEnemy::AI_SetUnHijackOutline(const bool bState)
 }
 
 void AEnemy::AI_ReduceHalfHp() { ReceiveDamage(MaxHp * 0.5f, EDamageReason::None, nullptr, nullptr); }
+
+void AEnemy::AI_ReceiveEmpEffect(const float InEffectDuration) { ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Emp); }
 
 void AEnemy::P_ReEnableRunIfToggleMode()
 {
@@ -519,8 +524,6 @@ void AEnemy::StopSound(const ESound InSoundName)
 	Sounds[InSoundName]->Stop();
 }
 
-void AEnemy::ReceiveEmpEffect(const float InEffectDuration) { ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Emp); }
-
 void AEnemy::EmpEffectEnded()
 {
 	bAffectedByEmp = false;
@@ -606,6 +609,14 @@ void AEnemy::Pull(const FVector& InPullLocation, const float InPullStrength)
 	if (Direction.Size() <= KINDA_SMALL_NUMBER) return;
 	Direction.Normalize();
 	AddMovementInput(Direction, InPullStrength);
+}
+
+void AEnemy::ApplyTankShieldActionSpeedDebuff()
+{
+			UE_LOG(LogTemp, Error, TEXT("DEBUFF ME: %s"), *GetName());
+	bTankShieldActionSpeedDebuff = true;
+	SetActionSpeed(ActionSpeed);
+	GetWorldTimerManager().SetTimer(AI_TankShieldActionSpeedDebuffHandle, this, &AEnemy::AI_TankShieldActionSpeedDebuffEnded, TankShieldActionSpeedDebuffDuration);
 }
 
 float AEnemy::AI_GetShootPause() { return AI_Data->GetShootPause(); }
@@ -1235,11 +1246,12 @@ void AEnemy::SetActionSpeed(const float InSpeed)
 {
 	if (!AI_Data || !AnimInstance || !Weapon) return;
 	ActionSpeed = InSpeed + AdditionalActionSpeedValue;
+	const float ModifiedActionSpeed = ActionSpeed * bTankShieldActionSpeedDebuff ? TankShieldActionSpeedDebuffPercentage : 1.f;
 	SetMaxWalkSpeed(CurrentMoveMode);
-	AnimInstance->SetGlobalPlayRate(ActionSpeed);
-	Weapon->SetReverseActionSpeed(1.f / ActionSpeed);
-	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ActionSpeed);
-	else if (Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->SetGlobalPlayRate(ActionSpeed);
+	AnimInstance->SetGlobalPlayRate(ModifiedActionSpeed);
+	Weapon->SetReverseActionSpeed(1.f / ModifiedActionSpeed);
+	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ModifiedActionSpeed);
+	else if (Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->SetGlobalPlayRate(ModifiedActionSpeed);
 }
 
 void AEnemy::Landed(const FHitResult& Hit)
@@ -1430,6 +1442,12 @@ void AEnemy::AI_AddWeakSpots()
 		WeakSpotMeshComponent->SetWorldScale3D(FVector(0.25f));
 		WeakSpots.Add(WeakSpotMeshComponent);
 	}
+}
+
+void AEnemy::AI_TankShieldActionSpeedDebuffEnded()
+{
+	bTankShieldActionSpeedDebuff = false;
+	SetActionSpeed(ActionSpeed);
 }
 
 void AEnemy::P_ChangeHoldingShootState(const bool bState)

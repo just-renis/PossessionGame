@@ -4,6 +4,8 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "Tank.generated.h"
 
+enum class EUpgrade : uint8;
+enum class EUpgradeAttribute : uint8;
 class APoolObject;
 
 UCLASS()
@@ -18,11 +20,20 @@ public:
 private:
 	ATank();
 
+	bool bIsSpecialDamageReductionUpgradeTaken = false;
+	bool bIsSpecialIgnoreNegativeEffectsUpgradeTaken = false;
 	int32 DecalLoopsCount = 0;
+	int32 AI_ShieldScalingLoopsCount = 0;
 	float DecalDissolveValue = 0.f;
+	float AI_ShieldScale = 3.f;
+	FTimerHandle AI_ShieldScalingHandle;
 	FTimerHandle SlamDecalHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Slam", meta = (AllowPrivateAccess = true))
 	float DecalLifespan = 4.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Slam", meta = (AllowPrivateAccess = true))
+	float LegendaryStunDuration = 4.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Slam", meta = (AllowPrivateAccess = true))
+	float LegendaryStunRadiusMultiplier = 1.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Slam", meta = (AllowPrivateAccess = true))
 	FVector DecalSize;
 	UPROPERTY(EditDefaultsOnly, Category = "Slam", meta = (AllowPrivateAccess = true))
@@ -48,6 +59,11 @@ private:
 	virtual void AI_PlaySpawnSound() override;
 	virtual void AI_PlayDeathSound() override;
 	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage) override;
+	void AI_ProcessShieldScaling();
+	void AI_ResetShield();
+	void AI_AddLegendaryUpgrade(const EUpgrade InUpgradeName, const EUpgradeAttribute InUpgradeAttribute);
+	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
+	virtual void AI_ReceiveEmpEffect(const float InEffectDuration) override;
 
 	bool P_GetIsLeftOrRightInputNotPressed();
 	virtual float P_GetStompDamage() override;
@@ -65,10 +81,12 @@ private:
 	virtual void P_WeaponShoot() override;
 	void P_ProcessSlamDecal();
 	virtual void P_MakeCameraShake(const ECameraShake InCameraShakeName) override;
+	void P_LegendarySlamStun(const FVector& InSlamLocation);
 	UFUNCTION()
 	void P_StopMinigun();
 	
 	virtual void BeginPlay() override;
 	virtual void Landed(const FHitResult& Hit) override;
 	virtual void InitiateDeath() override;
+	virtual void SetActionSpeed(const float InSpeed) override;
 };

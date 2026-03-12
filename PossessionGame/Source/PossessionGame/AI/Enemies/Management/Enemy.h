@@ -166,6 +166,7 @@ public:
 	void AI_SetHijackOutline(const bool bState);
 	virtual void AI_SetUnHijackOutline(const bool bState);
 	void AI_ReduceHalfHp();
+	virtual void AI_ReceiveEmpEffect(const float InEffectDuration);
 	virtual void AI_OnReachedNonEqsPoint() {}
 
 	virtual void P_RemoveReloadSound() {}
@@ -197,7 +198,6 @@ public:
 	virtual void ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent);
 	void PlaySound(const ESound InSoundName, const bool bIsCallbackRequired = false);
 	void StopSound(const ESound InSoundName);
-	virtual void ReceiveEmpEffect(const float InEffectDuration);
 	virtual void EmpEffectEnded();
 	void ChangeOverlappingPoisonAreasInState(const bool bState);
 	void SetMovementSpeedMultiplier(const float InMultiplier);
@@ -207,6 +207,7 @@ public:
 	void RemoveSlowingStacks();
 	void RemoveActiveWraithTrap(const float InEffectDuration);
 	void Pull(const FVector& InPullLocation, const float InPullStrength);
+	void ApplyTankShieldActionSpeedDebuff();
 protected:
 	bool bIsInputLocked = true;
 	bool bCanReload = true;
@@ -222,11 +223,14 @@ protected:
 	bool bIsJumpPrimaryAnim = true;
 	bool bIsSlidePrimaryAnim = true;
 	bool bIsBoss = false;
+	bool bTankShieldActionSpeedDebuff = false;
 	float MaxHp;
 	float CurrentHp;
 	float DamageReduction = 1.f;
 	float WraithTrapActionSpeedReduction = 0.f;
 	float ActionSpeed = 1.f;
+	float TankShieldActionSpeedDebuffPercentage = 0.5f;
+	float TankShieldActionSpeedDebuffDuration = 5.f;
 	int32 SlowingStacks = 0;
 	int32 BoostedAttacksAmount = 0;
 	ECharacterType CharacterName;
@@ -358,7 +362,7 @@ protected:
 	virtual void ApplyEmpEffect(const float InEffectDuration);
 	virtual void ReceiveBurnDamage();
 	void Heal(const float InHealAmount);
-	void SetActionSpeed(const float InSpeed);
+	virtual void SetActionSpeed(const float InSpeed);
 	virtual void Landed(const FHitResult& Hit) override;
 private:
 	bool bInUpgradeSelection = false;
@@ -416,6 +420,7 @@ private:
 	FTimerHandle AI_RespawnTimerHandle;
 	FTimerHandle AI_DisableHijackOutlineHandle;
 	FTimerHandle AI_DisableUnHijackOutlineHandle;
+	FTimerHandle AI_TankShieldActionSpeedDebuffHandle;
 	FTimerHandle P_DetectIfPlayerPointingAtOutlineObjectsHandle;
 	FTimerHandle P_TriggerCriticalDamageIndicatorHandle;
 	FTimerHandle P_DeathHandle;
@@ -585,6 +590,7 @@ private:
 	void AI_SetSpySnatchMarker(const bool bState);
 	void AI_ChangeWeakSpotsState(const bool bState);
 	void AI_AddWeakSpots();
+	void AI_TankShieldActionSpeedDebuffEnded();
 
 	int32 P_GetFirstSlotAbilityIndex() const { return P_FirstSlotAbilityIndex; }
 	int32 P_GetSecondSlotAbilityIndex() const { return P_SecondSlotAbilityIndex; }

@@ -1,6 +1,8 @@
 ﻿#include "ShieldProjector.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
+#include "Engine/OverlapResult.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DestructibleData.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
@@ -22,15 +24,33 @@ AShieldProjector::AShieldProjector()
 	Sounds.Add(ESound::TankShieldDissolve, DissolveSfx);
 }
 
+void AShieldProjector::P_ShieldDestruction() const
+{
+	if (!Mesh) return;
+	TArray<FOverlapResult> Overlaps;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(Proprietor);
+	DrawDebugSphere(GetWorld(), Mesh->GetComponentLocation(), Mesh->Bounds.SphereRadius, 32, FColor::Green, false, 5.f);
+	if (GetWorld()->OverlapMultiByObjectType(Overlaps, Mesh->GetComponentLocation(), FQuat::Identity, ECC_Pawn, FCollisionShape::MakeSphere(Mesh->Bounds.SphereRadius), Params))
+	{
+		for (const FOverlapResult& Result : Overlaps)
+		{
+			AEnemy* Enemy = Cast<AEnemy>(Result.GetActor());
+			if (Enemy && Enemy->GetIsAlive()) Enemy->ApplyTankShieldActionSpeedDebuff();
+		}
+	}
+}
+
 void AShieldProjector::BeginPlay()
 {
 	Super::BeginPlay();
 	ProjectorMesh->OnComponentHit.AddDynamic(this, &AShieldProjector::OnProjectorLanded);
 }
 
-void AShieldProjector::Init(const bool bInIsPlayerObject)
+void AShieldProjector::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
 {
-	Super::Init(bInIsPlayerObject);
+	Super::InitWithProprietor(InProprietor);
+	Proprietor = InProprietor;
 	if (!ConnectionVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::TankShieldConnection,[this]() -> bool { return ProjectorMesh->GetVisibleFlag(); }, &ConnectionVfx, ProjectorMesh);
 	else ConnectionVfx->Activate();
 	ChangeProjectorCollisionState(true);
@@ -38,6 +58,7 @@ void AShieldProjector::Init(const bool bInIsPlayerObject)
 
 void AShieldProjector::DestroyThis()
 {
+	if (bIsPlayerObject && GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::TankAbility1, EUpgradeAttribute::Special1)) P_ShieldDestruction();
 	ChangeProjectorCollisionState(false);
 	Super::DestroyThis();
 }

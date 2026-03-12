@@ -19,6 +19,7 @@ public:
 	
 	void HandleDeactivation();
 	virtual void Init(bool bInIsPlayerObject) override;
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	void ReceiveDamage(const float InDamage);
 protected:
 	bool bIsPlayerObject;

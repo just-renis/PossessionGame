@@ -15,7 +15,7 @@ void UTankAbility1::AI_Execute()
 void UTankAbility1::P_Execute()
 {
 	//(void)DelegateManager->OnAchievementCompleted.ExecuteIfBound(EAchievement::FIRST_ACHIEVEMENT);
-	if (const TObjectPtr<APoolObject> ShieldProjector = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::TankShieldProjector, Proprietor->GetActorLocation())) ShieldProjector->Init();
+	if (const TObjectPtr<APoolObject> ShieldProjector = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::TankShieldProjector, Proprietor->GetActorLocation())) ShieldProjector->InitWithProprietor(Proprietor);
 	Super::P_Execute();
 }
 

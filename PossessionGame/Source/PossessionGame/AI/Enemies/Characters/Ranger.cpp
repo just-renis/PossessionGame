@@ -171,7 +171,7 @@ void ARanger::BeginPlay()
 {
 	CharacterName = ECharacterType::Ranger;
 	Super::BeginPlay();
-	bIsMineSpecialUpgrade1Taken = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1);
+	bIsMineSpecialUpgrade1Taken = SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1);
 }
 
 void ARanger::EndPlay(const EEndPlayReason::Type EndPlayReason)

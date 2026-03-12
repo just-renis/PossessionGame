@@ -46,6 +46,7 @@ private:
 	void AI_TryTriggeringPoisonGrenadeLaunch();
 	void AI_DestroyPoisonGrenadeTrigger() const;
 	virtual void AI_DestroyVfxs() override;
+	virtual void AI_ReceiveEmpEffect(const float InEffectDuration) override;
 	UFUNCTION()
 	void AI_OnPlayerEnterPoisonGrenadeTrigger(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -57,7 +58,6 @@ private:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void InitiateDeath() override;
-	virtual void ReceiveEmpEffect(const float InEffectDuration) override;
 	virtual void SetMoveMode(const EMoveMode InMoveMode) override;
 	virtual void AllDisablingActionsFinished() override;
 };

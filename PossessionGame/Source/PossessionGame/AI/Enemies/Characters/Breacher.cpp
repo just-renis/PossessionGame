@@ -229,7 +229,7 @@ float ABreacher::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 {
 	if (!bIsHijacked)
 	{
-		if (bIsBashing && GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility2, EUpgradeAttribute::Special1)) return 0.f;
+		if (bIsBashing && SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility2, EUpgradeAttribute::Special1)) return 0.f;
 		if (bImmuneToExplosions && DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) return 0.f;
 	}
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
@@ -239,8 +239,8 @@ void ABreacher::BeginPlay()
 {
 	CharacterName = ECharacterType::Breacher;
 	Super::BeginPlay();
-	bImmuneToExplosions = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility3, EUpgradeAttribute::Special1);
-	bAI_ShootSpeedDoubled = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility1, EUpgradeAttribute::Special1);
+	bImmuneToExplosions = SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility3, EUpgradeAttribute::Special1);
+	bAI_ShootSpeedDoubled = SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility1, EUpgradeAttribute::Special1);
 }
 
 void ABreacher::DetonateDynamites() { DelegateManager->OnDetonateDynamites.Broadcast(); }
