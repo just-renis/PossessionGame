@@ -279,6 +279,8 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> WraithBurnExplosionSfx;
 	UPROPERTY()
+	TObjectPtr<USaveSlotManager> SaveSlotManager;
+	UPROPERTY()
 	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
@@ -560,8 +562,6 @@ private:
 	TObjectPtr<UMaterialInstanceDynamic> MID_Burn;
 	UPROPERTY()
 	TObjectPtr<UCameraShakeBase> MinionBossLaserShakeInstance;
-	UPROPERTY()
-	TObjectPtr<USaveSlotManager> SaveSlotManager;
 	UPROPERTY()
 	TArray<TObjectPtr<UStaticMeshComponent>> WeakSpots;
 

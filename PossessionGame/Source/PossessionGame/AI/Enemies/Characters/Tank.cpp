@@ -28,6 +28,10 @@ void ATank::AI_SpawnShield()
 	if (!AI_Shield) return;
 	AI_Shield->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("DeathSocket"));
 	AI_Shield->Init(false);
+	if (SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::TankAbility1, EUpgradeAttribute::Special1))
+	{
+		
+	}
 }
 
 void ATank::P_Shoot()
