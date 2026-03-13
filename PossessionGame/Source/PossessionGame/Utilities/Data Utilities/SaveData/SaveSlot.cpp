@@ -1,5 +1,6 @@
 ﻿#include "SaveSlot.h"
 #include "MetaSaveSlot.h"
+#include "RunSaveSlot.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerLevelData.h"
 #include "PossessionGame/Enums/EPlayerLevelUpgradeId.h"
@@ -49,8 +50,9 @@ float USaveSlot::GetPlayerLevelPureGlobalDamageBonus() const
 
 float USaveSlot::GetPlayerLevelAllGlobalDamageBonus() const
 {
-	if (!IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FourthOptionA)) return GetPlayerLevelPureGlobalDamageBonus();
-	return GetPlayerLevelPureGlobalDamageBonus() + GameInstance->GetSubsystem<UPlayerDataManager>()->GetRecentHijackBoost();
+	const float SecretBoostDamage = GameInstance ? GameInstance->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f : 0.f;
+	if (!IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FourthOptionA)) return GetPlayerLevelPureGlobalDamageBonus() + SecretBoostDamage;
+	return GetPlayerLevelPureGlobalDamageBonus() + GameInstance->GetSubsystem<UPlayerDataManager>()->GetRecentHijackBoost() + SecretBoostDamage;
 }
 
 float USaveSlot::GetPlayerLevelAllGlobalHpBonus(const float InMaxHp) const

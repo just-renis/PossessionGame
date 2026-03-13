@@ -7,7 +7,6 @@
 #include "PossessionGame/Enums/EPlayerLevelUpgradeId.h"
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Projectiles/Throwables/BreacherBarrel.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
@@ -74,9 +73,7 @@ void ASpyWeapon::P_DealDamageThroughWeakPoint(const FHitResult& InHitResult)
 	const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionB);
 	const bool bIsUpgradeSelectedEightOptionA = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::EighthOptionA);
 	
-	const float SecretBoostDamage = DefaultHitScanDamage + DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
-
-	const float AfterUpgradeApplianceDamage = SecretBoostDamage + P_UpgradeDamageAppliance();
+	const float AfterUpgradeApplianceDamage = DefaultHitScanDamage + P_UpgradeDamageAppliance();
 	
 	float AfterPlayerLevelAllGlobalDamage = AfterUpgradeApplianceDamage + P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 	

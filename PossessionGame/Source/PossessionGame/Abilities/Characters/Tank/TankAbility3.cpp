@@ -9,6 +9,7 @@ void UTankAbility3::P_Execute()
 {
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->SetInputState(true);
+	Proprietor->P_ToggleChargeMinigun(false);
 	Proprietor->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::TankSlamJump);
 	const FVector LaunchVelocity = Proprietor->GetActorForwardVector() * ForwardImpulseStrength + FVector::UpVector * UpImpulseStrength;
 	Proprietor->LaunchCharacter(LaunchVelocity, true, true);

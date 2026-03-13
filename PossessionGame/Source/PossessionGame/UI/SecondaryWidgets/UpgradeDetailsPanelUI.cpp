@@ -408,6 +408,48 @@ FText UUpgradeDetailsPanelUI::GetSpecialUpgradeText(const EUpgradeAttribute InUp
 				default: break;
 			}
 			break;
+		case EUpgrade::TankAbility1:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return FText::Format(NSLOCTEXT("ST_Localization", "TankAbilitySpecial1.1", "{0}WHEN THE SHIELD IS DESTROYED, ALL ENEMIES INSIDE IT RECEIVE{1}ACTION SPEED FOR{2}SECS. DOES NOT STACK.{3}"),
+						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(false) + " -50% </><UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(false) + " 5 </><UpgradeAttributeText>"), FText::FromString("</>"));
+					}
+					return FText::Format(NSLOCTEXT("ST_Localization", "TankAbilitySpecial1.2", "{0}TANK’S SHIELD GRADUALLY EXPANDS OVER{1}SECS, REACHING UP TO{2}ITS ORIGINAL SIZE.{3}"),
+					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(true) + " 5 </><UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(true) + " 1.5X </><UpgradeAttributeText>"), FText::FromString("</>"));
+				default: break;
+			}
+			break;
+		case EUpgrade::TankAbility2:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return FText::Format(NSLOCTEXT("ST_Localization", "TankAbilitySpecial2.1", "{0}WHEN THE EFFECT ENDS, IT EXPLODES FROM ITS CENTER, DEALING DAMAGE AND KNOCKING BACK NEARBY ENEMIES.{1}"),
+						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+					}
+					return FText::Format(NSLOCTEXT("ST_Localization", "TankAbilitySpecial2.2", "{0}TANK RECEIVES{1}REDUCED DAMAGE FROM ALL SOURCES.{2}"),
+					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(true) + " 30% </><UpgradeAttributeText>"), FText::FromString("</>"));
+				default: break;
+			}
+			break;
+		case EUpgrade::TankAbility3:
+			switch (InUpgradeAttribute)
+			{
+				case EUpgradeAttribute::Special1:
+					if (!bForEnemy)
+					{
+						return FText::Format(NSLOCTEXT("ST_Localization", "TankAbilitySpecial3.1", "{0}ENEMIES WITHIN{1}THE CURRENT SLAM RADIUS ARE STUNNED FOR{2}SECS.{3}"),
+						FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(false) + " 1.5X </><UpgradeAttributeText>"), FText::FromString("</>" + GetRichTextTag(false) + " 4 </><UpgradeAttributeText>"), FText::FromString("</>"));
+					}
+					return FText::Format(NSLOCTEXT("ST_Localization", "TankAbilitySpecial3.2", "{0}TANK IGNORES ALL NEGATIVE DISABLING EFFECTS, LIKE STUN, EMP, AND ACTION SPEED REDUCTION.{1}"),
+					FText::FromString("<UpgradeAttributeText>"), FText::FromString("</>"));
+				default: break;
+			}
+			break;
 		default: ;
 	}
 	return FText();

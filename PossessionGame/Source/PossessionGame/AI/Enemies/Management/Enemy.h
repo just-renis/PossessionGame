@@ -188,7 +188,7 @@ public:
 	void SetIsAllowedToShoot(const bool bState) { bAllowedToShoot = bState; }
 	void AddActiveWraithTrap() { ActiveWraithTrapCount++; }
 	void SubtractBoostedAttack() { BoostedAttacksAmount--; }
-	void SetInputState(const bool bIsLocked) { bIsInputLocked = bIsLocked; }
+	virtual void SetInputState(const bool bIsLocked) { bIsInputLocked = bIsLocked; }
 	void SetDamageReduction(const float InValue) { DamageReduction = InValue; }
 	void SetIsActionInMotion(const bool bState);
 	virtual void Tick(const float DeltaTime) override;

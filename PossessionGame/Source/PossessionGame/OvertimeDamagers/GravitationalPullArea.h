@@ -14,10 +14,16 @@ class POSSESSIONGAME_API AGravitationalPullArea : public AOvertimeDamager
 
 	AGravitationalPullArea();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Legendary Explosion", meta = (AllowPrivateAccess = true))
+	float DefaultLegendaryExplosionDamage = 50.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Legendary Explosion", meta = (AllowPrivateAccess = true))
+	float KnockbackStrength = 3000.f;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> PassiveSfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> ItselfVfx;
+	UPROPERTY()
+	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
@@ -26,5 +32,6 @@ class POSSESSIONGAME_API AGravitationalPullArea : public AOvertimeDamager
 	virtual void Disable(const bool bHide) override;
 	virtual void Setup(const bool bInIsPlayerObject, const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData, const EDamageReason InDamageReason) override;
 	virtual void SetupEffectStrength(const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData) override;
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	void PlaySound(const ESound InSoundName);
 };

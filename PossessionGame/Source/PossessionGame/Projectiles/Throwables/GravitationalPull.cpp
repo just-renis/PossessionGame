@@ -26,7 +26,7 @@ void AGravitationalPull::OnImpact(const FHitResult& InHit)
 {
 	Super::OnImpact(InHit);
 	const TObjectPtr<AOvertimeDamager> GravitationalPullArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::TankGravitationalPullArea, InHit.Location + FVector::UpVector, InHit.Normal.Rotation()));
-	GravitationalPullArea->Init();
+	GravitationalPullArea->InitWithProprietor(Proprietor);
 	GravitationalPullArea->Setup(true, Data->GetDamageOverTimeData(), EDamageReason::None);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::TankGravitationalPull, this);
 }

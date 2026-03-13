@@ -65,9 +65,10 @@ void AWraithMeteorProjectile::Landed()
 	if (!Data || !Proprietor) return;
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::WraithMeteorLandCameraShake);
 	Damage = DefaultDamage = Data->GetDamage();
-	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
+	const TObjectPtr<USaveSlotManager> SaveSlotManager = GetGameInstance()->GetSubsystem<USaveSlotManager>();
+	const TObjectPtr<URunSaveSlot> RunSaveSlot = SaveSlotManager->GetRunSaveSlot();
 	Damage += RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::WraithAbility3, EUpgradeAttribute::FlatDamage, bIsHijacked);
-	if (bIsHijacked) Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelPureGlobalDamageBonus();
+	if (bIsHijacked) Damage += DefaultDamage * SaveSlotManager->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 	else
 	{
 		const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(EUpgrade::WraithAbility3, EUpgradeAttribute::DamagePercentage, bIsHijacked);

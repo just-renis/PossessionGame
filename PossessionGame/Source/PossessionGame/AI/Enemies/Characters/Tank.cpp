@@ -52,6 +52,28 @@ void ATank::P_InitiateThrowGravitationalPull()
 	Cast<ATankWeapon>(Weapon)->P_BallRelease();
 }
 
+void ATank::P_ToggleChargeMinigun(const bool bState)
+{
+	if (Weapon->GetCurrentAmmoAmount() <= 0) return;
+	if (bState)
+	{
+		if (!Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp) && !Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot))
+		{
+			AssetsManager->RemoveStoredSound(ESound::TankWeaponChargeDown);
+			AssetsManager->PlaySound2D(ESound::TankWeaponChargeUp, true);
+			Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::ChargeUp);
+		}
+	}
+	else P_StopChargingMinigun();
+}
+
+void ATank::SetInputState(const bool bIsLocked)
+{
+	Super::SetInputState(bIsLocked);
+	if (!P_InputManager) return;
+	if (!bIsLocked && P_InputManager->IsPressed(FKey("LeftMouseButton"))) P_ToggleChargeMinigun(true);
+}
+
 ATank::ATank()
 {
 	SpawnSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("SpawnSfx"));
@@ -142,9 +164,10 @@ void ATank::AI_ReceiveEmpEffect(const float InEffectDuration)
 	Super::AI_ReceiveEmpEffect(InEffectDuration);
 }
 
-bool ATank::P_GetIsLeftOrRightInputNotPressed()
+bool ATank::P_GetIsLeftMouseInputNotPressed() const
 {
-	return !P_InputManager->IsPressed(FKey("LeftMouseButton")) && !P_InputManager->IsPressed(FKey("RightMouseButton"));
+	if (bIsInputLocked) return true;
+	return !P_InputManager->IsPressed(FKey("LeftMouseButton"));
 }
 
 float ATank::P_GetStompDamage()
@@ -186,27 +209,12 @@ void ATank::P_Destroy()
 	Weapon->AttachToSocket(GetMesh());
 }
 
-void ATank::P_ToggleChargeMinigun(const bool bState)
-{
-	if (Weapon->GetCurrentAmmoAmount() <= 0) return;
-	if (bState)
-	{
-		if (!Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp) && !Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::Shoot))
-		{
-			AssetsManager->RemoveStoredSound(ESound::TankWeaponChargeDown);
-			AssetsManager->PlaySound2D(ESound::TankWeaponChargeUp, true);
-			Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::ChargeUp);
-		}
-	}
-	else P_StopChargingMinigun();
-}
-
 void ATank::P_StopChargingMinigun()
 {
 	AssetsManager->RemoveStoredSound(ESound::TankWeaponChargeUp);
 	AssetsManager->PlaySound2D(ESound::TankWeaponChargeDown, true);
 	if (Weapon->GetAnimInstance()->IsPlaying(EWeaponAnimState::ChargeUp)) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::ChargeUp);
-	else if (P_GetIsLeftOrRightInputNotPressed()) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::Shoot);
+	else if (P_GetIsLeftMouseInputNotPressed()) Weapon->GetAnimInstance()->StopMontage(EWeaponAnimState::Shoot);
 }
 
 void ATank::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::TankProjectile); }

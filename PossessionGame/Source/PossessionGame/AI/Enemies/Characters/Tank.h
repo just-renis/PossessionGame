@@ -17,6 +17,9 @@ public:
 	
 	virtual void P_Shoot() override;
 	void P_InitiateThrowGravitationalPull();
+	void P_ToggleChargeMinigun(const bool bState);
+
+	void SetInputState(const bool bIsLocked) override;
 private:
 	ATank();
 
@@ -65,7 +68,7 @@ private:
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 	virtual void AI_ReceiveEmpEffect(const float InEffectDuration) override;
 
-	bool P_GetIsLeftOrRightInputNotPressed();
+	bool P_GetIsLeftMouseInputNotPressed() const;
 	virtual float P_GetStompDamage() override;
 	virtual float P_GetStompSize() override;
 	
@@ -76,7 +79,6 @@ private:
 	virtual void P_BindQuickMeleeAction() override {}
 	virtual void P_BindSlideAction() override {}
 	virtual void P_Destroy() override;
-	void P_ToggleChargeMinigun(const bool bState);
 	void P_StopChargingMinigun();
 	virtual void P_WeaponShoot() override;
 	void P_ProcessSlamDecal();

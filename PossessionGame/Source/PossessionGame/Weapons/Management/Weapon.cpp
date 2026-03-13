@@ -318,9 +318,7 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	const bool bIsUpgradeSelected = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::FifthOptionB);
 	const bool bIsUpgradeSelectedEightOptionA = SaveSlot->IsPlayerLevelUpgradeSelected(EPlayerLevelUpgradeId::EighthOptionA);
 	
-	const float SecretBoostDamage = DefaultHitScanDamage + DefaultHitScanDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
-
-	const float AfterUpgradeApplianceDamage = SecretBoostDamage + P_UpgradeDamageAppliance();
+	const float AfterUpgradeApplianceDamage = DefaultHitScanDamage + P_UpgradeDamageAppliance();
 	
 	float AfterPlayerLevelAllGlobalDamage = AfterUpgradeApplianceDamage + P_ReceiveHitScanDamage() * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 	

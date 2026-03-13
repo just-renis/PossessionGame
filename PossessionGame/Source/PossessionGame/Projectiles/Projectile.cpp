@@ -68,9 +68,11 @@ void AProjectile::SetDirection(const FVector& InDirection) const { MovementCompo
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+	if (GetInstigator()) { Mesh->IgnoreActorWhenMoving(GetInstigator(), true); }
 	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	UpgradeManager = GetWorld()->GetSubsystem<UUpgradeManager>();
 	Mesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	Mesh->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlap);
 }
 
 void AProjectile::PlaySound(const ESound InSoundName) { Sounds[InSoundName]->Sound ? Sounds[InSoundName]->Play() : AssetsManager->ConfigureSound(Sounds[InSoundName], nullptr, InSoundName); }
@@ -228,6 +230,19 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	if (!ProjectileData.bIsPlayerProjectile && OtherActor->ActorHasTag("Player")) DealDamageToSentientActor(ProjectileData.bIsPlayerProjectile, OtherActor, Hit);
 }
 
+void AProjectile::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor == this || OtherActor == nullptr || ProjectileData.bIsPlayerProjectile) return;
+	DestroyThis();
+	if (!ProjectileData.bIsProjectileDealingDamageItself) return;
+	if (OtherActor->ActorHasTag("Destructible"))
+	{
+		DealDamageToSentientActor(ProjectileData.bIsPlayerProjectile, OtherActor, SweepResult);
+		return;
+	}
+	if (OtherActor->ActorHasTag("Player")) DealDamageToSentientActor(ProjectileData.bIsPlayerProjectile, OtherActor, SweepResult);
+}
+
 EDamageReason AProjectile::GetDamageReason() const { return ProjectileData.DamageReason; }
 
 void AProjectile::AI_SetupUpgradesAppliance()
@@ -282,7 +297,6 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 		P_SetupUpgradesAppliance();
 		P_VariationDamageAppliance();
 		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
-		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
 	}
 	else AI_SetupUpgradesAppliance();
 }

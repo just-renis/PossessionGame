@@ -2,12 +2,15 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "Engine/OverlapResult.h"
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DamageOverTimeData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
+#include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
@@ -38,6 +41,27 @@ void AGravitationalPullArea::DealOvertimeDamage()
 
 void AGravitationalPullArea::Disable(const bool bHide)
 {
+	const TObjectPtr<USaveSlotManager> SaveSlotManager = GetGameInstance()->GetSubsystem<USaveSlotManager>();
+	//if (SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::TankAbility2, EUpgradeAttribute::Special1))
+//	{
+		const float AreaRadius = GetCollisionComponent()->GetScaledSphereRadius();
+		const float LegendaryExplosionDamage = DefaultLegendaryExplosionDamage + DefaultLegendaryExplosionDamage * SaveSlotManager->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
+		UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), LegendaryExplosionDamage, LegendaryExplosionDamage * 0.25f, GetActorLocation(), AreaRadius * 0.25f,
+		AreaRadius, 1.f, UDamageType::StaticClass(), TArray<AActor*>(), this, Proprietor->GetController(), ECC_GameTraceChannel4);
+		TArray<FOverlapResult> Overlaps;
+		GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(AreaRadius));
+		for (const FOverlapResult& Result : Overlaps)
+		{
+			TObjectPtr<AActor> Actor = Result.GetActor();
+			if (!Actor) continue;
+			ACharacter* Character = Cast<ACharacter>(Result.GetActor());
+			if (!Character) continue;
+			FVector Direction = Character->GetActorLocation() - GetActorLocation();
+			Direction.Z *= 0.2f;
+			Direction.Normalize();
+			Character->LaunchCharacter(Direction * KnockbackStrength, true, false);
+		}
+//	}
 	if (PassiveSfx) PassiveSfx->Deactivate();
 	if (ItselfVfx) ItselfVfx->DeactivateImmediate();
 	Super::Disable(bHide);
@@ -63,6 +87,12 @@ void AGravitationalPullArea::SetupEffectStrength(const TObjectPtr<UDamageOverTim
 {
 	const float EffectStrengthIncrease = 1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TankAbility2, EUpgradeAttribute::EffectStrength, bIsPlayer) * 0.01f;
 	EffectStrength = InDamageOverTimeData->GetEffectStrength() * EffectStrengthIncrease;
+}
+
+void AGravitationalPullArea::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
+{
+	Super::InitWithProprietor(InProprietor);
+	Proprietor = InProprietor;
 }
 
 void AGravitationalPullArea::PlaySound(const ESound InSoundName)

@@ -3,8 +3,6 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DamageOverTimeData.h"
 #include "PossessionGame/Enums/EDamageReason.h"
-#include "PossessionGame/Enums/EVariation.h"
-#include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -14,7 +12,7 @@ void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDam
 	bIsActive = true;
 	bIsPlayer = bInIsPlayerObject;
 	Damage = DefaultDamage = InDamageOverTimeData->GetDamage();
-	DamageBoostPercentage = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
+	DamageBoostPercentage = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 	DamageReason = InDamageReason;
 	DamageTick = DefaultDamageTick = InDamageOverTimeData->GetDamageTick();
 	EffectTick = InDamageOverTimeData->GetEffectDuration();
@@ -26,7 +24,7 @@ void AOvertimeDamager::Setup(const bool bInIsPlayerObject, const float InDamage,
 	bIsActive = true;
 	bIsPlayer = bInIsPlayerObject;
 	Damage = DefaultDamage = InDamage;
-	DamageBoostPercentage = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus() + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetSecretBoost(EVariation::SecretCrateRewardDamage) * 0.01f;
+	DamageBoostPercentage = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 	DamageReason = InDamageReason;
 	DamageTick = DefaultDamageTick = InDamageTick;
 	SetupRadiusAndTimers(InRadiusSize, InLifeSpan);
