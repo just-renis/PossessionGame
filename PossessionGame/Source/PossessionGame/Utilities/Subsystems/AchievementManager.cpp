@@ -13,7 +13,7 @@ void UAchievementManager::Init(const TObjectPtr<UDelegateManager>& InDelegateMan
 
 void UAchievementManager::UnlockAchievement(const EAchievement InAchievement)
 {
-/*	const IOnlineSubsystem* OSS = IOnlineSubsystem::Get();
+	const IOnlineSubsystem* OSS = IOnlineSubsystem::Get();
 	if (!OSS) return;
 	const IOnlineAchievementsPtr Achievements = OSS->GetAchievementsInterface();
 	if (!Achievements.IsValid()) return;
@@ -23,8 +23,13 @@ void UAchievementManager::UnlockAchievement(const EAchievement InAchievement)
 	if (!PlayerId.IsValid()) return;
 	const FString EnumString = UEnum::GetValueAsString(InAchievement);
 	const FString AchievementID = EnumString.RightChop(EnumString.Find(TEXT("::")) + 2);
-	FOnlineAchievementsWriteRef WriteObject = MakeShared<FOnlineAchievementsWrite>();
-	WriteObject->SetFloatStat(AchievementID, 100.f);
-	UE_LOG(LogTemp, Error, TEXT("UNLOCKED ACHIEVEMENT %s"), *AchievementID);
-	Achievements->WriteAchievements(*PlayerId, WriteObject, FOnAchievementsWrittenDelegate());*/
+	Achievements->QueryAchievements(*PlayerId, FOnQueryAchievementsCompleteDelegate::CreateLambda([Achievements, AchievementID](const FUniqueNetId& PlayerId, bool bWasSuccessful)
+	{
+		if (bWasSuccessful)
+		{
+			FOnlineAchievementsWriteRef WriteObject = MakeShared<FOnlineAchievementsWrite>();
+			WriteObject->SetFloatStat(AchievementID, 100.f);
+			Achievements->WriteAchievements(PlayerId, WriteObject, FOnAchievementsWrittenDelegate());
+		}
+	}));
 }
