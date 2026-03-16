@@ -58,7 +58,7 @@ void APossessionGameGameModeBase::LoadSettingsData()
 	}
 	else
 	{
-		const TObjectPtr<USettingsSave> SavedSettings = Cast<USettingsSave>(UGameplayStatics::CreateSaveGameObject(SettingsSaveClass));
+		const TObjectPtr<USettingsSave> SavedSettings = Cast<USettingsSave>(UGameplayStatics::CreateSaveGameObject(BaseModeData->GetSettingsSaveClass()));
 		UGameplayStatics::SaveGameToSlot(SavedSettings, SettingsSlot, 0);
 	}
 }
@@ -77,17 +77,17 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	(void)DelegateManager->RequestAddAbilitiesToUpgradePool.ExecuteIfBound(SaveSlot);
-	GetWorld()->GetSubsystem<UMarkerManager>()->Init(MarkerClass, MarkerTypes);
+	GetWorld()->GetSubsystem<UMarkerManager>()->Init(BaseModeData->GetMarkerClass(), BaseModeData->GetMarkerTypes());
 	LoadSettingsData();
 	GetWorld()->GetSubsystem<UVariationManager>()->Init(SaveSlot);
 	const TObjectPtr<UWidgetManager> WidgetManager = GetWorld()->GetSubsystem<UWidgetManager>();
-	WidgetManager->Init(WidgetClasses);
+	WidgetManager->Init(BaseModeData->GetWidgetClasses());
 	if (FShaderPipelineCache::NumPrecompilesRemaining() > 0) WidgetManager->GetWidget<ULoadingScreenUI>(EWidget::LoadingScreenUI)->Init(nullptr);
-	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(Upgrades);
+	GetWorld()->GetSubsystem<UUpgradeManager>()->Init(BaseModeData->GetUpgrades());
 	GetWorld()->GetSubsystem<UWaveManager>()->Init(DelegateManager, GameModesData);
-	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, TargetEQS);
-	GetWorld()->GetSubsystem<UPoolingManager>()->Init(PoolObjects, ThrowablesData);
-	GetWorld()->GetSubsystem<UPostProcessManager>()->Init(PostProcessMaterials);
+	GetWorld()->GetSubsystem<UEnemyCommunicator>()->Init(DelegateManager, BaseModeData->GetEQS());
+	GetWorld()->GetSubsystem<UPoolingManager>()->Init(BaseModeData->GetPoolObjects(), BaseModeData->GetThrowablesData());
+	GetWorld()->GetSubsystem<UPostProcessManager>()->Init(BaseModeData->GetPostProcessMaterials());
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->bShowMouseCursor = false;
 	PlayerController->SetInputMode(FInputModeGameOnly());
@@ -99,7 +99,7 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(RunSaveSlot->GetCurrentCharacter(), EGameMode::None, nullptr, nullptr);
 	}
-	else GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(CharacterToSpawn, EGameMode::None, nullptr, nullptr);
+	else GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(BaseModeData->GetCharacterToSpawn(), EGameMode::None, nullptr, nullptr);
 }
 
 void APossessionGameGameModeBase::SetRunStart() { RunStartTime = GetWorld()->GetTimeSeconds(); }

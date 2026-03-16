@@ -2,9 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "PossessionGame/Data Assets/Base Data Assets/BaseModeData.h"
 #include "PossessionGame/Utilities/Data Utilities/FPrefabCategoryData.h"
 #include "PossessionGameGameModeBase.generated.h"
 
+class UBaseModeData;
 class UThrowableData;
 class USaveSlot;
 enum class ECharacterType : uint8;
@@ -27,41 +29,20 @@ class POSSESSIONGAME_API APossessionGameGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
-	bool GetIsDebugModeEnabled() const { return bToggleDebugMode; }
+	bool GetIsDebugModeEnabled() const { return BaseModeData->GetIsDebugModeEnabled(); }
 	bool GetIsArenaMode() const { return bIsArenaMode; }
 	
 	TArray<TSubclassOf<APrefab>>* GetPrefabsByCategory(const EPrefabCategory Category);
 private:
 	bool bIsArenaMode = false;
 	float RunStartTime;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	bool bToggleDebugMode = false;
-	UPROPERTY(EditAnywhere, Category = "Character To Spawn", meta = (AllowPrivateAccess = true))
-	ECharacterType CharacterToSpawn;
-	UPROPERTY(EditAnywhere, Category = "Save Data", meta = (AllowPrivateAccess = true))
-	TSubclassOf<USettingsSave> SettingsSaveClass;
-	UPROPERTY(EditAnywhere, Category = "Classes", meta = (AllowPrivateAccess = true))
-	TSubclassOf<AMarker> MarkerClass;
-	UPROPERTY(EditAnywhere, Category = "EQS", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UEnvQuery> TargetEQS;
+	FTimerHandle PSOPrecachingHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UBaseModeData> BaseModeData;
 	UPROPERTY(EditAnywhere, Category = "Game Modes Manager", meta = (AllowPrivateAccess = true))
 	TMap<EGameMode, TObjectPtr<UGameModeData>> GameModesData;
 	UPROPERTY(EditAnywhere, Category = "Level Prefabs", meta = (AllowPrivateAccess = true))
 	TMap<EPrefabCategory, FPrefabCategoryData> Prefabs;
-	UPROPERTY(EditAnywhere, Category = "Post Process Manager", meta = (AllowPrivateAccess = true))
-	TMap<EPostProcessMaterial, TObjectPtr<UMaterialInterface>> PostProcessMaterials;
-	UPROPERTY(EditAnywhere, Category = "Pooling Manager", meta = (AllowPrivateAccess = true))
-	TMap<EPoolObject, TSubclassOf<APoolObject>> PoolObjects;
-	UPROPERTY(EditAnywhere, Category = "Pooling Manager", meta = (AllowPrivateAccess = true))
-	TMap<EPoolObject, TObjectPtr<UThrowableData>> ThrowablesData;
-	UPROPERTY(EditAnywhere, Category = "Widget Manager", meta = (AllowPrivateAccess = true))
-	TMap<EWidget, TSubclassOf<UUserWidget>> WidgetClasses;
-	UPROPERTY(EditAnywhere, Category = "Upgrades", meta = (AllowPrivateAccess = true))
-	TMap<EUpgrade, TObjectPtr<UUpgradeData>> Upgrades;
-	UPROPERTY(EditAnywhere, Category = "Markers", meta = (AllowPrivateAccess = true))
-	TMap<EMarkerType, TObjectPtr<UTexture2D>> MarkerTypes;
-	UPROPERTY()
-	FTimerHandle PSOPrecachingHandle;
 	
 	int32 GetRunFinishedTime() const;
 
