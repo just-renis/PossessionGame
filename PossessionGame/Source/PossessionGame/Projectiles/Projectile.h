@@ -28,6 +28,7 @@ public:
 	void SetDirection(const FVector& InDirection) const;
 protected:
 	bool bIsActive = true;
+	bool bIsProjectileDataBeenSetup = false;
 	float Damage;
 	float DefaultDamage;
 	FTimerHandle DestroyHandle;

@@ -41,6 +41,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 {
 	StartLocation = GetActorLocation();
 	ProjectileData = InProjectileData;
+	bIsProjectileDataBeenSetup = true;
 	Mesh->SetCollisionObjectType(ProjectileData.bIsPlayerProjectile ? ECC_GameTraceChannel1 : ECC_GameTraceChannel2);
 	SetupData(ProjectileData.bIsPlayerProjectile, InWhich);
 	if (!ProjectileData.bIsPlayerProjectile && MovementComponent)
@@ -68,7 +69,6 @@ void AProjectile::SetDirection(const FVector& InDirection) const { MovementCompo
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	if (GetInstigator()) { Mesh->IgnoreActorWhenMoving(GetInstigator(), true); }
 	AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	UpgradeManager = GetWorld()->GetSubsystem<UUpgradeManager>();
 	Mesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
@@ -191,6 +191,7 @@ void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnPr
 
 void AProjectile::DestroyThis()
 {
+	bIsProjectileDataBeenSetup = false;
 	bIsActive = false;
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTimeDilationChanged.RemoveAll(this);
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
@@ -200,7 +201,7 @@ void AProjectile::DestroyThis()
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor == this || OtherActor == nullptr) return;
+	if (OtherActor == this || OtherActor == nullptr || !bIsProjectileDataBeenSetup) return;
 	OnImpact(Hit);
 	if (ProjectileData.bProjectileDealsAreaDamage)
 	{
@@ -232,7 +233,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 
 void AProjectile::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor == this || OtherActor == nullptr || ProjectileData.bIsPlayerProjectile) return;
+	if (OtherActor == this || OtherActor == nullptr || ProjectileData.bIsPlayerProjectile || !bIsProjectileDataBeenSetup) return;
 	DestroyThis();
 	if (!ProjectileData.bIsProjectileDealingDamageItself) return;
 	if (OtherActor->ActorHasTag("Destructible"))

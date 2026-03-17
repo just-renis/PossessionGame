@@ -120,7 +120,8 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Trail }), EVfx::WraithBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Muzzle }), EVfx::WraithMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Impact }), EVfx::WraithBulletImpact },
-		{FPoolObjectPairWrapper({ EPoolObject::PyroBossProjectile, EVfxType::Trail }), EVfx::PyroBossProjectileTrail }
+		{FPoolObjectPairWrapper({ EPoolObject::PyroBossProjectile, EVfxType::Trail }), EVfx::PyroBossProjectileTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::SoldierBossProjectile, EVfxType::Trail }), EVfx::SoldierBossBulletTrail }
 	};
 	CharacterVfxCombinationsMap =
 	{
@@ -888,6 +889,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_PyroBossEnvironmentFire", EVfx::PyroBossEnvironmentFire);
 	VfxsMap.Add("PA_PyroBossFloorFireWarning", EVfx::PyroBossFloorFireWarning);
 	VfxsMap.Add("PA_PyroBossSendSignal", EVfx::PyroBossSendSignal);
+	VfxsMap.Add("PA_SoldierBossBulletTrail", EVfx::SoldierBossBulletTrail);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
