@@ -4,6 +4,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/SamuraiWeapon.h"
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
@@ -34,7 +35,8 @@ void ASamurai::BeginPlay()
 
 void ASamurai::SetupSamuraiHat()
 {
-	SamuraiHat = GetWorld()->SpawnActor<ADestructible>(SamuraiHatClass);
+	SamuraiHat = Cast<ADestructible>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::SamuraiHat));
+	SamuraiHat->Init(false);
 	AttachDestructible(SamuraiHat, "HatSocket");
 }
 

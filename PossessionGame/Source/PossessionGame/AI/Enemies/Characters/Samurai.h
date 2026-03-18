@@ -11,8 +11,8 @@ class POSSESSIONGAME_API ASamurai : public AEnemy
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TSubclassOf<ADestructible> SamuraiHatClass;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TSubclassOf<AActor> SamuraiHatClass;
 	UPROPERTY()
 	TObjectPtr<ADestructible> SamuraiHat;
 

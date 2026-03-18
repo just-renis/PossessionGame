@@ -22,7 +22,6 @@
 #include "PossessionGame/Data Assets/AI/Base Data/AICharacterData.h"
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerCharacterData.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
-#include "PossessionGame/Destructibles/Destructible.h"
 #include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EDisablingEffect.h"
@@ -1158,9 +1157,9 @@ void AEnemy::SetMaxWalkSpeed(const EMoveMode InMoveMode, float InNewSpeed)
 	if (AnimInstance) AnimInstance->SetMovementPlayRate(MovementSpeedMultiplier);
 }
 
-void AEnemy::AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const
+void AEnemy::AttachDestructible(const TObjectPtr<AActor>& Destructible, const FName SocketName) const
 {
-	Destructible->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+	Destructible->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
 }
 
 void AEnemy::HandleDeactivation()

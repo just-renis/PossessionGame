@@ -29,7 +29,6 @@ class UAIHpBarUI;
 class UWidgetComponent;
 class UPrimaryDataAssetsManager;
 enum class EVfx : uint16;
-class ADestructible;
 class ANavAreaModifier;
 class UAIPerceptionStimuliSourceComponent;
 class UCameraComponent;
@@ -350,7 +349,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void SetAnimInstance();
 	void SetMaxWalkSpeed(const EMoveMode InMoveMode, float InNewSpeed = -1.f);
-	void AttachDestructible(const TObjectPtr<ADestructible>& Destructible, const FName SocketName) const;
+	void AttachDestructible(const TObjectPtr<AActor>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
 	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
 	virtual void DestroyThis();
