@@ -1372,7 +1372,7 @@ void AEnemy::AI_StopAbilitiesEvents() const
 void AEnemy::AI_TimeDilationChange(const float InDilation) const
 {
 	if (!bIsAlive) return;
-	GetCharacterMovement()->SetComponentTickInterval(1.f / 30.f / InDilation);
+	GetCharacterMovement()->SetComponentTickInterval(1.f / MovementFramesPerSecond / InDilation);
 	GetMesh()->SetComponentTickInterval(1.f / 30.f / InDilation);
 }
 
@@ -2158,7 +2158,7 @@ void AEnemy::ToggleTimeDilation()
 
 void AEnemy::SetupMeshOptimization() const
 {
-	GetCharacterMovement()->SetComponentTickInterval(1.f / 30.f);
+	GetCharacterMovement()->SetComponentTickInterval(1.f / MovementFramesPerSecond);
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 	GetMesh()->bEnableUpdateRateOptimizations = true;
 	GetMesh()->SkipUpdateOverlapsOptimEnabled = true;

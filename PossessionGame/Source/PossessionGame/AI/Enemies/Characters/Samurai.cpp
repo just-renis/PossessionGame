@@ -29,6 +29,7 @@ void ASamurai::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::SamuraiProjectile)
 void ASamurai::BeginPlay()
 {
 	CharacterName = ECharacterType::Samurai;
+	MovementFramesPerSecond = 60.f;
 	Super::BeginPlay();
 	SetupSamuraiHat();
 }

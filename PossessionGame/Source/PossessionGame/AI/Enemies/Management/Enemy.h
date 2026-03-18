@@ -230,6 +230,7 @@ protected:
 	float ActionSpeed = 1.f;
 	float TankShieldActionSpeedDebuffPercentage = 0.5f;
 	float TankShieldActionSpeedDebuffDuration = 5.f;
+	float MovementFramesPerSecond = 30.f;
 	int32 SlowingStacks = 0;
 	int32 BoostedAttacksAmount = 0;
 	ECharacterType CharacterName;
@@ -388,6 +389,7 @@ private:
 	bool bHasBeenDamagedRecently = false;
 	bool bIsHijackAble = false;
 	bool bIsImmortal = false;
+	float P_BurnVfxRadiusValue = 4.f;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
 	float MeshEmissiveMaterialOpacityValue = 0.f;
@@ -399,7 +401,6 @@ private:
 	float SavedRespawnHpPercentage = 1.f;
 	float HijackDelayAnimationSpeed = 1.f;
 	float PoisonActionSpeedReduction = 0.f;
-	float P_BurnVfxRadiusValue = 4.f;
 	int32 P_FirstSlotAbilityIndex = 0;
 	int32 P_SecondSlotAbilityIndex = 1;
 	int32 OverlappingPoisonAreas = 0;
