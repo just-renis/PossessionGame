@@ -823,6 +823,7 @@ void AEnemy::P_Setup()
 	DisableSkeletalMesh();
 	GetCapsuleComponent()->SetCollisionProfileName("Player");
 	GetCharacterMovement()->SetComponentTickInterval(1.f / 60.f);
+	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 	DelegateManager->RequestCurrentCharacter.BindUObject(this, &AEnemy::GetCharacterName);
 	DelegateManager->ApplyUpgradeOnSelection.BindUObject(this, &AEnemy::P_ApplyUpgradeOnSelection);
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);

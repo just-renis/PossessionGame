@@ -230,7 +230,7 @@ protected:
 	float ActionSpeed = 1.f;
 	float TankShieldActionSpeedDebuffPercentage = 0.5f;
 	float TankShieldActionSpeedDebuffDuration = 5.f;
-	float MovementFramesPerSecond = 30.f;
+	float MovementFramesPerSecond = 60.f;
 	int32 SlowingStacks = 0;
 	int32 BoostedAttacksAmount = 0;
 	ECharacterType CharacterName;
