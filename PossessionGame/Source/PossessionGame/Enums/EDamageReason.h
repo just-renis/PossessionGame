@@ -16,5 +16,6 @@ enum class EDamageReason : uint8
     WraithDamage,
     WraithMolotovDamage,
     WraithEnemyMeteor,
-    WraithPlayerMeteor
+    WraithPlayerMeteor,
+    TankSlam
 };

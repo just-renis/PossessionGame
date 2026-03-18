@@ -496,6 +496,7 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 		}
 		else
 		{
+			ProcessKillDamageReason(InDamageReason);
 			InitiateDeath();
 			if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility1, EUpgradeAttribute::Special1) && BurningLogicData.GetIsBurning())
 			{
@@ -506,7 +507,6 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 				GetActorLocation(), MolotovExplosionRadius, MolotovExplosionRadius, 0.f, UDamageType::StaticClass(),
 				TArray<AActor*>{this}, this, GetController(), ECC_GameTraceChannel4);
 			}
-			ProcessKillDamageReason(InDamageReason);
 		}
 	}
 }
@@ -1171,7 +1171,7 @@ void AEnemy::HandleDeactivation()
 	GetMesh()->SetAnimInstanceClass(nullptr);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	GetMesh()->SetSimulatePhysics(true);
-	//GetMesh()->AddImpulse();
+	GetMesh()->SetAllPhysicsLinearVelocity(ImpulseAfterDeath, false);
 }
 
 void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->SetSkeletalMesh(AssetsManager->GetCharacterData(PrimaryDataAssetName).GetCharacterContainer()->CharacterMesh.Get()); }
@@ -2079,7 +2079,7 @@ void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float
 	}
 }
 
-void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
+void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason)
 {
 	switch (InDamageReason)
 	{
@@ -2091,6 +2091,7 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason) const
 			SaveSlotManager->GetSaveSlot()->ProgressVariationUnlock(EVariation::GuardianVariationGold, 1); break;
 		case EDamageReason::RangerGrenadeDamage: SaveSlotManager->GetSaveSlot()->ProgressVariationUnlock(EVariation::RangerVariationBlue, 1); break;
 		case EDamageReason::BreacherBashDamage: (void)DelegateManager->OnPlayerBashKill.ExecuteIfBound(); break;
+		case EDamageReason::TankSlam: ImpulseAfterDeath = FVector::UpVector * 500.f; break;
 		default: ;
 	}
 }

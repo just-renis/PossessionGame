@@ -447,6 +447,7 @@ private:
 	FTimerHandle BurningStateFinishHandle;
 	FTimerHandle GravitationalPullHandle;
 	FConductionLogicData ConductionLogicData;
+	FVector ImpulseAfterDeath;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
 	float HijackDelay = 0.5f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Hijack", meta = (AllowPrivateAccess = true))
@@ -663,7 +664,7 @@ private:
 	void ChangeXrayState(const bool bState);
 	void SetupUserSettings() const;
 	void ProcessDamageReason(const EDamageReason InDamageReason, const float InDamage);
-	void ProcessKillDamageReason(const EDamageReason InDamageReason) const;
+	void ProcessKillDamageReason(const EDamageReason InDamageReason);
 	void CheckIfFallOutOfWorld();
 	void SpawnCondenseMaterialsProcess();
 	void DestroyCondenseMaterialsProcess();

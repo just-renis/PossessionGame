@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Enums/EDamageReason.h"
+#include "PossessionGame/Interfaces/DamageReasonProvider.h"
 #include "Tank.generated.h"
 
 enum class EUpgrade : uint8;
@@ -9,7 +11,7 @@ enum class EUpgradeAttribute : uint8;
 class APoolObject;
 
 UCLASS()
-class POSSESSIONGAME_API ATank : public AEnemy
+class POSSESSIONGAME_API ATank : public AEnemy, public IDamageReasonProvider
 {
 	GENERATED_BODY()
 public:
@@ -18,7 +20,9 @@ public:
 	virtual void P_Shoot() override;
 	void P_InitiateThrowGravitationalPull();
 	void P_ToggleChargeMinigun(const bool bState);
-
+	
+	virtual EDamageReason GetDamageReason() const override { return EDamageReason::TankSlam; }
+	
 	void SetInputState(const bool bIsLocked) override;
 private:
 	ATank();
