@@ -30,6 +30,19 @@ class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 	FVector WaypointLocation = FVector::ZeroVector;
 	ETutorialBotExpression CurrentExpression;
 	EGameState CurrentGameState;
+	FTimerHandle HitVent1Handle;
+	FTimerHandle HitVent2Handle;
+	FTimerHandle HitVent3Handle;
+	FTimerHandle BreakVentHandle;
+	FTimerHandle LandOnHeadHandle;
+	FTimerHandle AnimFinishedHandle;
+	FTimerHandle TargetLocationUpdateHandle;
+	FTimerHandle ResetControlRigStateHandle;
+	FTimerHandle TabletVisibilityHandle;
+	FTimerHandle RandomBlinkHandle;
+	FTimerHandle EndBlinkHandle;
+	FTimerHandle CheckDistanceToTargetHandle;
+	FTimerHandle PressTabletHandle;
 	UPROPERTY(EditAnywhere, Category = "Mode", meta = (AllowPrivateAccess = true))
 	bool bIsArenaMode = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Expression | Random Blink", meta = (AllowPrivateAccess = true))
@@ -54,32 +67,6 @@ class POSSESSIONGAME_API ATutorialBot : public AInteractableObject
 	TObjectPtr<UTutorialBotAnimationInstance> AnimInstance;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_FaceExpression;
-	UPROPERTY()
-	FTimerHandle HitVent1Handle;
-	UPROPERTY()
-	FTimerHandle HitVent2Handle;
-	UPROPERTY()
-	FTimerHandle HitVent3Handle;
-	UPROPERTY()
-	FTimerHandle BreakVentHandle;
-	UPROPERTY()
-	FTimerHandle LandOnHeadHandle;
-	UPROPERTY()
-	FTimerHandle AnimFinishedHandle;
-	UPROPERTY()
-	FTimerHandle TargetLocationUpdateHandle;
-	UPROPERTY()
-	FTimerHandle ResetControlRigStateHandle;
-	UPROPERTY()
-	FTimerHandle TabletVisibilityHandle;
-	UPROPERTY()
-	FTimerHandle RandomBlinkHandle;
-	UPROPERTY()
-	FTimerHandle EndBlinkHandle;
-	UPROPERTY()
-	FTimerHandle CheckDistanceToTargetHandle;
-	UPROPERTY()
-	FTimerHandle PressTabletHandle;
 	UPROPERTY()
 	TObjectPtr<ATutorialDialogue> Dialogue;
 	UPROPERTY()

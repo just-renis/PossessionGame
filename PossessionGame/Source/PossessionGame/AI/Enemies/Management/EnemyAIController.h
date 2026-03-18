@@ -33,7 +33,6 @@ public:
 
 	void SetStateTreeCurrentEvent(const EStateTreeEvent InCurrentStateTreeEvent) { CurrentStateTreeEvent = InCurrentStateTreeEvent; }
 	void SetControlRigAvailabilityToggle(const bool bState) { bIsControlRigAvailableToToggle = bState; }
-	void SetEQSTargetLocation(const FVector& InLocation) const { EQSTarget->SetActorLocation(InLocation); }
 	void SetIsUsingEQS(const bool bState) { bIsUsingEQS = bState; }
 	void SetCustomFocusState(const bool bState) { bCustomFocusEnabled = bState; }
 	void SetShootCooldown(const float InValue);
@@ -48,19 +47,21 @@ public:
 	void SetTargetLocation(const FVector& InLocation);
 	virtual void ResetOnReachedNonEqsPoint() {}
 protected:
+	bool bIsControlRigAvailableToToggle = true;
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStateTreeComponent> StateTree;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
 	TObjectPtr<UEnemyCommunicator> EnemyCommunicator;
+	UPROPERTY()
+	TObjectPtr<AActor> EQSTarget;
 	
 	virtual void BeginPlay() override;
 	virtual void AdjustCustomFocus();
 	UFUNCTION()
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 private:
-	bool bIsControlRigAvailableToToggle = true;
 	bool bIsUsingEQS = true;
 	FTimerHandle AdjustCustomFocusHandle;
 	FTimerHandle OnLostSightOfPawnHandle;
@@ -94,8 +95,6 @@ private:
 	TObjectPtr<UAIPerceptionComponent> Perception;
 	UPROPERTY()
 	TObjectPtr<UAISenseConfig_Sight> SightConfig;
-	UPROPERTY()
-	TObjectPtr<AActor> EQSTarget;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;

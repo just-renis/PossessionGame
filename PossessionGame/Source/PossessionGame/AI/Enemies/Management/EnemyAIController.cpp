@@ -86,16 +86,24 @@ void AEnemyAIController::BeginPlay()
 
 void AEnemyAIController::AdjustCustomFocus()
 {
+	UE_LOG(LogTemp, Error, TEXT("AdjustCustomFocus 0"));
 	if (!Proprietor->GetIsActionInMotion())
 	{
+	UE_LOG(LogTemp, Error, TEXT("AdjustCustomFocus 1"));
 		FVector TargetLocation = bIsUsingEQS ? EnemyCommunicator->GetTargetLocation() : StateTreeData.GetMoveLocation();
-		if ((Proprietor->GetMoveMode() != EMoveMode::Walk || TargetLocation.ContainsNaN()) && bIsControlRigAvailableToToggle) Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
+		if ((Proprietor->GetMoveMode() != EMoveMode::Walk || TargetLocation.ContainsNaN()) && bIsControlRigAvailableToToggle)
+		{
+	UE_LOG(LogTemp, Error, TEXT("AdjustCustomFocus WRONG 1"));
+			Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
+		}
 		else
 		{
+	UE_LOG(LogTemp, Error, TEXT("AdjustCustomFocus CORRECT 1"));
 			if (bIsControlRigAvailableToToggle) Proprietor->GetAnimInstance()->SetIsControlRigEnabled(true);
 			const TObjectPtr<AEnemy> Player = EnemyCommunicator->GetTarget();
 			if (bPredictionEnabled && Player)
 			{
+	UE_LOG(LogTemp, Error, TEXT("AdjustCustomFocus WRONG 2"));
 				const FVector MuzzleLocation = Proprietor->GetWeapon()->GetSocketLocation("MuzzleSocket");
 				const FVector ToTarget = TargetLocation - MuzzleLocation;
 				const float Distance = ToTarget.Size();
@@ -117,8 +125,13 @@ void AEnemyAIController::AdjustCustomFocus()
 			}
 			else
 			{
+	UE_LOG(LogTemp, Error, TEXT("AdjustCustomFocus CORRECT 2"));
 				Proprietor->GetAnimInstance()->SetLookAtLocation(TargetLocation);
-				if (bCustomFocusEnabled) CustomFocusToLocation(TargetLocation);
+				if (bCustomFocusEnabled)
+				{
+	UE_LOG(LogTemp, Error, TEXT("AdjustCustomFocus CORRECT 3"));
+					CustomFocusToLocation(TargetLocation);
+				}
 			}
 		}
 	}
@@ -155,6 +168,7 @@ void AEnemyAIController::GetActorEyesViewPoint(FVector& OutLocation, FRotator& O
 
 void AEnemyAIController::CustomFocusToLocation(const FVector& InTargetLocation) const
 {
+	UE_LOG(LogTemp, Error, TEXT("CUSTOM FOCUS LOCATION"));
 	FRotator NewControlRotation = GetControlRotation();
 	NewControlRotation.Yaw = (InTargetLocation - GetPawn()->GetActorLocation()).GetSafeNormal2D().Rotation().Yaw;
 	GetPawn()->SetActorRotation(NewControlRotation);

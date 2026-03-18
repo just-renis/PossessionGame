@@ -27,7 +27,6 @@ struct POSSESSIONGAME_API FStateTreeData
 	void SetIsTargetInMySight(const bool bState) { bIsTargetInMySight = bState; }
 	void SetReloadDelay(const float InValue) { ReloadDelay = InValue; }
 	void SetShootCooldown(const float InValue) { ShootCooldown = InValue; }
-	void SetSearchLocation(const FVector InValue) { SearchLocation = InValue;}
 	void SetStateTreeRef(const TObjectPtr<UStateTreeComponent>& InStateTreeRef) { StateTree = InStateTreeRef; }
     void SetWeaponRef(const TObjectPtr<AWeapon>& InWeaponRef) { Weapon = InWeaponRef; }
     void SetTargetRef(const TObjectPtr<AActor>& InTargetRef) { Target = InTargetRef; }
@@ -48,8 +47,6 @@ private:
 	float ReloadDelay = 0.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	float ShootCooldown = 0.f;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	FVector SearchLocation = FVector::ZeroVector;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<AActor> Target;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
