@@ -48,8 +48,11 @@ public:
 	virtual void ResetOnReachedNonEqsPoint() {}
 protected:
 	bool bIsControlRigAvailableToToggle = true;
+	FTimerHandle OnLostSightOfPawnHandle;
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStateTreeComponent> StateTree;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	FStateTreeData StateTreeData;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
@@ -58,14 +61,16 @@ protected:
 	TObjectPtr<AActor> EQSTarget;
 	
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void AdjustCustomFocus();
+	void SetIsTargetInMySight(const bool bState);
+	virtual void OnLostSightOfPawn();
 	UFUNCTION()
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 private:
 	bool bIsUsingEQS = true;
-	FTimerHandle AdjustCustomFocusHandle;
-	FTimerHandle OnLostSightOfPawnHandle;
 	EStateTreeEvent CurrentStateTreeEvent;
+	FTimerHandle AdjustCustomFocusHandle;
 	FOnEqsTargetUpdate OnEqsTargetUpdate;
 	UPROPERTY(EditDefaultsOnly, Category = "Prediction", meta = (AllowPrivateAccess = true))
 	bool bPredictionEnabled = false;
@@ -89,21 +94,16 @@ private:
 	float VerticalDeltaAddition = 40.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Custom Focus", meta = (AllowPrivateAccess = true))
 	bool bCustomFocusEnabled = true;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	FStateTreeData StateTreeData;
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAIPerceptionComponent> Perception;
 	UPROPERTY()
 	TObjectPtr<UAISenseConfig_Sight> SightConfig;
 
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
 	void CustomFocusToLocation(const FVector& InTargetLocation) const;
 	void SetTarget(const TObjectPtr<AEnemy>& InTarget, const bool bIsTargetAcquiredForFirstTime);
-	void SetIsTargetInMySight(const bool bState);
 	void SetupEQSTarget();
 	void SetEQSTargetLocation();
 	void StopStateTreeLogic() const;
 	void StopStateTreeLogic(const bool bNeedCleanup) const;
-	void OnLostSightOfPawn();
 };

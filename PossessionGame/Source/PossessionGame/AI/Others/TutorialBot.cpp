@@ -48,7 +48,7 @@ void ATutorialBot::BeginPlay()
 	RetrieveWaypoints();
 	AnimInstance = Cast<UTutorialBotAnimationInstance>(Mesh->GetAnimInstance());
 	bIsTutorialFinished = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHijack.BindUObject(this, &ATutorialBot::SetPlayerRef);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHijack.AddUObject(this, &ATutorialBot::SetPlayerRef);
 	const int32 CurrentChapter = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetCurrentChapter();
 	CurrentGameState = bIsArenaMode ? EGameState::ArenaMode : (CurrentChapter > 1 ? EGameState::DuringGame : EGameState::PreGame);
 	if (!bIsTutorialFinished)
@@ -89,6 +89,7 @@ void ATutorialBot::BeginPlay()
 
 void ATutorialBot::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	DelegateManager->OnHijack.RemoveAll(this);
 	ClearTimers();
 	Super::EndPlay(EndPlayReason);
 }

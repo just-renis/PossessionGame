@@ -532,8 +532,8 @@ private:
 	TObjectPtr<UAIHpBarUI> AI_HpBar;
 	UPROPERTY()
 	TObjectPtr<UAIPerceptionStimuliSourceComponent> StimuliSource;
-	UPROPERTY()
-	TObjectPtr<ANavAreaModifier> NavAreaModifier;
+	//UPROPERTY()
+	//TObjectPtr<ANavAreaModifier> NavAreaModifier;
 	UPROPERTY()
 	TObjectPtr<APossessionGameGameModeBase> GameModeBase;
 	UPROPERTY()
@@ -623,7 +623,7 @@ private:
 	void P_InUpgradeSelection();
 	void P_TryInteracting();
 	void P_QuickMeleeAttack();
-	void P_SetupNavArea();
+	//void P_SetupNavArea();
 	void P_OnVariationSelection(const ECharacterType InCharacterType);
 	void P_OnAbilitiesOrLevelMenuSelectionEnd(const EWidget InWidgetName);
 	void P_ReceiveCurrentlySelectedVariation();

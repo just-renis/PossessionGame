@@ -3,6 +3,8 @@
 #include "Components/StateTreeComponent.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 
+FVector FStateTreeData::GetMoveLocation() const { return EQSTarget ? EQSTarget->GetActorLocation() : FVector(NAN, NAN, NAN); }
+
 void FStateTreeData::SetEQSPointLocation(const FVector InValue)
 {
 	EQSTarget->SetActorLocation(InValue);

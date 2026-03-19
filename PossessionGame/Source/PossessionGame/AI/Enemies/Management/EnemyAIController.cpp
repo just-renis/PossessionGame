@@ -84,6 +84,13 @@ void AEnemyAIController::BeginPlay()
 	SetupEQSTarget();
 }
 
+void AEnemyAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearTimer(AdjustCustomFocusHandle);
+	GetWorld()->GetTimerManager().ClearTimer(OnLostSightOfPawnHandle);
+	Super::EndPlay(EndPlayReason);
+}
+
 void AEnemyAIController::AdjustCustomFocus()
 {
 	if (!Proprietor->GetIsActionInMotion())
@@ -124,6 +131,10 @@ void AEnemyAIController::AdjustCustomFocus()
 	}
 }
 
+void AEnemyAIController::SetIsTargetInMySight(const bool bState) { StateTreeData.SetIsTargetInMySight(bState); }
+
+void AEnemyAIController::OnLostSightOfPawn() { SetIsTargetInMySight(false); }
+
 void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (Stimulus.WasSuccessfullySensed())
@@ -131,19 +142,11 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 		GetWorld()->GetTimerManager().ClearTimer(OnLostSightOfPawnHandle);
 		if (!StateTreeData.GetIsTargetInMySight())
 		{
-			GetStateTreeData().TriggerEvent(EStateTreeEvent::MoveDirectly);
 			Proprietor->GetAnimInstance()->SetIsTargetInSight(true);
 			SetIsTargetInMySight(true);
 		}
 	}
 	else GetWorld()->GetTimerManager().SetTimer(OnLostSightOfPawnHandle, this, &AEnemyAIController::OnLostSightOfPawn, 0.3f, false);
-}
-
-void AEnemyAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	GetWorld()->GetTimerManager().ClearTimer(AdjustCustomFocusHandle);
-	GetWorld()->GetTimerManager().ClearTimer(OnLostSightOfPawnHandle);
-	Super::EndPlay(EndPlayReason);
 }
 
 void AEnemyAIController::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
@@ -166,8 +169,6 @@ void AEnemyAIController::SetTarget(const TObjectPtr<AEnemy>& InTarget, const boo
 	StateTreeData.SetTargetRef(InTarget);
 	if (!bIsTargetAcquiredForFirstTime) SetupStateTree();
 }
-
-void AEnemyAIController::SetIsTargetInMySight(const bool bState) { StateTreeData.SetIsTargetInMySight(bState); }
 
 void AEnemyAIController::SetupEQSTarget()
 {
@@ -202,10 +203,4 @@ void AEnemyAIController::StopStateTreeLogic(const bool bNeedCleanup) const
 		StateTree->StopLogic(TEXT("Stopping State Tree"));
 		if (bNeedCleanup) StateTree->Cleanup();
 	}
-}
-
-void AEnemyAIController::OnLostSightOfPawn()
-{
-	GetStateTreeData().TriggerEvent(EStateTreeEvent::MoveWithPathfinder);
-	SetIsTargetInMySight(false);
 }

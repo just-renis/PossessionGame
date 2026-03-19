@@ -56,7 +56,6 @@ DECLARE_DELEGATE_OneParam(FOnXpReceived, const float);
 DECLARE_DELEGATE_OneParam(FApplySecretBoostHealth, const int32);
 DECLARE_DELEGATE_OneParam(FOnOpenUnlockAbilityPopup, const int32);
 DECLARE_DELEGATE_OneParam(FOnChargeTerminalModeCompletion, const int32);
-DECLARE_DELEGATE_OneParam(FOnHijack, const TObjectPtr<AActor>&);
 DECLARE_DELEGATE_OneParam(FLoadLevel, const FLoadLevelData);
 DECLARE_DELEGATE_OneParam(FRequestAddAbilitiesToUpgradePool, const TObjectPtr<USaveSlot>&);
 DECLARE_DELEGATE_OneParam(FOnVariationSelectionEnd, const ECharacterType);
@@ -108,6 +107,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemyDeathOccurred, const TObjectPtr<AAct
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTimeDilationChanged, const float);
 DECLARE_MULTICAST_DELEGATE_OneParam(FUpdateRangerMinesRadius, const bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FTriggerFireFloors, const TArray<int32>&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHijack, const TObjectPtr<AActor>&);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponAmmoChangeTwoParams, int32, int32);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnVariationSelection, const ECharacterType, const EVariation);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AEnemy>&, bool);
@@ -155,7 +155,6 @@ public:
 	FApplySecretBoostHealth ApplySecretBoostHealth;
 	FOnOpenUnlockAbilityPopup OnOpenUnlockAbilityPopup;
 	FOnChargeTerminalModeCompletion OnChargeTerminalModeCompletion;
-	FOnHijack OnHijack;
 	FLoadLevel LoadLevel;
 	FRequestAddAbilitiesToUpgradePool RequestAddAbilitiesToUpgradePool;
 	FOnVariationSelectionEnd OnVariationSelectionEnd;
@@ -206,6 +205,7 @@ public:
 	FOnTimeDilationChanged OnTimeDilationChanged;
 	FUpdateRangerMinesRadius UpdateRangerMinesRadius;
 	FTriggerFireFloors TriggerFireFloors;
+	FOnHijack OnHijack;
 	FOnWeaponAmmoChangeTwoParams OnWeaponAmmoChangeTwoParams;
 	FOnVariationSelection OnVariationSelection;
 	FOnTargetChange OnTargetChange;

@@ -18,7 +18,6 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "PossessionGame/Abilities/Management/Ability.h"
-#include "PossessionGame/AI/Navigation/NavAreaModifier.h"
 #include "PossessionGame/Data Assets/AI/Base Data/AICharacterData.h"
 #include "PossessionGame/Data Assets/Player/Base Data/PlayerCharacterData.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_CharacterContainer.h"
@@ -424,7 +423,7 @@ void AEnemy::PossessedBy(AController* NewController)
 	GetWorldTimerManager().SetTimer(AI_TriggerDeathVoiceLineHandle, this, &AEnemy::AI_TriggerDeathVoiceLine, 1.f);
 	P_Setup();
 	DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(NSLOCTEXT("ST_Localization", "Hijacked", "Hijacked"));
-	(void)DelegateManager->OnHijack.ExecuteIfBound(this);
+	DelegateManager->OnHijack.Broadcast(this);
 	SetInputState(false);
 }
 
@@ -845,7 +844,7 @@ void AEnemy::P_Setup()
 	P_LoadDataIfNotLoaded(CharacterName);
 	bUseControllerRotationYaw = true;
 	SetupStimuliSource();
-	P_SetupNavArea();
+	//P_SetupNavArea();
 	P_SetupData();
 	P_SetupCharacterMovement();
 	Camera->SetActive(true);
@@ -916,7 +915,7 @@ void AEnemy::P_Destroy()
 	Weapon->SetToOriginalSettings();
 	Weapon->DestroyThis();
 	GetMesh()->SetCollisionProfileName("Enemy");
-	NavAreaModifier->Destroy();
+	//NavAreaModifier->Destroy();
 	if (bPlayerDied)
 	{
 		SaveSlotManager->GetSaveSlot()->SaveSlot();
@@ -1723,11 +1722,11 @@ void AEnemy::P_QuickMeleeAttack()
 	P_ProcessMeleeAttack();
 }
 
-void AEnemy::P_SetupNavArea()
+/*void AEnemy::P_SetupNavArea()
 {
 	NavAreaModifier = GetWorld()->SpawnActor<ANavAreaModifier>(P_NavAreaDefaultClass, GetActorLocation(), GetActorRotation());
 	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-}
+}*/
 
 void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
 {
