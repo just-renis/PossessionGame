@@ -1,15 +1,9 @@
 ﻿#include "SamuraiAnimationInstance.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
-#include "PossessionGame/Weapons/Management/Weapon.h"
 
-void USamuraiAnimationInstance::AssignOnMontageEnd()
+void USamuraiAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted)
 {
-	Super::AssignOnMontageEnd();
-	OnMontageBlendingOut.AddDynamic(this, &USamuraiAnimationInstance::OnSamuraiMontageEnd);
-}
-
-void USamuraiAnimationInstance::OnSamuraiMontageEnd(UAnimMontage* Montage, bool bIsInterrupted)
-{
-	if (bIsInterrupted) return;
-	Proprietor->GetWeapon()->AI_Shoot();
+	Super::OnMontageEnd(InMontage, bIsInterrupted);
+	if (!IsMontage(EEnemyAnimState::Slash, InMontage)) return;
+	if (!Proprietor->IsActionsDisabled()) Proprietor->SetIsActionInMotion(false);
 }

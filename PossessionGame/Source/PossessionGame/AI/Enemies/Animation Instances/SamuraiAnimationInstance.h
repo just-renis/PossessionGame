@@ -9,7 +9,5 @@ class POSSESSIONGAME_API USamuraiAnimationInstance : public UEnemyAnimationInsta
 {
 	GENERATED_BODY()
 
-	virtual void AssignOnMontageEnd() override;
-	UFUNCTION()
-	void OnSamuraiMontageEnd(UAnimMontage* Montage, bool bIsInterrupted);
+	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted) override;
 };

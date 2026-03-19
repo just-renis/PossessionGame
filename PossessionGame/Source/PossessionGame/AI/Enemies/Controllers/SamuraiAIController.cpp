@@ -9,6 +9,7 @@ void ASamuraiAIController::BeginPlay()
 	Super::BeginPlay();
 	bIsControlRigAvailableToToggle = false;
 	SetIsUsingEQS(false);
+	GetWorldTimerManager().SetTimer(CheckDistanceBetweenTargetHandle, this, &ASamuraiAIController::CheckDistanceBetweenTarget, 0.1f, true);
 	EQSTarget = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetTarget();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHijack.AddUObject(this, &ASamuraiAIController::SetPlayerTarget);
 }
@@ -16,6 +17,7 @@ void ASamuraiAIController::BeginPlay()
 void ASamuraiAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnHijack.RemoveAll(this);
+	GetWorldTimerManager().ClearTimer(CheckDistanceBetweenTargetHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -56,4 +58,16 @@ void ASamuraiAIController::SetPlayerTarget(const TObjectPtr<AActor>& InPlayerTar
 	EQSTarget = InPlayerTarget;
 	GetStateTreeData().SetEQSTargetRef(EQSTarget);
 	GetStateTreeData().TriggerEvent(EStateTreeEvent::MoveWithPathfinder);
+}
+
+void ASamuraiAIController::CheckDistanceBetweenTarget() const
+{
+	if (!EQSTarget || !Proprietor || Proprietor->GetIsActionInMotion()) return;
+	const float Distance = FVector::DistSquared(Proprietor->GetActorLocation(), EQSTarget->GetActorLocation());
+	if (Distance <= FMath::Square(100.f))
+	{
+	UE_LOG(LogTemp, Error, TEXT("IM DOING THE ANIMATION: %f"), Distance);
+		Proprietor->SetIsActionInMotion(true);
+		Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Slash);
+	}
 }
