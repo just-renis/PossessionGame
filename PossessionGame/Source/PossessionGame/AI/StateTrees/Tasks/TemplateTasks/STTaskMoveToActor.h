@@ -57,9 +57,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Move Mode Switch", meta = (EditCondition = "bMoveModeSwitchEnabled"))
 	EGenericAICheck Operator = EGenericAICheck::Equal;
 
-	static EStateTreeRunStatus PathFollowingRequestResultHandling(EPathFollowingRequestResult::Type MoveResult);
-	FAIMoveRequest SetupAndGetMoveReq();
 	bool DistanceTestCondition(const float InDistance) const;
+	EStateTreeRunStatus PathFollowingRequestResultHandling(EPathFollowingRequestResult::Type MoveResult);
+	FAIMoveRequest SetupAndGetMoveReq();
 	EMoveMode ReceiveMoveMode() const;
 	
 	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result);

@@ -131,6 +131,7 @@ void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus St
 		GetWorld()->GetTimerManager().ClearTimer(OnLostSightOfPawnHandle);
 		if (!StateTreeData.GetIsTargetInMySight())
 		{
+			GetStateTreeData().TriggerEvent(EStateTreeEvent::MoveDirectly);
 			Proprietor->GetAnimInstance()->SetIsTargetInSight(true);
 			SetIsTargetInMySight(true);
 		}
@@ -203,4 +204,8 @@ void AEnemyAIController::StopStateTreeLogic(const bool bNeedCleanup) const
 	}
 }
 
-void AEnemyAIController::OnLostSightOfPawn() { SetIsTargetInMySight(false); }
+void AEnemyAIController::OnLostSightOfPawn()
+{
+	GetStateTreeData().TriggerEvent(EStateTreeEvent::MoveWithPathfinder);
+	SetIsTargetInMySight(false);
+}

@@ -24,6 +24,21 @@ void USTTaskMoveToActor::ExitState(FStateTreeExecutionContext& Context, const FS
 	Super::ExitState(Context, Transition);
 }
 
+bool USTTaskMoveToActor::DistanceTestCondition(const float InDistance) const
+{
+	switch (Operator)
+	{
+		case EGenericAICheck::Less: return InDistance < Distance;
+		case EGenericAICheck::LessOrEqual: return InDistance <= Distance;
+		case EGenericAICheck::Equal: return FMath::IsNearlyEqual(InDistance, Distance, 0.001f);
+		case EGenericAICheck::NotEqual: return !FMath::IsNearlyEqual(InDistance, Distance, 0.001f);
+		case EGenericAICheck::GreaterOrEqual: return InDistance >= Distance;
+		case EGenericAICheck::Greater: return InDistance > Distance;
+		case EGenericAICheck::IsTrue: return Distance != 0.f;
+		default: return false;
+	}
+}
+
 EStateTreeRunStatus USTTaskMoveToActor::PathFollowingRequestResultHandling(EPathFollowingRequestResult::Type MoveResult)
 {
 	if (MoveResult == EPathFollowingRequestResult::AlreadyAtGoal) return EStateTreeRunStatus::Succeeded;
@@ -52,29 +67,6 @@ FAIMoveRequest USTTaskMoveToActor::SetupAndGetMoveReq()
 	MoveReq.SetReachTestIncludesGoalRadius(false);
 	MoveReq.SetCanStrafe(bStrafe);
 	return MoveReq;
-}
-
-bool USTTaskMoveToActor::DistanceTestCondition(const float InDistance) const
-{
-	switch (Operator)
-	{
-		case EGenericAICheck::Less:
-			return InDistance < Distance;
-		case EGenericAICheck::LessOrEqual:
-			return InDistance <= Distance;
-		case EGenericAICheck::Equal:
-			return FMath::IsNearlyEqual(InDistance, Distance, 0.001f);
-		case EGenericAICheck::NotEqual:
-			return !FMath::IsNearlyEqual(InDistance, Distance, 0.001f);
-		case EGenericAICheck::GreaterOrEqual:
-			return InDistance >= Distance;
-		case EGenericAICheck::Greater:
-			return InDistance > Distance;
-		case EGenericAICheck::IsTrue:
-			return Distance != 0.f;
-		default:
-			return false;
-	}
 }
 
 EMoveMode USTTaskMoveToActor::ReceiveMoveMode() const
