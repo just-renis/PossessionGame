@@ -64,10 +64,8 @@ void ASamuraiAIController::CheckDistanceBetweenTarget() const
 {
 	if (!EQSTarget || !Proprietor || Proprietor->GetIsActionInMotion()) return;
 	const float Distance = FVector::DistSquared(Proprietor->GetActorLocation(), EQSTarget->GetActorLocation());
-	if (Distance <= FMath::Square(100.f))
+	if (Distance <= FMath::Square(DistanceBeforeSlashingInCentimetres))
 	{
-	UE_LOG(LogTemp, Error, TEXT("IM DOING THE ANIMATION THE LOGGGGGGGGGGGGGING: %f"), Distance);
-		if (EQSTarget) UE_LOG(LogTemp, Error, TEXT("RALFAS"));
 		Proprietor->SetIsActionInMotion(true);
 		Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Slash);
 	}

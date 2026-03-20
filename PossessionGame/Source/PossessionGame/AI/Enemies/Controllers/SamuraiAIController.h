@@ -8,9 +8,11 @@ UCLASS()
 class POSSESSIONGAME_API ASamuraiAIController : public AEnemyAIController
 {
 	GENERATED_BODY()
-
+	
 	bool bIsMovingDirectly = false;
 	FTimerHandle CheckDistanceBetweenTargetHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Slash Data", meta = (AllowPrivateAccess = true))
+	float DistanceBeforeSlashingInCentimetres = 200.f;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
