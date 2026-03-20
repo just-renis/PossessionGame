@@ -29,5 +29,5 @@ void USamuraiAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsIn
 {
 	Super::OnMontageEnd(InMontage, bIsInterrupted);
 	if (!IsMontage(EEnemyAnimState::Slash, InMontage)) return;
-	if (!Proprietor->IsActionsDisabled()) Proprietor->SetIsActionInMotion(false);
+	Proprietor->SetIsAnimActionInMotion(false);
 }

@@ -62,11 +62,11 @@ void ASamuraiAIController::SetPlayerTarget(const TObjectPtr<AActor>& InPlayerTar
 
 void ASamuraiAIController::CheckDistanceBetweenTarget() const
 {
-	if (!EQSTarget || !Proprietor || Proprietor->GetIsActionInMotion()) return;
+	if (!EQSTarget || !Proprietor || Proprietor->GetIsAnimActionInMotion()) return;
 	const float Distance = FVector::DistSquared(Proprietor->GetActorLocation(), EQSTarget->GetActorLocation());
 	if (Distance <= FMath::Square(DistanceBeforeSlashingInCentimetres))
 	{
-		Proprietor->SetIsActionInMotion(true);
+		Proprietor->SetIsAnimActionInMotion(true);
 		Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Slash);
 	}
 }

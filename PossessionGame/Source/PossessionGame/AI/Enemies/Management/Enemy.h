@@ -116,6 +116,7 @@ public:
 	bool GetIsHijacked() const { return bIsHijacked; }
 	bool GetCanReload() const { return bCanReload; }
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
+	bool GetIsAnimActionInMotion() const { return bIsAnimActionInMotion; }
 	bool GetIsAbilityInAction() const { return bIsAbilityInAction; }
 	bool GetIsStomping() const { return bIsStomping; }
 	bool GetIsHijackActionViable() const { return bCanHijackOtherEnemy; }
@@ -184,6 +185,7 @@ public:
 	virtual FLinearColor GetDamageNumberColor() const { return DamageNumberColor; }
 
 	void SetIsAbilityInAction(const bool bState) { bIsAbilityInAction = bState; }
+	void SetIsAnimActionInMotion(const bool bState) { bIsAnimActionInMotion = bState; }
 	void SetIsAllowedToShoot(const bool bState) { bAllowedToShoot = bState; }
 	void AddActiveWraithTrap() { ActiveWraithTrapCount++; }
 	void SubtractBoostedAttack() { BoostedAttacksAmount--; }
@@ -214,6 +216,7 @@ protected:
 	bool bCanShoot = false;
 	bool bAllowedToShoot = true;
 	bool bIsActionInMotion = false;
+	bool bIsAnimActionInMotion = false;
 	bool bShootPauseActive = false;
 	bool bIsAbilityInAction = false;
 	bool bAffectedByEmp = false;
