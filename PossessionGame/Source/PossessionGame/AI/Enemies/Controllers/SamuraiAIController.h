@@ -8,8 +8,10 @@ UCLASS()
 class POSSESSIONGAME_API ASamuraiAIController : public AEnemyAIController
 {
 	GENERATED_BODY()
-	
+
 	bool bIsMovingDirectly = false;
+	float StuckTimer = 0.f;
+	float StuckThreshold = 0.3f;
 	FTimerHandle CheckDistanceBetweenTargetHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Slash Data", meta = (AllowPrivateAccess = true))
 	float DistanceBeforeSlashingInCentimetres = 200.f;
@@ -19,5 +21,7 @@ class POSSESSIONGAME_API ASamuraiAIController : public AEnemyAIController
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus) override;
 	virtual void OnLostSightOfPawn() override;
 	void SetPlayerTarget(const TObjectPtr<AActor>& InPlayerTarget);
-	void CheckDistanceBetweenTarget() const;
+	void CheckDistanceBetweenTarget();
+	void CheckIfStuck();
+	virtual void SetIsInJumpMode(const bool bState) override;
 };

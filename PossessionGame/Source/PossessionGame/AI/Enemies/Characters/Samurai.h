@@ -18,6 +18,7 @@ class POSSESSIONGAME_API ASamurai : public AEnemy
 
 	virtual void AI_Shoot() override;
 	virtual void AI_SetupWeapon() override;
+	virtual void AI_PlayShootMontage() override;
 
 	virtual void P_Setup() override;
 	virtual void P_WeaponShoot() override;
@@ -26,5 +27,5 @@ class POSSESSIONGAME_API ASamurai : public AEnemy
 	void SetupSamuraiHat();
 	virtual void HandleDeactivation() override;
 	virtual void SetAnimInstance() override;
-	virtual void AI_PlayShootMontage() override;
+	virtual void Landed(const FHitResult& Hit) override;
 };

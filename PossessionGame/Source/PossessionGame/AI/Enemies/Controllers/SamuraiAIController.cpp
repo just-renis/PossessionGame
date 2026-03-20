@@ -1,4 +1,6 @@
 ﻿#include "SamuraiAIController.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Navigation/PathFollowingComponent.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -28,10 +30,8 @@ void ASamuraiAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus 
 		GetWorld()->GetTimerManager().ClearTimer(OnLostSightOfPawnHandle);
 		if (!StateTreeData.GetIsTargetInMySight())
 		{
-			//UE_LOG(LogTemp, Error, TEXT("%s PLAYER: %f, ENEMY: %f"), *Proprietor->GetName(), EQSTarget->GetActorLocation().Z, Proprietor->GetActorLocation().Z);
 			if (FMath::IsNearlyEqual(EQSTarget->GetActorLocation().Z, Proprietor->GetActorLocation().Z, 5.f))
 			{
-				UE_LOG(LogTemp, Error, TEXT("MOVE DIRECTLY %s"), *Proprietor->GetName());
 				bIsMovingDirectly = true;
 				GetStateTreeData().TriggerEvent(EStateTreeEvent::MoveDirectly);
 			}
@@ -46,7 +46,6 @@ void ASamuraiAIController::OnLostSightOfPawn()
 {
 	if (bIsMovingDirectly)
 	{
-			UE_LOG(LogTemp, Error, TEXT("PATHFINDER %s"), *Proprietor->GetName());
 		GetStateTreeData().TriggerEvent(EStateTreeEvent::MoveWithPathfinder);
 		bIsMovingDirectly = false;
 	}
@@ -60,13 +59,39 @@ void ASamuraiAIController::SetPlayerTarget(const TObjectPtr<AActor>& InPlayerTar
 	GetStateTreeData().TriggerEvent(EStateTreeEvent::MoveWithPathfinder);
 }
 
-void ASamuraiAIController::CheckDistanceBetweenTarget() const
+void ASamuraiAIController::CheckDistanceBetweenTarget()
 {
 	if (!EQSTarget || !Proprietor || Proprietor->GetIsAnimActionInMotion()) return;
+	CheckIfStuck();
 	const float Distance = FVector::DistSquared(Proprietor->GetActorLocation(), EQSTarget->GetActorLocation());
 	if (Distance <= FMath::Square(DistanceBeforeSlashingInCentimetres))
 	{
 		Proprietor->SetIsAnimActionInMotion(true);
 		Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Slash);
 	}
+}
+
+void ASamuraiAIController::CheckIfStuck()
+{
+	const FVector Direction = EQSTarget->GetActorLocation() - Proprietor->GetActorLocation();
+	const bool bIsNearPlayer = Direction.SizeSquared() <= DistanceBeforeSlashingInCentimetres * DistanceBeforeSlashingInCentimetres;
+	if (!bIsNearPlayer && Proprietor->GetVelocity().Size() < 10.f)
+	{
+		StuckTimer += 0.1f;
+		if (StuckTimer >= StuckThreshold)
+		{
+			StopStateTreeLogic(false);
+			Proprietor->GetCharacterMovement()->Velocity += Direction.GetSafeNormal2D() * 500.f;
+			Proprietor->Jump();
+			bIsInJumpMode = true;
+			StuckTimer = 0.f;
+		}
+	}
+	else StuckTimer = 0.f;
+}
+
+void ASamuraiAIController::SetIsInJumpMode(const bool bState)
+{
+	Super::SetIsInJumpMode(bState);
+	ResumeLogic();
 }

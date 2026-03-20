@@ -1,5 +1,6 @@
 ﻿#include "Samurai.h"
 #include "PossessionGame/AI/Enemies/Animation Instances/SamuraiAnimationInstance.h"
+#include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Destructibles/Destructible.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWeapon.h"
@@ -17,11 +18,20 @@ void ASamurai::AI_SetupWeapon()
 	Super::AI_SetupWeapon();
 }
 
+void ASamurai::AI_PlayShootMontage()
+{
+	if (AnimInstance->IsMontageExisting(EEnemyAnimState::Shoot) && !AnimInstance->IsPlaying(EEnemyAnimState::Shoot))
+	{
+		AnimInstance->PlayMontage(EEnemyAnimState::Shoot);
+		Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::AIShoot);
+	}
+}
+
 void ASamurai::P_Setup()
 {
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
-	SamuraiHat->HandleDeactivation();
+	//SamuraiHat->HandleDeactivation();
 }
 
 void ASamurai::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::SamuraiProjectile); }
@@ -30,7 +40,7 @@ void ASamurai::BeginPlay()
 {
 	CharacterName = ECharacterType::Samurai;
 	Super::BeginPlay();
-	SetupSamuraiHat();
+	//SetupSamuraiHat();
 }
 
 void ASamurai::SetupSamuraiHat()
@@ -42,17 +52,14 @@ void ASamurai::SetupSamuraiHat()
 
 void ASamurai::HandleDeactivation()
 {
-	if (!SamuraiHat->GetIsDeactivated()) SamuraiHat->HandleDeactivation();
+	//if (!SamuraiHat->GetIsDeactivated()) SamuraiHat->HandleDeactivation();
 	Super::HandleDeactivation();
 }
 
 void ASamurai::SetAnimInstance() { AnimInstance = Cast<USamuraiAnimationInstance>(GetMesh()->GetAnimInstance()); }
 
-void ASamurai::AI_PlayShootMontage()
+void ASamurai::Landed(const FHitResult& Hit)
 {
-	if (AnimInstance->IsMontageExisting(EEnemyAnimState::Shoot) && !AnimInstance->IsPlaying(EEnemyAnimState::Shoot))
-	{
-		AnimInstance->PlayMontage(EEnemyAnimState::Shoot);
-		Weapon->GetAnimInstance()->PlayMontage(EWeaponAnimState::AIShoot);
-	}
+	Super::Landed(Hit);
+	if (AI) AI->SetIsInJumpMode(false);
 }

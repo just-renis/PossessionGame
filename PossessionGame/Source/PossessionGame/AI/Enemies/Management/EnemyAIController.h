@@ -35,6 +35,7 @@ public:
 	void SetControlRigAvailabilityToggle(const bool bState) { bIsControlRigAvailableToToggle = bState; }
 	void SetIsUsingEQS(const bool bState) { bIsUsingEQS = bState; }
 	void SetCustomFocusState(const bool bState) { bCustomFocusEnabled = bState; }
+	virtual void SetIsInJumpMode(const bool bState) { bIsInJumpMode = bState; }
 	void SetShootCooldown(const float InValue);
 	void SetReloadDelay(const float InValue);
 	virtual void DestroyThis();
@@ -48,6 +49,7 @@ public:
 	virtual void ResetOnReachedNonEqsPoint() {}
 protected:
 	bool bIsControlRigAvailableToToggle = true;
+	bool bIsInJumpMode = false;
 	FTimerHandle OnLostSightOfPawnHandle;
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStateTreeComponent> StateTree;
@@ -65,6 +67,7 @@ protected:
 	virtual void AdjustCustomFocus();
 	void SetIsTargetInMySight(const bool bState);
 	virtual void OnLostSightOfPawn();
+	void StopStateTreeLogic(const bool bNeedCleanup) const;
 	UFUNCTION()
 	virtual void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 private:
@@ -105,5 +108,4 @@ private:
 	void SetupEQSTarget();
 	void SetEQSTargetLocation();
 	void StopStateTreeLogic() const;
-	void StopStateTreeLogic(const bool bNeedCleanup) const;
 };

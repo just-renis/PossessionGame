@@ -135,6 +135,15 @@ void AEnemyAIController::SetIsTargetInMySight(const bool bState) { StateTreeData
 
 void AEnemyAIController::OnLostSightOfPawn() { SetIsTargetInMySight(false); }
 
+void AEnemyAIController::StopStateTreeLogic(const bool bNeedCleanup) const
+{
+	if (StateTree)
+	{
+		StateTree->StopLogic(TEXT("Stopping State Tree"));
+		if (bNeedCleanup) StateTree->Cleanup();
+	}
+}
+
 void AEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (Stimulus.WasSuccessfullySensed())
@@ -193,14 +202,5 @@ void AEnemyAIController::StopStateTreeLogic() const
 	{
 		StateTree->StopLogic(TEXT("Stopping State Tree"));
 		StateTree->Cleanup();
-	}
-}
-
-void AEnemyAIController::StopStateTreeLogic(const bool bNeedCleanup) const
-{
-	if (StateTree)
-	{
-		StateTree->StopLogic(TEXT("Stopping State Tree"));
-		if (bNeedCleanup) StateTree->Cleanup();
 	}
 }
