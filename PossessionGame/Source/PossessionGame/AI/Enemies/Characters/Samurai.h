@@ -26,6 +26,5 @@ class POSSESSIONGAME_API ASamurai : public AEnemy
 	virtual void BeginPlay() override;
 	void SetupSamuraiHat();
 	virtual void HandleDeactivation() override;
-	virtual void SetAnimInstance() override;
 	virtual void Landed(const FHitResult& Hit) override;
 };

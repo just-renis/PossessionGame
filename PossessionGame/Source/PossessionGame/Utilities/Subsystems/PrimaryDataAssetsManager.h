@@ -168,7 +168,7 @@ public:
 	EVfx GetProjectileVfxName(const EPoolObject InProjectileName, const EVfxType InVfxType);
 	EVfx GetProjectileVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType);
 	EVfx GetCharacterVfxName(const ECharacterType InCharacterType, const EVfxType InVfxType);
-	TObjectPtr<UPA_WeaponContainer>& GetWeaponData(EWeapon WeaponName);
+	TObjectPtr<UPA_WeaponContainer> GetWeaponData(const EWeapon InWeaponName);
 	FSoundContainer& GetSoundData(const ESound InSoundName);
 	FCharacterContainer& GetCharacterData(const ECharacterType InCharacterName);
 	FVfxContainer& GetVfxData(const EVfx InVfxName);

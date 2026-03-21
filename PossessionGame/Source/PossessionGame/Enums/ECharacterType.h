@@ -16,5 +16,6 @@ enum class ECharacterType : uint8
 	Breacher,
 	Wraith,
 	PyroBoss,
-	SoldierBoss
+	SoldierBoss,
+	AcoBoss
 };

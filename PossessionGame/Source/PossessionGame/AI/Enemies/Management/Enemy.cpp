@@ -645,11 +645,12 @@ void AEnemy::AI_Setup()
 	AI_SetupData();
 	if (Weapon && Weapon->GetIsReloadEnabled()) AI->SetReloadDelay(AnimInstance->GetMontageLength(EEnemyAnimState::Reload));
 	AI->GetStateTreeData().OnStateTreeEvent.BindUObject(this, &AEnemy::AI_FinishShootLogicByEvent);
-	AI_SetupShootLogic();
+	if (Weapon) AI_SetupShootLogic();
 }
 
 void AEnemy::AI_SetupWeapon()
 {
+	if (!Weapon) return;
 	Weapon->SetProprietor(this);
 	AI->SetShootCooldown(Weapon->GetShootCooldown());
 	Weapon->PostProprietorSetup();
@@ -1145,8 +1146,6 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void AEnemy::SetAnimInstance() { AnimInstance = Cast<UEnemyAnimationInstance>(GetMesh()->GetAnimInstance()); }
-
 void AEnemy::SetMaxWalkSpeed(const EMoveMode InMoveMode, float InNewSpeed)
 {
 	SetMoveMode(InMoveMode);
@@ -1583,7 +1582,7 @@ void AEnemy::P_ToggleRun(const bool bState)
 
 void AEnemy::P_OnEnemyDeathEvents(float InXp, const ECharacterType InCharacterName) const
 {
-	if (InCharacterName != ECharacterType::Warden && InCharacterName != ECharacterType::MinionBoss && InCharacterName != ECharacterType::PyroBoss && InCharacterName != ECharacterType::SoldierBoss && DelegateManager->RequestCurrentXpNerf.IsBound()) InXp *= DelegateManager->RequestCurrentXpNerf.Execute();
+	if (InCharacterName != ECharacterType::Warden && InCharacterName != ECharacterType::MinionBoss && InCharacterName != ECharacterType::PyroBoss && InCharacterName != ECharacterType::SoldierBoss && InCharacterName != ECharacterType::AcoBoss && DelegateManager->RequestCurrentXpNerf.IsBound()) InXp *= DelegateManager->RequestCurrentXpNerf.Execute();
 	P_AddXp(InXp);
 }
 
@@ -2034,6 +2033,8 @@ EDamageReason AEnemy::ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCaus
 	if (!InDamageCauser) return EDamageReason::None;
 	return InDamageCauser->Implements<UDamageReasonProvider>() ? Cast<IDamageReasonProvider>(InDamageCauser)->GetDamageReason() : EDamageReason::None;
 }
+
+void AEnemy::SetAnimInstance() { AnimInstance = Cast<UEnemyAnimationInstance>(GetMesh()->GetAnimInstance()); }
 
 void AEnemy::TickAbilities(const float InDeltaTime)
 {

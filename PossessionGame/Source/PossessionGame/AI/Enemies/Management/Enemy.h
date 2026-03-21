@@ -351,7 +351,6 @@ protected:
 	virtual void SetMoveMode(const EMoveMode InMoveMode) { CurrentMoveMode = InMoveMode; }
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	virtual void SetAnimInstance();
 	void SetMaxWalkSpeed(const EMoveMode InMoveMode, float InNewSpeed = -1.f);
 	void AttachDestructible(const TObjectPtr<AActor>& Destructible, const FName SocketName) const;
 	virtual void HandleDeactivation();
@@ -662,6 +661,7 @@ private:
 	bool IsHackTerminalsGameMode() const;
 	EDamageReason ReceiveDamageReason(const TObjectPtr<AActor>& InDamageCauser);
 
+	void SetAnimInstance();
 	void TickAbilities(const float InDeltaTime);
 	void SetupStimuliSource();
 	void ChangeXrayState(const bool bState);

@@ -60,7 +60,11 @@ EVfx UPrimaryDataAssetsManager::GetCharacterVfxName(const ECharacterType InChara
 	return EVfx::None;
 }
 
-TObjectPtr<UPA_WeaponContainer>& UPrimaryDataAssetsManager::GetWeaponData(EWeapon WeaponName) { return WeaponContainers[WeaponName]; }
+TObjectPtr<UPA_WeaponContainer> UPrimaryDataAssetsManager::GetWeaponData(const EWeapon InWeaponName)
+{
+	if (TObjectPtr<UPA_WeaponContainer>* WeaponContainer = WeaponContainers.Find(InWeaponName)) return *WeaponContainer;
+	return nullptr;
+}
 
 FSoundContainer& UPrimaryDataAssetsManager::GetSoundData(const ESound InSoundName) { return SoundContainers[InSoundName]; }
 
@@ -380,29 +384,28 @@ void UPrimaryDataAssetsManager::AsyncLoadClone(const ECharacterType InCharacterN
 	else UE_LOG(LogTemp, Warning, TEXT("CharacterMesh is invalid for character %s"), *UEnum::GetValueAsString(InCharacterName));
 	EWeapon Weapon = GetWeaponByCharacter(InCharacterName);
 	const TObjectPtr<UPA_WeaponContainer> WeaponContainer = GetWeaponData(Weapon);
-	if (!IsValid(WeaponContainer))
-	{
-		UE_LOG(LogTemp, Error, TEXT("Invalid WeaponContainer for weapon %s"), *UEnum::GetValueAsString(Weapon));
-		return;
-	}
-	if (!WeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponClass.ToSoftObjectPath());
-	else UE_LOG(LogTemp, Warning, TEXT("WeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
-	if (!WeaponContainer->HandsMesh.IsNull()) PathsToLoad.Add(WeaponContainer->HandsMesh.ToSoftObjectPath());
-	else UE_LOG(LogTemp, Warning, TEXT("HandsMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
 	EWeapon SingularWeapon = GetSingularWeapon(Weapon);
-	if (SingularWeapon != EWeapon::None)
+	if (!IsValid(WeaponContainer)) { UE_LOG(LogTemp, Error, TEXT("Invalid WeaponContainer for weapon %s"), *UEnum::GetValueAsString(Weapon)); }
+	else
 	{
-		const TObjectPtr<UPA_WeaponContainer> SingularWeaponContainer = GetWeaponData(SingularWeapon);
-		if (IsValid(SingularWeaponContainer))
+		if (!WeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponClass.ToSoftObjectPath());
+		else UE_LOG(LogTemp, Warning, TEXT("WeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
+		if (!WeaponContainer->HandsMesh.IsNull()) PathsToLoad.Add(WeaponContainer->HandsMesh.ToSoftObjectPath());
+		else UE_LOG(LogTemp, Warning, TEXT("HandsMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
+		if (SingularWeapon != EWeapon::None)
 		{
-			if (!SingularWeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponClass.ToSoftObjectPath());
-			else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
-			if (!SingularWeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
-			else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
+			const TObjectPtr<UPA_WeaponContainer> SingularWeaponContainer = GetWeaponData(SingularWeapon);
+			if (IsValid(SingularWeaponContainer))
+			{
+				if (!SingularWeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponClass.ToSoftObjectPath());
+				else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
+				if (!SingularWeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
+				else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
+			}
 		}
+		else if (!WeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
+		else UE_LOG(LogTemp, Warning, TEXT("WeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
 	}
-	else if (!WeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
-	else UE_LOG(LogTemp, Warning, TEXT("WeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
 	TArray<FSoftObjectPath> ValidPaths;
 	for (const FSoftObjectPath& Path : PathsToLoad) if (!Path.GetAssetPathString().IsEmpty()) ValidPaths.Add(Path);
 	if (ValidPaths.IsEmpty())
@@ -750,6 +753,7 @@ void UPrimaryDataAssetsManager::SetupCharactersPrimaryAssets()
 	CharactersMap.Add("PA_PyroBoss", ECharacterType::PyroBoss);
 	CharactersMap.Add("PA_Warden", ECharacterType::Warden);
 	CharactersMap.Add("PA_SoldierBoss", ECharacterType::SoldierBoss);
+	CharactersMap.Add("PA_AcoBoss", ECharacterType::AcoBoss);
 	FillContainers<ECharacterType, FCharacterContainer, UPA_CharacterContainer>(CharactersMap, CharacterContainers, "Character");
 	CharactersMap.Empty();
 }
@@ -952,29 +956,28 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 	else UE_LOG(LogTemp, Warning, TEXT("CharacterMesh is invalid for character %s"), *UEnum::GetValueAsString(InCharacter));
 	EWeapon Weapon = GetWeaponByCharacter(InCharacter);
 	const TObjectPtr<UPA_WeaponContainer> WeaponContainer = GetWeaponData(Weapon);
-	if (!IsValid(WeaponContainer))
-	{
-		UE_LOG(LogTemp, Error, TEXT("Invalid WeaponContainer for weapon %s"), *UEnum::GetValueAsString(Weapon));
-		return;
-	}
-	if (!WeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponClass.ToSoftObjectPath());
-	else UE_LOG(LogTemp, Warning, TEXT("WeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
-	if (!WeaponContainer->HandsMesh.IsNull()) PathsToLoad.Add(WeaponContainer->HandsMesh.ToSoftObjectPath());
-	else UE_LOG(LogTemp, Warning, TEXT("HandsMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
 	EWeapon SingularWeapon = GetSingularWeapon(Weapon);
-	if (SingularWeapon != EWeapon::None)
+	if (!IsValid(WeaponContainer)) { UE_LOG(LogTemp, Error, TEXT("Invalid WeaponContainer for weapon %s"), *UEnum::GetValueAsString(Weapon)); }
+	else
 	{
-		const TObjectPtr<UPA_WeaponContainer> SingularWeaponContainer = GetWeaponData(SingularWeapon);
-		if (IsValid(SingularWeaponContainer))
+		if (!WeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponClass.ToSoftObjectPath());
+		else UE_LOG(LogTemp, Warning, TEXT("WeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
+		if (!WeaponContainer->HandsMesh.IsNull()) PathsToLoad.Add(WeaponContainer->HandsMesh.ToSoftObjectPath());
+		else UE_LOG(LogTemp, Warning, TEXT("HandsMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
+		if (SingularWeapon != EWeapon::None)
 		{
-			if (!SingularWeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponClass.ToSoftObjectPath());
-			else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
-			if (!SingularWeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
-			else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
+			const TObjectPtr<UPA_WeaponContainer> SingularWeaponContainer = GetWeaponData(SingularWeapon);
+			if (IsValid(SingularWeaponContainer))
+			{
+				if (!SingularWeaponContainer->WeaponClass.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponClass.ToSoftObjectPath());
+				else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponClass is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
+				if (!SingularWeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(SingularWeaponContainer->WeaponMesh.ToSoftObjectPath());
+				else UE_LOG(LogTemp, Warning, TEXT("SingularWeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(SingularWeapon));
+			}
 		}
+		else if (!WeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
+		else UE_LOG(LogTemp, Warning, TEXT("WeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
 	}
-	else if (!WeaponContainer->WeaponMesh.IsNull()) PathsToLoad.Add(WeaponContainer->WeaponMesh.ToSoftObjectPath());
-	else UE_LOG(LogTemp, Warning, TEXT("WeaponMesh is invalid for weapon %s"), *UEnum::GetValueAsString(Weapon));
 	TArray<FSoftObjectPath> ValidPaths;
 	for (const FSoftObjectPath& Path : PathsToLoad) if (!Path.GetAssetPathString().IsEmpty()) ValidPaths.Add(Path);
 	if (ValidPaths.IsEmpty())
@@ -1018,9 +1021,12 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularW
 		if (!SingularWeaponClass) { UE_LOG(LogTemp, Warning, TEXT("Failed to load singular weapon class %s"), *UEnum::GetValueAsString(InSingularWeapon)); }
 		else WeaponManager->AddWeapon(InSingularWeapon, Cast<UClass>(SingularWeaponClass));
 	}
-	UObject* WeaponClass = GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad();
-	if (!WeaponClass) { UE_LOG(LogTemp, Warning, TEXT("Failed to load weapon class %s"), *UEnum::GetValueAsString(InWeapon)); }
-	else WeaponManager->AddWeapon(InWeapon, Cast<UClass>(WeaponClass));
+	if (InWeapon != EWeapon::None)
+	{
+		UObject* WeaponClass = GetWeaponData(InWeapon)->WeaponClass.ToSoftObjectPath().TryLoad();
+		if (!WeaponClass) { UE_LOG(LogTemp, Warning, TEXT("Failed to load weapon class %s"), *UEnum::GetValueAsString(InWeapon)); }
+		else WeaponManager->AddWeapon(InWeapon, Cast<UClass>(WeaponClass));
+	}
 	SpawnEnemy(InCharacter, InGameMode, InCallBack);
 }
 

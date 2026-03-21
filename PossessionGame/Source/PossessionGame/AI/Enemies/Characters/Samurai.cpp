@@ -56,8 +56,6 @@ void ASamurai::HandleDeactivation()
 	Super::HandleDeactivation();
 }
 
-void ASamurai::SetAnimInstance() { AnimInstance = Cast<USamuraiAnimationInstance>(GetMesh()->GetAnimInstance()); }
-
 void ASamurai::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
