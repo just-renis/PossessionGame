@@ -168,6 +168,7 @@ public:
 	void AI_ReduceHalfHp();
 	virtual void AI_ReceiveEmpEffect(const float InEffectDuration);
 	virtual void AI_OnReachedNonEqsPoint() {}
+	void AI_SetAcoEnemy();
 
 	virtual void P_RemoveReloadSound() {}
 	void P_ReEnableRunIfToggleMode();
@@ -311,6 +312,7 @@ protected:
 	virtual void AI_Destroy();
 	virtual void AI_DestroyVfxs();
 	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName);
+	void AI_DestroyBossUnnecessaryComponents();
 
 	virtual float P_GetMeleeDamage();
 	virtual float P_GetStompDamage();
@@ -391,6 +393,7 @@ private:
 	bool bHasBeenDamagedRecently = false;
 	bool bIsHijackAble = false;
 	bool bIsImmortal = false;
+	bool bIsAco = false;
 	float P_BurnVfxRadiusValue = 4.f;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;

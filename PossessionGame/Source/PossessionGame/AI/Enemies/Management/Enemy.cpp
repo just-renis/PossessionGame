@@ -74,6 +74,7 @@ AEnemy::AEnemy()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("camera"));
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
+	Camera->SetActive(false);
 	AI_HpBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("AI_HpBar"));
 	AI_HpBarComponent->SetupAttachment(RootComponent);
 	AI_HpBarComponent->SetDrawSize(FVector2D(1920.f, 1080.f));
@@ -289,6 +290,15 @@ void AEnemy::AI_SetUnHijackOutline(const bool bState)
 void AEnemy::AI_ReduceHalfHp() { ReceiveDamage(MaxHp * 0.5f, EDamageReason::None, nullptr, nullptr); }
 
 void AEnemy::AI_ReceiveEmpEffect(const float InEffectDuration) { ApplyDisablingActionEffect(InEffectDuration, EDisablingEffect::Emp); }
+
+void AEnemy::AI_SetAcoEnemy()
+{
+	bIsAco = true;
+	bAllowedToShoot = false;
+	bIsInvincible = true;
+	if (AI) AI->StopLogic(false);
+	(void)DelegateManager->OnAcoEnemySpawned.ExecuteIfBound(this);
+}
 
 void AEnemy::P_ReEnableRunIfToggleMode()
 {
@@ -1108,7 +1118,7 @@ void AEnemy::BeginPlay()
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 	GlobalSettingsManager = GameInstance->GetSubsystem<UGlobalSettingsManager>();
 	SaveSlotManager = GameInstance->GetSubsystem<USaveSlotManager>();
-	DefaultCameraZ = Camera->GetRelativeLocation().Z;
+	if (Camera) DefaultCameraZ = Camera->GetRelativeLocation().Z;
 	AI_SetupHpBar();
 	AssetsManager = GameInstance->GetSubsystem<UPrimaryDataAssetsManager>();
 	GetWorld()->GetSubsystem<UEnemyCommunicator>()->AddEnemy(this);
@@ -1118,7 +1128,6 @@ void AEnemy::BeginPlay()
 	SetAnimInstance();
 	Tags.Add("Enemy");
 	Tags.Add("AliveEnemy");
-	Camera->SetActive(false);
 	GetWorldTimerManager().SetTimer(CheckIfFallOutOfWorldHandle, this, &AEnemy::CheckIfFallOutOfWorld, 5.f, true);
 	GetWorldTimerManager().SetTimer(AI_SetCharacterMovementSpeedHandle, this, &AEnemy::AI_SetCharacterMovementSpeed, 0.05f, true);
 	GetWorldTimerManager().SetTimer(AI_PlaySpawnSoundHandle, this, &AEnemy::AI_PlaySpawnSound, 3.f + UKismetMathLibrary::RandomInteger(4), false);
@@ -1446,6 +1455,20 @@ void AEnemy::AI_TankShieldActionSpeedDebuffEnded()
 {
 	bTankShieldActionSpeedDebuff = false;
 	SetActionSpeed(ActionSpeed);
+}
+
+void AEnemy::AI_DestroyBossUnnecessaryComponents()
+{
+	if (AI_HpBarComponent)
+	{
+		AI_HpBarComponent->DestroyComponent();
+		AI_HpBarComponent = nullptr;
+	}
+	if (Camera)
+	{
+		Camera->DestroyComponent();
+		Camera = nullptr;
+	}
 }
 
 void AEnemy::P_ChangeHoldingShootState(const bool bState)

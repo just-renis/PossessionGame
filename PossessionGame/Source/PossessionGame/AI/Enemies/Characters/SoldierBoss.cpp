@@ -1,5 +1,4 @@
 ﻿#include "SoldierBoss.h"
-#include "Components/WidgetComponent.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
@@ -9,11 +8,7 @@
 
 ASoldierBoss::ASoldierBoss()
 {
-	if (AI_HpBarComponent)
-	{
-		AI_HpBarComponent->DestroyComponent();
-		AI_HpBarComponent = nullptr;
-	}
+	AI_DestroyBossUnnecessaryComponents();
 }
 
 void ASoldierBoss::AI_SetupWeapon()

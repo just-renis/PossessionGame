@@ -3,7 +3,6 @@
 #include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StateTreeComponent.h"
-#include "Components/WidgetComponent.h"
 #include "Engine/OverlapResult.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
@@ -70,11 +69,7 @@ void AMinionBoss::ResetMoveDirectlyToPlayer()
 
 AMinionBoss::AMinionBoss()
 {
-	if (AI_HpBarComponent)
-	{
-		AI_HpBarComponent->DestroyComponent();
-		AI_HpBarComponent = nullptr;
-	}
+	AI_DestroyBossUnnecessaryComponents();
 	LaserCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("laserCollision"));
 	LaserCollision->SetupAttachment(GetMesh());
 	LaserCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);

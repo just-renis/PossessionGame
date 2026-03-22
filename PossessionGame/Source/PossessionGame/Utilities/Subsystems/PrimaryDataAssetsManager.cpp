@@ -1048,6 +1048,7 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 			{
 				Enemy->AI_SetupUpgradesAppliance();
 				Enemy->AI_ProcessSpawnEffects();
+				if (InCurrentGameMode == EGameMode::FinalBossEnemySpawn) Enemy->AI_SetAcoEnemy();
 				if (InCallBack) InCallBack(Enemy->GetCurrentHp());
 				break;
 			}

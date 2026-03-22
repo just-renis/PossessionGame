@@ -8,4 +8,6 @@ UCLASS()
 class POSSESSIONGAME_API AAcoBossAIController : public AEnemyAIController
 {
 	GENERATED_BODY()
+
+	virtual void BeginPlay() override;
 };

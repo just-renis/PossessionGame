@@ -2,7 +2,6 @@
 #include "NiagaraComponent.h"
 #include "Algo/RandomShuffle.h"
 #include "Components/AudioComponent.h"
-#include "Components/WidgetComponent.h"
 #include "Engine/OverlapResult.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECharacterType.h"
@@ -25,11 +24,7 @@ void APyroBoss::MarkStompAbilityReady()
 
 APyroBoss::APyroBoss()
 {
-	if (AI_HpBarComponent)
-	{
-		AI_HpBarComponent->DestroyComponent();
-		AI_HpBarComponent = nullptr;
-	}
+	AI_DestroyBossUnnecessaryComponents();
 	SpawnSfx = CreateDefaultSubobject<UAudioComponent>("SpawnSfx");
 	SpawnSfx->SetAutoActivate(false);
 	SpawnSfx->SetupAttachment(GetMesh());
