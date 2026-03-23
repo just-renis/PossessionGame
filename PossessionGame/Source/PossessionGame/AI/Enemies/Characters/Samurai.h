@@ -18,6 +18,7 @@ class POSSESSIONGAME_API ASamurai : public AEnemy
 
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_SetupShootLogic() override {}
+	virtual void AI_PlayDeathElectrification() override;
 
 	virtual void P_Setup() override;
 	virtual void P_WeaponShoot() override;

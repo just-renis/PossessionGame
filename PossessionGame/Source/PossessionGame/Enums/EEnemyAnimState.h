@@ -17,5 +17,7 @@ enum class EEnemyAnimState : uint8
 	Bash,
 	MeteorShower,
 	ActivateFloorLava,
-	Slash
+	Slash,
+	Kneel,
+	StandUp
 };

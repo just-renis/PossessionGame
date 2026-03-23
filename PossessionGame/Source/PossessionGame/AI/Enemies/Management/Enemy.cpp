@@ -294,17 +294,17 @@ void AEnemy::AI_ReceiveEmpEffect(const float InEffectDuration) { ApplyDisablingA
 void AEnemy::AI_SetAcoEnemy()
 {
 	bIsAco = true;
-	bAllowedToShoot = false;
-	bIsInvincible = true;
-	if (AI) AI->StopLogic(false);
+	bIsHijackAble = false;
+	AI_SetCombatState(false);
 	(void)DelegateManager->OnAcoEnemySpawned.ExecuteIfBound(this);
 }
 
-void AEnemy::AI_ApplyAcoHijack() const
+void AEnemy::AI_ApplyAcoHijack()
 {
 	AssetsManager->SpawnVfx(EVfx::AcoHijackEffect, nullptr, GetSocketLocation(FName("RootSocket")), GetSocketRotation(FName("RootSocket")), EVariation::Default,
 		{ { FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh()) } });
 	AI_AcoMaterialChange();
+	AI_SetCombatState(true);
 }
 
 void AEnemy::P_ReEnableRunIfToggleMode()
@@ -453,6 +453,7 @@ void AEnemy::InitiateDeath()
 	Tags.Remove("AliveEnemy");
 	if (!bIsHijacked)
 	{
+		if (bIsAco) (void)DelegateManager->OnAcoEnemyDeath.ExecuteIfBound();
 		if (CurrentHp > 0.f && IsHackTerminalsGameMode()) (void)DelegateManager->HackTerminalSubtractHp.ExecuteIfBound(CurrentHp);
 		AI_PlayDeathSound();
 		AI_PlayDeathExplosion();
@@ -1469,6 +1470,15 @@ void AEnemy::AI_AcoMaterialChange() const
 	if (!MI_MeshBaseMaterial) return;
 	MI_MeshBaseMaterial->SetScalarParameterValue(FName("Saturation"), 0.f);
 	MI_MeshBaseMaterial->SetScalarParameterValue(FName("AcoHijack"), 1.f);
+}
+
+void AEnemy::AI_SetCombatState(const bool bState)
+{
+	bIsInvincible = !bState;
+	bAllowedToShoot = bState;
+	if (!AI) return;
+	if (bState) AI->ResumeLogic();
+	else AI->StopLogic(false);
 }
 
 void AEnemy::AI_DestroyBossUnnecessaryComponents()

@@ -170,7 +170,7 @@ public:
 	virtual void AI_ReceiveEmpEffect(const float InEffectDuration);
 	virtual void AI_OnReachedNonEqsPoint() {}
 	void AI_SetAcoEnemy();
-	void AI_ApplyAcoHijack() const;
+	void AI_ApplyAcoHijack();
 
 	virtual void P_RemoveReloadSound() {}
 	void P_ReEnableRunIfToggleMode();
@@ -229,6 +229,7 @@ protected:
 	bool bIsSlidePrimaryAnim = true;
 	bool bIsBoss = false;
 	bool bTankShieldActionSpeedDebuff = false;
+	bool bIsAco = false;
 	float MaxHp;
 	float CurrentHp;
 	float DamageReduction = 1.f;
@@ -395,7 +396,6 @@ private:
 	bool bHasBeenDamagedRecently = false;
 	bool bIsHijackAble = false;
 	bool bIsImmortal = false;
-	bool bIsAco = false;
 	float P_BurnVfxRadiusValue = 4.f;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
@@ -602,6 +602,7 @@ private:
 	void AI_AddWeakSpots();
 	void AI_TankShieldActionSpeedDebuffEnded();
 	void AI_AcoMaterialChange() const;
+	void AI_SetCombatState(const bool bState);
 
 	int32 P_GetFirstSlotAbilityIndex() const { return P_FirstSlotAbilityIndex; }
 	int32 P_GetSecondSlotAbilityIndex() const { return P_SecondSlotAbilityIndex; }

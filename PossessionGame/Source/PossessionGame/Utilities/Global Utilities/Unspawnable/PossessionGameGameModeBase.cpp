@@ -3,6 +3,7 @@
 #include "SettingsSave.h"
 #include "ShaderPipelineCache.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/Data Assets/Base Data Assets/BaseModeData.h"
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/LoadingScreenUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
@@ -20,6 +21,8 @@
 #include "PossessionGame/Utilities/Subsystems/WaveManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
+bool APossessionGameGameModeBase::GetIsDebugModeEnabled() const { return BaseModeData->GetIsDebugModeEnabled(); }
+
 TArray<TSubclassOf<APrefab>>* APossessionGameGameModeBase::GetPrefabsByCategory(const EPrefabCategory Category)
 {
 	if (Prefabs.Contains(Category)) return &Prefabs[Category].PrefabClasses;
@@ -31,6 +34,7 @@ int32 APossessionGameGameModeBase::GetRunFinishedTime() const { return FMath::Fl
 void APossessionGameGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+	if (bIsFinalChapter) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(ECharacterType::AcoBoss, EGameMode::BossMode, nullptr, nullptr);
 	bIsArenaMode = GetWorld()->GetMapName().Contains("Arena");
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsArenaMode.BindUObject(this, &APossessionGameGameModeBase::GetIsArenaMode);
 	InitAfterPSOPrecache();

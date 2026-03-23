@@ -145,6 +145,17 @@ void ASpy::AI_UseDashToLocationAbility()
 	AI_UseAbility(1);
 }
 
+void ASpy::AI_PlayDeathElectrification()
+{
+	// LACKS DEATH ELECTRIFICATION 	else AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
+	if (bIsAco)
+	{
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
+	}
+}
+
 bool ASpy::P_IsSnatchAbilityAvailable() const { return CanAbilityBeExecuted(1); }
 
 float ASpy::P_GetMeleeDamage()

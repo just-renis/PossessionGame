@@ -76,7 +76,13 @@ void AWraith::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::Wr
 
 void AWraith::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::WraithDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
+	if (bIsAco)
+	{
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
+	}
+	else AssetsManager->AttachVfx(EVfx::WraithDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
 }
 
 void AWraith::AI_EnableTriggeringMeteorShower()

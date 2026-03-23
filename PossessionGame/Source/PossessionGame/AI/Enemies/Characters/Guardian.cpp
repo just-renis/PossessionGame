@@ -103,7 +103,13 @@ void AGuardian::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::
 
 void AGuardian::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::GuardianDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
+	if (bIsAco)
+	{
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
+	}
+	else AssetsManager->AttachVfx(EVfx::GuardianDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
 }
 
 void AGuardian::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)

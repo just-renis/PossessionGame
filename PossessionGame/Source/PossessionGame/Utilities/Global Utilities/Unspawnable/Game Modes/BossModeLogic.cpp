@@ -15,7 +15,8 @@ void UBossModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, const T
 	SetupWaveManagerUI();
 	WaveManager->GetDelegateManager()->OnBossDeath.AddUObject(this, &UBossModeLogic::BossDeath);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UBossModeLogic::UpdateEnemiesAmount);
-	WaveManager->GetAssetsManager()->RequestSpawnEnemy(Data->GetEnemyToSpawn(), WaveManager->GetCurrentGameMode(), [this](const float) { IncreaseAliveEnemiesAmount(); }, nullptr);
+	if (!Data->GetIsFinalBoss()) WaveManager->GetAssetsManager()->RequestSpawnEnemy(Data->GetEnemyToSpawn(), WaveManager->GetCurrentGameMode(), [this](const float) { IncreaseAliveEnemiesAmount(); }, nullptr);
+	else (void)WaveManager->GetDelegateManager()->OnFinalBossModeInitiated.ExecuteIfBound();
 	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UBossModeLogic::HandleSpawning, SpawnRate, true);
 }
 

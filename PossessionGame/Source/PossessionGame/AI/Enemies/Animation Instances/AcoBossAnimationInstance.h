@@ -13,4 +13,6 @@ public:
 private:
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	bool bIsFlying = false;
+
+	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted) override;
 };

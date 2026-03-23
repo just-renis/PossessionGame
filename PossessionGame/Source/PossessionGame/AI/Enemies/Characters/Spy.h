@@ -74,6 +74,7 @@ private:
 	virtual void AI_PlayDeathSound() override;
 	virtual void AI_OnReachedNonEqsPoint() override;
 	void AI_UseDashToLocationAbility();
+	virtual void AI_PlayDeathElectrification() override;
 
 	bool P_IsSnatchAbilityAvailable() const;
 	virtual float P_GetMeleeDamage() override;

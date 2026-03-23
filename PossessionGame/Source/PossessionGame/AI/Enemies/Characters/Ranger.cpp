@@ -96,16 +96,20 @@ void ARanger::AI_PlaySpawnSound() { PlaySound(ESound::RangerSpawn, true); }
 
 void ARanger::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
+	if (bIsAco)
+	{
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
+	}
+	else AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
 }
 
 void ARanger::AI_DestroyGrenadeTrigger() const
 {
-	if (AI_GrenadeTrigger)
-	{
-		AI_GrenadeTrigger->OnComponentBeginOverlap.RemoveAll(this);
-		AI_GrenadeTrigger->DestroyComponent();
-	}
+	if (!AI_GrenadeTrigger) return;
+	AI_GrenadeTrigger->OnComponentBeginOverlap.RemoveAll(this);
+	AI_GrenadeTrigger->DestroyComponent();
 }
 
 void ARanger::AI_TryTriggeringGrenade()
