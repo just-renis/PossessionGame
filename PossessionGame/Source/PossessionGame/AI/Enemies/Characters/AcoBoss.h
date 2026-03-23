@@ -12,13 +12,16 @@ class POSSESSIONGAME_API AAcoBoss : public AEnemy
 
 	AAcoBoss();
 
+	FVector DefaultSpawnLocation;
 	FTimerHandle FlyingTowardsHijackEnemyHandle;
-	TArray<ECharacterType> CharactersToHijack = { /*ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Ranger, ECharacterType::Wraith,
-		ECharacterType::Breacher, ECharacterType::Spy, ECharacterType::Tank,*/ ECharacterType::Samurai };
+	TArray<ECharacterType> CharactersToHijack = { /*ECharacterType::Guardian, ECharacterType::Trickster, , ECharacterType::Wraith,
+		ECharacterType::Breacher, ECharacterType::Spy, ECharacterType::Tank, ECharacterType::Samurai*/ ECharacterType::Ranger};
 	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))
 	float MovementSpeedTowardsHijackTarget = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))
-	float StopDistance = 5.f;
+	float StopDistance = 20.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Default", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInstance> MI_Default;
 	UPROPERTY()
 	TObjectPtr<AEnemy> HijackTargetEnemy;
 	
@@ -31,4 +34,6 @@ class POSSESSIONGAME_API AAcoBoss : public AEnemy
 	void SpawnFirstPhaseEnemy();
 	void SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijackTarget);
 	void ProcessFlyingTowardsHijackTarget();
+	void ReachedHijackTarget();
+	void ChangeActorRenderState(const bool bState);
 };

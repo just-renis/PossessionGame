@@ -293,15 +293,10 @@ void AEnemy::AI_ReceiveEmpEffect(const float InEffectDuration) { ApplyDisablingA
 
 void AEnemy::AI_SetAcoEnemy()
 {
-	UE_LOG(LogTemp, Error, TEXT("I'm ACO"));
 	bIsAco = true;
 	bAllowedToShoot = false;
 	bIsInvincible = true;
-	if (AI)
-	{
-	UE_LOG(LogTemp, Error, TEXT("STOP AI"));
-		AI->StopLogic(false);
-	}
+	if (AI) AI->StopLogic(false);
 	(void)DelegateManager->OnAcoEnemySpawned.ExecuteIfBound(this);
 }
 
@@ -309,6 +304,7 @@ void AEnemy::AI_ApplyAcoHijack() const
 {
 	AssetsManager->SpawnVfx(EVfx::AcoHijackEffect, nullptr, GetSocketLocation(FName("RootSocket")), GetSocketRotation(FName("RootSocket")), EVariation::Default,
 		{ { FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh()) } });
+	AI_AcoMaterialChange();
 }
 
 void AEnemy::P_ReEnableRunIfToggleMode()
@@ -1466,6 +1462,13 @@ void AEnemy::AI_TankShieldActionSpeedDebuffEnded()
 {
 	bTankShieldActionSpeedDebuff = false;
 	SetActionSpeed(ActionSpeed);
+}
+
+void AEnemy::AI_AcoMaterialChange() const
+{
+	if (!MI_MeshBaseMaterial) return;
+	MI_MeshBaseMaterial->SetScalarParameterValue(FName("Saturation"), 0.f);
+	MI_MeshBaseMaterial->SetScalarParameterValue(FName("AcoHijack"), 1.f);
 }
 
 void AEnemy::AI_DestroyBossUnnecessaryComponents()

@@ -601,6 +601,7 @@ private:
 	void AI_ChangeWeakSpotsState(const bool bState);
 	void AI_AddWeakSpots();
 	void AI_TankShieldActionSpeedDebuffEnded();
+	void AI_AcoMaterialChange() const;
 
 	int32 P_GetFirstSlotAbilityIndex() const { return P_FirstSlotAbilityIndex; }
 	int32 P_GetSecondSlotAbilityIndex() const { return P_SecondSlotAbilityIndex; }

@@ -24,6 +24,7 @@ void AAcoBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::AcoBoss;
 	bIsBoss = true;
+	DefaultSpawnLocation = GetActorLocation();
 	Super::BeginPlay();
 	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Boss);
@@ -54,7 +55,6 @@ void AAcoBoss::SpawnFirstPhaseEnemy()
 
 void AAcoBoss::SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijackTarget)
 {
-	UE_LOG(LogTemp, Error, TEXT("FLY"));
 	HijackTargetEnemy = InHijackTarget;
 	if (AI) AI->GetStateTreeData().SetEQSTargetRef(HijackTargetEnemy);
 	GetWorldTimerManager().SetTimer(FlyingTowardsHijackEnemyHandle, this, &AAcoBoss::ProcessFlyingTowardsHijackTarget, 0.025f, true);
@@ -67,10 +67,23 @@ void AAcoBoss::ProcessFlyingTowardsHijackTarget()
 	const float Distance = ToTarget.Size();
 	if (Distance <= StopDistance)
 	{
-		HijackTargetEnemy->AI_ApplyAcoHijack();
-		GetWorldTimerManager().ClearTimer(FlyingTowardsHijackEnemyHandle);
-		if (GetMovementComponent()) GetMovementComponent()->StopMovementImmediately();
+		ReachedHijackTarget();
 		return;
 	}
 	AddMovementInput(ToTarget.GetSafeNormal(), MovementSpeedTowardsHijackTarget);
+}
+
+void AAcoBoss::ReachedHijackTarget()
+{
+	HijackTargetEnemy->AI_ApplyAcoHijack();
+	GetWorldTimerManager().ClearTimer(FlyingTowardsHijackEnemyHandle);
+	if (GetMovementComponent()) GetMovementComponent()->StopMovementImmediately();
+	SetActorLocation(DefaultSpawnLocation);
+	ChangeActorRenderState(false);
+}
+
+void AAcoBoss::ChangeActorRenderState(const bool bState)
+{
+	SetActorTickEnabled(bState);
+	SetActorHiddenInGame(!bState);
 }
