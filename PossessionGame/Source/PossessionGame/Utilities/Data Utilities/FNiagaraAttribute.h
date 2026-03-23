@@ -11,8 +11,11 @@ struct POSSESSIONGAME_API FNiagaraAttribute
 	FNiagaraAttribute() : ParamType(EUserParamType::Float), FloatValue(0.f), VectorValue(FVector::ZeroVector) {}
 	FNiagaraAttribute(const EUserParamType InParamType, const float InFloat) : ParamType(InParamType), FloatValue(InFloat), VectorValue() {}
 	FNiagaraAttribute(const EUserParamType InParamType, const FVector& InVector) : ParamType(InParamType), FloatValue(), VectorValue(InVector) {}
+	FNiagaraAttribute(const EUserParamType InParamType, const TObjectPtr<UObject>& InObject) : ParamType(InParamType), FloatValue(), VectorValue(), Object(InObject) {}
 
 	EUserParamType ParamType;
 	float FloatValue;
 	FVector VectorValue;
+	UPROPERTY()
+	TObjectPtr<UObject> Object = nullptr;
 };

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Enemy.h"
+#include "Components/StateTreeComponent.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Utilities/Data Utilities/FStateTreeData.h"
 #include "EnemyAIController.generated.h"
@@ -26,6 +27,7 @@ public:
 
 	bool CanExecuteAbility(const int32 InAbilityIndex) const { return Proprietor->CanAbilityBeExecuted(InAbilityIndex); }
 	bool GetIsUsingEQS() const { return bIsUsingEQS; }
+	bool GetIsStateTreeRunning() const { return StateTree->IsRunning(); }
 	EStateTreeEvent GetCurrentStateTreeEvent() const { return CurrentStateTreeEvent; }
 	TObjectPtr<AEnemy> GetProprietor() { return Proprietor; }
 	FStateTreeData& GetStateTreeData() { return StateTreeData; }

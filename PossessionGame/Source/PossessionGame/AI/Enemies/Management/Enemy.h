@@ -133,6 +133,7 @@ public:
 	float GetCurrentHp() const { return CurrentHp; }
 	float GetMaxHp() const { return MaxHp; }
 	FVector GetSocketLocation(const FName& InSocketName) const { return GetMesh()->GetSocketLocation(InSocketName); }
+	FRotator GetSocketRotation(const FName& InSocketName) const { return GetMesh()->GetSocketRotation(InSocketName); }
 	ECharacterType GetCharacterName() const { return CharacterName; }
 	EVariation GetVariation() const { return Variation; }
 	EMoveMode GetMoveMode() const { return CurrentMoveMode; }
@@ -154,7 +155,7 @@ public:
 	virtual void AI_Disable();
 	void AI_StopAbility(const int32 InIndex) const;
 	void AI_SetupUpgradesAppliance();
-	void AI_SetupShootLogic();
+	virtual void AI_SetupShootLogic();
 	virtual void AI_CancelShooting() {}
 	void AI_TriggerVectorBlastSpecialImpact();
 	void AI_SetupRespawn();
@@ -169,6 +170,7 @@ public:
 	virtual void AI_ReceiveEmpEffect(const float InEffectDuration);
 	virtual void AI_OnReachedNonEqsPoint() {}
 	void AI_SetAcoEnemy();
+	void AI_ApplyAcoHijack() const;
 
 	virtual void P_RemoveReloadSound() {}
 	void P_ReEnableRunIfToggleMode();
@@ -563,6 +565,8 @@ private:
 	TObjectPtr<UNiagaraComponent> CorruptedVfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> SpySnatchMarkerVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> AcoHijackEffectVfx;
 	UPROPERTY()
 	TObjectPtr<UGlobalSettingsManager> GlobalSettingsManager;
 	UPROPERTY()

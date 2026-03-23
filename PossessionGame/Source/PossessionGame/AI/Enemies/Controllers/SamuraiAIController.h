@@ -15,6 +15,8 @@ class POSSESSIONGAME_API ASamuraiAIController : public AEnemyAIController
 	FTimerHandle CheckDistanceBetweenTargetHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Slash Data", meta = (AllowPrivateAccess = true))
 	float DistanceBeforeSlashingInCentimetres = 200.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Jump Data", meta = (AllowPrivateAccess = true))
+	float JumpVelocityForward = 500.f;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

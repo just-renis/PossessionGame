@@ -36,6 +36,8 @@ struct FNiagaraUserParam
 	FVector VectorValue = FVector::ZeroVector;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Color", EditConditionHides))
 	FLinearColor ColorValue = FLinearColor::White;
+	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Object", EditConditionHides))
+	TObjectPtr<UObject> Object = nullptr;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Material", EditConditionHides))
 	TObjectPtr<UMaterialInterface> MaterialValue = nullptr;
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "ParamType == EUserParamType::Material", EditConditionHides))

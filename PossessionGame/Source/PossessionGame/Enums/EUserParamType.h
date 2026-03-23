@@ -8,5 +8,6 @@ enum class EUserParamType : uint8
     Float,
     Vector,
     Color,
-    Material
+    Material,
+    Object
 };

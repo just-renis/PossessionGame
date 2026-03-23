@@ -13,12 +13,14 @@ class POSSESSIONGAME_API AAcoBoss : public AEnemy
 	AAcoBoss();
 
 	FTimerHandle FlyingTowardsHijackEnemyHandle;
-	TArray<ECharacterType> CharactersToHijack = { ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Ranger, ECharacterType::Wraith,
-		ECharacterType::Breacher, ECharacterType::Spy, ECharacterType::Tank, ECharacterType::Samurai };
+	TArray<ECharacterType> CharactersToHijack = { /*ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Ranger, ECharacterType::Wraith,
+		ECharacterType::Breacher, ECharacterType::Spy, ECharacterType::Tank,*/ ECharacterType::Samurai };
 	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))
 	float MovementSpeedTowardsHijackTarget = 5.f;
+	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))
+	float StopDistance = 5.f;
 	UPROPERTY()
-	TObjectPtr<AActor> HijackTargetEnemy;
+	TObjectPtr<AEnemy> HijackTargetEnemy;
 	
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 
@@ -27,6 +29,6 @@ class POSSESSIONGAME_API AAcoBoss : public AEnemy
 	virtual void ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent) override;
 	virtual void InitiateDeath() override;
 	void SpawnFirstPhaseEnemy();
-	void SetupFlyingTowardsHijackTarget(const TObjectPtr<AActor>& InHijackTarget);
+	void SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijackTarget);
 	void ProcessFlyingTowardsHijackTarget();
 };

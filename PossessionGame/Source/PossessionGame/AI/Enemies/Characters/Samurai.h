@@ -16,9 +16,8 @@ class POSSESSIONGAME_API ASamurai : public AEnemy
 	UPROPERTY()
 	TObjectPtr<ADestructible> SamuraiHat;
 
-	virtual void AI_Shoot() override;
 	virtual void AI_SetupWeapon() override;
-	virtual void AI_PlayShootMontage() override;
+	virtual void AI_SetupShootLogic() override {}
 
 	virtual void P_Setup() override;
 	virtual void P_WeaponShoot() override;

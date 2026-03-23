@@ -61,7 +61,7 @@ void ASamuraiAIController::SetPlayerTarget(const TObjectPtr<AActor>& InPlayerTar
 
 void ASamuraiAIController::CheckDistanceBetweenTarget()
 {
-	if (!EQSTarget || !Proprietor || Proprietor->GetIsAnimActionInMotion()) return;
+	if (!EQSTarget || !Proprietor || Proprietor->GetIsAnimActionInMotion() || !GetIsStateTreeRunning()) return;
 	CheckIfStuck();
 	const float Distance = FVector::DistSquared(Proprietor->GetActorLocation(), EQSTarget->GetActorLocation());
 	if (Distance <= FMath::Square(DistanceBeforeSlashingInCentimetres))
@@ -81,7 +81,7 @@ void ASamuraiAIController::CheckIfStuck()
 		if (StuckTimer >= StuckThreshold)
 		{
 			StopStateTreeLogic(false);
-			Proprietor->GetCharacterMovement()->Velocity += Direction.GetSafeNormal2D() * 500.f;
+			Proprietor->GetCharacterMovement()->Velocity += Direction.GetSafeNormal2D() * JumpVelocityForward;
 			Proprietor->Jump();
 			bIsInJumpMode = true;
 			StuckTimer = 0.f;

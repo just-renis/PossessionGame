@@ -308,6 +308,11 @@ void UPrimaryDataAssetsManager::UpdateVfxAttributes(const TObjectPtr<UNiagaraCom
 		{
 			case EUserParamType::Float: InVfxComponent->SetVariableFloat(Attribute.Key, Attribute.Value.FloatValue); break;
 			case EUserParamType::Vector: InVfxComponent->SetVariableVec3(Attribute.Key, Attribute.Value.VectorValue); break;
+			case EUserParamType::Object:
+				{
+					UNiagaraFunctionLibrary::OverrideSystemUserVariableSkeletalMeshComponent(InVfxComponent, Attribute.Key.ToString(), Cast<USkeletalMeshComponent>(Attribute.Value.Object));
+					break;
+				}
 			default: ;
 		}
 	}
@@ -895,6 +900,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_PyroBossSendSignal", EVfx::PyroBossSendSignal);
 	VfxsMap.Add("PA_SoldierBossBulletTrail", EVfx::SoldierBossBulletTrail);
 	VfxsMap.Add("PA_SamuraiSlash", EVfx::SamuraiSlash);
+	VfxsMap.Add("PA_AcoHijackEffect", EVfx::AcoHijackEffect);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }
@@ -925,6 +931,7 @@ void UPrimaryDataAssetsManager::SetupVfx(const FVfxContainer& InVfxData, TFuncti
 			case EUserParamType::Float: InVfxComponent->SetVariableFloat(Param.Key, Param.Value.FloatValue); break;
 			case EUserParamType::Vector: InVfxComponent->SetVariableVec3(Param.Key, Param.Value.VectorValue); break;
 			case EUserParamType::Color: InVfxComponent->SetVariableLinearColor(Param.Key, Param.Value.ColorValue); break;
+			case EUserParamType::Object: InVfxComponent->SetVariableObject(Param.Key, Param.Value.Object); break;
 			case EUserParamType::Material:
 				FNiagaraVariable NiagaraParamName(UMaterialInterface::StaticClass(), Param.Key);
 				TObjectPtr<UMaterialInstanceDynamic> MI_Dynamic = Cast<UMaterialInstanceDynamic>(NiagaraParams.GetUObject(NiagaraParamName));

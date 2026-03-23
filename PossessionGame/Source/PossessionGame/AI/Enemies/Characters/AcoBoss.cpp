@@ -52,8 +52,9 @@ void AAcoBoss::SpawnFirstPhaseEnemy()
 	CharactersToHijack.RemoveAt(Index);
 }
 
-void AAcoBoss::SetupFlyingTowardsHijackTarget(const TObjectPtr<AActor>& InHijackTarget)
+void AAcoBoss::SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijackTarget)
 {
+	UE_LOG(LogTemp, Error, TEXT("FLY"));
 	HijackTargetEnemy = InHijackTarget;
 	if (AI) AI->GetStateTreeData().SetEQSTargetRef(HijackTargetEnemy);
 	GetWorldTimerManager().SetTimer(FlyingTowardsHijackEnemyHandle, this, &AAcoBoss::ProcessFlyingTowardsHijackTarget, 0.025f, true);
@@ -62,5 +63,14 @@ void AAcoBoss::SetupFlyingTowardsHijackTarget(const TObjectPtr<AActor>& InHijack
 void AAcoBoss::ProcessFlyingTowardsHijackTarget()
 {
 	if (!HijackTargetEnemy) return;
-	AddMovementInput((HijackTargetEnemy->GetActorLocation() - GetActorLocation()).GetSafeNormal(), MovementSpeedTowardsHijackTarget);
+	const FVector ToTarget = HijackTargetEnemy->GetActorLocation() - GetActorLocation();
+	const float Distance = ToTarget.Size();
+	if (Distance <= StopDistance)
+	{
+		HijackTargetEnemy->AI_ApplyAcoHijack();
+		GetWorldTimerManager().ClearTimer(FlyingTowardsHijackEnemyHandle);
+		if (GetMovementComponent()) GetMovementComponent()->StopMovementImmediately();
+		return;
+	}
+	AddMovementInput(ToTarget.GetSafeNormal(), MovementSpeedTowardsHijackTarget);
 }

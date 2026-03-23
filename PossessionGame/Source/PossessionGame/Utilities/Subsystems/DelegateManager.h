@@ -66,7 +66,7 @@ DECLARE_DELEGATE_OneParam(FOnPlayerReloadMontageEnd, const int32);
 DECLARE_DELEGATE_OneParam(FOnUpgradeAmountChanged, const int32);
 DECLARE_DELEGATE_OneParam(FOnAbilitiesOrLevelMenuSelectionEnd, const EWidget);
 DECLARE_DELEGATE_OneParam(FOnAchievementCompleted, const EAchievement);
-DECLARE_DELEGATE_OneParam(FOnAcoEnemySpawned, const TObjectPtr<AActor>&);
+DECLARE_DELEGATE_OneParam(FOnAcoEnemySpawned, const TObjectPtr<AEnemy>&);
 DECLARE_DELEGATE_TwoParams(FOnAbilityEnd, const int32, const bool);
 DECLARE_DELEGATE_TwoParams(FUpdateGlobalHpBar, const float, const float);
 DECLARE_DELEGATE_TwoParams(FOnSaveSlotClicked, const FString&, const FString&);

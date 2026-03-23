@@ -293,11 +293,22 @@ void AEnemy::AI_ReceiveEmpEffect(const float InEffectDuration) { ApplyDisablingA
 
 void AEnemy::AI_SetAcoEnemy()
 {
+	UE_LOG(LogTemp, Error, TEXT("I'm ACO"));
 	bIsAco = true;
 	bAllowedToShoot = false;
 	bIsInvincible = true;
-	if (AI) AI->StopLogic(false);
+	if (AI)
+	{
+	UE_LOG(LogTemp, Error, TEXT("STOP AI"));
+		AI->StopLogic(false);
+	}
 	(void)DelegateManager->OnAcoEnemySpawned.ExecuteIfBound(this);
+}
+
+void AEnemy::AI_ApplyAcoHijack() const
+{
+	AssetsManager->SpawnVfx(EVfx::AcoHijackEffect, nullptr, GetSocketLocation(FName("RootSocket")), GetSocketRotation(FName("RootSocket")), EVariation::Default,
+		{ { FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh()) } });
 }
 
 void AEnemy::P_ReEnableRunIfToggleMode()

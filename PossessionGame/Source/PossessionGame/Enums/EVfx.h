@@ -136,5 +136,6 @@ enum class EVfx : uint16
 	PyroBossFloorFireWarning,
 	PyroBossSendSignal,
 	SoldierBossBulletTrail,
-	SamuraiSlash
+	SamuraiSlash,
+	AcoHijackEffect
 };
