@@ -42,6 +42,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Guardian;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_GuardianAcoForm;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Shield;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_TimeStop;
@@ -62,6 +64,7 @@ private:
 	virtual void AI_TriggerDeathVoiceLine() override;
 	virtual void AI_PlayDeathElectrification() override;
 	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage) override;
+	virtual void AI_AcoMaterialChange() const override;
 
 	virtual void P_Setup() override;
 	virtual void P_SetupLeftClickInputTriggeredState() override {}

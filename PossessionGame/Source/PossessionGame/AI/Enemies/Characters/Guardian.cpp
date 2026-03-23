@@ -118,6 +118,8 @@ void AGuardian::AI_ReceivedDamage(const EDamageReason InDamageReason, const floa
 	Super::AI_ReceivedDamage(InDamageReason, InDamage);
 }
 
+void AGuardian::AI_AcoMaterialChange() const { GetMesh()->SetMaterial(0, MI_GuardianAcoForm); }
+
 void AGuardian::P_Setup()
 {
 	bImmuneToFirstHit = false;

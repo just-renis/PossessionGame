@@ -316,6 +316,7 @@ protected:
 	virtual void AI_DestroyVfxs();
 	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName);
 	void AI_DestroyBossUnnecessaryComponents();
+	virtual void AI_AcoMaterialChange() const;
 
 	virtual float P_GetMeleeDamage();
 	virtual float P_GetStompDamage();
@@ -601,7 +602,6 @@ private:
 	void AI_ChangeWeakSpotsState(const bool bState);
 	void AI_AddWeakSpots();
 	void AI_TankShieldActionSpeedDebuffEnded();
-	void AI_AcoMaterialChange() const;
 	void AI_SetCombatState(const bool bState);
 
 	int32 P_GetFirstSlotAbilityIndex() const { return P_FirstSlotAbilityIndex; }

@@ -156,6 +156,8 @@ void ASpy::AI_PlayDeathElectrification()
 	}
 }
 
+void ASpy::AI_AcoMaterialChange() const { GetMesh()->SetMaterial(0, MI_SpyAcoForm); }
+
 bool ASpy::P_IsSnatchAbilityAvailable() const { return CanAbilityBeExecuted(1); }
 
 float ASpy::P_GetMeleeDamage()

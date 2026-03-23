@@ -42,6 +42,8 @@ private:
 	TObjectPtr<UMaterialInterface> MI_Invincibility;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_DarkXray;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_SpyAcoForm;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> TeleportKillCameraShake;
 	UPROPERTY()
@@ -75,6 +77,7 @@ private:
 	virtual void AI_OnReachedNonEqsPoint() override;
 	void AI_UseDashToLocationAbility();
 	virtual void AI_PlayDeathElectrification() override;
+	virtual void AI_AcoMaterialChange() const override;
 
 	bool P_IsSnatchAbilityAvailable() const;
 	virtual float P_GetMeleeDamage() override;
