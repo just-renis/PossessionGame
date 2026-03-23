@@ -71,6 +71,7 @@ private:
 	void AI_AddLegendaryUpgrade(const EUpgrade InUpgradeName, const EUpgradeAttribute InUpgradeAttribute);
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 	virtual void AI_ReceiveEmpEffect(const float InEffectDuration) override;
+	virtual void AI_PlayDeathElectrification() override;
 
 	bool P_GetIsLeftMouseInputNotPressed() const;
 	virtual float P_GetStompDamage() override;

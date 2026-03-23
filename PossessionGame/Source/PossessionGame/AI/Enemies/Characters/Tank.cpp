@@ -164,6 +164,17 @@ void ATank::AI_ReceiveEmpEffect(const float InEffectDuration)
 	Super::AI_ReceiveEmpEffect(InEffectDuration);
 }
 
+void ATank::AI_PlayDeathElectrification()
+{
+	// LACKS DEATH ELECTRIFICATION 	else AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
+	if (bIsAco)
+	{
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
+	}
+}
+
 bool ATank::P_GetIsLeftMouseInputNotPressed() const
 {
 	if (bIsInputLocked) return true;

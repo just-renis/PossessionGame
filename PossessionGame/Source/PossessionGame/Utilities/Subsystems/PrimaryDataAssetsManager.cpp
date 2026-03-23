@@ -901,6 +901,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_SoldierBossBulletTrail", EVfx::SoldierBossBulletTrail);
 	VfxsMap.Add("PA_SamuraiSlash", EVfx::SamuraiSlash);
 	VfxsMap.Add("PA_AcoHijackEffect", EVfx::AcoHijackEffect);
+	VfxsMap.Add("PA_AcoFlyTrail", EVfx::AcoFlyTrail);
+	VfxsMap.Add("PA_AcoEject", EVfx::AcoEject);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

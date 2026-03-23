@@ -113,7 +113,13 @@ void ATrickster::AI_PlaySpawnSound() { PlaySound(ESound::TricksterSpawn, true); 
 
 void ATrickster::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::TricksterDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
+	if (bIsAco)
+	{
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
+	}
+	else AssetsManager->AttachVfx(EVfx::TricksterDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
 }
 
 void ATrickster::AI_TryTriggeringPoisonGrenadeLaunch()

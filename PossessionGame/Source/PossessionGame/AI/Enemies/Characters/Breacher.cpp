@@ -181,7 +181,13 @@ void ABreacher::AI_DisableActions(const float InEffectDuration, const EDisabling
 
 void ABreacher::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::BreacherDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
+	if (bIsAco)
+	{
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
+	}
+	else AssetsManager->AttachVfx(EVfx::BreacherDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
 }
 
 void ABreacher::AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

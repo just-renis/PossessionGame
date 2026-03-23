@@ -18,7 +18,6 @@ struct POSSESSIONGAME_API FStateTreeData
 	bool GetIsTargetInMySight() const { return bIsTargetInMySight; }
 	bool GetIsEQSPointAvailable() const { return bIsEQSPointAvailable; }
 	bool GetIsActionInMotion() const { return bIsActionInMotion; }
-	FVector GetTargetLocation() const { return Target->GetActorLocation(); }
 	FVector GetMoveLocation() const;
 	TObjectPtr<AActor> GetTarget() { return Target; }
 	TObjectPtr<UStateTreeComponent>& GetStateTreeRef() { return StateTree; }
