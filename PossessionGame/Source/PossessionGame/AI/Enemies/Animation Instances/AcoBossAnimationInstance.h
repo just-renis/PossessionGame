@@ -8,4 +8,9 @@ UCLASS()
 class POSSESSIONGAME_API UAcoBossAnimationInstance : public UEnemyAnimationInstance
 {
 	GENERATED_BODY()
+public:
+	void SetIsFlying(const bool bState) { bIsFlying = bState; }
+private:
+	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
+	bool bIsFlying = false;
 };

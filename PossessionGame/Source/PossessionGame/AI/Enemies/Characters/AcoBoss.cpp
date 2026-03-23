@@ -1,5 +1,6 @@
 ﻿#include "AcoBoss.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "PossessionGame/AI/Enemies/Animation Instances/AcoBossAnimationInstance.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
@@ -26,6 +27,7 @@ void AAcoBoss::BeginPlay()
 	bIsBoss = true;
 	DefaultSpawnLocation = GetActorLocation();
 	Super::BeginPlay();
+	AcoAnimInstance = Cast<UAcoBossAnimationInstance>(GetAnimInstance());
 	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Boss);
 	SpawnFirstPhaseEnemy();
@@ -56,6 +58,7 @@ void AAcoBoss::SpawnFirstPhaseEnemy()
 void AAcoBoss::SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijackTarget)
 {
 	HijackTargetEnemy = InHijackTarget;
+	AcoAnimInstance->SetIsFlying(true);
 	if (AI) AI->GetStateTreeData().SetEQSTargetRef(HijackTargetEnemy);
 	GetWorldTimerManager().SetTimer(FlyingTowardsHijackEnemyHandle, this, &AAcoBoss::ProcessFlyingTowardsHijackTarget, 0.025f, true);
 }
@@ -76,6 +79,7 @@ void AAcoBoss::ProcessFlyingTowardsHijackTarget()
 void AAcoBoss::ReachedHijackTarget()
 {
 	HijackTargetEnemy->AI_ApplyAcoHijack();
+	AcoAnimInstance->SetIsFlying(false);
 	GetWorldTimerManager().ClearTimer(FlyingTowardsHijackEnemyHandle);
 	if (GetMovementComponent()) GetMovementComponent()->StopMovementImmediately();
 	SetActorLocation(DefaultSpawnLocation);

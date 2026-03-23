@@ -5,6 +5,8 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "AcoBoss.generated.h"
 
+class UAcoBossAnimationInstance;
+
 UCLASS()
 class POSSESSIONGAME_API AAcoBoss : public AEnemy
 {
@@ -24,6 +26,8 @@ class POSSESSIONGAME_API AAcoBoss : public AEnemy
 	TObjectPtr<UMaterialInstance> MI_Default;
 	UPROPERTY()
 	TObjectPtr<AEnemy> HijackTargetEnemy;
+	UPROPERTY()
+	TObjectPtr<UAcoBossAnimationInstance> AcoAnimInstance;
 	
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 
