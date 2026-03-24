@@ -20,9 +20,11 @@ private:
 
 	bool bIsFlyingTowardsHijackTarget = false;
 	float UnitsRose = 0.f;
+	int32 CountdownSecs = 6.f;
 	FVector DefaultSpawnLocation;
 	FTimerHandle FlyingTowardsTargetHandle;
 	FTimerHandle RiseUpwardsHandle;
+	FTimerHandle CountdownTimerHandle;
 	TArray<ECharacterType> CharactersToHijack = { /*ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Ranger, ECharacterType::Wraith,
 		ECharacterType::Breacher, ECharacterType::Spy, ECharacterType::Tank, ECharacterType::Samurai*/ ECharacterType::Ranger};
 	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))
@@ -54,5 +56,10 @@ private:
 	void ChangeActorRenderState(const bool bState);
 	void SetupFlyingTowardsColumnLocation();
 	void StandUp() const;
+	void FirstPhaseFinished();
 	void RiseUpwards();
+	void InitiateSecondPhase();
+	void TriggerSlamImpact();
+	void SetupSecondPhaseStartCountdown();
+	void UpdateSecondPhaseCountdown();
 };

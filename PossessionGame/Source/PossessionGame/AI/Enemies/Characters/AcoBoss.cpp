@@ -1,7 +1,9 @@
 ﻿#include "AcoBoss.h"
 
 #include "NiagaraComponent.h"
+#include "Engine/OverlapResult.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Animation Instances/AcoBossAnimationInstance.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECameraShake.h"
@@ -9,8 +11,10 @@
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
 #include "PossessionGame/Enums/EGameMode.h"
+#include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
 AAcoBoss::AAcoBoss()
 {
@@ -38,6 +42,7 @@ void AAcoBoss::BeginPlay()
 	DelegateManager->OnAcoEnemySpawned.BindUObject(this, &AAcoBoss::SetupFlyingTowardsHijackTarget);
 	DelegateManager->OnFinalBossModeInitiated.BindUObject(this, &AAcoBoss::StandUp);
 	DelegateManager->OnAcoEnemyDeath.BindUObject(this, &AAcoBoss::SetupFlyingTowardsColumnLocation);
+	//DelegateManager->OnAcoPlatformRiseComplete.BindUObject(this, &AAcoBoss::InitiateSecondPhase);
 }
 
 void AAcoBoss::ApplyEmpEffect(const float InEffectDuration) { Super::ApplyEmpEffect(InEffectDuration * 0.5f); }
@@ -64,10 +69,7 @@ void AAcoBoss::SpawnFirstPhaseEnemy()
 {
 	if (CharactersToHijack.IsEmpty())
 	{
-		UE_LOG(LogTemp, Error, TEXT("FIRST PHASE COMPLETED"));
-		(void)DelegateManager->OnAcoFirstPhaseFinish.ExecuteIfBound();
-		AcoAnimInstance->StopMontage(EEnemyAnimState::Kneel);
-		GetWorldTimerManager().SetTimer(RiseUpwardsHandle, this, &AAcoBoss::RiseUpwards, 0.025f, true);
+		FirstPhaseFinished();
 		return;
 	}
 	const int32 Index = FMath::RandRange(0, CharactersToHijack.Num() - 1);
@@ -134,13 +136,65 @@ void AAcoBoss::SetupFlyingTowardsColumnLocation()
 
 void AAcoBoss::StandUp() const { AcoAnimInstance->PlayMontage(EEnemyAnimState::StandUp); }
 
+void AAcoBoss::FirstPhaseFinished()
+{
+	(void)DelegateManager->OnAcoFirstPhaseFinish.ExecuteIfBound();
+	AcoAnimInstance->StopMontage(EEnemyAnimState::Kneel);
+	SetupSecondPhaseStartCountdown();
+	GetWorldTimerManager().SetTimer(RiseUpwardsHandle, this, &AAcoBoss::RiseUpwards, 0.025f, true);
+}
+
 void AAcoBoss::RiseUpwards()
 {
 	SetActorLocation(GetActorLocation() + FVector::UpVector * RisingUpwardsSpeed);
 	UnitsRose += RisingUpwardsSpeed;
 	if (UnitsRose >= UnitsToRise)
 	{
-		UE_LOG(LogTemp, Error, TEXT("REACHED SKY"));
+		ChangeActorRenderState(false);
+		SetActorLocation(DefaultSpawnLocation);
 		GetWorldTimerManager().ClearTimer(RiseUpwardsHandle);
+	}
+}
+
+void AAcoBoss::InitiateSecondPhase()
+{
+	ChangeActorRenderState(true);
+	AcoAnimInstance->PlayMontage(EEnemyAnimState::SlamFromSky);
+	FTimerHandle SlamHandle;
+	GetWorldTimerManager().SetTimer(SlamHandle, this, &AAcoBoss::TriggerSlamImpact, 0.3f);
+}
+
+void AAcoBoss::TriggerSlamImpact()
+{
+	DrawDebugSphere(GetWorld(), GetActorLocation(), StompRadiusInMeters * 100.f, 32, FColor::Red, false, 5.f);
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompRadiusInMeters * 100.f));
+	for (const FOverlapResult& Result : Overlaps)
+	{
+		TObjectPtr<AActor> HitActor = Result.GetActor();
+		if (!HitActor) continue;
+		if (HitActor->ActorHasTag("Player"))
+		{
+			UGameplayStatics::ApplyDamage(HitActor, StompDamage, nullptr, this, UDamageType::StaticClass());
+			return;
+		}
+	}
+}
+
+void AAcoBoss::SetupSecondPhaseStartCountdown()
+{
+	UpdateSecondPhaseCountdown();
+	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &AAcoBoss::UpdateSecondPhaseCountdown, 1.f, true);
+}
+
+void AAcoBoss::UpdateSecondPhaseCountdown()
+{
+	const TObjectPtr<UWaveManagerHUD> WaveManagerUI = GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD);
+	WaveManagerUI->UpdateCountdown(--CountdownSecs);
+	WaveManagerUI->PlayCountdownAnim();
+	if (CountdownSecs <= 0)
+	{
+		GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+		InitiateSecondPhase();
 	}
 }

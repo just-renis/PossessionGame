@@ -19,5 +19,6 @@ enum class EEnemyAnimState : uint8
 	ActivateFloorLava,
 	Slash,
 	Kneel,
-	StandUp
+	StandUp,
+	SlamFromSky
 };

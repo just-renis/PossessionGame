@@ -1,5 +1,4 @@
 ﻿#include "FinalBossPlatform.h"
-
 #include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 
@@ -25,5 +24,9 @@ void AFinalBossPlatform::ProcessRising()
 {
 	SetActorLocation(GetActorLocation() + FVector::UpVector * RisingSpeed);
 	UnitsRose += RisingSpeed;
-	if (UnitsRose >= UnitsToRise) GetWorldTimerManager().ClearTimer(RisingHandle);
+	if (UnitsRose >= UnitsToRise)
+	{
+		(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAcoPlatformRiseComplete.ExecuteIfBound();
+		GetWorldTimerManager().ClearTimer(RisingHandle);
+	}
 }
