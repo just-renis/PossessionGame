@@ -12,6 +12,8 @@ class POSSESSIONGAME_API AAcoBoss : public AEnemy
 {
 	GENERATED_BODY()
 public:
+	FVector GetCurrentTargetLocation() const;
+	
 	void SpawnFirstPhaseEnemy();
 private:
 	AAcoBoss();
@@ -46,5 +48,4 @@ private:
 	void ChangeActorRenderState(const bool bState);
 	void SetupFlyingTowardsColumnLocation();
 	void StandUp() const;
-	void StopKneelingMontage();
 };

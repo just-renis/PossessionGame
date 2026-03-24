@@ -63,6 +63,8 @@ protected:
 	TObjectPtr<UEnemyCommunicator> EnemyCommunicator;
 	UPROPERTY()
 	TObjectPtr<AActor> EQSTarget;
+
+	virtual FVector GetFocusTargetLocation() const;
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

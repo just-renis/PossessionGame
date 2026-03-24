@@ -52,6 +52,12 @@ void AAcoBoss::InitiateDeath()
 	DelegateManager->OnBossDeath.Broadcast();
 }
 
+FVector AAcoBoss::GetCurrentTargetLocation() const
+{
+	if (!HijackTargetEnemy) return DefaultSpawnLocation;
+	return bIsFlyingTowardsHijackTarget ? HijackTargetEnemy->GetActorLocation() : DefaultSpawnLocation;
+}
+
 void AAcoBoss::SpawnFirstPhaseEnemy()
 {
 	if (CharactersToHijack.IsEmpty())
@@ -66,6 +72,7 @@ void AAcoBoss::SpawnFirstPhaseEnemy()
 
 void AAcoBoss::SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijackTarget)
 {
+	AcoAnimInstance->StopMontage(EEnemyAnimState::Kneel);
 	if (!FlyTrailVfx) AssetsManager->AttachVfx(EVfx::AcoFlyTrail, nullptr, &FlyTrailVfx, GetMesh(), FName("RootSocket"));
 	else FlyTrailVfx->Activate();
 	bIsFlyingTowardsHijackTarget = true;
@@ -77,14 +84,10 @@ void AAcoBoss::SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijack
 void AAcoBoss::ProcessFlyingTowardsHijackTarget()
 {
 	if (!HijackTargetEnemy) return;
-	const FVector ToTarget = (bIsFlyingTowardsHijackTarget ? HijackTargetEnemy->GetActorLocation() : DefaultSpawnLocation) - GetActorLocation();
-	const float Distance = ToTarget.Size();
-	if (Distance <= StopDistance)
-	{
-		ReachedHijackTarget();
-		return;
-	}
-	AddMovementInput(ToTarget.GetSafeNormal(), MovementSpeedTowardsHijackTarget);
+	const FVector TargetLocation = GetCurrentTargetLocation();
+	const FVector NewLocation = FMath::VInterpConstantTo(GetActorLocation(), TargetLocation, 0.025f, MovementSpeedTowardsHijackTarget);
+	SetActorLocation(NewLocation);
+	if (FVector::Dist(NewLocation, TargetLocation) <= StopDistance) ReachedHijackTarget();
 }
 
 void AAcoBoss::ReachedHijackTarget()
@@ -102,7 +105,7 @@ void AAcoBoss::ReachedHijackTarget()
 	{
 		AcoAnimInstance->PlayMontage(EEnemyAnimState::Kneel);
 		FTimerHandle SpawnNextHijackAbleEnemyHandle;
-		GetWorldTimerManager().SetTimer(SpawnNextHijackAbleEnemyHandle, this, &AAcoBoss::StopKneelingMontage, 1.f);
+		GetWorldTimerManager().SetTimer(SpawnNextHijackAbleEnemyHandle, this, &AAcoBoss::SpawnFirstPhaseEnemy, 1.f);
 	}
 }
 
@@ -121,9 +124,3 @@ void AAcoBoss::SetupFlyingTowardsColumnLocation()
 }
 
 void AAcoBoss::StandUp() const { AcoAnimInstance->PlayMontage(EEnemyAnimState::StandUp); }
-
-void AAcoBoss::StopKneelingMontage()
-{
-	AcoAnimInstance->StopMontage(EEnemyAnimState::Kneel);
-	SpawnFirstPhaseEnemy();
-}

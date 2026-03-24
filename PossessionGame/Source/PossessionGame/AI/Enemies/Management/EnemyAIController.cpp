@@ -77,6 +77,8 @@ void AEnemyAIController::StopLogic(const bool bNeedCleanup)
 	StopStateTreeLogic(bNeedCleanup);
 }
 
+FVector AEnemyAIController::GetFocusTargetLocation() const { return bIsUsingEQS ? EnemyCommunicator->GetTargetLocation() : StateTreeData.GetMoveLocation(); }
+
 void AEnemyAIController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -95,7 +97,7 @@ void AEnemyAIController::AdjustCustomFocus()
 {
 	if (!Proprietor->GetIsActionInMotion())
 	{
-		FVector TargetLocation = bIsUsingEQS ? EnemyCommunicator->GetTargetLocation() : StateTreeData.GetMoveLocation();
+		FVector TargetLocation = GetFocusTargetLocation();
 		if ((Proprietor->GetMoveMode() != EMoveMode::Walk || TargetLocation.ContainsNaN()) && bIsControlRigAvailableToToggle) Proprietor->GetAnimInstance()->SetIsControlRigEnabled(false);
 		else
 		{
