@@ -12,5 +12,6 @@ enum class ECameraShake : uint8
     PlayerStunned,
     WraithMeteorLandCameraShake,
     SpyTeleportKillCameraShake,
-    TankSlamCameraShake
+    TankSlamCameraShake,
+    AcoDashInitiationCameraShake
 };

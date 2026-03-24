@@ -37,6 +37,7 @@ DECLARE_DELEGATE(FOnPlayerBashKill);
 DECLARE_DELEGATE(FOnRunModeChange);
 DECLARE_DELEGATE(FOnFinalBossModeInitiated);
 DECLARE_DELEGATE(FOnAcoEnemyDeath);
+DECLARE_DELEGATE(FOnAcoFirstPhaseFinish);
 DECLARE_DELEGATE_RetVal(int32, FOnRunFinished);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsSpyMarkerRequired);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsTimeStopUsed);
@@ -138,6 +139,7 @@ public:
 	FOnRunModeChange OnRunModeChange;
 	FOnFinalBossModeInitiated OnFinalBossModeInitiated;
 	FOnAcoEnemyDeath OnAcoEnemyDeath;
+	FOnAcoFirstPhaseFinish OnAcoFirstPhaseFinish;
 	FOnRunFinished OnRunFinished;
 	FRequestIsSpyMarkerRequired RequestIsSpyMarkerRequired;
 	FRequestIsTimeStopUsed RequestIsTimeStopUsed;

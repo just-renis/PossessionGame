@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PossessionGame/AI/Enemies/Animation Instances/AcoBossAnimationInstance.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
+#include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
@@ -78,6 +79,7 @@ void AAcoBoss::SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijack
 	bIsFlyingTowardsHijackTarget = true;
 	HijackTargetEnemy = InHijackTarget;
 	AcoAnimInstance->SetIsFlying(true);
+	(void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::AcoDashInitiationCameraShake);
 	GetWorldTimerManager().SetTimer(FlyingTowardsHijackEnemyHandle, this, &AAcoBoss::ProcessFlyingTowardsHijackTarget, 0.025f, true);
 }
 
@@ -117,9 +119,12 @@ void AAcoBoss::ChangeActorRenderState(const bool bState)
 
 void AAcoBoss::SetupFlyingTowardsColumnLocation()
 {
+	if (!FlyTrailVfx) AssetsManager->AttachVfx(EVfx::AcoFlyTrail, nullptr, &FlyTrailVfx, GetMesh(), FName("RootSocket"));
+	else FlyTrailVfx->Activate();
 	bIsFlyingTowardsHijackTarget = false;
 	ChangeActorRenderState(true);
 	AcoAnimInstance->SetIsFlying(true);
+	(void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::AcoDashInitiationCameraShake);
 	GetWorldTimerManager().SetTimer(FlyingTowardsHijackEnemyHandle, this, &AAcoBoss::ProcessFlyingTowardsHijackTarget, 0.025f, true);
 }
 
