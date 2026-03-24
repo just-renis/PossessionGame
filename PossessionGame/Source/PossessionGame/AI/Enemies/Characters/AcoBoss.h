@@ -15,16 +15,24 @@ public:
 	FVector GetCurrentTargetLocation() const;
 	
 	void SpawnFirstPhaseEnemy();
+	void InitiateFight();
 private:
 	AAcoBoss();
 
 	bool bIsFlyingTowardsHijackTarget = false;
+	bool bIsUltraInstinctActive = false;
 	float UnitsRose = 0.f;
+	float UltraInstinctCooldown = 5.f;
+	float UltraInstinctTimer = 0.f;
+	float UltraInstinctHoldPose = 2.f;
+	float UltraInstinctHoldTimer = 0.f;
+	const float FrameRate = 1.f / 60.f;
 	int32 CountdownSecs = 6.f;
 	FVector DefaultSpawnLocation;
 	FTimerHandle FlyingTowardsTargetHandle;
 	FTimerHandle RiseUpwardsHandle;
 	FTimerHandle CountdownTimerHandle;
+	FTimerHandle AbilityCycleHandle;
 	TArray<ECharacterType> CharactersToHijack = { /*ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Ranger, ECharacterType::Wraith,
 		ECharacterType::Breacher, ECharacterType::Spy, ECharacterType::Tank, ECharacterType::Samurai*/ ECharacterType::Ranger};
 	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))
@@ -62,4 +70,6 @@ private:
 	void TriggerSlamImpact();
 	void SetupSecondPhaseStartCountdown();
 	void UpdateSecondPhaseCountdown();
+	void ProcessAbilityCycle();
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };

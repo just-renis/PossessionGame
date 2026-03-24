@@ -8,7 +8,6 @@
 #include "PossessionGame/Enums/EVfxType.h"
 #include "PossessionGame/Projectiles/Throwables/BreacherBarrel.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
@@ -88,7 +87,6 @@ void ASpyWeapon::P_DealDamageThroughWeakPoint(const FHitResult& InHitResult)
 	const float RangeMultiplier = P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
 	if (FMath::IsNearlyEqual(RangeMultiplier, 0.f, 0.01f)) return;
 	const bool bIsCritical = InHitResult.BoneName.IsEqual(FName("head"));
-	(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 	
 	float CriticalDamageMultiplier = 1.f;
 	if (bIsCritical) CriticalDamageMultiplier = P_GetCriticalDamage();

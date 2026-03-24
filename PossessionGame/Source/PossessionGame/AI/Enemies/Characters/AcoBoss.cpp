@@ -1,6 +1,6 @@
 ﻿#include "AcoBoss.h"
-
 #include "NiagaraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/OverlapResult.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -75,6 +75,13 @@ void AAcoBoss::SpawnFirstPhaseEnemy()
 	const int32 Index = FMath::RandRange(0, CharactersToHijack.Num() - 1);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(CharactersToHijack[Index], EGameMode::FinalBossEnemySpawn, nullptr, nullptr);
 	CharactersToHijack.RemoveAt(Index);
+}
+
+void AAcoBoss::InitiateFight()
+{
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetWorldTimerManager().SetTimer(AbilityCycleHandle, this, &AAcoBoss::ProcessAbilityCycle, FrameRate, true);
 }
 
 void AAcoBoss::SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijackTarget)
@@ -172,12 +179,9 @@ void AAcoBoss::TriggerSlamImpact()
 	for (const FOverlapResult& Result : Overlaps)
 	{
 		TObjectPtr<AActor> HitActor = Result.GetActor();
-		if (!HitActor) continue;
-		if (HitActor->ActorHasTag("Player"))
-		{
-			UGameplayStatics::ApplyDamage(HitActor, StompDamage, nullptr, this, UDamageType::StaticClass());
-			return;
-		}
+		if (!HitActor || !HitActor->ActorHasTag("Player")) continue;
+		UGameplayStatics::ApplyDamage(HitActor, StompDamage, nullptr, this, UDamageType::StaticClass());
+		return;
 	}
 }
 
@@ -197,4 +201,26 @@ void AAcoBoss::UpdateSecondPhaseCountdown()
 		GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
 		InitiateSecondPhase();
 	}
+}
+
+void AAcoBoss::ProcessAbilityCycle()
+{
+	if (bIsUltraInstinctActive) return;
+	UltraInstinctTimer += FrameRate;
+	if (UltraInstinctTimer >= UltraInstinctCooldown)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ULTRA INSTINCT ENABLED"));
+		bIsUltraInstinctActive = true;
+		UltraInstinctTimer = 0.f;
+	}
+}
+
+float AAcoBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (bIsUltraInstinctActive)
+	{
+		SetActorLocation(FVector(GetActorLocation().X + FMath::RandRange(-100.f, 100.f), GetActorLocation().Y + FMath::RandRange(-100.f, 100.f), GetActorLocation().Z));
+		return 0.f;
+	}
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }

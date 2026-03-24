@@ -495,13 +495,22 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 	}
 	else if (bIsAlive)
 	{
-		if (RadialDamageEvent) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
+		if (RadialDamageEvent)
+		{
+			(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
+			(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
+		}
 		else if (PointDamageEvent)
 		{
 			const bool bIsCritical = PointDamageEvent->HitInfo.BoneName.IsEqual(FName("head"));
+			(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 			(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(bIsCritical ? CriticalDamageNumberColor : GetDamageNumberColor(), InDamage, PointDamageEvent->HitInfo.Location, GetActorForwardVector());
 		}
-		else (void)DelegateManager->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
+		else
+		{
+			(void)DelegateManager->ShowDamageNumber.ExecuteIfBound(GetDamageNumberColor(), InDamage, GetActorLocation(), GetActorForwardVector());
+			(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
+		}
 		AI_ReceivedDamage(InDamageReason, InDamage);
 	}
 	if (bIsAlive && CurrentHp <= 0)
@@ -1037,7 +1046,6 @@ void AEnemy::P_ProcessMeleeAttack()
 		TraceParams.AddIgnoredActor(Actor);
 		if (GetWorld()->LineTraceSingleByChannel(Hit, Origin, Actor->GetActorLocation(), ECC_Visibility, TraceParams)) return;
 		UGameplayStatics::ApplyDamage(Actor, P_GetMeleeDamage(), GetController(), this, UDamageType::StaticClass());
-		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
 	}
 }
 
@@ -1080,7 +1088,6 @@ void AEnemy::P_StompImpact(const FVector& InHitLocation)
 		Params.AddIgnoredActor(Actor);
 		if (GetWorld()->LineTraceSingleByChannel(Hit, InHitLocation, Actor->GetActorLocation(), ECC_Visibility, Params)) continue;
 		UGameplayStatics::ApplyDamage(Actor, P_GetStompDamage(), nullptr, this, UDamageType::StaticClass());
-		(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(false);
 	}
 }
 

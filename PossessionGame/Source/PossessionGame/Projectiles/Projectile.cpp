@@ -184,7 +184,6 @@ void AProjectile::DealDamageToSentientActor(const bool bIsPlayerProjectile, cons
 	ModifiableHit.TraceStart = StartLocation;
 	TrueDamage *= P_CalculateByRangeDamage(ModifiableHit);
 	UGameplayStatics::ApplyPointDamage(OtherActor, TrueDamage, (ModifiableHit.Location - GetActorLocation()).GetSafeNormal() * 2.f, ModifiableHit, ProjectileData.GetProprietor() ? ProjectileData.GetProprietor()->GetController() : nullptr, this, UDamageType::StaticClass());
-	if (ProjectileData.GetProprietor()) (void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 }
 
 void AProjectile::SpawnFirstProjectileImpactVfx(const FHitResult& Hit) { SpawnProjectileImpactVfx(Hit, true); }

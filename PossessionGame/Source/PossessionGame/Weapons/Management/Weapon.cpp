@@ -331,7 +331,6 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	const float RangeMultiplier = P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
 	if (FMath::IsNearlyEqual(RangeMultiplier, 0.f, 0.01f)) return;
 	const bool bIsCritical = InHitResult.BoneName.IsEqual(FName("head"));
-	(void)DelegateManager->OnPlayerDamageDealt.ExecuteIfBound(bIsCritical);
 	if (InHitResult.GetActor()->ActorHasTag("Destructible"))
 	{
 		UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), AfterPlayerLevelAllGlobalDamage * RangeMultiplier, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
