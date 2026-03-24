@@ -1007,6 +1007,7 @@ void AEnemy::P_MakeCameraShake(const ECameraShake InCameraShakeName)
 		case ECameraShake::PlayerStunned: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(StunnedCameraShake); break;
 		case ECameraShake::WraithMeteorLandCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(WraithMeteorLandCameraShake); break;
 		case ECameraShake::AcoDashInitiationCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(AcoDashInitiationCameraShake); break;
+		case ECameraShake::AcoPlatformRiseCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(AcoRisePlatformCameraShake); break;
 		default: ;
 	}
 }

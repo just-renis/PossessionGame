@@ -19,14 +19,20 @@ private:
 	AAcoBoss();
 
 	bool bIsFlyingTowardsHijackTarget = false;
+	float UnitsRose = 0.f;
 	FVector DefaultSpawnLocation;
-	FTimerHandle FlyingTowardsHijackEnemyHandle;
-	TArray<ECharacterType> CharactersToHijack = { ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Ranger, ECharacterType::Wraith,
-		ECharacterType::Breacher, ECharacterType::Spy, ECharacterType::Tank, ECharacterType::Samurai };
+	FTimerHandle FlyingTowardsTargetHandle;
+	FTimerHandle RiseUpwardsHandle;
+	TArray<ECharacterType> CharactersToHijack = { /*ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Ranger, ECharacterType::Wraith,
+		ECharacterType::Breacher, ECharacterType::Spy, ECharacterType::Tank, ECharacterType::Samurai*/ ECharacterType::Ranger};
 	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))
 	float MovementSpeedTowardsHijackTarget = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))
 	float StopDistance = 20.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Second Phase", meta = (AllowPrivateAccess = true))
+	float RisingUpwardsSpeed = 20.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Second Phase", meta = (AllowPrivateAccess = true))
+	float UnitsToRise = 2000.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Default", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInstance> MI_Default;
 	UPROPERTY()
@@ -43,9 +49,10 @@ private:
 	virtual void ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent) override;
 	virtual void InitiateDeath() override;
 	void SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijackTarget);
-	void ProcessFlyingTowardsHijackTarget();
+	void ProcessFlyingTowardsTarget();
 	void ReachedHijackTarget();
 	void ChangeActorRenderState(const bool bState);
 	void SetupFlyingTowardsColumnLocation();
 	void StandUp() const;
+	void RiseUpwards();
 };

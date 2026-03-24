@@ -30,6 +30,7 @@ void AAcoBoss::BeginPlay()
 	bIsBoss = true;
 	DefaultSpawnLocation = GetActorLocation();
 	Super::BeginPlay();
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AcoAnimInstance = Cast<UAcoBossAnimationInstance>(GetAnimInstance());
 	AcoAnimInstance->PlayMontage(EEnemyAnimState::Kneel);
 	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
@@ -64,6 +65,9 @@ void AAcoBoss::SpawnFirstPhaseEnemy()
 	if (CharactersToHijack.IsEmpty())
 	{
 		UE_LOG(LogTemp, Error, TEXT("FIRST PHASE COMPLETED"));
+		(void)DelegateManager->OnAcoFirstPhaseFinish.ExecuteIfBound();
+		AcoAnimInstance->StopMontage(EEnemyAnimState::Kneel);
+		GetWorldTimerManager().SetTimer(RiseUpwardsHandle, this, &AAcoBoss::RiseUpwards, 0.025f, true);
 		return;
 	}
 	const int32 Index = FMath::RandRange(0, CharactersToHijack.Num() - 1);
@@ -80,10 +84,10 @@ void AAcoBoss::SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijack
 	HijackTargetEnemy = InHijackTarget;
 	AcoAnimInstance->SetIsFlying(true);
 	(void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::AcoDashInitiationCameraShake);
-	GetWorldTimerManager().SetTimer(FlyingTowardsHijackEnemyHandle, this, &AAcoBoss::ProcessFlyingTowardsHijackTarget, 0.025f, true);
+	GetWorldTimerManager().SetTimer(FlyingTowardsTargetHandle, this, &AAcoBoss::ProcessFlyingTowardsTarget, 0.025f, true);
 }
 
-void AAcoBoss::ProcessFlyingTowardsHijackTarget()
+void AAcoBoss::ProcessFlyingTowardsTarget()
 {
 	if (!HijackTargetEnemy) return;
 	const FVector TargetLocation = GetCurrentTargetLocation();
@@ -96,7 +100,7 @@ void AAcoBoss::ReachedHijackTarget()
 {
 	if (FlyTrailVfx) FlyTrailVfx->DeactivateImmediate();
 	AcoAnimInstance->SetIsFlying(false);
-	GetWorldTimerManager().ClearTimer(FlyingTowardsHijackEnemyHandle);
+	GetWorldTimerManager().ClearTimer(FlyingTowardsTargetHandle);
 	if (GetMovementComponent()) GetMovementComponent()->StopMovementImmediately();
 	if (bIsFlyingTowardsHijackTarget)
 	{
@@ -125,7 +129,18 @@ void AAcoBoss::SetupFlyingTowardsColumnLocation()
 	ChangeActorRenderState(true);
 	AcoAnimInstance->SetIsFlying(true);
 	(void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::AcoDashInitiationCameraShake);
-	GetWorldTimerManager().SetTimer(FlyingTowardsHijackEnemyHandle, this, &AAcoBoss::ProcessFlyingTowardsHijackTarget, 0.025f, true);
+	GetWorldTimerManager().SetTimer(FlyingTowardsTargetHandle, this, &AAcoBoss::ProcessFlyingTowardsTarget, 0.025f, true);
 }
 
 void AAcoBoss::StandUp() const { AcoAnimInstance->PlayMontage(EEnemyAnimState::StandUp); }
+
+void AAcoBoss::RiseUpwards()
+{
+	SetActorLocation(GetActorLocation() + FVector::UpVector * RisingUpwardsSpeed);
+	UnitsRose += RisingUpwardsSpeed;
+	if (UnitsRose >= UnitsToRise)
+	{
+		UE_LOG(LogTemp, Error, TEXT("REACHED SKY"));
+		GetWorldTimerManager().ClearTimer(RiseUpwardsHandle);
+	}
+}
