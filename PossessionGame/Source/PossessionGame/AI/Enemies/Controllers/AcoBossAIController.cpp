@@ -10,6 +10,11 @@ FVector AAcoBossAIController::GetFocusTargetLocation() const
 void AAcoBossAIController::BeginPlay()
 {
 	Super::BeginPlay();
-	RealProprietor = Cast<AAcoBoss>(Proprietor);
 	SetIsUsingEQS(false);
+}
+
+void AAcoBossAIController::SetProprietor(const TObjectPtr<AEnemy>& InEnemy)
+{
+	Super::SetProprietor(InEnemy);
+	RealProprietor = Cast<AAcoBoss>(Proprietor);
 }

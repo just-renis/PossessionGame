@@ -41,7 +41,7 @@ public:
 	void SetShootCooldown(const float InValue);
 	void SetReloadDelay(const float InValue);
 	virtual void DestroyThis();
-	void SetProprietor(const TObjectPtr<AEnemy>& InEnemy);
+	virtual void SetProprietor(const TObjectPtr<AEnemy>& InEnemy);
 	void SetupStateTree();
 	void SetMoveMode(const EMoveMode InMoveMode) const;
 	virtual void SetupAI();

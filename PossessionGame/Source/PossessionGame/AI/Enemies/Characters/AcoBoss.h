@@ -27,7 +27,8 @@ private:
 	float UltraInstinctHoldTimer = 0.f;
 	const float FrameRate = 1.f / 60.f;
 	int32 CountdownSecs = 6.f;
-	FVector DefaultSpawnLocation;
+	int32 CurrentUltraInstinctPose = 0;
+	FVector LookAtLocation;
 	FTimerHandle FlyingTowardsTargetHandle;
 	FTimerHandle CountdownTimerHandle;
 	FTimerHandle AbilityCycleHandle;

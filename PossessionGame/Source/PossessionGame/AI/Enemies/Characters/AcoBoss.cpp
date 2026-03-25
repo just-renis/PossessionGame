@@ -13,6 +13,7 @@
 #include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WidgetManager.h"
 
@@ -32,7 +33,7 @@ void AAcoBoss::BeginPlay()
 {
 	CharacterName = ECharacterType::AcoBoss;
 	bIsBoss = true;
-	DefaultSpawnLocation = GetActorLocation();
+	LookAtLocation = GetActorLocation();
 	Super::BeginPlay();
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	AcoAnimInstance = Cast<UAcoBossAnimationInstance>(GetAnimInstance());
@@ -61,8 +62,8 @@ void AAcoBoss::InitiateDeath()
 
 FVector AAcoBoss::GetCurrentTargetLocation() const
 {
-	if (!HijackTargetEnemy) return DefaultSpawnLocation;
-	return bIsFlyingTowardsHijackTarget ? HijackTargetEnemy->GetActorLocation() : DefaultSpawnLocation;
+	if (!HijackTargetEnemy) return LookAtLocation;
+	return bIsFlyingTowardsHijackTarget ? HijackTargetEnemy->GetActorLocation() : LookAtLocation;
 }
 
 void AAcoBoss::SpawnFirstPhaseEnemy()
@@ -91,7 +92,7 @@ void AAcoBoss::SetupFlyingTowardsHijackTarget(const TObjectPtr<AEnemy>& InHijack
 	else FlyTrailVfx->Activate();
 	bIsFlyingTowardsHijackTarget = true;
 	HijackTargetEnemy = InHijackTarget;
-	AcoAnimInstance->SetIsFlying(true);
+	AcoAnimInstance->SetFlyingState(true);
 	(void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::AcoDashInitiationCameraShake);
 	GetWorldTimerManager().SetTimer(FlyingTowardsTargetHandle, this, &AAcoBoss::ProcessFlyingTowardsTarget, 0.025f, true);
 }
@@ -108,7 +109,7 @@ void AAcoBoss::ProcessFlyingTowardsTarget()
 void AAcoBoss::ReachedHijackTarget()
 {
 	if (FlyTrailVfx) FlyTrailVfx->DeactivateImmediate();
-	AcoAnimInstance->SetIsFlying(false);
+	AcoAnimInstance->SetFlyingState(false);
 	GetWorldTimerManager().ClearTimer(FlyingTowardsTargetHandle);
 	if (GetMovementComponent()) GetMovementComponent()->StopMovementImmediately();
 	if (bIsFlyingTowardsHijackTarget)
@@ -136,7 +137,7 @@ void AAcoBoss::SetupFlyingTowardsColumnLocation()
 	else FlyTrailVfx->Activate();
 	bIsFlyingTowardsHijackTarget = false;
 	ChangeActorRenderState(true);
-	AcoAnimInstance->SetIsFlying(true);
+	AcoAnimInstance->SetFlyingState(true);
 	(void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::AcoDashInitiationCameraShake);
 	GetWorldTimerManager().SetTimer(FlyingTowardsTargetHandle, this, &AAcoBoss::ProcessFlyingTowardsTarget, 0.025f, true);
 }
@@ -199,6 +200,10 @@ void AAcoBoss::ProcessAbilityCycle()
 		UE_LOG(LogTemp, Error, TEXT("ULTRA INSTINCT ENABLED"));
 		bIsUltraInstinctActive = true;
 		UltraInstinctTimer = 0.f;
+		CurrentUltraInstinctPose = FMath::RandRange(0, 3);
+		LookAtLocation = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetTargetLocation();
+		AcoAnimInstance->SetUltraInstinctPose(CurrentUltraInstinctPose);
+		AcoAnimInstance->SetUltraInstinctState(true);
 	}
 }
 
@@ -206,6 +211,10 @@ float AAcoBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 {
 	if (bIsUltraInstinctActive)
 	{
+		const int32 Offset = FMath::RandRange(1, 3);
+		CurrentUltraInstinctPose = (CurrentUltraInstinctPose + Offset) % 4;
+		LookAtLocation = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetTargetLocation();
+		AcoAnimInstance->SetUltraInstinctPose(CurrentUltraInstinctPose);
 		SetActorLocation(FVector(GetActorLocation().X + FMath::RandRange(-100.f, 100.f), GetActorLocation().Y + FMath::RandRange(-100.f, 100.f), GetActorLocation().Z));
 		return 0.f;
 	}

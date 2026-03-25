@@ -17,4 +17,5 @@ class POSSESSIONGAME_API AAcoBossAIController : public AEnemyAIController
 	virtual FVector GetFocusTargetLocation() const override;
 
 	virtual void BeginPlay() override;
+	virtual void SetProprietor(const TObjectPtr<AEnemy>& InEnemy) override;
 };
