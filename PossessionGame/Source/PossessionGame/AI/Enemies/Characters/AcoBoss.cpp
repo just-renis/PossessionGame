@@ -160,6 +160,7 @@ void AAcoBoss::InitiateSecondPhase()
 
 void AAcoBoss::TriggerSlamImpact()
 {
+	(void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::AcoSlamCameraShake);
 	TArray<FOverlapResult> Overlaps;
 	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompRadiusInMeters * 100.f));
 	for (const FOverlapResult& Result : Overlaps)

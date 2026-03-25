@@ -16,7 +16,7 @@ void AFinalBossPlatform::BeginPlay()
 
 void AFinalBossPlatform::SetupRisingLogic()
 {
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::AcoDashInitiationCameraShake);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestTriggerCameraShake.ExecuteIfBound(ECameraShake::AcoPlatformRiseCameraShake);
 	GetWorldTimerManager().SetTimer(RisingHandle, this, &AFinalBossPlatform::ProcessRising, 0.025f, true);
 }
 
