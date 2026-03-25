@@ -173,7 +173,6 @@ void AAcoBoss::InitiateSecondPhase()
 
 void AAcoBoss::TriggerSlamImpact()
 {
-	DrawDebugSphere(GetWorld(), GetActorLocation(), StompRadiusInMeters * 100.f, 32, FColor::Red, false, 5.f);
 	TArray<FOverlapResult> Overlaps;
 	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompRadiusInMeters * 100.f));
 	for (const FOverlapResult& Result : Overlaps)
