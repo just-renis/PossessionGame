@@ -146,21 +146,8 @@ void AAcoBoss::StandUp() const { AcoAnimInstance->PlayMontage(EEnemyAnimState::S
 void AAcoBoss::FirstPhaseFinished()
 {
 	(void)DelegateManager->OnAcoFirstPhaseFinish.ExecuteIfBound();
-	AcoAnimInstance->StopMontage(EEnemyAnimState::Kneel);
+	AcoAnimInstance->PlayMontage(EEnemyAnimState::SlamPrepare);
 	SetupSecondPhaseStartCountdown();
-	GetWorldTimerManager().SetTimer(RiseUpwardsHandle, this, &AAcoBoss::RiseUpwards, 0.025f, true);
-}
-
-void AAcoBoss::RiseUpwards()
-{
-	SetActorLocation(GetActorLocation() + FVector::UpVector * RisingUpwardsSpeed);
-	UnitsRose += RisingUpwardsSpeed;
-	if (UnitsRose >= UnitsToRise)
-	{
-		ChangeActorRenderState(false);
-		SetActorLocation(DefaultSpawnLocation);
-		GetWorldTimerManager().ClearTimer(RiseUpwardsHandle);
-	}
 }
 
 void AAcoBoss::InitiateSecondPhase()

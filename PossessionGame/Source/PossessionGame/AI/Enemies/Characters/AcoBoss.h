@@ -21,7 +21,6 @@ private:
 
 	bool bIsFlyingTowardsHijackTarget = false;
 	bool bIsUltraInstinctActive = false;
-	float UnitsRose = 0.f;
 	float UltraInstinctCooldown = 5.f;
 	float UltraInstinctTimer = 0.f;
 	float UltraInstinctHoldPose = 2.f;
@@ -30,7 +29,6 @@ private:
 	int32 CountdownSecs = 6.f;
 	FVector DefaultSpawnLocation;
 	FTimerHandle FlyingTowardsTargetHandle;
-	FTimerHandle RiseUpwardsHandle;
 	FTimerHandle CountdownTimerHandle;
 	FTimerHandle AbilityCycleHandle;
 	TArray<ECharacterType> CharactersToHijack = { /*ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Ranger, ECharacterType::Wraith,
@@ -39,10 +37,6 @@ private:
 	float MovementSpeedTowardsHijackTarget = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))
 	float StopDistance = 20.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Second Phase", meta = (AllowPrivateAccess = true))
-	float RisingUpwardsSpeed = 20.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Second Phase", meta = (AllowPrivateAccess = true))
-	float UnitsToRise = 2000.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Default", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInstance> MI_Default;
 	UPROPERTY()
@@ -65,7 +59,6 @@ private:
 	void SetupFlyingTowardsColumnLocation();
 	void StandUp() const;
 	void FirstPhaseFinished();
-	void RiseUpwards();
 	void InitiateSecondPhase();
 	void TriggerSlamImpact();
 	void SetupSecondPhaseStartCountdown();
