@@ -215,8 +215,28 @@ float AAcoBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 		CurrentUltraInstinctPose = (CurrentUltraInstinctPose + Offset) % 4;
 		LookAtLocation = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetTargetLocation();
 		AcoAnimInstance->SetUltraInstinctPose(CurrentUltraInstinctPose);
-		SetActorLocation(FVector(GetActorLocation().X + FMath::RandRange(-100.f, 100.f), GetActorLocation().Y + FMath::RandRange(-100.f, 100.f), GetActorLocation().Z));
+		UltraInstinctTeleport();
 		return 0.f;
 	}
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
+void AAcoBoss::UltraInstinctTeleport()
+{
+	FVector CurrentLocation = GetActorLocation();
+	int32 CurrentAttempt = 0;
+	bool bFoundValidSpot = false;
+	do 
+	{
+		const float OffsetX = FMath::FRandRange(MinTeleportDistance, MaxTeleportDistance) * (FMath::RandBool() ? 1.f : -1.f);
+		const float OffsetY = FMath::FRandRange(MinTeleportDistance, MaxTeleportDistance) * (FMath::RandBool() ? 1.f : -1.f);
+		FVector PotentialTarget = FVector(CurrentLocation.X + OffsetX, CurrentLocation.Y + OffsetY, CurrentLocation.Z);
+		if (FVector::Dist(PotentialTarget, FinalBossArenaCenter) <= ArenaRadius)
+		{
+			CurrentLocation = PotentialTarget;
+			bFoundValidSpot = true;
+		}
+		CurrentAttempt++;
+	} while (!bFoundValidSpot && CurrentAttempt < MaxAttempts);
+	if (bFoundValidSpot) SetActorLocation(CurrentLocation);
 }

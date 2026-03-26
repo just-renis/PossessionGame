@@ -25,10 +25,12 @@ private:
 	float UltraInstinctTimer = 0.f;
 	float UltraInstinctHoldPose = 2.f;
 	float UltraInstinctHoldTimer = 0.f;
+	float ArenaRadius = 2000.f;
 	const float FrameRate = 1.f / 60.f;
 	int32 CountdownSecs = 6.f;
 	int32 CurrentUltraInstinctPose = 0;
 	FVector LookAtLocation;
+	const FVector FinalBossArenaCenter = FVector(-10490.f,-990.f,8750.f);
 	FTimerHandle FlyingTowardsTargetHandle;
 	FTimerHandle CountdownTimerHandle;
 	FTimerHandle AbilityCycleHandle;
@@ -38,6 +40,12 @@ private:
 	float MovementSpeedTowardsHijackTarget = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))
 	float StopDistance = 20.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Ultra Instinct", meta = (AllowPrivateAccess = true))
+	float MaxTeleportDistance = 600.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Ultra Instinct", meta = (AllowPrivateAccess = true))
+	float MinTeleportDistance = 200.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Ultra Instinct", meta = (AllowPrivateAccess = true))
+	int32 MaxAttempts = 10;
 	UPROPERTY(EditDefaultsOnly, Category = "Default", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInstance> MI_Default;
 	UPROPERTY()
@@ -66,4 +74,5 @@ private:
 	void UpdateSecondPhaseCountdown();
 	void ProcessAbilityCycle();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	void UltraInstinctTeleport();
 };
