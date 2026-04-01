@@ -1,6 +1,4 @@
 ﻿#include "Breacher.h"
-#include "EnhancedInputComponent.h"
-#include "InputMappingContext.h"
 #include "MinionBoss.h"
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
@@ -131,13 +129,13 @@ void ABreacher::AI_Bash()
 
 void ABreacher::AI_ActivateBashWindUpVfx()
 {
-	if (!AI_BashWindUpFistVfx) AssetsManager->AttachVfx(EVfx::BreacherBashWindUpFist, [this]() -> bool { return GetIsAlive() && !bIsHijacked; }, &AI_BashWindUpFistVfx, GetMesh(), FName("LeftHandSocket"));
+	if (!AI_BashWindUpFistVfx) AssetsManager->AttachVfx(EVfx::BreacherBashWindUpFist, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsBashInitiated; }, &AI_BashWindUpFistVfx, GetMesh(), FName("LeftHandSocket"));
 	else AI_BashWindUpFistVfx->Activate();
 }
 
 void ABreacher::AI_ActivateBashDashVfx()
 {
-	if (!AI_BashDashVfx) AssetsManager->AttachVfx(EVfx::BreacherBashDash, [this]() -> bool { return GetIsAlive() && !bIsHijacked; }, &AI_BashDashVfx, GetMesh(), FName("DeathSocket"));
+	if (!AI_BashDashVfx) AssetsManager->AttachVfx(EVfx::BreacherBashDash, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsBashing; }, &AI_BashDashVfx, GetMesh(), FName("DeathSocket"));
 	else AI_BashDashVfx->Activate();
 }
 
@@ -208,8 +206,6 @@ void ABreacher::P_Setup()
 	P_StopAIBashLogic();
 }
 
-void ABreacher::P_SetupRightClickInput() { EnhancedInputComponent->BindAction(PlayerMappingContext->GetMapping(14).Action, ETriggerEvent::Started, this, &ABreacher::DetonateDynamites); }
-
 void ABreacher::P_StopAIBashLogic()
 {
 	StopBash();
@@ -249,8 +245,6 @@ void ABreacher::BeginPlay()
 	bAI_ShootSpeedDoubled = SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::BreacherAbility1, EUpgradeAttribute::Special1);
 }
 
-void ABreacher::DetonateDynamites() { DelegateManager->OnDetonateDynamites.Broadcast(); }
-
 void ABreacher::ClearTimers()
 {
 	Super::ClearTimers();
@@ -279,7 +273,7 @@ void ABreacher::TriggerBashOverlap()
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_Destructible);
-	if (GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation() + GetActorForwardVector() * AI_BashCapsuleForwardUnits, FQuat::Identity, ObjectQueryParams, FCollisionShape::MakeCapsule(AI_BashCapsuleRadius, AI_BashCapsuleHalfHeight), Params))
+	if (GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation() + GetActorForwardVector() * AI_BashSphereForwardUnits, FQuat::Identity, ObjectQueryParams, FCollisionShape::MakeSphere(AI_BashSphereRadius), Params))
 	{
 		TSet<TObjectPtr<AActor>> HitActors;
 		for (FOverlapResult OverlapResult : OverlapResults)

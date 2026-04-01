@@ -8,5 +8,5 @@ void UTricksterGrenadeLaunchNotify::Notify(USkeletalMeshComponent* MeshComp, UAn
 	if (!Owner) return;
 	const TObjectPtr<ATrickster> Proprietor = Cast<ATrickster>(Owner);
 	if (!Proprietor) return;
-	if (Proprietor->IsAsyncAssetStillAllowedToBeUsed()) Cast<ATrickster>(Proprietor)->AI_LaunchPoisonGrenade();
+	if (Proprietor->IsAsyncAssetStillAllowedToBeUsed()) Proprietor->AI_LaunchPoisonGrenade();
 }

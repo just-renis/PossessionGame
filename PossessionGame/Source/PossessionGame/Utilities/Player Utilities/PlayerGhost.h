@@ -35,4 +35,5 @@ private:
 	void SetupUserSettings() const;
 	void ToggleTimeDilation();
 	void DetectIfPointingAtEnemy();
+	void HijackNextChapterEnemyAutomatically(const TObjectPtr<AEnemy>& InHijackTarget);
 };

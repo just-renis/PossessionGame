@@ -2,6 +2,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Perception/AIPerceptionTypes.h"
+#include "PossessionGame/AI/Enemies/Characters/Samurai.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
@@ -64,11 +65,7 @@ void ASamuraiAIController::CheckDistanceBetweenTarget()
 	if (!EQSTarget || !Proprietor || Proprietor->GetIsAnimActionInMotion() || !GetIsStateTreeRunning()) return;
 	CheckIfStuck();
 	const float Distance = FVector::DistSquared(Proprietor->GetActorLocation(), EQSTarget->GetActorLocation());
-	if (Distance <= FMath::Square(DistanceBeforeSlashingInCentimetres))
-	{
-		Proprietor->SetIsAnimActionInMotion(true);
-		Proprietor->GetAnimInstance()->PlayMontage(EEnemyAnimState::Slash);
-	}
+	if (Distance <= FMath::Square(DistanceBeforeSlashingInCentimetres)) SamuraiProprietor->AI_SlashAttack();
 }
 
 void ASamuraiAIController::CheckIfStuck()
@@ -88,6 +85,12 @@ void ASamuraiAIController::CheckIfStuck()
 		}
 	}
 	else StuckTimer = 0.f;
+}
+
+void ASamuraiAIController::SetProprietor(const TObjectPtr<AEnemy>& InEnemy)
+{
+	Super::SetProprietor(InEnemy);
+	SamuraiProprietor = Cast<ASamurai>(InEnemy);
 }
 
 void ASamuraiAIController::SetIsInJumpMode(const bool bState)

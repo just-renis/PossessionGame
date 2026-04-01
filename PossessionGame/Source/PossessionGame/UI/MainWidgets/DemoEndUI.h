@@ -28,8 +28,11 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 
 	bool bAlreadyClickedButton = false;
 	bool bIsArenaMode = false;
+	bool bIsDemoMode = false;
 	int32 RunEndTime;
 	FName LevelNameToLoad;
+	FTimerHandle PauseHandle;
+	FTimerHandle PlayFadeInSoundHandle;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TArray<FRunTimeRankData> Ranks;
 	UPROPERTY(meta = (BindWidget))
@@ -56,13 +59,10 @@ class POSSESSIONGAME_API UDemoEndUI : public UUserWidget
 	TObjectPtr<UWidgetAnimation> FadeInArenaAnim;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeFinishedDelegate;
-	UPROPERTY()
-	FTimerHandle PauseHandle;
-	UPROPERTY()
-	FTimerHandle PlayFadeInSoundHandle;
 
 	int32 GetRankCoinsAmount();
 	FString GetConvertedNumber(const int32 InNumber);
+	FName GetChapterLevelName(const int32 InChapter);
 
 	virtual void NativeConstruct() override;
 	void PauseGame() const;

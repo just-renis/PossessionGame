@@ -2,6 +2,7 @@
 #include "NiagaraComponent.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Weapons/Character Weapons/SamuraiWeapon.h"
 
 void USamuraiAnimationInstance::PlaySlashVfx(const EVfx InVfxName, const int32 SlashIndex)
 {
@@ -30,4 +31,5 @@ void USamuraiAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsIn
 	Super::OnMontageEnd(InMontage, bIsInterrupted);
 	if (!IsMontage(EEnemyAnimState::Slash, InMontage)) return;
 	Proprietor->SetIsAnimActionInMotion(false);
+	Cast<ASamuraiWeapon>(Proprietor->GetWeapon())->AI_StopProcessingMeleeAttack();
 }

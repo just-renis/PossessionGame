@@ -86,7 +86,8 @@ void UArenaModeLogic::HandleSpawning()
 	if (EnemiesLeftToKill > 0 && AliveEnemiesAmount < EnemiesOnSceneLimit)
 	{
 		bAsyncLoadInProcess = true;
-		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(), [this](const float) { AfterSpawnEnemyCallback(); }, [this] { return bInstanceFinished; });
+		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, WaveManager->GetCurrentGameMode(),
+			[this](const TObjectPtr<AEnemy>&) { AfterSpawnEnemyCallback(); }, [this] { return bInstanceFinished; });
 	}
 	else if (!bWaveNotStarted && EnemiesLeftToKill <= 0 && AliveEnemiesAmount <= 0) WaveCompleted();
 }

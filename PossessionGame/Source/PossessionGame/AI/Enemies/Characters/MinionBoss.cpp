@@ -113,6 +113,11 @@ void AMinionBoss::AI_SetupWeapon()
 	AI->SetShootCooldown(WeaponShootCooldown);
 }
 
+void AMinionBoss::AI_SetupShootLogic()
+{
+	GetWorld()->GetTimerManager().SetTimer(AI_ShootLogicHandle, this, &AMinionBoss::AI_MainShootLogic, 1.f / 60.f, true);
+}
+
 void AMinionBoss::AI_ShootLogic()
 {
 	WeaponShootCooldownTimer += 1.f / 60.f;

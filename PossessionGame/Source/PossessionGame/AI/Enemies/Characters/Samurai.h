@@ -10,7 +10,9 @@ UCLASS()
 class POSSESSIONGAME_API ASamurai : public AEnemy
 {
 	GENERATED_BODY()
-
+public:
+	void AI_SlashAttack();
+private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<AActor> SamuraiHatClass;
 	UPROPERTY()
@@ -21,7 +23,7 @@ class POSSESSIONGAME_API ASamurai : public AEnemy
 	virtual void AI_PlayDeathElectrification() override;
 
 	virtual void P_Setup() override;
-	virtual void P_WeaponShoot() override;
+	virtual void P_Shoot() override;
 
 	virtual void BeginPlay() override;
 	void SetupSamuraiHat();

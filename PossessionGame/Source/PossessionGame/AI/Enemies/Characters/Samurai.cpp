@@ -1,13 +1,20 @@
 ﻿#include "Samurai.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
+#include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Destructibles/Destructible.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWeapon.h"
-#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Character Weapons/SamuraiWeapon.h"
+
+void ASamurai::AI_SlashAttack()
+{
+	SetIsAnimActionInMotion(true);
+	GetAnimInstance()->PlayMontage(EEnemyAnimState::Slash);
+	if (Weapon) Weapon->AI_Shoot();
+}
 
 void ASamurai::AI_SetupWeapon()
 {
@@ -28,12 +35,15 @@ void ASamurai::AI_PlayDeathElectrification()
 
 void ASamurai::P_Setup()
 {
-	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	Super::P_Setup();
 	//SamuraiHat->HandleDeactivation();
 }
 
-void ASamurai::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::SamuraiProjectile); }
+void ASamurai::P_Shoot()
+{
+	if (!Weapon) return;
+	Weapon->P_Shoot(EPoolObject::SamuraiSlashAttack);
+}
 
 void ASamurai::BeginPlay()
 {

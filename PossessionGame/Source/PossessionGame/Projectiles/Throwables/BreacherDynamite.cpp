@@ -12,12 +12,6 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
-void ABreacherDynamite::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
-{
-	Super::InitWithProprietor(InProprietor);
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.AddUObject(this, &ABreacherDynamite::PrimaryExplode);
-}
-
 ABreacherDynamite::ABreacherDynamite()
 {
 	ExplodeSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ExplodeSfx"));
@@ -35,7 +29,6 @@ void ABreacherDynamite::PrimaryExplode()
 	bIsActionInProcess = true;
 	SavedSpecialExplosionLocation = GetActorLocation();
 	Explode();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnDetonateDynamites.RemoveAll(this);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestObjectWithCapRemoval.ExecuteIfBound(EPoolObject::BreacherDynamite, this);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::BreacherDynamite, this);
 	bIsActionInProcess = false;
@@ -63,12 +56,4 @@ void ABreacherDynamite::Explode()
 	PlaySound(ESound::BreacherDynamiteExplosion);
 }
 
-void ABreacherDynamite::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) { OnImpact(Hit); }
-
-void ABreacherDynamite::OnImpact(const FHitResult& Hit)
-{
-	Mesh->OnComponentHit.RemoveAll(this);
-	Mesh->SetSimulatePhysics(false);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	Mesh->AttachToComponent(Hit.GetComponent(), FAttachmentTransformRules::KeepWorldTransform);
-}
+void ABreacherDynamite::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) { PrimaryExplode(); }

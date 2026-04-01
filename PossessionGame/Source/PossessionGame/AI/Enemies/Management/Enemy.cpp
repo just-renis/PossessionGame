@@ -152,6 +152,7 @@ void AEnemy::AI_SetupUpgradesAppliance()
 
 void AEnemy::AI_SetupShootLogic()
 {
+	if (!Weapon) return;
 	GetWorld()->GetTimerManager().SetTimer(AI_ShootLogicHandle, this, &AEnemy::AI_MainShootLogic, 1.f / 60.f, true);
 }
 
@@ -361,7 +362,11 @@ void AEnemy::P_ReceiveStunEffect(const float InEffectDuration, const float InDam
 	ApplyStunEffect(InEffectDuration);
 }
 
-void AEnemy::P_StunEffectEnded() { bIsInputLocked = false; }
+void AEnemy::P_StunEffectEnded()
+{
+	SetInputState(false);
+	P_SetLookLocked(false);
+}
 
 void AEnemy::SetIsActionInMotion(const bool bState)
 {
@@ -672,7 +677,7 @@ void AEnemy::AI_Setup()
 	AI_SetupData();
 	if (Weapon && Weapon->GetIsReloadEnabled()) AI->SetReloadDelay(AnimInstance->GetMontageLength(EEnemyAnimState::Reload));
 	AI->GetStateTreeData().OnStateTreeEvent.BindUObject(this, &AEnemy::AI_FinishShootLogicByEvent);
-	if (Weapon) AI_SetupShootLogic();
+	AI_SetupShootLogic();
 }
 
 void AEnemy::AI_SetupWeapon()
@@ -1369,13 +1374,6 @@ void AEnemy::AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent)
 	AI_CancelShooting();
 }
 
-void AEnemy::AI_MainShootLogic()
-{
-	if (!AI || !bAllowedToShoot || GetIsActionInMotion() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
-	if (!GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) AI_InitiateShooting();
-	if (GetWeapon()->AI_CanShoot()) AI_ShootLogic();
-}
-
 void AEnemy::AI_StopAbilitiesEvents() const
 {
 	if (!AI) return;
@@ -1480,6 +1478,13 @@ void AEnemy::AI_AcoMaterialChange() const
 	if (!MI_MeshBaseMaterial) return;
 	MI_MeshBaseMaterial->SetScalarParameterValue(FName("Saturation"), 0.f);
 	MI_MeshBaseMaterial->SetScalarParameterValue(FName("AcoHijack"), 1.f);
+}
+
+void AEnemy::AI_MainShootLogic()
+{
+	if (!AI || !bAllowedToShoot || GetIsActionInMotion() || !AI->GetStateTreeData().GetIsTargetInMySight()) return;
+	if (!GetAnimInstance()->IsPlaying(EEnemyAnimState::Shoot)) AI_InitiateShooting();
+	if (GetWeapon()->AI_CanShoot()) AI_ShootLogic();
 }
 
 void AEnemy::AI_SetCombatState(const bool bState)
@@ -1587,7 +1592,8 @@ void AEnemy::P_HijackLogic(const TObjectPtr<AEnemy>& InEnemy, const bool bInstan
 		AssetsManager->PlaySound2D(ESound::HijackInProgress);
 		HijackTarget = InEnemy;
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->OpenUI(HijackDelayAnimationSpeed);
-		bIsInputLocked = true;
+		SetInputState(true);
+		P_SetLookLocked(true);
 		if (P_HUD) P_HUD->PlayHijackAnim(true, HijackDelayAnimationSpeed);
 		GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UWaveManagerHUD>(EWidget::WaveManagerHUD)->PlayHijackInitiateAnim(true, HijackDelayAnimationSpeed);
 		GetWorldTimerManager().SetTimer(HijackDelayHandle, this, &AEnemy::P_FinishHijackProcess, HijackDelay);
@@ -1609,7 +1615,7 @@ void AEnemy::P_HijackBarLogic()
 
 void AEnemy::P_Rotate(const FInputActionValue& InValue)
 {
-	if (!Controller || bIsInputLocked) return;
+	if (!Controller || bIsLookLocked) return;
 	const FVector2D RotationVector = InValue.Get<FVector2D>();
 	const FVector2D MouseSensitivity = GlobalSettingsManager->GetMouseSensitivity();
 	AddControllerYawInput(RotationVector.X * MouseSensitivity.X);
@@ -2003,7 +2009,8 @@ void AEnemy::P_CheckStoppedMoving() const
 void AEnemy::P_CancelHijackingProcess()
 {
 	Camera->FieldOfView = 90.f;
-	bIsInputLocked = false;
+	SetInputState(false);
+	P_SetLookLocked(false);
 	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UHijackUI>(EWidget::HijackUI)->CloseUI();
 	GetWorldTimerManager().ClearTimer(HijackDelayHandle);
 	GetWorldTimerManager().ClearTimer(HijackFovChangeHandle);
@@ -2132,6 +2139,9 @@ void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float
 				SetupBurningState(EBurningType::Meteor, 2.f, 3.f, 0.2f);
 			}
 		break;
+		case EDamageReason::BreacherDynamiteDamage:
+			SetupBurningState(EBurningType::BreacherDynamite, 2.f, 3.f, 0.35f);
+			break;
 		default: ;
 	}
 }
@@ -2267,7 +2277,8 @@ void AEnemy::ApplyStunEffect(const float InEffectDuration)
 	{
 		DelegateManager->RequirePlayerAnnouncementInfo.ExecuteIfBound(NSLOCTEXT("ST_Localization", "Stunned", "Stunned"));
 		P_MakeCameraShake(ECameraShake::PlayerStunned);
-		bIsInputLocked = true;
+		SetInputState(true);
+		P_SetLookLocked(true);
 		if (Weapon && Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->PlayMontageWithHold(EHandsAnimState::StunEffect, InEffectDuration);
 		GetWorldTimerManager().SetTimer(StunEffectEndHandle, this, &AEnemy::P_StunEffectEnded, InEffectDuration);
 	}

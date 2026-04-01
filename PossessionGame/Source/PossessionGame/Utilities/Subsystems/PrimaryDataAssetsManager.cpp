@@ -247,12 +247,17 @@ void UPrimaryDataAssetsManager::ChangeVfxVariation(const FVfxContainer& InVfxDat
 	SetupVfx(InVfxData, InCallbackOfDeactivation, InVfxComponent, bDeactivate, InVariationName, TMap<FName, FNiagaraAttribute>());
 }
 
-void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack, TFunction<bool()> InSpawnCallback)
+void UPrimaryDataAssetsManager::RequestSpawnEnemy(ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const TObjectPtr<AEnemy>& OutEnemy)> InCallBack, TFunction<bool()> InSpawnCallback)
 {
 	if (InCharacter == ECharacterType::Random) InCharacter = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetRandomSpawnableCharacter();
 	!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, InGameMode, InCallBack, InSpawnCallback) : SpawnEnemy(InCharacter, InGameMode, InCallBack);
 	TotalSpawnedEnemies++;
 	AddSpawnableEnemiesToThePool();
+}
+
+void UPrimaryDataAssetsManager::RequestSpawnEnemyForNextChapter(const ECharacterType InCharacter, TFunction<void(const TObjectPtr<AEnemy>& OutEnemy)> InCallBack)
+{
+	!LoadedEnemies.Contains(InCharacter) ? AsyncLoadEnemy(InCharacter, EGameMode::None, InCallBack, nullptr) : SpawnEnemy(InCharacter, EGameMode::None, InCallBack);
 }
 
 void UPrimaryDataAssetsManager::RequestSpawnEnemy(const ECharacterType InCharacter, const FVector& InLocation, const float InHpPercentage, const bool bIsCorrupted)
@@ -471,7 +476,7 @@ EPoolObject UPrimaryDataAssetsManager::GetProjectileNameByCharacterName(ECharact
 		case ECharacterType::Trickster: return EPoolObject::TricksterProjectile;
 		case ECharacterType::Breacher: return EPoolObject::BreacherProjectile;
 		case ECharacterType::Wraith: return EPoolObject::WraithProjectile;
-		case ECharacterType::Samurai: return EPoolObject::SamuraiProjectile;
+		case ECharacterType::Samurai: return EPoolObject::SamuraiSlashAttack;
 		case ECharacterType::Spy: return EPoolObject::SpyProjectile;
 		case ECharacterType::Tank: return EPoolObject::TankProjectile;
 		case ECharacterType::Guardian: return EPoolObject::GuardianProjectile;
@@ -948,7 +953,7 @@ void UPrimaryDataAssetsManager::SetupVfx(const FVfxContainer& InVfxData, TFuncti
 	}
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack, TFunction<bool()> InSpawnCallback)
+void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const TObjectPtr<AEnemy>& OutEnemy)> InCallBack, TFunction<bool()> InSpawnCallback)
 {
 	if (!GetCanAsyncLoadHappen()) return;
 	const FCharacterContainer& CharacterContainer = GetCharacterData(InCharacter);
@@ -1018,7 +1023,7 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemy(const ECharacterType InCharacter,
 	AddAsyncHandle(Handle);
 }
 
-void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack)
+void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularWeapon, const EWeapon InWeapon, const ECharacterType InCharacter, const EGameMode InGameMode, TFunction<void(const TObjectPtr<AEnemy>& OutEnemy)> InCallBack)
 {
 	const TObjectPtr<UWeaponManager> WeaponManager = GetGameInstance()->GetSubsystem<UWeaponManager>();
 	UObject* EnemyClass = GetCharacterData(InCharacter).GetCharacterContainer()->CharacterClass.ToSoftObjectPath().TryLoad();
@@ -1039,7 +1044,7 @@ void UPrimaryDataAssetsManager::AsyncLoadEnemyCallback(const EWeapon InSingularW
 	SpawnEnemy(InCharacter, InGameMode, InCallBack);
 }
 
-void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, TFunction<void(const float OutEnemyMaxHp)> InCallBack)
+void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, const EGameMode InCurrentGameMode, TFunction<void(const TObjectPtr<AEnemy>& OutEnemy)> InCallBack)
 {
 	FGameModeSpawnLocations* SpawnLocationsByGameMode = SpawnLocations.Find(InCurrentGameMode);
 	if (!SpawnLocationsByGameMode) return;
@@ -1058,7 +1063,7 @@ void UPrimaryDataAssetsManager::SpawnEnemy(const ECharacterType InCharacter, con
 				Enemy->AI_SetupUpgradesAppliance();
 				Enemy->AI_ProcessSpawnEffects();
 				if (InCurrentGameMode == EGameMode::FinalBossEnemySpawn) Enemy->AI_SetAcoEnemy();
-				if (InCallBack) InCallBack(Enemy->GetCurrentHp());
+				if (InCallBack) InCallBack(Enemy);
 				break;
 			}
 		}

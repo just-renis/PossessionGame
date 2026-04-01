@@ -29,10 +29,23 @@ FString UDemoEndUI::GetConvertedNumber(const int32 InNumber)
 	return FString::FromInt(InNumber);
 }
 
+FName UDemoEndUI::GetChapterLevelName(const int32 InChapter)
+{
+	switch (InChapter)
+	{
+		case 2: return FName("C2_Level1");
+		case 3: return FName("C3_Level1");
+		case 4: return FName("C4_Level1");
+		default: return FName("Level_1");
+	}
+}
+
 void UDemoEndUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-	bIsArenaMode = GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsArenaMode.Execute();
+	const TObjectPtr<UDelegateManager> DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
+	bIsArenaMode = DelegateManager->RequestIsArenaMode.Execute();
+	bIsDemoMode = DelegateManager->RequestIsDemo.Execute();
 	ChapterCompletedText->SetText(bIsArenaMode ? NSLOCTEXT("ST_Localization", "Arena", "Arena") : NSLOCTEXT("ST_Localization", "ChapterCompleted", "Chapter Completed"));
 	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeInFinished);
 	if (bIsArenaMode)
@@ -46,6 +59,12 @@ void UDemoEndUI::NativeConstruct()
 		HighScoreEndTimeText->SetVisibility(ESlateVisibility::Collapsed);
 		BindToAnimationFinished(FadeInAnim, FadeFinishedDelegate);
 		PlayAnimation(FadeInAnim);
+	}
+	if (bIsDemoMode) ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Replay);
+	else
+	{
+		ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::GoToNextChapter);
+		ReplayButton->SetText(NSLOCTEXT("ST_Localization", "NextChapter", "Next Chapter"));
 	}
 	UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraFade(0.f, 1.f, bIsArenaMode ? 1.f : 0.25f, FLinearColor::Black, false, true);
 	const TObjectPtr<APlayerController> PlayerController = GetWorld()->GetFirstPlayerController();
@@ -124,12 +143,7 @@ void UDemoEndUI::FadeInFinished()
 		ReturnToMenuButton->SetButtonVisibility(true);
 		ReturnToMenuButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::ReturnToMainMenu);
 	}
-	if (ReplayButton)
-	{
-		ReplayButton->SetButtonVisibility(true);
-		if (!GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsDemo.Execute()) ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::GoToNextChapter);
-		else ReplayButton->Get()->OnClicked.AddDynamic(this, &UDemoEndUI::Replay);
-	}
+	if (ReplayButton) ReplayButton->SetButtonVisibility(true);
 	UnbindFromAnimationFinished(bIsArenaMode ? FadeInArenaAnim : FadeInAnim, FadeFinishedDelegate);
 }
 
@@ -174,7 +188,7 @@ void UDemoEndUI::GoToNextChapter()
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	RunSaveSlot->SetCurrentChapterAndCharacter(RunSaveSlot->GetCurrentChapter() + 1, Character);
 	bAlreadyClickedButton = true;
-	LevelNameToLoad = bIsArenaMode ? FName("L_Arena") : FName("C2_Level1");
+	LevelNameToLoad = bIsArenaMode ? FName("L_Arena") : GetChapterLevelName(RunSaveSlot->GetCurrentChapter());
 	FadeFinishedDelegate.BindDynamic(this, &UDemoEndUI::FadeOutToNextChapter);
 	PlayAnimation(FadeOutAnim);
 	BindToAnimationFinished(FadeOutAnim, FadeFinishedDelegate);

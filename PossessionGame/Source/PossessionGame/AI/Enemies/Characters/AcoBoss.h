@@ -34,8 +34,8 @@ private:
 	FTimerHandle FlyingTowardsTargetHandle;
 	FTimerHandle CountdownTimerHandle;
 	FTimerHandle AbilityCycleHandle;
-	TArray<ECharacterType> CharactersToHijack = { /*ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Ranger, ECharacterType::Wraith,
-		ECharacterType::Breacher, ECharacterType::Spy, ECharacterType::Tank, ECharacterType::Samurai*/ ECharacterType::Ranger};
+	TArray<ECharacterType> CharactersToHijack = { /*ECharacterType::Guardian, ECharacterType::Trickster, ECharacterType::Ranger, ECharacterType::Ranger, ECharacterType::Wraith,
+		ECharacterType::Breacher, ECharacterType::Spy, ECharacterType::Tank,*/ ECharacterType::Samurai };
 	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))
 	float MovementSpeedTowardsHijackTarget = 5.f;
 	UPROPERTY(EditDefaultsOnly, Category = "First Phase", meta = (AllowPrivateAccess = true))

@@ -32,6 +32,7 @@ APlayerGhost::APlayerGhost()
 void APlayerGhost::BeginPlay()
 {
 	Super::BeginPlay();
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnNextChapterLoaded.BindUObject(this, &APlayerGhost::HijackNextChapterEnemyAutomatically);
 	Tags.Add("PlayerGhost");
 	GetWorld()->GetTimerManager().SetTimer(CheckHandle, this, &APlayerGhost::CheckIfPlayerFallOutOfWorld, 2.f, true);
 	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished())
@@ -159,4 +160,12 @@ void APlayerGhost::DetectIfPointingAtEnemy()
 			else Enemy->AI_SetUnHijackOutline(true);
 		}
 	}
+}
+
+void APlayerGhost::HijackNextChapterEnemyAutomatically(const TObjectPtr<AEnemy>& InHijackTarget)
+{
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnPlayerGhostDestroy.ExecuteIfBound();
+	Controller->Possess(InHijackTarget);
+	UE_LOG(LogTemp, Error, TEXT("HIJACKING OTHER ENEMY"));
+	Destroy();
 }

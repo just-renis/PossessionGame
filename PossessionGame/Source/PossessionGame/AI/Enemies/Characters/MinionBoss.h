@@ -68,6 +68,7 @@ private:
 	virtual TObjectPtr<AWeapon>& GetWeapon() override; // For getting singular weapon data only.
 	
 	virtual void AI_SetupWeapon() override;
+	virtual void AI_SetupShootLogic() override;
 	virtual void AI_ShootLogic() override;
 	virtual void AI_Shoot() override;
 	virtual void AI_SetCanShoot(const bool bState) override;

@@ -4,6 +4,8 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "SamuraiAIController.generated.h"
 
+class ASamurai;
+
 UCLASS()
 class POSSESSIONGAME_API ASamuraiAIController : public AEnemyAIController
 {
@@ -17,6 +19,8 @@ class POSSESSIONGAME_API ASamuraiAIController : public AEnemyAIController
 	float DistanceBeforeSlashingInCentimetres = 200.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Jump Data", meta = (AllowPrivateAccess = true))
 	float JumpVelocityForward = 500.f;
+	UPROPERTY()
+	TObjectPtr<ASamurai> SamuraiProprietor;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -25,5 +29,6 @@ class POSSESSIONGAME_API ASamuraiAIController : public AEnemyAIController
 	void SetPlayerTarget(const TObjectPtr<AActor>& InPlayerTarget);
 	void CheckDistanceBetweenTarget();
 	void CheckIfStuck();
+	virtual void SetProprietor(const TObjectPtr<AEnemy>& InEnemy) override;
 	virtual void SetIsInJumpMode(const bool bState) override;
 };

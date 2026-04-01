@@ -1,4 +1,6 @@
 ﻿#include "HackTerminalModeLogic.h"
+
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Game Modes/HackTerminalModeData.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
 #include "PossessionGame/Enums/EGameMode.h"
@@ -38,10 +40,10 @@ void UHackTerminalModeLogic::HandleSpawning()
 	{
 		bAsyncLoadInProcess = true;
 		WaveManager->GetAssetsManager()->RequestSpawnEnemy(ECharacterType::Random, CurrentTerminalRoomMode,
-		[this](const float OutEnemyMaxHp)
+		[this](const TObjectPtr<AEnemy>& OutEnemy)
 		{
 			IncreaseAliveEnemiesAmount();
-			ReservedEnemiesHpPool -= OutEnemyMaxHp;
+			ReservedEnemiesHpPool -= OutEnemy->GetCurrentHp();
 			if (ReservedEnemiesHpPool <= 0.f)
 			{
 				UnreservedEnemiesHpPool -= ReservedEnemiesHpPool;

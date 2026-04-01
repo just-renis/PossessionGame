@@ -65,6 +65,7 @@ void USpyAbility2::InitiateProcess()
 	Proprietor->SetIsActionInMotion(true);
 	Proprietor->StartTeleportProcess();
 	Proprietor->SetInputState(true);
+	Proprietor->P_SetLookLocked(true);
 	Proprietor->GetWorldTimerManager().SetTimer(TransferHandle, this, &USpyAbility2::ProcessTransfer, 0.02f, true);
 	Super::P_Execute();
 }
@@ -84,6 +85,7 @@ void USpyAbility2::FinishTransfer()
 	Proprietor->FinishTeleportProcess();
 	Proprietor->GetWeapon()->GetHandsAnimInstance()->PlayMontage(EHandsAnimState::TeleportImpact);
 	Proprietor->SetInputState(false);
+	Proprietor->P_SetLookLocked(false);
 	Proprietor->GetWorldTimerManager().ClearTimer(TransferHandle);
 	if (Target && Target->GetIsAlive())
 	{

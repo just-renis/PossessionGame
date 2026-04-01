@@ -7,5 +7,6 @@ enum class EBurningType : uint8
     Molotov,
     Meteor,
     PyroBossProjectileFirePool,
-    PyroBossEnvironmentFire
+    PyroBossEnvironmentFire,
+    BreacherDynamite
 };

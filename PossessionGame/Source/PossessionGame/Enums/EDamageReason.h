@@ -13,6 +13,7 @@ enum class EDamageReason : uint8
     TricksterPoisonDamage,
     RangerGrenadeDamage,
     BreacherBashDamage,
+    BreacherDynamiteDamage,
     WraithDamage,
     WraithMolotovDamage,
     WraithEnemyMeteor,

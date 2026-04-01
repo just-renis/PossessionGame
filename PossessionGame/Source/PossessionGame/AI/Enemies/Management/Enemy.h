@@ -173,6 +173,7 @@ public:
 	void AI_ApplyAcoHijack();
 
 	virtual void P_RemoveReloadSound() {}
+	void P_SetLookLocked(const bool bIsLocked) { bIsLookLocked = bIsLocked; }
 	void P_ReEnableRunIfToggleMode();
 	virtual void P_ApplyUpgradeOnSelection();
 	void P_UseAbility(const int32 InAbilityIndex);
@@ -214,6 +215,7 @@ public:
 	void ApplyTankShieldActionSpeedDebuff();
 protected:
 	bool bIsInputLocked = true;
+	bool bIsLookLocked = false;
 	bool bCanReload = true;
 	bool bIsHijacked = false;
 	bool bCanShoot = false;
@@ -244,6 +246,7 @@ protected:
 	EVariation Variation;
 	EMoveMode CurrentMoveMode;
 	FBurningLogicData BurningLogicData;
+	FTimerHandle AI_ShootLogicHandle;
 	FTimerHandle WraithTrapSlowEffectLingerHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompRadiusInMeters = 3.f;
@@ -317,6 +320,7 @@ protected:
 	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName);
 	void AI_DestroyBossUnnecessaryComponents();
 	virtual void AI_AcoMaterialChange() const;
+	void AI_MainShootLogic();
 
 	virtual float P_GetMeleeDamage();
 	virtual float P_GetStompDamage();
@@ -424,7 +428,6 @@ private:
 	FTimerHandle AI_PlaySpawnSoundHandle;
 	FTimerHandle AI_HideHpBarHandle;
 	FTimerHandle AI_DamageTakenEffectHandle;
-	FTimerHandle AI_ShootLogicHandle;
 	FTimerHandle AI_RespawnTimerHandle;
 	FTimerHandle AI_DisableHijackOutlineHandle;
 	FTimerHandle AI_DisableUnHijackOutlineHandle;
@@ -600,7 +603,6 @@ private:
 	void AI_SetCharacterMovementSpeed() const;
 	void AI_DisableDamageTakenRedFlash() const;
 	void AI_FinishShootLogicByEvent(const EStateTreeEvent InEvent);
-	void AI_MainShootLogic();
 	void AI_StopAbilitiesEvents() const;
 	void AI_TimeDilationChange(const float InDilation) const;
 	void AI_ShowHpBar() const;

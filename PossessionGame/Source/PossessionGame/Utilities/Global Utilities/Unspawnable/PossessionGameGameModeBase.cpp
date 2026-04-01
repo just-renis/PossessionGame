@@ -101,7 +101,8 @@ void APossessionGameGameModeBase::InitAfterPSOPrecache()
 	DelegateManager->OnRunFinished.BindUObject(this, &APossessionGameGameModeBase::GetRunFinishedTime);
 	if (!bIsArenaMode && RunSaveSlot->GetCurrentChapter() > 1)
 	{
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(RunSaveSlot->GetCurrentCharacter(), EGameMode::None, nullptr, nullptr);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemyForNextChapter(RunSaveSlot->GetCurrentCharacter(),
+			[this, DelegateManager](const TObjectPtr<AEnemy>& OutEnemy){ (void)DelegateManager->OnNextChapterLoaded.ExecuteIfBound(OutEnemy); });
 	}
 	else GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->RequestSpawnEnemy(BaseModeData->GetCharacterToSpawn(), EGameMode::None, nullptr, nullptr);
 }
