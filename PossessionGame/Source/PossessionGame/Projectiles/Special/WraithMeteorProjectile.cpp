@@ -81,7 +81,9 @@ void AWraithMeteorProjectile::Landed()
 		IgnoredActors.Reserve(Enemies.Num());
 		for (AEnemy* Enemy : Enemies) IgnoredActors.Add(Enemy);
 	}
+#if WITH_EDITOR
 	if (bEnableDebug) DrawDebugSphere(GetWorld(), GetActorLocation(), Data->GetDamageInnerRadius(), 32, FColor::Green, false, 3.f);
+#endif
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), Damage, Damage, GetActorLocation(), Data->GetDamageInnerRadius(),
 	Data->GetDamageOuterRadius(), 0.f, UDamageType::StaticClass(), IgnoredActors, this, Proprietor->GetController(), ECC_GameTraceChannel4);
 }

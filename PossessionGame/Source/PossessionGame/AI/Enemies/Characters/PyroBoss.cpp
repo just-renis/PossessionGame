@@ -22,6 +22,11 @@ void APyroBoss::MarkStompAbilityReady()
 	GetWorldTimerManager().SetTimer(ActivateStompHandle, this, &APyroBoss::ActivateStomp, 0.25f, true);
 }
 
+void APyroBoss::MarkBallPhaseAbilityReady()
+{
+	GetWorldTimerManager().SetTimer(ActivateBallPhaseHandle, this, &APyroBoss::ActivateBallPhase, 0.25f, true);
+}
+
 APyroBoss::APyroBoss()
 {
 	AI_DestroyBossUnnecessaryComponents();
@@ -132,9 +137,18 @@ void APyroBoss::ActivateStomp()
 	}
 }
 
+void APyroBoss::ActivateBallPhase()
+{
+	if (!AI || IsActionsDisabled() || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	GetWorldTimerManager().ClearTimer(ActivateBallPhaseHandle);
+	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::PyroBossBallPhase);
+	UE_LOG(LogTemp, Error, TEXT("ACTIVATE BALLLLLLLLLLLLLLLS"));
+}
+
 void APyroBoss::ClearTimers()
 {
 	Super::ClearTimers();
 	GetWorldTimerManager().ClearTimer(ActivateFloorLavaHandle);
 	GetWorldTimerManager().ClearTimer(ActivateStompHandle);
+	GetWorldTimerManager().ClearTimer(ActivateBallPhaseHandle);
 }

@@ -9,6 +9,7 @@
 #include "PossessionGame/Abilities/Characters/MinionBoss/MinionBossAbility2.h"
 #include "PossessionGame/Abilities/Characters/PyroBoss/PyroBossAbility1.h"
 #include "PossessionGame/Abilities/Characters/PyroBoss/PyroBossAbility2.h"
+#include "PossessionGame/Abilities/Characters/PyroBoss/PyroBossAbility3.h"
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility1.h"
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility2.h"
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility3.h"
@@ -76,6 +77,7 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::Wraith, 2, EAbility::WraithAbility3, UWraithAbility3::StaticClass());
     AddAbility(ECharacterType::PyroBoss, 0, EAbility::PyroBossAbility1, UPyroBossAbility1::StaticClass());
     AddAbility(ECharacterType::PyroBoss, 1, EAbility::PyroBossAbility2, UPyroBossAbility2::StaticClass());
+    AddAbility(ECharacterType::PyroBoss, 2, EAbility::PyroBossAbility3, UPyroBossAbility3::StaticClass());
     AddAbility(ECharacterType::Spy, 0, EAbility::SpyAbility1, USpyAbility1::StaticClass());
     AddAbility(ECharacterType::Spy, 1, EAbility::SpyAbility2, USpyAbility2::StaticClass());
     AddAbility(ECharacterType::Spy, 2, EAbility::SpyAbility3, USpyAbility3::StaticClass());

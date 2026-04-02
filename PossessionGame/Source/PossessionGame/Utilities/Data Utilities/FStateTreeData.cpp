@@ -27,6 +27,7 @@ void FStateTreeData::TriggerEvent(const EStateTreeEvent InEventName) const
 		case EStateTreeEvent::WraithMeteorShower: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.Wraith.MeteorShower")); break;
 		case EStateTreeEvent::PyroBossActivateFireFloor: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.PyroBoss.ActivateFireFloor")); break;
 		case EStateTreeEvent::PyroBossStomp: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.PyroBoss.Stomp")); break;
+		case EStateTreeEvent::PyroBossBallPhase: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.PyroBoss.ActivateBallPhase")); break;
 		case EStateTreeEvent::MoveDirectly: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MoveDirectly")); break;
 		case EStateTreeEvent::MoveWithPathfinder: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MoveWithPathfinder")); break;
 		default: ;

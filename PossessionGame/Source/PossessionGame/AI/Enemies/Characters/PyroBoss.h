@@ -15,11 +15,14 @@ public:
 	
 	void MarkFloorLavaAbilityReady();
 	void MarkStompAbilityReady();
+	void MarkBallPhaseAbilityReady();
 private:
 	APyroBoss();
-	
+
+	bool bIsBallPhaseActive = false;
 	FTimerHandle ActivateFloorLavaHandle;
 	FTimerHandle ActivateStompHandle;
+	FTimerHandle ActivateBallPhaseHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
 	float SecondPhaseHpPercentage = 0.7f;
 	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
@@ -54,5 +57,6 @@ private:
 	virtual void ApplyEmpEffect(const float InEffectDuration) override;
 	void ActivateFloorLava();
 	void ActivateStomp();
+	void ActivateBallPhase();
 	virtual void ClearTimers() override;
 };

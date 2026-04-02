@@ -9,10 +9,18 @@ void UPyroBossAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsI
 		(void)Cast<APyroBossAIController>(Proprietor->GetAI())->OnActivateFireFloorFinished.ExecuteIfBound();
 		if (!Proprietor->IsActionsDisabled()) Proprietor->SetIsActionInMotion(false);
 		Proprietor->SetIsAbilityInAction(false);
+		return;
 	}
-	if (!IsMontage(EEnemyAnimState::Stomp, InMontage)) return;
-	(void)Cast<APyroBossAIController>(Proprietor->GetAI())->OnActivateStompFinished.ExecuteIfBound();
+	if (IsMontage(EEnemyAnimState::Stomp, InMontage))
+	{
+		(void)Cast<APyroBossAIController>(Proprietor->GetAI())->OnActivateStompFinished.ExecuteIfBound();
+		if (!Proprietor->IsActionsDisabled()) Proprietor->SetIsActionInMotion(false);
+		Proprietor->SetIsAbilityInAction(false);
+		Proprietor->GetAnimInstance()->SetNonBlendableSlotState(false);
+		return;
+	}
+	if (!IsMontage(EEnemyAnimState::ActivatePyroBall, InMontage)) return;
+	(void)Cast<APyroBossAIController>(Proprietor->GetAI())->OnActivateBallPhaseFinished.ExecuteIfBound();
 	if (!Proprietor->IsActionsDisabled()) Proprietor->SetIsActionInMotion(false);
 	Proprietor->SetIsAbilityInAction(false);
-	Proprietor->GetAnimInstance()->SetNonBlendableSlotState(false);
 }

@@ -6,6 +6,7 @@
 
 DECLARE_DELEGATE(FOnActivateFireFloorFinished);
 DECLARE_DELEGATE(FOnActivateStompFinished);
+DECLARE_DELEGATE(FOnActivateBallPhaseFinished);
 
 UCLASS()
 class POSSESSIONGAME_API APyroBossAIController : public AEnemyAIController
@@ -14,4 +15,5 @@ class POSSESSIONGAME_API APyroBossAIController : public AEnemyAIController
 public:
 	FOnActivateFireFloorFinished OnActivateFireFloorFinished;
 	FOnActivateStompFinished OnActivateStompFinished;
+	FOnActivateBallPhaseFinished OnActivateBallPhaseFinished;
 };

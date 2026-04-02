@@ -1,6 +1,6 @@
 ﻿#include "EMPGrenade.h"
 #include "Components/AudioComponent.h"
-#include "Components/SphereComponent.h"
+#include "Engine/OverlapResult.h"
 #include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Enums/EUpgradeAttribute.h"
@@ -9,11 +9,6 @@
 
 AEMPGrenade::AEMPGrenade()
 {
-	Radius = CreateDefaultSubobject<USphereComponent>("radius");
-	Radius->SetupAttachment(RootComponent);
-	Radius->SetCollisionProfileName("TriggerPlayer");
-	Radius->SetGenerateOverlapEvents(false);
-	Radius->OnComponentBeginOverlap.AddDynamic(this, &AEMPGrenade::TriggerEmpEffect);
 	Sounds.Add(ESound::TricksterEmpImpact, CreateDefaultSubobject<UAudioComponent>(TEXT("EmpImpactSound")));
 	Sounds[ESound::TricksterEmpImpact]->SetAutoActivate(false);
 	Sounds[ESound::TricksterEmpImpact]->SetupAttachment(Mesh);
@@ -23,8 +18,14 @@ void AEMPGrenade::PlayImpactSound() { PlaySound(ESound::TricksterEmpImpact); }
 
 void AEMPGrenade::OnImpact(const FHitResult& Hit)
 {
-	Radius->SetGenerateOverlapEvents(true);
-	Radius->UpdateOverlaps();
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByProfile(Overlaps, Hit.Location, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(EmpRadius));
+	for (const FOverlapResult& Result : Overlaps)
+	{
+		TObjectPtr<AActor> Actor = Result.GetActor();
+		if (!Actor || !Actor->ActorHasTag("AliveEnemy")) continue;
+		if (const TObjectPtr<AEnemy> Target = Cast<AEnemy>(Actor)) if (!Target->GetIsHijacked()) Target->AI_ReceiveEmpEffect(EffectDuration);
+	}
 	Super::OnImpact(Hit);
 }
 
@@ -33,16 +34,4 @@ void AEMPGrenade::Init(FProjectileData& InProjectileData, const FRotator& Rotati
 	Super::Init(InProjectileData, Rotation, InWhich);
 	const float EffectDurationIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TricksterAbility2, EUpgradeAttribute::EffectDuration, ProjectileData.bIsPlayerProjectile);
 	EffectDuration = ProjectileData.EffectDuration + ProjectileData.EffectDuration * EffectDurationIncrease * 0.01f;
-}
-
-void AEMPGrenade::Disable(const bool bHide)
-{
-	Super::Disable();
-	Radius->SetGenerateOverlapEvents(false);
-}
-
-void AEMPGrenade::TriggerEmpEffect(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (!OtherActor->ActorHasTag("AliveEnemy")) return;
-	if (const TObjectPtr<AEnemy> Target = Cast<AEnemy>(OtherActor)) if (!Target->GetIsHijacked()) Target->AI_ReceiveEmpEffect(EffectDuration);
 }

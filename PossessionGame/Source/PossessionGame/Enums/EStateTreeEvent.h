@@ -15,6 +15,7 @@ enum class EStateTreeEvent : uint8
     WraithMeteorShower,
     PyroBossActivateFireFloor,
     PyroBossStomp,
+    PyroBossBallPhase,
     MoveDirectly,
     MoveWithPathfinder
 };

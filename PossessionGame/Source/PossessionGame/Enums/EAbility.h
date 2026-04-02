@@ -24,6 +24,7 @@ enum class EAbility : uint8
     WraithAbility3,
     PyroBossAbility1,
     PyroBossAbility2,
+    PyroBossAbility3,
     SpyAbility1,
     SpyAbility2,
     SpyAbility3,
