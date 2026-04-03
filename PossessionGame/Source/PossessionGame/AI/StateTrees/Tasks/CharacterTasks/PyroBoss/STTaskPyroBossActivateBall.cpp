@@ -1,5 +1,4 @@
 ﻿#include "STTaskPyroBossActivateBall.h"
-
 #include "StateTreeExecutionContext.h"
 #include "PossessionGame/AI/Enemies/Controllers/PyroBossAIController.h"
 

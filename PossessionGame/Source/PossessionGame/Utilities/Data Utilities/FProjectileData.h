@@ -36,7 +36,6 @@ struct POSSESSIONGAME_API FProjectileData
 {
 	GENERATED_BODY()
 
-	EPoolObject ProjectileName = EPoolObject::None;
 	int32 Amount = 1;
 	UPROPERTY(EditAnywhere)
 	bool bIsPlayerProjectile = false;
@@ -74,6 +73,8 @@ struct POSSESSIONGAME_API FProjectileData
 	FName ProjectileSocketName = "ProjectileSocket";
 	UPROPERTY(EditDefaultsOnly)
 	EDamageReason DamageReason = EDamageReason::None;
+	UPROPERTY(EditDefaultsOnly)
+	EPoolObject ProjectileName = EPoolObject::None;
 	
 	float GetCalcSpread() const { return Spread * (bWalkSpreadEnabled ? 2.f : 1.f); }
 	FAdditionalProjectiles GetMultiProjectileData(const int32 InAmount)

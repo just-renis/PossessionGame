@@ -5,7 +5,8 @@
 void UPyroBossAbility3::AI_Execute()
 {
 	Proprietor->SetIsAbilityInAction(true);
-	Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::ActivatePyroBall, 6.f, false);
+	Proprietor->GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::ActivatePyroBall, DurationTime, false);
+	Proprietor->InitiateBallPhase();
 	Super::AI_Execute();
 }
 

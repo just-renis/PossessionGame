@@ -4,8 +4,6 @@
 #include "Projectile.h"
 #include "EMPGrenade.generated.h"
 
-class USphereComponent;
-
 UCLASS()
 class POSSESSIONGAME_API AEMPGrenade : public AProjectile
 {

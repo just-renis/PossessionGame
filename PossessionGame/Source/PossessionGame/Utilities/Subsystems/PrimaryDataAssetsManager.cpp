@@ -903,6 +903,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_PyroBossEnvironmentFire", EVfx::PyroBossEnvironmentFire);
 	VfxsMap.Add("PA_PyroBossFloorFireWarning", EVfx::PyroBossFloorFireWarning);
 	VfxsMap.Add("PA_PyroBossSendSignal", EVfx::PyroBossSendSignal);
+	VfxsMap.Add("PA_PyroBossBallPhase", EVfx::PyroBossBallPhase);
 	VfxsMap.Add("PA_SoldierBossBulletTrail", EVfx::SoldierBossBulletTrail);
 	VfxsMap.Add("PA_SamuraiSlash", EVfx::SamuraiSlash);
 	VfxsMap.Add("PA_AcoHijackEffect", EVfx::AcoHijackEffect);

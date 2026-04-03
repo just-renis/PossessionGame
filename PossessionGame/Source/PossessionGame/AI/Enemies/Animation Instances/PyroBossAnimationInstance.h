@@ -10,4 +10,5 @@ class POSSESSIONGAME_API UPyroBossAnimationInstance : public UEnemyAnimationInst
 	GENERATED_BODY()
 
 	virtual void OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted) override;
+	virtual void MontageWithHoldEnd() override;
 };

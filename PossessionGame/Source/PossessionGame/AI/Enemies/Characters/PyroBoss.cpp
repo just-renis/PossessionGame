@@ -4,13 +4,17 @@
 #include "Components/AudioComponent.h"
 #include "Engine/OverlapResult.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
+#include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
+#include "PossessionGame/Weapons/Management/Weapon.h"
 
 void APyroBoss::MarkFloorLavaAbilityReady()
 {
@@ -25,6 +29,18 @@ void APyroBoss::MarkStompAbilityReady()
 void APyroBoss::MarkBallPhaseAbilityReady()
 {
 	GetWorldTimerManager().SetTimer(ActivateBallPhaseHandle, this, &APyroBoss::ActivateBallPhase, 0.25f, true);
+}
+
+void APyroBoss::InitiateBallPhase()
+{
+	bIsBallPhaseActive = true;
+	FTimerHandle ActivateBallPhaseAttackHandle;
+	GetWorldTimerManager().SetTimer(ActivateBallPhaseAttackHandle, this, &APyroBoss::ActivateBallPhaseAttack, GetAnimInstance()->GetMontageLength(EEnemyAnimState::ActivatePyroBall));
+}
+
+void APyroBoss::FinishedBallPhase()
+{
+	bIsBallPhaseActive = false;
 }
 
 APyroBoss::APyroBoss()
@@ -142,7 +158,26 @@ void APyroBoss::ActivateBallPhase()
 	if (!AI || IsActionsDisabled() || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
 	GetWorldTimerManager().ClearTimer(ActivateBallPhaseHandle);
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::PyroBossBallPhase);
-	UE_LOG(LogTemp, Error, TEXT("ACTIVATE BALLLLLLLLLLLLLLLS"));
+}
+
+void APyroBoss::ActivateBallPhaseAttack()
+{
+	if (!IsAsyncAssetStillAllowedToBeUsed()) return;
+	GetWorldTimerManager().SetTimer(BallPhaseAttackHandle, this, &APyroBoss::TriggerBallPhaseAttack, 0.25f, true);
+	if (!BallPhaseVfx) AssetsManager->AttachVfx(EVfx::PyroBossBallPhase, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed() && bIsBallPhaseActive; }, &BallPhaseVfx, GetMesh(), FName("BallPhaseSocket"));
+	else BallPhaseVfx->Activate();
+}
+
+void APyroBoss::TriggerBallPhaseAttack()
+{
+	if (!bIsBallPhaseActive)
+	{
+		GetWorldTimerManager().ClearTimer(BallPhaseAttackHandle);
+		return;
+	}
+	const FRotator Rotation = FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f);
+	ProjectileData.SetProprietor(this);
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::PyroBossProjectile, GetSocketLocation(FName("BallPhaseSocket")), Rotation)->Init(ProjectileData, Rotation);
 }
 
 void APyroBoss::ClearTimers()
@@ -151,4 +186,5 @@ void APyroBoss::ClearTimers()
 	GetWorldTimerManager().ClearTimer(ActivateFloorLavaHandle);
 	GetWorldTimerManager().ClearTimer(ActivateStompHandle);
 	GetWorldTimerManager().ClearTimer(ActivateBallPhaseHandle);
+	GetWorldTimerManager().ClearTimer(BallPhaseAttackHandle);
 }

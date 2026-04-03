@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Utilities/Data Utilities/FProjectileData.h"
 #include "PyroBoss.generated.h"
 
 UCLASS()
@@ -16,6 +17,8 @@ public:
 	void MarkFloorLavaAbilityReady();
 	void MarkStompAbilityReady();
 	void MarkBallPhaseAbilityReady();
+	void InitiateBallPhase();
+	void FinishedBallPhase();
 private:
 	APyroBoss();
 
@@ -23,6 +26,7 @@ private:
 	FTimerHandle ActivateFloorLavaHandle;
 	FTimerHandle ActivateStompHandle;
 	FTimerHandle ActivateBallPhaseHandle;
+	FTimerHandle BallPhaseAttackHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
 	float SecondPhaseHpPercentage = 0.7f;
 	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
@@ -31,6 +35,8 @@ private:
 	float StompTriggerRadiusInMeters = 4.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Stomp", meta = (AllowPrivateAccess = true))
 	float StunDuration = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Ball Phase", meta = (AllowPrivateAccess = true))
+	FProjectileData ProjectileData;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> SendSignalVfx;
 	UPROPERTY()
@@ -45,6 +51,8 @@ private:
 	TObjectPtr<UAudioComponent> InitiateFlameFloorSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> StompSfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> BallPhaseVfx;
 	
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 	virtual void AI_SetupWeapon() override;
@@ -58,5 +66,7 @@ private:
 	void ActivateFloorLava();
 	void ActivateStomp();
 	void ActivateBallPhase();
+	void ActivateBallPhaseAttack();
+	void TriggerBallPhaseAttack();
 	virtual void ClearTimers() override;
 };
