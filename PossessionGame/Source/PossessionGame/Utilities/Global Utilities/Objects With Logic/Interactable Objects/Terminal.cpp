@@ -76,6 +76,6 @@ void ATerminal::ProcessRotationOfValve()
 	GetWorldTimerManager().ClearTimer(ValveRotationHandle);
 	const TObjectPtr<UPrimaryDataAssetsManager> AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
 	AssetsManager->PlaySoundAtLocation(ESound::HackTerminalSmoke, GetActorLocation() + SmokePipeOffset);
-	AssetsManager->SpawnVfx(EVfx::GeneratorRoomSmoke, nullptr, GetActorLocation() + FVector::BackwardVector * 400.f);
+	AssetsManager->SpawnVfx(EVfx::GeneratorRoomSmoke, nullptr, GetActorLocation() + RoomSmokeOffset);
 	AssetsManager->SpawnVfx(EVfx::GeneratorRoomPipeSmoke, nullptr, GetActorLocation() + SmokePipeOffset);
 }
