@@ -79,8 +79,13 @@ struct POSSESSIONGAME_API FProjectileData
 	float GetCalcSpread() const { return Spread * (bWalkSpreadEnabled ? 2.f : 1.f); }
 	FAdditionalProjectiles GetMultiProjectileData(const int32 InAmount)
 	{
-		if (MultipleProjectiles.Find(InAmount)) return MultipleProjectiles[InAmount];
+		if (FAdditionalProjectiles* ProjectileData = MultipleProjectiles.Find(InAmount)) return *ProjectileData;
 		return FAdditionalProjectiles();
+	}
+	FAdditionalProjectiles* GetMultiProjectileDataPtr(const int32 InAmount)
+	{
+		if (FAdditionalProjectiles* Found = MultipleProjectiles.Find(InAmount)) return Found;
+		return nullptr;
 	}
 	TObjectPtr<AEnemy> GetProprietor() { return Proprietor; }
 

@@ -22,6 +22,8 @@ class POSSESSIONGAME_API ATerminal : public AInteractableObject
 	bool bIsValve = false;
 	UPROPERTY(EditAnywhere, Category = "Individual Values | Valve", meta = (EditCondition = "bIsValve", EditConditionHides, AllowPrivateAccess = true))
 	FVector SmokePipeOffset;
+	UPROPERTY(EditAnywhere, Category = "Individual Values | Valve", meta = (EditCondition = "bIsValve", EditConditionHides, AllowPrivateAccess = true))
+	FVector RoomSmokeOffset;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 
