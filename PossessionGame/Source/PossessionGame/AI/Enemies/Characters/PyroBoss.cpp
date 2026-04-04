@@ -177,6 +177,7 @@ void APyroBoss::TriggerBallPhaseAttack()
 	}
 	const FRotator Rotation = FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f);
 	ProjectileData.SetProprietor(this);
+	ProjectileData.GetMultiProjectileDataPtr(1)->Data[0].GravityScale = FMath::FRandRange(1.f, 3.f);
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::PyroBossProjectile, GetSocketLocation(FName("BallPhaseSocket")), Rotation)->Init(ProjectileData, Rotation);
 }
 

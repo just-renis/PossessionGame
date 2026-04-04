@@ -20,62 +20,35 @@ void APyroBossFireFloor::BeginPlay()
 {
 	Super::BeginPlay();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->TriggerFireFloors.AddUObject(this, &APyroBossFireFloor::TriggerFireWarning);
-	const TObjectPtr<UPrimaryDataAssetsManager> AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
-	if (AssetsManager->IsVfxAlreadyLoaded(EVfx::PyroBossFloorFireWarning)) AssetsManager->AttachVfx(EVfx::PyroBossFloorFireWarning, nullptr, &WarningFire, Mesh, NAME_None, true);
-	else
-	{
-		TWeakObjectPtr WeakThis = this;
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->LoadVfx(EVfx::PyroBossFloorFireWarning, [WeakThis]
-		{
-			if (!WeakThis.IsValid() || !WeakThis.Get()) return;
-			if (WeakThis->WarningFire)
-			{
-				WeakThis->WarningFire->DestroyComponent();
-				WeakThis->WarningFire = nullptr;
-			}
-			WeakThis->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::PyroBossFloorFireWarning, nullptr, &WeakThis->WarningFire, WeakThis->Mesh, NAME_None, true);
-		});
-	}
-	if (AssetsManager->IsVfxAlreadyLoaded(EVfx::PyroBossFloorFireWarning)) AssetsManager->AttachVfx(EVfx::PyroBossEnvironmentFire, nullptr, &EnvironmentFire, Mesh, NAME_None, true);
-	else
-	{
-		TWeakObjectPtr WeakThis = this;
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->LoadVfx(EVfx::PyroBossEnvironmentFire, [WeakThis]
-		{
-			if (!WeakThis.IsValid() || !WeakThis.Get()) return;
-			if (WeakThis->EnvironmentFire)
-			{
-				WeakThis->EnvironmentFire->DestroyComponent();
-				WeakThis->EnvironmentFire = nullptr;
-			}
-			WeakThis->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::PyroBossEnvironmentFire, nullptr, &WeakThis->EnvironmentFire, WeakThis->Mesh, NAME_None, true);
-		});
-	}
 }
 
 void APyroBossFireFloor::TriggerFireWarning(const TArray<int32>& InIds)
 {
 	if (!InIds.Contains(Id)) return;
 	bIsWarningActive = true;
-	if (WarningFire) WarningFire->Activate(true);
+	if (!WarningFire) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::PyroBossFloorFireWarning, [this]() -> bool { return bIsWarningActive; }, &WarningFire, Mesh);
+	else WarningFire->Activate(true);
+	FTimerHandle TriggerFireHandle;
 	GetWorldTimerManager().SetTimer(TriggerFireHandle, this, &APyroBossFireFloor::TriggerFire, TriggerFireTime);
 }
 
 void APyroBossFireFloor::TriggerFire()
 {
-	if (WarningFire) WarningFire->DeactivateImmediate();
 	bIsWarningActive = false;
+	if (WarningFire) WarningFire->DeactivateImmediate();
 	if (Collision) Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	bIsFireActive = true;
-	if (EnvironmentFire) EnvironmentFire->Activate(true);
+	if (!EnvironmentFire) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::PyroBossEnvironmentFire, [this]() -> bool { return bIsFireActive; }, &EnvironmentFire, Mesh);
+	else EnvironmentFire->Activate(true);
+	FTimerHandle FireUptimeHandle;
 	GetWorldTimerManager().SetTimer(FireUptimeHandle, this, &APyroBossFireFloor::TurnOffFire, FireUptime);
 }
 
 void APyroBossFireFloor::TurnOffFire()
 {
+	bIsFireActive = false;
 	if (EnvironmentFire) EnvironmentFire->DeactivateImmediate();
 	if (Collision) Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	bIsFireActive = false;
 }
 
 void APyroBossFireFloor::AddOverlappedTarget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

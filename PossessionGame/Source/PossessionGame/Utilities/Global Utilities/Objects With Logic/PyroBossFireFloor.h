@@ -18,8 +18,6 @@ class POSSESSIONGAME_API APyroBossFireFloor : public AActor
 	bool bIsFireActive = false;
 	float TriggerFireTime = 3.f;
 	float FireUptime = 3.f;
-	FTimerHandle TriggerFireHandle;
-	FTimerHandle FireUptimeHandle;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 Id;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
