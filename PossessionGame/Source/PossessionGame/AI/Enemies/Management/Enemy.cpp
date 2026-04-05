@@ -1038,7 +1038,7 @@ void AEnemy::P_ProcessMeleeAttack()
 	FCollisionQueryParams OverlapParams;
 	OverlapParams.AddIgnoredActor(this);
 	TArray<FOverlapResult> Overlaps;
-	const FVector Origin = GetWeapon()->GetHandsSocketLocation("PlayerWeaponSocket1") - GetActorForwardVector() * 30.f;
+	const FVector Origin = GetActorLocation() - GetActorForwardVector() * 30.f;
 	GetWorld()->OverlapMultiByProfile(Overlaps, Origin, FQuat::Identity, FName("TriggerDamageable"), FCollisionShape::MakeSphere(QuickMeleeAttackRadiusInMeters * 100.f), OverlapParams);
 	for (const FOverlapResult& Overlap : Overlaps)
 	{

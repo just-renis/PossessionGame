@@ -24,6 +24,7 @@ private:
 
 	virtual void P_Setup() override;
 	virtual void P_Shoot() override;
+	virtual void P_BindQuickMeleeAction() override {}
 
 	virtual void BeginPlay() override;
 	void SetupSamuraiHat();
