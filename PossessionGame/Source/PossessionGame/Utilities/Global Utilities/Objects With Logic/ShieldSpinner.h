@@ -11,7 +11,7 @@ class POSSESSIONGAME_API AShieldSpinner : public AActor
 
 	AShieldSpinner();
 
-	bool bIsLiftingInner = true;
+	bool bIsLiftingInner = false;
 	float CurrentlyLiftedHeight = 0.f;
 	FTimerHandle SpinHandle;
 	FTimerHandle LiftingHandle;
@@ -25,6 +25,10 @@ class POSSESSIONGAME_API AShieldSpinner : public AActor
 	TObjectPtr<UStaticMeshComponent> InnerMesh;
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> OuterMesh;
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> InnerFloorMesh;
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> OuterFloorMesh;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
