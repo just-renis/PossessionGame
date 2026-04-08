@@ -11,10 +11,15 @@ UCLASS()
 class POSSESSIONGAME_API ATutorialButton : public AActor
 {
 	GENERATED_BODY()
-	
+public:
+	int32 GetButtonIndex() const { return ButtonIndex; };
+private:
 	ATutorialButton();
 
+	bool bActive = true;
 	FTimerHandle CheckIfStompedHandle;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	bool bTerminalButton = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ButtonIndex;
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes", meta = (AllowPrivateAccess = true))
@@ -31,6 +36,7 @@ class POSSESSIONGAME_API ATutorialButton : public AActor
 	void ButtonClicked();
 	void StompCheck();
 	void SpawnMarker() const;
+	void DisableActiveStateWhenOtherButtonStomped(const int32 InClickedButtonId);
 	UFUNCTION()
 	void OverlapOccured(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

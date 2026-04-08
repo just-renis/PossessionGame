@@ -1,6 +1,7 @@
 ﻿#include "Terminal.h"
 #include "Components/SphereComponent.h"
 #include "PossessionGame/Enums/EGameMode.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/TutorialObjects/TutorialButton.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -15,9 +16,17 @@ void ATerminal::BeginPlay()
 {
 	Super::BeginPlay();
 	DelegateManager->OnHackModeStart.AddUObject(this, &ATerminal::ShowMarker);
-	DelegateManager->OnTerminalInteraction.AddUObject(this, &ATerminal::DisableTerminal);
-	DelegateManager->OnTerminalHackFinish.AddUObject(this, &ATerminal::EnableTerminal);
-	DelegateManager->OnGameModeInitiator.AddUObject(this, &ATerminal::EnableTerminal);
+	if (bIsButton)
+	{
+		DelegateManager->OnTerminalCandleInteraction.AddUObject(this, &ATerminal::InteractWithButtonId);
+		DelegateManager->OnInteractionTry.RemoveAll(this);
+	}
+	else
+	{
+		DelegateManager->OnTerminalInteraction.AddUObject(this, &ATerminal::DisableTerminal);
+		DelegateManager->OnTerminalHackFinish.AddUObject(this, &ATerminal::EnableTerminal);
+		DelegateManager->OnGameModeInitiator.AddUObject(this, &ATerminal::EnableTerminal);
+	}
 }
 
 void ATerminal::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -29,10 +38,7 @@ void ATerminal::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ATerminal::Interact()
 {
 	if (!GetIsInteractable()) return;
-	if (bIsValve)
-	{
-		GetWorldTimerManager().SetTimer(ValveRotationHandle, this, &ATerminal::ProcessRotationOfValve, 1.f / 36.f, true);
-	}
+	if (bIsValve) GetWorldTimerManager().SetTimer(ValveRotationHandle, this, &ATerminal::ProcessRotationOfValve, 1.f / 36.f, true);
 	DelegateManager->SendHackTerminalRoomMode.Broadcast(RoomMode);
 	GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
 	DelegateManager->OnTerminalInteraction.RemoveAll(this);
@@ -41,6 +47,8 @@ void ATerminal::Interact()
 	DisableTerminal();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTerminalInteraction.Broadcast();
 }
+
+void ATerminal::SetupInteractionLogic() { if (!bIsButton) Super::SetupInteractionLogic(); }
 
 void ATerminal::ShowMarker() const { GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 140.f); }
 
@@ -78,4 +86,10 @@ void ATerminal::ProcessRotationOfValve()
 	AssetsManager->PlaySoundAtLocation(ESound::HackTerminalSmoke, GetActorLocation() + SmokePipeOffset);
 	AssetsManager->SpawnVfx(EVfx::GeneratorRoomSmoke, nullptr, GetActorLocation() + RoomSmokeOffset);
 	AssetsManager->SpawnVfx(EVfx::GeneratorRoomPipeSmoke, nullptr, GetActorLocation() + SmokePipeOffset);
+}
+
+void ATerminal::InteractWithButtonId(const int32 InButtonId)
+{
+	if (Button->GetButtonIndex() != InButtonId) return;
+	Interact();
 }

@@ -25,8 +25,7 @@ void AInteractableObject::BeginPlay()
 	Super::BeginPlay();
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->OnInteractionTry.AddUObject(this, &AInteractableObject::Interact);
-	Collision->OnComponentBeginOverlap.AddDynamic(this, &AInteractableObject::EnableInteractionWidget);
-	Collision->OnComponentEndOverlap.AddDynamic(this, &AInteractableObject::DisableInteractionWidget);
+	SetupInteractionLogic();
 	InteractableUI = Cast<UInteractableUI>(InteractableWidget->GetWidget());
 }
 
@@ -45,6 +44,12 @@ void AInteractableObject::ChangeOutlineState(const bool bState)
 }
 
 void AInteractableObject::FadeOutAnimFinished() const { if (InteractableWidget)  InteractableWidget->SetVisibility(false); }
+
+void AInteractableObject::SetupInteractionLogic()
+{
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &AInteractableObject::EnableInteractionWidget);
+	Collision->OnComponentEndOverlap.AddDynamic(this, &AInteractableObject::DisableInteractionWidget);
+}
 
 void AInteractableObject::EnableInteractionWidget(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {

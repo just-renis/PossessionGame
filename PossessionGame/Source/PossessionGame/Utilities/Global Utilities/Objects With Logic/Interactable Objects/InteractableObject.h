@@ -33,16 +33,15 @@ protected:
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void SetupInteractionLogic();
 	virtual void Interact() override {}
 private:
+	FTimerHandle FadeOutAnimHandle;
+	FTimerHandle DisableOutlineHandle;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	bool bIsSkeletalMesh = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_InteractionOutline;
-	UPROPERTY()
-	FTimerHandle FadeOutAnimHandle;
-	UPROPERTY()
-	FTimerHandle DisableOutlineHandle;
 
 	virtual void ChangeOutlineState(const bool bState) override;
 	void FadeOutAnimFinished() const;
