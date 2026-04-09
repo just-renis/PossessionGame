@@ -140,5 +140,7 @@ enum class EVfx : uint16
 	SamuraiSlash,
 	AcoHijackEffect,
 	AcoFlyTrail,
-	AcoEject
+	AcoEject,
+	TerminalCandleEnergy,
+	TerminalCoreEnergy
 };

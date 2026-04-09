@@ -20,6 +20,8 @@ void ATerminal::BeginPlay()
 	{
 		DelegateManager->OnTerminalCandleInteraction.AddUObject(this, &ATerminal::InteractWithButtonId);
 		DelegateManager->OnInteractionTry.RemoveAll(this);
+		DelegateManager->OnTerminalHackFinish.AddUObject(this, &ATerminal::EnableTerminal);
+		SetIsInteractable(true);
 	}
 	else
 	{
@@ -39,7 +41,7 @@ void ATerminal::Interact()
 {
 	if (!GetIsInteractable()) return;
 	if (bIsValve) GetWorldTimerManager().SetTimer(ValveRotationHandle, this, &ATerminal::ProcessRotationOfValve, 1.f / 36.f, true);
-	DelegateManager->SendHackTerminalRoomMode.Broadcast(RoomMode);
+	DelegateManager->SendHackTerminalRoomMode.Broadcast(RoomMode == EGameMode::None ? EGameMode::HackTerminalsMode : RoomMode);
 	GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
 	DelegateManager->OnTerminalInteraction.RemoveAll(this);
 	DelegateManager->OnTerminalHackFinish.RemoveAll(this);
@@ -55,6 +57,11 @@ void ATerminal::ShowMarker() const { GetWorld()->GetSubsystem<UMarkerManager>()-
 void ATerminal::EnableTerminal(const EGameMode InGameMode)
 {
 	if (InGameMode == EGameMode::HackTerminalsMode) ToggleInteractableWidget(true);
+}
+
+void ATerminal::EnableButtonTerminal(const EGameMode InGameMode)
+{
+	if (InGameMode == EGameMode::HackTerminalsMode) ShowMarker();
 }
 
 void ATerminal::DisableTerminal()

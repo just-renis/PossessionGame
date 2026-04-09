@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "TutorialButton.generated.h"
 
+enum class EGameMode : uint8;
 class AEnemy;
 class USphereComponent;
 
@@ -37,6 +38,7 @@ private:
 	void StompCheck();
 	void SpawnMarker() const;
 	void DisableActiveStateWhenOtherButtonStomped(const int32 InClickedButtonId);
+	void TerminalHijackFinished(const EGameMode InGameMode);
 	UFUNCTION()
 	void OverlapOccured(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()

@@ -909,6 +909,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_AcoHijackEffect", EVfx::AcoHijackEffect);
 	VfxsMap.Add("PA_AcoFlyTrail", EVfx::AcoFlyTrail);
 	VfxsMap.Add("PA_AcoEject", EVfx::AcoEject);
+	VfxsMap.Add("PA_TerminalCandleEnergy", EVfx::TerminalCandleEnergy);
+	VfxsMap.Add("PA_TerminalCoreEnergy", EVfx::TerminalCoreEnergy);
 	FillContainers<EVfx, FVfxContainer, UPA_VfxContainer>(VfxsMap, VfxContainers, "Vfx");
 	VfxsMap.Empty();
 }

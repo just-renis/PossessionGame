@@ -40,6 +40,7 @@ class POSSESSIONGAME_API ATerminal : public AInteractableObject
 	virtual void SetupInteractionLogic() override;
 	void ShowMarker() const;
 	void EnableTerminal(const EGameMode InGameMode);
+	void EnableButtonTerminal(const EGameMode InGameMode);
 	void DisableTerminal();
 	void ToggleInteractableWidget(const bool bState);
 	void ProcessRotationOfValve();

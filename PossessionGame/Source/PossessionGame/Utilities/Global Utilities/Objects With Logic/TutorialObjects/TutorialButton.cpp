@@ -22,7 +22,11 @@ void ATutorialButton::BeginPlay()
 	Super::BeginPlay();
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATutorialButton::OverlapOccured);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ATutorialButton::OverlapEnded);
-	if (bTerminalButton) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTerminalCandleInteraction.AddUObject(this, &ATutorialButton::DisableActiveStateWhenOtherButtonStomped);
+	if (bTerminalButton)
+	{
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTerminalCandleInteraction.AddUObject(this, &ATutorialButton::DisableActiveStateWhenOtherButtonStomped);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTerminalHackFinish.AddUObject(this, &ATutorialButton::TerminalHijackFinished);
+	}
 	if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished()) GetGameInstance()->GetSubsystem<UDelegateManager>()->SpawnMarkerOnTutorialButton.BindUObject(this, &ATutorialButton::SpawnMarker);
 }
 
@@ -52,10 +56,11 @@ void ATutorialButton::SpawnMarker() const { GetWorld()->GetSubsystem<UMarkerMana
 
 void ATutorialButton::DisableActiveStateWhenOtherButtonStomped(const int32 InClickedButtonId) { bActive = false; }
 
+void ATutorialButton::TerminalHijackFinished(const EGameMode InGameMode) { bActive = true; }
+
 void ATutorialButton::OverlapOccured(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!OtherActor->ActorHasTag("Player") || !bActive) return;
-	UE_LOG(LogTemp, Error, TEXT("OVERLAP OCCURED"));
 	if (const TObjectPtr<AEnemy> Player = Cast<AEnemy>(OtherActor))
 	{
 		OverlappedPlayer = Player;
