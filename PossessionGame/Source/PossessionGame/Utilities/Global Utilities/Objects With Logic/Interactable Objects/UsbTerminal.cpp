@@ -30,6 +30,7 @@ void AUsbTerminal::Interact()
 	DelegateManager->OnUsbInserted.Broadcast();
 	DelegateManager->OnUsbInserted.RemoveAll(this);
 	DelegateManager->OnUsbCollected.RemoveAll(this);
+	if (bIsWiredTerminal) DelegateManager->OnUsbInsertionForWires.Broadcast(WireId);
 	DisableInteraction();
 	if (!MID_Locks) return;
 	MID_Locks->SetScalarParameterValue(FName("ColorLockSwitch"), 1.f);

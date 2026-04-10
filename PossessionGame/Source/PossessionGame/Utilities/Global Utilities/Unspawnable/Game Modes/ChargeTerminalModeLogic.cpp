@@ -14,11 +14,16 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UChargeTerminalModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->OnUsbInserted.AddUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
 	PlaySound(ESound::TaskAnnouncement);
-	WaveManager->GetAssetsManager()->RequestSpawnEnemy(Data->GetEnemyToSpawn(), EGameMode::MiniBossSpawn, [this](const TObjectPtr<AEnemy>&)
+	for (int32 i = 0; i < Data->GetBossesAtOnceSpawned(); i++)
 	{
-		IncreaseAliveEnemiesAmount();
-		GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
-	}, nullptr);
+		UE_LOG(LogTemp, Error, TEXT("Data->GetBossesAtOnceSpawned() %i"), Data->GetBossesAtOnceSpawned());
+		WaveManager->GetAssetsManager()->RequestSpawnEnemy(Data->GetEnemyToSpawn(), EGameMode::MiniBossSpawn,
+		[this](const TObjectPtr<AEnemy>&)
+		{
+			IncreaseAliveEnemiesAmount();
+			GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
+		}, nullptr);
+	}
 }
 
 void UChargeTerminalModeLogic::Finalize()
@@ -100,7 +105,14 @@ void UChargeTerminalModeLogic::InitiateNextCharge()
 	bInstanceFinished = false;
 	WaveManagerHUD->UpdateObjectiveProgress(ChargeAmount, Data->GetChargeAmountRequired(), true);
 	WaveManagerHUD->ToggleFinishOffEnemiesText(false);
-	WaveManager->GetAssetsManager()->RequestSpawnEnemy(Data->GetEnemyToSpawn(), EGameMode::MiniBossSpawn,
-		[this](const TObjectPtr<AEnemy>&) { IncreaseAliveEnemiesAmount(); }, nullptr);
-	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
+	for (int32 i = 0; i < Data->GetBossesAtOnceSpawned(); i++)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Data->GetBossesAtOnceSpawned() %i"), Data->GetBossesAtOnceSpawned());
+		WaveManager->GetAssetsManager()->RequestSpawnEnemy(Data->GetEnemyToSpawn(), EGameMode::MiniBossSpawn,
+		[this](const TObjectPtr<AEnemy>&)
+		{
+			IncreaseAliveEnemiesAmount();
+			GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
+		}, nullptr);
+	}
 }

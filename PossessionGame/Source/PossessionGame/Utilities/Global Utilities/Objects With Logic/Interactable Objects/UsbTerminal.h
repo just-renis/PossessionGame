@@ -14,6 +14,10 @@ class POSSESSIONGAME_API AUsbTerminal : public AInteractableObject
 	AUsbTerminal();
 
 	bool bIsUsbCollected = false;
+	UPROPERTY(EditAnywhere, Category = "Wire Data", meta = (AllowPrivateAccess = true))
+	bool bIsWiredTerminal = false;
+	UPROPERTY(EditAnywhere, Category = "Wire Data", meta = (EditCondition = "bIsWiredTerminal", EditConditionHides, AllowPrivateAccess = true))
+	int32 WireId;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY()

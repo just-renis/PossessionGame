@@ -19,22 +19,28 @@ class POSSESSIONGAME_API AForceField : public AActor
 	float PatternMaxOpacity = 0.f;
 	float PatternOpacityDivisor = 0.f;
 	float DeploymentPercent = 0.f;
+	FTimerHandle DissolveHandle;
+	FTimerHandle DurationHandle;
+	FTimerHandle WarningDissolveHandle;
+	FTimerHandle WarningBlinkHandle;
 	FLinearColor DefaultColor;
+	UPROPERTY(EditAnywhere, Category = "Wire Data", meta = (AllowPrivateAccess = true))
+	bool bAssociatedWithWires = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bAppearByGameModeInitiation = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bForTerminalHackRoom = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bWithDurationForceField = false;
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", EditConditionHides, AllowPrivateAccess = true))
 	float StartLoopAfter = 0.f;
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", EditConditionHides, AllowPrivateAccess = true))
 	float DurationUntilDisappear = 5.f;
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", EditConditionHides, AllowPrivateAccess = true))
 	float DurationUntilAppear = 5.f;
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", EditConditionHides, AllowPrivateAccess = true))
 	float TimeBeforeWarning = 1.f;
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bWithDurationForceField", EditConditionHides, AllowPrivateAccess = true))
 	FLinearColor WarningColor;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 ForceFieldIndex = -1;
@@ -44,20 +50,13 @@ class POSSESSIONGAME_API AForceField : public AActor
 	TObjectPtr<UStaticMeshComponent> ForceField;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Material;
-	UPROPERTY()
-	FTimerHandle DissolveHandle;
-	UPROPERTY()
-	FTimerHandle DurationHandle;
-	UPROPERTY()
-	FTimerHandle WarningDissolveHandle;;
-	UPROPERTY()
-	FTimerHandle WarningBlinkHandle;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void DestroyThis();
 	void StartDissolveForceField(const int32 InIndex);
 	void AppearForceField(const EGameMode InGameMode);
+	void AppearForceFieldForWires(const EGameMode InGameMode);
 	void ProcessDissolveForceField();
 	void StartDeploymentOfForceField();
 	void ProcessDeploymentOfForceField();

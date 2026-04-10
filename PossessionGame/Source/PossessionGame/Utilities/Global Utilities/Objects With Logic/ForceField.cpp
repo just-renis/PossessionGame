@@ -23,6 +23,12 @@ void AForceField::BeginPlay()
 		GetWorldTimerManager().SetTimer(DurationHandle, this, &AForceField::SetupDurationTimer, StartLoopAfter, false);
 		return;
 	}
+	if (bAssociatedWithWires)
+	{
+		SetMaterialValuesToInvisible();
+		ForceField->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitiator.AddUObject(this, &AForceField::AppearForceFieldForWires);
+	}
 	if (bAppearByGameModeInitiation)
 	{
 		SetMaterialValuesToInvisible();
@@ -68,6 +74,12 @@ void AForceField::StartDissolveForceField(const int32 InIndex)
 void AForceField::AppearForceField(const EGameMode InGameMode)
 {
 	if (TerminalRoomMode != InGameMode) return;
+	ForceField->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	StartDeploymentOfForceField();
+}
+
+void AForceField::AppearForceFieldForWires(const EGameMode InGameMode)
+{
 	ForceField->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	StartDeploymentOfForceField();
 }
