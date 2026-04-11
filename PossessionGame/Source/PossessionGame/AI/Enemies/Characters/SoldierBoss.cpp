@@ -9,6 +9,8 @@
 ASoldierBoss::ASoldierBoss()
 {
 	AI_DestroyBossUnnecessaryComponents();
+	Backpack = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Backpack"));
+	Backpack->SetupAttachment(GetMesh(), FName("BackpackSocket"));
 }
 
 void ASoldierBoss::AI_SetupWeapon()

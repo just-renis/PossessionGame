@@ -11,6 +11,9 @@ class POSSESSIONGAME_API ASoldierBoss : public AEnemy
 
 	ASoldierBoss();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Backpack", meta = (AllowPrivateAccess = true))
+	TObjectPtr<USkeletalMeshComponent> Backpack;
+
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
 
