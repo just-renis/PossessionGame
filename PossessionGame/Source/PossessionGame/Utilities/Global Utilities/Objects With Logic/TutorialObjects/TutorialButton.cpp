@@ -52,7 +52,7 @@ void ATutorialButton::StompCheck()
 	if (OverlappedPlayer->GetIsStomping()) ButtonClicked();
 }
 
-void ATutorialButton::SpawnMarker() const { GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 70.f); }
+void ATutorialButton::SpawnMarker() const { GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 70.f, false); }
 
 void ATutorialButton::DisableActiveStateWhenOtherButtonStomped(const int32 InClickedButtonId) { bActive = false; }
 

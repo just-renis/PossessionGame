@@ -1,6 +1,5 @@
 ﻿#include "GameModeBaseLogic.h"
 #include "PossessionGame/Data Assets/Base Data Assets/GameModeData.h"
-#include "PossessionGame/Enums/EGameMode.h"
 #include "PossessionGame/Enums/EWidget.h"
 #include "PossessionGame/UI/MainWidgets/WaveManagerHUD.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -17,18 +16,6 @@ void UGameModeBaseLogic::Init(const TObjectPtr<UWaveManager>& InWaveManager, con
 	FirstThresholdOfTotalAmountNerf = InGameModeData->GetFirstThresholdOfTotalAmountNerf();
 	SecondThresholdOfTotalAmountNerf = InGameModeData->GetSecondThresholdOfTotalAmountNerf();
 	WaveManager->GetDelegateManager()->OnPlayerDeath.AddUObject(this, &UGameModeBaseLogic::FadeOutObjectivePanel);
-}
-
-int32 UGameModeBaseLogic::ConvertGameModeToDroneLocation() const
-{
-	switch (WaveManager->GetCurrentGameMode())
-	{
-		case EGameMode::WaveMode: return 3;
-		case EGameMode::HackTerminalsMode: return 4;
-		case EGameMode::ChargeTerminalMode: return 5;
-		default: ;
-	}
-	return 0;
 }
 
 float UGameModeBaseLogic::GetCurrentXpNerf() const

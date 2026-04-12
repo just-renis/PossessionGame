@@ -11,10 +11,9 @@ class POSSESSIONGAME_API UChargeTerminalModeLogic : public UGameModeBaseLogic
 {
 	GENERATED_BODY()
 
-	bool bIsTerminalCharged = false;
+	bool bIsTerminalsCharged = false;
 	bool bIsUsbRequirementFilled = false;
 	int32 ChargeAmount = 0;
-	FTimerHandle InitiateNextChargeHandle;
 	UPROPERTY()
 	TObjectPtr<UChargeTerminalModeData> Data;
 

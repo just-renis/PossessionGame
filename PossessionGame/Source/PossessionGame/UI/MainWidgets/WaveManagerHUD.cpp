@@ -55,7 +55,7 @@ void UWaveManagerHUD::UpdateObjective(const EGameMode InGameMode, const int32 In
 		case EGameMode::HackTerminalsMode:
 			ObjectiveText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "HackTerminals", "Hack {0} terminals"), InData));
 			break;
-		case EGameMode::ChargeTerminalMode:
+		case EGameMode::ChargeTerminalMode: case EGameMode::MultipleWardenMode:
 			ObjectiveText->SetText(FText::Format(NSLOCTEXT("ST_Localization", "ChargeTerminal", "Charge terminal {0} times"), InData));
 			break;
 		case EGameMode::BossMode: 
@@ -68,14 +68,13 @@ void UWaveManagerHUD::UpdateObjective(const EGameMode InGameMode, const int32 In
 	}
 }
 
-void UWaveManagerHUD::UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective, const bool bShowUpgradeSelection)
+void UWaveManagerHUD::UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective)
 {
 	if (!ObjectiveProgressText) return;
 	if (InObjective == -1) ObjectiveProgressText->SetText(FText::FromString(FString::FromInt(InObjectiveProgress)));
 	else ObjectiveProgressText->SetText(FText::FromString(FString::FromInt(InObjectiveProgress) + " / " + FString::FromInt(InObjective)));
 	if (InObjectiveProgress != InObjective) return;
 	PlayAnimation(ObjectiveCompletedFadeInAnim);
-	if (bShowUpgradeSelection) BindToAnimationFinished(ObjectiveCompletedFadeInAnim, OnObjectivePanelAnimEnd);
 }
 
 void UWaveManagerHUD::ToggleFinishOffEnemiesText(const bool bState)
@@ -102,7 +101,6 @@ FString UWaveManagerHUD::GetConvertedNumber(const int32 InNumber)
 void UWaveManagerHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
-	OnObjectivePanelAnimEnd.BindUFunction(this, "OpenUpgradeSelection");
 	DelegateManager = GetGameInstance()->GetSubsystem<UDelegateManager>();
 	DelegateManager->RequestMiniPopup.BindUObject(this, &UWaveManagerHUD::TriggerMiniPopup);
 	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsTutorialFinished()) GetWorld()->GetTimerManager().SetTimer(TimerUpdateHandle, this, &UWaveManagerHUD::UpdateTimerText, 0.5f, true);
@@ -138,10 +136,4 @@ void UWaveManagerHUD::NativeDestruct()
 	GetWorld()->GetTimerManager().ClearTimer(AnnouncementHandle);
 	GetWorld()->GetTimerManager().ClearTimer(TimerUpdateHandle);
 	Super::NativeDestruct();
-}
-
-void UWaveManagerHUD::OpenUpgradeSelection()
-{
-	UnbindFromAnimationFinished(ObjectiveCompletedFadeInAnim, OnObjectivePanelAnimEnd);
-	//GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UUpgradeSelectionUI>(EWidget::UpgradeSelectionUI)->OpenUI();
 }

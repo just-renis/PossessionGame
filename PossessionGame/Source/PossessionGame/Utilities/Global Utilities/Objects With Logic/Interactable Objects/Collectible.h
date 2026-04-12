@@ -20,7 +20,11 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public ICollectable
 	ACollectible();
 
 	int32 SpawnProcessIndex = 0;
+	int32 MarkerId = 0;
 	float InitialSpawnZ;
+	FTimerHandle FloatHandle;
+	FTimerHandle SpinHandle;
+	FTimerHandle ProcessSpawnHandle;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -35,12 +39,6 @@ class POSSESSIONGAME_API ACollectible : public APoolObject, public ICollectable
 	TObjectPtr<UMaterialInstanceDynamic> MID_Border;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Main;
-	UPROPERTY()
-	FTimerHandle FloatHandle;
-	UPROPERTY()
-	FTimerHandle SpinHandle;
-	UPROPERTY()
-	FTimerHandle ProcessSpawnHandle;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

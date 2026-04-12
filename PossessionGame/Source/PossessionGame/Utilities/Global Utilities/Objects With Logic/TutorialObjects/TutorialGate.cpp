@@ -114,7 +114,7 @@ void ATutorialGate::ChangeOutlineState(const bool bState)
 void ATutorialGate::ShowMarker(const EGameMode InGameMode) const
 {
 	if (GameModeToFinish != InGameMode) return;
-	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 100.f);
+	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 100.f, false);
 }
 
 void ATutorialGate::FadeOutAnimFinished() const { if (InteractableWidget) InteractableWidget->SetVisibility(false); }

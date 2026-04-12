@@ -127,7 +127,7 @@ void AGate::SetArtifactCollected()
 void AGate::ShowMarker(const EGameMode InGameMode) const
 {
 	if (GameModeToFinish != InGameMode) return;
-	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 100.f);
+	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 100.f, false);
 }
 
 void AGate::FadeOutAnimFinished() const { if (InteractableWidget) InteractableWidget->SetVisibility(false); }

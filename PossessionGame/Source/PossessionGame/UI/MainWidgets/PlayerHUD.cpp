@@ -283,9 +283,10 @@ void UPlayerHUD::UpdateGlobalHpBar(const float InCurrent, const float InMax)
 	UpdateProgressBar(EUIBar::Boss, InCurrent, InMax);
 }
 
-void UPlayerHUD::EnableGlobalHpBar(const EEnemyHpBar InHpBarType) const
+void UPlayerHUD::EnableGlobalHpBar(const EEnemyHpBar InHpBarType, const int32 InBossesAmount)
 {
 	if (!GlobalHpBarInv || !GlobalHpBar) return;
+	BossesToKillBeforeDisablingGlobalHpBar = InBossesAmount;
 	FProgressBarStyle CurrentStyle = GlobalHpBar->GetWidgetStyle();
 	CurrentStyle.FillImage.SetResourceObject(EnemyHpBars[InHpBarType]);
 	GlobalHpBar->SetWidgetStyle(CurrentStyle);
@@ -294,7 +295,11 @@ void UPlayerHUD::EnableGlobalHpBar(const EEnemyHpBar InHpBarType) const
 	GlobalHpBarInv->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
-void UPlayerHUD::DisableGlobalHpBar() const { if (GlobalHpBarInv) GlobalHpBarInv->SetVisibility(ESlateVisibility::Collapsed); }
+void UPlayerHUD::DisableGlobalHpBar()
+{
+	if (!GlobalHpBarInv || --BossesToKillBeforeDisablingGlobalHpBar > 0) return;
+	GlobalHpBarInv->SetVisibility(ESlateVisibility::Collapsed);
+}
 
 void UPlayerHUD::UpdateWhiteHpBar()
 {

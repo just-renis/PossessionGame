@@ -59,6 +59,7 @@ private:
 	float StepUpgradePercentage;
 	float MinorAnnouncementDisplayCooldown = 0.3f;
 	float OutOfAmmoDisplayCooldown = 0.5f;
+	int32 BossesToKillBeforeDisablingGlobalHpBar = 1;
 	ECharacterType CharacterType;
 	FTimerHandle UpdateHpWhiteBarHandle;
 	FTimerHandle UpdateGlobalHpWhiteBarHandle;
@@ -221,8 +222,8 @@ private:
 	void PlayLevelUpAnim();
 	void SetLevelText() const;
 	void UpdateGlobalHpBar(const float InCurrent, const float InMax);
-	void EnableGlobalHpBar(const EEnemyHpBar InHpBarType) const;
-	void DisableGlobalHpBar() const;
+	void EnableGlobalHpBar(const EEnemyHpBar InHpBarType, const int32 InBossesAmount);
+	void DisableGlobalHpBar();
 	void UpdateWhiteHpBar();
 	void UpdateGlobalWhiteHpBar();
 	void UpdateXpBar();

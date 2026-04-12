@@ -17,7 +17,7 @@ void AMarkerTrigger::BeginPlay()
 
 void AMarkerTrigger::OnOtherMarkerTriggerPassed(const int32 InNextMarkerToTrigger) const
 {
-	if (InNextMarkerToTrigger == MarkerTriggerIndex) GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation());
+	if (InNextMarkerToTrigger == MarkerTriggerIndex) GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation(), false);
 }
 
 void AMarkerTrigger::Initiate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

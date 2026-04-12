@@ -39,7 +39,7 @@ void AAcoBoss::BeginPlay()
 	AcoAnimInstance = Cast<UAcoBossAnimationInstance>(GetAnimInstance());
 	AcoAnimInstance->PlayMontage(EEnemyAnimState::Kneel);
 	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
-	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Boss);
+	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Boss, 1);
 	DelegateManager->OnAcoEnemySpawned.BindUObject(this, &AAcoBoss::SetupFlyingTowardsHijackTarget);
 	DelegateManager->OnFinalBossModeInitiated.BindUObject(this, &AAcoBoss::StandUp);
 	DelegateManager->OnAcoEnemyDeath.BindUObject(this, &AAcoBoss::SetupFlyingTowardsColumnLocation);

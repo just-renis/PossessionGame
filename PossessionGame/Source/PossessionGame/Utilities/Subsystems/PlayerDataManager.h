@@ -180,6 +180,7 @@ class POSSESSIONGAME_API UPlayerDataManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 public:
+	bool IsUsbToInsertAvailable() const { return CurrentAmountOfCollectedUsb > 0; }
 	float GetPoisonAreaStackBoost() const { return TricksterPurpleVariationData.GetDamageBoost(); }
 	float GetRangerGrenadeSpecialBoost() const { return RangerGrenadeSpecialData.GetDamageBoost(); }
 	float GetRangerShieldSpecialBoost() const { return RangerShieldSpecialData.GetDamageBoost(); }
@@ -194,9 +195,12 @@ public:
 	void AddRangerShieldSpecialStack() { RangerShieldSpecialData.AddStack(); }
 	void AddGuardianTimeStopSpecialStack() { GuardianTimeStopSpecialData.AddStack(); }
 	void AddRecentHijackBoost(const bool bInIsFourthOptionA) { RecentHijackBoostData.AddBoost(bInIsFourthOptionA); }
+	void AddUsb() { CurrentAmountOfCollectedUsb++; }
+	void RemoveUsb() { CurrentAmountOfCollectedUsb--; }
 	void Reset();
 	void Tick(const float InTickTime);
 private:
+	int32 CurrentAmountOfCollectedUsb = 0;
 	FTricksterPurpleVariationData TricksterPurpleVariationData;
 	FRangerGrenadeSpecialData RangerGrenadeSpecialData;
 	FRangerShieldSpecialData RangerShieldSpecialData;

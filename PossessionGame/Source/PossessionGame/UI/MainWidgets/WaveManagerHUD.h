@@ -23,7 +23,7 @@ public:
 	void PlayAnnouncementAnim(const FText& InAnnouncementText);
 	void PlayCountdownAnim();
 	void UpdateObjective(const EGameMode InGameMode, const int32 InData) const;
-	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective, const bool bShowUpgradeSelection = false);
+	void UpdateObjectiveProgress(const int32 InObjectiveProgress, const int32 InObjective);
 	void ToggleFinishOffEnemiesText(const bool bState);
 	void PlayHijackInitiateAnim(const bool bIsForward, const float InPlayRate);
 	void CancelHijackInitiateAnim() { PlayAnimation(HijackInitiateAnim, 1, 1, EUMGSequencePlayMode::Reverse); }
@@ -63,8 +63,6 @@ private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> HijackInitiateAnim;
 	UPROPERTY()
-	FWidgetAnimationDynamicEvent OnObjectivePanelAnimEnd;
-	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
 
 	FString GetConvertedNumber(const int32 InNumber);
@@ -74,6 +72,4 @@ private:
 	void TriggerMiniPopup(const FText& InText);
 	void UpdateTimerText();
 	virtual void NativeDestruct() override;
-	UFUNCTION()
-	void OpenUpgradeSelection();
 };

@@ -29,5 +29,5 @@ void APlayerLevelComputer::Interact()
 void APlayerLevelComputer::SpawnMarker() const
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitialized.RemoveAll(this);
-	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * MarkerUpwardsUnits, EMarkerType::RedArrow);
+	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * MarkerUpwardsUnits, false, EMarkerType::RedArrow);
 }

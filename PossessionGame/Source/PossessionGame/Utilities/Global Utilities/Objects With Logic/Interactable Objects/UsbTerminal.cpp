@@ -2,6 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AUsbTerminal::AUsbTerminal()
@@ -25,8 +26,9 @@ void AUsbTerminal::BeginPlay()
 
 void AUsbTerminal::Interact()
 {
-	if (!GetIsInteractable() || !bIsUsbCollected) return;
+	if (!GetIsInteractable() || !GetGameInstance()->GetSubsystem<UPlayerDataManager>()->IsUsbToInsertAvailable()) return;
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::UsbInsert);
+	GetGameInstance()->GetSubsystem<UPlayerDataManager>()->RemoveUsb();
 	DelegateManager->OnUsbInserted.Broadcast();
 	DelegateManager->OnUsbInserted.RemoveAll(this);
 	DelegateManager->OnUsbCollected.RemoveAll(this);
@@ -37,18 +39,17 @@ void AUsbTerminal::Interact()
 	MID_Locks->SetScalarParameterValue(FName("LightLockSwitch"), 1.f);
 }
 
-void AUsbTerminal::ShowMarker() const { GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 140.f); }
+void AUsbTerminal::ShowMarker() const { GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 140.f, false); }
 
-void AUsbTerminal::EnableInteraction()
+void AUsbTerminal::EnableInteraction() const
 {
 	ShowMarker();
-	bIsUsbCollected = true;
 	Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-void AUsbTerminal::DisableInteraction()
+void AUsbTerminal::DisableInteraction() const
 {
+	if (!GetIsInteractable() || GetGameInstance()->GetSubsystem<UPlayerDataManager>()->IsUsbToInsertAvailable()) return;
 	GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
-	bIsUsbCollected = false;
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }

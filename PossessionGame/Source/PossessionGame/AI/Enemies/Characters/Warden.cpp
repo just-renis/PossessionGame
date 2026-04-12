@@ -2,11 +2,9 @@
 #include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/WidgetComponent.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
-#include "PossessionGame/Enums/EEnemyHpBar.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
 #include "PossessionGame/Enums/EWeapon.h"
@@ -18,11 +16,7 @@
 
 AWarden::AWarden()
 {
-	if (AI_HpBarComponent)
-	{
-		AI_HpBarComponent->DestroyComponent();
-		AI_HpBarComponent = nullptr;
-	}
+	AI_DestroyBossUnnecessaryComponents();
 	BeamWeapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BeamWeapon"));
 	BeamCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("BeamCollision"));
 	BeamCollision->SetupAttachment(BeamWeapon, FName("BeamSocket"));
@@ -81,7 +75,7 @@ void AWarden::BeginPlay()
 	bIsBoss = true;
 	Super::BeginPlay();
 	bCanShoot = true;
-	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Warden);
+	DelegateManager->OnBossDeath.AddUObject(this, &AWarden::UpdateGlobalHpBarIfMultipleWardensExist);
 	BeamWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("BeamWeaponSocket"));
 	GetWorldTimerManager().SetTimer(BeamTriggerHandle, this, &AWarden::TryTriggeringBeamShot, 1.f, true);
 	BeamCollision->OnComponentBeginOverlap.AddDynamic(this, &AWarden::OnBeamCollisionBeginOverlap);
@@ -111,13 +105,14 @@ void AWarden::InitiateDeath()
 {
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::Usb, GetActorLocation())->Init();
 	Super::InitiateDeath();
+	DelegateManager->OnBossDeath.RemoveAll(this);
 	DelegateManager->OnBossDeath.Broadcast();
 }
 
 void AWarden::ReceiveDamage(const float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent)
 {
 	Super::ReceiveDamage(InDamage, InDamageReason, PointDamageEvent, RadialDamageEvent);
-	(void)DelegateManager->UpdateGlobalHpBar.ExecuteIfBound(CurrentHp, MaxHp);
+	if (CurrentHp > 0.f) (void)DelegateManager->UpdateGlobalHpBar.ExecuteIfBound(CurrentHp, MaxHp);
 }
 
 void AWarden::ClearTimers()
@@ -128,6 +123,8 @@ void AWarden::ClearTimers()
 }
 
 void AWarden::ApplyEmpEffect(const float InEffectDuration) { Super::ApplyEmpEffect(InEffectDuration * 0.5f); }
+
+void AWarden::UpdateGlobalHpBarIfMultipleWardensExist() const { (void)DelegateManager->UpdateGlobalHpBar.ExecuteIfBound(CurrentHp, MaxHp); }
 
 void AWarden::TriggerBeam()
 {

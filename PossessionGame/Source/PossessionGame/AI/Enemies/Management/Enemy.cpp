@@ -1208,7 +1208,7 @@ void AEnemy::SetMesh(const ECharacterType PrimaryDataAssetName) { GetMesh()->Set
 
 void AEnemy::DestroyThis()
 {
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
+	if (bIsHijacked) GetGameInstance()->GetSubsystem<UDelegateManager>()->OnLevelUp.RemoveAll(this);
 	if (Weapon) Weapon->DestroyThis();
 	GetWorldTimerManager().SetTimer(DestroyCondenseMaterialsProcessHandle, this, &AEnemy::DestroyCondenseMaterialsProcess, 0.05f, true);
 }

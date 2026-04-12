@@ -52,7 +52,7 @@ void ATerminal::Interact()
 
 void ATerminal::SetupInteractionLogic() { if (!bIsButton) Super::SetupInteractionLogic(); }
 
-void ATerminal::ShowMarker() const { GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 140.f); }
+void ATerminal::ShowMarker() const { GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 140.f, false); }
 
 void ATerminal::EnableTerminal(const EGameMode InGameMode)
 {

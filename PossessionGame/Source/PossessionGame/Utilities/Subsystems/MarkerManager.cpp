@@ -2,13 +2,17 @@
 #include "PossessionGame/Enums/EMarkerType.h"
 #include "PossessionGame/Utilities/Global Utilities/UI Actors/Marker.h"
 
-void UMarkerManager::SpawnMarkerAtLocation(const FVector& InLocation, const EMarkerType InMarkerType) const
+int32 UMarkerManager::SpawnMarkerAtLocation(const FVector& InLocation, const bool bSaveMarker, const EMarkerType InMarkerType)
 {
+	TObjectPtr<AMarker> Marker;
 	if (const TObjectPtr<UTexture2D>* MarkerTexture = MarkerTypes.Find(InMarkerType))
 	{
-		GetWorld()->SpawnActor<AMarker>(MarkerClass, InLocation, FRotator::ZeroRotator)->SetImage(*MarkerTexture);
+		Marker = GetWorld()->SpawnActor<AMarker>(MarkerClass, InLocation, FRotator::ZeroRotator);
+		Marker->SetImage(*MarkerTexture);
 	}
-	else GetWorld()->SpawnActor<AMarker>(MarkerClass, InLocation, FRotator::ZeroRotator);
+	else Marker = GetWorld()->SpawnActor<AMarker>(MarkerClass, InLocation, FRotator::ZeroRotator);
+	Marker->SaveMarker(++NextId, bSaveMarker);
+	return NextId;
 }
 
 void UMarkerManager::Init(const TSubclassOf<AMarker>& InMarkerClass, const TMap<EMarkerType, TObjectPtr<UTexture2D>>& InMarkersTypes)
@@ -17,4 +21,6 @@ void UMarkerManager::Init(const TSubclassOf<AMarker>& InMarkerClass, const TMap<
 	MarkerTypes = InMarkersTypes;
 }
 
-void UMarkerManager::DestroyMarkers() { GetTriggerDestroyMarkersDelegate().Broadcast(); }
+void UMarkerManager::DestroyMarker(const int32 InId) const { TriggerDestroyMarkerWithId.Broadcast(InId); }
+
+void UMarkerManager::DestroyMarkers() const { TriggerDestroyMarkers.Broadcast(); }

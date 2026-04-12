@@ -31,7 +31,7 @@ void ASoldierBoss::BeginPlay()
 	CharacterName = ECharacterType::SoldierBoss;
 	bIsBoss = true;
 	Super::BeginPlay();
-	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Boss);
+	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Boss, 1);
 }
 
 void ASoldierBoss::ApplyEmpEffect(const float InEffectDuration) { Super::ApplyEmpEffect(InEffectDuration * 0.5f); }

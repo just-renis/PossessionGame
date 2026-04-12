@@ -30,7 +30,6 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UWaveManagerHUD> WaveManagerHUD;
 
-	int32 ConvertGameModeToDroneLocation() const;
 	float GetCurrentXpNerf() const;
 	
 	virtual void SetupWaveManagerUI();

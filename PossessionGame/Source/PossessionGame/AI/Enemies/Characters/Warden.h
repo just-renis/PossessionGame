@@ -50,6 +50,7 @@ private:
 	virtual void ReceiveDamage(const float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent) override;
 	virtual void ClearTimers() override;
 	virtual void ApplyEmpEffect(const float InEffectDuration) override;
+	void UpdateGlobalHpBarIfMultipleWardensExist() const;
 	UFUNCTION()
 	void OnBeamCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

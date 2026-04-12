@@ -15,6 +15,9 @@ enum class EGameMode : uint8
     BossMode,
     BossModeEnemy,
     MiniBossSpawn,
+    MiniBossSpawn1,
+    MiniBossSpawn2,
     ArenaMode,
-    FinalBossEnemySpawn
+    FinalBossEnemySpawn,
+    MultipleWardenMode
 };

@@ -32,5 +32,5 @@ void AVariationsComputer::Interact()
 void AVariationsComputer::SpawnMarker() const
 {
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnGameModeInitialized.RemoveAll(this);
-	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * MarkerUpwardsUnits, EMarkerType::Question);
+	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * MarkerUpwardsUnits, false, EMarkerType::Question);
 }

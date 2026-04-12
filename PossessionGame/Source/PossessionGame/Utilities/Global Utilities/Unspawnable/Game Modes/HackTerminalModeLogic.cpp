@@ -72,7 +72,7 @@ void UHackTerminalModeLogic::StartTerminalHack()
 	bInstanceFinished = false;
 	PlaySound(ESound::GeneratorInitiate);
 	PlaySound(ESound::TaskAnnouncement);
-	(void)WaveManager->GetDelegateManager()->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::HackTerminalBar);
+	(void)WaveManager->GetDelegateManager()->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::HackTerminalBar, 1);
 	if (WaveManagerHUD) WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "HackInitiated", "Hack Initiated"));
 	GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UHackTerminalModeLogic::HandleSpawning, SpawnRate, true);
 }

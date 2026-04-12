@@ -426,7 +426,7 @@ void ATutorialBot::PlayIdleAnimation() { SetupAndPlayNextAnimation(ETutorialBotA
 
 void ATutorialBot::SpawnMarker() const
 {
-	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 200.f, EMarkerType::Exclamation);
+	GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 200.f, false, EMarkerType::Exclamation);
 }
 
 void ATutorialBot::Interact()

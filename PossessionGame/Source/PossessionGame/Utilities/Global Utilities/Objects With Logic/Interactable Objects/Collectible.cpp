@@ -5,6 +5,7 @@
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/MarkerManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
@@ -69,6 +70,7 @@ void ACollectible::Collect()
 	switch (Data->GetCollectibleName())
 	{
 		case EPoolObject::Usb:
+			GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddUsb();
 			GetGameInstance()->GetSubsystem<UDelegateManager>()->OnUsbCollected.Broadcast();
 			GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestMiniPopup.ExecuteIfBound(NSLOCTEXT("ST_Localization", "UsbObtained", "USB OBTAINED"));
 			break;
@@ -84,12 +86,12 @@ void ACollectible::ToggleCollectible(const bool bState, const bool bMarkerInclud
 	if (bState)
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		if (bMarkerIncluded && Data->GetIsMarkerEnabled()) GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 50.f);
+		if (bMarkerIncluded && Data->GetIsMarkerEnabled()) MarkerId = GetWorld()->GetSubsystem<UMarkerManager>()->SpawnMarkerAtLocation(GetActorLocation() + FVector::UpVector * 50.f, true);
 	}
 	else
 	{
 		Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (bMarkerIncluded && Data->GetIsMarkerEnabled()) GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarkers();
+		if (bMarkerIncluded && Data->GetIsMarkerEnabled()) GetWorld()->GetSubsystem<UMarkerManager>()->DestroyMarker(MarkerId);
 	}
 }
 

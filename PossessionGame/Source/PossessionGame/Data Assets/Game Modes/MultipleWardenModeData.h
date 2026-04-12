@@ -1,0 +1,22 @@
+﻿#pragma once
+
+#include "CoreMinimal.h"
+#include "PossessionGame/Data Assets/Base Data Assets/GameModeData.h"
+#include "MultipleWardenModeData.generated.h"
+
+UCLASS()
+class POSSESSIONGAME_API UMultipleWardenModeData : public UGameModeData
+{
+	GENERATED_BODY()
+public:
+	int32 GetChargeAmountRequired() const { return ChargeAmountRequired; }
+	int32 GetBossesAtOnceSpawned() const { return BossesAtOnceSpawned; }
+	ECharacterType GetEnemyToSpawn() const { return EnemyToSpawn; }
+private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	int32 BossesAtOnceSpawned = 1;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	int32 ChargeAmountRequired = 2;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	ECharacterType EnemyToSpawn;
+};

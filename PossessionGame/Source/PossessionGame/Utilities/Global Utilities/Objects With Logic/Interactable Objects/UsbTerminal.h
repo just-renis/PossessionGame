@@ -13,7 +13,6 @@ class POSSESSIONGAME_API AUsbTerminal : public AInteractableObject
 
 	AUsbTerminal();
 
-	bool bIsUsbCollected = false;
 	UPROPERTY(EditAnywhere, Category = "Wire Data", meta = (AllowPrivateAccess = true))
 	bool bIsWiredTerminal = false;
 	UPROPERTY(EditAnywhere, Category = "Wire Data", meta = (EditCondition = "bIsWiredTerminal", EditConditionHides, AllowPrivateAccess = true))
@@ -28,6 +27,6 @@ class POSSESSIONGAME_API AUsbTerminal : public AInteractableObject
 	virtual void BeginPlay() override;
 	virtual void Interact() override;
 	void ShowMarker() const;
-	void EnableInteraction();
-	void DisableInteraction();
+	void EnableInteraction() const;
+	void DisableInteraction() const;
 };
