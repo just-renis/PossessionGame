@@ -15,5 +15,5 @@ class POSSESSIONGAME_API USTTaskPyroBossActivateBall : public UStateTreeTaskBlue
 	TObjectPtr<APyroBossAIController> CachedController;
 
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
-	void ActivateBallPhaseFinished();
+	void BallPhaseFinished();
 };

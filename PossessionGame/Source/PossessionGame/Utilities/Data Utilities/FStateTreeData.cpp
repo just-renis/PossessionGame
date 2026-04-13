@@ -30,6 +30,7 @@ void FStateTreeData::TriggerEvent(const EStateTreeEvent InEventName) const
 		case EStateTreeEvent::PyroBossBallPhase: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.PyroBoss.ActivateBallPhase")); break;
 		case EStateTreeEvent::MoveDirectly: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MoveDirectly")); break;
 		case EStateTreeEvent::MoveWithPathfinder: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.MoveWithPathfinder")); break;
+		case EStateTreeEvent::SoldierBossMissilesLaunch: StateTree->SendStateTreeEvent(FGameplayTag::RequestGameplayTag("StateTree.SoldierBoss.MissilesLaunch")); break;
 		default: ;
 	}
 }

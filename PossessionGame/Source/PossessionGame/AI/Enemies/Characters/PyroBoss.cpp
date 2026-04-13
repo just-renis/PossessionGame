@@ -38,10 +38,7 @@ void APyroBoss::InitiateBallPhase()
 	GetWorldTimerManager().SetTimer(ActivateBallPhaseAttackHandle, this, &APyroBoss::ActivateBallPhaseAttack, GetAnimInstance()->GetMontageLength(EEnemyAnimState::ActivatePyroBall));
 }
 
-void APyroBoss::FinishedBallPhase()
-{
-	bIsBallPhaseActive = false;
-}
+void APyroBoss::FinishedBallPhase() { bIsBallPhaseActive = false; }
 
 APyroBoss::APyroBoss()
 {

@@ -743,6 +743,11 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_SpyInvincibilityOn", ESound::SpyInvincibilityOn);
 	SoundMap.Add("PA_SpyInvincibilityOff", ESound::SpyInvincibilityOff);
 	SoundMap.Add("PA_AISpyDash", ESound::AI_SpyDash);
+	SoundMap.Add("PA_SoldierBossDeath", ESound::SoldierBossDeath);
+	SoundMap.Add("PA_SoldierBossPrepareMissileLaunch", ESound::SoldierBossPrepareMissileLaunch);
+	SoundMap.Add("PA_SoldierBossSpawn", ESound::SoldierBossSpawn);
+	SoundMap.Add("PA_SoldierBossTakeDamage", ESound::SoldierBossTakeDamage);
+	SoundMap.Add("PA_SoldierBossShoot", ESound::SoldierBossShoot);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -905,6 +910,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_PyroBossSendSignal", EVfx::PyroBossSendSignal);
 	VfxsMap.Add("PA_PyroBossBallPhase", EVfx::PyroBossBallPhase);
 	VfxsMap.Add("PA_SoldierBossBulletTrail", EVfx::SoldierBossBulletTrail);
+	VfxsMap.Add("PA_SoldierBossMissileLaunched", EVfx::SoldierBossMissileLaunched);
 	VfxsMap.Add("PA_SamuraiSlash", EVfx::SamuraiSlash);
 	VfxsMap.Add("PA_AcoHijackEffect", EVfx::AcoHijackEffect);
 	VfxsMap.Add("PA_AcoFlyTrail", EVfx::AcoFlyTrail);

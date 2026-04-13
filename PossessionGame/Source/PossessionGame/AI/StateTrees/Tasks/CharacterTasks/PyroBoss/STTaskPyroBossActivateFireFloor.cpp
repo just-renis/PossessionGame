@@ -7,11 +7,11 @@ EStateTreeRunStatus USTTaskPyroBossActivateFireFloor::EnterState(FStateTreeExecu
 	CachedController = Cast<APyroBossAIController>(Context.GetOwner());
 	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::PyroBossActivateFireFloor);
 	CachedController->GetProprietor()->AI_UseAbility(0);
-	CachedController->OnActivateFireFloorFinished.BindUObject(this, &USTTaskPyroBossActivateFireFloor::ActivateFireFloorFinished);
+	CachedController->OnFireFloorFinished.BindUObject(this, &USTTaskPyroBossActivateFireFloor::FireFloorFinished);
 	return Super::EnterState(Context, Transition);
 }
 
-void USTTaskPyroBossActivateFireFloor::ActivateFireFloorFinished()
+void USTTaskPyroBossActivateFireFloor::FireFloorFinished()
 {
 	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::None);
 	FinishTask();

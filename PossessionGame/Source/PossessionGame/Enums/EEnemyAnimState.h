@@ -22,5 +22,6 @@ enum class EEnemyAnimState : uint8
 	Kneel,
 	StandUp,
 	SlamFromSky,
-	SlamPrepare
+	SlamPrepare,
+	MissilesLaunch
 };

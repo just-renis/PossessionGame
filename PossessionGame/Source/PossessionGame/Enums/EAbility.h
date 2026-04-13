@@ -30,5 +30,6 @@ enum class EAbility : uint8
     SpyAbility3,
     TankAbility1,
     TankAbility2,
-    TankAbility3
+    TankAbility3,
+    SoldierBossAbility1
 };

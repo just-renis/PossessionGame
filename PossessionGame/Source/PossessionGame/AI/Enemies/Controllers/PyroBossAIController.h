@@ -4,16 +4,16 @@
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PyroBossAIController.generated.h"
 
-DECLARE_DELEGATE(FOnActivateFireFloorFinished);
-DECLARE_DELEGATE(FOnActivateStompFinished);
-DECLARE_DELEGATE(FOnActivateBallPhaseFinished);
+DECLARE_DELEGATE(FOnFireFloorFinished);
+DECLARE_DELEGATE(FOnStompFinished);
+DECLARE_DELEGATE(FOnBallPhaseFinished);
 
 UCLASS()
 class POSSESSIONGAME_API APyroBossAIController : public AEnemyAIController
 {
 	GENERATED_BODY()
 public:
-	FOnActivateFireFloorFinished OnActivateFireFloorFinished;
-	FOnActivateStompFinished OnActivateStompFinished;
-	FOnActivateBallPhaseFinished OnActivateBallPhaseFinished;
+	FOnFireFloorFinished OnFireFloorFinished;
+	FOnStompFinished OnStompFinished;
+	FOnBallPhaseFinished OnBallPhaseFinished;
 };

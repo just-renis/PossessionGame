@@ -29,10 +29,10 @@ void AShieldSpinner::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AShieldSpinner::ProcessSpin() const
 {
-	InnerMesh->AddLocalRotation(FRotator(0.f, -1.f, 0.f));
-	OuterMesh->AddLocalRotation(FRotator(0.f, 1.f, 0.f));
-	InnerFloorMesh->AddLocalRotation(FRotator(0.f, -1.f, 0.f));
-	OuterFloorMesh->AddLocalRotation(FRotator(0.f, 1.f, 0.f));
+	InnerMesh->AddLocalRotation(FRotator(0.f, -RotationSpeed, 0.f));
+	OuterMesh->AddLocalRotation(FRotator(0.f, RotationSpeed, 0.f));
+	InnerFloorMesh->AddLocalRotation(FRotator(0.f, -RotationSpeed, 0.f));
+	OuterFloorMesh->AddLocalRotation(FRotator(0.f, RotationSpeed, 0.f));
 }
 
 void AShieldSpinner::SetupLiftInitiationTimer()

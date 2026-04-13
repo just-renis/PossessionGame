@@ -16,6 +16,8 @@ class POSSESSIONGAME_API AShieldSpinner : public AActor
 	FTimerHandle SpinHandle;
 	FTimerHandle LiftingHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes", meta = (AllowPrivateAccess = true))
+	float RotationSpeed = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Meshes", meta = (AllowPrivateAccess = true))
 	float SecondsBetweenLiftChange = 10.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes", meta = (AllowPrivateAccess = true))
 	float LiftHeight = 100.f;

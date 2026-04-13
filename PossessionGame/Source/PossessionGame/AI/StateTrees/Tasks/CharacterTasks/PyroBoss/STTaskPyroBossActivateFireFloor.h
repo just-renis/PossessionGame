@@ -15,5 +15,5 @@ class POSSESSIONGAME_API USTTaskPyroBossActivateFireFloor : public UStateTreeTas
 	TObjectPtr<APyroBossAIController> CachedController;
 
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
-	void ActivateFireFloorFinished();
+	void FireFloorFinished();
 };

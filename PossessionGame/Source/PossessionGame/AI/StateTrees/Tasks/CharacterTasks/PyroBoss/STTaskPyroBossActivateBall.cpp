@@ -7,11 +7,11 @@ EStateTreeRunStatus USTTaskPyroBossActivateBall::EnterState(FStateTreeExecutionC
 	CachedController = Cast<APyroBossAIController>(Context.GetOwner());
 	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::PyroBossBallPhase);
 	CachedController->GetProprietor()->AI_UseAbility(2);
-	CachedController->OnActivateBallPhaseFinished.BindUObject(this, &USTTaskPyroBossActivateBall::ActivateBallPhaseFinished);
+	CachedController->OnBallPhaseFinished.BindUObject(this, &USTTaskPyroBossActivateBall::BallPhaseFinished);
 	return Super::EnterState(Context, Transition);
 }
 
-void USTTaskPyroBossActivateBall::ActivateBallPhaseFinished()
+void USTTaskPyroBossActivateBall::BallPhaseFinished()
 {
 	CachedController->SetStateTreeCurrentEvent(EStateTreeEvent::None);
 	FinishTask();

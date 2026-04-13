@@ -9,6 +9,11 @@ class POSSESSIONGAME_API ASoldierBossWeapon : public AOneHandedWeapon
 {
 	GENERATED_BODY()
 
+	ASoldierBossWeapon();
+	
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> ShootSfx;
+
 	virtual void AI_Shoot() override;
 
 	virtual void BeginPlay() override;

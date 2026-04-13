@@ -13,6 +13,7 @@
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility1.h"
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility2.h"
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility3.h"
+#include "PossessionGame/Abilities/Characters/SoldierBoss/SoldierBossAbility1.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility1.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility2.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility3.h"
@@ -84,6 +85,7 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::Tank, 0, EAbility::TankAbility1, UTankAbility1::StaticClass());
     AddAbility(ECharacterType::Tank, 1, EAbility::TankAbility2, UTankAbility2::StaticClass());
     AddAbility(ECharacterType::Tank, 2, EAbility::TankAbility3, UTankAbility3::StaticClass());
+    AddAbility(ECharacterType::SoldierBoss, 0, EAbility::SoldierBossAbility1, USoldierBossAbility1::StaticClass());
 }
 
 void UAbilityManager::AddAbility(const ECharacterType InCharacterName, const int32 InAbilityIndex, const EAbility InAbilityName, const TSubclassOf<UAbility>& InAbilityClass)

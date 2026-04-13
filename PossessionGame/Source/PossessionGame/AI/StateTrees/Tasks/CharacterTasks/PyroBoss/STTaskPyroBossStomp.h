@@ -15,5 +15,5 @@ class POSSESSIONGAME_API USTTaskPyroBossStomp : public UStateTreeTaskBlueprintBa
 	TObjectPtr<APyroBossAIController> CachedController;
 
 	virtual EStateTreeRunStatus EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition) override;
-	void ActivateStompFinished();
+	void StompFinished();
 };

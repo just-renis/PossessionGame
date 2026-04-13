@@ -180,5 +180,10 @@ enum class ESound : uint16
 	SpyXrayOff,
 	SpyInvincibilityOn,
 	SpyInvincibilityOff,
-	AI_SpyDash
+	AI_SpyDash,
+	SoldierBossDeath,
+	SoldierBossPrepareMissileLaunch,
+	SoldierBossSpawn,
+	SoldierBossTakeDamage,
+	SoldierBossShoot
 };

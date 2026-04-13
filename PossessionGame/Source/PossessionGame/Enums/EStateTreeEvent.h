@@ -17,5 +17,6 @@ enum class EStateTreeEvent : uint8
     PyroBossStomp,
     PyroBossBallPhase,
     MoveDirectly,
-    MoveWithPathfinder
+    MoveWithPathfinder,
+    SoldierBossMissilesLaunch
 };
