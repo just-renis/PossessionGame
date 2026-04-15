@@ -739,7 +739,7 @@ void AEnemy::AI_Destroy()
 	{
 		GetWorld()->GetSubsystem<UEnemyCommunicator>()->RemoveEnemy(this);
 		DelegateManager->OnXrayChange.RemoveAll(this);
-		ChangeXrayState(false);
+		//ChangeXrayState(false);
 		AI_StopAllAbilities();
 		GetMesh()->SetAnimInstanceClass(nullptr);
 		GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
