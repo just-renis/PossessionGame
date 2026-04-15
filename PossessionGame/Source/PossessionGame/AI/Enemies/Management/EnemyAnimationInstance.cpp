@@ -56,6 +56,7 @@ void UEnemyAnimationInstance::PlayMontageWithHold(const EEnemyAnimState InState,
         if (Proprietor) Proprietor->SetIsActionInMotion(true);
         MontageStateInHold = InState;
         if (bNeedsToStopAILogic && Proprietor && Proprietor->GetAI()) Proprietor->GetAI()->StopLogic(false);
+        UE_LOG(LogTemp, Error, TEXT("IN HOLD TIME: %f"), InHoldTime);
         GetWorld()->GetTimerManager().SetTimer(MontageWithHoldHandle, this, &UEnemyAnimationInstance::MontageWithHoldEnd, InHoldTime);
     }
     else UE_LOG(LogTemp, Warning, TEXT("%s Montage with state: %s doesn't exist in PlayMontageWithHold"), *UEnum::GetValueAsString(Proprietor->GetCharacterName()), *UEnum::GetValueAsString(InState));

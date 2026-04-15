@@ -21,6 +21,11 @@ void ASoldierBoss::PlayMissilesLaunchReadyAnims(const float InDuration)
 	if (Backpack) Backpack->PlayAnimation(BackpackOpenAnim, false);
 }
 
+void ASoldierBoss::FinishedMissilesLaunch() const
+{
+	if (Backpack) Backpack->PlayAnimation(BackpackCloseAnim, false);
+}
+
 ASoldierBoss::ASoldierBoss()
 {
 	AI_DestroyBossUnnecessaryComponents();

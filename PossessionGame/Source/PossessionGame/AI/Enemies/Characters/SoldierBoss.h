@@ -11,12 +11,15 @@ class POSSESSIONGAME_API ASoldierBoss : public AEnemy
 public:
 	void MarkMissilesLaunchAbilityReady();
 	void PlayMissilesLaunchReadyAnims(const float InDuration);
+	void FinishedMissilesLaunch() const;
 private:
 	ASoldierBoss();
 
 	FTimerHandle ActivateMissilesLaunchHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Backpack", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAnimationAsset> BackpackOpenAnim;
+	UPROPERTY(EditDefaultsOnly, Category = "Backpack", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAnimationAsset> BackpackCloseAnim;
 	UPROPERTY(EditDefaultsOnly, Category = "Backpack", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> Backpack;
 	UPROPERTY()

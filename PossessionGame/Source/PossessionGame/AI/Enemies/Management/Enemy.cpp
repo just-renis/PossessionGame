@@ -739,7 +739,6 @@ void AEnemy::AI_Destroy()
 	{
 		GetWorld()->GetSubsystem<UEnemyCommunicator>()->RemoveEnemy(this);
 		DelegateManager->OnXrayChange.RemoveAll(this);
-		//ChangeXrayState(false);
 		AI_StopAllAbilities();
 		GetMesh()->SetAnimInstanceClass(nullptr);
 		GetWorld()->GetTimerManager().ClearTimer(AI_ShootLogicHandle);
@@ -1865,7 +1864,6 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 			{
 				if (Enemy->GetIsHijackAble()) Enemy->AI_SetHijackOutline(true);
 				else Enemy->AI_SetUnHijackOutline(true);
-				//else Enemy->AI_SetSpySnatchMarker(true);
 			}
 		}
 	}
