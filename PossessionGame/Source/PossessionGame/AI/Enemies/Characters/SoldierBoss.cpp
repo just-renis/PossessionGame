@@ -2,6 +2,7 @@
 #include "Components/AudioComponent.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
+#include "PossessionGame/AI/Others/BackpackAnimInstance.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
@@ -18,12 +19,14 @@ void ASoldierBoss::MarkMissilesLaunchAbilityReady()
 void ASoldierBoss::PlayMissilesLaunchReadyAnims(const float InDuration)
 {
 	GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::MissilesLaunch, InDuration, false);
-	if (Backpack) Backpack->PlayAnimation(BackpackOpenAnim, false);
+	if (!BackpackAnimInstance) return;
+	BackpackAnimInstance->SetIsOpen(true);
 }
 
 void ASoldierBoss::FinishedMissilesLaunch() const
 {
-	if (Backpack) Backpack->PlayAnimation(BackpackCloseAnim, false);
+	if (!BackpackAnimInstance) return;
+	BackpackAnimInstance->SetIsOpen(false);
 }
 
 ASoldierBoss::ASoldierBoss()
@@ -70,8 +73,10 @@ void ASoldierBoss::BeginPlay()
 	CharacterName = ECharacterType::SoldierBoss;
 	bIsBoss = true;
 	Super::BeginPlay();
-	if (Backpack) Backpack->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("BackpackSocket"));
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Boss, 1);
+	if (!Backpack) return;
+	Backpack->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("BackpackSocket"));
+	BackpackAnimInstance = Cast<UBackpackAnimInstance>(Backpack->GetAnimInstance());
 }
 
 void ASoldierBoss::ApplyEmpEffect(const float InEffectDuration) { Super::ApplyEmpEffect(InEffectDuration * 0.5f); }
@@ -93,6 +98,7 @@ void ASoldierBoss::ActivateMissilesLaunch()
 {
 	if (!AI || IsActionsDisabled() || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::SoldierBossMissilesLaunch);
+	GetWorldTimerManager().ClearTimer(ActivateMissilesLaunchHandle);
 }
 
 void ASoldierBoss::ClearTimers()

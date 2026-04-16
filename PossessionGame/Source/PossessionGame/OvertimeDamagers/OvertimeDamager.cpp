@@ -51,7 +51,7 @@ void AOvertimeDamager::SetupRadiusAndTimers(const float InAreaSize, const float 
 	Radius->SetGenerateOverlapEvents(true);
 	Radius->UpdateOverlaps();
 	GetWorldTimerManager().SetTimer(DamageOvertimeHandle, this, &AOvertimeDamager::DealOvertimeDamage, DamageTick, true);
-	GetWorldTimerManager().SetTimer(DestroyThisHandle, this, &AOvertimeDamager::ReturnToPool, InLifeSpan, false);
+	GetWorldTimerManager().SetTimer(DestroyThisHandle, this, &AOvertimeDamager::ReturnToPool, InLifeSpan);
 }
 
 void AOvertimeDamager::Disable(const bool bHide)

@@ -4,6 +4,8 @@
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "SoldierBoss.generated.h"
 
+class UBackpackAnimInstance;
+
 UCLASS()
 class POSSESSIONGAME_API ASoldierBoss : public AEnemy
 {
@@ -28,6 +30,8 @@ private:
 	TObjectPtr<UAudioComponent> DeathSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> TakeDamageSfx;
+	UPROPERTY()
+	TObjectPtr<UBackpackAnimInstance> BackpackAnimInstance;
 
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_ReceiveStunEffect(const bool bHitByOtherAI, const float InEffectDuration, const float InDamage, FVector InHitDirection) override;
