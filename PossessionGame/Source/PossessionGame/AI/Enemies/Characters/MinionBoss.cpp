@@ -4,6 +4,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/StateTreeComponent.h"
 #include "Engine/OverlapResult.h"
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Enums/ECameraShake.h"
@@ -65,6 +66,26 @@ void AMinionBoss::ResetMoveDirectlyToPlayer()
 	bIsMoveDirectlyToPlayerTriggered = false;
 	SetMovementSpeedMultiplier(1.f);
 	GetWorld()->GetTimerManager().SetTimer(MoveDirectlyToPlayerHandle, this, &AMinionBoss::SetMoveDirectlyToPlayer, MoveDirectlyToPlayerInterval, false);
+}
+
+void AMinionBoss::StompHitTheGround()
+{
+	TriggerStompCameraShake();
+	const FVector StompLocation = GetSocketLocation("StompSocket");
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByProfile(Overlaps, StompLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(GetStompRadius()));
+	TSet<TObjectPtr<AActor>> UniqueActors;
+	for (const FOverlapResult& Result : Overlaps)
+	{
+		TObjectPtr<AActor> HitActor = Result.GetActor();
+		if (!HitActor || UniqueActors.Contains(HitActor)) continue;
+		UniqueActors.Add(HitActor);
+		if (HitActor->ActorHasTag("Player"))
+		{
+			UGameplayStatics::ApplyDamage(HitActor, GetStompDamage(), nullptr, this, UDamageType::StaticClass());
+			return;
+		}
+	}
 }
 
 AMinionBoss::AMinionBoss()

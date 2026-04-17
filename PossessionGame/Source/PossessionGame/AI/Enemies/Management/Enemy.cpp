@@ -1273,11 +1273,12 @@ void AEnemy::Heal(const float InHealAmount)
 
 void AEnemy::SetActionSpeed(const float InSpeed)
 {
-	if (!AI_Data || !AnimInstance || !Weapon) return;
+	if (!AI_Data || !AnimInstance) return;
 	ActionSpeed = InSpeed + AdditionalActionSpeedValue;
-	const float ModifiedActionSpeed = ActionSpeed * bTankShieldActionSpeedDebuff ? TankShieldActionSpeedDebuffPercentage : 1.f;
+	const float ModifiedActionSpeed = ActionSpeed * (bTankShieldActionSpeedDebuff ? TankShieldActionSpeedDebuffPercentage : 1.f);
 	SetMaxWalkSpeed(CurrentMoveMode);
 	AnimInstance->SetGlobalPlayRate(ModifiedActionSpeed);
+	if (!Weapon) return;
 	Weapon->SetReverseActionSpeed(1.f / ModifiedActionSpeed);
 	if (Weapon->GetAnimInstance()) Weapon->GetAnimInstance()->SetGlobalPlayRate(ModifiedActionSpeed);
 	else if (Weapon->GetHandsAnimInstance()) Weapon->GetHandsAnimInstance()->SetGlobalPlayRate(ModifiedActionSpeed);

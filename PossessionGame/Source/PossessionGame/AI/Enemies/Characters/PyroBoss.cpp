@@ -23,6 +23,7 @@ void APyroBoss::MarkFloorLavaAbilityReady()
 
 void APyroBoss::MarkStompAbilityReady()
 {
+	bFirstStompSucceed = false;
 	GetWorldTimerManager().SetTimer(ActivateStompHandle, this, &APyroBoss::ActivateStomp, 0.25f, true);
 }
 
@@ -39,6 +40,29 @@ void APyroBoss::InitiateBallPhase()
 }
 
 void APyroBoss::FinishedBallPhase() { bIsBallPhaseActive = false; }
+
+void APyroBoss::StompHitTheGround()
+{
+	//	Proprietor->TriggerStompCameraShake();
+	//Proprietor->PlaySound(ESound::MinionBossStomp, true);
+	//Proprietor->GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::MinionBossStompCrack, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, Proprietor->GetSocketLocation("StompSocket"));
+	const FVector StompLocation = GetSocketLocation("StompSocket");
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByProfile(Overlaps, StompLocation, FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(GetStompRadius() * 100.f));
+	TSet<TObjectPtr<AActor>> UniqueActors;
+	for (const FOverlapResult& Result : Overlaps)
+	{
+		TObjectPtr<AActor> HitActor = Result.GetActor();
+		if (!HitActor || UniqueActors.Contains(HitActor)) continue;
+		UniqueActors.Add(HitActor);
+		if (HitActor->ActorHasTag("Player"))
+		{
+			Cast<AEnemy>(HitActor)->P_ReceiveStunEffect(bFirstStompSucceed ? 0.f : GetStunDuration(), GetStompDamage(), FVector::ZeroVector);
+			bFirstStompSucceed = true;
+			return;
+		}
+	}
+}
 
 APyroBoss::APyroBoss()
 {
@@ -134,6 +158,7 @@ void APyroBoss::ActivateFloorLava()
 void APyroBoss::ActivateStomp()
 {
 	if (!AI || IsActionsDisabled() || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
+	PlaySound(ESound::PyroBossStomp);
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	TArray<FOverlapResult> Overlaps;
@@ -145,7 +170,6 @@ void APyroBoss::ActivateStomp()
 		SetIsActionInMotion(true);
 		GetWorldTimerManager().ClearTimer(ActivateStompHandle);
 		AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::PyroBossStomp);
-		PlaySound(ESound::PyroBossStomp);
 		return;
 	}
 }

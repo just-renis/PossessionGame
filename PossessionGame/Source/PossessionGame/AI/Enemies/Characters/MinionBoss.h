@@ -23,6 +23,7 @@ public:
 	TObjectPtr<UNiagaraComponent> GetLaser() const { return LaserVfx; }
 	TObjectPtr<UNiagaraComponent> GetLaserEyeBall() const { return LaserEyeBallVfx; }
 
+	void SetStompAvailability(const bool bState) { bIsStompAvailable = bState; }
 	void TriggerStompCameraShake() const;
 	void TriggerLaserCameraShake() const;
 	void EnableLaserEyeBall();
@@ -31,7 +32,7 @@ public:
 	void OnLaserFinish();
 	void OnStompFinish();
 	void ResetMoveDirectlyToPlayer();
-	void SetStompAvailability(const bool bState) { bIsStompAvailable = bState; }
+	void StompHitTheGround();
 private:
 	AMinionBoss();
 

@@ -19,10 +19,12 @@ public:
 	void MarkBallPhaseAbilityReady();
 	void InitiateBallPhase();
 	void FinishedBallPhase();
+	void StompHitTheGround();
 private:
 	APyroBoss();
 
 	bool bIsBallPhaseActive = false;
+	bool bFirstStompSucceed = false;
 	FTimerHandle ActivateFloorLavaHandle;
 	FTimerHandle ActivateStompHandle;
 	FTimerHandle ActivateBallPhaseHandle;
