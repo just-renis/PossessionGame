@@ -1,4 +1,5 @@
 ﻿#include "SoldierBoss.h"
+#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
@@ -6,9 +7,15 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
+#include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/ESound.h"
+#include "PossessionGame/Enums/EVfx.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/EnemyCommunicator.h"
+#include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 
 void ASoldierBoss::MarkMissilesLaunchAbilityReady()
@@ -19,13 +26,15 @@ void ASoldierBoss::MarkMissilesLaunchAbilityReady()
 void ASoldierBoss::StartMissilesLaunchPhase(const float InDuration)
 {
 	GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::MissilesLaunch, InDuration, false);
-	
+	GetWorldTimerManager().SetTimer(MissileLaunchHandle, this, &ASoldierBoss::LaunchMissile, MissileLaunchInterval, true);
 	if (!BackpackAnimInstance) return;
 	BackpackAnimInstance->SetIsOpen(true);
 }
 
-void ASoldierBoss::FinishedMissilesLaunch() const
+void ASoldierBoss::FinishedMissilesLaunch()
 {
+	if (MissileLaunchVfx) MissileLaunchVfx->DeactivateImmediate();
+	GetWorldTimerManager().ClearTimer(MissileLaunchHandle);
 	if (!BackpackAnimInstance) return;
 	BackpackAnimInstance->SetIsOpen(false);
 }
@@ -42,9 +51,13 @@ ASoldierBoss::ASoldierBoss()
 	TakeDamageSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("TakeDamageSfx"));
 	TakeDamageSfx->SetAutoActivate(false);
 	TakeDamageSfx->SetupAttachment(GetMesh());
+	MissileLaunchSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("MissileLaunchSfx"));
+	MissileLaunchSfx->SetAutoActivate(false);
+	MissileLaunchSfx->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::SoldierBossSpawn, SpawnSfx);
 	Sounds.Add(ESound::SoldierBossDeath, DeathSfx);
 	Sounds.Add(ESound::SoldierBossTakeDamage, TakeDamageSfx);
+	Sounds.Add(ESound::SoldierBossMissileLaunch, MissileLaunchSfx);
 	Backpack = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Backpack"));
 }
 
@@ -106,4 +119,26 @@ void ASoldierBoss::ClearTimers()
 {
 	Super::ClearTimers();
 	GetWorldTimerManager().ClearTimer(ActivateMissilesLaunchHandle);
+	GetWorldTimerManager().ClearTimer(MissileLaunchHandle);
+}
+
+void ASoldierBoss::LaunchMissile()
+{
+	if (!MissileLaunchVfx) AssetsManager->AttachVfx(EVfx::SoldierBossMissileLaunched, nullptr, &MissileLaunchVfx, Backpack, FName("MissileSocket"));
+	else MissileLaunchVfx->Activate(true);
+	PlaySound(ESound::SoldierBossMissileLaunch);
+	const TObjectPtr<AEnemy> Player = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetTarget();
+	const FVector PlayerLocation = Player->GetSocketLocation(FName("RootSocket"));
+	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::SoldierBossMissile, PlayerLocation)->InitWithProprietor(this);
+	if (!MissileImpactVfx)
+	{
+		UE_LOG(LogTemp, Error, TEXT("LOAD"));
+		MissileImpactVfx = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnAndReceiveVfxForcefully(EVfx::SoldierBossMissileImpact, PlayerLocation, FRotator::ZeroRotator);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("SET LOCATION"));
+		MissileImpactVfx->SetWorldLocation(PlayerLocation);
+		MissileImpactVfx->Activate(true);
+	}
 }

@@ -173,6 +173,7 @@ public:
 	FCharacterContainer& GetCharacterData(const ECharacterType InCharacterName);
 	FVfxContainer& GetVfxData(const EVfx InVfxName);
 	TObjectPtr<AEnemy> SpawnVariationReplacement(const ECharacterType InCharacter, const EWidget InWidgetName);
+	TObjectPtr<UNiagaraComponent> SpawnAndReceiveVfxForcefully(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation);
 	
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	void AddAsyncHandle(TSharedPtr<FStreamableHandle>& Handle) { AsyncHandles.Add(FAsyncHandle(Handle)); }

@@ -13,15 +13,14 @@ class POSSESSIONGAME_API ASoldierBoss : public AEnemy
 public:
 	void MarkMissilesLaunchAbilityReady();
 	void StartMissilesLaunchPhase(const float InDuration);
-	void FinishedMissilesLaunch() const;
+	void FinishedMissilesLaunch();
 private:
 	ASoldierBoss();
-
+	
 	FTimerHandle ActivateMissilesLaunchHandle;
-	UPROPERTY(EditDefaultsOnly, Category = "Backpack", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UAnimationAsset> BackpackOpenAnim;
-	UPROPERTY(EditDefaultsOnly, Category = "Backpack", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UAnimationAsset> BackpackCloseAnim;
+	FTimerHandle MissileLaunchHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Missile Data", meta = (AllowPrivateAccess = true))
+	float MissileLaunchInterval = 2.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Backpack", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkeletalMeshComponent> Backpack;
 	UPROPERTY()
@@ -30,6 +29,12 @@ private:
 	TObjectPtr<UAudioComponent> DeathSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> TakeDamageSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> MissileLaunchSfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> MissileLaunchVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> MissileImpactVfx;
 	UPROPERTY()
 	TObjectPtr<UBackpackAnimInstance> BackpackAnimInstance;
 
@@ -44,4 +49,5 @@ private:
 	virtual void InitiateDeath() override;
 	void ActivateMissilesLaunch();
 	virtual void ClearTimers() override;
+	void LaunchMissile();
 };

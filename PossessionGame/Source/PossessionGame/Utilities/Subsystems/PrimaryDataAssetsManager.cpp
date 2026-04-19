@@ -81,6 +81,11 @@ TObjectPtr<AEnemy> UPrimaryDataAssetsManager::SpawnVariationReplacement(const EC
 	return nullptr;
 }
 
+TObjectPtr<UNiagaraComponent> UPrimaryDataAssetsManager::SpawnAndReceiveVfxForcefully(const EVfx InVfxName, const FVector& InLocation, const FRotator& InRotation)
+{
+	return UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, GetVfxData(InVfxName).GetVfxContainer()->GetVfxEffect().LoadSynchronous(), InLocation, InRotation);
+}
+
 void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);

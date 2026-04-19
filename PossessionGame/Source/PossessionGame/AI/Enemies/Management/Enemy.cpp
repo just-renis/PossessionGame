@@ -1024,6 +1024,7 @@ void AEnemy::P_MakeCameraShake(const ECameraShake InCameraShakeName)
 		case ECameraShake::AcoSlamCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(AcoSlamCameraShake); break;
 		case ECameraShake::PyroBossStompCameraShake1: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(PyroBossStompCameraShake1); break;
 		case ECameraShake::PyroBossStompCameraShake2: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(PyroBossStompCameraShake2); break;
+		case ECameraShake::SoldierBossMissileImpactCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(SoldierBossMissileImpactCameraShake); break;
 		default: ;
 	}
 }
