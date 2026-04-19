@@ -6,13 +6,6 @@
 void UPyroBossAnimationInstance::OnMontageEnd(UAnimMontage* InMontage, bool bIsInterrupted)
 {
 	Super::OnMontageEnd(InMontage, bIsInterrupted);
-	if (IsMontage(EEnemyAnimState::ActivateFloorLava, InMontage))
-	{
-		(void)Cast<APyroBossAIController>(Proprietor->GetAI())->OnFireFloorFinished.ExecuteIfBound();
-		if (!Proprietor->IsActionsDisabled()) Proprietor->SetIsActionInMotion(false);
-		Proprietor->SetIsAbilityInAction(false);
-		return;
-	}
 	if (!IsMontage(EEnemyAnimState::Stomp, InMontage)) return;
 	(void)Cast<APyroBossAIController>(Proprietor->GetAI())->OnStompFinished.ExecuteIfBound();
 	if (!Proprietor->IsActionsDisabled()) Proprietor->SetIsActionInMotion(false);

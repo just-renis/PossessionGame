@@ -17,11 +17,6 @@
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Management/Weapon.h"
 
-void APyroBoss::MarkFloorLavaAbilityReady()
-{
-	GetWorldTimerManager().SetTimer(ActivateFloorLavaHandle, this, &APyroBoss::ActivateFloorLava, 0.25f, true);
-}
-
 void APyroBoss::MarkStompAbilityReady()
 {
 	bFirstStompSucceed = false;
@@ -77,20 +72,12 @@ APyroBoss::APyroBoss()
 	TakeDamageSfx = CreateDefaultSubobject<UAudioComponent>("TakeDamageSfx");
 	TakeDamageSfx->SetAutoActivate(false);
 	TakeDamageSfx->SetupAttachment(GetMesh());
-	ActivateFlameFloorSfx = CreateDefaultSubobject<UAudioComponent>("ActivateFlameFloorSfx");
-	ActivateFlameFloorSfx->SetAutoActivate(false);
-	ActivateFlameFloorSfx->SetupAttachment(GetMesh());
-	InitiateFlameFloorSfx = CreateDefaultSubobject<UAudioComponent>("InitiateFlameFloorSfx");
-	InitiateFlameFloorSfx->SetAutoActivate(false);
-	InitiateFlameFloorSfx->SetupAttachment(GetMesh());
 	StompSfx = CreateDefaultSubobject<UAudioComponent>("StompSfx");
 	StompSfx->SetAutoActivate(false);
 	StompSfx->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::PyroBossSpawn, SpawnSfx);
 	Sounds.Add(ESound::PyroBossDeath, DeathSfx);
 	Sounds.Add(ESound::PyroBossTakeDamage, TakeDamageSfx);
-	Sounds.Add(ESound::PyroBossActivateFlameFloor, ActivateFlameFloorSfx);
-	Sounds.Add(ESound::PyroBossInitiateFlameFloor, InitiateFlameFloorSfx);
 	Sounds.Add(ESound::PyroBossStomp, StompSfx);
 }
 
@@ -120,6 +107,7 @@ void APyroBoss::BeginPlay()
 	CharacterName = ECharacterType::PyroBoss;
 	bIsBoss = true;
 	Super::BeginPlay();
+	GetWorldTimerManager().SetTimer(FloorTriggerHandle, this, &APyroBoss::ActivateFloorLava, FloorTriggerTime, true);
 	(void)DelegateManager->OnGlobalHpBarSpawn.ExecuteIfBound(EEnemyHpBar::Boss, 1);
 }
 
@@ -138,16 +126,8 @@ void APyroBoss::ReceiveDamage(float InDamage, const EDamageReason InDamageReason
 
 void APyroBoss::ApplyEmpEffect(const float InEffectDuration) { Super::ApplyEmpEffect(InEffectDuration * 0.5f); }
 
-void APyroBoss::ActivateFloorLava()
+void APyroBoss::ActivateFloorLava() const
 {
-	if (!AI || IsActionsDisabled() || bIsActionInMotion || !AI->GetStateTreeData().GetStateTreeRef()) return;
-	PlaySound(ESound::PyroBossActivateFlameFloor);
-	PlaySound(ESound::PyroBossInitiateFlameFloor);
-	SetIsActionInMotion(true);
-	if (!SendSignalVfx) AssetsManager->AttachVfx(EVfx::PyroBossSendSignal, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &SendSignalVfx, GetMesh(), FName("DeathSocket"));
-	else SendSignalVfx->Activate(true);
-	GetWorldTimerManager().ClearTimer(ActivateFloorLavaHandle);
-	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::PyroBossActivateFireFloor);
 	const float HpPercentageLeft = CurrentHp / MaxHp;
 	const int32 NumIndicesToUse = HpPercentageLeft > SecondPhaseHpPercentage ? 1.f : HpPercentageLeft > ThirdPhaseHpPercentage ? 2.f : 3.f;
 	TArray Indices = { 0, 1, 2, 3, 4, 5, 6, 7 };
@@ -209,7 +189,7 @@ void APyroBoss::TriggerBallPhaseAttack()
 void APyroBoss::ClearTimers()
 {
 	Super::ClearTimers();
-	GetWorldTimerManager().ClearTimer(ActivateFloorLavaHandle);
+	GetWorldTimerManager().ClearTimer(FloorTriggerHandle);
 	GetWorldTimerManager().ClearTimer(ActivateStompHandle);
 	GetWorldTimerManager().ClearTimer(ActivateBallPhaseHandle);
 	GetWorldTimerManager().ClearTimer(BallPhaseAttackHandle);

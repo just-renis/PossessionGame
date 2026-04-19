@@ -1,5 +1,6 @@
 ﻿#include "PyroBossFireFloor.h"
 #include "NiagaraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -14,6 +15,9 @@ APyroBossFireFloor::APyroBossFireFloor()
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &APyroBossFireFloor::AddOverlappedTarget);
 	Collision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Collision->SetupAttachment(RootComponent);
+	WarningSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("WarningSfx"));
+	WarningSfx->SetAutoActivate(false);
+	WarningSfx->SetupAttachment(RootComponent);
 }
 
 void APyroBossFireFloor::BeginPlay()
@@ -25,6 +29,7 @@ void APyroBossFireFloor::BeginPlay()
 void APyroBossFireFloor::TriggerFireWarning(const TArray<int32>& InIds)
 {
 	if (!InIds.Contains(Id)) return;
+	if (WarningSfx) WarningSfx->Sound ? WarningSfx->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(WarningSfx, TFunction<bool()>(), ESound::PyroBossWarningFlameFloor, false);
 	bIsWarningActive = true;
 	if (!WarningFire) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::PyroBossFloorFireWarning, [this]() -> bool { return bIsWarningActive; }, &WarningFire, Mesh);
 	else WarningFire->Activate(true);

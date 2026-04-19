@@ -1389,7 +1389,6 @@ void AEnemy::AI_StopAbilitiesEvents() const
 		case EStateTreeEvent::WraithMeteorShower: AI_StopAbility(2); break;
 		case EStateTreeEvent::MinionBossStomp: AI_StopAbility(0); break;
 		case EStateTreeEvent::MinionBossLaserEye: AI_StopAbility(1); break;
-		case EStateTreeEvent::PyroBossActivateFireFloor: AI_StopAbility(0); break;
 		case EStateTreeEvent::PyroBossStomp: AI_StopAbility(1); break;
 		case EStateTreeEvent::PyroBossBallPhase: AI_StopAbility(2); break;
 		case EStateTreeEvent::SoldierBossMissilesLaunch: AI_StopAbility(0); break;

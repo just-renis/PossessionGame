@@ -28,6 +28,8 @@ class POSSESSIONGAME_API APyroBossFireFloor : public AActor
 	TObjectPtr<UNiagaraComponent> EnvironmentFire;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> WarningFire;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> WarningSfx;
 
 	virtual void BeginPlay() override;
 	void TriggerFireWarning(const TArray<int32>& InIds);

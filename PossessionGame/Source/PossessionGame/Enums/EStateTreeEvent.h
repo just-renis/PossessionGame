@@ -13,7 +13,6 @@ enum class EStateTreeEvent : uint8
     WardenBeamShot,
     BreacherBash,
     WraithMeteorShower,
-    PyroBossActivateFireFloor,
     PyroBossStomp,
     PyroBossBallPhase,
     MoveDirectly,

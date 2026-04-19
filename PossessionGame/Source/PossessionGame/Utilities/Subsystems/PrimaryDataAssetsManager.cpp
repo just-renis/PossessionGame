@@ -725,8 +725,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_PyroBossSpawn", ESound::PyroBossSpawn);
 	SoundMap.Add("PA_PyroBossDeath", ESound::PyroBossDeath);
 	SoundMap.Add("PA_PyroBossTakeDamage", ESound::PyroBossTakeDamage);
-	SoundMap.Add("PA_PyroBossActivateFlameFloor", ESound::PyroBossActivateFlameFloor);
-	SoundMap.Add("PA_PyroBossInitiateFlameFloor", ESound::PyroBossInitiateFlameFloor);
+	SoundMap.Add("PA_PyroBossWarningFlameFloor", ESound::PyroBossWarningFlameFloor);
 	SoundMap.Add("PA_PyroBossProjectileImpact", ESound::PyroBossProjectileImpact);
 	SoundMap.Add("PA_PyroBossShoot", ESound::PyroBossShoot);
 	SoundMap.Add("PA_PyroBossStomp", ESound::PyroBossStomp);
@@ -909,7 +908,6 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_PyroBossProjectileFirePool", EVfx::PyroBossProjectileFirePool);
 	VfxsMap.Add("PA_PyroBossEnvironmentFire", EVfx::PyroBossEnvironmentFire);
 	VfxsMap.Add("PA_PyroBossFloorFireWarning", EVfx::PyroBossFloorFireWarning);
-	VfxsMap.Add("PA_PyroBossSendSignal", EVfx::PyroBossSendSignal);
 	VfxsMap.Add("PA_PyroBossBallPhase", EVfx::PyroBossBallPhase);
 	VfxsMap.Add("PA_SoldierBossBulletTrail", EVfx::SoldierBossBulletTrail);
 	VfxsMap.Add("PA_SoldierBossMissileLaunched", EVfx::SoldierBossMissileLaunched);

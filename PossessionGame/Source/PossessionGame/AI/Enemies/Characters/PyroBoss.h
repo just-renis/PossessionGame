@@ -14,7 +14,6 @@ public:
 	float GetStompDamage() const { return StompDamage; }
 	float GetStunDuration() const { return StunDuration; }
 	
-	void MarkFloorLavaAbilityReady();
 	void MarkStompAbilityReady();
 	void MarkBallPhaseAbilityReady();
 	void InitiateBallPhase();
@@ -25,16 +24,18 @@ private:
 
 	bool bIsBallPhaseActive = false;
 	bool bFirstStompSucceed = false;
-	FTimerHandle ActivateFloorLavaHandle;
 	FTimerHandle ActivateStompHandle;
 	FTimerHandle ActivateBallPhaseHandle;
 	FTimerHandle BallPhaseAttackHandle;
+	FTimerHandle FloorTriggerHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Debug", meta = (AllowPrivateAccess = true))
 	bool bEnableDebug = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
 	float SecondPhaseHpPercentage = 0.7f;
 	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
 	float ThirdPhaseHpPercentage = 0.4f;
+	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
+	float FloorTriggerTime = 10.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Stomp", meta = (AllowPrivateAccess = true))
 	float StompTriggerRadiusInMeters = 4.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Stomp", meta = (AllowPrivateAccess = true))
@@ -48,17 +49,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Ball Phase", meta = (AllowPrivateAccess = true))
 	FProjectileData ProjectileData;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> SendSignalVfx;
-	UPROPERTY()
 	TObjectPtr<UAudioComponent> SpawnSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DeathSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> TakeDamageSfx;
-	UPROPERTY()
-	TObjectPtr<UAudioComponent> ActivateFlameFloorSfx;
-	UPROPERTY()
-	TObjectPtr<UAudioComponent> InitiateFlameFloorSfx;
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> StompSfx;
 	UPROPERTY()
@@ -73,7 +68,7 @@ private:
 	virtual void InitiateDeath() override;
 	virtual void ReceiveDamage(float InDamage, const EDamageReason InDamageReason, const FPointDamageEvent* PointDamageEvent, const FRadialDamageEvent* RadialDamageEvent) override;
 	virtual void ApplyEmpEffect(const float InEffectDuration) override;
-	void ActivateFloorLava();
+	void ActivateFloorLava() const;
 	void ActivateStomp();
 	void ActivateBallPhase();
 	void ActivateBallPhaseAttack();
