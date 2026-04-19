@@ -6,7 +6,7 @@ void USoldierBossAbility1::AI_Execute()
 {
 	Proprietor->SetIsAbilityInAction(true);
 	Proprietor->GetAnimInstance()->SetNonBlendableSlotState(true);
-	Proprietor->PlayMissilesLaunchReadyAnims(DurationTime);
+	Proprietor->StartMissilesLaunchPhase(DurationTime);
 	Super::AI_Execute();
 }
 

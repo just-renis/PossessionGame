@@ -16,9 +16,10 @@ void ASoldierBoss::MarkMissilesLaunchAbilityReady()
 	GetWorldTimerManager().SetTimer(ActivateMissilesLaunchHandle, this, &ASoldierBoss::ActivateMissilesLaunch, 0.25f, true);
 }
 
-void ASoldierBoss::PlayMissilesLaunchReadyAnims(const float InDuration)
+void ASoldierBoss::StartMissilesLaunchPhase(const float InDuration)
 {
 	GetAnimInstance()->PlayMontageWithHold(EEnemyAnimState::MissilesLaunch, InDuration, false);
+	
 	if (!BackpackAnimInstance) return;
 	BackpackAnimInstance->SetIsOpen(true);
 }

@@ -5,6 +5,7 @@
 #include "Engine/OverlapResult.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
+#include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
@@ -41,9 +42,9 @@ void APyroBoss::InitiateBallPhase()
 
 void APyroBoss::FinishedBallPhase() { bIsBallPhaseActive = false; }
 
-void APyroBoss::StompHitTheGround()
+void APyroBoss::StompHitTheGround(const bool bFirstStomp)
 {
-	//	Proprietor->TriggerStompCameraShake();
+	(void)DelegateManager->RequestTriggerCameraShake.ExecuteIfBound(bFirstStomp ? ECameraShake::PyroBossStompCameraShake1 : ECameraShake::PyroBossStompCameraShake2);
 	//Proprietor->PlaySound(ESound::MinionBossStomp, true);
 	//Proprietor->GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnVfx(EVfx::MinionBossStompCrack, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, Proprietor->GetSocketLocation("StompSocket"));
 	const FVector StompLocation = GetSocketLocation("StompSocket");
@@ -163,6 +164,9 @@ void APyroBoss::ActivateStomp()
 	Params.AddIgnoredActor(this);
 	TArray<FOverlapResult> Overlaps;
 	GetWorld()->OverlapMultiByProfile(Overlaps, GetActorLocation(), FQuat::Identity, FName("TriggerPlayer"), FCollisionShape::MakeSphere(StompTriggerRadiusInMeters * 100.f), Params);
+#if WITH_EDITOR
+	if (bEnableDebug) DrawDebugSphere(GetWorld(), GetActorLocation(), StompTriggerRadiusInMeters * 100.f, 32, FColor::Green, false, 3.f);
+#endif
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
 		TObjectPtr<AActor> Actor = Overlap.GetActor();
@@ -184,7 +188,7 @@ void APyroBoss::ActivateBallPhase()
 void APyroBoss::ActivateBallPhaseAttack()
 {
 	if (!IsAsyncAssetStillAllowedToBeUsed()) return;
-	GetWorldTimerManager().SetTimer(BallPhaseAttackHandle, this, &APyroBoss::TriggerBallPhaseAttack, 0.25f, true);
+	GetWorldTimerManager().SetTimer(BallPhaseAttackHandle, this, &APyroBoss::TriggerBallPhaseAttack, ShotFrequency, true);
 	if (!BallPhaseVfx) AssetsManager->AttachVfx(EVfx::PyroBossBallPhase, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed() && bIsBallPhaseActive; }, &BallPhaseVfx, GetMesh(), FName("BallPhaseSocket"));
 	else BallPhaseVfx->Activate();
 }
@@ -198,7 +202,7 @@ void APyroBoss::TriggerBallPhaseAttack()
 	}
 	const FRotator Rotation = FRotator(0.f, FMath::FRandRange(0.f, 360.f), 0.f);
 	ProjectileData.SetProprietor(this);
-	ProjectileData.GetMultiProjectileDataPtr(1)->Data[0].GravityScale = FMath::FRandRange(1.f, 3.f);
+	ProjectileData.GetMultiProjectileDataPtr(1)->Data[0].GravityScale = FMath::FRandRange(MinGravityScale, MaxGravityScale);
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::PyroBossProjectile, GetSocketLocation(FName("BallPhaseSocket")), Rotation)->Init(ProjectileData, Rotation);
 }
 

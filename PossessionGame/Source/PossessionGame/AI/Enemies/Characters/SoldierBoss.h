@@ -12,7 +12,7 @@ class POSSESSIONGAME_API ASoldierBoss : public AEnemy
 	GENERATED_BODY()
 public:
 	void MarkMissilesLaunchAbilityReady();
-	void PlayMissilesLaunchReadyAnims(const float InDuration);
+	void StartMissilesLaunchPhase(const float InDuration);
 	void FinishedMissilesLaunch() const;
 private:
 	ASoldierBoss();

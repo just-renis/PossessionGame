@@ -185,5 +185,7 @@ enum class ESound : uint16
 	SoldierBossPrepareMissileLaunch,
 	SoldierBossSpawn,
 	SoldierBossTakeDamage,
-	SoldierBossShoot
+	SoldierBossShoot,
+	SoldierBossMissileLaunch,
+	SoldierBossMissileLand
 };

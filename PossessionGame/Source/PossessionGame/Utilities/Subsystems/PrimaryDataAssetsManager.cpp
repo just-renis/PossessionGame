@@ -748,6 +748,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_SoldierBossSpawn", ESound::SoldierBossSpawn);
 	SoundMap.Add("PA_SoldierBossTakeDamage", ESound::SoldierBossTakeDamage);
 	SoundMap.Add("PA_SoldierBossShoot", ESound::SoldierBossShoot);
+	SoundMap.Add("PA_SoldierBossMissileLaunch", ESound::SoldierBossMissileLaunch);
+	SoundMap.Add("PA_SoldierBossMissileLand", ESound::SoldierBossMissileLand);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -911,6 +913,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_PyroBossBallPhase", EVfx::PyroBossBallPhase);
 	VfxsMap.Add("PA_SoldierBossBulletTrail", EVfx::SoldierBossBulletTrail);
 	VfxsMap.Add("PA_SoldierBossMissileLaunched", EVfx::SoldierBossMissileLaunched);
+	VfxsMap.Add("PA_SoldierBossMissileImpact", EVfx::SoldierBossMissileImpact);
 	VfxsMap.Add("PA_SamuraiSlash", EVfx::SamuraiSlash);
 	VfxsMap.Add("PA_AcoHijackEffect", EVfx::AcoHijackEffect);
 	VfxsMap.Add("PA_AcoFlyTrail", EVfx::AcoFlyTrail);

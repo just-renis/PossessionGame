@@ -8,5 +8,5 @@ void UPyroBossStompNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 	if (!Owner) return;
 	const TObjectPtr<APyroBoss> Proprietor = Cast<APyroBoss>(Owner);
 	if (!Proprietor) return;
-	if (Proprietor->IsAsyncAssetStillAllowedToBeUsed()) Proprietor->StompHitTheGround();
+	if (Proprietor->IsAsyncAssetStillAllowedToBeUsed()) Proprietor->StompHitTheGround(bFirstCameraShake);
 }

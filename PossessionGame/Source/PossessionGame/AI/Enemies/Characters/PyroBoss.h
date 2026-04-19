@@ -19,7 +19,7 @@ public:
 	void MarkBallPhaseAbilityReady();
 	void InitiateBallPhase();
 	void FinishedBallPhase();
-	void StompHitTheGround();
+	void StompHitTheGround(const bool bFirstStomp);
 private:
 	APyroBoss();
 
@@ -29,6 +29,8 @@ private:
 	FTimerHandle ActivateStompHandle;
 	FTimerHandle ActivateBallPhaseHandle;
 	FTimerHandle BallPhaseAttackHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Debug", meta = (AllowPrivateAccess = true))
+	bool bEnableDebug = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
 	float SecondPhaseHpPercentage = 0.7f;
 	UPROPERTY(EditDefaultsOnly, Category = "Lava Floor", meta = (AllowPrivateAccess = true))
@@ -37,6 +39,12 @@ private:
 	float StompTriggerRadiusInMeters = 4.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Stomp", meta = (AllowPrivateAccess = true))
 	float StunDuration = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Ball Phase", meta = (AllowPrivateAccess = true))
+	float MinGravityScale = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Ball Phase", meta = (AllowPrivateAccess = true))
+	float MaxGravityScale = 3.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Ball Phase", meta = (AllowPrivateAccess = true))
+	float ShotFrequency = 0.25f;
 	UPROPERTY(EditDefaultsOnly, Category = "Ball Phase", meta = (AllowPrivateAccess = true))
 	FProjectileData ProjectileData;
 	UPROPERTY()
