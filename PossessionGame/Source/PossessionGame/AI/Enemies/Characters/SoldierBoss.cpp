@@ -130,14 +130,9 @@ void ASoldierBoss::LaunchMissile()
 	const TObjectPtr<AEnemy> Player = GetWorld()->GetSubsystem<UEnemyCommunicator>()->GetTarget();
 	const FVector PlayerLocation = Player->GetSocketLocation(FName("RootSocket"));
 	GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::SoldierBossMissile, PlayerLocation)->InitWithProprietor(this);
-	if (!MissileImpactVfx)
-	{
-		UE_LOG(LogTemp, Error, TEXT("LOAD"));
-		MissileImpactVfx = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnAndReceiveVfxForcefully(EVfx::SoldierBossMissileImpact, PlayerLocation, FRotator::ZeroRotator);
-	}
+	if (!MissileImpactVfx) MissileImpactVfx = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->SpawnAndReceiveVfxForcefully(EVfx::SoldierBossMissileImpact, PlayerLocation, FRotator::ZeroRotator);
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("SET LOCATION"));
 		MissileImpactVfx->SetWorldLocation(PlayerLocation);
 		MissileImpactVfx->Activate(true);
 	}
