@@ -48,13 +48,9 @@ void ASamuraiWeapon::AI_ProcessMeleeAttack()
 
 void ASamuraiWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
-	//if (bIsActionInMotion || bIsInputLocked) return;
-	//AssetsManager->PlaySound2D(ESound::QuickMelee);
-	//P_MakeCameraShake(ECameraShake::PlayerQuickMelee);
-	//bIsActionInMotion = true;
-	//GetHandsAnimInstance()->PlayMontage(EHandsAnimState::QuickMelee);
+	if (GetHandsAnimInstance()->IsPlaying(EHandsAnimState::QuickMelee)) return;
+	GetHandsAnimInstance()->PlayMontage(EHandsAnimState::QuickMelee);
 	P_HandleMeleeStrike();
-	//PlayHandsAndWeaponMontage(EHandsAnimState::Shoot, EWeaponAnimState::Shoot);
 }
 
 void ASamuraiWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(CurrentAmmo); }

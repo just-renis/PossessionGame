@@ -41,7 +41,7 @@ void ASamurai::P_Setup()
 
 void ASamurai::P_Shoot()
 {
-	if (!Weapon) return;
+	if (bIsInputLocked || bIsActionInMotion || !bCanShoot || !Weapon) return;
 	Weapon->P_Shoot(EPoolObject::SamuraiSlashAttack);
 }
 
