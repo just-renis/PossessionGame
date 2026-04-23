@@ -17,9 +17,10 @@ class POSSESSIONGAME_API APyroBossFireFloor : public AActor
 	bool bIsWarningActive = false;
 	bool bIsFireActive = false;
 	float TriggerFireTime = 3.f;
-	float FireUptime = 3.f;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	int32 Id;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	float FireUptime = 3.f;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
