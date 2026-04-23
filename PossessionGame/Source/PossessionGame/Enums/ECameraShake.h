@@ -18,5 +18,6 @@ enum class ECameraShake : uint8
     AcoSlamCameraShake,
     PyroBossStompCameraShake1,
     PyroBossStompCameraShake2,
-    SoldierBossMissileImpactCameraShake
+    SoldierBossMissileImpactCameraShake,
+    SamuraiPlayerSlashCameraShake
 };

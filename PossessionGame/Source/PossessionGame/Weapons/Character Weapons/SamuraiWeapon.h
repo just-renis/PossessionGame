@@ -11,6 +11,8 @@ class POSSESSIONGAME_API ASamuraiWeapon : public AOneHandedWeapon
 public:
 	virtual void AI_Shoot() override;
 	void AI_StopProcessingMeleeAttack();
+
+	void P_TriggerSlashVfx();
 private:
 	bool bIsFirstCheck = true;
 	FVector LastSocketLocation;
@@ -25,6 +27,8 @@ private:
 	float AttackHeight = 50.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Melee Attack", meta = (AllowPrivateAccess = true))
 	float AttackWidth = 10.f;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> SlashVfx;
 	
 	void AI_ProcessMeleeAttack();
 

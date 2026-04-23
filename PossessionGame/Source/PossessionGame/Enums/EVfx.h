@@ -139,6 +139,7 @@ enum class EVfx : uint16
 	SoldierBossMissileLaunched,
 	SoldierBossMissileImpact,
 	SamuraiSlash,
+	PlayerSamuraiSlash,
 	AcoHijackEffect,
 	AcoFlyTrail,
 	AcoEject,

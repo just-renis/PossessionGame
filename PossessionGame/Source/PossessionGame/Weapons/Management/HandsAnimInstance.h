@@ -34,6 +34,10 @@ public:
 	void SetGlobalPlayRate(const float InPlayRate);
 protected:
 	UPROPERTY()
+	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
+	UPROPERTY()
+	TObjectPtr<AEnemy> Proprietor;
+	UPROPERTY()
 	TMap<EHandsAnimState, TObjectPtr<UAnimMontage>> Montages;
 	
 	bool IsMontage(const EHandsAnimState InState, const UAnimMontage* InMontage) const;
@@ -53,11 +57,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = true))
 	float Speed = 0.f;
 	UPROPERTY()
-	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
-	UPROPERTY()
 	TObjectPtr<UDelegateManager> DelegateManager;
-	UPROPERTY()
-	TObjectPtr<AEnemy> Proprietor;
 
 	bool IsMontageExisting(const EHandsAnimState InState) const;
 	

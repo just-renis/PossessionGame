@@ -13,6 +13,8 @@ class POSSESSIONGAME_API ASamurai : public AEnemy
 public:
 	void AI_SlashAttack();
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UCameraShakeBase> SlashCameraShake;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<AActor> SamuraiHatClass;
 	UPROPERTY()
@@ -25,6 +27,7 @@ private:
 	virtual void P_Setup() override;
 	virtual void P_Shoot() override;
 	virtual void P_BindQuickMeleeAction() override {}
+	virtual void P_MakeCameraShake(const ECameraShake InCameraShakeName) override;
 
 	virtual void BeginPlay() override;
 	void SetupSamuraiHat();

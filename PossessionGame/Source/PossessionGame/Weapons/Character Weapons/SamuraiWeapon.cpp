@@ -1,12 +1,13 @@
 ﻿#include "SamuraiWeapon.h"
+#include "NiagaraComponent.h"
 #include "Engine/OverlapResult.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Weapons/Management/HandsAnimInstance.h"
-#include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 
 void ASamuraiWeapon::AI_Shoot()
 {
@@ -15,6 +16,12 @@ void ASamuraiWeapon::AI_Shoot()
 }
 
 void ASamuraiWeapon::AI_StopProcessingMeleeAttack() { GetWorldTimerManager().ClearTimer(ProcessMeleeAttackHandle); }
+
+void ASamuraiWeapon::P_TriggerSlashVfx()
+{
+	if (!SlashVfx) AssetsManager->AttachVfx(EVfx::PlayerSamuraiSlash, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &SlashVfx, GetHandsMesh(), FName("RootSocket"));
+	else SlashVfx->Activate(true);
+}
 
 void ASamuraiWeapon::AI_ProcessMeleeAttack()
 {

@@ -1,7 +1,10 @@
 ﻿#include "Samurai.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
 #include "PossessionGame/Destructibles/Destructible.h"
+#include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -42,7 +45,14 @@ void ASamurai::P_Setup()
 void ASamurai::P_Shoot()
 {
 	if (bIsInputLocked || bIsActionInMotion || !bCanShoot || !Weapon) return;
+	P_MakeCameraShake(ECameraShake::SamuraiPlayerSlashCameraShake);
 	Weapon->P_Shoot(EPoolObject::SamuraiSlashAttack);
+}
+
+void ASamurai::P_MakeCameraShake(const ECameraShake InCameraShakeName)
+{
+	if (InCameraShakeName == ECameraShake::SamuraiPlayerSlashCameraShake) UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(SlashCameraShake);
+	Super::P_MakeCameraShake(InCameraShakeName);
 }
 
 void ASamurai::BeginPlay()
