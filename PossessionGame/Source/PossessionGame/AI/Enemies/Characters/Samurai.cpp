@@ -45,7 +45,6 @@ void ASamurai::P_Setup()
 void ASamurai::P_Shoot()
 {
 	if (bIsInputLocked || bIsActionInMotion || !bCanShoot || !Weapon) return;
-	P_MakeCameraShake(ECameraShake::SamuraiPlayerSlashCameraShake);
 	Weapon->P_Shoot(EPoolObject::SamuraiSlashAttack);
 }
 

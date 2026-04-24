@@ -185,6 +185,7 @@ public:
 	void P_ResetMovementSpeed();
 	virtual void P_ReceiveStunEffect(const float InEffectDuration, const float InDamage, FVector InHitDirection);
 	void P_StunEffectEnded();
+	virtual void P_MakeCameraShake(const ECameraShake InCameraShakeName);
 
 	virtual FLinearColor GetDamageNumberColor() const { return DamageNumberColor; }
 
@@ -343,7 +344,6 @@ protected:
 	virtual void P_InitiateStomp();
 	virtual void P_ShowReceivedDamageNumber(const float InDamage);
 	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
-	virtual void P_MakeCameraShake(const ECameraShake InCameraShakeName);
 	virtual void P_WeaponShoot() {}
 	void P_StopAbility(const int32 InAbilityIndex);
 	virtual void P_ProcessMeleeAttack();

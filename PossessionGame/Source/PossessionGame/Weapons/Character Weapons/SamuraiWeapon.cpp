@@ -2,6 +2,7 @@
 #include "NiagaraComponent.h"
 #include "Engine/OverlapResult.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
@@ -55,7 +56,9 @@ void ASamuraiWeapon::AI_ProcessMeleeAttack()
 
 void ASamuraiWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
-	if (GetHandsAnimInstance()->IsPlaying(EHandsAnimState::QuickMelee)) return;
+	if (GetHandsAnimInstance()->IsPlaying(EHandsAnimState::QuickMelee) || !bCanDoSlashAttack) return;
+	P_ChangeAttackState(false);
+	Proprietor->P_MakeCameraShake(ECameraShake::SamuraiPlayerSlashCameraShake);
 	GetHandsAnimInstance()->PlayMontage(EHandsAnimState::QuickMelee);
 	P_HandleMeleeStrike();
 }

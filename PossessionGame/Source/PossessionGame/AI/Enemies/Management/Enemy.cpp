@@ -368,6 +368,28 @@ void AEnemy::P_StunEffectEnded()
 	P_SetLookLocked(false);
 }
 
+void AEnemy::P_MakeCameraShake(const ECameraShake InCameraShakeName)
+{
+	switch (InCameraShakeName)
+	{
+		case ECameraShake::WardenBeam: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(WardenBeamShake); break;
+		case ECameraShake::MinionBossStomp: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(MinionBossStompCameraShake); break;
+		case ECameraShake::MinionBossLaser: MinionBossLaserShakeInstance = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(MinionBossLaserShake); break;
+		case ECameraShake::PlayerReceiveDamage: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(ReceivingDamageCameraShake); break;
+		case ECameraShake::PlayerQuickMelee: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(QuickMeleeCameraShake); break;
+		case ECameraShake::PlayerStomp: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(StompCameraShake); break;
+		case ECameraShake::PlayerStunned: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(StunnedCameraShake); break;
+		case ECameraShake::WraithMeteorLandCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(WraithMeteorLandCameraShake); break;
+		case ECameraShake::AcoDashInitiationCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(AcoDashInitiationCameraShake); break;
+		case ECameraShake::AcoPlatformRiseCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(AcoRisePlatformCameraShake); break;
+		case ECameraShake::AcoSlamCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(AcoSlamCameraShake); break;
+		case ECameraShake::PyroBossStompCameraShake1: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(PyroBossStompCameraShake1); break;
+		case ECameraShake::PyroBossStompCameraShake2: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(PyroBossStompCameraShake2); break;
+		case ECameraShake::SoldierBossMissileImpactCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(SoldierBossMissileImpactCameraShake); break;
+		default: ;
+	}
+}
+
 void AEnemy::SetIsActionInMotion(const bool bState)
 {
 	bIsActionInMotion = bState;
@@ -1006,28 +1028,6 @@ void AEnemy::P_InitiateStomp()
 void AEnemy::P_ShowReceivedDamageNumber(const float InDamage) { (void)DelegateManager->OnPlayerDamageTaken.ExecuteIfBound(InDamage, FLinearColor::Red); }
 
 void AEnemy::P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const { UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(InCameraShake); }
-
-void AEnemy::P_MakeCameraShake(const ECameraShake InCameraShakeName)
-{
-	switch (InCameraShakeName)
-	{
-		case ECameraShake::WardenBeam: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(WardenBeamShake); break;
-		case ECameraShake::MinionBossStomp: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(MinionBossStompCameraShake); break;
-		case ECameraShake::MinionBossLaser: MinionBossLaserShakeInstance = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(MinionBossLaserShake); break;
-		case ECameraShake::PlayerReceiveDamage: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(ReceivingDamageCameraShake); break;
-		case ECameraShake::PlayerQuickMelee: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(QuickMeleeCameraShake); break;
-		case ECameraShake::PlayerStomp: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(StompCameraShake); break;
-		case ECameraShake::PlayerStunned: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(StunnedCameraShake); break;
-		case ECameraShake::WraithMeteorLandCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(WraithMeteorLandCameraShake); break;
-		case ECameraShake::AcoDashInitiationCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(AcoDashInitiationCameraShake); break;
-		case ECameraShake::AcoPlatformRiseCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(AcoRisePlatformCameraShake); break;
-		case ECameraShake::AcoSlamCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(AcoSlamCameraShake); break;
-		case ECameraShake::PyroBossStompCameraShake1: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(PyroBossStompCameraShake1); break;
-		case ECameraShake::PyroBossStompCameraShake2: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(PyroBossStompCameraShake2); break;
-		case ECameraShake::SoldierBossMissileImpactCameraShake: UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->StartCameraShake(SoldierBossMissileImpactCameraShake); break;
-		default: ;
-	}
-}
 
 void AEnemy::P_StopAbility(const int32 InAbilityIndex)
 {
