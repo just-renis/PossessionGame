@@ -5,27 +5,23 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Weapons/Character Weapons/SamuraiWeapon.h"
 
-void USamuraiHandsAnimInstance::PlaySlashVfx()
+void USamuraiHandsAnimInstance::PlaySlashVfx(const bool bIsFirstSlash)
 {
-	if (!SlashVfx) AssetsManager->AttachVfx(EVfx::PlayerSamuraiSlash, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &SlashVfx, GetSkelMeshComponent(), FName("RootSocket"));
-	else SlashVfx->Activate(true);
-}
-
-void USamuraiHandsAnimInstance::SetProprietor(const TObjectPtr<AEnemy>& InProprietor)
-{
-	Super::SetProprietor(InProprietor);
-	Weapon = Cast<ASamuraiWeapon>(Proprietor->GetWeapon());
+	if (bIsFirstSlash)
+	{
+		if (!FirstSlashVfx) AssetsManager->AttachVfx(EVfx::PlayerSamuraiSlash, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &FirstSlashVfx, GetSkelMeshComponent(), FName("RootSocket"));
+		else FirstSlashVfx->Activate(true);
+	}
+	else
+	{
+		if (!SecondSlashVfx) AssetsManager->AttachVfx(EVfx::PlayerSamuraiSlash, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &SecondSlashVfx, GetSkelMeshComponent(), FName("SlashSocket2"));
+		else SecondSlashVfx->Activate(true);
+	}
 }
 
 void USamuraiHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted)
 {
 	Super::OnMontageEnd(InMontage, bIsInterrupted);
 	if (!IsMontage(EHandsAnimState::QuickMelee, InMontage)) return;
-	FTimerHandle AttackCooldownHandle;
-	GetWorld()->GetTimerManager().SetTimer(AttackCooldownHandle, this, &USamuraiHandsAnimInstance::SetAttackCooldownFinished, AttackCooldown);
-}
-
-void USamuraiHandsAnimInstance::SetAttackCooldownFinished() const
-{
-	if (Weapon) Weapon->P_ChangeAttackState(true);
+	Cast<ASamuraiWeapon>(Proprietor->GetWeapon())->P_ChangeComboState(false);
 }

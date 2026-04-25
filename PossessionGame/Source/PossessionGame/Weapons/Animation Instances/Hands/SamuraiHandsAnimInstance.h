@@ -12,16 +12,12 @@ class POSSESSIONGAME_API USamuraiHandsAnimInstance : public UHandsAnimInstance
 {
 	GENERATED_BODY()
 public:
-	void PlaySlashVfx();
+	void PlaySlashVfx(const bool bIsFirstSlash);
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Melee Attack", meta = (AllowPrivateAccess = true))
-	float AttackCooldown = 3.f;
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> SlashVfx;
+	TObjectPtr<UNiagaraComponent> FirstSlashVfx;
 	UPROPERTY()
-	TObjectPtr<ASamuraiWeapon> Weapon;
+	TObjectPtr<UNiagaraComponent> SecondSlashVfx;
 
-	virtual void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) override;
 	virtual void OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted) override;
-	void SetAttackCooldownFinished() const;
 };

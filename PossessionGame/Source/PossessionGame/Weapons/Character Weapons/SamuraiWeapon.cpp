@@ -56,11 +56,15 @@ void ASamuraiWeapon::AI_ProcessMeleeAttack()
 
 void ASamuraiWeapon::P_Shoot(const EPoolObject InProjectileName)
 {
-	if (GetHandsAnimInstance()->IsPlaying(EHandsAnimState::QuickMelee) || !bCanDoSlashAttack) return;
-	P_ChangeAttackState(false);
+	if (!HandsAnimInstance) return;
+	const bool bIsFirst = HandsAnimInstance->IsPlaying(EHandsAnimState::QuickMelee);
+	const bool bIsSecond = HandsAnimInstance->IsPlaying(EHandsAnimState::QuickMeleeSecondCombo);
+	if (!bCanDoCombo && (bIsFirst || bIsSecond)) return;
 	Proprietor->P_MakeCameraShake(ECameraShake::SamuraiPlayerSlashCameraShake);
-	GetHandsAnimInstance()->PlayMontage(EHandsAnimState::QuickMelee);
 	P_HandleMeleeStrike();
+	if (bCanDoCombo) HandsAnimInstance->PlayMontage(bIsFirst ? EHandsAnimState::QuickMeleeSecondCombo : EHandsAnimState::QuickMelee);
+	else HandsAnimInstance->PlayMontage(EHandsAnimState::QuickMelee);
+	P_ChangeComboState(false);
 }
 
 void ASamuraiWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(CurrentAmmo); }
@@ -96,11 +100,11 @@ void ASamuraiWeapon::BeginPlay()
 {
 	Name = EWeapon::SamuraiWeapon;
 	Super::BeginPlay();
+	DelegateManager->OnSamuraiSlashComboStateChange.BindUObject(this, &ASamuraiWeapon::P_ChangeComboState);
 }
 
 void ASamuraiWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, const bool bFromFirstWeapon)
 {
-	
 	Super::ShootProjectile(EPoolObject::SamuraiSlashAttack, false);
 }
 

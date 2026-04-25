@@ -13,10 +13,10 @@ public:
 	void AI_StopProcessingMeleeAttack();
 
 	void P_TriggerSlashVfx();
-	void P_ChangeAttackState(const bool bState) { bCanDoSlashAttack = bState; }
+	void P_ChangeComboState(const bool bState) { bCanDoCombo = bState; }
 private:
 	bool bIsFirstCheck = true;
-	bool bCanDoSlashAttack = true;
+	bool bCanDoCombo = false;
 	FVector LastSocketLocation;
 	FTimerHandle ProcessMeleeAttackHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Melee Attack", meta = (AllowPrivateAccess = true))

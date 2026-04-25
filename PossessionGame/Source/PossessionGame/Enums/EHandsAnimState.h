@@ -14,6 +14,7 @@ enum class EHandsAnimState : uint8
 	SecondaryGrenadeLaunch,
 	OverCharge,
 	QuickMelee,
+	QuickMeleeSecondCombo,
 	Jump,
 	Slide,
 	DeployClone,

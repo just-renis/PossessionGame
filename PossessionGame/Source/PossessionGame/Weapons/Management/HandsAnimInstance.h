@@ -30,7 +30,7 @@ public:
 	void PlayMontageWithHold(const EHandsAnimState InState, const float InHoldTime);
 	void StopMontage(const EHandsAnimState InState, const float InBlendOut);
 	void SetWeaponName(const EWeapon InName) { WeaponName = InName; }
-	virtual void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
+	void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
 	void SetGlobalPlayRate(const float InPlayRate);
 protected:
 	UPROPERTY()
