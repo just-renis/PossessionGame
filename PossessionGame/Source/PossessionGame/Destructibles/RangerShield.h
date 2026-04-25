@@ -4,6 +4,8 @@
 #include "Destructible.h"
 #include "RangerShield.generated.h"
 
+class UAIHpBarUI;
+class UWidgetComponent;
 class AEnemy;
 enum class ESound : uint16;
 
@@ -16,15 +18,20 @@ public:
 	
 	void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
 private:
+	bool bHasBeenDamagedRecently = false;
 	int32 ShieldMaterialValueChanger;
 	FTimerHandle DissolveHandle;
 	FTimerHandle MoveShieldHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UWidgetComponent> HpBarComponent;
+	UPROPERTY()
+	TObjectPtr<UAIHpBarUI> HpBar;
 	UPROPERTY()
 	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> M_ForceField;
+	TObjectPtr<UMaterialInstanceDynamic> MID_ForceField;
 	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> M_Shield;
+	TObjectPtr<UMaterialInstanceDynamic> MID_Shield;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
@@ -40,4 +47,10 @@ private:
 	void DissolveShield();
 	virtual void SetThisLifeSpan() override;
 	virtual void SetUpgradesApplication() override;
+	void SetupHpBar();
+	void DestroyHpBar();
+	void HideHpBar() const;
+	void ShowHpBar() const;
+	virtual void SubtractHp(const float InDamage) override;
+	void DisableDamageTakenRedFlash() const;
 };

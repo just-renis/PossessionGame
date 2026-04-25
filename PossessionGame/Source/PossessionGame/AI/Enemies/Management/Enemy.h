@@ -427,7 +427,6 @@ private:
 	FTimerHandle AI_SetCharacterMovementSpeedHandle;
 	FTimerHandle AI_PlaySpawnSoundHandle;
 	FTimerHandle AI_HideHpBarHandle;
-	FTimerHandle AI_DamageTakenEffectHandle;
 	FTimerHandle AI_RespawnTimerHandle;
 	FTimerHandle AI_DisableHijackOutlineHandle;
 	FTimerHandle AI_DisableUnHijackOutlineHandle;

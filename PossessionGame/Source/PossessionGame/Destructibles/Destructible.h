@@ -37,6 +37,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void DestroyThis();
 	virtual void SetThisLifeSpan();
+	virtual void SubtractHp(const float InDamage);
 	virtual void SetUpgradesApplication() {}
 private:
 	bool bIsDeactivated = false;

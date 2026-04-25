@@ -62,10 +62,10 @@ float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEv
 		if (const TObjectPtr<AProjectile> ProjectileCauser = Cast<AProjectile>(DamageCauser))
 		{
 			const bool bIsPlayerProjectile = ProjectileCauser->GetIsPlayerProjectile();
-			if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) Hp -= Damage;
+			if ((bIsPlayerProjectile && !bIsPlayerObject) || (!bIsPlayerProjectile && bIsPlayerObject)) SubtractHp(Damage);
 		}
 	}
-	else Hp -= Damage;
+	else SubtractHp(Damage);
 	if (Hp > 0) return Damage;
 	if (bIsAffectedByPhysics)
 	{
@@ -100,3 +100,5 @@ void ADestructible::SetThisLifeSpan()
 {
 	GetWorldTimerManager().SetTimer(DestroyHandle, this, &ADestructible::DestroyThis, LifeSpan, false);
 }
+
+void ADestructible::SubtractHp(const float InDamage) { Hp -= InDamage; }

@@ -744,7 +744,8 @@ void AEnemy::AI_PlayDeathSound() { PlaySound(ESound::MechanicalDeath); }
 void AEnemy::AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage)
 {
 	if (MI_MeshBaseMaterial) MI_MeshBaseMaterial->SetScalarParameterValue("RedFlash", 1.f);
-	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.02f, false);
+	FTimerHandle AI_DamageTakenEffectHandle;
+	GetWorldTimerManager().SetTimer(AI_DamageTakenEffectHandle, this, &AEnemy::AI_DisableDamageTakenRedFlash, 0.02f);
 	ProcessDamageReason(InDamageReason, InDamage);
 	if (CurrentHp <= 0.f || !AI_HpBar || !AI_HpBarComponent) return;
 	AI_ShowHpBar();
@@ -1172,7 +1173,6 @@ void AEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorldTimerManager().ClearTimer(AI_ClearShootPauseHandle);
 	GetWorldTimerManager().ClearTimer(AI_SetCharacterMovementSpeedHandle);
 	GetWorldTimerManager().ClearTimer(AI_HideHpBarHandle);
-	GetWorldTimerManager().ClearTimer(AI_DamageTakenEffectHandle);
 	GetWorldTimerManager().ClearTimer(P_ContinuousFovChangeHandle);
 	GetWorldTimerManager().ClearTimer(P_DeathHandle);
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
@@ -1855,18 +1855,20 @@ void AEnemy::P_DetectIfPlayerPointingAtOutlineObjects()
 	const FVector StartLocation = GetCamera()->GetComponentLocation();
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, StartLocation + GetCamera()->GetForwardVector() * 15000.f, ECC_Visibility))
 	{
-		if (const TObjectPtr<AActor> HitActor = HitResult.GetActor(); HitActor->Implements<UInteractable>())
+		const TObjectPtr<AActor> HitActor = HitResult.GetActor(); 
+		if (HitActor->Implements<UInteractable>())
 		{
 			IInteractable* Interactable = Cast<IInteractable>(HitActor);
 			if (Interactable && Interactable->GetIsInteractable()) Interactable->ChangeOutlineState(true);
 		}
 		else if (bCanHijackOtherEnemy)
 		{
-			const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitResult.GetActor());
+			const TObjectPtr<AEnemy> Enemy = Cast<AEnemy>(HitActor);
 			if (Enemy && Enemy->GetIsAlive())
 			{
 				if (Enemy->GetIsHijackAble()) Enemy->AI_SetHijackOutline(true);
 				else Enemy->AI_SetUnHijackOutline(true);
+				return;
 			}
 		}
 	}

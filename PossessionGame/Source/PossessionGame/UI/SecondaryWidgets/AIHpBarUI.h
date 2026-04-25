@@ -14,12 +14,11 @@ public:
 	void UpdateHpBar(const float InCurrentHp, const float InMaxHp);
 private:
 	float StepHpPercentage;
+	FTimerHandle UpdateWhiteHpBarHandle;
 	UPROPERTY(meta = (BindWIdget))
 	TObjectPtr<UProgressBar> HpBar;
 	UPROPERTY(meta = (BindWIdget))
 	TObjectPtr<UProgressBar> HpWhiteBar;
-	UPROPERTY()
-	FTimerHandle UpdateWhiteHpBarHandle;
 
 	UFUNCTION()
 	void UpdateWhiteHpBar();
