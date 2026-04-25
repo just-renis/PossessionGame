@@ -12,6 +12,9 @@
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility1.h"
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility2.h"
 #include "PossessionGame/Abilities/Characters/Ranger/RangerAbility3.h"
+#include "PossessionGame/Abilities/Characters/Samurai/SamuraiAbility1.h"
+#include "PossessionGame/Abilities/Characters/Samurai/SamuraiAbility2.h"
+#include "PossessionGame/Abilities/Characters/Samurai/SamuraiAbility3.h"
 #include "PossessionGame/Abilities/Characters/SoldierBoss/SoldierBossAbility1.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility1.h"
 #include "PossessionGame/Abilities/Characters/Spy/SpyAbility2.h"
@@ -84,6 +87,9 @@ void UAbilityManager::InitAbilities()
     AddAbility(ECharacterType::Tank, 1, EAbility::TankAbility2, UTankAbility2::StaticClass());
     AddAbility(ECharacterType::Tank, 2, EAbility::TankAbility3, UTankAbility3::StaticClass());
     AddAbility(ECharacterType::SoldierBoss, 0, EAbility::SoldierBossAbility1, USoldierBossAbility1::StaticClass());
+    AddAbility(ECharacterType::Samurai, 0, EAbility::SamuraiAbility1, USamuraiAbility1::StaticClass());
+    AddAbility(ECharacterType::Samurai, 1, EAbility::SamuraiAbility2, USamuraiAbility2::StaticClass());
+    AddAbility(ECharacterType::Samurai, 2, EAbility::SamuraiAbility3, USamuraiAbility3::StaticClass());
 }
 
 void UAbilityManager::AddAbility(const ECharacterType InCharacterName, const int32 InAbilityIndex, const EAbility InAbilityName, const TSubclassOf<UAbility>& InAbilityClass)

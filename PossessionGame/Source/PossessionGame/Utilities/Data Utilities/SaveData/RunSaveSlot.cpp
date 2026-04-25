@@ -192,6 +192,9 @@ EUpgrade URunSaveSlot::GetUpgradeByAbilityName(const EAbility InAbilityName)
 		case EAbility::TankAbility1: return EUpgrade::TankAbility1;
 		case EAbility::TankAbility2: return EUpgrade::TankAbility2;
 		case EAbility::TankAbility3: return EUpgrade::TankAbility3;
+		case EAbility::SamuraiAbility1: return EUpgrade::SamuraiAbility1;
+		case EAbility::SamuraiAbility2: return EUpgrade::SamuraiAbility2;
+		case EAbility::SamuraiAbility3: return EUpgrade::SamuraiAbility3;
 		default: ;
 	}
 	return EUpgrade::None;
@@ -253,6 +256,7 @@ TArray<EUpgrade> URunSaveSlot::GetHpUpgradesByCharacterName(const ECharacterType
 		case ECharacterType::Breacher: return TArray({ EUpgrade::BreacherAbility1, EUpgrade::BreacherAbility2, EUpgrade::BreacherAbility3 });
 		case ECharacterType::Wraith: return TArray({ EUpgrade::WraithAbility1, EUpgrade::WraithAbility2, EUpgrade::WraithAbility3 });
 		case ECharacterType::Spy: return TArray({ EUpgrade::SpyAbility1, EUpgrade::SpyAbility2, EUpgrade::SpyAbility3 });
+		case ECharacterType::Samurai: return TArray({ EUpgrade::SamuraiAbility1, EUpgrade::SamuraiAbility2, EUpgrade::SamuraiAbility3 });
 		default: ;
 	}
 	return {};

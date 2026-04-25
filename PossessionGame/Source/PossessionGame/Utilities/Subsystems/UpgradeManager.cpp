@@ -48,7 +48,10 @@ void UUpgradeManager::Init(const TMap<EUpgrade, TObjectPtr<UUpgradeData>>& InUpg
 		{EAbility::SpyAbility3, EUpgrade::SpyAbility3},
 		{EAbility::TankAbility1, EUpgrade::TankAbility1},
 		{EAbility::TankAbility2, EUpgrade::TankAbility2},
-		{EAbility::TankAbility3, EUpgrade::TankAbility3}
+		{EAbility::TankAbility3, EUpgrade::TankAbility3},
+		{EAbility::SamuraiAbility1, EUpgrade::SamuraiAbility1},
+		{EAbility::SamuraiAbility2, EUpgrade::SamuraiAbility2},
+		{EAbility::SamuraiAbility3, EUpgrade::SamuraiAbility3},
 	};
 	RunSaveSlot = GetWorld()->GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 }

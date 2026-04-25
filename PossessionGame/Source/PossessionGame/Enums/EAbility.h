@@ -30,5 +30,8 @@ enum class EAbility : uint8
     TankAbility1,
     TankAbility2,
     TankAbility3,
-    SoldierBossAbility1
+    SoldierBossAbility1,
+    SamuraiAbility1,
+    SamuraiAbility2,
+    SamuraiAbility3
 };

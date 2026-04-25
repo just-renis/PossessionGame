@@ -64,6 +64,7 @@ ECharacterType UUpgradeDetailsPanelUI::GetCharacterByUpgradeName() const
 		case EUpgrade::TankAbility1: case EUpgrade::TankAbility2: case EUpgrade::TankAbility3: return ECharacterType::Tank;
 		case EUpgrade::WraithAbility1: case EUpgrade::WraithAbility2: case EUpgrade::WraithAbility3: return ECharacterType::Wraith;
 		case EUpgrade::SpyAbility1: case EUpgrade::SpyAbility2: case EUpgrade::SpyAbility3: return ECharacterType::Spy;
+		case EUpgrade::SamuraiAbility1: case EUpgrade::SamuraiAbility2: case EUpgrade::SamuraiAbility3: return ECharacterType::Samurai;
 		default: return ECharacterType::Random;
 	}
 }
@@ -93,6 +94,9 @@ EAbility UUpgradeDetailsPanelUI::GetAbilityByUpgradeName() const
 		case EUpgrade::TankAbility1: return EAbility::TankAbility1;
 		case EUpgrade::TankAbility2: return EAbility::TankAbility2;
 		case EUpgrade::TankAbility3: return EAbility::TankAbility3;
+		case EUpgrade::SamuraiAbility1: return EAbility::SamuraiAbility1;
+		case EUpgrade::SamuraiAbility2: return EAbility::SamuraiAbility2;
+		case EUpgrade::SamuraiAbility3: return EAbility::SamuraiAbility3;
 		default: return EAbility::None;
 	}
 }

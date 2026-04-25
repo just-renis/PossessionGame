@@ -99,6 +99,9 @@ FText UUpgradeSelectionUI::GetUpgradeTextFromUpgrade(const EUpgrade InUpgrade)
 		case EUpgrade::TankAbility1: return NSLOCTEXT("ST_Localization", "ShieldUpgrade", "SHIELD");
 		case EUpgrade::TankAbility2: return NSLOCTEXT("ST_Localization", "GravitationalBallUpgrade", "GRAVITATIONAL BALL");
 		case EUpgrade::TankAbility3: return NSLOCTEXT("ST_Localization", "SlamUpgrade", "SLAM");
+		case EUpgrade::SamuraiAbility1: return NSLOCTEXT("ST_Localization", "DashSlashUpgrade", "DASH SLASH");
+		case EUpgrade::SamuraiAbility2: return NSLOCTEXT("ST_Localization", "DeflectUpgrade", "DEFLECT");
+		//case EUpgrade::SamuraiAbility3: return NSLOCTEXT("ST_Localization", "DeflectUpgrade", "DEFLECT");
 		default: ;
 	}
 	return FText::GetEmpty();

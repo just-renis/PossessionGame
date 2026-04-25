@@ -25,5 +25,6 @@ enum class EHandsAnimState : uint8
 	TeleportImpact,
 	JumpSecondary,
 	SlideSecondary,
-	Slam
+	Slam,
+	DashSlash
 };
