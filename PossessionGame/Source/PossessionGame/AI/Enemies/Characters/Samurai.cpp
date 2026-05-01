@@ -1,6 +1,7 @@
 ﻿#include "Samurai.h"
-
+#include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
@@ -8,8 +9,10 @@
 #include "PossessionGame/Destructibles/Destructible.h"
 #include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
+#include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
 #include "PossessionGame/Weapons/Animation Instances/Hands/SamuraiHandsAnimInstance.h"
@@ -25,6 +28,12 @@ void ASamurai::AI_SlashAttack()
 void ASamurai::P_DashSlash()
 {
 	bIsInvincible = true;
+	bIsDashSlashing = true;
+	if (!DashSlashVfx) AssetsManager->AttachVfx(EVfx::SamuraiDashSlash, [this]() -> bool { return GetIsAlive() && bIsDashSlashing && bIsHijacked; }, &DashSlashVfx, GetWeapon()->GetHandsMesh(), FName("DashSlashSocket"));
+	else DashSlashVfx->Activate(true);
+	if (!DashSlashLinesVfx) AssetsManager->AttachVfx(EVfx::SamuraiDashLines, [this]() -> bool { return GetIsAlive() && bIsDashSlashing && bIsHijacked; }, &DashSlashLinesVfx, Camera);
+	else DashSlashLinesVfx->Activate(true);
+	P_SetDashMaterialValue(1.f);
 	FVector DashDir = GetLastMovementInputVector();
 	if (DashDir.IsNearlyZero()) DashDir = GetActorForwardVector();
 	GetCharacterMovement()->GroundFriction = 0.f;
@@ -39,6 +48,9 @@ void ASamurai::P_EndDash()
 {
 	bIsInvincible = false;
 	bIsActionInMotion = false;
+	bIsDashSlashing = false;
+	if (DashSlashLinesVfx) DashSlashLinesVfx->DeactivateImmediate();
+	P_SetDashMaterialValue(0.f);
 	GetCharacterMovement()->GroundFriction = BrakingFrictionFactor;
 	GetCharacterMovement()->BrakingFrictionFactor = GroundFriction;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
@@ -50,6 +62,12 @@ void ASamurai::P_EndDash()
 void ASamurai::P_ChangeDeflectState(const bool bState)
 {
 	bDeflectState = bState;
+	if (bDeflectState)
+	{
+		if (!DeflectParticlesVfx) AssetsManager->AttachVfx(EVfx::SamuraiDeflectParticles, [this]() -> bool { return GetIsAlive() && bDeflectState && bIsHijacked; }, &DeflectParticlesVfx, Camera);
+		else DeflectParticlesVfx->Activate(true);
+	}
+	else if (DeflectParticlesVfx) DeflectParticlesVfx->DeactivateImmediate();
 	if (bState) P_ToggleRun(false);
 	bCanRun = !bState;
 	Cast<USamuraiHandsAnimInstance>(GetWeapon()->GetHandsAnimInstance())->SetDeflectState(bState);
@@ -95,17 +113,10 @@ void ASamurai::P_DashOverlapTick()
 	const FVector Start = GetActorLocation();
 	const FVector End = Start + GetVelocity() * DashOverlapCheckTick;
 	TArray<FHitResult> Hits;
-	GetWorld()->SweepMultiByChannel(
-		Hits,
-		Start,
-		End,
-		FQuat::Identity,
-		ECC_Pawn,
-		FCollisionShape::MakeBox(DashOverlapSweepBox)
-	);
-	FVector Center = (Start + End) / 2.f;
-	FVector Extent = FVector(DashOverlapSweepBox);
-	DrawDebugBox(GetWorld(), Center, Extent, FColor::Green, false, 5.f);
+	GetWorld()->SweepMultiByChannel(Hits, Start, End, FQuat::Identity, ECC_Pawn, FCollisionShape::MakeBox(DashOverlapSweepBox));
+//	FVector Center = (Start + End) / 2.f;
+////	FVector Extent = FVector(DashOverlapSweepBox);
+//	DrawDebugBox(GetWorld(), Center, Extent, FColor::Green, false, 5.f);
 	for (FHitResult& Hit : Hits)
 	{
 		TObjectPtr<AActor> HitActor = Hit.GetActor();
@@ -116,6 +127,24 @@ void ASamurai::P_DashOverlapTick()
 			UGameplayStatics::ApplyDamage(HitActor, DashDamage, GetController(), this, nullptr);
 		}
 	}
+}
+
+void ASamurai::P_SetDashMaterialValue(const float InValue)
+{
+	if (!MID_Dash) MID_Dash = UMaterialInstanceDynamic::Create(MI_Dash, this);
+	if (InValue > 0.1f)
+	{
+		MID_Dash->SetScalarParameterValue(FName("Density"), 2.3f);
+		MID_Dash->SetScalarParameterValue(FName("Intensity"), 1.8f);
+		MID_Dash->SetScalarParameterValue(FName("Radius"), 0.2f);
+	}
+	else
+	{
+		MID_Dash->SetScalarParameterValue(FName("Density"), 0.f);
+		MID_Dash->SetScalarParameterValue(FName("Intensity"), 0.f);
+		MID_Dash->SetScalarParameterValue(FName("Radius"), 0.f);
+	}
+	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyTeleportEffect, MID_Dash, InValue);
 }
 
 void ASamurai::BeginPlay()

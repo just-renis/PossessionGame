@@ -918,6 +918,9 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_SoldierBossMissileLaunched", EVfx::SoldierBossMissileLaunched);
 	VfxsMap.Add("PA_SoldierBossMissileImpact", EVfx::SoldierBossMissileImpact);
 	VfxsMap.Add("PA_SamuraiSlash", EVfx::SamuraiSlash);
+	VfxsMap.Add("PA_SamuraiDashSlash", EVfx::SamuraiDashSlash);
+	VfxsMap.Add("PA_SamuraiDashLines", EVfx::SamuraiDashLines);
+	VfxsMap.Add("PA_SamuraiDeflectParticles", EVfx::SamuraiDeflectParticles);
 	VfxsMap.Add("PA_PlayerSamuraiSlash", EVfx::PlayerSamuraiSlash);
 	VfxsMap.Add("PA_AcoHijackEffect", EVfx::AcoHijackEffect);
 	VfxsMap.Add("PA_AcoFlyTrail", EVfx::AcoFlyTrail);

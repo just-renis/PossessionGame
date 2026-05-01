@@ -18,6 +18,7 @@ public:
 	void P_ChangeDeflectState(const bool bState);
 private:
 	bool bDeflectState = false;
+	bool bIsDashSlashing = false;
 	FTimerHandle DashOverlapTickHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Dash", meta = (AllowPrivateAccess = true))
 	float DashStrength = 2500.f;
@@ -31,10 +32,20 @@ private:
 	float DashOverlapCheckTick = 0.05f;
 	UPROPERTY(EditDefaultsOnly, Category = "Camera", meta = (AllowPrivateAccess = true))
 	TSubclassOf<UCameraShakeBase> SlashCameraShake;
+	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterialInterface> MI_Dash;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<AActor> SamuraiHatClass;
 	UPROPERTY()
 	TObjectPtr<ADestructible> SamuraiHat;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Dash;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> DashSlashVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> DashSlashLinesVfx;
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> DeflectParticlesVfx;
 	UPROPERTY()
 	TSet<TObjectPtr<AActor>> DashHitActors; 
 
@@ -47,6 +58,7 @@ private:
 	virtual void P_BindQuickMeleeAction() override {}
 	virtual void P_MakeCameraShake(const ECameraShake InCameraShakeName) override;
 	void P_DashOverlapTick();
+	void P_SetDashMaterialValue(const float InValue);
 
 	virtual void BeginPlay() override;
 	void SetupSamuraiHat();
