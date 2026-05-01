@@ -232,6 +232,7 @@ protected:
 	bool bIsSlidePrimaryAnim = true;
 	bool bIsBoss = false;
 	bool bTankShieldActionSpeedDebuff = false;
+	bool bCanRun = true;
 	bool bIsAco = false;
 	float MaxHp;
 	float CurrentHp;
@@ -253,6 +254,10 @@ protected:
 	float StompRadiusInMeters = 3.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
 	float StompDamage = 40.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	float BrakingFrictionFactor = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	float GroundFriction = 8.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
 	float QuickMeleeAttackDamage = 20.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
@@ -351,6 +356,7 @@ protected:
 	virtual void P_BindQuickMeleeAction();
 	virtual void P_BindSlideAction();
 	void P_StompImpact(const FVector& InHitLocation);
+	void P_ToggleRun(const bool bState);
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	float ReceiveDefaultMovementSpeed() const;
@@ -385,7 +391,6 @@ private:
 	bool bIsAIBarCreated = false;
 	bool bPlayerDied = false;
 	bool bIsStomping = false;
-	bool bCanRun = true;
 	bool bIsRunning = false;
 	bool bWasRunningBeforeShooting = false;
 	bool bIsSliding = false;
@@ -476,10 +481,6 @@ private:
 	float AirControl = 1.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	float MaxAcceleration = 20000.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
-	float BrakingFrictionFactor = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
-	float GroundFriction = 8.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
 	int32 MaxJumpAmount = 2;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Slide", meta = (AllowPrivateAccess = true))
@@ -629,8 +630,6 @@ private:
 	void P_HijackBarLogic();
 	void P_Rotate(const FInputActionValue& InValue);
 	void P_Reload();
-	void P_ToggleRun();
-	void P_ToggleRun(const bool bState);
 	void P_OnEnemyDeathEvents(float InXp, const ECharacterType InCharacterName) const;
 	void P_ToggleGodMode();
 	void P_UpdateAbilitiesUI();
@@ -647,6 +646,7 @@ private:
 	void P_InUpgradeSelection();
 	void P_TryInteracting();
 	void P_QuickMeleeAttack();
+	void P_ToggleRun();
 	//void P_SetupNavArea();
 	void P_OnVariationSelection(const ECharacterType InCharacterType);
 	void P_OnAbilitiesOrLevelMenuSelectionEnd(const EWidget InWidgetName);

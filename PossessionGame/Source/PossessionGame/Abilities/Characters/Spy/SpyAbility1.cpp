@@ -3,9 +3,8 @@
 
 void USpyAbility1::P_Execute()
 {
-	bIsAbilityInDuration = true;
-	Proprietor->SetFirstAbilityActiveState(true);
 	Super::P_Execute();
+	Proprietor->SetFirstAbilityActiveState(true);
 }
 
 void USpyAbility1::P_StopAbility()

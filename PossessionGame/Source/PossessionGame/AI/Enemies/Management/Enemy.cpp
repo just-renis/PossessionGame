@@ -1100,6 +1100,19 @@ void AEnemy::P_StompImpact(const FVector& InHitLocation)
 	}
 }
 
+void AEnemy::P_ToggleRun(const bool bState)
+{
+	if (bIsInputLocked || !bCanRun) return;
+	bIsRunning = bState;
+	if (bIsRunning)
+	{
+		if (!RunVfx) AssetsManager->AttachVfx(EVfx::RunEffect, [this]() -> bool { return GetIsAlive() && bIsRunning; }, &RunVfx, GetMesh(), FName("DeathSocket"));
+		else RunVfx->Activate();
+	}
+	else if (RunVfx) RunVfx->DeactivateImmediate();
+	SetMaxWalkSpeed(bIsRunning ? EMoveMode::Run : EMoveMode::Walk);
+}
+
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (bIsInvincible) return 0.f;
@@ -1632,21 +1645,6 @@ void AEnemy::P_Reload()
 	if (!bIsActionInMotion && Weapon->GetIsReloadEnabled() && bCanReload && !P_InputManager->IsPressed(FKey("LeftMouseButton")) && Weapon->P_CanReload()) Weapon->P_Reload();
 }
 
-void AEnemy::P_ToggleRun() { P_ToggleRun(!bIsRunning); }
-
-void AEnemy::P_ToggleRun(const bool bState)
-{
-	if (bIsInputLocked || !bCanRun) return;
-	bIsRunning = bState;
-	if (bIsRunning)
-	{
-		if (!RunVfx) AssetsManager->AttachVfx(EVfx::RunEffect, [this]() -> bool { return GetIsAlive() && bIsRunning; }, &RunVfx, GetMesh(), FName("DeathSocket"));
-		else RunVfx->Activate();
-	}
-	else if (RunVfx) RunVfx->DeactivateImmediate();
-	SetMaxWalkSpeed(bIsRunning ? EMoveMode::Run : EMoveMode::Walk);
-}
-
 void AEnemy::P_OnEnemyDeathEvents(float InXp, const ECharacterType InCharacterName) const
 {
 	if (InCharacterName != ECharacterType::Warden && InCharacterName != ECharacterType::MinionBoss && InCharacterName != ECharacterType::PyroBoss && InCharacterName != ECharacterType::SoldierBoss && InCharacterName != ECharacterType::AcoBoss && DelegateManager->RequestCurrentXpNerf.IsBound()) InXp *= DelegateManager->RequestCurrentXpNerf.Execute();
@@ -1788,6 +1786,8 @@ void AEnemy::P_QuickMeleeAttack()
 	P_ProcessMeleeAttack();
 }
 
+void AEnemy::P_ToggleRun() { P_ToggleRun(!bIsRunning); }
+
 /*void AEnemy::P_SetupNavArea()
 {
 	NavAreaModifier = GetWorld()->SpawnActor<ANavAreaModifier>(P_NavAreaDefaultClass, GetActorLocation(), GetActorRotation());
@@ -1922,7 +1922,7 @@ void AEnemy::P_InitiateSlide()
 	FVector SlideDir = GetLastMovementInputVector();
 	if (SlideDir.IsNearlyZero()) SlideDir = GetActorForwardVector();
 	LaunchCharacter(SlideDir.GetSafeNormal() * SlideStrength, true, false);
-	GetWorld()->GetTimerManager().SetTimer(P_SlideEndHandle, this, &AEnemy::P_EndSlide, SlideDuration, false);
+	GetWorld()->GetTimerManager().SetTimer(P_SlideEndHandle, this, &AEnemy::P_EndSlide, SlideDuration);
 	Weapon->GetHandsAnimInstance()->PlayMontageWithHold(bIsSlidePrimaryAnim ? EHandsAnimState::Slide : EHandsAnimState::SlideSecondary, SlideDuration);
 }
 

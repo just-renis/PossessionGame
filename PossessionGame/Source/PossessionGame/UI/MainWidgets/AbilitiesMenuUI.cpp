@@ -60,6 +60,7 @@ void UAbilitiesMenuUI::OpenUI()
 	WraithCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	SpyCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	TankCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
+	SamuraiCharacterAbilities->LoadAbilitiesLayout(SaveSlot);
 	FirstTimeOpenInstance = false;
 	TriggerSwitchOnTheFirstOpen();
 }
@@ -80,6 +81,7 @@ void UAbilitiesMenuUI::CloseUI()
 	WraithCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	SpyCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	TankCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
+	SamuraiCharacterAbilities->SaveAbilitiesLayout(SaveSlot);
 	SaveSlot->SaveSlot();
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestAddAbilitiesToUpgradePool.ExecuteIfBound(SaveSlot);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnAbilitiesOrLevelMenuSelectionEnd.ExecuteIfBound(EWidget::AbilitiesMenuUI);
@@ -98,6 +100,7 @@ void UAbilitiesMenuUI::NativeConstruct()
 	WraithCharacterAbilities->SetAbilitiesIconData();
 	SpyCharacterAbilities->SetAbilitiesIconData();
 	TankCharacterAbilities->SetAbilitiesIconData();
+	SamuraiCharacterAbilities->SetAbilitiesIconData();
 	GuardianCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	RangerCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	TricksterCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
@@ -105,6 +108,7 @@ void UAbilitiesMenuUI::NativeConstruct()
 	WraithCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	SpyCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 	TankCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
+	SamuraiCharacterIcon->OnVariationClicked.BindUObject(this, &UAbilitiesMenuUI::SwitchCharacterAbilities);
 }
 
 void UAbilitiesMenuUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

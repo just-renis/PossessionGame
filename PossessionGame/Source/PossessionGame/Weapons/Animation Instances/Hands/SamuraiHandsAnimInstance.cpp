@@ -1,5 +1,6 @@
 ﻿#include "SamuraiHandsAnimInstance.h"
 #include "NiagaraComponent.h"
+#include "PossessionGame/AI/Enemies/Characters/Samurai.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -22,6 +23,11 @@ void USamuraiHandsAnimInstance::PlaySlashVfx(const bool bIsFirstSlash)
 void USamuraiHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted)
 {
 	Super::OnMontageEnd(InMontage, bIsInterrupted);
-	if (!IsMontage(EHandsAnimState::QuickMelee, InMontage)) return;
-	Cast<ASamuraiWeapon>(Proprietor->GetWeapon())->P_ChangeComboState(false);
+	if (IsMontage(EHandsAnimState::QuickMelee, InMontage))
+	{
+		Cast<ASamuraiWeapon>(Proprietor->GetWeapon())->P_ChangeComboState(false);
+		return;
+	}
+	if (!IsMontage(EHandsAnimState::DashSlash, InMontage)) return;
+	Cast<ASamurai>(Proprietor)->P_EndDash();
 }

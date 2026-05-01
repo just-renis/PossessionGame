@@ -4,10 +4,9 @@
 
 void USpyAbility3::P_Execute()
 {
+	Super::P_Execute();
 	DelegateManager->OnXrayChange.Broadcast(true);
 	Proprietor->SetXrayState(true);
-	bIsAbilityInDuration = true;
-	Super::P_Execute();
 }
 
 void USpyAbility3::P_StopAbility()
