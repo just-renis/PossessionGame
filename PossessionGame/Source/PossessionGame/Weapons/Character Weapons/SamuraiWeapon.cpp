@@ -76,6 +76,7 @@ void ASamuraiWeapon::P_HandleMeleeStrike()
 	OverlapParams.AddIgnoredActor(Proprietor);
 	TArray<FOverlapResult> Overlaps;
 	const FVector Origin = Proprietor->GetActorLocation() - Proprietor->GetActorForwardVector() * 30.f;
+	bool bHitAtLeastOnce = false;
 	GetWorld()->OverlapMultiByProfile(Overlaps, Origin, FQuat::Identity, FName("TriggerDamageable"), FCollisionShape::MakeSphere(P_MeleeAttackRadiusInMeters * 100.f), OverlapParams);
 	for (const FOverlapResult& Overlap : Overlaps)
 	{
@@ -92,8 +93,11 @@ void ASamuraiWeapon::P_HandleMeleeStrike()
 		float P_Damage = P_DefaultDamage + RunSaveSlot->GetUpgradeAttributeValues(EPoolObject::SamuraiSlashAttack, EUpgradeAttribute::FlatDamage, true);
 		const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(EPoolObject::SamuraiSlashAttack, EUpgradeAttribute::DamagePercentage, true);
 		P_Damage += P_DefaultDamage * DamagePercentage * 0.01f;
+		bHitAtLeastOnce = true;
 		UGameplayStatics::ApplyDamage(Actor, P_Damage, Proprietor->GetController(), this, UDamageType::StaticClass());
 	}
+	if (bHitAtLeastOnce) AssetsManager->PlaySound2D(ESound::SamuraiSlashHit);
+	else AssetsManager->PlaySound2D(ESound::SamuraiSwoosh);
 }
 
 void ASamuraiWeapon::BeginPlay()

@@ -2,6 +2,8 @@
 #include "NiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
+#include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
@@ -9,6 +11,7 @@
 #include "PossessionGame/Destructibles/Destructible.h"
 #include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/ECharacterType.h"
+#include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EWeapon.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
@@ -29,6 +32,7 @@ void ASamurai::P_DashSlash()
 {
 	bIsInvincible = true;
 	bIsDashSlashing = true;
+	AssetsManager->PlaySound2D(ESound::SamuraiDashSlash);
 	if (!DashSlashVfx) AssetsManager->AttachVfx(EVfx::SamuraiDashSlash, [this]() -> bool { return GetIsAlive() && bIsDashSlashing && bIsHijacked; }, &DashSlashVfx, GetWeapon()->GetHandsMesh(), FName("DashSlashSocket"));
 	else DashSlashVfx->Activate(true);
 	if (!DashSlashLinesVfx) AssetsManager->AttachVfx(EVfx::SamuraiDashLines, [this]() -> bool { return GetIsAlive() && bIsDashSlashing && bIsHijacked; }, &DashSlashLinesVfx, Camera);
@@ -64,13 +68,34 @@ void ASamurai::P_ChangeDeflectState(const bool bState)
 	bDeflectState = bState;
 	if (bDeflectState)
 	{
+		AssetsManager->PlaySound2D(ESound::SamuraiDeflectActivate);
 		if (!DeflectParticlesVfx) AssetsManager->AttachVfx(EVfx::SamuraiDeflectParticles, [this]() -> bool { return GetIsAlive() && bDeflectState && bIsHijacked; }, &DeflectParticlesVfx, Camera);
 		else DeflectParticlesVfx->Activate(true);
 	}
-	else if (DeflectParticlesVfx) DeflectParticlesVfx->DeactivateImmediate();
+	else
+	{
+		AssetsManager->PlaySound2D(ESound::SamuraiDeflectDeactivate);
+		if (DeflectParticlesVfx) DeflectParticlesVfx->DeactivateImmediate();
+	}
 	if (bState) P_ToggleRun(false);
 	bCanRun = !bState;
 	Cast<USamuraiHandsAnimInstance>(GetWeapon()->GetHandsAnimInstance())->SetDeflectState(bState);
+}
+
+ASamurai::ASamurai()
+{
+	SpawnSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("SpawnSfx"));
+	SpawnSfx->SetAutoActivate(false);
+	SpawnSfx->SetupAttachment(GetMesh());
+	DeathSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("DeathSfx"));
+	DeathSfx->SetAutoActivate(false);
+	DeathSfx->SetupAttachment(GetMesh());
+	DeflectSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("DeflectSfx"));
+	DeflectSfx->SetAutoActivate(false);
+	DeflectSfx->SetupAttachment(GetMesh());
+	Sounds.Add(ESound::SamuraiSpawn, SpawnSfx);
+	Sounds.Add(ESound::SamuraiDeath, DeathSfx);
+	Sounds.Add(ESound::SamuraiDeflect, DeflectSfx);
 }
 
 void ASamurai::AI_SetupWeapon()
@@ -89,6 +114,16 @@ void ASamurai::AI_PlayDeathElectrification()
 		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
 	}
 }
+
+void ASamurai::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::SamuraiOnHijack); }
+
+void ASamurai::AI_PlayDeathSound()
+{
+	Super::AI_PlayDeathSound();
+	PlaySound(ESound::SamuraiDeath);
+}
+
+void ASamurai::AI_PlaySpawnSound() { PlaySound(ESound::SamuraiSpawn, true); }
 
 void ASamurai::P_Setup()
 {
@@ -145,6 +180,28 @@ void ASamurai::P_SetDashMaterialValue(const float InValue)
 		MID_Dash->SetScalarParameterValue(FName("Radius"), 0.f);
 	}
 	GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyTeleportEffect, MID_Dash, InValue);
+}
+
+float ASamurai::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (bDeflectState && DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+	{
+		const FPointDamageEvent* PointDamage = static_cast<const FPointDamageEvent*>(&DamageEvent);
+		FVector ShotDirection = PointDamage->ShotDirection;
+		ShotDirection.Z = 0;
+		ShotDirection.Normalize();
+		FVector Forward = GetActorForwardVector();
+		Forward.Z = 0;
+		Forward.Normalize();
+		if (FVector::DotProduct(Forward, ShotDirection) > 0.f)
+		{
+			DeflectAnimChange = !DeflectAnimChange;
+			PlaySound(ESound::SamuraiDeflect);
+			GetWeapon()->GetHandsAnimInstance()->PlayMontage(DeflectAnimChange ? EHandsAnimState::Deflect1 : EHandsAnimState::Deflect2);
+			return 0.f;
+		}
+	}
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void ASamurai::BeginPlay()

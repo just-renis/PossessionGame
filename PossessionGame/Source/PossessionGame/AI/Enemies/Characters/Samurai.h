@@ -17,8 +17,11 @@ public:
 	void P_EndDash();
 	void P_ChangeDeflectState(const bool bState);
 private:
+	ASamurai();
+	
 	bool bDeflectState = false;
 	bool bIsDashSlashing = false;
+	bool DeflectAnimChange = false;
 	FTimerHandle DashOverlapTickHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Dash", meta = (AllowPrivateAccess = true))
 	float DashStrength = 2500.f;
@@ -47,11 +50,20 @@ private:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> DeflectParticlesVfx;
 	UPROPERTY()
+	TObjectPtr<UAudioComponent> DeathSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> SpawnSfx;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> DeflectSfx;
+	UPROPERTY()
 	TSet<TObjectPtr<AActor>> DashHitActors; 
 
 	virtual void AI_SetupWeapon() override;
 	virtual void AI_SetupShootLogic() override {}
 	virtual void AI_PlayDeathElectrification() override;
+	virtual void AI_TriggerDeathVoiceLine() override;
+	virtual void AI_PlayDeathSound() override;
+	virtual void AI_PlaySpawnSound() override;
 
 	virtual void P_Setup() override;
 	virtual void P_Shoot() override;
@@ -59,6 +71,8 @@ private:
 	virtual void P_MakeCameraShake(const ECameraShake InCameraShakeName) override;
 	void P_DashOverlapTick();
 	void P_SetDashMaterialValue(const float InValue);
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual void BeginPlay() override;
 	void SetupSamuraiHat();

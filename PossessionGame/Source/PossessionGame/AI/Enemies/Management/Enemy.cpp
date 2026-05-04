@@ -2233,7 +2233,6 @@ void AEnemy::ToggleTimeDilation()
 void AEnemy::SetupMeshOptimization() const
 {
 	GetCharacterMovement()->SetComponentTickInterval(1.f / MovementFramesPerSecond);
-	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 	GetMesh()->bEnableUpdateRateOptimizations = true;
 	GetMesh()->SkipUpdateOverlapsOptimEnabled = true;
 	GetMesh()->SetAllowAnimCurveEvaluation(false);

@@ -186,5 +186,14 @@ enum class ESound : uint16
 	SoldierBossTakeDamage,
 	SoldierBossShoot,
 	SoldierBossMissileLaunch,
-	SoldierBossMissileLand
+	SoldierBossMissileLand,
+	SamuraiSpawn,
+	SamuraiOnHijack,
+	SamuraiDeath,
+	SamuraiDashSlash,
+	SamuraiDeflect,
+	SamuraiDeflectActivate,
+	SamuraiDeflectDeactivate,
+	SamuraiSlashHit,
+	SamuraiSwoosh,
 };

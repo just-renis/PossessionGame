@@ -53,6 +53,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> BashWindUpSfx;
 	UPROPERTY()
+	TObjectPtr<UAudioComponent> BashImpactSfx;
+	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> AI_BashWindUpFistVfx;
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> AI_BashDashVfx;

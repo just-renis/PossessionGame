@@ -77,9 +77,13 @@ ABreacher::ABreacher()
 	BashWindUpSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("BashWindUpSfx"));
 	BashWindUpSfx->SetAutoActivate(false);
 	BashWindUpSfx->SetupAttachment(GetMesh());
+	BashImpactSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("BashImpactSfx"));
+	BashImpactSfx->SetAutoActivate(false);
+	BashImpactSfx->SetupAttachment(GetMesh());
 	Sounds.Add(ESound::BreacherSpawn, SpawnSfx);
 	Sounds.Add(ESound::BreacherDeath, DeathSfx);
 	Sounds.Add(ESound::BreacherBashWindUp, BashWindUpSfx);
+	Sounds.Add(ESound::BreacherBashImpact, BashImpactSfx);
 }
 
 float ABreacher::AI_GetShootPause() { return Super::AI_GetShootPause() * (bAI_ShootSpeedDoubled ? 0.5f : 1.f); }
@@ -193,7 +197,7 @@ void ABreacher::AI_BashHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 	if (!OtherActor || OtherActor == this || FMath::Abs(Hit.Normal.Z) > 0.5f) return;
 	GetWorldTimerManager().ClearTimer(StopBashHandle);
 	StopBash();
-	AssetsManager->PlaySound2D(ESound::BreacherBashImpact);
+	PlaySound(ESound::BreacherBashImpact);
 	TriggerBashOverlap();
 }
 

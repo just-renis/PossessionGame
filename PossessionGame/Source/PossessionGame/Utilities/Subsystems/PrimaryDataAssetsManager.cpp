@@ -754,6 +754,15 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_SoldierBossShoot", ESound::SoldierBossShoot);
 	SoundMap.Add("PA_SoldierBossMissileLaunch", ESound::SoldierBossMissileLaunch);
 	SoundMap.Add("PA_SoldierBossMissileLand", ESound::SoldierBossMissileLand);
+	SoundMap.Add("PA_SamuraiDeath", ESound::SamuraiDeath);
+	SoundMap.Add("PA_SamuraiDeflect", ESound::SamuraiDeflect);
+	SoundMap.Add("PA_SamuraiSpawn", ESound::SamuraiSpawn);
+	SoundMap.Add("PA_SamuraiDashSlash", ESound::SamuraiDashSlash);
+	SoundMap.Add("PA_SamuraiDeflectActivate", ESound::SamuraiDeflectActivate);
+	SoundMap.Add("PA_SamuraiOnHijack", ESound::SamuraiOnHijack);
+	SoundMap.Add("PA_SamuraiSwoosh", ESound::SamuraiSwoosh);
+	SoundMap.Add("PA_SamuraiDeflectDeactivate", ESound::SamuraiDeflectDeactivate);
+	SoundMap.Add("PA_SamuraiSlashHit", ESound::SamuraiSlashHit);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
