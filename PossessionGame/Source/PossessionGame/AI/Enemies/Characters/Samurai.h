@@ -37,6 +37,8 @@ private:
 	TSubclassOf<UCameraShakeBase> SlashCameraShake;
 	UPROPERTY(EditDefaultsOnly, Category = "Materials", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMaterialInterface> MI_Dash;
+	UPROPERTY(EditDefaultsOnly, Category = "Deflect", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> SM_DeflectKatana;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<AActor> SamuraiHatClass;
 	UPROPERTY()

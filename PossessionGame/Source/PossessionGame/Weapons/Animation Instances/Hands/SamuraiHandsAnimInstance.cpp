@@ -23,11 +23,6 @@ void USamuraiHandsAnimInstance::PlaySlashVfx(const bool bIsFirstSlash)
 void USamuraiHandsAnimInstance::OnMontageEnd(UAnimMontage* InMontage, const bool bIsInterrupted)
 {
 	Super::OnMontageEnd(InMontage, bIsInterrupted);
-	if (IsMontage(EHandsAnimState::QuickMelee, InMontage))
-	{
-		Cast<ASamuraiWeapon>(Proprietor->GetWeapon())->P_ChangeComboState(false);
-		return;
-	}
-	if (!IsMontage(EHandsAnimState::DashSlash, InMontage)) return;
-	Cast<ASamurai>(Proprietor)->P_EndDash();
+	if (!IsMontage(EHandsAnimState::QuickMelee, InMontage)) return;
+	Cast<ASamuraiWeapon>(Proprietor->GetWeapon())->P_ChangeComboState(false);
 }
