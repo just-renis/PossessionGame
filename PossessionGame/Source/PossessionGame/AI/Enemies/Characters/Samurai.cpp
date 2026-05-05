@@ -14,6 +14,7 @@
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -32,6 +33,8 @@ void ASamurai::P_DashSlash()
 {
 	bIsInvincible = true;
 	bIsDashSlashing = true;
+	bIsInputLocked = true;
+	bIsLookLocked = true;
 	AssetsManager->PlaySound2D(ESound::SamuraiDashSlash);
 	if (!DashSlashVfx) AssetsManager->AttachVfx(EVfx::SamuraiDashSlash, [this]() -> bool { return GetIsAlive() && bIsDashSlashing && bIsHijacked; }, &DashSlashVfx, GetWeapon()->GetHandsMesh(), FName("DashSlashSocket"));
 	else DashSlashVfx->Activate(true);
@@ -53,6 +56,8 @@ void ASamurai::P_EndDash()
 	bIsInvincible = false;
 	bIsActionInMotion = false;
 	bIsDashSlashing = false;
+	bIsInputLocked = false;
+	bIsLookLocked = false;
 	if (DashSlashLinesVfx) DashSlashLinesVfx->DeactivateImmediate();
 	P_SetDashMaterialValue(0.f);
 	GetCharacterMovement()->GroundFriction = BrakingFrictionFactor;
@@ -66,14 +71,17 @@ void ASamurai::P_EndDash()
 void ASamurai::P_ChangeDeflectState(const bool bState)
 {
 	bDeflectState = bState;
+	bIsActionInMotion = bState;
 	if (bDeflectState)
 	{
+		SM_DeflectKatana->SetVisibility(true);
 		AssetsManager->PlaySound2D(ESound::SamuraiDeflectActivate);
 		if (!DeflectParticlesVfx) AssetsManager->AttachVfx(EVfx::SamuraiDeflectParticles, [this]() -> bool { return GetIsAlive() && bDeflectState && bIsHijacked; }, &DeflectParticlesVfx, Camera);
 		else DeflectParticlesVfx->Activate(true);
 	}
 	else
 	{
+		SM_DeflectKatana->SetVisibility(false);
 		AssetsManager->PlaySound2D(ESound::SamuraiDeflectDeactivate);
 		if (DeflectParticlesVfx) DeflectParticlesVfx->DeactivateImmediate();
 	}
@@ -96,6 +104,7 @@ ASamurai::ASamurai()
 	Sounds.Add(ESound::SamuraiSpawn, SpawnSfx);
 	Sounds.Add(ESound::SamuraiDeath, DeathSfx);
 	Sounds.Add(ESound::SamuraiDeflect, DeflectSfx);
+	SM_DeflectKatana = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DeflectKatana"));
 }
 
 void ASamurai::AI_SetupWeapon()
@@ -128,6 +137,9 @@ void ASamurai::AI_PlaySpawnSound() { PlaySound(ESound::SamuraiSpawn, true); }
 void ASamurai::P_Setup()
 {
 	Super::P_Setup();
+	DelegateManager->OnSamuraiDashSlashEnd.BindUObject(this, &ASamurai::P_EndDash);
+	if (!SM_DeflectKatana || !GetWeapon() || !GetWeapon()->GetHandsMesh()) return;
+	SM_DeflectKatana->AttachToComponent(GetWeapon()->GetHandsMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("DeflectWeaponSocket"));
 	//SamuraiHat->HandleDeactivation();
 }
 
