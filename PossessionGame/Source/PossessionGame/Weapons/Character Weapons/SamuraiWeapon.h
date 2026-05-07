@@ -37,6 +37,7 @@ private:
 	virtual void P_Shoot(const EPoolObject InProjectileName) override;
 	virtual void P_UpdateAmmoTextHUD() override;
 	void P_HandleMeleeStrike();
+	virtual void P_SetupTransfer(const bool bSetToFirstHand) override;
 
 	virtual void BeginPlay() override;
 	virtual void ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, const bool bFromFirstWeapon) override;

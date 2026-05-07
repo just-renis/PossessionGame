@@ -16,6 +16,7 @@ public:
 	
 	bool GetIsDeactivated() const { return bIsDeactivated; }
 	bool GetIsPlayerObject() const { return bIsPlayerObject; }
+	TObjectPtr<UStaticMeshComponent> GetMesh() { return Mesh; }
 	
 	void HandleDeactivation();
 	virtual void Init(bool bInIsPlayerObject) override;
@@ -38,7 +39,7 @@ protected:
 	virtual void DestroyThis();
 	virtual void SetThisLifeSpan();
 	virtual void SubtractHp(const float InDamage);
-	virtual void SetUpgradesApplication() {}
+	virtual void SetUpgradesApplication();
 private:
 	bool bIsDeactivated = false;
 	bool bIsAffectedByPhysics = false;

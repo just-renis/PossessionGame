@@ -100,11 +100,16 @@ void ASamuraiWeapon::P_HandleMeleeStrike()
 	else AssetsManager->PlaySound2D(ESound::SamuraiSwoosh);
 }
 
+void ASamuraiWeapon::P_SetupTransfer(const bool bSetToFirstHand)
+{
+	Super::P_SetupTransfer(bSetToFirstHand);
+	DelegateManager->OnSamuraiSlashComboStateChange.BindUObject(this, &ASamuraiWeapon::P_ChangeComboState);
+}
+
 void ASamuraiWeapon::BeginPlay()
 {
 	Name = EWeapon::SamuraiWeapon;
 	Super::BeginPlay();
-	DelegateManager->OnSamuraiSlashComboStateChange.BindUObject(this, &ASamuraiWeapon::P_ChangeComboState);
 }
 
 void ASamuraiWeapon::ShootProjectile(const EPoolObject InProjectileName, const bool bIsFromAbility, const FName InProjectileSocketName, const bool bFromFirstWeapon)
