@@ -93,6 +93,7 @@ void ADestructible::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ADestructible::DestroyThis()
 {
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	if (Mesh) Mesh->SetSimulatePhysics(false);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(Data->GetObjectName(), this);
 }
 
@@ -102,3 +103,9 @@ void ADestructible::SetThisLifeSpan()
 }
 
 void ADestructible::SubtractHp(const float InDamage) { Hp -= InDamage; }
+
+void ADestructible::SetUpgradesApplication()
+{
+	DamageReduction = Data->GetDamageReduction();
+	LifeSpan = Data->GetLifeSpan();
+}

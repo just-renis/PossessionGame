@@ -140,7 +140,7 @@ void ASamurai::P_Setup()
 	DelegateManager->OnSamuraiDashSlashEnd.BindUObject(this, &ASamurai::P_EndDash);
 	if (!SM_DeflectKatana || !GetWeapon() || !GetWeapon()->GetHandsMesh()) return;
 	SM_DeflectKatana->AttachToComponent(GetWeapon()->GetHandsMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("DeflectWeaponSocket"));
-	//SamuraiHat->HandleDeactivation();
+	SamuraiHat->HandleDeactivation();
 }
 
 void ASamurai::P_Shoot()
@@ -161,9 +161,6 @@ void ASamurai::P_DashOverlapTick()
 	const FVector End = Start + GetVelocity() * DashOverlapCheckTick;
 	TArray<FHitResult> Hits;
 	GetWorld()->SweepMultiByChannel(Hits, Start, End, FQuat::Identity, ECC_Pawn, FCollisionShape::MakeBox(DashOverlapSweepBox));
-//	FVector Center = (Start + End) / 2.f;
-////	FVector Extent = FVector(DashOverlapSweepBox);
-//	DrawDebugBox(GetWorld(), Center, Extent, FColor::Green, false, 5.f);
 	for (FHitResult& Hit : Hits)
 	{
 		TObjectPtr<AActor> HitActor = Hit.GetActor();
@@ -220,19 +217,20 @@ void ASamurai::BeginPlay()
 {
 	CharacterName = ECharacterType::Samurai;
 	Super::BeginPlay();
-	//SetupSamuraiHat();
+	SetupSamuraiHat();
 }
 
 void ASamurai::SetupSamuraiHat()
 {
 	SamuraiHat = Cast<ADestructible>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::SamuraiHat));
 	SamuraiHat->Init(false);
+	if (const TObjectPtr<UStaticMeshComponent> HatMesh = SamuraiHat->GetMesh()) HatMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	AttachDestructible(SamuraiHat, "HatSocket");
 }
 
 void ASamurai::HandleDeactivation()
 {
-	//if (!SamuraiHat->GetIsDeactivated()) SamuraiHat->HandleDeactivation();
+	if (!SamuraiHat->GetIsDeactivated()) SamuraiHat->HandleDeactivation();
 	Super::HandleDeactivation();
 }
 
