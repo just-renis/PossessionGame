@@ -27,7 +27,7 @@ public:
 
 	bool CanExecuteAbility(const int32 InAbilityIndex) const { return Proprietor->CanAbilityBeExecuted(InAbilityIndex); }
 	bool GetIsUsingEQS() const { return bIsUsingEQS; }
-	bool GetIsStateTreeRunning() const { return StateTree->IsRunning(); }
+	bool GetIsStateTreeRunning() const { return StateTree ? StateTree->IsRunning() : false; }
 	EStateTreeEvent GetCurrentStateTreeEvent() const { return CurrentStateTreeEvent; }
 	TObjectPtr<AEnemy> GetProprietor() { return Proprietor; }
 	FStateTreeData& GetStateTreeData() { return StateTreeData; }

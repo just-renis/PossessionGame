@@ -2,6 +2,7 @@
 #include "NiagaraComponent.h"
 #include "Engine/OverlapResult.h"
 #include "Kismet/GameplayStatics.h"
+#include "PossessionGame/AI/Enemies/Characters/Samurai.h"
 #include "PossessionGame/Enums/ECameraShake.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
@@ -88,7 +89,12 @@ void ASamuraiWeapon::P_HandleMeleeStrike()
 		FCollisionQueryParams TraceParams;
 		TraceParams.AddIgnoredActor(Proprietor);
 		TraceParams.AddIgnoredActor(Actor);
-		if (GetWorld()->LineTraceSingleByChannel(Hit, Origin, Actor->GetActorLocation(), ECC_Visibility, TraceParams)) return;
+	//	DrawDebugLine(GetWorld(), Origin, Actor->GetActorLocation(), FColor::Red, false, 3.f);
+		if (GetWorld()->LineTraceSingleByChannel(Hit, Origin, Actor->GetActorLocation(), ECC_Visibility, TraceParams))
+		{
+			
+			return;
+		}
 		const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 		float P_Damage = P_DefaultDamage + RunSaveSlot->GetUpgradeAttributeValues(EPoolObject::SamuraiSlashAttack, EUpgradeAttribute::FlatDamage, true);
 		const float DamagePercentage = RunSaveSlot->GetUpgradeAttributeValues(EPoolObject::SamuraiSlashAttack, EUpgradeAttribute::DamagePercentage, true);

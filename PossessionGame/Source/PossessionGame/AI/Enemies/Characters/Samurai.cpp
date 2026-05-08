@@ -237,6 +237,6 @@ void ASamurai::HandleDeactivation()
 void ASamurai::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
-	if (!AI || !AI->GetIsStateTreeRunning()) return;
+	if (!AI || AI->GetIsStateTreeRunning()) return;
 	AI->SetIsInJumpMode(false);
 }

@@ -4,6 +4,8 @@
 #include "PossessionGame/Weapons/Categories/OneHandedWeapon.h"
 #include "SamuraiWeapon.generated.h"
 
+class ADestructible;
+
 UCLASS()
 class POSSESSIONGAME_API ASamuraiWeapon : public AOneHandedWeapon
 {
