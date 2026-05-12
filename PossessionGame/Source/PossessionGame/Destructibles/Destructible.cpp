@@ -53,6 +53,13 @@ void ADestructible::ReceiveDamage(const float InDamage)
 	else DestroyThis();
 }
 
+void ADestructible::DestroyThis()
+{
+	GetWorldTimerManager().ClearTimer(DestroyHandle);
+	if (Mesh) Mesh->SetSimulatePhysics(false);
+	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(Data->GetObjectName(), this);
+}
+
 float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	const float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser) * DamageReduction;
@@ -88,13 +95,6 @@ void ADestructible::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	Super::EndPlay(EndPlayReason);
-}
-
-void ADestructible::DestroyThis()
-{
-	GetWorldTimerManager().ClearTimer(DestroyHandle);
-	if (Mesh) Mesh->SetSimulatePhysics(false);
-	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(Data->GetObjectName(), this);
 }
 
 void ADestructible::SetThisLifeSpan()

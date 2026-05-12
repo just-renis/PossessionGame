@@ -214,174 +214,6 @@ public:
 	void RemoveActiveWraithTrap(const float InEffectDuration);
 	void Pull(const FVector& InPullLocation, const float InPullStrength);
 	void ApplyTankShieldActionSpeedDebuff();
-protected:
-	bool bIsInputLocked = true;
-	bool bIsLookLocked = false;
-	bool bCanReload = true;
-	bool bIsHijacked = false;
-	bool bCanShoot = false;
-	bool bAllowedToShoot = true;
-	bool bIsActionInMotion = false;
-	bool bIsAnimActionInMotion = false;
-	bool bShootPauseActive = false;
-	bool bIsAbilityInAction = false;
-	bool bAffectedByEmp = false;
-	bool bAffectedByStun = false;
-	bool bIsInvincible = false;
-	bool bIsJumpPrimaryAnim = true;
-	bool bIsSlidePrimaryAnim = true;
-	bool bIsBoss = false;
-	bool bTankShieldActionSpeedDebuff = false;
-	bool bCanRun = true;
-	bool bIsAco = false;
-	float MaxHp;
-	float CurrentHp;
-	float DamageReduction = 1.f;
-	float WraithTrapActionSpeedReduction = 0.f;
-	float ActionSpeed = 1.f;
-	float TankShieldActionSpeedDebuffPercentage = 0.5f;
-	float TankShieldActionSpeedDebuffDuration = 5.f;
-	float MovementFramesPerSecond = 60.f;
-	int32 SlowingStacks = 0;
-	int32 BoostedAttacksAmount = 0;
-	ECharacterType CharacterName;
-	EVariation Variation;
-	EMoveMode CurrentMoveMode;
-	FBurningLogicData BurningLogicData;
-	FTimerHandle AI_ShootLogicHandle;
-	FTimerHandle WraithTrapSlowEffectLingerHandle;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
-	float StompRadiusInMeters = 3.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
-	float StompDamage = 40.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
-	float BrakingFrictionFactor = 1.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
-	float GroundFriction = 8.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
-	float QuickMeleeAttackDamage = 20.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
-	FLinearColor DamageNumberColor = FLinearColor::White;
-	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
-	FLinearColor CriticalDamageNumberColor = FLinearColor::Red;
-	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
-	FLinearColor HealNumberColor = FLinearColor::Green;
-	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UInputMappingContext> PlayerMappingContext;
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UCameraComponent> Camera;
-	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
-	TObjectPtr<UWidgetComponent> AI_HpBarComponent;
-	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> MI_MeshBaseMaterial;
-	UPROPERTY()
-	TObjectPtr<UEnemyAnimationInstance> AnimInstance;
-	UPROPERTY()
-	TObjectPtr<AEnemyAIController> AI;
-	UPROPERTY()
-	TObjectPtr<UPlayerHUD> P_HUD;
-	UPROPERTY()
-	TObjectPtr<AWeapon> Weapon;
-	UPROPERTY()
-	TMap<int32, TObjectPtr<UAbility>> Abilities;
-	UPROPERTY()
-	TObjectPtr<UAICharacterData> AI_Data;
-	UPROPERTY()
-	TObjectPtr<UPlayerCharacterData> P_Data;
-	UPROPERTY()
-	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
-	UPROPERTY()
-	TObjectPtr<UDelegateManager> DelegateManager;
-	UPROPERTY()
-	TObjectPtr<UEnhancedPlayerInput> P_InputManager;
-	UPROPERTY()
-	TObjectPtr<UAudioComponent> VectorBlastSpecialImpactUpgrade;
-	UPROPERTY()
-	TObjectPtr<UAudioComponent> WraithBurnExplosionSfx;
-	UPROPERTY()
-	TObjectPtr<USaveSlotManager> SaveSlotManager;
-	UPROPERTY()
-	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent;
-	UPROPERTY()
-	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
-	
-	virtual float AI_GetShootPause();
-
-	virtual void AI_SetupAbilities();
-	virtual void AI_Setup();
-	virtual void AI_SetupWeapon();
-	virtual void AI_Shoot();
-	void AI_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
-	virtual void AI_SetController();
-	virtual void AI_PlayShootMontage();
-	void AI_Reload() const;
-	virtual void AI_PlayDeathSound();
-	virtual void AI_PlayDeathExplosion() {}
-	virtual void AI_PlayDeathElectrification() {}
-	virtual void AI_TriggerDeathVoiceLine() {}
-	virtual void AI_PlaySpawnSound() {}
-	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage);
-	virtual void AI_Destroy();
-	virtual void AI_DestroyVfxs();
-	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName);
-	void AI_DestroyBossUnnecessaryComponents();
-	virtual void AI_AcoMaterialChange() const;
-	void AI_MainShootLogic();
-
-	virtual float P_GetMeleeDamage();
-	virtual float P_GetStompDamage();
-	virtual float P_GetStompSize();
-
-	virtual void P_SetupAbilities();
-	virtual void P_Setup();
-	virtual void P_Shoot();
-	virtual void P_SetupLeftClickInput();
-	virtual void P_SetupRightClickInput() {}
-	virtual void P_SetupShiftInput();
-	virtual void P_SetupLeftClickInputStartedState();
-	virtual void P_SetupLeftClickInputTriggeredState();
-	virtual void P_SetupLeftClickInputCompletedState();
-	virtual void P_Destroy();
-	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
-	void P_SetupCharacterMovement();
-	virtual void P_Move(const FInputActionValue& Value);
-	virtual void P_InitiateJump();
-	virtual void P_InitiateStomp();
-	virtual void P_ShowReceivedDamageNumber(const float InDamage);
-	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
-	virtual void P_WeaponShoot() {}
-	void P_StopAbility(const int32 InAbilityIndex);
-	virtual void P_ProcessMeleeAttack();
-	virtual void P_FinishHijackProcess();
-	virtual void P_BindQuickMeleeAction();
-	virtual void P_BindSlideAction();
-	void P_StompImpact(const FVector& InHitLocation);
-	void P_ToggleRun(const bool bState);
-
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	float ReceiveDefaultMovementSpeed() const;
-	virtual float ReceiveMovementSpeedModification() const { return 1.f; }
-
-	void SetCurrentHp(const float NewCurrentHp) { CurrentHp = NewCurrentHp; }
-	void SetMaxHp(const float NewMaxHp) { MaxHp = NewMaxHp; }
-	virtual void SetMoveMode(const EMoveMode InMoveMode) { CurrentMoveMode = InMoveMode; }
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void SetMaxWalkSpeed(const EMoveMode InMoveMode, float InNewSpeed = -1.f);
-	void AttachDestructible(const TObjectPtr<AActor>& Destructible, const FName SocketName) const;
-	virtual void HandleDeactivation();
-	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
-	virtual void DestroyThis();
-	virtual void DestroyImmediately();
-	virtual void DisableAllVfxAfterPossession();
-	virtual void ClearTimers();
-	virtual void AllDisablingActionsFinished();
-	virtual void RecoverFromDisablingEffect();
-	virtual void ApplyEmpEffect(const float InEffectDuration);
-	virtual void ReceiveBurnDamage();
-	void Heal(const float InHealAmount);
-	virtual void SetActionSpeed(const float InSpeed);
-	virtual void Landed(const FHitResult& Hit) override;
 private:
 	bool bInUpgradeSelection = false;
 	bool bCanHijackOtherEnemy = false;
@@ -711,4 +543,172 @@ private:
 	void DisableSkeletalMesh() const;
 	void StopBurningState();
 	void TogglePoisonSlowVfx(const bool bState);
+protected:
+	bool bIsInputLocked = true;
+	bool bIsLookLocked = false;
+	bool bCanReload = true;
+	bool bIsHijacked = false;
+	bool bCanShoot = false;
+	bool bAllowedToShoot = true;
+	bool bIsActionInMotion = false;
+	bool bIsAnimActionInMotion = false;
+	bool bShootPauseActive = false;
+	bool bIsAbilityInAction = false;
+	bool bAffectedByEmp = false;
+	bool bAffectedByStun = false;
+	bool bIsInvincible = false;
+	bool bIsJumpPrimaryAnim = true;
+	bool bIsSlidePrimaryAnim = true;
+	bool bIsBoss = false;
+	bool bTankShieldActionSpeedDebuff = false;
+	bool bCanRun = true;
+	bool bIsAco = false;
+	float MaxHp;
+	float CurrentHp;
+	float DamageReduction = 1.f;
+	float WraithTrapActionSpeedReduction = 0.f;
+	float ActionSpeed = 1.f;
+	float TankShieldActionSpeedDebuffPercentage = 0.5f;
+	float TankShieldActionSpeedDebuffDuration = 5.f;
+	float MovementFramesPerSecond = 60.f;
+	int32 SlowingStacks = 0;
+	int32 BoostedAttacksAmount = 0;
+	ECharacterType CharacterName;
+	EVariation Variation;
+	EMoveMode CurrentMoveMode;
+	FBurningLogicData BurningLogicData;
+	FTimerHandle AI_ShootLogicHandle;
+	FTimerHandle WraithTrapSlowEffectLingerHandle;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
+	float StompRadiusInMeters = 3.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Stomp", meta = (AllowPrivateAccess = true))
+	float StompDamage = 40.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	float BrakingFrictionFactor = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Movement", meta = (AllowPrivateAccess = true))
+	float GroundFriction = 8.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Quick Melee Attack", meta = (AllowPrivateAccess = true))
+	float QuickMeleeAttackDamage = 20.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
+	FLinearColor DamageNumberColor = FLinearColor::White;
+	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
+	FLinearColor CriticalDamageNumberColor = FLinearColor::Red;
+	UPROPERTY(EditDefaultsOnly, Category = "Damage Number Data", meta = (AllowPrivateAccess = true))
+	FLinearColor HealNumberColor = FLinearColor::Green;
+	UPROPERTY(EditAnywhere, Category = "Input", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UInputMappingContext> PlayerMappingContext;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCameraComponent> Camera;
+	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UWidgetComponent> AI_HpBarComponent;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MI_MeshBaseMaterial;
+	UPROPERTY()
+	TObjectPtr<UEnemyAnimationInstance> AnimInstance;
+	UPROPERTY()
+	TObjectPtr<AEnemyAIController> AI;
+	UPROPERTY()
+	TObjectPtr<UPlayerHUD> P_HUD;
+	UPROPERTY()
+	TObjectPtr<AWeapon> Weapon;
+	UPROPERTY()
+	TMap<int32, TObjectPtr<UAbility>> Abilities;
+	UPROPERTY()
+	TObjectPtr<UAICharacterData> AI_Data;
+	UPROPERTY()
+	TObjectPtr<UPlayerCharacterData> P_Data;
+	UPROPERTY()
+	TObjectPtr<UPrimaryDataAssetsManager> AssetsManager;
+	UPROPERTY()
+	TObjectPtr<UDelegateManager> DelegateManager;
+	UPROPERTY()
+	TObjectPtr<UEnhancedPlayerInput> P_InputManager;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> VectorBlastSpecialImpactUpgrade;
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> WraithBurnExplosionSfx;
+	UPROPERTY()
+	TObjectPtr<USaveSlotManager> SaveSlotManager;
+	UPROPERTY()
+	TObjectPtr<UEnhancedInputComponent> EnhancedInputComponent;
+	UPROPERTY()
+	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
+	
+	virtual float AI_GetShootPause();
+
+	virtual void AI_SetupAbilities();
+	virtual void AI_Setup();
+	virtual void AI_SetupWeapon();
+	virtual void AI_Shoot();
+	void AI_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
+	virtual void AI_SetController();
+	virtual void AI_PlayShootMontage();
+	void AI_Reload() const;
+	virtual void AI_PlayDeathSound();
+	virtual void AI_PlayDeathExplosion() {}
+	virtual void AI_PlayDeathElectrification() {}
+	virtual void AI_TriggerDeathVoiceLine() {}
+	virtual void AI_PlaySpawnSound() {}
+	virtual void AI_ReceivedDamage(const EDamageReason InDamageReason, const float InDamage);
+	virtual void AI_Destroy();
+	virtual void AI_DestroyVfxs();
+	virtual void AI_DisableActions(const float InEffectDuration, const EDisablingEffect InEffectName);
+	void AI_DestroyBossUnnecessaryComponents();
+	virtual void AI_AcoMaterialChange() const;
+	void AI_MainShootLogic();
+
+	virtual float P_GetMeleeDamage();
+	virtual float P_GetStompDamage();
+	virtual float P_GetStompSize();
+
+	virtual void P_SetupAbilities();
+	virtual void P_Setup();
+	virtual void P_Shoot();
+	virtual void P_SetupLeftClickInput();
+	virtual void P_SetupRightClickInput() {}
+	virtual void P_SetupShiftInput();
+	virtual void P_SetupLeftClickInputStartedState();
+	virtual void P_SetupLeftClickInputTriggeredState();
+	virtual void P_SetupLeftClickInputCompletedState();
+	virtual void P_Destroy();
+	void P_LoadDataIfNotLoaded(const ECharacterType PrimaryDataAssetName);
+	void P_SetupCharacterMovement();
+	virtual void P_Move(const FInputActionValue& Value);
+	virtual void P_InitiateJump();
+	virtual void P_InitiateStomp();
+	virtual void P_ShowReceivedDamageNumber(const float InDamage);
+	void P_MakeCameraShake(const TSubclassOf<UCameraShakeBase>& InCameraShake) const;
+	virtual void P_WeaponShoot() {}
+	void P_StopAbility(const int32 InAbilityIndex);
+	virtual void P_ProcessMeleeAttack();
+	virtual void P_FinishHijackProcess();
+	virtual void P_BindQuickMeleeAction();
+	virtual void P_BindSlideAction();
+	void P_StompImpact(const FVector& InHitLocation);
+	void P_ToggleRun(const bool bState);
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	float ReceiveDefaultMovementSpeed() const;
+	virtual float ReceiveMovementSpeedModification() const { return 1.f; }
+
+	void SetCurrentHp(const float NewCurrentHp) { CurrentHp = NewCurrentHp; }
+	void SetMaxHp(const float NewMaxHp) { MaxHp = NewMaxHp; }
+	virtual void SetMoveMode(const EMoveMode InMoveMode) { CurrentMoveMode = InMoveMode; }
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	void SetMaxWalkSpeed(const EMoveMode InMoveMode, float InNewSpeed = -1.f);
+	void AttachDestructible(const TObjectPtr<AActor>& Destructible, const FName SocketName) const;
+	virtual void HandleDeactivation();
+	virtual void SetMesh(const ECharacterType PrimaryDataAssetName);
+	virtual void DestroyThis();
+	virtual void DestroyImmediately();
+	virtual void DisableAllVfxAfterPossession();
+	virtual void ClearTimers();
+	virtual void AllDisablingActionsFinished();
+	virtual void RecoverFromDisablingEffect();
+	virtual void ApplyEmpEffect(const float InEffectDuration);
+	virtual void ReceiveBurnDamage();
+	void Heal(const float InHealAmount);
+	virtual void SetActionSpeed(const float InSpeed);
+	virtual void Landed(const FHitResult& Hit) override;
 };

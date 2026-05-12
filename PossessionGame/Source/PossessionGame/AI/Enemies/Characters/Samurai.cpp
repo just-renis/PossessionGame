@@ -140,7 +140,7 @@ void ASamurai::P_Setup()
 	DelegateManager->OnSamuraiDashSlashEnd.BindUObject(this, &ASamurai::P_EndDash);
 	if (!SM_DeflectKatana || !GetWeapon() || !GetWeapon()->GetHandsMesh()) return;
 	SM_DeflectKatana->AttachToComponent(GetWeapon()->GetHandsMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("DeflectWeaponSocket"));
-	SamuraiHat->HandleDeactivation();
+	SamuraiHat->DestroyThis();
 }
 
 void ASamurai::P_Shoot()

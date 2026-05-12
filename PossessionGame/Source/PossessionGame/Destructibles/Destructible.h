@@ -22,6 +22,7 @@ public:
 	virtual void Init(bool bInIsPlayerObject) override;
 	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	void ReceiveDamage(const float InDamage);
+	virtual void DestroyThis();
 protected:
 	bool bIsPlayerObject;
 	float LifeSpan;
@@ -36,7 +37,6 @@ protected:
 	
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	virtual void DestroyThis();
 	virtual void SetThisLifeSpan();
 	virtual void SubtractHp(const float InDamage);
 	virtual void SetUpgradesApplication();
