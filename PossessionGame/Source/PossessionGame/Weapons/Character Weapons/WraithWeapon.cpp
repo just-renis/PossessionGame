@@ -16,7 +16,7 @@ AWraithWeapon::AWraithWeapon()
 void AWraithWeapon::AI_Shoot()
 {
 	PlaySound(ESound::WraithShoot, true);
-	Super::AI_Shoot();
+	ShootTimer = 0.f;
 	ShootProjectile(EPoolObject::WraithProjectile, false);
 }
 
