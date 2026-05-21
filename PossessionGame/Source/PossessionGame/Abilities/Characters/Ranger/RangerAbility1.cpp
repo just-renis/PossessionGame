@@ -59,5 +59,5 @@ void URangerAbility1::SetupUpgradeAppliance(const bool bIsPlayer)
 void URangerAbility1::Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
 {
 	Super::Setup(InAbilityOwner, InAbilityData, InDelegateManager);
-	bRangerBlueVariationEnabled = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Ranger) == EVariation::RangerVariationBlue;
+	bRangerBlueVariationEnabled = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Ranger) == EVariation::RangerBlue;
 }

@@ -4,38 +4,42 @@
 
 FVariationUnlockData::FVariationUnlockData()
 {
-	SelectedVariations.Add(ECharacterType::Guardian, EVariation::GuardianVariationDefault);
-	SelectedVariations.Add(ECharacterType::Ranger, EVariation::RangerVariationDefault);
-	SelectedVariations.Add(ECharacterType::Trickster, EVariation::TricksterVariationDefault);
-	SelectedVariations.Add(ECharacterType::Breacher, EVariation::BreacherVariationDefault);
-	SelectedVariations.Add(ECharacterType::Wraith, EVariation::WraithVariationDefault);
-	SelectedVariations.Add(ECharacterType::Tank, EVariation::TankVariationDefault);
-	SelectedVariations.Add(ECharacterType::Spy, EVariation::SpyVariationDefault);
-	SelectedVariations.Add(ECharacterType::Samurai, EVariation::SamuraiVariationDefault);
-	VariationUnlocks.Add(EVariation::GuardianVariationGold, FVariationUnlockGoal(10));
-	VariationUnlocks.Add(EVariation::RangerVariationBlue, FVariationUnlockGoal(15));
-	VariationUnlocks.Add(EVariation::TricksterVariationPurple, FVariationUnlockGoal(800));
+	SelectedVariations.Add(ECharacterType::Guardian, FUnlockedVariations({EVariation::GuardianDefault}, EVariation::GuardianDefault));
+	SelectedVariations.Add(ECharacterType::Ranger, FUnlockedVariations({EVariation::RangerDefault}, EVariation::RangerDefault));
+	SelectedVariations.Add(ECharacterType::Trickster, FUnlockedVariations({EVariation::TricksterDefault}, EVariation::TricksterDefault));
+	SelectedVariations.Add(ECharacterType::Breacher, FUnlockedVariations({EVariation::BreacherDefault}, EVariation::BreacherDefault));
+	SelectedVariations.Add(ECharacterType::Wraith, FUnlockedVariations({EVariation::WraithDefault}, EVariation::WraithDefault));
+	SelectedVariations.Add(ECharacterType::Tank, FUnlockedVariations({EVariation::TankDefault}, EVariation::TankDefault));
+	SelectedVariations.Add(ECharacterType::Spy, FUnlockedVariations({EVariation::SpyDefault}, EVariation::SpyDefault));
+	SelectedVariations.Add(ECharacterType::Samurai, FUnlockedVariations({EVariation::SamuraiDefault}, EVariation::SamuraiDefault));
 }
 
 bool FVariationUnlockData::IsVariationUnlocked(const EVariation InVariationUnlockName)
 {
-	if (const FVariationUnlockGoal* VariationUnlockGoal = VariationUnlocks.Find(InVariationUnlockName))
+	ECharacterType CharacterType;
+	switch (InVariationUnlockName)
 	{
-		return VariationUnlockGoal->bIsBought && VariationUnlockGoal->Current >= VariationUnlockGoal->Requirement;
+		case EVariation::GuardianGold: CharacterType = ECharacterType::Guardian; break;
+		case EVariation::RangerBlue: case EVariation::RangerGreen: case EVariation::RangerBlack: CharacterType = ECharacterType::Ranger; break;
+		case EVariation::TricksterPurple: CharacterType = ECharacterType::Trickster; break;
+		default: return true;
 	}
-	return true;
+	return SelectedVariations[CharacterType].UnlockedVariations.Contains(InVariationUnlockName);
 }
 
-bool FVariationUnlockData::IsVariationTaskCompleted(const EVariation InVariationUnlockName) const { return VariationUnlocks[InVariationUnlockName].Current >= VariationUnlocks[InVariationUnlockName].Requirement; }
+EVariation FVariationUnlockData::GetSelectedVariation(const ECharacterType InCharacter) const { return SelectedVariations[InCharacter].Current; }
 
-int32 FVariationUnlockData::GetVariationUnlockProgress(const EVariation InVariationUnlockName) const { return VariationUnlocks[InVariationUnlockName].Current; }
+void FVariationUnlockData::UpdateSelectedVariation(const ECharacterType InCharacterType, const EVariation InVariationName) { SelectedVariations[InCharacterType].Current = InVariationName; }
 
-int32 FVariationUnlockData::GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const { return VariationUnlocks[InVariationUnlockName].Requirement; }
-
-EVariation FVariationUnlockData::GetSelectedVariation(const ECharacterType InCharacter) const { return SelectedVariations[InCharacter]; }
-
-void FVariationUnlockData::ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount) { VariationUnlocks[InVariationUnlockName].Current += InAmount; }
-
-void FVariationUnlockData::UnlockVariation(const EVariation InVariationUnlockName) { VariationUnlocks[InVariationUnlockName].bIsBought = true; }
-
-void FVariationUnlockData::UpdateSelectedVariation(const ECharacterType InCharacterType, const EVariation InVariationName) { SelectedVariations[InCharacterType] = InVariationName; }
+void FVariationUnlockData::UnlockVariation(const EVariation InVariationName)
+{
+	ECharacterType CharacterType;
+	switch (InVariationName)
+	{
+		case EVariation::GuardianGold: CharacterType = ECharacterType::Guardian; break;
+		case EVariation::RangerBlue: case EVariation::RangerGreen: case EVariation::RangerBlack: CharacterType = ECharacterType::Ranger; break;
+		case EVariation::TricksterPurple: CharacterType = ECharacterType::Trickster; break;
+		default: return;
+	}
+	SelectedVariations[CharacterType].UnlockedVariations.Add(InVariationName);
+}

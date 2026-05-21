@@ -4,18 +4,20 @@ UENUM()
 enum class EVariation : uint8
 {
 	Default,
-	GuardianVariationDefault,
-	GuardianVariationGold,
-	RangerVariationDefault,
-	RangerVariationBlue,
-	TricksterVariationDefault,
-	TricksterVariationPurple,
+	GuardianDefault,
+	GuardianGold,
+	RangerDefault,
+	RangerBlue,
+	RangerGreen,
+	RangerBlack,
+	TricksterDefault,
+	TricksterPurple,
 	SecretCrateRewardHealth,
 	SecretCrateRewardDamage,
 	SecretCrateRewardXp,
-	BreacherVariationDefault,
-	WraithVariationDefault,
-	TankVariationDefault,
-	SpyVariationDefault,
-	SamuraiVariationDefault
+	BreacherDefault,
+	WraithDefault,
+	TankDefault,
+	SpyDefault,
+	SamuraiDefault
 };

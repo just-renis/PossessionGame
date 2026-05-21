@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "VariationsUI.generated.h"
 
+class UArrowButtonUI;
 class UButton;
 enum class ECharacterType : uint8;
 class UVariationCurrencyPanelUI;
@@ -47,13 +48,33 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> CharactersSwitcher;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> RangerVariations;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> TricksterVariations;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> GuardianVariations;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> WraithVariations;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> BreacherVariations;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> TankVariations;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> SpyVariations;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UWidgetSwitcher> SamuraiVariations;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationUnlockDetailsUI> VariationDetailsPanel;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationUnlockDetailsUI> UnlockDetailsPanel;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> RightArrowButton;
+	TObjectPtr<UArrowButtonUI> RightArrowButton;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> LeftArrowButton;
+	TObjectPtr<UArrowButtonUI> LeftArrowButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UArrowButtonUI> VariationPageRightArrowButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UArrowButtonUI> VariationPageLeftArrowButton;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationOptionUI> GuardianVariationDefault;
 	UPROPERTY(meta = (BindWidget))
@@ -80,14 +101,6 @@ private:
 	TObjectPtr<UCloseButtonUI> CloseButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	TObjectPtr<UWidgetAnimation> VariationMenuFadeInAnim;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> ArrowLeftHoverAnim;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> ArrowLeftPressAnim;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> ArrowRightHoverAnim;
-	UPROPERTY(Transient, meta = (BindWidgetAnim))
-	TObjectPtr<UWidgetAnimation> ArrowRightPressAnim;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TMap<EVariation, int32> UnlockPrices;
 	UPROPERTY()
@@ -96,6 +109,8 @@ private:
 	TObjectPtr<UVariationCharacterIconUI> CurrentlySelectedIcon;
 	UPROPERTY()
 	TObjectPtr<UVariationCurrencyPanelUI> VariationCurrencyPanel;
+	UPROPERTY()
+	TObjectPtr<UWidgetSwitcher> CurrentVariationsSwitcherSelected;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeOutDelegate;
 
@@ -113,11 +128,7 @@ private:
 	UFUNCTION()
 	void SwitchCharactersSelectionLeft();
 	UFUNCTION()
-	void LeftArrowButtonHovered();
+	void SwitchVariationPageRight();
 	UFUNCTION()
-	void LeftArrowButtonUnHovered();
-	UFUNCTION()
-	void RightArrowButtonHovered();
-	UFUNCTION()
-	void RightArrowButtonUnHovered();
+	void SwitchVariationPageLeft();
 };

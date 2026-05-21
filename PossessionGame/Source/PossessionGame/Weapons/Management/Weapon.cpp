@@ -330,15 +330,19 @@ void AWeapon::DealPointDamage(const FHitResult& InHitResult)
 	
 	const float RangeMultiplier = P_Data->GetDamageMultiplierFromRange(InHitResult.Distance * 0.01f);
 	if (FMath::IsNearlyEqual(RangeMultiplier, 0.f, 0.01f)) return;
-	const bool bIsCritical = InHitResult.BoneName.IsEqual(FName("head"));
 	if (InHitResult.GetActor()->ActorHasTag("Destructible"))
 	{
 		UGameplayStatics::ApplyPointDamage(InHitResult.GetActor(), AfterPlayerLevelAllGlobalDamage * RangeMultiplier, (InHitResult.Location - GetActorLocation()).GetSafeNormal(), InHitResult, nullptr, this, UDamageType::StaticClass());
 		return;
 	}
 	
+	const bool bIsCritical = InHitResult.BoneName.IsEqual(FName("head"));
 	float CriticalDamageMultiplier = 1.f;
-	if (bIsCritical) CriticalDamageMultiplier = P_GetCriticalDamage();
+	if (bIsCritical)
+	{
+		CriticalDamageMultiplier = P_GetCriticalDamage();
+		CriticalHitLogic();
+	}
 	CriticalDamageMultiplier += GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerBlueVariationStackBoost(); // Ranger Blue Variation Critical Damage Boost.
 	
 	float FinalDamageOutput = AfterPlayerLevelAllGlobalDamage * CriticalDamageMultiplier * RangeMultiplier;

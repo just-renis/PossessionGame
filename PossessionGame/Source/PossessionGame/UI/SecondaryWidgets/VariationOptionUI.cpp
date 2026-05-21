@@ -8,11 +8,6 @@
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 
-void UVariationOptionUI::UpdateUnlockProgressText(const TObjectPtr<USaveSlot>& InSaveSlot)
-{
-	UnlockProgressText = FText::Format(DefaultUnlockText, FText::FromString(GetUnlockProgressString(InSaveSlot)));
-}
-
 void UVariationOptionUI::UnlockVariation()
 {
 	bIsLocked = false;
@@ -45,11 +40,6 @@ void UVariationOptionUI::SelectVariation()
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.Broadcast(CharacterType, Variation);
 	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(CharacterType);
 	SetSelected(true);
-}
-
-FString UVariationOptionUI::GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot) const
-{
-	return TEXT(" [") + FString::FromInt(InSaveSlot->GetVariationUnlockProgress(Variation)) + TEXT(" / ") + FString::FromInt(InSaveSlot->GetVariationUnlockRequirement(Variation)) + TEXT("]");
 }
 
 FReply UVariationOptionUI::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -92,7 +82,7 @@ void UVariationOptionUI::VariationOptionHovered()
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	if (!VariationOptionBorder) return;
 	const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
-	if (!SaveSlot->GetIsVariationUnlocked(Variation)) UpdateUnlockProgressText(SaveSlot);
+	if (!SaveSlot->GetIsVariationUnlocked(Variation)) UnlockProgressText = FText::FromString("NOT UNLOCKED");
 	(void)ShowDetailsPanel.ExecuteIfBound(true, Variation, VariationDetailsPanelText, UnlockProgressText);
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward);
 }

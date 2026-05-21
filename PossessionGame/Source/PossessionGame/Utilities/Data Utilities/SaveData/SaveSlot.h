@@ -21,14 +21,11 @@ class POSSESSIONGAME_API USaveSlot : public USaveGame
 public:
 	bool GetIsTutorialFinished() const { return bTutorialFinished; }
 	bool GetIsVariationUnlocked(const EVariation InVariationUnlockName);
-	bool GetIsVariationTaskCompleted(const EVariation InVariationUnlockName) const;
 	bool UnlockAbility(const ECharacterType InCharacter, const int32 InAbilityIndex);
 	bool GetIsAbilityUnlocked(const ECharacterType InCharacter, const int32 InAbilityIndex);
 	bool GetIsExplanationShown(const EExplanation InExplanationName) const;
 	bool IsPlayerLevelUpgradeSelected(const EPlayerLevelUpgradeId InId) const;
 	int32 GetPlayerLevel() const { return CurrentLevel; }
-	int32 GetVariationUnlockProgress(const EVariation InVariationUnlockName) const;
-	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
 	int32 GetCurrencyAmount() const { return CurrencyAmount; }
 	int32 GetSkillPoints() const;
 	int32 GetArenaMaxTimeSurvivedSeconds() const { return ArenaMaxTimeSurvivedSeconds; }
@@ -50,7 +47,6 @@ public:
 	void AddSpawnableCharacter(const TObjectPtr<UDelegateManager>& InDelegateManager, const ECharacterType InCharacterName);
 	void SetupSlot(const TObjectPtr<UPossessionGameInstance>& InGameInstance, const FString& InSlotName);
 	void AddXp(const float InXp);
-	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);
 	void SaveSlot();
 	void UnlockVariation(const EVariation InVariationUnlockName);
 	void AddChosenAbilities(const ECharacterType InCharacter, const int32 InFirstAbilityIndex, const int32 InSecondAbilityIndex);

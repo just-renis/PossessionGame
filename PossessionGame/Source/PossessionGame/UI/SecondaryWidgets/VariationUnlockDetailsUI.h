@@ -17,17 +17,12 @@ class POSSESSIONGAME_API UVariationUnlockDetailsUI : public UUserWidget
 	GENERATED_BODY()
 public:
 	void SetDetailsText(const FText& InText) const;
-	void SetTaskCompleted(const bool bState) const;
 	void SetUnlockedVariation(const bool bState) const;
 	void SetupDetailsPanel(const EVariation InVariation, const int32 InUnlockPrice);
 	void SetSaveSlot(const TObjectPtr<USaveSlot>& InSaveSlot) { SaveSlot = InSaveSlot; }
 	void PlayFadeInAnim() { PlayAnimation(FadeInAnim); }
 private:
 	int32 UnlockPrice = INT_MAX;
-	UPROPERTY(EditAnywhere, Category = "Details Panel", meta = (AllowPrivateAccess = true))
-	bool bIsCheckBoxNeeded = false;
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UCheckBox> DetailsCheck;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DetailsText;
 	UPROPERTY(meta = (BindWidget))

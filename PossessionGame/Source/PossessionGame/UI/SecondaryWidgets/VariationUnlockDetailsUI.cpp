@@ -1,7 +1,6 @@
 ﻿#include "VariationUnlockDetailsUI.h"
 #include "MainMenuButtonUI.h"
 #include "Components/Button.h"
-#include "Components/CheckBox.h"
 #include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
@@ -11,14 +10,6 @@ void UVariationUnlockDetailsUI::SetDetailsText(const FText& InText) const
 {
 	if (!DetailsText) return;
 	DetailsText->SetText(InText);
-}
-
-void UVariationUnlockDetailsUI::SetTaskCompleted(const bool bState) const
-{
-	if (!UnlockButton || !DetailsCheck) return;
-	UnlockButton->SetIsEnabled(bState);
-	DetailsCheck->SetIsChecked(bState);
-	SetUnlockedVariation(false);
 }
 
 void UVariationUnlockDetailsUI::SetUnlockedVariation(const bool bState) const
@@ -42,11 +33,8 @@ void UVariationUnlockDetailsUI::SetupDetailsPanel(const EVariation InVariation, 
 void UVariationUnlockDetailsUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-	if (!bIsCheckBoxNeeded)
-	{
-		ChangeVisibilityOfUnlockElements(false);
-		if (UnlockButton) UnlockButton->SetIsEnabled(false);
-	}
+	//ChangeVisibilityOfUnlockElements(false);
+	//if (UnlockButton) UnlockButton->SetIsEnabled(false);
 }
 
 void UVariationUnlockDetailsUI::NativeConstruct()
@@ -57,8 +45,7 @@ void UVariationUnlockDetailsUI::NativeConstruct()
 
 void UVariationUnlockDetailsUI::ChangeVisibilityOfUnlockElements(const bool bState) const
 {
-	if (!DetailsCheck || !UnlockButton || !CostPriceBox) return;
-	DetailsCheck->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+	if (!UnlockButton || !CostPriceBox) return;
 	UnlockButton->SetButtonVisibility(bState);
 	UnlockButton->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 	CostPriceBox->SetVisibility(bState ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
@@ -66,7 +53,7 @@ void UVariationUnlockDetailsUI::ChangeVisibilityOfUnlockElements(const bool bSta
 
 void UVariationUnlockDetailsUI::UnlockVariation()
 {
-	if (SaveSlot->GetIsVariationTaskCompleted(Variation) && SaveSlot->GetCurrencyAmount() >= UnlockPrice)
+	if (SaveSlot->GetCurrencyAmount() >= UnlockPrice)
 	{
 		SaveSlot->AddCurrencyAmount(-UnlockPrice);
 		SaveSlot->UnlockVariation(Variation);

@@ -42,6 +42,28 @@ struct FTricksterPurpleVariationData
 };
 
 USTRUCT()
+struct FTricksterDefaultVariationData
+{
+	GENERATED_BODY()
+	
+	float StackDuration = 7.f;
+	float MovementBoostPercentage = 0.01f;
+	TArray<float> Stacks;
+
+	float GetMovementBoost() const { return MovementBoostPercentage * Stacks.Num(); }
+	
+	void AddMovementStack() { Stacks.Add(0.f); }
+	void TickStackDuration(const float InTickTime)
+	{
+		for (int32 i = Stacks.Num() - 1; i >= 0; i--)
+		{
+			Stacks[i] += InTickTime;
+			if (Stacks[i] >= StackDuration) Stacks.RemoveAt(i);
+		}
+	}
+};
+
+USTRUCT()
 struct FRangerBlueVariationData
 {
 	GENERATED_BODY()
@@ -187,6 +209,7 @@ public:
 	float GetGuardianTimeStopSpecialBoost() const { return GuardianTimeStopSpecialData.GetDamageBoost(); }
 	float GetRangerBlueVariationStackBoost() const { return RangerBlueVariationData.GetCriticalDamageBoost(); }
 	float GetRecentHijackBoost() const { return RecentHijackBoostData.GetBoost(); }
+	float GetTricksterDefaultMovementBoost() const { return TricksterDefaultVariationData.GetMovementBoost(); }
 	FOnRangerAbilityStackStatusChanged& GetOnRangerAbilityStackStatusChangedDelegate() { return RangerGrenadeSpecialData.OnRangerAbilityStackStatusChanged; }
 	
 	void AddPoisonAreaUptime(const float InUptime) { TricksterPurpleVariationData.AddPoisonAreaUptime(InUptime); }
@@ -195,6 +218,7 @@ public:
 	void AddRangerShieldSpecialStack() { RangerShieldSpecialData.AddStack(); }
 	void AddGuardianTimeStopSpecialStack() { GuardianTimeStopSpecialData.AddStack(); }
 	void AddRecentHijackBoost(const bool bInIsFourthOptionA) { RecentHijackBoostData.AddBoost(bInIsFourthOptionA); }
+	void AddTricksterDefaultMovementBoost() { TricksterDefaultVariationData.AddMovementStack(); }
 	void AddUsb() { CurrentAmountOfCollectedUsb++; }
 	void RemoveUsb() { CurrentAmountOfCollectedUsb--; }
 	void Reset();
@@ -207,4 +231,5 @@ private:
 	FGuardianTimeStopSpecialData GuardianTimeStopSpecialData;
 	FRangerBlueVariationData RangerBlueVariationData;
 	FRecentHijackBoost RecentHijackBoostData;
+	FTricksterDefaultVariationData TricksterDefaultVariationData;
 };

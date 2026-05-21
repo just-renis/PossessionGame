@@ -23,4 +23,5 @@ class POSSESSIONGAME_API ATricksterSingularWeapon : public AOneHandedWeapon
 	virtual void BeginPlay() override;
 	virtual void SetMeshes(EWeapon PrimaryDataAssetName) override;
 	virtual void FpsTrailVfxLogic() override;
+	virtual void CriticalHitLogic() override;
 };

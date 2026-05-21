@@ -125,6 +125,7 @@ void AGuardian::P_Setup()
 	bImmuneToFirstHit = false;
 	DelegateManager->OnWeaponAmmoChangeOneParam.AddUObject(this, &AEnemy::P_UpdateAmmoHUD);
 	DelegateManager->RequestIsTimeStopUsed.BindUObject(this, &AGuardian::IsSecondAbilityInUse);
+	DelegateManager->OnKillAddEnergyShield.BindUObject(this, &AGuardian::AddEnergyShield);
 	Super::P_Setup();
 	MID_Shield = UMaterialInstanceDynamic::Create(MI_Shield, this);
 	Weapon->GetHandsAnimInstance()->OnHandsMontageEnd.BindUObject(this, &AGuardian::SetIsActionInMotion);
@@ -237,7 +238,11 @@ void AGuardian::ToggleShieldVfx(const bool bState, const EVfx InVfxName)
 
 void AGuardian::InitiateDeath()
 {
-	if (bIsHijacked) DelegateManager->RequestIsTimeStopUsed.Unbind();
+	if (bIsHijacked)
+	{
+		DelegateManager->RequestIsTimeStopUsed.Unbind();
+		DelegateManager->OnKillAddEnergyShield.Unbind();
+	}
 	Super::InitiateDeath();
 }
 

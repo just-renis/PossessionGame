@@ -214,6 +214,7 @@ public:
 	void RemoveActiveWraithTrap(const float InEffectDuration);
 	void Pull(const FVector& InPullLocation, const float InPullStrength);
 	void ApplyTankShieldActionSpeedDebuff();
+	void RefreshMovementSpeed();
 protected:
 	bool bIsInputLocked = true;
 	bool bIsLookLocked = false;
@@ -365,6 +366,7 @@ protected:
 	void SetCurrentHp(const float NewCurrentHp) { CurrentHp = NewCurrentHp; }
 	void SetMaxHp(const float NewMaxHp) { MaxHp = NewMaxHp; }
 	virtual void SetMoveMode(const EMoveMode InMoveMode) { CurrentMoveMode = InMoveMode; }
+	void AddEnergyShield(const float InEnergyShieldAmount) { EnergyShieldHp += InEnergyShieldAmount; }
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void SetMaxWalkSpeed(const EMoveMode InMoveMode, float InNewSpeed = -1.f);
@@ -418,6 +420,7 @@ private:
 	float SavedRespawnHpPercentage = 1.f;
 	float HijackDelayAnimationSpeed = 1.f;
 	float PoisonActionSpeedReduction = 0.f;
+	float EnergyShieldHp = 0.f;
 	int32 P_FirstSlotAbilityIndex = 0;
 	int32 P_SecondSlotAbilityIndex = 1;
 	int32 OverlappingPoisonAreas = 0;

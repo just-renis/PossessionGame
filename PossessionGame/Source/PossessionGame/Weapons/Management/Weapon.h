@@ -147,6 +147,7 @@ protected:
 	void DealPointDamage(const FHitResult& InHitResult);
 	virtual void MuzzleLogicFromAbility() {}
 	virtual void FpsTrailVfxLogic();
+	virtual void CriticalHitLogic() {}
 private:
 	int32 ShootCyclesUntilReload;
 	FTimerHandle DisableComponentTickHandle;

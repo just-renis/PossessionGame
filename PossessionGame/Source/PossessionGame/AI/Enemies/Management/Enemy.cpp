@@ -500,14 +500,23 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 {
 	if (bIsSelectedFourthOptionB) InDamage *= GameInstance->GetSubsystem<UPlayerDataManager>()->GetRecentHijackBoost();
 	InDamage += InDamage * ConductionLogicData.GetDamageTakenPercentage();
-	CurrentHp -= InDamage;
+	if (EnergyShieldHp > 0)
+	{
+		if (EnergyShieldHp < InDamage)
+		{
+			CurrentHp = CurrentHp - (InDamage - EnergyShieldHp);
+			EnergyShieldHp = 0;
+		}
+		else EnergyShieldHp -= InDamage;
+	}
+	else CurrentHp -= InDamage;
 	if (IsHackTerminalsGameMode()) (void)DelegateManager->HackTerminalSubtractHp.ExecuteIfBound(InDamage + (CurrentHp <= 0.f ? CurrentHp : 0.f));
 	if (bIsHijacked)
 	{
 		switch (InDamageReason)
 		{
 			case EDamageReason::GuardianDamage:
-				if (EVariation::GuardianVariationGold == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Guardian)) { ConductionLogicData.AddStack(); }
+				if (EVariation::GuardianGold == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Guardian)) { ConductionLogicData.AddStack(); }
 				break;
 			case EDamageReason::WraithEnemyMeteor:
 				if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility3, EUpgradeAttribute::Special1))
@@ -665,11 +674,13 @@ void AEnemy::Pull(const FVector& InPullLocation, const float InPullStrength)
 
 void AEnemy::ApplyTankShieldActionSpeedDebuff()
 {
-			UE_LOG(LogTemp, Error, TEXT("DEBUFF ME: %s"), *GetName());
+		UE_LOG(LogTemp, Error, TEXT("DEBUFF ME: %s"), *GetName());
 	bTankShieldActionSpeedDebuff = true;
 	SetActionSpeed(ActionSpeed);
 	GetWorldTimerManager().SetTimer(AI_TankShieldActionSpeedDebuffHandle, this, &AEnemy::AI_TankShieldActionSpeedDebuffEnded, TankShieldActionSpeedDebuffDuration);
 }
+
+void AEnemy::RefreshMovementSpeed() { SetMaxWalkSpeed(CurrentMoveMode); }
 
 float AEnemy::AI_GetShootPause() { return AI_Data->GetShootPause(); }
 
@@ -1198,8 +1209,9 @@ void AEnemy::SetMaxWalkSpeed(const EMoveMode InMoveMode, float InNewSpeed)
 	SetMoveMode(InMoveMode);
 	if (InNewSpeed < 0.f) InNewSpeed = ReceiveDefaultMovementSpeed();
 	InNewSpeed *= ReceiveMovementSpeedModification();
-	GetCharacterMovement()->MaxWalkSpeed = InNewSpeed * MovementSpeedMultiplier * ActionSpeed;
-	GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetSafeNormal() * MovementSpeedMultiplier * InNewSpeed * ActionSpeed;
+	const float FinalSpeed = InNewSpeed * MovementSpeedMultiplier * ActionSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = FinalSpeed;
+	GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetSafeNormal() * FinalSpeed;
 	if (AnimInstance) AnimInstance->SetMovementPlayRate(MovementSpeedMultiplier);
 }
 
@@ -2137,7 +2149,6 @@ void AEnemy::ProcessDamageReason(const EDamageReason InDamageReason, const float
 {
 	switch (InDamageReason)
 	{
-		case EDamageReason::TricksterPoisonDamage: SaveSlotManager->GetSaveSlot()->ProgressVariationUnlock(EVariation::TricksterVariationPurple, InDamage); break;
 		case EDamageReason::WraithPlayerMeteor:
 			if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility3, EUpgradeAttribute::Special1))
 			{
@@ -2160,8 +2171,7 @@ void AEnemy::ProcessKillDamageReason(const EDamageReason InDamageReason)
 			{
 				if (DelegateManager->RequestIsTimeStopUsed.IsBound() && DelegateManager->RequestIsTimeStopUsed.Execute()) GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddGuardianTimeStopSpecialStack();
 			}
-			SaveSlotManager->GetSaveSlot()->ProgressVariationUnlock(EVariation::GuardianVariationGold, 1); break;
-		case EDamageReason::RangerGrenadeDamage: SaveSlotManager->GetSaveSlot()->ProgressVariationUnlock(EVariation::RangerVariationBlue, 1); break;
+			if (EVariation::GuardianDefault == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Guardian)) (void)DelegateManager->OnKillAddEnergyShield.ExecuteIfBound(20);
 		case EDamageReason::BreacherBashDamage: (void)DelegateManager->OnPlayerBashKill.ExecuteIfBound(); break;
 		case EDamageReason::TankSlam: ImpulseAfterDeath = FVector::UpVector * 500.f; break;
 		default: ;

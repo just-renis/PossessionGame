@@ -11,6 +11,7 @@
 #include "PossessionGame/Enums/EUpgrade.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/RunSaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 #include "PossessionGame/Utilities/Subsystems/SaveSlotManager.h"
 #include "PossessionGame/Utilities/Subsystems/WeaponManager.h"
@@ -177,7 +178,7 @@ void ATrickster::P_WeaponShoot() { Weapon->P_Shoot(EPoolObject::TricksterProject
 float ATrickster::ReceiveMovementSpeedModification() const
 {
 	if (bIsCloneEnemyRunUpgradeTaken && !bIsHijacked && CurrentMoveMode == EMoveMode::Run) return AI_MovementSpeedMultiplierForCloneSpecialUpgrade;
-	return 1.f;
+	return 1.f + GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetTricksterDefaultMovementBoost();
 }
 
 void ATrickster::BeginPlay()

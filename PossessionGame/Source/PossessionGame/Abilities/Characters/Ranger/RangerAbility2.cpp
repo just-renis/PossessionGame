@@ -33,5 +33,5 @@ void URangerAbility2::SetProprietor(const TObjectPtr<AEnemy>& InAbilityProprieto
 void URangerAbility2::Setup(TObjectPtr<AEnemy> InAbilityOwner, TObjectPtr<UAbilityData> InAbilityData, TObjectPtr<UDelegateManager> InDelegateManager)
 {
 	Super::Setup(InAbilityOwner, InAbilityData, InDelegateManager);
-	bRangerBlueVariationEnabled = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Ranger) == EVariation::RangerVariationBlue;
+	bRangerBlueVariationEnabled = GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Ranger) == EVariation::RangerBlue;
 }

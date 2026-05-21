@@ -12,8 +12,6 @@
 
 bool USaveSlot::GetIsVariationUnlocked(const EVariation InVariationUnlockName) { return VariationUnlockData.IsVariationUnlocked(InVariationUnlockName); }
 
-bool USaveSlot::GetIsVariationTaskCompleted(const EVariation InVariationUnlockName) const { return VariationUnlockData.IsVariationTaskCompleted(InVariationUnlockName); }
-
 bool USaveSlot::GetIsAbilityUnlocked(const ECharacterType InCharacter, const int32 InAbilityIndex)
 {
 	if (const FCharacterAbilities* CharacterAbilities = CharacterUnlockedAbilities.Find(InCharacter)) return CharacterAbilities->Abilities.Contains(InAbilityIndex);
@@ -32,10 +30,6 @@ bool USaveSlot::UnlockAbility(const ECharacterType InCharacter, const int32 InAb
 	SaveSlot();
 	return true;
 }
-
-int32 USaveSlot::GetVariationUnlockProgress(const EVariation InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockProgress(InVariationUnlockName); }
-
-int32 USaveSlot::GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const { return VariationUnlockData.GetVariationUnlockRequirement(InVariationUnlockName); }
 
 int32 USaveSlot::GetSkillPoints() const { return GetPlayerLevel() - CharacterUnlockedAbilities.Num(); }
 
@@ -143,8 +137,6 @@ void USaveSlot::AddXp(const float InXp)
 		GameInstance->GetSubsystem<UDelegateManager>()->OnLevelUp.Broadcast();
 	}
 }
-
-void USaveSlot::ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount) { VariationUnlockData.ProgressVariationUnlock(InVariationUnlockName, InAmount); }
 
 void USaveSlot::SaveSlot()
 {

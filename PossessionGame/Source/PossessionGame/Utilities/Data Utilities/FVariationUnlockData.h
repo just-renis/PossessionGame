@@ -1,24 +1,20 @@
 ﻿#pragma once
-#include "PossessionGame/Enums/EVariation.h"
 
+#include "PossessionGame/Enums/EVariation.h"
 #include "FVariationUnlockData.generated.h"
 
 enum class EVariation : uint8;
 enum class ECharacterType : uint8;
 
 USTRUCT()
-struct FVariationUnlockGoal
+struct FUnlockedVariations
 {
 	GENERATED_BODY()
 
-	explicit FVariationUnlockGoal(const int32 InRequirement) : Requirement(InRequirement), bIsBought(false), Current(0) {}
-	FVariationUnlockGoal() : Requirement(0), bIsBought(false), Current(0) {}
-
-	int32 Requirement;
 	UPROPERTY()
-	bool bIsBought;
+	TArray<EVariation> UnlockedVariations;
 	UPROPERTY()
-	int32 Current;
+	EVariation Current;
 };
 
 USTRUCT()
@@ -29,17 +25,11 @@ struct FVariationUnlockData
 	FVariationUnlockData();
 
 	bool IsVariationUnlocked(const EVariation InVariationUnlockName);
-	bool IsVariationTaskCompleted(const EVariation InVariationUnlockName) const;
-	int32 GetVariationUnlockProgress(const EVariation InVariationUnlockName) const;
-	int32 GetVariationUnlockRequirement(const EVariation InVariationUnlockName) const;
 	EVariation GetSelectedVariation(const ECharacterType InCharacter) const;
 	
-	void ProgressVariationUnlock(const EVariation InVariationUnlockName, const int32 InAmount);
-	void UnlockVariation(const EVariation InVariationUnlockName);
 	void UpdateSelectedVariation(const ECharacterType InCharacterType, const EVariation InVariationName);
+	void UnlockVariation(const EVariation InVariationName);
 private:
 	UPROPERTY()
-	TMap<ECharacterType, EVariation> SelectedVariations;
-	UPROPERTY()
-	TMap<EVariation, FVariationUnlockGoal> VariationUnlocks;
+	TMap<ECharacterType, FUnlockedVariations> SelectedVariations;
 };

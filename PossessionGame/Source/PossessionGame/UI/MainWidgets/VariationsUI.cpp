@@ -11,6 +11,7 @@
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EExplanation.h"
 #include "PossessionGame/Enums/EVariation.h"
+#include "PossessionGame/UI/SecondaryWidgets/ArrowButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CloseButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationCurrencyPanelUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
@@ -67,12 +68,14 @@ void UVariationsUI::NativeConstruct()
 	CloseButton->Get()->OnClicked.AddDynamic(this, &UVariationsUI::CloseUI);
 	if (!GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestIsDemo.Execute())
 	{
-		RightArrowButton->OnClicked.AddDynamic(this, &UVariationsUI::SwitchCharactersSelectionRight);
-		RightArrowButton->OnHovered.AddDynamic(this, &UVariationsUI::RightArrowButtonHovered);
-		RightArrowButton->OnUnhovered.AddDynamic(this, &UVariationsUI::RightArrowButtonUnHovered);
-		LeftArrowButton->OnClicked.AddDynamic(this, &UVariationsUI::SwitchCharactersSelectionLeft);
-		LeftArrowButton->OnHovered.AddDynamic(this, &UVariationsUI::LeftArrowButtonHovered);
-		LeftArrowButton->OnUnhovered.AddDynamic(this, &UVariationsUI::LeftArrowButtonUnHovered);
+		RightArrowButton->GetClickEvent().AddDynamic(this, &UVariationsUI::SwitchCharactersSelectionRight);
+		RightArrowButton->SetupEvents();
+		LeftArrowButton->GetClickEvent().AddDynamic(this, &UVariationsUI::SwitchCharactersSelectionLeft);
+		LeftArrowButton->SetupEvents();
+		VariationPageRightArrowButton->GetClickEvent().AddDynamic(this, &UVariationsUI::SwitchVariationPageRight);
+		VariationPageRightArrowButton->SetupEvents();
+		VariationPageLeftArrowButton->GetClickEvent().AddDynamic(this, &UVariationsUI::SwitchVariationPageLeft);
+		VariationPageLeftArrowButton->SetupEvents();
 	}
 	FadeOutDelegate.BindDynamic(this, &UVariationsUI::HideVariationsPanel);
 }
@@ -103,17 +106,17 @@ void UVariationsUI::SetSelectedVariation(const EVariation InVariation)
 {
 	switch (InVariation)
 	{
-		case EVariation::GuardianVariationDefault: GuardianVariationDefault->SetSelected(true); break;
-		case EVariation::GuardianVariationGold: GuardianVariationGold->SetSelected(true); break;
-		case EVariation::RangerVariationDefault: RangerVariationDefault->SetSelected(true); break;
-		case EVariation::RangerVariationBlue: RangerVariationBlue->SetSelected(true); break;
-		case EVariation::TricksterVariationDefault: TricksterVariationDefault->SetSelected(true); break;
-		case EVariation::TricksterVariationPurple: TricksterVariationPurple->SetSelected(true); break;
-		case EVariation::BreacherVariationDefault: BreacherVariationDefault->SetSelected(true); break;
-		case EVariation::WraithVariationDefault: WraithVariationDefault->SetSelected(true); break;
-		case EVariation::TankVariationDefault: TankVariationDefault->SetSelected(true); break;
-		case EVariation::SpyVariationDefault: SpyVariationDefault->SetSelected(true); break;
-		case EVariation::SamuraiVariationDefault: SamuraiVariationDefault->SetSelected(true);
+		case EVariation::GuardianDefault: GuardianVariationDefault->SetSelected(true); break;
+		case EVariation::GuardianGold: GuardianVariationGold->SetSelected(true); break;
+		case EVariation::RangerDefault: RangerVariationDefault->SetSelected(true); break;
+		case EVariation::RangerBlue: RangerVariationBlue->SetSelected(true); break;
+		case EVariation::TricksterDefault: TricksterVariationDefault->SetSelected(true); break;
+		case EVariation::TricksterPurple: TricksterVariationPurple->SetSelected(true); break;
+		case EVariation::BreacherDefault: BreacherVariationDefault->SetSelected(true); break;
+		case EVariation::WraithDefault: WraithVariationDefault->SetSelected(true); break;
+		case EVariation::TankDefault: TankVariationDefault->SetSelected(true); break;
+		case EVariation::SpyDefault: SpyVariationDefault->SetSelected(true); break;
+		case EVariation::SamuraiDefault: SamuraiVariationDefault->SetSelected(true);
 		default: ;
 	}
 }
@@ -127,41 +130,49 @@ void UVariationsUI::SwitchVariation(const ECharacterType InCharacterName)
 		case ECharacterType::Guardian:
 			CurrentlySelectedIcon = GuardianCharacterIcon;
 			ActiveWidgetIndex = 0;
-			if (SaveSlot->GetIsVariationUnlocked(EVariation::GuardianVariationGold)) GuardianVariationGold->UnlockVariation();
+			CurrentVariationsSwitcherSelected = GuardianVariations;
+			if (SaveSlot->GetIsVariationUnlocked(EVariation::GuardianGold)) GuardianVariationGold->UnlockVariation();
 			break;
 		case ECharacterType::Ranger:
 			CurrentlySelectedIcon = RangerCharacterIcon;
 			ActiveWidgetIndex = 1;
-			if (SaveSlot->GetIsVariationUnlocked(EVariation::RangerVariationBlue)) RangerVariationBlue->UnlockVariation();
+			CurrentVariationsSwitcherSelected = RangerVariations;
+			if (SaveSlot->GetIsVariationUnlocked(EVariation::RangerBlue)) RangerVariationBlue->UnlockVariation();
 			break;
 		case ECharacterType::Trickster:
 			CurrentlySelectedIcon = TricksterCharacterIcon;
 			ActiveWidgetIndex = 2;
-			if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
+			CurrentVariationsSwitcherSelected = TricksterVariations;
+			if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterPurple)) TricksterVariationPurple->UnlockVariation();
 			break;
 		case ECharacterType::Breacher:
 			CurrentlySelectedIcon = BreacherCharacterIcon;
 			ActiveWidgetIndex = 3;
-		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
+			CurrentVariationsSwitcherSelected = BreacherVariations;
+		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterPurple)) TricksterVariationPurple->UnlockVariation();
 			break;
 		case ECharacterType::Wraith:
 			CurrentlySelectedIcon = WraithCharacterIcon;
 			ActiveWidgetIndex = 4;
+			CurrentVariationsSwitcherSelected = WraithVariations;
 		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
 			break;
 		case ECharacterType::Tank:
 			CurrentlySelectedIcon = TankCharacterIcon;
 			ActiveWidgetIndex = 5;
+			CurrentVariationsSwitcherSelected = TankVariations;
 		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
 			break;
 		case ECharacterType::Spy:
 			CurrentlySelectedIcon = SpyCharacterIcon;
 			ActiveWidgetIndex = 6;
+			CurrentVariationsSwitcherSelected = SpyVariations;
 		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
 			break;
 		case ECharacterType::Samurai:
 			CurrentlySelectedIcon = SamuraiCharacterIcon;
 			ActiveWidgetIndex = 7;
+			CurrentVariationsSwitcherSelected = SamuraiVariations;
 		//	if (SaveSlot->GetIsVariationUnlocked(EVariation::TricksterVariationPurple)) TricksterVariationPurple->UnlockVariation();
 			break;
 		default: ;
@@ -180,8 +191,7 @@ void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVar
 		UnlockDetailsPanel->SetDetailsText(InUnlockDetailsText);
 		if (const int32* UnlockPrice = UnlockPrices.Find(InVariationName)) UnlockDetailsPanel->SetupDetailsPanel(InVariationName, *UnlockPrice);
 		else UnlockDetailsPanel->SetupDetailsPanel(InVariationName, INT_MAX);
-		if (SaveSlot->GetIsVariationUnlocked(InVariationName)) UnlockDetailsPanel->SetUnlockedVariation(true);
-		else UnlockDetailsPanel->SetTaskCompleted(SaveSlot->GetIsVariationTaskCompleted(InVariationName));
+		UnlockDetailsPanel->SetUnlockedVariation(SaveSlot->GetIsVariationUnlocked(InVariationName));
 		UnlockDetailsPanel->PlayFadeInAnim();
 		VariationDetailsPanel->PlayFadeInAnim();
 		if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsExplanationShown(EExplanation::VariationDetailsUI))
@@ -200,7 +210,6 @@ void UVariationsUI::HideVariationsPanel()
 void UVariationsUI::SwitchCharactersSelectionRight()
 {
 	if (!CharactersSwitcher) return;
-	PlayAnimation(ArrowRightPressAnim);
 	int32 NextActiveIndex = CharactersSwitcher->GetActiveWidgetIndex();
 	if (++NextActiveIndex >= CharactersSwitcher->GetNumWidgets()) NextActiveIndex = 0;
 	CharactersSwitcher->SetActiveWidgetIndex(NextActiveIndex);
@@ -209,28 +218,23 @@ void UVariationsUI::SwitchCharactersSelectionRight()
 void UVariationsUI::SwitchCharactersSelectionLeft()
 {
 	if (!CharactersSwitcher) return;
-	PlayAnimation(ArrowLeftPressAnim);
 	int32 NextActiveIndex = CharactersSwitcher->GetActiveWidgetIndex();
 	if (--NextActiveIndex < 0) NextActiveIndex = CharactersSwitcher->GetNumWidgets() - 1;
 	CharactersSwitcher->SetActiveWidgetIndex(NextActiveIndex);
 }
 
-void UVariationsUI::LeftArrowButtonHovered()
+void UVariationsUI::SwitchVariationPageRight()
 {
-	PlayAnimation(ArrowLeftHoverAnim, GetAnimationCurrentTime(ArrowLeftHoverAnim));
+	if (!CurrentVariationsSwitcherSelected) return;
+	int32 NextActiveIndex = CurrentVariationsSwitcherSelected->GetActiveWidgetIndex();
+	if (++NextActiveIndex >= CurrentVariationsSwitcherSelected->GetNumWidgets()) NextActiveIndex = 0;
+	CurrentVariationsSwitcherSelected->SetActiveWidgetIndex(NextActiveIndex);
 }
 
-void UVariationsUI::LeftArrowButtonUnHovered()
+void UVariationsUI::SwitchVariationPageLeft()
 {
-	PlayAnimation(ArrowLeftHoverAnim, GetAnimationCurrentTime(ArrowLeftHoverAnim), 1, EUMGSequencePlayMode::Reverse);
-}
-
-void UVariationsUI::RightArrowButtonHovered()
-{
-	PlayAnimation(ArrowRightHoverAnim, GetAnimationCurrentTime(ArrowRightHoverAnim));
-}
-
-void UVariationsUI::RightArrowButtonUnHovered()
-{
-	PlayAnimation(ArrowRightHoverAnim, GetAnimationCurrentTime(ArrowRightHoverAnim), 1, EUMGSequencePlayMode::Reverse);
+	if (!CurrentVariationsSwitcherSelected) return;
+	int32 NextActiveIndex = CurrentVariationsSwitcherSelected->GetActiveWidgetIndex();
+	if (--NextActiveIndex < 0) NextActiveIndex = CurrentVariationsSwitcherSelected->GetNumWidgets() - 1;
+	CurrentVariationsSwitcherSelected->SetActiveWidgetIndex(NextActiveIndex);
 }

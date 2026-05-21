@@ -23,7 +23,6 @@ public:
 
 	bool GetIsLocked() const { return bIsLocked; }
 
-	void UpdateUnlockProgressText(const TObjectPtr<USaveSlot>& InSaveSlot);
 	void UnlockVariation();
 	void SetSelected(const bool bState);
 	void SetButtonState(const bool bState) const;
@@ -37,8 +36,6 @@ private:
 	ECharacterType CharacterType;
 	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true, MultiLine = true))
 	FText VariationDetailsPanelText;
-	UPROPERTY(EditAnywhere, Category = "Text", meta = (AllowPrivateAccess = true, MultiLine = true))
-	FText DefaultUnlockText;
 	UPROPERTY(EditAnywhere, Category = "Icon", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UTexture2D> VariationOptionIcon;
 	UPROPERTY(meta = (BindWidget))
@@ -56,7 +53,6 @@ private:
 	UPROPERTY()
 	FText UnlockProgressText;
 
-	FString GetUnlockProgressString(const TObjectPtr<USaveSlot>& InSaveSlot) const;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 	virtual void NativePreConstruct() override;

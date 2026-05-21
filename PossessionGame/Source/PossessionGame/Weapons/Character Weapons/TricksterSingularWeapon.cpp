@@ -3,7 +3,9 @@
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EVfxType.h"
+#include "PossessionGame/Utilities/Subsystems/PlayerDataManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
+#include "PossessionGame/Utilities/Subsystems/VariationManager.h"
 
 ATricksterSingularWeapon::ATricksterSingularWeapon()
 {
@@ -52,4 +54,13 @@ void ATricksterSingularWeapon::FpsTrailVfxLogic()
 {
 	if (!FpsTrailVfx) AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &FpsTrailVfx, GetMesh(), FName("FpsProjectileSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, Proprietor->GetVariation());
 	else FpsTrailVfx->Activate(true);
+}
+
+void ATricksterSingularWeapon::CriticalHitLogic()
+{
+	if (EVariation::TricksterDefault == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Trickster))
+	{
+		GetGameInstance()->GetSubsystem<UPlayerDataManager>()->AddTricksterDefaultMovementBoost();
+		Proprietor->RefreshMovementSpeed();
+	}
 }
