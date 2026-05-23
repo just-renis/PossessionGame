@@ -111,8 +111,7 @@ void AWeapon::P_SetVariationMaterial()
 	const TObjectPtr<UMaterialInstanceDynamic> MI_Variation = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
 	if (!MI_Variation) return;
 	GetMesh()->SetMaterial(0, MI_Variation);
-	MI_Variation->SetScalarParameterValue("Hue", P_Data->GetVariationHueValue(Proprietor->GetVariation()));
-	MI_Variation->SetScalarParameterValue("EmissiveHue", P_Data->GetVariationHueValue(Proprietor->GetVariation()));
+	P_Data->SetupVariationMaterial(MI_Variation, Proprietor->GetVariation());
 }
 
 void AWeapon::P_ChangeVfxVariation()

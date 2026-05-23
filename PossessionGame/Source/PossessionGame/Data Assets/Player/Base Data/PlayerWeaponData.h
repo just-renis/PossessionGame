@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/Data Assets/Base Data Assets/WeaponData.h"
+#include "PossessionGame/Utilities/Data Utilities/FVariationVfxParams.h"
 #include "PlayerWeaponData.generated.h"
 
 enum class EVariation : uint8;
@@ -47,7 +48,6 @@ public:
     float GetHitScanDamage() const { return HitScanDamage; }
     float GetHitScanSpread() const { return HitScanSpread; }
     float GetDamageMultiplierFromRange(const float InMeters) const;
-    float GetVariationHueValue(const EVariation InVariation);
     float GetCriticalDamage() const { return CriticalDamage; }
     FVector GetFirstWeaponLocation() const { return FirstWeaponLocation; }
     FRotator GetFirstWeaponRotation() const { return FirstWeaponRotation; }
@@ -55,6 +55,8 @@ public:
     FVector GetSecondWeaponLocation() const { return SecondWeaponLocation; }
     FRotator GetSecondWeaponRotation() const { return SecondWeaponRotation; }
     FVector GetSecondWeaponScale() const { return SecondWeaponScale; }
+
+    void SetupVariationMaterial(const TObjectPtr<UMaterialInstanceDynamic>& InMaterial, const EVariation InVariation);
 private:
     UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
     bool bHitScan = true;
@@ -81,5 +83,5 @@ private:
     UPROPERTY(EditAnywhere, Category = "Damage Range Entries", meta = (AllowPrivateAccess = true))
     FDamageRangeEntries DamageRangeEntries;
     UPROPERTY(EditAnywhere, Category = "Variation Hue Values", meta = (AllowPrivateAccess = true))
-    TMap<EVariation, float> VariationHueValues;
+    TMap<EVariation, FVariationVfxParams> VariationHueValues;
 };

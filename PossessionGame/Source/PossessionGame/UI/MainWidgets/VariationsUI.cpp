@@ -58,6 +58,8 @@ void UVariationsUI::NativeConstruct()
 	GuardianVariationGold->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	RangerVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	RangerVariationBlue->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	RangerVariationGreen->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
+	RangerVariationBlack->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	TricksterVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	TricksterVariationPurple->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
 	BreacherVariationDefault->ShowDetailsPanel.BindUObject(this, &UVariationsUI::ToggleDetailsPanel);
@@ -110,6 +112,8 @@ void UVariationsUI::SetSelectedVariation(const EVariation InVariation)
 		case EVariation::GuardianGold: GuardianVariationGold->SetSelected(true); break;
 		case EVariation::RangerDefault: RangerVariationDefault->SetSelected(true); break;
 		case EVariation::RangerBlue: RangerVariationBlue->SetSelected(true); break;
+		case EVariation::RangerGreen: RangerVariationGreen->SetSelected(true); break;
+		case EVariation::RangerBlack: RangerVariationBlack->SetSelected(true); break;
 		case EVariation::TricksterDefault: TricksterVariationDefault->SetSelected(true); break;
 		case EVariation::TricksterPurple: TricksterVariationPurple->SetSelected(true); break;
 		case EVariation::BreacherDefault: BreacherVariationDefault->SetSelected(true); break;
@@ -138,6 +142,8 @@ void UVariationsUI::SwitchVariation(const ECharacterType InCharacterName)
 			ActiveWidgetIndex = 1;
 			CurrentVariationsSwitcherSelected = RangerVariations;
 			if (SaveSlot->GetIsVariationUnlocked(EVariation::RangerBlue)) RangerVariationBlue->UnlockVariation();
+			if (SaveSlot->GetIsVariationUnlocked(EVariation::RangerGreen)) RangerVariationGreen->UnlockVariation();
+			if (SaveSlot->GetIsVariationUnlocked(EVariation::RangerBlack)) RangerVariationBlack->UnlockVariation();
 			break;
 		case ECharacterType::Trickster:
 			CurrentlySelectedIcon = TricksterCharacterIcon;

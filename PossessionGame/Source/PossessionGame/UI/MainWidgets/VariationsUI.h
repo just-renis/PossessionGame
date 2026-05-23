@@ -84,6 +84,10 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationOptionUI> RangerVariationBlue;
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> RangerVariationGreen;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> RangerVariationBlack;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationOptionUI> TricksterVariationDefault;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationOptionUI> TricksterVariationPurple;
