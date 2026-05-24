@@ -38,9 +38,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> WraithCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationCharacterIconUI> TankCharacterIcon;
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> SpyCharacterIcon;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationCharacterIconUI> TankCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationCharacterIconUI> SamuraiCharacterIcon;
 	UPROPERTY(meta = (BindWidget))
@@ -76,31 +76,69 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UArrowButtonUI> VariationPageLeftArrowButton;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> GuardianVariationDefault;
+	TObjectPtr<UVariationOptionUI> GuardianDefault;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> GuardianVariationGold;
+	TObjectPtr<UVariationOptionUI> GuardianGreen;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> RangerVariationDefault;
+	TObjectPtr<UVariationOptionUI> GuardianPurple;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> RangerVariationBlue;
+	TObjectPtr<UVariationOptionUI> GuardianBlack;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> RangerVariationGreen;
+	TObjectPtr<UVariationOptionUI> RangerDefault;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> RangerVariationBlack;
+	TObjectPtr<UVariationOptionUI> RangerBlue;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> TricksterVariationDefault;
+	TObjectPtr<UVariationOptionUI> RangerGreen;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> TricksterVariationPurple;
+	TObjectPtr<UVariationOptionUI> RangerBlack;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> BreacherVariationDefault;
+	TObjectPtr<UVariationOptionUI> TricksterDefault;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> WraithVariationDefault;
+	TObjectPtr<UVariationOptionUI> TricksterPurple;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> TankVariationDefault;
+	TObjectPtr<UVariationOptionUI> TricksterLime;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> SpyVariationDefault;
+	TObjectPtr<UVariationOptionUI> TricksterBlack;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationOptionUI> SamuraiVariationDefault;
+	TObjectPtr<UVariationOptionUI> BreacherDefault;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> BreacherRed;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> BreacherGreen;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> BreacherBlack;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> WraithDefault;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> WraithPurple;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> WraithBlue;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> WraithBlack;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> TankDefault;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> TankOrange;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> TankGreen;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> TankBlack;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> SpyDefault;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> SpyOrange;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> SpyYellow;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> SpyBlack;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> SamuraiDefault;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> SamuraiRed;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> SamuraiBlue;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UVariationOptionUI> SamuraiBlack;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCloseButtonUI> CloseButton;
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -117,6 +155,8 @@ private:
 	TObjectPtr<UWidgetSwitcher> CurrentVariationsSwitcherSelected;
 	UPROPERTY()
 	FWidgetAnimationDynamicEvent FadeOutDelegate;
+	UPROPERTY()
+	TMap<EVariation, TObjectPtr<UVariationOptionUI>> VariationOptions;
 
 	virtual void NativeConstruct() override;
 	void Toggle(const bool bState);

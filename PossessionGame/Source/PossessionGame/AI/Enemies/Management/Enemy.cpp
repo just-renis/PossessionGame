@@ -516,7 +516,7 @@ void AEnemy::ReceiveDamage(float InDamage, const EDamageReason InDamageReason, c
 		switch (InDamageReason)
 		{
 			case EDamageReason::GuardianDamage:
-				if (EVariation::GuardianGold == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Guardian)) { ConductionLogicData.AddStack(); }
+				if (EVariation::GuardianGreen == GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(ECharacterType::Guardian)) { ConductionLogicData.AddStack(); }
 				break;
 			case EDamageReason::WraithEnemyMeteor:
 				if (DelegateManager->RequestSpecialUpgradeAvailability.IsBound() && DelegateManager->RequestSpecialUpgradeAvailability.Execute(EUpgrade::WraithAbility3, EUpgradeAttribute::Special1))

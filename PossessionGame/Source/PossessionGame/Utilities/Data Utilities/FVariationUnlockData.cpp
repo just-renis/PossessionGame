@@ -19,9 +19,14 @@ bool FVariationUnlockData::IsVariationUnlocked(const EVariation InVariationUnloc
 	ECharacterType CharacterType;
 	switch (InVariationUnlockName)
 	{
-		case EVariation::GuardianGold: CharacterType = ECharacterType::Guardian; break;
+		case EVariation::GuardianGreen: case EVariation::GuardianPurple: case EVariation::GuardianBlack: CharacterType = ECharacterType::Guardian; break;
 		case EVariation::RangerBlue: case EVariation::RangerGreen: case EVariation::RangerBlack: CharacterType = ECharacterType::Ranger; break;
-		case EVariation::TricksterPurple: CharacterType = ECharacterType::Trickster; break;
+		case EVariation::TricksterPurple: case EVariation::TricksterLime: case EVariation::TricksterBlack: CharacterType = ECharacterType::Trickster; break;
+		case EVariation::WraithBlack: case EVariation::WraithBlue: case EVariation::WraithPurple: CharacterType = ECharacterType::Wraith; break;
+		case EVariation::BreacherBlack: case EVariation::BreacherRed: case EVariation::BreacherGreen: CharacterType = ECharacterType::Breacher; break;
+		case EVariation::SpyOrange: case EVariation::SpyYellow: case EVariation::SpyBlack: CharacterType = ECharacterType::Spy; break;
+		case EVariation::TankGreen: case EVariation::TankOrange: case EVariation::TankBlack: CharacterType = ECharacterType::Tank; break;
+		case EVariation::SamuraiBlue: case EVariation::SamuraiRed: case EVariation::SamuraiBlack: CharacterType = ECharacterType::Samurai; break;
 		default: return true;
 	}
 	return SelectedVariations[CharacterType].UnlockedVariations.Contains(InVariationUnlockName);
@@ -36,9 +41,14 @@ void FVariationUnlockData::UnlockVariation(const EVariation InVariationName)
 	ECharacterType CharacterType;
 	switch (InVariationName)
 	{
-		case EVariation::GuardianGold: CharacterType = ECharacterType::Guardian; break;
+		case EVariation::GuardianGreen: case EVariation::GuardianPurple: case EVariation::GuardianBlack: CharacterType = ECharacterType::Guardian; break;
 		case EVariation::RangerBlue: case EVariation::RangerGreen: case EVariation::RangerBlack: CharacterType = ECharacterType::Ranger; break;
-		case EVariation::TricksterPurple: CharacterType = ECharacterType::Trickster; break;
+		case EVariation::TricksterPurple: case EVariation::TricksterLime: case EVariation::TricksterBlack: CharacterType = ECharacterType::Trickster; break;
+		case EVariation::WraithBlack: case EVariation::WraithBlue: case EVariation::WraithPurple: CharacterType = ECharacterType::Wraith; break;
+		case EVariation::BreacherBlack: case EVariation::BreacherRed: case EVariation::BreacherGreen: CharacterType = ECharacterType::Breacher; break;
+		case EVariation::SpyOrange: case EVariation::SpyYellow: case EVariation::SpyBlack: CharacterType = ECharacterType::Spy; break;
+		case EVariation::TankGreen: case EVariation::TankOrange: case EVariation::TankBlack: CharacterType = ECharacterType::Tank; break;
+		case EVariation::SamuraiBlue: case EVariation::SamuraiRed: case EVariation::SamuraiBlack: CharacterType = ECharacterType::Samurai; break;
 		default: return;
 	}
 	SelectedVariations[CharacterType].UnlockedVariations.Add(InVariationName);
