@@ -4,6 +4,7 @@
 #include "Throwable.h"
 #include "RangerMine.generated.h"
 
+enum class EVfx : uint16;
 enum class EUpgrade : uint8;
 enum class EUpgradeAttribute : uint8;
 enum class ESound : uint16;
@@ -17,12 +18,14 @@ class POSSESSIONGAME_API ARangerMine : public AThrowable
 public:
 	virtual void Disable(const bool bHide) override;
 	void DestroyThis() const;
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 private:
 	ARangerMine();
 
 	bool bAlreadyLanded = false;
 	bool bIsFirstSpecialUpgradeTaken = false;
 	float CurrentCollisionRadius;
+	EVfx CurrentRadiusVfx;
 	FTimerHandle ExplosionHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta = (AllowPrivateAccess = true))
 	float SpecialUpgradeDamageMultiplier = 2.f;

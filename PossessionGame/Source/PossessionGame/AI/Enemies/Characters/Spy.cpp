@@ -42,8 +42,8 @@ void ASpy::StartTeleportProcess()
 	AssetsManager->PlaySound2D(ESound::SpyPlayerSnatchStart);
 	bIsInvincible = true;
 	bIsSecondAbilityActive = true;
-	if (!TeleportLinesVfx) AssetsManager->AttachVfx(EVfx::SpyTeleportLines, [this]() -> bool { return GetIsAlive() && bIsSecondAbilityActive && bIsHijacked; }, &TeleportLinesVfx, Camera);
-	else TeleportLinesVfx->Activate(true);
+	if (!TeleportLinesVfx) AssetsManager->AttachVfx(EVfx::SpyTeleportLines, [this]() -> bool { return GetIsAlive() && bIsSecondAbilityActive && bIsHijacked; }, &TeleportLinesVfx, Camera, NAME_None, GetVariation());
+	else AssetsManager->ActivateWithVariation(EVfx::SpyTeleportLines, nullptr, TeleportLinesVfx, false, GetVariation());
 	SetTeleportMaterialValue(1.f);
 }
 
@@ -68,8 +68,8 @@ void ASpy::SetFirstAbilityActiveState(const bool bState)
 	if (bState)
 	{
 		AssetsManager->PlaySound2D(ESound::SpyInvincibilityOn);
-		if (!InvincibilityVfx) AssetsManager->AttachVfx(EVfx::SpyInvincibility, [this]() -> bool { return GetIsAlive() && bIsFirstAbilityActive && bIsHijacked; }, &InvincibilityVfx, GetMesh(), FName("DeathSocket"));
-		else InvincibilityVfx->Activate(true);
+		if (!InvincibilityVfx) AssetsManager->AttachVfx(EVfx::SpyInvincibility, [this]() -> bool { return GetIsAlive() && bIsFirstAbilityActive && bIsHijacked; }, &InvincibilityVfx, GetMesh(), FName("DeathSocket"), GetVariation());
+		else AssetsManager->ActivateWithVariation(EVfx::SpyInvincibility, nullptr, InvincibilityVfx, false, GetVariation());
 		GetWorld()->GetSubsystem<UPostProcessManager>()->AddOrUpdateDynamicMaterial(EPostProcessMaterial::SpyInvincibilityEffect, MID_Invincibility, 1.f);
 		GetWorldTimerManager().SetTimer(ProcessInvincibilityMaterialHandle, this, &ASpy::ProcessInvincibilityMaterialActivation, 0.025f, true);
 	}
@@ -150,8 +150,8 @@ void ASpy::AI_PlayDeathElectrification()
 	// LACKS DEATH ELECTRIFICATION 	else AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
 	if (bIsAco)
 	{
-		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
-		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"), EVariation::Default,
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false,
 		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
 	}
 }

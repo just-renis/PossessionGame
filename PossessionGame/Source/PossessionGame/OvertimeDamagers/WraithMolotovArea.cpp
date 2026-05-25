@@ -1,5 +1,4 @@
 ﻿#include "WraithMolotovArea.h"
-#include "NiagaraComponent.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DamageOverTimeData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
@@ -66,12 +65,12 @@ void AWraithMolotovArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UD
 	Attributes.Add(FName("BubblesLifetime"), FNiagaraAttribute(EUserParamType::Float, BubblesLifetime));
 	if (!RadiusVfx)
 	{
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithMolotovRadius, nullptr, &RadiusVfx, RootComponent, NAME_None,
-		false, FVector::ZeroVector, FRotator(-90.f, 0.f, 0.f), EAttachLocation::SnapToTarget, false, EVariation::Default, Attributes);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithMolotovRadius, nullptr, &RadiusVfx, RootComponent, NAME_None, Proprietor->GetVariation(), 
+		false, FVector::ZeroVector, FRotator(-90.f, 0.f, 0.f), EAttachLocation::SnapToTarget, false, Attributes);
 	}
 	else
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->UpdateVfxAttributes(RadiusVfx, Attributes);
-		RadiusVfx->Activate(true);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ActivateWithVariation(EVfx::WraithMolotovRadius, nullptr, RadiusVfx, false, Proprietor->GetVariation());
 	}
 }

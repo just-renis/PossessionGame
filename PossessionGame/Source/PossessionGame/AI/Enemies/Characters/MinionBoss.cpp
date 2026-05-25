@@ -24,7 +24,7 @@ void AMinionBoss::TriggerLaserCameraShake() const { (void)DelegateManager->Reque
 
 void AMinionBoss::EnableLaserEyeBall()
 {
-	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &LaserEyeBallVfx, GetMesh(), "LaserSocket");
+	if (!LaserEyeBallVfx) AssetsManager->AttachVfx(EVfx::MinionBossLaserBall, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &LaserEyeBallVfx, GetMesh(), FName("LaserSocket"));
 	else LaserEyeBallVfx->Activate();
 }
 
@@ -36,7 +36,7 @@ void AMinionBoss::EnableLaser()
 		{
 			if (RequestLaserActivityState.IsBound()) return IsAsyncAssetStillAllowedToBeUsed() && RequestLaserActivityState.Execute();
 			return IsAsyncAssetStillAllowedToBeUsed();
-		}, &LaserVfx, GetMesh(), "LaserSocket");
+		}, &LaserVfx, GetMesh(), FName("LaserSocket"));
 	}
 	else LaserVfx->Activate();
 }
@@ -172,12 +172,12 @@ void AMinionBoss::AI_PlayDeathExplosion()
 {
 	PlaySound(ESound::MinionBossDeathExplosion);
 	PlaySound(ESound::MinionBossElectrificationDeathPassive);
-	AssetsManager->AttachVfx(EVfx::MinionBossDeathExplosion, nullptr, nullptr, GetMesh(), "DeathSocket");
+	AssetsManager->AttachVfx(EVfx::MinionBossDeathExplosion, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
 }
 
 void AMinionBoss::AI_PlayDeathElectrification()
 {
-	AssetsManager->AttachVfx(EVfx::MinionBossDeathElectrification, nullptr, nullptr, GetMesh(), "DeathSocket");
+	AssetsManager->AttachVfx(EVfx::MinionBossDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
 }
 
 void AMinionBoss::AI_PlaySpawnSound() { PlaySound(ESound::MinionBossSpawn, true); }

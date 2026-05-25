@@ -1,5 +1,4 @@
 ﻿#include "MeteorShowerArea.h"
-#include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DamageOverTimeData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
@@ -17,12 +16,6 @@ void AMeteorShowerArea::BeginPlay()
 
 void AMeteorShowerArea::DealOvertimeDamage() { SpawnMeteor(); }
 
-void AMeteorShowerArea::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
-{
-	Super::InitWithProprietor(InProprietor);
-	Proprietor = InProprietor;
-}
-
 void AMeteorShowerArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData, const EDamageReason InDamageReason)
 {
 	bIsHijacked = bInIsPlayerObject;
@@ -33,9 +26,9 @@ void AMeteorShowerArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDa
 	if (!DeployVfx)
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTriggerMeteorImpact, nullptr, &DeployVfx, RootComponent, NAME_None,
-		false, FVector::ZeroVector, FRotator(-90.f, 0.f, 0.f));
+		Proprietor->GetVariation(), false, FVector::ZeroVector, FRotator(-90.f, 0.f, 0.f));
 	}
-	else DeployVfx->Activate(true);
+	else GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ActivateWithVariation(EVfx::WraithTriggerMeteorImpact, nullptr, DeployVfx, false, Proprietor->GetVariation());
 }
 
 void AMeteorShowerArea::SpawnMeteor()

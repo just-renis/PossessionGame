@@ -84,7 +84,7 @@ void AWarden::BeginPlay()
 void AWarden::TryTriggeringBeamShot()
 {
 	if (!CanAbilityBeExecuted(0) || GetIsAbilityInAction() || !AI || !AI->GetStateTreeData().GetStateTreeRef()) return;
-	if (!BeamVfx) AssetsManager->AttachVfx(EVfx::WardenBeamShot, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &BeamVfx, BeamWeapon, FName("BeamSocket"), true);
+	if (!BeamVfx) AssetsManager->AttachVfx(EVfx::WardenBeamShot, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &BeamVfx, BeamWeapon, FName("BeamSocket"), EVariation::Default, true);
 	AI->GetStateTreeData().TriggerEvent(EStateTreeEvent::WardenBeamShot);
 }
 

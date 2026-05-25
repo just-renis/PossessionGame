@@ -36,10 +36,10 @@ void ASamurai::P_DashSlash()
 	bIsInputLocked = true;
 	bIsLookLocked = true;
 	AssetsManager->PlaySound2D(ESound::SamuraiDashSlash);
-	if (!DashSlashVfx) AssetsManager->AttachVfx(EVfx::SamuraiDashSlash, [this]() -> bool { return GetIsAlive() && bIsDashSlashing && bIsHijacked; }, &DashSlashVfx, GetWeapon()->GetHandsMesh(), FName("DashSlashSocket"));
-	else DashSlashVfx->Activate(true);
-	if (!DashSlashLinesVfx) AssetsManager->AttachVfx(EVfx::SamuraiDashLines, [this]() -> bool { return GetIsAlive() && bIsDashSlashing && bIsHijacked; }, &DashSlashLinesVfx, Camera);
-	else DashSlashLinesVfx->Activate(true);
+	if (!DashSlashVfx) AssetsManager->AttachVfx(EVfx::SamuraiDashSlash, [this]() -> bool { return GetIsAlive() && bIsDashSlashing && bIsHijacked; }, &DashSlashVfx, GetWeapon()->GetHandsMesh(), FName("DashSlashSocket"), GetVariation());
+	else AssetsManager->ActivateWithVariation(EVfx::SamuraiDashSlash, nullptr, DashSlashVfx, false, GetVariation());
+	if (!DashSlashLinesVfx) AssetsManager->AttachVfx(EVfx::SamuraiDashLines, [this]() -> bool { return GetIsAlive() && bIsDashSlashing && bIsHijacked; }, &DashSlashLinesVfx, Camera, NAME_None, GetVariation());
+	else AssetsManager->ActivateWithVariation(EVfx::SamuraiDashLines, nullptr, DashSlashLinesVfx, false, GetVariation());
 	P_SetDashMaterialValue(1.f);
 	FVector DashDir = GetLastMovementInputVector();
 	if (DashDir.IsNearlyZero()) DashDir = GetActorForwardVector();
@@ -76,8 +76,8 @@ void ASamurai::P_ChangeDeflectState(const bool bState)
 	{
 		SM_DeflectKatana->SetVisibility(true);
 		AssetsManager->PlaySound2D(ESound::SamuraiDeflectActivate);
-		if (!DeflectParticlesVfx) AssetsManager->AttachVfx(EVfx::SamuraiDeflectParticles, [this]() -> bool { return GetIsAlive() && bDeflectState && bIsHijacked; }, &DeflectParticlesVfx, Camera);
-		else DeflectParticlesVfx->Activate(true);
+		if (!DeflectParticlesVfx) AssetsManager->AttachVfx(EVfx::SamuraiDeflectParticles, [this]() -> bool { return GetIsAlive() && bDeflectState && bIsHijacked; }, &DeflectParticlesVfx, Camera, NAME_None, GetVariation());
+		else AssetsManager->ActivateWithVariation(EVfx::SamuraiDeflectParticles, nullptr, DeflectParticlesVfx, false, GetVariation());
 	}
 	else
 	{
@@ -118,8 +118,8 @@ void ASamurai::AI_PlayDeathElectrification()
 	// LACKS DEATH ELECTRIFICATION AssetsManager->AttachVfx(EVfx::GuardianDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
 	if (bIsAco)
 	{
-		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
-		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"), EVariation::Default,
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, 
 		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
 	}
 }

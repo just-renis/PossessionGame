@@ -34,8 +34,8 @@ void AWraithMeteorProjectile::InitWithProprietor(const TObjectPtr<AEnemy> InProp
 	bIsHijacked = Proprietor->GetIsHijacked();
 	if (bIsHijacked)
 	{
-		if (!PlayerDeployVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithMeteor, nullptr, &PlayerDeployVfx, RootComponent);
-		else PlayerDeployVfx->Activate(true);
+		if (!PlayerDeployVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithMeteor, nullptr, &PlayerDeployVfx, RootComponent, NAME_None, Proprietor->GetVariation());
+		else GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ActivateWithVariation(EVfx::WraithMeteor, nullptr, PlayerDeployVfx, false, Proprietor->GetVariation());
 	}
 	else
 	{

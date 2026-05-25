@@ -16,10 +16,10 @@ void ATricksterWeapon::P_Reload()
 
 void ATricksterWeapon::P_PlayOverChargeVfx()
 {
-	if (FirstWeaponOverChargeVfx) FirstWeaponOverChargeVfx->Activate();
-	else AssetsManager->AttachVfx(EVfx::TricksterReload, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed() && Proprietor->GetWeapon()->GetHandsAnimInstance()->GetIsReloading(); }, &FirstWeaponOverChargeVfx, FirstWeapon->GetMesh(), "OverChargeSocket");
-	if (SecondWeaponOverChargeVfx) SecondWeaponOverChargeVfx->Activate();
-	else AssetsManager->AttachVfx(EVfx::TricksterReload, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed() && Proprietor->GetWeapon()->GetHandsAnimInstance()->GetIsReloading(); }, &SecondWeaponOverChargeVfx, SecondWeapon->GetMesh(), "OverChargeSocket");
+	if (FirstWeaponOverChargeVfx) AssetsManager->ActivateWithVariation(EVfx::TricksterReload, nullptr, FirstWeaponOverChargeVfx, false, Proprietor->GetVariation());
+	else AssetsManager->AttachVfx(EVfx::TricksterReload, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed() && Proprietor->GetWeapon()->GetHandsAnimInstance()->GetIsReloading(); }, &FirstWeaponOverChargeVfx, FirstWeapon->GetMesh(), FName("OverChargeSocket"), Proprietor->GetVariation());
+	if (SecondWeaponOverChargeVfx) AssetsManager->ActivateWithVariation(EVfx::TricksterReload, nullptr, SecondWeaponOverChargeVfx, false, Proprietor->GetVariation());
+	else AssetsManager->AttachVfx(EVfx::TricksterReload, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed() && Proprietor->GetWeapon()->GetHandsAnimInstance()->GetIsReloading(); }, &SecondWeaponOverChargeVfx, SecondWeapon->GetMesh(), FName("OverChargeSocket"), Proprietor->GetVariation());
 }
 
 void ATricksterWeapon::P_StopOverChargeVfx() const

@@ -296,13 +296,13 @@ void AProjectile::SetupTrailComponent()
 	{
 		if (const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, VfxType); VfxName != EVfx::None)
 		{
-			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, VfxType), [this]() -> bool { return bIsActive; }, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, ProjectileData.GetProprietor()->GetVariation(), Attributes);
+			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, VfxType), [this]() -> bool { return bIsActive; }, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), ProjectileData.GetProprietor()->GetVariation(), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, Attributes);
 		}
 	}
 	else
 	{
 		const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, VfxType);
 		if (VfxName == EVfx::None) return;
-		AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(VfxName), nullptr, BulletTrailComponent, false, ProjectileData.GetProprietor()->GetVariation()); // FIX THIS CRAP LATER.
+		AssetsManager->ChangeVfxVariation(VfxName, nullptr, BulletTrailComponent, false, ProjectileData.GetProprietor()->GetVariation()); // FIX THIS CRAP LATER.
 	}
 }

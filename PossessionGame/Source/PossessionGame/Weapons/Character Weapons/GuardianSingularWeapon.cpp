@@ -1,6 +1,4 @@
 ﻿#include "GuardianSingularWeapon.h"
-
-#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -49,7 +47,7 @@ void AGuardianSingularWeapon::MuzzleLogicFromAbility()
 	if (!VectorBlastMuzzleComponent)
 	{
 		AssetsManager->AttachVfx(EVfx::VectorBlastMuzzle, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); },
-		&VectorBlastMuzzleComponent, Mesh, FName("MuzzleSocket"));
+		&VectorBlastMuzzleComponent, Mesh, FName("MuzzleSocket"), Proprietor->GetVariation());
 	}
-	else VectorBlastMuzzleComponent->Activate(true);
+	else AssetsManager->ActivateWithVariation(EVfx::VectorBlastMuzzle, nullptr, VectorBlastMuzzleComponent, false, Proprietor->GetVariation());
 }

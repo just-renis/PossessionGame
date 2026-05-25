@@ -27,6 +27,23 @@ void ARangerMine::DestroyThis() const
 	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+void ARangerMine::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
+{
+	Super::InitWithProprietor(InProprietor);
+	const TObjectPtr<UPrimaryDataAssetsManager> AssetsManager = GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>();
+	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1))
+	{
+		CurrentRadiusVfx = EVfx::RangerMineSpecialRadius;
+		AssetsManager->AttachVfx(EVfx::RangerMineSpecialRadius, [this]() -> bool { return bAlreadyLanded; }, &RadiusVfx, Mesh, NAME_None, Proprietor->GetVariation());
+	}
+	else
+	{
+		CurrentRadiusVfx = EVfx::RangerMineRadius;
+		AssetsManager->AttachVfx(EVfx::RangerMineRadius, [this]() -> bool { return bAlreadyLanded; }, &RadiusVfx, Mesh, NAME_None, Proprietor->GetVariation());
+	}
+	AssetsManager->AttachVfx(EVfx::RangerMineImpact, [this]() -> bool { return bAlreadyLanded; }, &ImpactVfx, Mesh, NAME_None, Proprietor->GetVariation());
+}
+
 ARangerMine::ARangerMine()
 {
 	MineTriggerCollision = CreateDefaultSubobject<USphereComponent>("MineTriggerCollision");
@@ -54,16 +71,8 @@ void ARangerMine::BeginPlay()
 {
 	Super::BeginPlay();
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->UpdateRangerMinesRadius.AddUObject(this, &ARangerMine::UpdateRadiusVfxSize);
-	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1))
-	{
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineSpecialRadius, [this]() -> bool { return bAlreadyLanded; }, &RadiusVfx, Mesh);
-	}
-	else
-	{
-		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSpecialUpgradeAdded.AddUObject(this, &ARangerMine::ChangeRadiusVfx);
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineRadius, [this]() -> bool { return bAlreadyLanded; }, &RadiusVfx, Mesh);
-	}
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineImpact, [this]() -> bool { return bAlreadyLanded; }, &ImpactVfx, Mesh);
+	if (GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::RangerAbility3, EUpgradeAttribute::Special1)) return;
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnSpecialUpgradeAdded.AddUObject(this, &ARangerMine::ChangeRadiusVfx);
 }
 
 void ARangerMine::OnImpact(const FHitResult& Hit)
@@ -71,7 +80,7 @@ void ARangerMine::OnImpact(const FHitResult& Hit)
 	Super::OnImpact(Hit);
 	bAlreadyLanded = true;
 	PlaySound(ESound::RangerDeployMine);
-	if (ImpactVfx) ImpactVfx->Activate();
+	if (ImpactVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ActivateWithVariation(EVfx::RangerMineImpact, nullptr, ImpactVfx, false, Proprietor->GetVariation());
 	UpdateRadiusVfxSize(false);
 	MineTriggerCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
@@ -116,7 +125,8 @@ void ARangerMine::ChangeRadiusVfx(const EUpgrade InUpgradeName, const EUpgradeAt
 			WeakThis->RadiusVfx->DestroyComponent();
 			WeakThis->RadiusVfx = nullptr;
 		}
-		WeakThis->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineSpecialRadius, [WeakThis]() -> bool { return WeakThis->bAlreadyLanded; }, &WeakThis->RadiusVfx, WeakThis->Mesh);
+		WeakThis->CurrentRadiusVfx = EVfx::RangerMineSpecialRadius;
+		WeakThis->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerMineSpecialRadius, [WeakThis]() -> bool { return WeakThis->bAlreadyLanded; }, &WeakThis->RadiusVfx, WeakThis->Mesh, NAME_None, WeakThis->Proprietor->GetVariation());
 		WeakThis->UpdateRadiusVfxSize(false);
 	});
 }
@@ -138,7 +148,7 @@ void ARangerMine::UpdateRadiusVfxSize(const bool bIsUpdate)
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->UpdateVfxAttributes(RadiusVfx, Attributes);
 	MineTriggerCollision->SetSphereRadius(CurrentCollisionRadius);
 	RadiusVfx->DeactivateImmediate();
-	RadiusVfx->Activate();
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ActivateWithVariation(CurrentRadiusVfx, nullptr, RadiusVfx, false, Proprietor->GetVariation());
 }
 
 void ARangerMine::TriggeredCollision(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

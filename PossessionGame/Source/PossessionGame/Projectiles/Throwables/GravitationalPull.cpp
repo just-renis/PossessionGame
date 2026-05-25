@@ -1,5 +1,5 @@
 ﻿#include "GravitationalPull.h"
-#include "NiagaraComponent.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EPoolObject.h"
@@ -11,13 +11,7 @@ void AGravitationalPull::InitWithProprietor(const TObjectPtr<AEnemy> InProprieto
 {
 	Super::InitWithProprietor(InProprietor);
 	if (!BallVfx) return;
-	BallVfx->Activate(true);
-}
-
-void AGravitationalPull::BeginPlay()
-{
-	Super::BeginPlay();
-	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::TankGravitationalBall, [this]() -> bool { return Mesh->GetVisibleFlag(); }, &BallVfx, Mesh);
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::TankGravitationalBall, [this]() -> bool { return Mesh->GetVisibleFlag(); }, &BallVfx, Mesh, NAME_None, Proprietor->GetVariation());
 }
 
 void AGravitationalPull::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) { OnImpact(Hit); }

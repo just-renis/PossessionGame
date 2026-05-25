@@ -27,8 +27,8 @@ void AWraithProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 
 void AWraithProjectile::DestroyThis()
 {
-	if (!ExplosionVfx) AssetsManager->AttachVfx(EVfx::WraithBulletExplosion, nullptr, &ExplosionVfx, Mesh, FName("FpsTrailSocket"));
-	else ExplosionVfx->Activate(true);
+	if (!ExplosionVfx) AssetsManager->AttachVfx(EVfx::WraithBulletExplosion, nullptr, &ExplosionVfx, Mesh, FName("FpsTrailSocket"), ProjectileData.GetProprietor()->GetVariation());
+	else AssetsManager->ActivateWithVariation(EVfx::WraithBulletExplosion, nullptr, ExplosionVfx, false, ProjectileData.GetProprietor()->GetVariation());
 	bIsActive = false;
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTimeDilationChanged.RemoveAll(this);
 	DisableProjectileComponents();

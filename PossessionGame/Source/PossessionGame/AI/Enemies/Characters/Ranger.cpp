@@ -98,8 +98,8 @@ void ARanger::AI_PlayDeathElectrification()
 {
 	if (bIsAco)
 	{
-		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
-		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"), EVariation::Default,
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, 
 		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
 	}
 	else AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
@@ -189,9 +189,9 @@ void ARanger::GrenadeMuzzleFlashLogic()
 	if (!AI_GrenadeMuzzleFlashComponent)
 	{
 		AssetsManager->AttachVfx(EVfx::RangerGrenadeLauncherMuzzle, [this]() -> bool { return IsAsyncAssetStillAllowedToBeUsed(); }, &AI_GrenadeMuzzleFlashComponent,
-		Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), true,FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, GetVariation());
+		Weapon->GetMesh(), FName("GrenadeLauncherMuzzleSocket"), GetVariation(), true,FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false);
 	}
-	else AI_GrenadeMuzzleFlashComponent->Activate(true);
+	else AssetsManager->ActivateWithVariation(EVfx::RangerGrenadeLauncherMuzzle, nullptr, AI_GrenadeMuzzleFlashComponent, false, GetVariation());
 }
 
 void ARanger::PossessedBy(AController* NewController)

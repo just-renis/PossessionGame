@@ -23,8 +23,6 @@ class POSSESSIONGAME_API AGravitationalPullArea : public AOvertimeDamager
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> ItselfVfx;
 	UPROPERTY()
-	TObjectPtr<AEnemy> Proprietor;
-	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	virtual void BeginPlay() override;
@@ -32,6 +30,5 @@ class POSSESSIONGAME_API AGravitationalPullArea : public AOvertimeDamager
 	virtual void Disable(const bool bHide) override;
 	virtual void Setup(const bool bInIsPlayerObject, const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData, const EDamageReason InDamageReason) override;
 	virtual void SetupEffectStrength(const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData) override;
-	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	void PlaySound(const ESound InSoundName);
 };

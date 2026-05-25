@@ -73,11 +73,11 @@ void AGravitationalPullArea::Setup(const bool bInIsPlayerObject, const TObjectPt
 	const float LifeSpanIncrease = 1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TankAbility2, EUpgradeAttribute::EffectDuration, bInIsPlayerObject) * 0.01f;
 	const float ModifiedLifeSpan = InDamageOverTimeData->GetAreaLifeSpan() * LifeSpanIncrease;
 	if (PassiveSfx) PassiveSfx->Activate();
-	if (!ItselfVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::GravitationalPull, [this]() -> bool { return GetCollisionComponent()->GetVisibleFlag(); }, &ItselfVfx, GetCollisionComponent());
+	if (!ItselfVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::GravitationalPull, [this]() -> bool { return GetCollisionComponent()->GetVisibleFlag(); }, &ItselfVfx, GetCollisionComponent(), NAME_None, Proprietor->GetVariation());
 	else
 	{
 		ItselfVfx->SetFloatParameter(FName("Loop Duration"), ModifiedLifeSpan);
-		ItselfVfx->Activate(true);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ActivateWithVariation(EVfx::GravitationalPull, nullptr, ItselfVfx, false, Proprietor->GetVariation());
 	}
 	const float SizeIncrease = 1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TankAbility2, EUpgradeAttribute::Size, bInIsPlayerObject) * 0.01f;
 	SetupRadiusAndTimers(InDamageOverTimeData->GetAreaSize() * SizeIncrease, ModifiedLifeSpan);
@@ -87,12 +87,6 @@ void AGravitationalPullArea::SetupEffectStrength(const TObjectPtr<UDamageOverTim
 {
 	const float EffectStrengthIncrease = 1.f + GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::TankAbility2, EUpgradeAttribute::EffectStrength, bIsPlayer) * 0.01f;
 	EffectStrength = InDamageOverTimeData->GetEffectStrength() * EffectStrengthIncrease;
-}
-
-void AGravitationalPullArea::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
-{
-	Super::InitWithProprietor(InProprietor);
-	Proprietor = InProprietor;
 }
 
 void AGravitationalPullArea::PlaySound(const ESound InSoundName)

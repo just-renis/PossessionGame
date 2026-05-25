@@ -2,7 +2,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
 #include "InputMappingContext.h"
-#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "Engine/OverlapResult.h"
 #include "Kismet/GameplayStatics.h"
@@ -169,8 +168,8 @@ void ATank::AI_PlayDeathElectrification()
 	// LACKS DEATH ELECTRIFICATION 	else AssetsManager->AttachVfx(EVfx::RangerDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
 	if (bIsAco)
 	{
-		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
-		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"), EVariation::Default,
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, 
 		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
 	}
 }
@@ -297,8 +296,8 @@ void ATank::Landed(const FHitResult& Hit)
 	if (!HandsAnimInstance || !HandsAnimInstance->IsPlaying(EHandsAnimState::JumpSecondary)) return;
 	P_MakeCameraShake(ECameraShake::TankSlamCameraShake);
 	AssetsManager->PlaySound2D(ESound::TankSlam);
-	if (!SlamVfx) AssetsManager->AttachVfx(EVfx::TankSlam, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &SlamVfx, GetMesh(), FName("RootSocket"));
-	else SlamVfx->Activate(true);
+	if (!SlamVfx) AssetsManager->AttachVfx(EVfx::TankSlam, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &SlamVfx, GetMesh(), FName("RootSocket"), GetVariation());
+	else AssetsManager->ActivateWithVariation(EVfx::TankSlam, nullptr, SlamVfx, false, GetVariation());
 	if (MID_Slam)
 	{
 		const float StompSize = P_GetStompSize();

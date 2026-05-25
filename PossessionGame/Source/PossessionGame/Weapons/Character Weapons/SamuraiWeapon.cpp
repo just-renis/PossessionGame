@@ -1,5 +1,4 @@
 ﻿#include "SamuraiWeapon.h"
-#include "NiagaraComponent.h"
 #include "Engine/OverlapResult.h"
 #include "Kismet/GameplayStatics.h"
 #include "PossessionGame/AI/Enemies/Characters/Samurai.h"
@@ -21,8 +20,8 @@ void ASamuraiWeapon::AI_StopProcessingMeleeAttack() { GetWorldTimerManager().Cle
 
 void ASamuraiWeapon::P_TriggerSlashVfx()
 {
-	if (!SlashVfx) AssetsManager->AttachVfx(EVfx::PlayerSamuraiSlash, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &SlashVfx, GetHandsMesh(), FName("RootSocket"));
-	else SlashVfx->Activate(true);
+	if (!SlashVfx) AssetsManager->AttachVfx(EVfx::PlayerSamuraiSlash, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &SlashVfx, GetHandsMesh(), FName("RootSocket"), Proprietor->GetVariation());
+	else AssetsManager->ActivateWithVariation(EVfx::PlayerSamuraiSlash, nullptr, SlashVfx, false, Proprietor->GetVariation());
 }
 
 void ASamuraiWeapon::AI_ProcessMeleeAttack()

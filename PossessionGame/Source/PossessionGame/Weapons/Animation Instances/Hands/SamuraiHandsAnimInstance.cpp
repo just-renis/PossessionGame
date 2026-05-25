@@ -1,6 +1,4 @@
 ﻿#include "SamuraiHandsAnimInstance.h"
-#include "NiagaraComponent.h"
-#include "PossessionGame/AI/Enemies/Characters/Samurai.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -10,13 +8,14 @@ void USamuraiHandsAnimInstance::PlaySlashVfx(const bool bIsFirstSlash)
 {
 	if (bIsFirstSlash)
 	{
-		if (!FirstSlashVfx) AssetsManager->AttachVfx(EVfx::PlayerSamuraiSlash, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &FirstSlashVfx, GetSkelMeshComponent(), FName("RootSocket"));
-		else FirstSlashVfx->Activate(true);
+		if (!FirstSlashVfx) AssetsManager->AttachVfx(EVfx::PlayerSamuraiSlash, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &FirstSlashVfx, GetSkelMeshComponent(), FName("RootSocket"), GetProprietor()->GetVariation());
+		else AssetsManager->ActivateWithVariation(EVfx::PlayerSamuraiSlash, nullptr, FirstSlashVfx, false, Proprietor->GetVariation());
+
 	}
 	else
 	{
-		if (!SecondSlashVfx) AssetsManager->AttachVfx(EVfx::PlayerSamuraiSlash, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &SecondSlashVfx, GetSkelMeshComponent(), FName("SlashSocket2"));
-		else SecondSlashVfx->Activate(true);
+		if (!SecondSlashVfx) AssetsManager->AttachVfx(EVfx::PlayerSamuraiSlash, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &SecondSlashVfx, GetSkelMeshComponent(), FName("SlashSocket2"), GetProprietor()->GetVariation());
+		else AssetsManager->ActivateWithVariation(EVfx::PlayerSamuraiSlash, nullptr, SecondSlashVfx, false, Proprietor->GetVariation());
 	}
 }
 

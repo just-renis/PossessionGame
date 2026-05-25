@@ -299,9 +299,9 @@ void AWeapon::MuzzleFlashLogic()
 	if (!MuzzleFlashComponent)
 	{
 		AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); },
-		&MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), true,FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, Proprietor->GetVariation());
+		&MuzzleFlashComponent, Mesh, FName("MuzzleSocket"), Proprietor->GetVariation(), true,FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false);
 	}
-	else MuzzleFlashComponent->Activate(true);
+	else AssetsManager->ActivateWithVariation(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::Muzzle), nullptr, MuzzleFlashComponent, false, Proprietor->GetVariation());
 }
 
 void AWeapon::DisableHandsMesh() const

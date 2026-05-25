@@ -1,5 +1,4 @@
 #include "TricksterSingularWeapon.h"
-#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
 #include "PossessionGame/Data Assets/Primary Data Assets/PA_WeaponContainer.h"
 #include "PossessionGame/Enums/EVfxType.h"
@@ -52,8 +51,8 @@ void ATricksterSingularWeapon::SetMeshes(EWeapon PrimaryDataAssetName)
 
 void ATricksterSingularWeapon::FpsTrailVfxLogic()
 {
-	if (!FpsTrailVfx) AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &FpsTrailVfx, GetMesh(), FName("FpsProjectileSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, Proprietor->GetVariation());
-	else FpsTrailVfx->Activate(true);
+	if (!FpsTrailVfx) AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(Proprietor->GetCharacterName(), EVfxType::FpsTrail), [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); }, &FpsTrailVfx, GetMesh(), FName("FpsProjectileSocket"), Proprietor->GetVariation(), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false);
+	else AssetsManager->ActivateWithVariation(EVfx::TankHandBall, nullptr, FpsTrailVfx, false, Proprietor->GetVariation());
 }
 
 void ATricksterSingularWeapon::CriticalHitLogic()

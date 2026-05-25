@@ -35,8 +35,8 @@ void ATankWeapon::P_SetupTransfer(bool bSetToFirstHand)
 	Super::P_SetupTransfer(bSetToFirstHand);
 	AnimInstance->StopAllMontages(0.f);
 	if (!HandsMesh) return;
-	if (!HandBallVfx) AssetsManager->AttachVfx(EVfx::TankHandBall, [this]() -> bool { return Proprietor ? Proprietor->GetIsAlive() : false; }, &HandBallVfx, HandsMesh, FName("BallSocket"));
-	else HandBallVfx->Activate(true);
+	if (!HandBallVfx) AssetsManager->AttachVfx(EVfx::TankHandBall, [this]() -> bool { return Proprietor ? Proprietor->GetIsAlive() : false; }, &HandBallVfx, HandsMesh, FName("BallSocket"), Proprietor->GetVariation());
+	else AssetsManager->ActivateWithVariation(EVfx::TankHandBall, nullptr, HandBallVfx, false, Proprietor->GetVariation());
 }
 
 void ATankWeapon::P_BallRelease()
@@ -48,7 +48,7 @@ void ATankWeapon::P_BallRelease()
 	HandBallVfx->SetVariableFloat(FName("4"), 0.f);
 	HandBallVfx->SetVariableFloat(FName("5"), 0.f);
 	HandBallVfx->DeactivateImmediate();
-	HandBallVfx->Activate(true);
+	AssetsManager->ActivateWithVariation(EVfx::TankHandBall, nullptr, HandBallVfx, false, Proprietor->GetVariation());
 	GetWorldTimerManager().SetTimer(UpdateHandBallVfxHandle, this, &ATankWeapon::P_UpdateHandBallVfx, 0.025f, true);
 }
 
@@ -67,7 +67,7 @@ void ATankWeapon::P_UpdateHandBallVfx()
 	HandBallVfx->SetVariableFloat(FName("3"), 0.4678f * UpdateHandBallLoopCount);
 	HandBallVfx->SetVariableFloat(FName("4"), 0.6463f * UpdateHandBallLoopCount);
 	HandBallVfx->SetVariableFloat(FName("5"), 0.6131f * UpdateHandBallLoopCount);
-	HandBallVfx->Activate(true);
+	AssetsManager->ActivateWithVariation(EVfx::TankHandBall, nullptr, HandBallVfx, false, Proprietor->GetVariation());
 	if (UpdateHandBallLoopCount >= 10)
 	{
 		UpdateHandBallLoopCount = 0;

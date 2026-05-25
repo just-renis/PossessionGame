@@ -623,6 +623,7 @@ private:
 
 	int32 P_GetFirstSlotAbilityIndex() const { return P_FirstSlotAbilityIndex; }
 	int32 P_GetSecondSlotAbilityIndex() const { return P_SecondSlotAbilityIndex; }
+	EVariation P_ReceiveCharacterVariation(const ECharacterType InCharacterName) const;
 	
 	void P_EnableTakeDamageEffects() { bPlayerTakeDamageEffectsEnabled = true; }
 	void P_ChangeHoldingShootState(const bool bState);

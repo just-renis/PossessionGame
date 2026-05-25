@@ -44,8 +44,8 @@ void ABreacher::P_Bash(const float InImpulseStrength)
 {
 	bIsBashing = true;
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ABreacher::P_BashHit);
-	if (!P_BashVfx) AssetsManager->AttachVfx(EVfx::BreacherBash, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &P_BashVfx, GetMesh(), FName("DeathSocket"));
-	else P_BashVfx->Activate();
+	if (!P_BashVfx) AssetsManager->AttachVfx(EVfx::BreacherBash, [this]() -> bool { return GetIsAlive() && bIsHijacked; }, &P_BashVfx, GetMesh(), FName("DeathSocket"), GetVariation());
+	else AssetsManager->ActivateWithVariation(EVfx::BreacherBash, nullptr, P_BashVfx, false, GetVariation());
 	AssetsManager->PlaySound2D(ESound::BreacherBash);
 	FVector DashDirection = GetActorForwardVector();
 	DashDirection.Z = 0.f;
@@ -185,8 +185,8 @@ void ABreacher::AI_PlayDeathElectrification()
 {
 	if (bIsAco)
 	{
-		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
-		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"), EVariation::Default,
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false,
 		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
 	}
 	else AssetsManager->AttachVfx(EVfx::BreacherDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));

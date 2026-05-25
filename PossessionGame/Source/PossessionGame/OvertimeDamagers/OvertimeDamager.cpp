@@ -40,6 +40,12 @@ AOvertimeDamager::AOvertimeDamager()
 	Radius->OnComponentEndOverlap.AddDynamic(this, &AOvertimeDamager::RemoveOverlappedTarget);
 }
 
+void AOvertimeDamager::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
+{
+	Super::InitWithProprietor(InProprietor);
+	Proprietor = InProprietor;
+}
+
 void AOvertimeDamager::AddTarget(const TObjectPtr<AEnemy>& InTarget) { Targets.Add(InTarget); }
 
 void AOvertimeDamager::RemoveTarget(const TObjectPtr<AEnemy>& InTarget) { Targets.Remove(InTarget); }

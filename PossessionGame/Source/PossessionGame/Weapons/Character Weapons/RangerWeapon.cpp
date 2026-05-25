@@ -83,12 +83,12 @@ void ARangerWeapon::AttachGrenadeLaunchSpecialVfx()
 {
 	GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetOnRangerAbilityStackStatusChangedDelegate().BindUObject(this, &ARangerWeapon::ChangeGrenadeLaunchSpecialComponentState);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::RangerGrenadeLaunchSpecial, [this]() -> bool { return Proprietor->IsAsyncAssetStillAllowedToBeUsed(); },
-	&GrenadeLaunchSpecialVfx, GetMesh(), FName("MuzzleSocket"), true);
+	&GrenadeLaunchSpecialVfx, GetMesh(), FName("MuzzleSocket"), Proprietor->GetVariation(), true);
 }
 
 void ARangerWeapon::ChangeGrenadeLaunchSpecialComponentState(const bool bState) const
 {
 	if (!GrenadeLaunchSpecialVfx) return;
-	if (bState) GrenadeLaunchSpecialVfx->Activate(true);
+	if (bState) AssetsManager->ActivateWithVariation(EVfx::RangerGrenadeLaunchSpecial, nullptr, GrenadeLaunchSpecialVfx, false, Proprietor->GetVariation());
 	else GrenadeLaunchSpecialVfx->Deactivate();
 }

@@ -10,7 +10,7 @@ UCLASS()
 class POSSESSIONGAME_API AWraithMolotovArea : public AOvertimeDamager
 {
 	GENERATED_BODY()
-	
+
 	float DefaultVfxLifetime = 5.f;
 	float DefaultVfxRadius = 360.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Collision", meta = (AllowPrivateAccess = true))

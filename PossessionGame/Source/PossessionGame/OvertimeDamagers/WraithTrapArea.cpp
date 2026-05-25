@@ -1,5 +1,4 @@
 ﻿#include "WraithTrapArea.h"
-#include "NiagaraComponent.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/DamageOverTimeData.h"
 #include "PossessionGame/Enums/EPoolObject.h"
@@ -69,13 +68,13 @@ void AWraithTrapArea::Setup(const bool bInIsPlayerObject, const TObjectPtr<UDama
 	Attributes.Add(FName("GhostLifetime"), FNiagaraAttribute(EUserParamType::Float, GhostLifetime));
 	if (!RadiusVfx)
 	{
-		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTrap, nullptr, &RadiusVfx, RootComponent, NAME_None,
-		false, FVector::ZeroVector, FRotator(-90.f, 0.f, 0.f), EAttachLocation::SnapToTarget, false, EVariation::Default, Attributes);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTrap, nullptr, &RadiusVfx, RootComponent, NAME_None, Proprietor->GetVariation(),
+		false, FVector::ZeroVector, FRotator(-90.f, 0.f, 0.f), EAttachLocation::SnapToTarget, false, Attributes);
 	}
 	else
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->UpdateVfxAttributes(RadiusVfx, Attributes);
-		RadiusVfx->Activate(true);
+		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ActivateWithVariation(EVfx::WraithTrap, nullptr, RadiusVfx, false, Proprietor->GetVariation());
 	}
 }
 

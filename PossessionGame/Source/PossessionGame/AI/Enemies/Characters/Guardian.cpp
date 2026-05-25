@@ -105,8 +105,8 @@ void AGuardian::AI_PlayDeathElectrification()
 {
 	if (bIsAco)
 	{
-		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"),
-		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default,
+		AssetsManager->AttachVfx(EVfx::AcoEject, nullptr, nullptr, GetMesh(), FName("DeathSocket"), EVariation::Default,
+		false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false,
 		{{FName("Skeletal Mesh"), FNiagaraAttribute(EUserParamType::Object, GetMesh())}});
 	}
 	else AssetsManager->AttachVfx(EVfx::GuardianDeathElectrification, nullptr, nullptr, GetMesh(), FName("DeathSocket"));
@@ -226,12 +226,12 @@ void AGuardian::ToggleShieldVfx(const bool bState, const EVfx InVfxName)
 	if (!GuardianShieldComponent)
 	{
 		if (!bState) return;
-		GetWorld()->GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(InVfxName, [this]() -> bool
-		{ return IsAsyncAssetStillAllowedToBeUsed(); }, &GuardianShieldComponent, GetMesh(), FName("DeathSocket"));
+		AssetsManager->AttachVfx(InVfxName, [this]() -> bool
+		{ return IsAsyncAssetStillAllowedToBeUsed(); }, &GuardianShieldComponent, GetMesh(), FName("DeathSocket"), GetVariation());
 	}
 	else
 	{
-		if (bState) GuardianShieldComponent->Activate(true);
+		if (bState) AssetsManager->ActivateWithVariation(InVfxName, nullptr, GuardianShieldComponent, false, GetVariation());
 		else GuardianShieldComponent->DeactivateImmediate();
 	}
 }

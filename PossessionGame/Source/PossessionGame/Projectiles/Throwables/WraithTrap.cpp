@@ -1,6 +1,6 @@
 ﻿#include "WraithTrap.h"
-#include "NiagaraComponent.h"
 #include "Components/AudioComponent.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Enums/EDamageReason.h"
 #include "PossessionGame/Enums/EPoolObject.h"
@@ -12,8 +12,8 @@
 void AWraithTrap::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
 {
 	Super::InitWithProprietor(InProprietor);
-	if (!TrailVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTrapTrail, [this]() -> bool { return bIsActive; }, &TrailVfx, Mesh, FName("TrailSocket"));
-	else TrailVfx->Activate(true);
+	if (!TrailVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::WraithTrapTrail, [this]() -> bool { return bIsActive; }, &TrailVfx, Mesh, FName("TrailSocket"), Proprietor->GetVariation());
+	else GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ActivateWithVariation(EVfx::WraithTrapTrail, nullptr, TrailVfx, false, Proprietor->GetVariation());
 }
 
 AWraithTrap::AWraithTrap()
@@ -37,7 +37,7 @@ void AWraithTrap::OnImpact(const FHitResult& InHit)
 	Super::OnImpact(InHit);
 	PlaySound(ESound::WraithTrapImpact);
 	const TObjectPtr<AOvertimeDamager> TrapArea = Cast<AOvertimeDamager>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::WraithTrapArea, InHit.Location + FVector::UpVector, InHit.Normal.Rotation()));
-	TrapArea->Init();
+	TrapArea->InitWithProprietor(Proprietor);
 	TrapArea->Setup(true, Data->GetDamageOverTimeData(), EDamageReason::None);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(EPoolObject::WraithTrap, this);
 }

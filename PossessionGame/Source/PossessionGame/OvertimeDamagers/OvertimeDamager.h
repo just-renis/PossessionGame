@@ -17,7 +17,8 @@ class POSSESSIONGAME_API AOvertimeDamager : public APoolObject, public IDamageRe
 	GENERATED_BODY()
 public:
 	AOvertimeDamager();
-	
+
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	virtual void Setup(const bool bInIsPlayerObject, const TObjectPtr<UDamageOverTimeData>& InDamageOverTimeData, const EDamageReason InDamageReason);
 	virtual void Setup(const bool bInIsPlayerObject, const float InDamage, const float InDamageTick, const float InLifeSpan, const float InRadiusSize, const EDamageReason InDamageReason);
 protected:
@@ -32,6 +33,8 @@ protected:
 	float DamageBoostPercentage;
 	EPoolObject ObjectName;
 	EDamageReason DamageReason;
+	UPROPERTY()
+	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
 	TArray<TObjectPtr<AEnemy>> Targets;
 

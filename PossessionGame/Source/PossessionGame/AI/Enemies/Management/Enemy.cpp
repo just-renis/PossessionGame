@@ -159,8 +159,8 @@ void AEnemy::AI_SetupShootLogic()
 void AEnemy::AI_TriggerVectorBlastSpecialImpact()
 {
 	PlaySound(ESound::VectorBlastSpecialImpactUpgrade);
-	if (!VectorBlastSpecialImpactVfx) AssetsManager->AttachVfx(EVfx::GuardianVectorBlastUpgrade, [this]() -> bool { return GetIsAlive(); }, &VectorBlastSpecialImpactVfx, GetMesh(), FName("DeathSocket"));
-	else VectorBlastSpecialImpactVfx->Activate();
+	if (!VectorBlastSpecialImpactVfx) AssetsManager->AttachVfx(EVfx::GuardianVectorBlastUpgrade, [this]() -> bool { return GetIsAlive(); }, &VectorBlastSpecialImpactVfx, GetMesh(), FName("DeathSocket"), P_ReceiveCharacterVariation(ECharacterType::Guardian));
+	else AssetsManager->ActivateWithVariation(EVfx::GuardianVectorBlastUpgrade, nullptr, VectorBlastSpecialImpactVfx, false, P_ReceiveCharacterVariation(ECharacterType::Guardian));
 }
 
 void AEnemy::AI_SetupRespawn()
@@ -1447,9 +1447,9 @@ void AEnemy::AI_SetSpySnatchMarker(const bool bState)
 	if (!SpySnatchMarkerVfx)
 	{
 		if (AssetsManager->GetVfxData(EVfx::SpySnatchMarker).GetIsInLoad() && !AssetsManager->GetVfxData(EVfx::SpySnatchMarker).GetIsLoaded()) return;
-		AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"));
+		AssetsManager->AttachVfx(EVfx::SpySnatchMarker, [this]() -> bool { return GetIsAlive() && !bIsHijacked && bIsLookedAtByPlayer; }, &SpySnatchMarkerVfx, GetMesh(), FName("RootSocket"), GetVariation());
 	}
-	else if (!SpySnatchMarkerVfx->IsActive()) SpySnatchMarkerVfx->Activate();
+	else if (!SpySnatchMarkerVfx->IsActive()) AssetsManager->ActivateWithVariation(EVfx::SpySnatchMarker, nullptr, SpySnatchMarkerVfx, false, GetVariation());
 }
 
 void AEnemy::AI_ChangeWeakSpotsState(const bool bState)
@@ -1502,6 +1502,20 @@ void AEnemy::AI_TankShieldActionSpeedDebuffEnded()
 	SetActionSpeed(ActionSpeed);
 }
 
+void AEnemy::AI_DestroyBossUnnecessaryComponents()
+{
+	if (AI_HpBarComponent)
+	{
+		AI_HpBarComponent->DestroyComponent();
+		AI_HpBarComponent = nullptr;
+	}
+	if (Camera)
+	{
+		Camera->DestroyComponent();
+		Camera = nullptr;
+	}
+}
+
 void AEnemy::AI_AcoMaterialChange() const
 {
 	if (!MI_MeshBaseMaterial) return;
@@ -1525,19 +1539,7 @@ void AEnemy::AI_SetCombatState(const bool bState)
 	else AI->StopLogic(false);
 }
 
-void AEnemy::AI_DestroyBossUnnecessaryComponents()
-{
-	if (AI_HpBarComponent)
-	{
-		AI_HpBarComponent->DestroyComponent();
-		AI_HpBarComponent = nullptr;
-	}
-	if (Camera)
-	{
-		Camera->DestroyComponent();
-		Camera = nullptr;
-	}
-}
+EVariation AEnemy::P_ReceiveCharacterVariation(const ECharacterType InCharacterName) const { return GetWorld()->GetSubsystem<UVariationManager>()->GetCurrentVariation(InCharacterName); }
 
 void AEnemy::P_ChangeHoldingShootState(const bool bState)
 {
@@ -2210,7 +2212,7 @@ void AEnemy::CloseInfoPanel() { /*if (P_HUD) P_HUD->ToggleInfoPanel(false);*/ }
 
 void AEnemy::PlayEmpAffectedVfx(const float InEffectDuration)
 {
-	if (!EmpAffectedVfx) AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, &EmpAffectedVfx, GetMesh(), FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(EUserParamType::Float, InEffectDuration)}});
+	if (!EmpAffectedVfx) AssetsManager->AttachVfx(EVfx::EmpAffected, [this]() -> bool { return GetIsAlive(); }, &EmpAffectedVfx, GetMesh(), FName("DeathSocket"), EVariation::Default, false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, {{"Loop Duration", FNiagaraAttribute(EUserParamType::Float, InEffectDuration)}});
 	else EmpAffectedVfx->Activate(true);
 }
 
@@ -2303,8 +2305,8 @@ void AEnemy::PlayStunAffectedVfx(const float InEffectDuration)
 	if (!StunAffectedVfx)
 	{
 		AssetsManager->AttachVfx(EVfx::Stunned, [this]() -> bool { return GetIsAlive(); }, &StunAffectedVfx, GetMesh(),
-		FName("DeathSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget,
-		false, EVariation::Default, {{"Loop Duration", FNiagaraAttribute(EUserParamType::Float, InEffectDuration)}});
+		FName("DeathSocket"), EVariation::Default, false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget,
+		false, {{"Loop Duration", FNiagaraAttribute(EUserParamType::Float, InEffectDuration)}});
 	}
 	else
 	{
