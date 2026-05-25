@@ -123,10 +123,13 @@ void UPrimaryDataAssetsManager::Initialize(FSubsystemCollectionBase& Collection)
 		{FPoolObjectPairWrapper({ EPoolObject::WardenProjectile, EVfxType::Trail }), EVfx::WardenBlasterProjectile },
 		{FPoolObjectPairWrapper({ EPoolObject::MinionBossProjectile, EVfxType::Muzzle }), EVfx::MinionBossMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::CloneProjectile, EVfxType::Impact }), EVfx::CloneBulletImpact },
-		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Trail }), EVfx::BreacherBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::AIBreacherProjectile, EVfxType::Trail }), EVfx::BreacherBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::AIBreacherProjectile, EVfxType::Impact }), EVfx::BreacherBulletImpact },
+		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::FpsTrail }), EVfx::BreacherFpsBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Muzzle }), EVfx::BreacherMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::BreacherProjectile, EVfxType::Impact }), EVfx::BreacherBulletImpact },
-		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Trail }), EVfx::WraithAIBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::AIWraithProjectile, EVfxType::Trail }), EVfx::WraithAIBulletTrail },
+		{FPoolObjectPairWrapper({ EPoolObject::AIWraithProjectile, EVfxType::Impact }), EVfx::WraithBulletImpact },
 		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::FpsTrail }), EVfx::WraithBulletTrail },
 		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Muzzle }), EVfx::WraithMuzzle },
 		{FPoolObjectPairWrapper({ EPoolObject::WraithProjectile, EVfxType::Impact }), EVfx::WraithBulletImpact },
@@ -898,6 +901,7 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_BreacherBashWindUpFist", EVfx::BreacherBashWindUpFist);
 	VfxsMap.Add("PA_BreacherBashDash", EVfx::BreacherBashDash);
 	VfxsMap.Add("PA_BreacherBashDashTrail", EVfx::BreacherBashDashTrail);
+	VfxsMap.Add("PA_BreacherFpsBulletTrail", EVfx::BreacherFpsBulletTrail);
 	VfxsMap.Add("PA_BreacherSpecialBarrelExplosion", EVfx::BreacherSpecialBarrelExplosion);
 	VfxsMap.Add("PA_BreacherDeathElectrification", EVfx::BreacherDeathElectrification);
 	VfxsMap.Add("PA_Stunned", EVfx::Stunned);

@@ -91,4 +91,5 @@ private:
 	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) {}
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void SetupData(const bool bIsPlayerProjectile, const int32 InWhich);
+	void SetupTrailComponent();
 };

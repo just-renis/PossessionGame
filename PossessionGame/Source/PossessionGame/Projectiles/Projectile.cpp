@@ -49,19 +49,7 @@ void AProjectile::SetupProjectile(const FProjectileData& InProjectileData, const
 		MovementComponent->SetComponentTickInterval(1.f / 30.f / TimeDilation);
 		GetGameInstance()->GetSubsystem<UDelegateManager>()->OnTimeDilationChanged.AddUObject(this, &AProjectile::AI_TimeDilationChange);
 	}
-	if (!BulletTrailComponent)
-	{
-		if (const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail); VfxName != EVfx::None)
-		{
-			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail), [this]() -> bool { return bIsActive; }, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, ProjectileData.GetProprietor()->GetVariation(), Attributes);
-		}
-	}
-	else
-	{
-		const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, EVfxType::Trail);
-		if (VfxName == EVfx::None) return;
-		AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(VfxName), nullptr, BulletTrailComponent, false, ProjectileData.GetProprietor()->GetVariation()); // FIX THIS CRAP LATER.
-	}
+	SetupTrailComponent();
 }
 
 void AProjectile::SetDirection(const FVector& InDirection) const { MovementComponent->Velocity = InDirection * MovementComponent->MaxSpeed; }
@@ -299,4 +287,22 @@ void AProjectile::SetupData(const bool bIsPlayerProjectile, const int32 InWhich)
 		Damage += DefaultDamage * GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetPlayerLevelAllGlobalDamageBonus();
 	}
 	else AI_SetupUpgradesAppliance();
+}
+
+void AProjectile::SetupTrailComponent()
+{
+	const EVfxType VfxType = ProjectileData.bIsPlayerProjectile ? EVfxType::FpsTrail : EVfxType::Trail;
+	if (!BulletTrailComponent)
+	{
+		if (const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, VfxType); VfxName != EVfx::None)
+		{
+			AssetsManager->AttachVfx(AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, VfxType), [this]() -> bool { return bIsActive; }, &BulletTrailComponent, Mesh, FName("BulletTrailSocket"), false, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, ProjectileData.GetProprietor()->GetVariation(), Attributes);
+		}
+	}
+	else
+	{
+		const EVfx VfxName = AssetsManager->GetProjectileVfxName(ProjectileData.ProjectileName, VfxType);
+		if (VfxName == EVfx::None) return;
+		AssetsManager->ChangeVfxVariation(AssetsManager->GetVfxData(VfxName), nullptr, BulletTrailComponent, false, ProjectileData.GetProprietor()->GetVariation()); // FIX THIS CRAP LATER.
+	}
 }

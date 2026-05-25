@@ -18,7 +18,7 @@ void ABreacherWeapon::AI_Shoot()
 {
 	PlaySound(ESound::BreacherShoot, true);
 	Super::AI_Shoot();
-	ShootProjectile(EPoolObject::BreacherProjectile, false, NAME_None, true);
+	ShootProjectile(EPoolObject::AIBreacherProjectile, false, NAME_None, true);
 }
 
 void ABreacherWeapon::P_Shoot(const EPoolObject InProjectileName)

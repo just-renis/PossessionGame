@@ -17,7 +17,7 @@ void AWraithWeapon::AI_Shoot()
 {
 	PlaySound(ESound::WraithShoot, true);
 	ShootTimer = 0.f;
-	ShootProjectile(EPoolObject::WraithProjectile, false);
+	ShootProjectile(EPoolObject::AIWraithProjectile, false);
 }
 
 void AWraithWeapon::P_UpdateAmmoTextHUD() { DelegateManager->OnWeaponAmmoChangeOneParam.Broadcast(CurrentAmmo); }
