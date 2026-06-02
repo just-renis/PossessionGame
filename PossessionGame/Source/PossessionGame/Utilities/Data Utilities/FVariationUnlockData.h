@@ -14,7 +14,7 @@ struct FUnlockedVariations
 	UPROPERTY()
 	TArray<EVariation> UnlockedVariations;
 	UPROPERTY()
-	EVariation Current;
+	EVariation Current = EVariation::Default;
 };
 
 USTRUCT()
