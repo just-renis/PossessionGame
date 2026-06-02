@@ -17,10 +17,6 @@ void UVariationUnlockDetailsUI::SetUnlockedVariation(const bool bState) const
 	ChangeVisibilityOfUnlockElements(!bState);
 	if (!DetailsText) return;
 	if (bState) DetailsText->SetText(NSLOCTEXT("ST_Localization", "Unlocked", "UNLOCKED"));
-	DetailsText->SetJustification(bState ? ETextJustify::Center : ETextJustify::Left);
-	FSlateFontInfo FontInfo = DetailsText->GetFont();
-	FontInfo.Size = bState ? 40 : 18;
-	DetailsText->SetFont(FontInfo);
 }
 
 void UVariationUnlockDetailsUI::SetupDetailsPanel(const EVariation InVariation, const int32 InUnlockPrice)
@@ -28,13 +24,6 @@ void UVariationUnlockDetailsUI::SetupDetailsPanel(const EVariation InVariation, 
 	Variation = InVariation;
 	UnlockPrice = InUnlockPrice;
 	if (CostPriceText) CostPriceText->SetText(FText::AsNumber(UnlockPrice));
-}
-
-void UVariationUnlockDetailsUI::NativePreConstruct()
-{
-	Super::NativePreConstruct();
-	//ChangeVisibilityOfUnlockElements(false);
-	//if (UnlockButton) UnlockButton->SetIsEnabled(false);
 }
 
 void UVariationUnlockDetailsUI::NativeConstruct()

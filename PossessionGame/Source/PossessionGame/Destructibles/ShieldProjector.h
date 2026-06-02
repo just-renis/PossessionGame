@@ -25,8 +25,6 @@ class POSSESSIONGAME_API AShieldProjector : public ADestructible
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> DissolveSfx;
 	UPROPERTY()
-	TObjectPtr<AEnemy> Proprietor;
-	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
 	void P_ShieldDestruction() const;

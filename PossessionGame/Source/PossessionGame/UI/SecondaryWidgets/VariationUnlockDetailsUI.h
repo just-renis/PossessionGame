@@ -38,7 +38,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<USaveSlot> SaveSlot;
 
-	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	void ChangeVisibilityOfUnlockElements(const bool bState) const;
 	UFUNCTION()

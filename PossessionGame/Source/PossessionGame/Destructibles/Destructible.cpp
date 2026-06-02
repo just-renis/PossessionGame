@@ -22,26 +22,17 @@ void ADestructible::HandleDeactivation()
 	SetThisLifeSpan();
 }
 
-void ADestructible::Init(const bool bInIsPlayerObject)
-{
-	Super::Init(bInIsPlayerObject);
-	Hp = Data->GetHp();
-	bIsAffectedByPhysics = Data->GetIsAffectedByPhysics();
-	bIsPlayerObject = bInIsPlayerObject;
-	Mesh->SetCollisionProfileName(Data->GetCollisionProfileName(bIsPlayerObject));
-	if (Data->GetIsLifeSpanImmediatelyAdded()) SetThisLifeSpan();
-	SetUpgradesApplication();
-}
-
 void ADestructible::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
 {
 	Super::InitWithProprietor(InProprietor);
+	Proprietor = InProprietor;
 	Hp = Data->GetHp();
 	bIsAffectedByPhysics = Data->GetIsAffectedByPhysics();
-	bIsPlayerObject = InProprietor->GetIsHijacked();
+	bIsPlayerObject = Proprietor->GetIsHijacked();
 	Mesh->SetCollisionProfileName(Data->GetCollisionProfileName(bIsPlayerObject));
 	if (Data->GetIsLifeSpanImmediatelyAdded()) SetThisLifeSpan();
 	SetUpgradesApplication();
+	if (Data->IsVariationValuesExist()) P_SetVariationMaterial();
 }
 
 void ADestructible::ReceiveDamage(const float InDamage)
@@ -58,6 +49,17 @@ void ADestructible::DestroyThis()
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	if (Mesh) Mesh->SetSimulatePhysics(false);
 	GetWorld()->GetSubsystem<UPoolingManager>()->ReturnObjectToPool(Data->GetObjectName(), this);
+}
+
+void ADestructible::P_SetVariationMaterial()
+{
+	if (!MID_Variation)
+	{
+		MID_Variation = UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(0), this);
+		GetMesh()->SetMaterial(0, MID_Variation);
+		if (!MID_Variation) return;
+	}
+	Data->SetupVariationMaterial(MID_Variation, Proprietor->GetVariation());
 }
 
 float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

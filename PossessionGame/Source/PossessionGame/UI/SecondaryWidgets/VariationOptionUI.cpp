@@ -29,6 +29,10 @@ void UVariationOptionUI::SetButtonState(const bool bState) const
 
 void UVariationOptionUI::SelectVariation()
 {
+//	if (!VariationOptionBorder) return;
+	const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
+	if (!SaveSlot->GetIsVariationUnlocked(Variation)) UnlockProgressText = FText::FromString("NOT UNLOCKED");
+	(void)ShowDetailsPanel.ExecuteIfBound(true, Variation, VariationDetailsPanelText, UnlockProgressText);
 	if (bIsLocked)
 	{
 		GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::NotSelectable);
@@ -38,7 +42,6 @@ void UVariationOptionUI::SelectVariation()
 	PlayAnimation(SelectAnim);
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonSelect);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelection.Broadcast(CharacterType, Variation);
-	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationSelectionEnd.ExecuteIfBound(CharacterType);
 	SetSelected(true);
 }
 
@@ -80,16 +83,13 @@ void UVariationOptionUI::UnlockVariation(const EVariation InVariationName) { if 
 void UVariationOptionUI::VariationOptionHovered()
 {
 	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
-	if (!VariationOptionBorder) return;
-	const TObjectPtr<USaveSlot> SaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot();
-	if (!SaveSlot->GetIsVariationUnlocked(Variation)) UnlockProgressText = FText::FromString("NOT UNLOCKED");
-	(void)ShowDetailsPanel.ExecuteIfBound(true, Variation, VariationDetailsPanelText, UnlockProgressText);
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Forward);
 }
 
 void UVariationOptionUI::VariationOptionUnHovered()
 {
-	if (!VariationOptionBorder) return;
-	(void)ShowDetailsPanel.ExecuteIfBound(false, Variation, FText(), FText());
+//	if (!VariationOptionBorder) return;
+	//(void)ShowDetailsPanel.ExecuteIfBound(false, Variation, FText(), FText());
+	GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::ButtonHover);
 	PlayAnimation(HoverAnim, GetAnimationCurrentTime(HoverAnim), 1, EUMGSequencePlayMode::Reverse);
 }

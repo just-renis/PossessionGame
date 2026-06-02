@@ -14,6 +14,8 @@ class POSSESSIONGAME_API ARangerGrenade : public AProjectile
 	virtual float AI_UpgradeDamageAppliance() override;
 
 	virtual float P_UpgradeDamageAppliance() override;
+
+	virtual void P_SetVariationMaterial() override;
 	
 	virtual void PlayImpactSound() override;
 };

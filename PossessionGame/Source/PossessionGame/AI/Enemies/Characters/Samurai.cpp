@@ -223,7 +223,7 @@ void ASamurai::BeginPlay()
 void ASamurai::SetupSamuraiHat()
 {
 	SamuraiHat = Cast<ADestructible>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::SamuraiHat));
-	SamuraiHat->Init(false);
+	SamuraiHat->InitWithProprietor(this);
 	if (const TObjectPtr<UStaticMeshComponent> HatMesh = SamuraiHat->GetMesh()) HatMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	AttachDestructible(SamuraiHat, "HatSocket");
 }

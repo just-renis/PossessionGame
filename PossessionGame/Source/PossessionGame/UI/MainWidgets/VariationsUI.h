@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "VariationsUI.generated.h"
 
+class UVariationDescriptionUI;
 class UArrowButtonUI;
 class UButton;
 enum class ECharacterType : uint8;
@@ -64,7 +65,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> SamuraiVariations;
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVariationUnlockDetailsUI> VariationDetailsPanel;
+	TObjectPtr<UVariationDescriptionUI> VariationDescriptionPanel;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UVariationUnlockDetailsUI> UnlockDetailsPanel;
 	UPROPERTY(meta = (BindWidget))

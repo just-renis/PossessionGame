@@ -80,6 +80,7 @@ void AProjectile::Init(FProjectileData& InProjectileData, const FRotator& Rotati
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	Super::Init(InProjectileData, Rotation, InWhich);
 	SetupProjectile(InProjectileData, InWhich);
+	if (ProjectileData.IsVariationValuesExist()) P_SetVariationMaterial();
 	SetDirection(FMath::VRandCone(Rotation.Vector(), FMath::DegreesToRadians(ProjectileData.GetCalcSpread())));
 	if (BulletTrailComponent) BulletTrailComponent->Activate(true);
 	MovementComponent->SetComponentTickEnabled(true);
@@ -264,6 +265,17 @@ void AProjectile::P_SetupUpgradesAppliance()
 	const TObjectPtr<URunSaveSlot> RunSaveSlot = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot();
 	Damage += RunSaveSlot->GetUpgradeAttributeValues(ProjectileData.ProjectileName, EUpgradeAttribute::FlatDamage, true);
 	Damage += P_UpgradeDamageAppliance();
+}
+
+void AProjectile::P_SetVariationMaterial()
+{
+	if (!MID_Variation)
+	{
+		MID_Variation = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(0), this);
+		Mesh->SetMaterial(0, MID_Variation);
+		if (!MID_Variation) return;
+	}
+	ProjectileData.SetupVariationMaterial(MID_Variation);
 }
 
 void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)

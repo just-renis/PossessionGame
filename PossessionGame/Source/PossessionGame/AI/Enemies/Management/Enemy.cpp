@@ -68,6 +68,7 @@
 #include "PossessionGame/Weapons/Management/WeaponAnimInstance.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 
+//(void)DelegateManager->OnAchievementCompleted.ExecuteIfBound(EAchievement::FIRST_ACHIEVEMENT);
 AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -894,7 +895,8 @@ void AEnemy::P_Setup()
 	DelegateManager->OnUpgradeSelectionOpened.BindUObject(this, &AEnemy::P_InUpgradeSelection);
 	DelegateManager->RequestTriggerCameraShake.BindUObject(this, &AEnemy::P_MakeCameraShake);
 	DelegateManager->RequestStopCameraShake.BindUObject(this, &AEnemy::P_StopCameraShake);
-	DelegateManager->OnVariationSelectionEnd.BindUObject(this, &AEnemy::P_OnVariationSelection);
+	DelegateManager->OnVariationSelection.AddUObject(this, &AEnemy::P_OnVariationSelection);
+	DelegateManager->OnVariationUIClosed.BindUObject(this, &AEnemy::P_OnVariationUIClosed);
 	DelegateManager->OnAbilitiesOrLevelMenuSelectionEnd.BindUObject(this, &AEnemy::P_OnAbilitiesOrLevelMenuSelectionEnd);
 	DelegateManager->OnLevelUp.AddUObject(this, &AEnemy::P_PlayLevelUpVfx);
 	DelegateManager->OnXpReceived.BindUObject(this, &AEnemy::P_AddXp);
@@ -976,6 +978,7 @@ void AEnemy::P_Destroy()
 	P_RemoveBurnVfx();
 	P_RemoveReloadSound();
 	DelegateManager->RequestTriggerCameraShake.Unbind();
+	DelegateManager->OnVariationSelection.RemoveAll(this);
 	GetMesh()->SetHiddenInGame(false);
 	StimuliSource->UnregisterFromPerceptionSystem();
 	Weapon->SetToOriginalSettings();
@@ -1168,6 +1171,7 @@ void AEnemy::BeginPlay()
 	GameModeBase = Cast<APossessionGameGameModeBase>(GetWorld()->GetAuthGameMode());
 	GlobalSettingsManager = GameInstance->GetSubsystem<UGlobalSettingsManager>();
 	SaveSlotManager = GameInstance->GetSubsystem<USaveSlotManager>();
+	Variation = EVariation::Default;
 	if (Camera) DefaultCameraZ = Camera->GetRelativeLocation().Z;
 	AI_SetupHpBar();
 	AssetsManager = GameInstance->GetSubsystem<UPrimaryDataAssetsManager>();
@@ -1808,10 +1812,18 @@ void AEnemy::P_ToggleRun() { P_ToggleRun(!bIsRunning); }
 	NavAreaModifier->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }*/
 
-void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType)
+void AEnemy::P_OnVariationSelection(const ECharacterType InCharacterType, const EVariation InVariationName)
 {
-	if (const TObjectPtr<AEnemy> Enemy = AssetsManager->SpawnVariationReplacement(InCharacterType, EWidget::VariationsUI)) P_HijackLogic(Enemy, true);
-	GetWorld()->GetSubsystem<UWidgetManager>()->GetWidget<UVariationsUI>(EWidget::VariationsUI)->CloseUI();
+	if (CharacterName == InCharacterType) bIsVariationOfCurrentCharacterWasChanged = true;
+}
+
+void AEnemy::P_OnVariationUIClosed()
+{
+	if (bIsVariationOfCurrentCharacterWasChanged)
+	{
+		if (const TObjectPtr<AEnemy> Enemy = AssetsManager->SpawnVariationReplacement(CharacterName, EWidget::VariationsUI)) P_HijackLogic(Enemy, true);
+		bIsVariationOfCurrentCharacterWasChanged = false;
+	}
 }
 
 void AEnemy::P_OnAbilitiesOrLevelMenuSelectionEnd(const EWidget InWidgetName)

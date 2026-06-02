@@ -408,6 +408,7 @@ private:
 	bool bHasBeenDamagedRecently = false;
 	bool bIsHijackAble = false;
 	bool bIsImmortal = false;
+	bool bIsVariationOfCurrentCharacterWasChanged = false;
 	float P_BurnVfxRadiusValue = 4.f;
 	float HijackBarTimer = 0.f;
 	float MeshBaseMaterialCondenseValue = 0.7f;
@@ -652,7 +653,8 @@ private:
 	void P_QuickMeleeAttack();
 	void P_ToggleRun();
 	//void P_SetupNavArea();
-	void P_OnVariationSelection(const ECharacterType InCharacterType);
+	void P_OnVariationSelection(const ECharacterType InCharacterType, const EVariation InVariationName);
+	void P_OnVariationUIClosed();
 	void P_OnAbilitiesOrLevelMenuSelectionEnd(const EWidget InWidgetName);
 	void P_ReceiveCurrentlySelectedVariation();
 	void P_Jump();

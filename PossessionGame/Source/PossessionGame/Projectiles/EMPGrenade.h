@@ -15,6 +15,8 @@ class POSSESSIONGAME_API AEMPGrenade : public AProjectile
 	UPROPERTY(EditDefaultsOnly, Category = "Radius", meta = (AllowPrivateAccess = true))
 	float EmpRadius = 250.f;
 
+	virtual void P_SetVariationMaterial() override;
+
 	virtual void PlayImpactSound() override;
 	virtual void OnImpact(const FHitResult& Hit) override;
 	virtual void Init(FProjectileData& InProjectileData, const FRotator& Rotation, const int32 InWhich) override;

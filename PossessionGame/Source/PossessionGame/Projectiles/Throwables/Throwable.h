@@ -4,6 +4,7 @@
 #include "PossessionGame/Utilities/Global Utilities/Objects With Logic/PoolObject.h"
 #include "Throwable.generated.h"
 
+enum class EVariation : uint8;
 enum class ESound : uint16;
 class UThrowableData;
 
@@ -27,7 +28,11 @@ protected:
 	UPROPERTY()
 	TObjectPtr<AEnemy> Proprietor;
 	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Variation;
+	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
+
+	virtual void P_SetVariationMaterial();
 
 	float GetPlayerLevelAllGlobalDamageBonus() const;
 

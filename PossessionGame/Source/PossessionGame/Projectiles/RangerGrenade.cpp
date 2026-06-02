@@ -27,4 +27,15 @@ float ARangerGrenade::P_UpgradeDamageAppliance()
 	+ DefaultDamage * GetGameInstance()->GetSubsystem<UPlayerDataManager>()->GetRangerShieldSpecialBoost();
 }
 
+void ARangerGrenade::P_SetVariationMaterial()
+{
+	if (!MID_Variation)
+	{
+		MID_Variation = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(1), this);
+		Mesh->SetMaterial(1, MID_Variation);
+		if (!MID_Variation) return;
+	}
+	ProjectileData.SetupVariationMaterial(MID_Variation);
+}
+
 void ARangerGrenade::PlayImpactSound() { PlaySound(ESound::RangerGrenadeExplosion); }

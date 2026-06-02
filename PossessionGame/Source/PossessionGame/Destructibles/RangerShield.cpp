@@ -27,6 +27,12 @@ ARangerShield::ARangerShield()
 	Sounds[ESound::RangerDissolveShield]->SetupAttachment(Mesh);
 }
 
+void ARangerShield::P_SetVariationMaterial()
+{
+	if (!MID_ForceField) return;
+	Data->SetupVariationMaterial(MID_ForceField, Proprietor->GetVariation());
+}
+
 float ARangerShield::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (bIsPlayerObject && GetGameInstance()->GetSubsystem<UDelegateManager>()->RequestSpecialUpgradeAvailability.Execute(EUpgrade::RangerAbility2, EUpgradeAttribute::Special1))
@@ -54,15 +60,15 @@ void ARangerShield::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void ARangerShield::Init(bool bInIsPlayerObject)
+void ARangerShield::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
 {
+	Super::InitWithProprietor(InProprietor);
 	ShieldMaterialValueChanger = 0;
-	const float SizeIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility2, EUpgradeAttribute::Size, bInIsPlayerObject);
+	const float SizeIncrease = GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetRunSaveSlot()->GetUpgradeAttributeValues(EUpgrade::RangerAbility2, EUpgradeAttribute::Size, bIsPlayerObject);
 	SetActorScale3D(FVector(GetActorScale3D().X + GetActorScale3D().X * SizeIncrease * 0.01f, GetActorScale3D().Y, GetActorScale3D().Z + GetActorScale3D().Z * SizeIncrease * 0.01f));
-	if (bInIsPlayerObject) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::RangerDeployShield);
+	if (bIsPlayerObject) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->PlaySound2D(ESound::RangerDeployShield);
 	else PlaySound(ESound::RangerDeployShield);
 	UpdateShieldMaterialValues(0.f, 0.7f);
-	Super::Init(bInIsPlayerObject);
 	ShowHpBar();
 	GetWorldTimerManager().SetTimer(MoveShieldHandle, this, &ARangerShield::MoveShield, 0.05f, true);
 }

@@ -19,7 +19,6 @@ public:
 	TObjectPtr<UStaticMeshComponent> GetMesh() { return Mesh; }
 	
 	void HandleDeactivation();
-	virtual void Init(bool bInIsPlayerObject) override;
 	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	void ReceiveDamage(const float InDamage);
 	virtual void DestroyThis();
@@ -32,6 +31,10 @@ protected:
 	TObjectPtr<UDestructibleData> Data;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
+	UPROPERTY()
+	TObjectPtr<AEnemy> Proprietor;
+
+	virtual void P_SetVariationMaterial();
 
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
@@ -44,4 +47,6 @@ private:
 	bool bIsDeactivated = false;
 	bool bIsAffectedByPhysics = false;
 	FTimerHandle DestroyHandle;
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Variation;
 };

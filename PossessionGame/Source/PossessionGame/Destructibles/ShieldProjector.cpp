@@ -50,7 +50,6 @@ void AShieldProjector::BeginPlay()
 void AShieldProjector::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
 {
 	Super::InitWithProprietor(InProprietor);
-	Proprietor = InProprietor;
 	if (!ConnectionVfx) GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->AttachVfx(EVfx::TankShieldConnection,[this]() -> bool { return ProjectorMesh->GetVisibleFlag(); }, &ConnectionVfx, ProjectorMesh, NAME_None, Proprietor->GetVariation());
 	else GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ActivateWithVariation(EVfx::TankShieldConnection, nullptr, ConnectionVfx, false, Proprietor->GetVariation());
 	ChangeProjectorCollisionState(true);

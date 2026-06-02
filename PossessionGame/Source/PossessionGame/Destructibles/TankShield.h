@@ -9,7 +9,7 @@ class POSSESSIONGAME_API ATankShield : public ADestructible
 {
 	GENERATED_BODY()
 
-	virtual void Init(const bool bInIsPlayerObject) override;
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	virtual void SetThisLifeSpan() override;
 	virtual void SetUpgradesApplication() override;
 };

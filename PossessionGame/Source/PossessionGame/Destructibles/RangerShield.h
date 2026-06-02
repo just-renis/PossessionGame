@@ -15,8 +15,6 @@ class POSSESSIONGAME_API ARangerShield : public ADestructible
 	GENERATED_BODY()
 public:
 	ARangerShield();
-	
-	void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
 private:
 	bool bHasBeenDamagedRecently = false;
 	int32 ShieldMaterialValueChanger;
@@ -27,19 +25,19 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAIHpBarUI> HpBar;
 	UPROPERTY()
-	TObjectPtr<AEnemy> Proprietor;
-	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_ForceField;
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> MID_Shield;
 	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 
+	virtual void P_SetVariationMaterial() override;
+
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	virtual void Init(bool bInIsPlayerObject) override;
+	virtual void InitWithProprietor(const TObjectPtr<AEnemy> InProprietor) override;
 	virtual void DestroyThis() override;
 	void UpdateShieldMaterialValues(const float InOpacity, const float InProgress) const;
 	void PlaySound(const ESound InSoundName);

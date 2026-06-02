@@ -27,7 +27,7 @@ void ATank::AI_SpawnShield()
 	AI_Shield = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::AI_TankShield);
 	if (!AI_Shield) return;
 	AI_Shield->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("DeathSocket"));
-	AI_Shield->Init(false);
+	AI_Shield->InitWithProprietor(this);
 	if (SaveSlotManager->GetRunSaveSlot()->IsSpecialUpgradeAvailable(EUpgrade::TankAbility1, EUpgradeAttribute::Special1))
 	{
 		GetWorldTimerManager().SetTimer(AI_ShieldScalingHandle, this, &ATank::AI_ProcessShieldScaling, 0.2f, true);

@@ -1,5 +1,6 @@
 ﻿#include "Throwable.h"
 #include "Components/AudioComponent.h"
+#include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Data Assets/Base Data Assets/ThrowableData.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -19,6 +20,7 @@ void AThrowable::InitWithProprietor(const TObjectPtr<AEnemy> InProprietor)
 {
 	Super::InitWithProprietor(InProprietor);
 	Proprietor = InProprietor;
+	if (Data->IsVariationValuesExist()) P_SetVariationMaterial();
 }
 
 void AThrowable::Disable(const bool bHide)
@@ -31,6 +33,17 @@ AThrowable::AThrowable()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = Mesh;
+}
+
+void AThrowable::P_SetVariationMaterial()
+{
+	if (!MID_Variation)
+	{
+		MID_Variation = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(0), this);
+		Mesh->SetMaterial(0, MID_Variation);
+		if (!MID_Variation) return;
+	}
+	Data->SetupVariationMaterial(MID_Variation, Proprietor->GetVariation());
 }
 
 float AThrowable::GetPlayerLevelAllGlobalDamageBonus() const

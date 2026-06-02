@@ -22,6 +22,17 @@ APoisonGrenade::APoisonGrenade()
 	Sounds[ESound::TricksterPoisonRelease]->SetupAttachment(Mesh);
 }
 
+void APoisonGrenade::P_SetVariationMaterial()
+{
+	if (!MID_Variation)
+	{
+		MID_Variation = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(1), this);
+		Mesh->SetMaterial(1, MID_Variation);
+		if (!MID_Variation) return;
+	}
+	ProjectileData.SetupVariationMaterial(MID_Variation);
+}
+
 void APoisonGrenade::PlayImpactSound()
 {
 	PlaySound(ESound::TricksterPoisonImpact);

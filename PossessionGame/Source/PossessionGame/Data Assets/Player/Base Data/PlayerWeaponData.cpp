@@ -1,5 +1,4 @@
 #include "PlayerWeaponData.h"
-#include "PossessionGame/Data Assets/Primary Data Assets/PA_VfxContainer.h"
 
 float UPlayerWeaponData::GetDamageMultiplierFromRange(const float InMeters) const { return DamageRangeEntries.GetDamageMultiplier(InMeters); }
 

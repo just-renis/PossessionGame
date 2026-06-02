@@ -43,6 +43,8 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> BulletTrailComponent;
 	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> MID_Variation;
+	UPROPERTY()
 	TMap<ESound, TObjectPtr<UAudioComponent>> Sounds;
 	UPROPERTY()
 	TMap<FName, FNiagaraAttribute> Attributes;
@@ -85,8 +87,9 @@ private:
 	virtual float P_UpgradeDamageAppliance() { return 0.f; }
 	float P_CalculateByRangeDamage(const FHitResult& InHit);
 
-	void P_SetupUpgradesAppliance();
 	virtual void P_VariationDamageAppliance() {}
+	void P_SetupUpgradesAppliance();
+	virtual void P_SetVariationMaterial();
 
 	virtual void SpawnSecondProjectileImpactVfx(const FHitResult& Hit) {}
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

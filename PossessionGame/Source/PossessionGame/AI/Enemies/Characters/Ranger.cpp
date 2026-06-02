@@ -5,7 +5,6 @@
 #include "Engine/DamageEvents.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAIController.h"
 #include "PossessionGame/AI/Enemies/Management/EnemyAnimationInstance.h"
-#include "PossessionGame/Destructibles/RangerShield.h"
 #include "PossessionGame/Enums/ECharacterType.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EStateTreeEvent.h"
@@ -74,8 +73,7 @@ void ARanger::P_RemoveReloadSound()
 void ARanger::SpawnShield()
 {
 	const TObjectPtr<APoolObject> Shield = GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::RangerShield, GetActorLocation() + GetActorForwardVector() * 100.f, GetActorRotation() + FRotator(0.f, -90.f, 0.f));
-	Shield->Init(bIsHijacked);
-	Cast<ARangerShield>(Shield)->SetProprietor(this);
+	Shield->InitWithProprietor(this);
 }
 
 void ARanger::AI_TriggerDeathVoiceLine() { AssetsManager->PlaySound2D(ESound::RangerOnHijack); }

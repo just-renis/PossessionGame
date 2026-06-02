@@ -14,6 +14,7 @@
 #include "PossessionGame/UI/SecondaryWidgets/ArrowButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/CloseButtonUI.h"
 #include "PossessionGame/UI/SecondaryWidgets/VariationCurrencyPanelUI.h"
+#include "PossessionGame/UI/SecondaryWidgets/VariationDescriptionUI.h"
 #include "PossessionGame/Utilities/Data Utilities/SaveData/SaveSlot.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
@@ -36,7 +37,11 @@ void UVariationsUI::OpenUI()
 	Toggle(true);
 }
 
-void UVariationsUI::CloseUI() { Toggle(false); }
+void UVariationsUI::CloseUI()
+{
+	Toggle(false);
+	(void)GetGameInstance()->GetSubsystem<UDelegateManager>()->OnVariationUIClosed.ExecuteIfBound();
+}
 
 void UVariationsUI::NativeConstruct()
 {
@@ -217,18 +222,18 @@ void UVariationsUI::SwitchVariation(const ECharacterType InCharacterName)
 
 void UVariationsUI::ToggleDetailsPanel(const bool bState, const EVariation InVariationName, const FText& InVariationDetailsText, const FText& InUnlockDetailsText)
 {
-	if (!UnlockDetailsPanel || !VariationDetailsPanel) return;
+	if (!UnlockDetailsPanel || !VariationDescriptionPanel) return;
 	if (bState)
 	{
-		if (VariationDetailsPanel->GetVisibility() == ESlateVisibility::Hidden) VariationDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		if (VariationDescriptionPanel->GetVisibility() == ESlateVisibility::Hidden) VariationDescriptionPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		if (UnlockDetailsPanel->GetVisibility() == ESlateVisibility::Hidden) UnlockDetailsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		VariationDetailsPanel->SetDetailsText(InVariationDetailsText);
+		VariationDescriptionPanel->SetDetailsText(InVariationDetailsText);
 		UnlockDetailsPanel->SetDetailsText(InUnlockDetailsText);
 		if (const int32* UnlockPrice = UnlockPrices.Find(InVariationName)) UnlockDetailsPanel->SetupDetailsPanel(InVariationName, *UnlockPrice);
 		else UnlockDetailsPanel->SetupDetailsPanel(InVariationName, INT_MAX);
 		UnlockDetailsPanel->SetUnlockedVariation(SaveSlot->GetIsVariationUnlocked(InVariationName));
 		UnlockDetailsPanel->PlayFadeInAnim();
-		VariationDetailsPanel->PlayFadeInAnim();
+		VariationDescriptionPanel->PlayFadeInAnim();
 		if (!GetGameInstance()->GetSubsystem<USaveSlotManager>()->GetSaveSlot()->GetIsExplanationShown(EExplanation::VariationDetailsUI))
 		{
 			(void)GetWorld()->GetSubsystem<UWidgetManager>()->GetOnShowExplanationDelegate().ExecuteIfBound(EExplanation::VariationDetailsUI, GetGameInstance());

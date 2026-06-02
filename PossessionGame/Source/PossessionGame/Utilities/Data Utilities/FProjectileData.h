@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "FVariationVfxParams.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
 #include "PossessionGame/Enums/EPoolObject.h"
 #include "PossessionGame/Enums/EDamageReason.h"
@@ -75,7 +76,10 @@ struct POSSESSIONGAME_API FProjectileData
 	EDamageReason DamageReason = EDamageReason::None;
 	UPROPERTY(EditDefaultsOnly)
 	EPoolObject ProjectileName = EPoolObject::None;
-	
+	UPROPERTY(EditDefaultsOnly, Category = "Variation Values", meta = (AllowPrivateAccess = true))
+	TMap<EVariation, FVariationVfxParams> VariationValues;
+
+	bool IsVariationValuesExist() const { return !VariationValues.IsEmpty(); }
 	float GetCalcSpread() const { return Spread * (bWalkSpreadEnabled ? 2.f : 1.f); }
 	FAdditionalProjectiles GetMultiProjectileData(const int32 InAmount)
 	{
@@ -92,6 +96,26 @@ struct POSSESSIONGAME_API FProjectileData
 	void SetWalkSpread(const bool bState) { bWalkSpreadEnabled = bState; }
 	void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
 	void SetAmount(const int32 InAmount) { Amount = InAmount; }
+    void SetupVariationMaterial(const TObjectPtr<UMaterialInstanceDynamic>& InMaterial)
+	{
+		if (!Proprietor) return;
+		if (const FVariationVfxParams* Data = VariationValues.Find(Proprietor->GetVariation()))
+		{
+			for (const TPair<FName, FNiagaraUserParam>& Param : Data->Params)
+			{
+				switch (Param.Value.ParamType)
+				{
+				case EUserParamType::Bool: InMaterial->SetScalarParameterValue(Param.Key, Param.Value.bBoolValue); break;
+				case EUserParamType::Int: InMaterial->SetScalarParameterValue(Param.Key, Param.Value.IntValue); break;
+				case EUserParamType::Float: InMaterial->SetScalarParameterValue(Param.Key, Param.Value.FloatValue); break;
+				case EUserParamType::Vector: InMaterial->SetVectorParameterValue(Param.Key, Param.Value.VectorValue); break;
+				case EUserParamType::Color: InMaterial->SetVectorParameterValue(Param.Key, Param.Value.ColorValue); break;
+				case EUserParamType::Texture: InMaterial->SetTextureParameterValue(Param.Key, Param.Value.Texture); break;
+				default: ;
+				}
+			}
+		}
+	}
 private:
 	bool bWalkSpreadEnabled = false;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
