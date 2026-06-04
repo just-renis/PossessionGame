@@ -92,6 +92,7 @@ void AProjectile::InitCloneProjectile(FProjectileData& InProjectileData, const F
 	bIsActive = true;
 	GetWorldTimerManager().ClearTimer(DestroyHandle);
 	Super::InitCloneProjectile(InProjectileData, Rotation);
+	bIsProjectileDataBeenSetup = true;
 	StartLocation = GetActorLocation();
 	ProjectileData = InProjectileData;
 	ProjectileData.ProjectileName = EPoolObject::CloneProjectile;
