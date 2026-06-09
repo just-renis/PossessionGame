@@ -16,6 +16,7 @@ public:
 	void P_DashSlash();
 	void P_EndDash();
 	void P_ChangeDeflectState(const bool bState);
+	void P_ThrowShuriken();
 private:
 	ASamurai();
 	

@@ -28,5 +28,6 @@ enum class EHandsAnimState : uint8
 	Slam,
 	DashSlash,
 	Deflect1,
-	Deflect2
+	Deflect2,
+	ShurikenThrow
 };

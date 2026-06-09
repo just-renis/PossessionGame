@@ -196,4 +196,6 @@ enum class ESound : uint16
 	SamuraiDeflectDeactivate,
 	SamuraiSlashHit,
 	SamuraiSwoosh,
+	SamuraiShurikenImpact,
+	SamuraiShurikenThrow,
 };

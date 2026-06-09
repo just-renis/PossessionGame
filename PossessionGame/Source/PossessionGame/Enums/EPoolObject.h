@@ -47,5 +47,6 @@ enum class EPoolObject : uint8
 	AI_TankShield,
 	NotPoolableTankSlam,
 	SoldierBossProjectile,
-	SoldierBossMissile
+	SoldierBossMissile,
+	SamuraiShuriken
 };

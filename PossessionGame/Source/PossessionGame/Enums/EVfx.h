@@ -145,6 +145,8 @@ enum class EVfx : uint16
 	SamuraiDashLines,
 	SamuraiDeflectParticles,
 	PlayerSamuraiSlash,
+	PlayerSamuraiShuriken,
+	PlayerSamuraiShurikenImpact,
 	AcoHijackEffect,
 	AcoFlyTrail,
 	AcoEject,

@@ -14,6 +14,7 @@
 #include "PossessionGame/Enums/EHandsAnimState.h"
 #include "PossessionGame/Enums/EPostProcessMaterial.h"
 #include "PossessionGame/Enums/EWeapon.h"
+#include "PossessionGame/Projectiles/Throwables/SamuraiShuriken.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
 #include "PossessionGame/Utilities/Subsystems/PoolingManager.h"
 #include "PossessionGame/Utilities/Subsystems/PostProcessManager.h"
@@ -88,6 +89,15 @@ void ASamurai::P_ChangeDeflectState(const bool bState)
 	if (bState) P_ToggleRun(false);
 	bCanRun = !bState;
 	Cast<USamuraiHandsAnimInstance>(GetWeapon()->GetHandsAnimInstance())->SetDeflectState(bState);
+}
+
+void ASamurai::P_ThrowShuriken()
+{
+	const TObjectPtr<ASamuraiShuriken> Shuriken = Cast<ASamuraiShuriken>(GetWorld()->GetSubsystem<UPoolingManager>()->SpawnObjectFromPool(EPoolObject::SamuraiShuriken, Weapon->GetHandsSocketLocation(FName("ShurikenSocket")), Weapon->GetHandsSocketRotation(FName("ShurikenSocket"))));
+	if (!Shuriken) return;
+	Shuriken->InitWithProprietor(this);
+	AssetsManager->PlaySound2D(ESound::SamuraiShurikenThrow);
+	Shuriken->Throw();
 }
 
 ASamurai::ASamurai()

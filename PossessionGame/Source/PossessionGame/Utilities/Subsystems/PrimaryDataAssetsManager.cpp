@@ -773,6 +773,8 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_SamuraiSwoosh", ESound::SamuraiSwoosh);
 	SoundMap.Add("PA_SamuraiDeflectDeactivate", ESound::SamuraiDeflectDeactivate);
 	SoundMap.Add("PA_SamuraiSlashHit", ESound::SamuraiSlashHit);
+	SoundMap.Add("PA_SamuraiShurikenImpact", ESound::SamuraiShurikenImpact);
+	SoundMap.Add("PA_SamuraiShurikenThrow", ESound::SamuraiShurikenThrow);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }
@@ -943,6 +945,8 @@ void UPrimaryDataAssetsManager::SetupVfxsPrimaryAssets()
 	VfxsMap.Add("PA_SamuraiDashLines", EVfx::SamuraiDashLines);
 	VfxsMap.Add("PA_SamuraiDeflectParticles", EVfx::SamuraiDeflectParticles);
 	VfxsMap.Add("PA_PlayerSamuraiSlash", EVfx::PlayerSamuraiSlash);
+	VfxsMap.Add("PA_PlayerSamuraiShuriken", EVfx::PlayerSamuraiShuriken);
+	VfxsMap.Add("PA_PlayerSamuraiShurikenImpact", EVfx::PlayerSamuraiShurikenImpact);
 	VfxsMap.Add("PA_AcoHijackEffect", EVfx::AcoHijackEffect);
 	VfxsMap.Add("PA_AcoFlyTrail", EVfx::AcoFlyTrail);
 	VfxsMap.Add("PA_AcoEject", EVfx::AcoEject);
