@@ -59,7 +59,7 @@ void ADestructible::P_SetVariationMaterial()
 		GetMesh()->SetMaterial(0, MID_Variation);
 		if (!MID_Variation) return;
 	}
-	Data->SetupVariationMaterial(MID_Variation, Proprietor->GetVariation());
+	Data->SetupVariationMaterials(TArray{ MID_Variation }, Proprietor->GetVariation());
 }
 
 float ADestructible::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

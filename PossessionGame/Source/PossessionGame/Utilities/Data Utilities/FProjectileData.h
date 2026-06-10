@@ -77,7 +77,7 @@ struct POSSESSIONGAME_API FProjectileData
 	UPROPERTY(EditDefaultsOnly)
 	EPoolObject ProjectileName = EPoolObject::None;
 	UPROPERTY(EditDefaultsOnly, Category = "Variation Values", meta = (AllowPrivateAccess = true))
-	TMap<EVariation, FVariationVfxParams> VariationValues;
+	TMap<EVariation, FMaterialVariationVfxParams> VariationValues;
 
 	bool IsVariationValuesExist() const { return !VariationValues.IsEmpty(); }
 	float GetCalcSpread() const { return Spread * (bWalkSpreadEnabled ? 2.f : 1.f); }
@@ -96,22 +96,27 @@ struct POSSESSIONGAME_API FProjectileData
 	void SetWalkSpread(const bool bState) { bWalkSpreadEnabled = bState; }
 	void SetProprietor(const TObjectPtr<AEnemy>& InProprietor) { Proprietor = InProprietor; }
 	void SetAmount(const int32 InAmount) { Amount = InAmount; }
-    void SetupVariationMaterial(const TObjectPtr<UMaterialInstanceDynamic>& InMaterial)
+    void SetupVariationMaterials(const TArray<TObjectPtr<UMaterialInstanceDynamic>>& InMaterials)
 	{
 		if (!Proprietor) return;
-		if (const FVariationVfxParams* Data = VariationValues.Find(Proprietor->GetVariation()))
+		const FMaterialVariationVfxParams* VariationData = VariationValues.Find(Proprietor->GetVariation());
+		if (!VariationData) return;
+		for (const TPair<int32, FVariationVfxParams>& MaterialPair : VariationData->Params)
 		{
-			for (const TPair<FName, FNiagaraUserParam>& Param : Data->Params)
+			const int32 MaterialIndex = MaterialPair.Key;
+			if (!InMaterials.IsValidIndex(MaterialIndex)) continue;
+			UMaterialInstanceDynamic* Material = InMaterials[MaterialIndex];
+			for (const TPair<FName, FNiagaraUserParam>& Param : MaterialPair.Value.Params)
 			{
 				switch (Param.Value.ParamType)
 				{
-				case EUserParamType::Bool: InMaterial->SetScalarParameterValue(Param.Key, Param.Value.bBoolValue); break;
-				case EUserParamType::Int: InMaterial->SetScalarParameterValue(Param.Key, Param.Value.IntValue); break;
-				case EUserParamType::Float: InMaterial->SetScalarParameterValue(Param.Key, Param.Value.FloatValue); break;
-				case EUserParamType::Vector: InMaterial->SetVectorParameterValue(Param.Key, Param.Value.VectorValue); break;
-				case EUserParamType::Color: InMaterial->SetVectorParameterValue(Param.Key, Param.Value.ColorValue); break;
-				case EUserParamType::Texture: InMaterial->SetTextureParameterValue(Param.Key, Param.Value.Texture); break;
-				default: ;
+				case EUserParamType::Bool: Material->SetScalarParameterValue(Param.Key, Param.Value.bBoolValue); break;
+				case EUserParamType::Int: Material->SetScalarParameterValue(Param.Key, Param.Value.IntValue); break;
+				case EUserParamType::Float: Material->SetScalarParameterValue(Param.Key, Param.Value.FloatValue); break;
+				case EUserParamType::Vector: Material->SetVectorParameterValue(Param.Key, Param.Value.VectorValue); break;
+				case EUserParamType::Color: Material->SetVectorParameterValue(Param.Key, Param.Value.ColorValue); break;
+				case EUserParamType::Texture: Material->SetTextureParameterValue(Param.Key, Param.Value.Texture); break;
+				default: break;
 				}
 			}
 		}

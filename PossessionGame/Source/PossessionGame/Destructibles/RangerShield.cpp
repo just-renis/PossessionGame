@@ -30,7 +30,7 @@ ARangerShield::ARangerShield()
 void ARangerShield::P_SetVariationMaterial()
 {
 	if (!MID_ForceField) return;
-	Data->SetupVariationMaterial(MID_ForceField, Proprietor->GetVariation());
+	Data->SetupVariationMaterials(TArray{MID_ForceField, MID_Shield}, Proprietor->GetVariation());
 }
 
 float ARangerShield::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -47,8 +47,8 @@ void ARangerShield::BeginPlay()
 	Super::BeginPlay();
 	MID_ForceField = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(0), this);
 	Mesh->SetMaterial(0, MID_ForceField);
-	MID_Shield = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(1), this);
-	Mesh->SetMaterial(1, MID_Shield);
+	MID_Shield = UMaterialInstanceDynamic::Create(Mesh->GetMaterial(2), this);
+	Mesh->SetMaterial(2, MID_Shield);
 	SetupHpBar();
 }
 

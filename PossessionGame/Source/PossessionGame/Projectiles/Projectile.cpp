@@ -276,7 +276,7 @@ void AProjectile::P_SetVariationMaterial()
 		Mesh->SetMaterial(0, MID_Variation);
 		if (!MID_Variation) return;
 	}
-	ProjectileData.SetupVariationMaterial(MID_Variation);
+	ProjectileData.SetupVariationMaterials(TArray{MID_Variation});
 }
 
 void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)

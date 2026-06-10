@@ -25,7 +25,7 @@ public:
 	float GetDirectionMultiplier() const { return DirectionMultiplier; }
 	TObjectPtr<UDamageOverTimeData> GetDamageOverTimeData() const { return DamageOverTimeData; }
 	
-    void SetupVariationMaterial(const TObjectPtr<UMaterialInstanceDynamic>& InMaterial, const EVariation InVariation);
+    void SetupVariationMaterials(const TArray<TObjectPtr<UMaterialInstanceDynamic>>& InMaterials, const EVariation InVariation);
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	bool bNeedsOnHitEvent = false;
@@ -52,5 +52,5 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bHasDamageOverTime", EditConditionHides, AllowPrivateAccess = true))
 	TObjectPtr<UDamageOverTimeData> DamageOverTimeData;
 	UPROPERTY(EditDefaultsOnly, Category = "Variation Values", meta = (AllowPrivateAccess = true))
-	TMap<EVariation, FVariationVfxParams> VariationValues;
+	TMap<EVariation, FMaterialVariationVfxParams> VariationValues;
 };

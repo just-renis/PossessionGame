@@ -49,3 +49,12 @@ struct FVariationVfxParams
 	UPROPERTY(EditDefaultsOnly, Category = "Vfx Data", meta = (AllowPrivateAccess = true))
 	TMap<FName, FNiagaraUserParam> Params;
 };
+
+USTRUCT()
+struct FMaterialVariationVfxParams
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Vfx Data", meta = (AllowPrivateAccess = true))
+	TMap<int32, FVariationVfxParams> Params;
+};

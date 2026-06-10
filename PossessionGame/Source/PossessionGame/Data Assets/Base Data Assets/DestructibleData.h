@@ -22,7 +22,7 @@ public:
 	EPoolObject GetObjectName() const { return ObjectName; }
 	FName GetCollisionProfileName(const bool bIsPlayerObject) const { return bIsPlayerObject ? PlayerCollisionProfileName : EnemyCollisionProfileName; }
 	
-    void SetupVariationMaterial(const TObjectPtr<UMaterialInstanceDynamic>& InMaterial, const EVariation InVariation);
+    void SetupVariationMaterials(const TArray<TObjectPtr<UMaterialInstanceDynamic>>& InMaterials, const EVariation InVariation);
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	bool bIsLifeSpanImmediatelyAdded;
@@ -41,5 +41,5 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	FName EnemyCollisionProfileName;
 	UPROPERTY(EditDefaultsOnly, Category = "Variation Values", meta = (AllowPrivateAccess = true))
-	TMap<EVariation, FVariationVfxParams> VariationValues;
+	TMap<EVariation, FMaterialVariationVfxParams> VariationValues;
 };

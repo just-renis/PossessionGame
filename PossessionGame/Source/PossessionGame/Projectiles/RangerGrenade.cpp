@@ -35,7 +35,7 @@ void ARangerGrenade::P_SetVariationMaterial()
 		Mesh->SetMaterial(1, MID_Variation);
 		if (!MID_Variation) return;
 	}
-	ProjectileData.SetupVariationMaterial(MID_Variation);
+	ProjectileData.SetupVariationMaterials(TArray{MID_Variation});
 }
 
 void ARangerGrenade::PlayImpactSound() { PlaySound(ESound::RangerGrenadeExplosion); }
