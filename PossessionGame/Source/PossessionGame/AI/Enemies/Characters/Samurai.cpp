@@ -174,7 +174,6 @@ void ASamurai::P_DashOverlapTick()
 	for (FHitResult& Hit : Hits)
 	{
 		TObjectPtr<AActor> HitActor = Hit.GetActor();
-
 		if (HitActor && !DashHitActors.Contains(HitActor))
 		{
 			DashHitActors.Add(HitActor);
@@ -214,9 +213,8 @@ float ASamurai::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, 
 		Forward.Normalize();
 		if (FVector::DotProduct(Forward, ShotDirection) > 0.f)
 		{
-			DeflectAnimChange = !DeflectAnimChange;
 			PlaySound(ESound::SamuraiDeflect);
-			GetWeapon()->GetHandsAnimInstance()->PlayMontage(DeflectAnimChange ? EHandsAnimState::Deflect1 : EHandsAnimState::Deflect2);
+			PlayDeflectionAnim();
 			return 0.f;
 		}
 	}
@@ -249,4 +247,18 @@ void ASamurai::Landed(const FHitResult& Hit)
 	Super::Landed(Hit);
 	if (!AI || AI->GetIsStateTreeRunning()) return;
 	AI->SetIsInJumpMode(false);
+}
+
+void ASamurai::PlayDeflectionAnim()
+{
+	constexpr EHandsAnimState DeflectAnims[] = { EHandsAnimState::Deflect1, EHandsAnimState::Deflect2, EHandsAnimState::Deflect3, EHandsAnimState::Deflect4 };
+	int32 Index = FMath::RandRange(0, 2);
+	if (LastDeflectAnim != EHandsAnimState::None)
+	{
+		if (Index >= static_cast<int32>(LastDeflectAnim) - static_cast<int32>(EHandsAnimState::Deflect1)) Index++;
+	}
+	const EHandsAnimState NewAnim = DeflectAnims[Index];
+	LastDeflectAnim = NewAnim;
+	UE_LOG(LogTemp, Error, TEXT("%s"), *UEnum::GetValueAsString(LastDeflectAnim));
+	GetWeapon()->GetHandsAnimInstance()->PlayMontage(NewAnim);
 }

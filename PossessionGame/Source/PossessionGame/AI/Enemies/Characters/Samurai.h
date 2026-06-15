@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "PossessionGame/AI/Enemies/Management/Enemy.h"
+#include "PossessionGame/Enums/EHandsAnimState.h"
 #include "Samurai.generated.h"
 
 class ADestructible;
@@ -22,7 +23,7 @@ private:
 	
 	bool bDeflectState = false;
 	bool bIsDashSlashing = false;
-	bool DeflectAnimChange = false;
+	EHandsAnimState LastDeflectAnim = EHandsAnimState::None;
 	FTimerHandle DashOverlapTickHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Dash", meta = (AllowPrivateAccess = true))
 	float DashStrength = 2500.f;
@@ -81,4 +82,5 @@ private:
 	void SetupSamuraiHat();
 	virtual void HandleDeactivation() override;
 	virtual void Landed(const FHitResult& Hit) override;
+	void PlayDeflectionAnim();
 };
