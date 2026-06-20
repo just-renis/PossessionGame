@@ -48,7 +48,7 @@ void ASamurai::P_DashSlash()
 	GetCharacterMovement()->BrakingFrictionFactor = 0.f;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
-	LaunchCharacter(DashDir.GetSafeNormal() * DashStrength, true, false);
+	LaunchCharacter(DashDir.GetSafeNormal() * P_DashStrength, true, false);
 	GetWorldTimerManager().SetTimer(DashOverlapTickHandle, this, &ASamurai::P_DashOverlapTick, DashOverlapCheckTick, true);
 }
 
@@ -177,7 +177,7 @@ void ASamurai::P_DashOverlapTick()
 		if (HitActor && !DashHitActors.Contains(HitActor))
 		{
 			DashHitActors.Add(HitActor);
-			UGameplayStatics::ApplyDamage(HitActor, DashDamage, GetController(), this, nullptr);
+			UGameplayStatics::ApplyDamage(HitActor, P_DashDamage, GetController(), this, nullptr);
 		}
 	}
 }

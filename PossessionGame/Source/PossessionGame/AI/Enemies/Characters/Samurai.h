@@ -26,11 +26,9 @@ private:
 	EHandsAnimState LastDeflectAnim = EHandsAnimState::None;
 	FTimerHandle DashOverlapTickHandle;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Dash", meta = (AllowPrivateAccess = true))
-	float DashStrength = 2500.f;
+	float P_DashStrength = 2500.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Dash", meta = (AllowPrivateAccess = true))
-	float DashDuration = 0.5f;
-	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Dash", meta = (AllowPrivateAccess = true))
-	float DashDamage = 40.f;
+	float P_DashDamage = 40.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Dash", meta = (AllowPrivateAccess = true))
 	FVector DashOverlapSweepBox = FVector(150.f);
 	UPROPERTY(EditDefaultsOnly, Category = "Individual Values | Dash", meta = (AllowPrivateAccess = true))
