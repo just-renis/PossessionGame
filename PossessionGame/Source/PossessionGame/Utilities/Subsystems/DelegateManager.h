@@ -115,6 +115,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemyDeathOccurred, const TObjectPtr<AAct
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTimeDilationChanged, const float);
 DECLARE_MULTICAST_DELEGATE_OneParam(FUpdateRangerMinesRadius, const bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FTriggerFireFloors, const TArray<int32>&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FTriggerWallLasers, const TArray<int32>&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHijack, const TObjectPtr<AActor>&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTerminalCandleInteraction, const int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnUsbInsertionForWires, const int32);
@@ -223,6 +224,7 @@ public:
 	FOnTimeDilationChanged OnTimeDilationChanged;
 	FUpdateRangerMinesRadius UpdateRangerMinesRadius;
 	FTriggerFireFloors TriggerFireFloors;
+	FTriggerWallLasers TriggerWallLasers;
 	FOnHijack OnHijack;
 	FOnTerminalCandleInteraction OnTerminalCandleInteraction;
 	FOnUsbInsertionForWires OnUsbInsertionForWires;

@@ -1,4 +1,6 @@
 ﻿#include "ChargeTerminalModeLogic.h"
+
+#include "Algo/RandomShuffle.h"
 #include "PossessionGame/Data Assets/Game Modes/ChargeTerminalModeData.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
 #include "PossessionGame/Enums/EGameMode.h"
@@ -15,6 +17,13 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UChargeTerminalModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->OnUsbInserted.AddUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
 	PlaySound(ESound::TaskAnnouncement);
+	if (Data->GetIsWallLasersExist())
+	{
+		TArray Indices = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+		Algo::RandomShuffle(Indices);
+		Indices.SetNum(2);
+		GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->TriggerWallLasers.Broadcast(Indices);
+	}
 	WaveManager->GetAssetsManager()->RequestSpawnEnemy(Data->GetEnemyToSpawn(), EGameMode::MiniBossSpawn,
 	[this](const TObjectPtr<AEnemy>&)
 	{
