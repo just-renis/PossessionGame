@@ -1,5 +1,4 @@
 ﻿#include "ChargeTerminalModeLogic.h"
-
 #include "Algo/RandomShuffle.h"
 #include "PossessionGame/Data Assets/Game Modes/ChargeTerminalModeData.h"
 #include "PossessionGame/Enums/EEnemyHpBar.h"
@@ -16,14 +15,12 @@ void UChargeTerminalModeLogic::Init(const TObjectPtr<UWaveManager>& InWaveManage
 	SetupWaveManagerUI();
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.BindUObject(this, &UChargeTerminalModeLogic::UpdateEnemiesAmount);
 	WaveManager->GetDelegateManager()->OnUsbInserted.AddUObject(this, &UChargeTerminalModeLogic::UpdateTaskProgress);
-	PlaySound(ESound::TaskAnnouncement);
 	if (Data->GetIsWallLasersExist())
 	{
-		TArray Indices = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
-		Algo::RandomShuffle(Indices);
-		Indices.SetNum(2);
-		GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->TriggerWallLasers.Broadcast(Indices);
+		WaveManager->GetDelegateManager()->OnElevatorFinishedRising.BindUObject(this, &UChargeTerminalModeLogic::InitiateNextCharge);
+		ActivateWallLasers();
 	}
+	PlaySound(ESound::TaskAnnouncement);
 	WaveManager->GetAssetsManager()->RequestSpawnEnemy(Data->GetEnemyToSpawn(), EGameMode::MiniBossSpawn,
 	[this](const TObjectPtr<AEnemy>&)
 	{
@@ -42,6 +39,7 @@ void UChargeTerminalModeLogic::Finalize()
 		WaveManagerHUD->UpdateObjectiveProgress(ChargeAmount, Data->GetChargeAmountRequired());
 		WaveManagerHUD->ToggleFinishOffEnemiesText(false);
 	}
+	if (Data->GetIsWallLasersExist()) WaveManager->GetDelegateManager()->OnElevatorFinishedRising.Unbind();
 	WaveManager->GetDelegateManager()->StartForceFieldDissolve.Broadcast(0);
 	WaveManager->GetDelegateManager()->UpdateGameModeEnemiesAmount.Unbind();
 	WaveManager->GetDelegateManager()->OnUsbInserted.RemoveAll(this);
@@ -104,11 +102,17 @@ void UChargeTerminalModeLogic::ChargeCleared()
 	TotalAmountOfEnemiesKilled = 0;
 	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "WaveCompleted", "Wave Completed"));
 	FTimerHandle InitiateNextChargeHandle;
-	GetWorld()->GetTimerManager().SetTimer(InitiateNextChargeHandle, this, &UChargeTerminalModeLogic::InitiateNextCharge, WaveManagerHUD->GetWaveAnnouncementEndTime());
+	if (!Data->GetIsWallLasersExist()) GetWorld()->GetTimerManager().SetTimer(InitiateNextChargeHandle, this, &UChargeTerminalModeLogic::InitiateNextCharge, WaveManagerHUD->GetWaveAnnouncementEndTime());
+	else
+	{
+		(void)WaveManager->GetDelegateManager()->OnElevatorTriggered.ExecuteIfBound();
+		UE_LOG(LogTemp, Error, TEXT("ON ELEVATOR TRIGGERED"));
+	}
 }
 
 void UChargeTerminalModeLogic::InitiateNextCharge()
 {
+	if (Data->GetIsWallLasersExist()) ActivateWallLasers();
 	bIsUsbRequirementFilled = false;
 	bInstanceFinished = false;
 	WaveManagerHUD->UpdateObjectiveProgress(ChargeAmount, Data->GetChargeAmountRequired());
@@ -120,4 +124,12 @@ void UChargeTerminalModeLogic::InitiateNextCharge()
 		IncreaseAliveEnemiesAmount();
 		GetWorld()->GetTimerManager().SetTimer(SpawnHandle, this, &UChargeTerminalModeLogic::HandleSpawning, SpawnRate, true);
 	}, nullptr);
+}
+
+void UChargeTerminalModeLogic::ActivateWallLasers()
+{
+	TArray Indices = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+	Algo::RandomShuffle(Indices);
+	Indices.SetNum(LasersAmount++);
+	GetWorld()->GetGameInstance()->GetSubsystem<UDelegateManager>()->TriggerWallLasers.Broadcast(Indices, ChargeAmount);
 }

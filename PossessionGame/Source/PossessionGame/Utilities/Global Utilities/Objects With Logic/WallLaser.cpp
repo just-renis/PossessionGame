@@ -32,9 +32,9 @@ void AWallLaser::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void AWallLaser::EnableLaser(const TArray<int32>& InIds)
+void AWallLaser::EnableLaser(const TArray<int32>& InIds, const int32 InGroup)
 {
-	if (!InIds.Contains(Id)) return;
+	if (Group != InGroup || !InIds.Contains(Id)) return;
 	if (MID_Material) MID_Material->SetScalarParameterValue(FName("Appear"), 100.f);
 	DamageRadius->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	DamageRadius->SetGenerateOverlapEvents(true);

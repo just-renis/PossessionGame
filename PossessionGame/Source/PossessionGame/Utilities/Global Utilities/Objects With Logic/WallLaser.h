@@ -15,7 +15,9 @@ class POSSESSIONGAME_API AWallLaser : public AActor
 	AWallLaser();
 
 	FTimerHandle DamageOvertimeHandle;
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = "Group", meta = (AllowPrivateAccess = true))
+	int32 Group;
+	UPROPERTY(EditAnywhere, Category = "Group", meta = (AllowPrivateAccess = true))
 	int32 Id;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	float DamageTick = 0.2f;
@@ -32,7 +34,7 @@ class POSSESSIONGAME_API AWallLaser : public AActor
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	void EnableLaser(const TArray<int32>& InIds);
+	void EnableLaser(const TArray<int32>& InIds, const int32 InGroup);
 	void DealDamage();
 	void AddTarget(const TObjectPtr<AEnemy>& InTarget);
 	void RemoveTarget();

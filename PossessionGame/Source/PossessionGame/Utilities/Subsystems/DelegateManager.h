@@ -41,6 +41,8 @@ DECLARE_DELEGATE(FOnAcoFirstPhaseFinish);
 DECLARE_DELEGATE(FOnAcoPlatformRiseComplete);
 DECLARE_DELEGATE(FOnSamuraiDashSlashEnd);
 DECLARE_DELEGATE(FOnVariationUIClosed);
+DECLARE_DELEGATE(FOnElevatorTriggered);
+DECLARE_DELEGATE(FOnElevatorFinishedRising);
 DECLARE_DELEGATE_RetVal(int32, FOnRunFinished);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsSpyMarkerRequired);
 DECLARE_DELEGATE_RetVal(bool, FRequestIsTimeStopUsed);
@@ -115,7 +117,6 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemyDeathOccurred, const TObjectPtr<AAct
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTimeDilationChanged, const float);
 DECLARE_MULTICAST_DELEGATE_OneParam(FUpdateRangerMinesRadius, const bool);
 DECLARE_MULTICAST_DELEGATE_OneParam(FTriggerFireFloors, const TArray<int32>&);
-DECLARE_MULTICAST_DELEGATE_OneParam(FTriggerWallLasers, const TArray<int32>&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHijack, const TObjectPtr<AActor>&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTerminalCandleInteraction, const int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnUsbInsertionForWires, const int32);
@@ -125,6 +126,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTargetChange, const TObjectPtr<AEnemy>&,
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText&);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSpecialUpgradeAdded, const EUpgrade, const EUpgradeAttribute);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FAddActionSpeedBoost, const float, const float);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FTriggerWallLasers, const TArray<int32>&, const int32);
 
 UCLASS()
 class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
@@ -150,6 +152,8 @@ public:
 	FOnAcoPlatformRiseComplete OnAcoPlatformRiseComplete;
 	FOnSamuraiDashSlashEnd OnSamuraiDashSlashEnd;
 	FOnVariationUIClosed OnVariationUIClosed;
+	FOnElevatorTriggered OnElevatorTriggered;
+	FOnElevatorFinishedRising OnElevatorFinishedRising;
 	FOnRunFinished OnRunFinished;
 	FRequestIsSpyMarkerRequired RequestIsSpyMarkerRequired;
 	FRequestIsTimeStopUsed RequestIsTimeStopUsed;
@@ -224,7 +228,6 @@ public:
 	FOnTimeDilationChanged OnTimeDilationChanged;
 	FUpdateRangerMinesRadius UpdateRangerMinesRadius;
 	FTriggerFireFloors TriggerFireFloors;
-	FTriggerWallLasers TriggerWallLasers;
 	FOnHijack OnHijack;
 	FOnTerminalCandleInteraction OnTerminalCandleInteraction;
 	FOnUsbInsertionForWires OnUsbInsertionForWires;
@@ -234,4 +237,5 @@ public:
 	FOnKeyBindChange OnKeyBindChange;
 	FOnSpecialUpgradeAdded OnSpecialUpgradeAdded;
 	FAddActionSpeedBoost AddActionSpeedBoost;
+	FTriggerWallLasers TriggerWallLasers;
 };

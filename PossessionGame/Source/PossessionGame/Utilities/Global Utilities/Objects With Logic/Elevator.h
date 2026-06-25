@@ -11,10 +11,22 @@ class POSSESSIONGAME_API AElevator : public AActor
 
 	AElevator();
 
+	float UnitsRose = 0.f;
+	FTimerHandle RisingHandle;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	float RisingSpeed = 2.f;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	float UnitsToRise = 500.f;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> WardenSpawnMesh;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<AActor> WardenSpawnLocation;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TArray<TObjectPtr<AActor>> EnemiesSpawnLocations;
 
 	virtual void BeginPlay() override;
+	void InitiateRising();
+	void ProcessRising();
 };

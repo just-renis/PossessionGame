@@ -14,6 +14,7 @@ class POSSESSIONGAME_API UChargeTerminalModeLogic : public UGameModeBaseLogic
 	bool bIsTerminalsCharged = false;
 	bool bIsUsbRequirementFilled = false;
 	int32 ChargeAmount = 0;
+	int32 LasersAmount = 2;
 	UPROPERTY()
 	TObjectPtr<UChargeTerminalModeData> Data;
 
@@ -26,4 +27,5 @@ class POSSESSIONGAME_API UChargeTerminalModeLogic : public UGameModeBaseLogic
 	void UsbRequirementFilled();
 	void ChargeCleared();
 	void InitiateNextCharge();
+	void ActivateWallLasers();
 };
