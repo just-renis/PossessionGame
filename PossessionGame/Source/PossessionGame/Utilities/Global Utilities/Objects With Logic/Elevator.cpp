@@ -1,23 +1,36 @@
 ﻿#include "Elevator.h"
+#include "Components/AudioComponent.h"
+#include "PossessionGame/Enums/ESound.h"
 #include "PossessionGame/Utilities/Subsystems/DelegateManager.h"
+#include "PossessionGame/Utilities/Subsystems/PrimaryDataAssetsManager.h"
 
 AElevator::AElevator()
 {
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	WardenSpawnMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WardenSpawnMesh"));
 	RootComponent = Mesh;
+	WardenSpawnMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WardenSpawnMesh"));
 	WardenSpawnMesh->SetupAttachment(RootComponent);
+	ElevatorRisingSfx = CreateDefaultSubobject<UAudioComponent>(TEXT("ElevatorRisingSfx"));
+	ElevatorRisingSfx->SetAutoActivate(false);
+	ElevatorRisingSfx->SetupAttachment(RootComponent);
 }
 
 void AElevator::BeginPlay()
 {
 	Super::BeginPlay();
-	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnElevatorTriggered.BindUObject(this, &AElevator::InitiateRising);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnElevatorTriggered.AddUObject(this, &AElevator::InitiateRising);
 	for (const TObjectPtr<AActor> SpawnLocation : EnemiesSpawnLocations) SpawnLocation->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+}
+
+void AElevator::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnElevatorTriggered.RemoveAll(this);
+	Super::EndPlay(EndPlayReason);
 }
 
 void AElevator::InitiateRising()
 {
+	ElevatorRisingSfx->Sound ? ElevatorRisingSfx->Play() : GetGameInstance()->GetSubsystem<UPrimaryDataAssetsManager>()->ConfigureSound(ElevatorRisingSfx, nullptr, ESound::ElevatorRising);
 	GetWorldTimerManager().SetTimer(RisingHandle, this, &AElevator::ProcessRising, 0.05f, true);
 }
 

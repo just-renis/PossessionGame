@@ -103,11 +103,7 @@ void UChargeTerminalModeLogic::ChargeCleared()
 	WaveManagerHUD->PlayAnnouncementAnim(NSLOCTEXT("ST_Localization", "WaveCompleted", "Wave Completed"));
 	FTimerHandle InitiateNextChargeHandle;
 	if (!Data->GetIsWallLasersExist()) GetWorld()->GetTimerManager().SetTimer(InitiateNextChargeHandle, this, &UChargeTerminalModeLogic::InitiateNextCharge, WaveManagerHUD->GetWaveAnnouncementEndTime());
-	else
-	{
-		(void)WaveManager->GetDelegateManager()->OnElevatorTriggered.ExecuteIfBound();
-		UE_LOG(LogTemp, Error, TEXT("ON ELEVATOR TRIGGERED"));
-	}
+	else WaveManager->GetDelegateManager()->OnElevatorTriggered.Broadcast();
 }
 
 void UChargeTerminalModeLogic::InitiateNextCharge()

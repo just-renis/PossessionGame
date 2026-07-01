@@ -24,9 +24,12 @@ class POSSESSIONGAME_API AElevator : public AActor
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TObjectPtr<AActor> WardenSpawnLocation;
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAudioComponent> ElevatorRisingSfx;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<AActor>> EnemiesSpawnLocations;
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void InitiateRising();
 	void ProcessRising();
 };

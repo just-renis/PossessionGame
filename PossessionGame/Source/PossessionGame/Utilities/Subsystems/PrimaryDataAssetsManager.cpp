@@ -775,6 +775,7 @@ void UPrimaryDataAssetsManager::SetupSoundsPrimaryAssets()
 	SoundMap.Add("PA_SamuraiSlashHit", ESound::SamuraiSlashHit);
 	SoundMap.Add("PA_SamuraiShurikenImpact", ESound::SamuraiShurikenImpact);
 	SoundMap.Add("PA_SamuraiShurikenThrow", ESound::SamuraiShurikenThrow);
+	SoundMap.Add("PA_ElevatorRising", ESound::ElevatorRising);
 	FillContainers<ESound, FSoundContainer, UPA_SoundContainer>(SoundMap, SoundContainers, "Sound");
 	SoundMap.Empty();
 }

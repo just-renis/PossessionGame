@@ -24,10 +24,12 @@ void AWallLaser::BeginPlay()
 	MID_Material = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 	if (MID_Material) MID_Material->SetScalarParameterValue(FName("Appear"), 0.f);
 	GetGameInstance()->GetSubsystem<UDelegateManager>()->TriggerWallLasers.AddUObject(this, &AWallLaser::EnableLaser);
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnElevatorTriggered.AddUObject(this, &AWallLaser::DisableLaser);
 }
 
 void AWallLaser::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	GetGameInstance()->GetSubsystem<UDelegateManager>()->OnElevatorTriggered.RemoveAll(this);
 	GetWorldTimerManager().ClearTimer(DamageOvertimeHandle);
 	Super::EndPlay(EndPlayReason);
 }
@@ -35,10 +37,20 @@ void AWallLaser::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AWallLaser::EnableLaser(const TArray<int32>& InIds, const int32 InGroup)
 {
 	if (Group != InGroup || !InIds.Contains(Id)) return;
+	bIsLaserEnabled = true;
 	if (MID_Material) MID_Material->SetScalarParameterValue(FName("Appear"), 100.f);
 	DamageRadius->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	DamageRadius->SetGenerateOverlapEvents(true);
 	GetWorldTimerManager().SetTimer(DamageOvertimeHandle, this, &AWallLaser::DealDamage, DamageTick, true);
+}
+
+void AWallLaser::DisableLaser()
+{
+	if (!bIsLaserEnabled) return;
+	if (MID_Material) MID_Material->SetScalarParameterValue(FName("Appear"), 0.f);
+	DamageRadius->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	DamageRadius->SetGenerateOverlapEvents(false);
+	GetWorldTimerManager().ClearTimer(DamageOvertimeHandle);
 }
 
 void AWallLaser::DealDamage()

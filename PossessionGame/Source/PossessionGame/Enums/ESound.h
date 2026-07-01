@@ -198,4 +198,5 @@ enum class ESound : uint16
 	SamuraiSwoosh,
 	SamuraiShurikenImpact,
 	SamuraiShurikenThrow,
+	ElevatorRising
 };

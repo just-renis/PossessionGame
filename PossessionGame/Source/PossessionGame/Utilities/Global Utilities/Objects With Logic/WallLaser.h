@@ -14,6 +14,7 @@ class POSSESSIONGAME_API AWallLaser : public AActor
 
 	AWallLaser();
 
+	bool bIsLaserEnabled = false;
 	FTimerHandle DamageOvertimeHandle;
 	UPROPERTY(EditAnywhere, Category = "Group", meta = (AllowPrivateAccess = true))
 	int32 Group;
@@ -35,6 +36,7 @@ class POSSESSIONGAME_API AWallLaser : public AActor
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void EnableLaser(const TArray<int32>& InIds, const int32 InGroup);
+	void DisableLaser();
 	void DealDamage();
 	void AddTarget(const TObjectPtr<AEnemy>& InTarget);
 	void RemoveTarget();
