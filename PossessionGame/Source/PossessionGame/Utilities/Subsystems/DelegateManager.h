@@ -127,6 +127,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnKeyBindChange, const FName&, const FText
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSpecialUpgradeAdded, const EUpgrade, const EUpgradeAttribute);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FAddActionSpeedBoost, const float, const float);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FTriggerWallLasers, const TArray<int32>&, const int32);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnTeleporterEntered, const int32, const TObjectPtr<AActor>&);
 
 UCLASS()
 class POSSESSIONGAME_API UDelegateManager : public UGameInstanceSubsystem
@@ -238,4 +239,5 @@ public:
 	FOnSpecialUpgradeAdded OnSpecialUpgradeAdded;
 	FAddActionSpeedBoost AddActionSpeedBoost;
 	FTriggerWallLasers TriggerWallLasers;
+	FOnTeleporterEntered OnTeleporterEntered;
 };
